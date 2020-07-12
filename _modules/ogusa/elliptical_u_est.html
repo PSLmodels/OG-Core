@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogusa.elliptical_u_est &#8212; OG-USA 0.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ogusa.elliptical_u_est</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">This script takes a Frisch elasticity parameter and then estimates the</span>
+<span class="sd">parameters of the elliptical utility fuction that correspond to a</span>
+<span class="sd">constant Frisch elasticity function with the input Frisch elasticity.</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1"># Import packages</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">opt</span>
+
+
+<div class="viewcode-block" id="CFE_u"><a class="viewcode-back" href="../../elliptical_u_est.html#ogusa.elliptical_u_est.CFE_u">[docs]</a><span class="k">def</span> <span class="nf">CFE_u</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Disutility of labor supply from the constant Frisch elasticity</span>
+<span class="sd">    utility function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        theta (scalar): inverse of the Frisch elasticity of labor supply</span>
+<span class="sd">        l_tilde (scalar): maximum amount of labor supply</span>
+<span class="sd">        n (array_like): labor supply amount</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        u (array_like): disutility of labor supply</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="p">((</span><span class="n">n</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">theta</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">theta</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">u</span></div>
+
+
+<div class="viewcode-block" id="CFE_mu"><a class="viewcode-back" href="../../elliptical_u_est.html#ogusa.elliptical_u_est.CFE_mu">[docs]</a><span class="k">def</span> <span class="nf">CFE_mu</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Marginal disutility of labor supply from the constant Frisch</span>
+<span class="sd">    elasticity utility function</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        theta (scalar):  inverse of the Frisch elasticity of labor supply</span>
+<span class="sd">        l_tilde (scalar): maximum amount of labor supply</span>
+<span class="sd">        n (array_like): labor supply amount</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mu (array_like): marginal disutility of labor supply</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">n</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">theta</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mu</span></div>
+
+
+<div class="viewcode-block" id="elliptical_u"><a class="viewcode-back" href="../../elliptical_u_est.html#ogusa.elliptical_u_est.elliptical_u">[docs]</a><span class="k">def</span> <span class="nf">elliptical_u</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">upsilon</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Disutility of labor supply from the elliptical utility function</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        b (scalar):  scale parameter of elliptical utility function</span>
+<span class="sd">        k (scalar):  shift parametr of elliptical utility function</span>
+<span class="sd">        upsilon (scalar):  curvature parameter of elliptical utility</span>
+<span class="sd">            function</span>
+<span class="sd">        l_tilde (scalar): maximum amount of labor supply</span>
+<span class="sd">        n (array_like): labor supply amount</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        u (array_like): disutility of labor supply</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">n</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">upsilon</span><span class="p">))</span> <span class="o">+</span> <span class="n">k</span>
+
+    <span class="k">return</span> <span class="n">u</span></div>
+
+
+<div class="viewcode-block" id="elliptical_mu"><a class="viewcode-back" href="../../elliptical_u_est.html#ogusa.elliptical_u_est.elliptical_mu">[docs]</a><span class="k">def</span> <span class="nf">elliptical_mu</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">upsilon</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Marginal disutility of labor supply from the elliptical utility</span>
+<span class="sd">    function</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        b (scalar):  scale parameter of elliptical utility function</span>
+<span class="sd">        upsilon (scalar):  curvature parameter of elliptical utility</span>
+<span class="sd">            function</span>
+<span class="sd">        l_tilde (scalar): maximum amount of labor supply</span>
+<span class="sd">        n (array_like): labor supply amount</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mu (array_like): marginal disutility of labor supply</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">upsilon</span><span class="p">)</span> <span class="o">**</span>
+                                 <span class="p">((</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">upsilon</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span> <span class="o">*</span>
+          <span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">mu</span></div>
+
+
+<div class="viewcode-block" id="sumsq"><a class="viewcode-back" href="../../elliptical_u_est.html#ogusa.elliptical_u_est.sumsq">[docs]</a><span class="k">def</span> <span class="nf">sumsq</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function generates the sum of squared deviations between the</span>
+<span class="sd">    constant Frisch elasticity function and the elliptical utility</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        params (tuple): parameters to estimate, (b, k, upsilon)</span>
+<span class="sd">        objs (tuple): other parameters of utility function,</span>
+<span class="sd">            (theta, l_tilde, n_grid)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ssqdev (scalar): sum of squared errors</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span> <span class="o">=</span> <span class="n">objs</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">upsilon</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">CFE</span> <span class="o">=</span> <span class="n">CFE_u</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span><span class="p">)</span>
+    <span class="n">ellipse</span> <span class="o">=</span> <span class="n">elliptical_u</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">upsilon</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">CFE</span> <span class="o">-</span> <span class="n">ellipse</span>
+    <span class="n">ssqdev</span> <span class="o">=</span> <span class="p">(</span><span class="n">errors</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ssqdev</span></div>
+
+
+<div class="viewcode-block" id="sumsq_MU"><a class="viewcode-back" href="../../elliptical_u_est.html#ogusa.elliptical_u_est.sumsq_MU">[docs]</a><span class="k">def</span> <span class="nf">sumsq_MU</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function generates the sum of squared deviations between the</span>
+<span class="sd">    marginals of the constant Frisch elasticity function and the</span>
+<span class="sd">    elliptical utility function</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        params (tuple): parameters to estimate, (b, k, upsilon)</span>
+<span class="sd">        objs (tuple): other parameters of utility function,</span>
+<span class="sd">            (theta, l_tilde, n_grid)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ssqdev (scalar): sum of squared errors</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span> <span class="o">=</span> <span class="n">objs</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">upsilon</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">CFE_MU</span> <span class="o">=</span> <span class="n">CFE_mu</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span><span class="p">)</span>
+    <span class="n">ellipse_MU</span> <span class="o">=</span> <span class="n">elliptical_mu</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">upsilon</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span><span class="p">)</span>
+    <span class="c1"># CFE_MU = (1.0 / l_tilde) * ((n_grid / l_tilde) ** theta)</span>
+    <span class="c1"># ellipse_MU = (b * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) **</span>
+    <span class="c1">#                                       upsilon) **</span>
+    <span class="c1">#                                      ((1.0 / upsilon) - 1.0)) *</span>
+    <span class="c1">#               (n_grid / l_tilde) ** (upsilon - 1.0))</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">CFE_MU</span> <span class="o">-</span> <span class="n">ellipse_MU</span>
+    <span class="n">ssqdev</span> <span class="o">=</span> <span class="p">(</span><span class="n">errors</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ssqdev</span></div>
+
+
+<div class="viewcode-block" id="estimation"><a class="viewcode-back" href="../../elliptical_u_est.html#ogusa.elliptical_u_est.estimation">[docs]</a><span class="k">def</span> <span class="nf">estimation</span><span class="p">(</span><span class="n">frisch</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function estimates the parameters of an elliptical utility</span>
+<span class="sd">    funcion that fits a constant frisch elasticty function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frisch (scalar):  Frisch elasticity of labor supply</span>
+<span class="sd">        l_tilde (scalar): maximum amount of labor supply</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        b_MU_til (scalar): estimated b from ellipitical utility function</span>
+<span class="sd">        upsilon_MU_til (scalar): estimated upsilon from ellipitical</span>
+<span class="sd">            utility function</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    ------------------------------------------------------------------------</span>
+<span class="sd">    Set parameters</span>
+<span class="sd">    ------------------------------------------------------------------------</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">frisch</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">101</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    ------------------------------------------------------------------------</span>
+<span class="sd">    Estimate parameters of ellipitical utility function</span>
+<span class="sd">    ------------------------------------------------------------------------</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Initial guesses</span>
+    <span class="n">b_init</span> <span class="o">=</span> <span class="o">.</span><span class="mi">6701</span>
+    <span class="c1"># k_init = -.6548</span>
+    <span class="n">upsilon_init</span> <span class="o">=</span> <span class="mf">2.3499</span>
+    <span class="c1"># don&#39;t estimate near edge of range of labor supply</span>
+    <span class="n">n_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># Estimating using levels of utility function</span>
+    <span class="c1"># ellipse_params_init = np.array([b_init, k_init, upsilon_init])</span>
+    <span class="c1"># ellipse_objs = (theta, l_tilde, n_grid)</span>
+    <span class="c1"># bnds = ((None, None), (None, None), (1e-12, None))</span>
+    <span class="c1"># ellipse_params_til = opt.minimize(sumsq, ellipse_params_init,</span>
+    <span class="c1">#                     args=(ellipse_objs), method=&quot;L-BFGS-B&quot;, bounds=bnds,</span>
+    <span class="c1">#                     tol=1e-15)</span>
+    <span class="c1"># (b_til, k_til, upsilon_til) = ellipse_params_til.x</span>
+
+    <span class="c1"># elapsed_time = time.clock() - start_time</span>
+
+    <span class="c1"># Estimate params using marginal utilities</span>
+    <span class="n">ellipse_MU_params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b_init</span><span class="p">,</span> <span class="n">upsilon_init</span><span class="p">])</span>
+    <span class="n">ellipse_MU_objs</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span><span class="p">)</span>
+    <span class="n">bnds_MU</span> <span class="o">=</span> <span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">ellipse_MU_params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">sumsq_MU</span><span class="p">,</span>
+                                         <span class="n">ellipse_MU_params_init</span><span class="p">,</span>
+                                         <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">ellipse_MU_objs</span><span class="p">),</span>
+                                         <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">,</span>
+                                         <span class="n">bounds</span><span class="o">=</span><span class="n">bnds_MU</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">b_MU_til</span><span class="p">,</span> <span class="n">upsilon_MU_til</span><span class="p">)</span> <span class="o">=</span> <span class="n">ellipse_MU_params_til</span><span class="o">.</span><span class="n">x</span>
+
+    <span class="k">return</span> <span class="n">b_MU_til</span><span class="p">,</span> <span class="n">upsilon_MU_til</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jason DeBacker and Richard W. Evans.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

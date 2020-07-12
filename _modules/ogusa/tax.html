@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogusa.tax &#8212; OG-USA 0.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ogusa.tax</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">Functions for taxes in the steady state and along the transition path.</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Packages</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">    Functions</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="replacement_rate_vals"><a class="viewcode-back" href="../../tax.html#ogusa.tax.replacement_rate_vals">[docs]</a><span class="k">def</span> <span class="nf">replacement_rate_vals</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">wss</span><span class="p">,</span> <span class="n">factor_ss</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates replacement rate values for the social security system.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nssmat (Numpy array): initial guess at labor supply, size = SxJ</span>
+<span class="sd">        new_w (scalar): steady state real wage rate</span>
+<span class="sd">        factor_ss (scalar): scaling factor converting model units to</span>
+<span class="sd">            dollars</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        theta (Numpy array): social security replacement rate value for</span>
+<span class="sd">            lifetime income group j</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span>
+    <span class="c1"># adjust number of calendar years AIME computed from int model periods</span>
+    <span class="n">equiv_periods</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_num_years</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">dim2</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dim2</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">earnings</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">*</span> <span class="p">(</span><span class="n">wss</span> <span class="o">*</span> <span class="n">nssmat</span> <span class="o">*</span> <span class="n">factor_ss</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">dim2</span><span class="p">)</span>
+    <span class="c1"># get highest earning years for number of years AIME computed from</span>
+    <span class="n">highest_earn</span> <span class="o">=</span>\
+        <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">earnings</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span>
+                        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[:</span><span class="n">equiv_periods</span><span class="p">]</span>
+    <span class="n">AIME</span> <span class="o">=</span> <span class="n">highest_earn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mf">12.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">))</span> <span class="o">*</span> <span class="n">equiv_periods</span><span class="p">)</span>
+    <span class="n">PIA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dim2</span><span class="p">)</span>
+    <span class="c1"># Compute level of replacement using AIME brackets and PIA rates</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span><span class="p">:</span>
+            <span class="n">PIA</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_1</span> <span class="o">*</span> <span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_2</span><span class="p">:</span>
+            <span class="n">PIA</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_1</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span> <span class="o">+</span>
+                      <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_2</span> <span class="o">*</span> <span class="p">(</span><span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">PIA</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_1</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span> <span class="o">+</span>
+                      <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_2</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_2</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span><span class="p">)</span> <span class="o">+</span>
+                      <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_3</span> <span class="o">*</span> <span class="p">(</span><span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_2</span><span class="p">))</span>
+    <span class="c1"># Set the maximum monthly replacment rate from SS benefits tables</span>
+    <span class="n">PIA</span><span class="p">[</span><span class="n">PIA</span> <span class="o">&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_maxpayment</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_maxpayment</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_minpayment</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">PIA</span><span class="p">[</span><span class="n">PIA</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_minpayment</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_minpayment</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="p">(</span><span class="n">PIA</span> <span class="o">*</span> <span class="p">(</span><span class="mf">12.0</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">factor_ss</span> <span class="o">*</span> <span class="n">wss</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">theta</span></div>
+
+
+<div class="viewcode-block" id="ETR_wealth"><a class="viewcode-back" href="../../tax.html#ogusa.tax.ETR_wealth">[docs]</a><span class="k">def</span> <span class="nf">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the effective tax rate on wealth.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        b (Numpy array): savings</span>
+<span class="sd">        h_wealth (scalar): parameter of wealth tax function</span>
+<span class="sd">        p_wealth (scalar): parameter of wealth tax function</span>
+<span class="sd">        m_wealth (scalar): parameter of wealth tax function</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tau_w (Numpy array): effective tax rate on wealth, size = SxJ</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">tau_w</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_wealth</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h_wealth</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">m_wealth</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tau_w</span></div>
+
+
+<div class="viewcode-block" id="MTR_wealth"><a class="viewcode-back" href="../../tax.html#ogusa.tax.MTR_wealth">[docs]</a><span class="k">def</span> <span class="nf">MTR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the marginal tax rate on wealth from the wealth tax.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} = \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        b (Numpy array): savings</span>
+<span class="sd">        h_wealth (scalar): parameter of wealth tax function</span>
+<span class="sd">        p_wealth (scalar): parameter of wealth tax function</span>
+<span class="sd">        m_wealth (scalar): parameter of wealth tax function</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">tau_prime</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">*</span> <span class="n">m_wealth</span> <span class="o">*</span> <span class="n">p_wealth</span><span class="p">)</span> <span class="o">/</span>
+                 <span class="p">((</span><span class="n">b</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">+</span> <span class="n">m_wealth</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
+                 <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">tau_prime</span></div>
+
+
+<div class="viewcode-block" id="ETR_income"><a class="viewcode-back" href="../../tax.html#ogusa.tax.ETR_income">[docs]</a><span class="k">def</span> <span class="nf">ETR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates effective personal income tax rate.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): real interest rate</span>
+<span class="sd">        w (array_like): real wage rate</span>
+<span class="sd">        b (Numpy array): savings</span>
+<span class="sd">        n (Numpy array): labor supply</span>
+<span class="sd">        factor (scalar): scaling factor converting model units to</span>
+<span class="sd">            dollars</span>
+<span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        etr_params (Numpy array): effective tax rate function parameters</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tau (Numpy array): effective tax rate on total income</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
+    <span class="n">X2</span> <span class="o">=</span> <span class="n">X</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">Y2</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">income</span> <span class="o">=</span> <span class="n">X</span> <span class="o">+</span> <span class="n">Y</span>
+    <span class="n">income2</span> <span class="o">=</span> <span class="n">income</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span> <span class="o">==</span> <span class="s1">&#39;GS&#39;</span><span class="p">:</span>
+        <span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">phi1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">phi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">tau</span> <span class="o">=</span> <span class="p">((</span><span class="n">phi0</span> <span class="o">*</span> <span class="p">(</span><span class="n">income</span> <span class="o">-</span> <span class="p">((</span><span class="n">income</span> <span class="o">**</span> <span class="o">-</span><span class="n">phi1</span><span class="p">)</span> <span class="o">+</span> <span class="n">phi2</span><span class="p">)</span> <span class="o">**</span>
+                        <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">phi1</span><span class="p">)))</span> <span class="o">/</span> <span class="n">income</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span> <span class="o">==</span> <span class="s1">&#39;DEP_totalinc&#39;</span><span class="p">:</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">max_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+        <span class="n">min_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+        <span class="n">shift_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+        <span class="n">tau_income</span> <span class="o">=</span> <span class="p">(((</span><span class="n">max_income</span> <span class="o">-</span> <span class="n">min_income</span><span class="p">)</span> <span class="o">*</span>
+                       <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">income2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">income</span><span class="p">)</span> <span class="o">/</span>
+                       <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">income2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">income</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">min_income</span><span class="p">)</span>
+        <span class="n">tau</span> <span class="o">=</span> <span class="n">tau_income</span> <span class="o">+</span> <span class="n">shift_income</span> <span class="o">+</span> <span class="n">shift</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># DEP or linear</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="n">max_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+        <span class="n">min_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+        <span class="n">max_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+        <span class="n">min_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+        <span class="n">shift_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+        <span class="n">shift_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+        <span class="n">share</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">11</span><span class="p">])</span>
+
+        <span class="n">tau_x</span> <span class="o">=</span> <span class="p">((</span><span class="n">max_x</span> <span class="o">-</span> <span class="n">min_x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">X2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">/</span>
+                 <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">X2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_x</span><span class="p">)</span>
+        <span class="n">tau_y</span> <span class="o">=</span> <span class="p">((</span><span class="n">max_y</span> <span class="o">-</span> <span class="n">min_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">Y2</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span> <span class="o">/</span>
+                 <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">Y2</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">Y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_y</span><span class="p">)</span>
+        <span class="n">tau</span> <span class="o">=</span> <span class="p">(((</span><span class="n">tau_x</span> <span class="o">+</span> <span class="n">shift_x</span><span class="p">)</span> <span class="o">**</span> <span class="n">share</span><span class="p">)</span> <span class="o">*</span>
+               <span class="p">((</span><span class="n">tau_y</span> <span class="o">+</span> <span class="n">shift_y</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">share</span><span class="p">)))</span> <span class="o">+</span> <span class="n">shift</span>
+
+    <span class="k">return</span> <span class="n">tau</span></div>
+
+
+<div class="viewcode-block" id="MTR_income"><a class="viewcode-back" href="../../tax.html#ogusa.tax.MTR_income">[docs]</a><span class="k">def</span> <span class="nf">MTR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">mtr_capital</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span>
+               <span class="n">mtr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generates the marginal tax rate on labor income for households.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): real interest rate</span>
+<span class="sd">        w (array_like): real wage rate</span>
+<span class="sd">        b (Numpy array): savings</span>
+<span class="sd">        n (Numpy array): labor supply</span>
+<span class="sd">        factor (scalar): scaling factor converting model units to</span>
+<span class="sd">            dollars</span>
+<span class="sd">        mtr_capital (bool): whether to compute the marginal tax rate on</span>
+<span class="sd">            capital income or labor income</span>
+<span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        etr_params (Numpy array): effective tax rate function parameters</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tau (Numpy array): marginal tax rate on income source</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
+    <span class="n">X2</span> <span class="o">=</span> <span class="n">X</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">Y2</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">income</span> <span class="o">=</span> <span class="n">X</span> <span class="o">+</span> <span class="n">Y</span>
+    <span class="n">income2</span> <span class="o">=</span> <span class="n">income</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span> <span class="o">==</span> <span class="s1">&#39;GS&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">analytical_mtrs</span><span class="p">:</span>
+            <span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">phi1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">phi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">phi1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">phi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">tau</span> <span class="o">=</span> <span class="p">(</span><span class="n">phi0</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">income</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">phi1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
+                          <span class="p">((</span><span class="n">income</span> <span class="o">**</span> <span class="o">-</span><span class="n">phi1</span><span class="p">)</span> <span class="o">+</span> <span class="n">phi2</span><span class="p">)</span> <span class="o">**</span>
+                          <span class="p">((</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi1</span><span class="p">)</span> <span class="o">/</span> <span class="n">phi1</span><span class="p">))))</span>
+    <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span> <span class="o">==</span> <span class="s1">&#39;DEP_totalinc&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">analytical_mtrs</span><span class="p">:</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">max_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+            <span class="n">min_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+            <span class="n">shift_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+            <span class="n">d_etr</span> <span class="o">=</span> <span class="p">((</span><span class="n">max_income</span> <span class="o">-</span> <span class="n">min_income</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">income</span> <span class="o">+</span> <span class="n">B</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="p">((</span><span class="n">A</span> <span class="o">*</span> <span class="n">income2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">income</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+            <span class="n">etr</span> <span class="o">=</span> <span class="p">(((</span><span class="n">max_income</span> <span class="o">-</span> <span class="n">min_income</span><span class="p">)</span> <span class="o">*</span>
+                    <span class="p">((</span><span class="n">A</span> <span class="o">*</span> <span class="n">income2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">income</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">income2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">income</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">min_income</span><span class="p">)</span> <span class="o">+</span>
+                   <span class="n">shift_income</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span>
+            <span class="n">tau</span> <span class="o">=</span> <span class="p">(</span><span class="n">d_etr</span> <span class="o">*</span> <span class="n">income</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">etr</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">max_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+            <span class="n">min_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+            <span class="n">shift_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+            <span class="n">tau_income</span> <span class="o">=</span> <span class="p">(((</span><span class="n">max_income</span> <span class="o">-</span> <span class="n">min_income</span><span class="p">)</span> <span class="o">*</span>
+                           <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">income2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">income</span><span class="p">)</span> <span class="o">/</span>
+                           <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">income2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">income</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">min_income</span><span class="p">)</span>
+            <span class="n">tau</span> <span class="o">=</span> <span class="n">tau_income</span> <span class="o">+</span> <span class="n">shift_income</span> <span class="o">+</span> <span class="n">shift</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># DEP or linear</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">analytical_mtrs</span><span class="p">:</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+            <span class="n">max_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+            <span class="n">min_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+            <span class="n">max_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+            <span class="n">min_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+            <span class="n">shift_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+            <span class="n">shift_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+            <span class="n">share</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">etr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">11</span><span class="p">])</span>
+
+            <span class="n">tau_x</span> <span class="o">=</span> <span class="p">((</span><span class="n">max_x</span> <span class="o">-</span> <span class="n">min_x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">X2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">X2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_x</span><span class="p">)</span>
+            <span class="n">tau_y</span> <span class="o">=</span> <span class="p">((</span><span class="n">max_y</span> <span class="o">-</span> <span class="n">min_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">Y2</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">Y2</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">Y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_y</span><span class="p">)</span>
+            <span class="n">etr</span> <span class="o">=</span> <span class="p">(((</span><span class="n">tau_x</span> <span class="o">+</span> <span class="n">shift_x</span><span class="p">)</span> <span class="o">**</span> <span class="n">share</span><span class="p">)</span> <span class="o">*</span>
+                   <span class="p">((</span><span class="n">tau_y</span> <span class="o">+</span> <span class="n">shift_y</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">share</span><span class="p">)))</span> <span class="o">+</span> <span class="n">shift</span>
+            <span class="k">if</span> <span class="n">mtr_capital</span><span class="p">:</span>
+                <span class="n">d_etr</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">share</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">tau_y</span> <span class="o">+</span> <span class="n">shift_y</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">share</span><span class="p">))</span> <span class="o">*</span>
+                         <span class="p">(</span><span class="n">max_y</span> <span class="o">-</span> <span class="n">min_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="n">Y</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span> <span class="o">/</span>
+                                            <span class="p">((</span><span class="n">C</span> <span class="o">*</span> <span class="n">Y2</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">Y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                                             <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span>
+                         <span class="p">((</span><span class="n">tau_x</span> <span class="o">+</span> <span class="n">shift_x</span><span class="p">)</span> <span class="o">**</span> <span class="n">share</span><span class="p">))</span>
+                <span class="n">tau</span> <span class="o">=</span> <span class="n">d_etr</span> <span class="o">*</span> <span class="n">income</span> <span class="o">+</span> <span class="n">etr</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d_etr</span> <span class="o">=</span> <span class="p">(</span><span class="n">share</span> <span class="o">*</span> <span class="p">((</span><span class="n">tau_x</span> <span class="o">+</span> <span class="n">shift_x</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">share</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span>
+                         <span class="p">(</span><span class="n">max_x</span> <span class="o">-</span> <span class="n">min_x</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="n">B</span><span class="p">)</span> <span class="o">/</span>
+                                            <span class="p">((</span><span class="n">A</span> <span class="o">*</span> <span class="n">X2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                                             <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span>
+                         <span class="p">((</span><span class="n">tau_y</span> <span class="o">+</span> <span class="n">shift_y</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">share</span><span class="p">)))</span>
+                <span class="n">tau</span> <span class="o">=</span> <span class="n">d_etr</span> <span class="o">*</span> <span class="n">income</span> <span class="o">+</span> <span class="n">etr</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+            <span class="n">max_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+            <span class="n">min_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+            <span class="n">max_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+            <span class="n">min_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+            <span class="n">shift_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+            <span class="n">shift_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+            <span class="n">share</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">mtr_params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">11</span><span class="p">])</span>
+
+            <span class="n">tau_x</span> <span class="o">=</span> <span class="p">((</span><span class="n">max_x</span> <span class="o">-</span> <span class="n">min_x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">X2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">X2</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_x</span><span class="p">)</span>
+            <span class="n">tau_y</span> <span class="o">=</span> <span class="p">((</span><span class="n">max_y</span> <span class="o">-</span> <span class="n">min_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">Y2</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">Y2</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">Y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_y</span><span class="p">)</span>
+            <span class="n">tau</span> <span class="o">=</span> <span class="p">(((</span><span class="n">tau_x</span> <span class="o">+</span> <span class="n">shift_x</span><span class="p">)</span> <span class="o">**</span> <span class="n">share</span><span class="p">)</span> <span class="o">*</span>
+                   <span class="p">((</span><span class="n">tau_y</span> <span class="o">+</span> <span class="n">shift_y</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">share</span><span class="p">)))</span> <span class="o">+</span> <span class="n">shift</span>
+
+    <span class="k">return</span> <span class="n">tau</span></div>
+
+
+<div class="viewcode-block" id="get_biz_tax"><a class="viewcode-back" href="../../tax.html#ogusa.tax.get_biz_tax">[docs]</a><span class="k">def</span> <span class="nf">get_biz_tax</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Finds total business income tax revenue.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) - \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}</span>
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): real interest rate</span>
+<span class="sd">        Y (array_like): aggregate output</span>
+<span class="sd">        L (array_like): aggregate labor demand</span>
+<span class="sd">        K (array_like): aggregate capital demand</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        business_revenue (array_like): aggregate business tax revenue</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">business_revenue</span> <span class="o">=</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">w</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span> <span class="o">*</span> <span class="n">K</span>
+    <span class="k">return</span> <span class="n">business_revenue</span></div>
+
+
+<div class="viewcode-block" id="net_taxes"><a class="viewcode-back" href="../../tax.html#ogusa.tax.net_taxes">[docs]</a><span class="k">def</span> <span class="nf">net_taxes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span>
+              <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate net taxes paid for each household.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): real interest rate</span>
+<span class="sd">        w (array_like): real wage rate</span>
+<span class="sd">        b (Numpy array): savings</span>
+<span class="sd">        n (Numpy array): labor supply</span>
+<span class="sd">        bq (Numpy array): bequests received</span>
+<span class="sd">        factor (scalar): scaling factor converting model units to</span>
+<span class="sd">            dollars</span>
+<span class="sd">        tr (Numpy array): government transfers to the household</span>
+<span class="sd">        theta (Numpy array): social security replacement rate value for</span>
+<span class="sd">            lifetime income group j</span>
+<span class="sd">        t (int): time period</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        shift (bool): whether computing for periods 0--s or 1--(s+1),</span>
+<span class="sd">            =True for 1--(s+1)</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
+<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        etr_params (Numpy array): effective tax rate function parameters</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        net_tax (Numpy array): net taxes paid for each household</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">T_I</span> <span class="o">=</span> <span class="n">income_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">pension</span> <span class="o">=</span> <span class="n">pension_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">T_W</span> <span class="o">=</span> <span class="n">wealth_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="n">net_tax</span> <span class="o">=</span> <span class="n">T_I</span> <span class="o">-</span> <span class="n">pension</span> <span class="o">+</span> <span class="n">T_BQ</span> <span class="o">+</span> <span class="n">T_W</span> <span class="o">-</span> <span class="n">tr</span>
+
+    <span class="k">return</span> <span class="n">net_tax</span></div>
+
+
+<div class="viewcode-block" id="income_tax_liab"><a class="viewcode-back" href="../../tax.html#ogusa.tax.income_tax_liab">[docs]</a><span class="k">def</span> <span class="nf">income_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate income and payroll tax liability for each household</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): real interest rate</span>
+<span class="sd">        w (array_like): real wage rate</span>
+<span class="sd">        b (Numpy array): savings</span>
+<span class="sd">        n (Numpy array): labor supply</span>
+<span class="sd">        factor (scalar): scaling factor converting model units to</span>
+<span class="sd">            dollars</span>
+<span class="sd">        t (int): time period</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
+<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        etr_params (Numpy array): effective tax rate function parameters</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        T_I (Numpy array): total income and payroll taxes paid for each</span>
+<span class="sd">            household</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="n">income</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
+    <span class="n">labor_income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
+    <span class="n">T_I</span> <span class="o">=</span> <span class="n">ETR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">income</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+        <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">T_P</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
+                   <span class="n">labor_income</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">T_P</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
+                   <span class="n">labor_income</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>
+        <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
+
+    <span class="n">income_payroll_tax_liab</span> <span class="o">=</span> <span class="n">T_I</span> <span class="o">+</span> <span class="n">T_P</span>
+
+    <span class="k">return</span> <span class="n">income_payroll_tax_liab</span></div>
+
+
+<div class="viewcode-block" id="pension_amount"><a class="viewcode-back" href="../../tax.html#ogusa.tax.pension_amount">[docs]</a><span class="k">def</span> <span class="nf">pension_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate public pension benefit amounts for each household.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        w (array_like): real wage rate</span>
+<span class="sd">        n (Numpy array): labor supply</span>
+<span class="sd">        theta (Numpy array): social security replacement rate value for</span>
+<span class="sd">            lifetime income group j</span>
+<span class="sd">        t (int): time period</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        shift (bool): whether computing for periods 0--s or 1--(s+1),</span>
+<span class="sd">            =True for 1--(s+1)</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
+<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pension (Numpy array): pension amount for each household</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="n">pension</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+        <span class="c1"># Depending on if we are looking at b_s or b_s+1, the</span>
+        <span class="c1"># entry for retirement will change (it shifts back one).</span>
+        <span class="c1"># The shift boolean makes sure we start replacement rates</span>
+        <span class="c1"># at the correct age.</span>
+        <span class="k">if</span> <span class="n">shift</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shift</span><span class="p">:</span>
+            <span class="c1"># retireTPI is different from retire, because in TP income</span>
+            <span class="c1"># we are counting backwards with different length lists.</span>
+            <span class="c1"># This will always be the correct location of retirement,</span>
+            <span class="c1"># depending on the shape of the lists.</span>
+            <span class="n">retireTPI</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">retireTPI</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">shift</span><span class="p">:</span>
+                <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
+            <span class="n">pension</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">theta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:])</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pension</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">pension</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">retireTPI</span><span class="p">[</span><span class="n">tt</span><span class="p">]:]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">theta</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="n">tt</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">tt</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pension</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">pension</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">retireTPI</span><span class="p">[</span><span class="n">tt</span><span class="p">]:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">theta</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span> <span class="o">*</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="n">tt</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">tt</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>
+        <span class="c1"># The above methods won&#39;t work if scalars are used.  This option</span>
+        <span class="c1"># is only called by the SS_TPI_firstdoughnutring function in TPI.</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span>
+
+    <span class="k">return</span> <span class="n">pension</span></div>
+
+
+<div class="viewcode-block" id="wealth_tax_liab"><a class="viewcode-back" href="../../tax.html#ogusa.tax.wealth_tax_liab">[docs]</a><span class="k">def</span> <span class="nf">wealth_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate wealth tax liability for each household.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): real interest rate</span>
+<span class="sd">        b (Numpy array): savings</span>
+<span class="sd">        t (int): time period</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
+<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        T_W (Numpy array): wealth tax liability for each household</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+        <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                              <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                              <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                              <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                              <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span>
+                <span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>
+        <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">T_W</span></div>
+
+
+<div class="viewcode-block" id="bequest_tax_liab"><a class="viewcode-back" href="../../tax.html#ogusa.tax.bequest_tax_liab">[docs]</a><span class="k">def</span> <span class="nf">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate liability due from taxes on bequests for each household.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): real interest rate</span>
+<span class="sd">        b (Numpy array): savings</span>
+<span class="sd">        bq (Numpy array): bequests received</span>
+<span class="sd">        t (int): time period</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
+<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        T_BQ (Numpy array): bequest tax liability for each household</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lambdas</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lambdas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+        <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">bq</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">*</span> <span class="n">bq</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">bq</span> <span class="o">/</span> <span class="n">lambdas</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">bq</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>
+        <span class="c1"># The above methods won&#39;t work if scalars are used.  This option</span>
+        <span class="c1"># is only called by the SS_TPI_firstdoughnutring function in TPI.</span>
+        <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">bq</span>
+
+    <span class="k">return</span> <span class="n">T_BQ</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jason DeBacker and Richard W. Evans.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

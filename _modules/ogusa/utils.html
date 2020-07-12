@@ -1,0 +1,919 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogusa.utils &#8212; OG-USA 0.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ogusa.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">Miscellaneous functions used in the OG-USA model.</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1"># Packages</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_stream</span><span class="p">,</span> <span class="n">Requirement</span>
+
+<span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">1e-10</span>  <span class="c1"># tolerance or comparison functions</span>
+
+
+<div class="viewcode-block" id="mkdirs"><a class="viewcode-back" href="../../utils.html#ogusa.utils.mkdirs">[docs]</a><span class="k">def</span> <span class="nf">mkdirs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Makes directories to save output.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): path name for new directory</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">oe</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">oe</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">17</span><span class="p">:</span>  <span class="c1"># 17 is an error code if can&#39;t make path</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="pct_diff_func"><a class="viewcode-back" href="../../utils.html#ogusa.utils.pct_diff_func">[docs]</a><span class="k">def</span> <span class="nf">pct_diff_func</span><span class="p">(</span><span class="n">simul</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Used to calculate the absolute percent difference between data</span>
+<span class="sd">    moments and model moments.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simul (array_like): any shape, model moments</span>
+<span class="sd">        data (array_like): same shape as simul, data moments</span>
+
+<span class="sd">    Functions called: None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        output (array_like): percentage differences between model and</span>
+<span class="sd">            data moments</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">frac</span> <span class="o">=</span> <span class="p">(</span><span class="n">simul</span> <span class="o">-</span> <span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">data</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frac</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="convex_combo"><a class="viewcode-back" href="../../utils.html#ogusa.utils.convex_combo">[docs]</a><span class="k">def</span> <span class="nf">convex_combo</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Takes the convex combination of two variables, where nu is in [0,1].</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        var1 (array_like): any shape, variable 1</span>
+<span class="sd">        var2 (array_like): same shape as var1, variable 2</span>
+<span class="sd">        nu (scalar): weight on var1 in convex combination, in [0, 1]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        combo (array_like): same shape as var1, convex combination of</span>
+<span class="sd">        var1 and var2</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">combo</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">*</span> <span class="n">var1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">var2</span>
+    <span class="k">return</span> <span class="n">combo</span></div>
+
+
+<div class="viewcode-block" id="read_file"><a class="viewcode-back" href="../../utils.html#ogusa.utils.read_file">[docs]</a><span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Read the contents of &#39;path&#39;. If it does not exist, assume the file</span>
+<span class="sd">    is installed in a .egg file, and adjust accordingly.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): path name for new directory</span>
+<span class="sd">        fname (str): filename</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        file contents (str)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fname</span><span class="p">)):</span>
+        <span class="n">path_in_egg</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;ogusa&quot;</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">resource_stream</span><span class="p">(</span><span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;ogusa&quot;</span><span class="p">),</span> <span class="n">path_in_egg</span><span class="p">)</span>
+        <span class="n">_bytes</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">_bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fname</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="pickle_file_compare"><a class="viewcode-back" href="../../utils.html#ogusa.utils.pickle_file_compare">[docs]</a><span class="k">def</span> <span class="nf">pickle_file_compare</span><span class="p">(</span><span class="n">fname1</span><span class="p">,</span> <span class="n">fname2</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span>
+                        <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Read two pickle files and unpickle each. We assume that each</span>
+<span class="sd">    resulting object is a dictionary. The values of each dict are either</span>
+<span class="sd">    numpy arrays or else types that are comparable with the == operator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fname1 (str): file name of file 1</span>
+<span class="sd">        fname2 (str): file name of file 2</span>
+<span class="sd">        tol (scalar): tolerance</span>
+<span class="sd">        exceptions (dict): exceptions</span>
+<span class="sd">        relative (bool): whether comparison compares relative values</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        comparison (bool): whether therea two dictionaries are the same</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">pkl1</span> <span class="o">=</span> <span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">fname1</span><span class="p">)</span>
+    <span class="n">pkl2</span> <span class="o">=</span> <span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">fname2</span><span class="p">)</span>
+    <span class="n">comparison</span> <span class="o">=</span> <span class="n">dict_compare</span><span class="p">(</span><span class="n">fname1</span><span class="p">,</span> <span class="n">pkl1</span><span class="p">,</span> <span class="n">fname2</span><span class="p">,</span> <span class="n">pkl2</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+                              <span class="n">exceptions</span><span class="o">=</span><span class="n">exceptions</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="n">relative</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">comparison</span></div>
+
+
+<div class="viewcode-block" id="comp_array"><a class="viewcode-back" href="../../utils.html#ogusa.utils.comp_array">[docs]</a><span class="k">def</span> <span class="nf">comp_array</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Compare two arrays in the L inifinity norm</span>
+<span class="sd">    Return True if | a - b | &lt; tol, False otherwise</span>
+<span class="sd">    If not equal, add items to the unequal list</span>
+<span class="sd">    name: the name of the value being compared</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): name of variable being compared</span>
+<span class="sd">        a (array_like): first array to compare</span>
+<span class="sd">        b (array_like): second array to compare</span>
+<span class="sd">        tol (scalar): tolerance used for comparison</span>
+<span class="sd">        unequal (dict): dict of variables that are not equal</span>
+<span class="sd">        exceptions (dict): exceptions</span>
+<span class="sd">        relative (bool): whether comparison compares relative values</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool): whether two arrays are the same or not</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">exceptions</span><span class="p">:</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="n">exceptions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unequal shapes for </span><span class="si">{0}</span><span class="s2"> comparison &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
+        <span class="n">unequal</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">EPSILON</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="n">EPSILON</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">relative</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
+            <span class="n">mn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">err</span> <span class="o">/</span> <span class="n">mn</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;diff for </span><span class="si">{0}</span><span class="s2"> is </span><span class="si">{1}</span><span class="s2"> which is NOT OK&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">err</span><span class="p">))</span>
+            <span class="n">unequal</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;err is </span><span class="si">{0}</span><span class="s2"> which is OK&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="comp_scalar"><a class="viewcode-back" href="../../utils.html#ogusa.utils.comp_scalar">[docs]</a><span class="k">def</span> <span class="nf">comp_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Compare two scalars in the L inifinity norm</span>
+<span class="sd">    Return True if abs(a - b) &lt; tol, False otherwise</span>
+<span class="sd">    If not equal, add items to the unequal list</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): name of variable being compared</span>
+<span class="sd">        a (scalar): first scalar to compare</span>
+<span class="sd">        b (scalra): second scalar to compare</span>
+<span class="sd">        tol (scalar): tolerance used for comparison</span>
+<span class="sd">        unequal (list):  list of variables that are not equal</span>
+<span class="sd">        exceptions (dict): exceptions</span>
+<span class="sd">        relative (bool): whether comparison compares relative values</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool): whether two arrays are the same or not</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">exceptions</span><span class="p">:</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="n">exceptions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">EPSILON</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="n">EPSILON</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">relative</span><span class="p">:</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;err for </span><span class="si">{0}</span><span class="s2"> is </span><span class="si">{1}</span><span class="s2"> which is NOT OK&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">err</span><span class="p">))</span>
+        <span class="n">unequal</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;err is </span><span class="si">{0}</span><span class="s2"> which is OK&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="dict_compare"><a class="viewcode-back" href="../../utils.html#ogusa.utils.dict_compare">[docs]</a><span class="k">def</span> <span class="nf">dict_compare</span><span class="p">(</span><span class="n">name1</span><span class="p">,</span> <span class="n">dict1</span><span class="p">,</span> <span class="n">name2</span><span class="p">,</span> <span class="n">dict2</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Compare two dictionaries. The values of each dict are either</span>
+<span class="sd">    numpy arrays or else types that are comparable with the `==` operator.</span>
+<span class="sd">    For arrays, they are considered the same if `|x - y| &lt; tol` in</span>
+<span class="sd">    the L_inf norm. For scalars, they are considered the same if</span>
+<span class="sd">    `x - y &lt; tol`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name1 (str): name of dictionary 1</span>
+<span class="sd">        dict1 (dict): first dictionary to compare</span>
+<span class="sd">        name2 (str): name of dictionary 2</span>
+<span class="sd">        dict2 (dict): second dictionary to compare</span>
+<span class="sd">        tol (scalar): tolerance used for comparison</span>
+<span class="sd">        verbose (bool): whether print messages</span>
+<span class="sd">        exceptions (dict): exceptions</span>
+<span class="sd">        relative (bool): whether comparison compares relative values</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool): whether two dictionaries are the same or not</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">keys1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dict1</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">keys2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dict2</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">check</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">keys1</span> <span class="o">!=</span> <span class="n">keys2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys2</span><span class="p">):</span>
+            <span class="n">extra1</span> <span class="o">=</span> <span class="n">keys1</span> <span class="o">-</span> <span class="n">keys2</span>
+            <span class="n">extra2</span> <span class="o">=</span> <span class="n">keys2</span> <span class="o">-</span> <span class="n">keys1</span>
+            <span class="n">msg1</span> <span class="o">=</span> <span class="s2">&quot;extra items in </span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2">&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg1</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name1</span><span class="p">,</span> <span class="n">extra1</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg1</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name2</span><span class="p">,</span> <span class="n">extra2</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys2</span><span class="p">):</span>
+            <span class="n">bigger</span> <span class="o">=</span> <span class="n">keys1</span>
+            <span class="n">bigger_file</span> <span class="o">=</span> <span class="n">name1</span>
+            <span class="n">smaller</span> <span class="o">=</span> <span class="n">keys2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bigger</span> <span class="o">=</span> <span class="n">keys2</span>
+            <span class="n">bigger_file</span> <span class="o">=</span> <span class="n">name2</span>
+            <span class="n">smaller</span> <span class="o">=</span> <span class="n">keys1</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">bigger</span> <span class="o">-</span> <span class="n">smaller</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;more items in </span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2">&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bigger_file</span><span class="p">,</span> <span class="n">res</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">unequal_items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dict1</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+                <span class="n">check</span> <span class="o">&amp;=</span> <span class="n">comp_array</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">dict2</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal_items</span><span class="p">,</span>
+                                    <span class="n">exceptions</span><span class="o">=</span><span class="n">exceptions</span><span class="p">,</span>
+                                    <span class="n">relative</span><span class="o">=</span><span class="n">relative</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">check</span> <span class="o">&amp;=</span> <span class="n">comp_scalar</span><span class="p">(</span>
+                        <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">dict2</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal_items</span><span class="p">,</span>
+                        <span class="n">exceptions</span><span class="o">=</span><span class="n">exceptions</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="n">relative</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="n">check</span> <span class="o">&amp;=</span> <span class="n">comp_array</span><span class="p">(</span>
+                        <span class="n">k</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dict2</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="n">tol</span><span class="p">,</span>
+                        <span class="n">unequal_items</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="n">exceptions</span><span class="p">,</span>
+                        <span class="n">relative</span><span class="o">=</span><span class="n">relative</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">unequal_items</span><span class="p">:</span>
+            <span class="n">frmt</span> <span class="o">=</span> <span class="s2">&quot;Name </span><span class="si">{0}</span><span class="s2">&quot;</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">frmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">unequal_items</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Different arrays: &quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">check</span></div>
+
+
+<div class="viewcode-block" id="to_timepath_shape"><a class="viewcode-back" href="../../utils.html#ogusa.utils.to_timepath_shape">[docs]</a><span class="k">def</span> <span class="nf">to_timepath_shape</span><span class="p">(</span><span class="n">some_array</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function takes an vector of length T and tiles it to fill a</span>
+<span class="sd">    Tx1x1 array for time path computations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        some_array (Numpy array): array to reshape</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tp_array (Numpy  array): reshaped array</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">tp_array</span> <span class="o">=</span> <span class="n">some_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">some_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tp_array</span></div>
+
+
+<div class="viewcode-block" id="get_initial_path"><a class="viewcode-back" href="../../utils.html#ogusa.utils.get_initial_path">[docs]</a><span class="k">def</span> <span class="nf">get_initial_path</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function generates a path from point x1 to point xT such that</span>
+<span class="sd">    that the path x is a linear or quadratic function of time t.</span>
+
+<span class="sd">        * linear:    `x = d*t + e`</span>
+<span class="sd">        * quadratic: `x = a*t^2 + b*t + c`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x1 (scalar): initial value of the function x(t) at t=0</span>
+<span class="sd">        xT (scalar): value of the function x(t) at t=T-1</span>
+<span class="sd">        T (int): number of periods of the path, must be &gt;= 3</span>
+<span class="sd">        shape (str): shape of guess for time path, &quot;linear&quot;, &quot;ratio&quot;,</span>
+<span class="sd">            or &quot;quadratic&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        xpath (Numpy array): guess of variable over the time path</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The identifying assumptions for quadratic are the following:</span>
+<span class="sd">            1. `x1` is the value at time `t=0: x1 = c</span>
+<span class="sd">            2. `xT` is the value at time `t=T-1: xT = a*(T-1)^2 + b*(T-1) + c`</span>
+<span class="sd">            3. the slope of the path at `t=T-1` is 0: 0 = 2*a*(T-1) + b`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+        <span class="n">xpath</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;ratio&quot;</span><span class="p">:</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">domain2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+        <span class="n">xpath</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">domain2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">xT</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">+</span> <span class="n">xT</span>
+    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+        <span class="n">cc</span> <span class="o">=</span> <span class="n">x1</span>
+        <span class="n">bb</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">xT</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">aa</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">xT</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">xpath</span> <span class="o">=</span> <span class="p">(</span><span class="n">aa</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
+                 <span class="p">(</span><span class="n">bb</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">cc</span><span class="p">)</span>
+    <span class="n">ending_x_tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">xT</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span>
+                            <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">xpath_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xpath</span><span class="p">,</span> <span class="n">ending_x_tail</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xpath_full</span></div>
+
+
+<div class="viewcode-block" id="safe_read_pickle"><a class="viewcode-back" href="../../utils.html#ogusa.utils.safe_read_pickle">[docs]</a><span class="k">def</span> <span class="nf">safe_read_pickle</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function reads a pickle from Python 2 into Python 2 or Python 3</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path (str): path to pickle file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        obj (object): object saved in pickle file</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># pragma no cover</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># pragma no cover</span>
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="rate_conversion"><a class="viewcode-back" href="../../utils.html#ogusa.utils.rate_conversion">[docs]</a><span class="k">def</span> <span class="nf">rate_conversion</span><span class="p">(</span><span class="n">annual_rate</span><span class="p">,</span> <span class="n">start_age</span><span class="p">,</span> <span class="n">end_age</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function converts annual rates to model period ratesself.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        annual_rate (array_like): annualized rates</span>
+<span class="sd">        start_age (int): age at which agents become economically active</span>
+<span class="sd">        end_age (int): maximum age of agents</span>
+<span class="sd">        S (int): number of model periods in agents life</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        rate (array_like): model period rates</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">rate</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">annual_rate</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="n">end_age</span> <span class="o">-</span> <span class="n">start_age</span><span class="p">)</span> <span class="o">/</span> <span class="n">S</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">rate</span></div>
+
+
+<div class="viewcode-block" id="save_return_table"><a class="viewcode-back" href="../../utils.html#ogusa.utils.save_return_table">[docs]</a><span class="k">def</span> <span class="nf">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">output_type</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function to save or return a table of data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        table_df (Pandas DataFrame): table</span>
+<span class="sd">        output_type (string): specifies the type of file to save</span>
+<span class="sd">            table to: &#39;csv&#39;, &#39;tex&#39;, &#39;excel&#39;, &#39;json&#39;</span>
+<span class="sd">        path (string): specifies path to save file with table to</span>
+<span class="sd">        precision (integer): number of significant digits to print.</span>
+<span class="sd">            Defaults to 0.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        table_df (Pandas DataFrame): table</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">float_format</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;{:,.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;f}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s1">&#39;tex&#39;</span><span class="p">:</span>
+            <span class="n">tab_str</span> <span class="o">=</span> <span class="n">table_df</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tab_str</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s1">&#39;json&#39;</span><span class="p">:</span>
+            <span class="n">tab_str</span> <span class="o">=</span> <span class="n">table_df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">double_precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tab_str</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s1">&#39;html&#39;</span><span class="p">:</span>
+            <span class="n">tab_html</span> <span class="o">=</span> <span class="n">table_df</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span>
+                <span class="n">classes</span><span class="o">=</span><span class="s2">&quot;table table-striped table-hover&quot;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">tab_html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tab_html</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">table_df</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s1">&#39;tex&#39;</span><span class="p">:</span>
+            <span class="n">table_df</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
+            <span class="n">table_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path_or_buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s1">&#39;json&#39;</span><span class="p">:</span>
+            <span class="n">table_df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">path_or_buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                             <span class="n">double_precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s1">&#39;excel&#39;</span><span class="p">:</span>
+            <span class="n">table_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">excel_writer</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Please enter a valid output format&#39;</span><span class="p">)</span>  <span class="c1"># pragma no cover</span>
+            <span class="k">assert</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># pragma no cover</span></div>
+
+
+<div class="viewcode-block" id="Inequality"><a class="viewcode-back" href="../../utils.html#ogusa.utils.Inequality">[docs]</a><span class="k">class</span> <span class="nc">Inequality</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A class with methods to compute different measures of inequality.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">ability_weights</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            dist (Numpy array): distribution of endogenous variables</span>
+<span class="sd">                over age and lifetime income group, size, SxJ</span>
+<span class="sd">            pop_weights (Numpy array): fraction of population by each</span>
+<span class="sd">                age, length S</span>
+<span class="sd">            ability_weights (Numpy array): fraction of population for</span>
+<span class="sd">                each lifetime income group, length J</span>
+<span class="sd">            S (int): number of economically active periods in lifetime</span>
+<span class="sd">            J (int): number of ability types</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ability_weights</span> <span class="o">=</span> <span class="n">ability_weights</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">pop_weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span> <span class="o">*</span>
+                   <span class="n">ability_weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+        <span class="n">flattened_dist</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">flattened_weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">flattened_dist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span> <span class="o">=</span> <span class="n">flattened_dist</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span> <span class="o">=</span> <span class="n">flattened_weights</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cum_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Inequality.gini"><a class="viewcode-back" href="../../utils.html#ogusa.utils.Inequality.gini">[docs]</a>    <span class="k">def</span> <span class="nf">gini</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;overall&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the Gini coefficient</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            gini_coeff (scalar): Gini coefficient</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;overall&#39;</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span>
+            <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span>
+            <span class="n">flattened_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">flattened_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_weights</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">flattened_dist</span><span class="p">)</span>
+            <span class="n">sort_dist</span> <span class="o">=</span> <span class="n">flattened_dist</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">sort_weights</span> <span class="o">=</span> <span class="n">flattened_weights</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">/</span><span class="n">flattened_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sort_weights</span><span class="p">)</span>
+            <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sort_dist</span><span class="o">*</span><span class="n">sort_weights</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;ability&#39;</span><span class="p">:</span>
+            <span class="n">flattened_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">flattened_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ability_weights</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">flattened_dist</span><span class="p">)</span>
+            <span class="n">sort_dist</span> <span class="o">=</span> <span class="n">flattened_dist</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">sort_weights</span> <span class="o">=</span> <span class="n">flattened_weights</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">/</span><span class="n">flattened_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sort_weights</span><span class="p">)</span>
+            <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sort_dist</span><span class="o">*</span><span class="n">sort_weights</span><span class="p">)</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">/</span> <span class="n">nu</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">gini_coeff</span> <span class="o">=</span> <span class="p">(</span><span class="n">nu</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="n">nu</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">gini_coeff</span></div>
+
+<div class="viewcode-block" id="Inequality.var_of_logs"><a class="viewcode-back" href="../../utils.html#ogusa.utils.Inequality.var_of_logs">[docs]</a>    <span class="k">def</span> <span class="nf">var_of_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the variance of logs</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            var_ln_dist (scalar): variance of logs</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ln_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span><span class="p">)</span>
+        <span class="n">weight_mean</span> <span class="o">=</span> <span class="p">((</span>
+            <span class="n">ln_dist</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">var_ln_dist</span> <span class="o">=</span> <span class="p">((</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span> <span class="o">*</span> <span class="p">((</span><span class="n">ln_dist</span> <span class="o">-</span> <span class="n">weight_mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+                       <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">())))</span>
+
+        <span class="k">return</span> <span class="n">var_ln_dist</span></div>
+
+<div class="viewcode-block" id="Inequality.ratio_pct1_pct2"><a class="viewcode-back" href="../../utils.html#ogusa.utils.Inequality.ratio_pct1_pct2">[docs]</a>    <span class="k">def</span> <span class="nf">ratio_pct1_pct2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct1</span><span class="p">,</span> <span class="n">pct2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the pct1/pct2 percentile ratio</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pct1 (scalar): percentile to compute the top pctile% for,</span>
+<span class="sd">                in (0, 1).</span>
+<span class="sd">            pct2 (scalar): percentile to compute the top pctile% for,</span>
+<span class="sd">                in (0, 1)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pct_ratio (scalar): ratio of pct1 to pct2</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            usually pct1 &gt; pct 2</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="n">pct1</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">pct1</span> <span class="o">&lt;</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">pct2</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">pct2</span> <span class="o">&lt;</span> <span class="mi">1</span>
+        <span class="n">loc_pct1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cum_weights</span> <span class="o">-</span> <span class="n">pct1</span><span class="p">))</span>
+        <span class="n">loc_pct2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cum_weights</span> <span class="o">-</span> <span class="n">pct2</span><span class="p">))</span>
+        <span class="n">pct_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span><span class="p">[</span><span class="n">loc_pct1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span><span class="p">[</span><span class="n">loc_pct2</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">pct_ratio</span></div>
+
+<div class="viewcode-block" id="Inequality.top_share"><a class="viewcode-back" href="../../utils.html#ogusa.utils.Inequality.top_share">[docs]</a>    <span class="k">def</span> <span class="nf">top_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pctile</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the top X% share</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pctile (scalar): percentile to compute the top pctile% for,</span>
+<span class="sd">                in (0, 1).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pctile_share (scalar): share of variable attributed to the</span>
+<span class="sd">                top pctile group</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="n">pctile</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">pctile</span> <span class="o">&lt;</span> <span class="mi">1</span>
+        <span class="n">loc_pctile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cum_weights</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pctile</span><span class="p">)))</span>
+        <span class="n">pctile_share</span> <span class="o">=</span> <span class="p">((</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span><span class="p">[</span><span class="n">loc_pctile</span><span class="p">:]</span> <span class="o">*</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">[</span><span class="n">loc_pctile</span><span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span>
+                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">pctile_share</span></div></div>
+
+
+<div class="viewcode-block" id="read_cbo_forecast"><a class="viewcode-back" href="../../utils.html#ogusa.utils.read_cbo_forecast">[docs]</a><span class="k">def</span> <span class="nf">read_cbo_forecast</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function reads the CBO Long-Term Budget Projections document</span>
+<span class="sd">    from https://www.cbo.gov/about/products/budget-economic-data#1</span>
+<span class="sd">    and then formats the relevant data for use with OG-USA</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">CBO_LT_URL</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;https://www.cbo.gov/system/files/2019-07/51119-CBO-2019-06-ltbo.xlsx&#39;</span>
+        <span class="p">)</span>
+    <span class="c1"># Read in data</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_LT_URL</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;3. Economic Vars&#39;</span><span class="p">,</span>
+                       <span class="n">skiprows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 4&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">]))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">]))</span> <span class="o">&amp;</span>
+         <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">])))]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;full_var_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">]</span> <span class="o">+</span>
+                           <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">])</span>
+    <span class="n">CBO_VAR_NAMES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Real GDP (Billions of 2019 dollars) &#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;On 10-year Treasury notes and the OASDI trust funds&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Growth of Real Earnings per Worker&#39;</span><span class="p">:</span> <span class="s1">&#39;w_growth&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Growth of Total Hours Worked&#39;</span><span class="p">:</span> <span class="s1">&#39;L_growth&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Hours of All Persons (Nonfarm Business Sector)&#39;</span><span class="p">:</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Personal Consumption Expenditures&#39;</span><span class="p">:</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Gross Private Domestic Investment&#39;</span><span class="p">:</span> <span class="s1">&#39;I_total&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Government Consumption Expenditures and Gross Investment&#39;</span><span class="p">:</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Old-Age and Survivors Insurance&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_pension_outlays&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Individual income taxes&#39;</span><span class="p">:</span> <span class="s1">&#39;iit_revenue&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Payroll taxes&#39;</span><span class="p">:</span> <span class="s1">&#39;payroll_tax_revenue&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Corporate income taxes&#39;</span><span class="p">:</span> <span class="s1">&#39;business_tax_revenue&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Wages and Salaries&#39;</span><span class="p">:</span> <span class="s1">&#39;wL&#39;</span><span class="p">}</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;var_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;full_var_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">CBO_VAR_NAMES</span><span class="p">)</span>
+    <span class="c1"># keep just variables of interest</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;full_var_name&#39;</span><span class="p">],</span>
+            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;var_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">CBO_VAR_NAMES</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
+    <span class="c1"># Keep just real interest rate (not nominal)</span>
+    <span class="c1"># Note that real interest rate comes first in table</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># reshape so that variable names down column</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span>
+                 <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1989</span><span class="p">,</span> <span class="mi">2050</span><span class="p">)])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="s1">&#39;year&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># add debt forcast</span>
+    <span class="n">df_fiscal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_LT_URL</span><span class="p">,</span>
+                              <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;1. Summary Extended Baseline&#39;</span><span class="p">,</span>
+                              <span class="n">skiprows</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+    <span class="n">df_fiscal</span> <span class="o">=</span> <span class="n">df_fiscal</span><span class="p">[[</span><span class="s1">&#39;Fiscal Year&#39;</span><span class="p">,</span> <span class="s1">&#39;Revenues&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;Federal Debt Held by the Public&#39;</span><span class="p">]]</span>
+    <span class="n">df_lt</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_fiscal</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;Fiscal Year&#39;</span><span class="p">,</span>
+                     <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+    <span class="n">df_lt</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Federal Debt Held by the Public&#39;</span><span class="p">:</span> <span class="s1">&#39;D/Y&#39;</span><span class="p">},</span>
+                 <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df_lt</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_lt</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df_lt</span><span class="p">[</span><span class="s1">&#39;D/Y&#39;</span><span class="p">]</span>
+
+    <span class="n">CBO_10yr_budget_URL</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;https://www.cbo.gov/system/files/2019-08/&#39;</span> <span class="o">+</span>
+        <span class="s1">&#39;51118-2019-08-budgetprojections_3.xlsx&#39;</span>
+        <span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_10yr_budget_URL</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;Table 1-1&#39;</span><span class="p">,</span>
+                       <span class="n">skiprows</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">:</span> <span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="s1">&#39;Actual, </span><span class="se">\n</span><span class="s1">2018&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">},</span>
+        <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 3&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2024&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2029&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span> <span class="o">==</span> <span class="s1">&#39;Other&#39;</span><span class="p">))]</span>
+
+    <span class="n">CBO_10yr_budget_URL</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;https://www.cbo.gov/system/files/2019-08/&#39;</span> <span class="o">+</span>
+        <span class="s1">&#39;51118-2019-08-budgetprojections_3.xlsx&#39;</span>
+        <span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_10yr_budget_URL</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;Table 1-4&#39;</span><span class="p">,</span>
+                       <span class="n">skiprows</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">:</span> <span class="s1">&#39;variable&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;Actual, </span><span class="se">\n</span><span class="s1">2018&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 3&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;Unnamed: 4&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2024&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2029&#39;</span><span class="p">],</span>
+            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span><span class="p">)]</span>
+
+    <span class="n">CBO_10yr_macro_URL</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;https://www.cbo.gov/system/files/2019-08/&#39;</span> <span class="o">+</span>
+        <span class="s1">&#39;51135-2019-08-economicprojections_1.xlsx&#39;</span>
+        <span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_10yr_macro_URL</span><span class="p">,</span>
+                       <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;2. Calendar Year&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                       <span class="n">nrows</span><span class="o">=</span><span class="mi">131</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">:</span> <span class="s1">&#39;variable&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Units&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Note that real values come second (after nominal values)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df3</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span><span class="p">)]</span>
+    <span class="n">df_st</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df2</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">df3</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df_st</span><span class="p">[</span><span class="s1">&#39;var_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_st</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">CBO_VAR_NAMES</span><span class="p">)</span>
+    <span class="n">df_st</span> <span class="o">=</span> <span class="n">df_st</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df_st</span><span class="o">.</span><span class="n">var_name</span><span class="p">)]</span>
+    <span class="n">df_st</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># reshape so each row a year</span>
+    <span class="n">df_st</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df_st</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span>
+                    <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2017</span><span class="p">,</span> <span class="mi">2030</span><span class="p">)])</span>
+    <span class="n">df_st</span> <span class="o">=</span> <span class="n">df_st</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span>
+                        <span class="n">values</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">df_st</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="s1">&#39;year&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># merge with long term data</span>
+    <span class="n">df_cbo</span> <span class="o">=</span> <span class="n">df_lt</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_st</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span>
+                         <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;_lt&#39;</span><span class="p">,</span> <span class="s1">&#39;_st&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">df_cbo</span></div>
+
+
+<div class="viewcode-block" id="print_progress"><a class="viewcode-back" href="../../utils.html#ogusa.utils.print_progress">[docs]</a><span class="k">def</span> <span class="nf">print_progress</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;Progress:&#39;</span><span class="p">,</span>
+                   <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;Complete&#39;</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bar_length</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Prints a progress bar to the terminal when completing small tasks</span>
+<span class="sd">    of a larger job.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        iteration (int&gt;=1): which task the job is currently doing</span>
+<span class="sd">        total (int&gt;=1): how many tasks are in the job</span>
+<span class="sd">        source_name (string): name of source data</span>
+<span class="sd">        prefix (string): what to print before the progress bar</span>
+<span class="sd">        suffix (string): what to print after the progress bar</span>
+<span class="sd">        decimals (int&gt;=0): how many decimals in the percentage</span>
+<span class="sd">        bar_length (int&gt;=3): how many boxes in the progress bar</span>
+
+<span class="sd">    Functions called: None</span>
+
+<span class="sd">    Objects created within function:</span>
+<span class="sd">        status (string): status of download</span>
+<span class="sd">        str_format (string): string containing percentage completed</span>
+<span class="sd">        percents (string): percentage completed</span>
+<span class="sd">        filled_length (int): number of boxes in the progress bar to fill</span>
+<span class="sd">        bar (string): progress bar</span>
+
+<span class="sd">    Returns: status</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;Incomplete&#39;</span>
+    <span class="n">str_format</span> <span class="o">=</span> <span class="s2">&quot;{0:.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">decimals</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;f}&quot;</span>
+    <span class="n">percents</span> <span class="o">=</span> <span class="n">str_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">iteration</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">)))</span>
+    <span class="n">filled_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">bar_length</span> <span class="o">*</span> <span class="n">iteration</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">)))</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="s1">&#39;█&#39;</span> <span class="o">*</span> <span class="n">filled_length</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">bar_length</span> <span class="o">-</span> <span class="n">filled_length</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">source_name</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Accessing data files...</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Accessing &#39;</span> <span class="o">+</span> <span class="n">source_name</span> <span class="o">+</span>
+                             <span class="s1">&#39; data files...</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="si">%s</span><span class="s1"> |</span><span class="si">%s</span><span class="s1">| </span><span class="si">%s%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
+                     <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="n">percents</span><span class="p">,</span> <span class="s1">&#39;%&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)),</span>
+
+    <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="n">total</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Computing...</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;Complete&#39;</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">status</span></div>
+
+
+<div class="viewcode-block" id="fetch_files_from_web"><a class="viewcode-back" href="../../utils.html#ogusa.utils.fetch_files_from_web">[docs]</a><span class="k">def</span> <span class="nf">fetch_files_from_web</span><span class="p">(</span><span class="n">file_urls</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Fetches zip files from respective web addresses and saves them as</span>
+<span class="sd">    temporary files. Prints progress bar as it downloads the files.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_urls (list of strings): list of URLs of respective data zip</span>
+<span class="sd">            files</span>
+
+<span class="sd">    Functions called:</span>
+<span class="sd">        print_progress()</span>
+
+<span class="sd">    Objects created within function:</span>
+<span class="sd">        local_paths = list, local paths for teporary files</span>
+<span class="sd">        iteration   = int, the number of files that have been downloaded</span>
+<span class="sd">        total       = total, the total number of files to download</span>
+<span class="sd">        f           = temporary file of monthly CPS survey</span>
+<span class="sd">        path        = string, local path for temporary file</span>
+<span class="sd">        zipped_file = ZipFile object, opened zipfile</span>
+
+<span class="sd">    Files created by this function:</span>
+<span class="sd">        .dta file for each year of SCF data</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        local_paths (list of strings): local paths of temporary data</span>
+<span class="sd">            files</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">local_paths</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_urls</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">print_progress</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s1">&#39;SCF&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">file_url</span> <span class="ow">in</span> <span class="n">file_urls</span><span class="p">:</span>
+        <span class="c1"># url = requests.get(file_url) (if using reuests package)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">file_url</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="c1"># url.content (if using requests package)</span>
+        <span class="k">with</span> <span class="n">ZipFile</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span> <span class="k">as</span> <span class="n">zipped_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">contained_file</span> <span class="ow">in</span> <span class="n">zipped_file</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">zipped_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">contained_file</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                <span class="c1"># for line in zipped_file.open(contained_file).readlines():</span>
+                <span class="c1">#     f.write(line)</span>
+
+        <span class="n">local_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">print_progress</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s1">&#39;SCF&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">local_paths</span></div>
+
+
+<div class="viewcode-block" id="not_connected"><a class="viewcode-back" href="../../utils.html#ogusa.utils.not_connected">[docs]</a><span class="k">def</span> <span class="nf">not_connected</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;http://www.google.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Checks for internet connection status of machine.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (string): url used to check connectivity</span>
+<span class="sd">        timeout (float&gt;0): time to wait for timeout</span>
+
+<span class="sd">    Functions called: None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Boolean singleton: =True if connection was made within timeout</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ConnectionError: If no response from url withing timeout</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jason DeBacker and Richard W. Evans.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

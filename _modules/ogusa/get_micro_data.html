@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogusa.get_micro_data &#8212; OG-USA 0.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ogusa.get_micro_data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">This program extracts tax rate and income data from the microsimulation</span>
+<span class="sd">model (Tax-Calculator).</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">from</span> <span class="nn">taxcalc</span> <span class="kn">import</span> <span class="n">Records</span><span class="p">,</span> <span class="n">Calculator</span><span class="p">,</span> <span class="n">Policy</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">dask</span> <span class="kn">import</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">compute</span>
+<span class="kn">import</span> <span class="nn">dask.multiprocessing</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">TC_LAST_YEAR</span><span class="p">,</span> <span class="n">PUF_START_YEAR</span>
+
+
+<div class="viewcode-block" id="get_calculator"><a class="viewcode-back" href="../../get_micro_data.html#ogusa.get_micro_data.get_calculator">[docs]</a><span class="k">def</span> <span class="nf">get_calculator</span><span class="p">(</span><span class="n">baseline</span><span class="p">,</span> <span class="n">calculator_start_year</span><span class="p">,</span> <span class="n">reform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gfactors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">records_start_year</span><span class="o">=</span><span class="n">PUF_START_YEAR</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function creates the tax calculator object with the policy</span>
+<span class="sd">    specified in reform and the data specified with the data kwarg.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        baseline (boolean): True if baseline tax policy</span>
+<span class="sd">        calculator_start_year (int): first year of budget window</span>
+<span class="sd">        reform (dictionary): IIT policy reform parameters, None if</span>
+<span class="sd">            baseline</span>
+<span class="sd">        data (DataFrame or str): DataFrame or path to datafile for</span>
+<span class="sd">            Records object</span>
+<span class="sd">        gfactors (Tax-Calculator GrowthFactors object): growth factors</span>
+<span class="sd">            to use to extrapolate data over budget window</span>
+<span class="sd">        weights (DataFrame): weights for Records object</span>
+<span class="sd">        records_start_year (int): the start year for the data and</span>
+<span class="sd">            weights dfs (default is set to the PUF start year as defined</span>
+<span class="sd">            in the Tax-Calculator project)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        calc1 (Tax-Calculator Calculator object): Calulator object with</span>
+<span class="sd">            current_year equal to calculator_start_year</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># create a calculator</span>
+    <span class="n">policy1</span> <span class="o">=</span> <span class="n">Policy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;cps&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">records1</span> <span class="o">=</span> <span class="n">Records</span><span class="o">.</span><span class="n">cps_constructor</span><span class="p">()</span>
+        <span class="c1"># impute short and long term capital gains if using CPS data</span>
+        <span class="c1"># in 2012 SOI data 6.587% of CG as short-term gains</span>
+        <span class="n">records1</span><span class="o">.</span><span class="n">p22250</span> <span class="o">=</span> <span class="mf">0.06587</span> <span class="o">*</span> <span class="n">records1</span><span class="o">.</span><span class="n">e01100</span>
+        <span class="n">records1</span><span class="o">.</span><span class="n">p23250</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.06587</span><span class="p">)</span> <span class="o">*</span> <span class="n">records1</span><span class="o">.</span><span class="n">e01100</span>
+        <span class="c1"># set total capital gains to zero</span>
+        <span class="n">records1</span><span class="o">.</span><span class="n">e01100</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">records1</span><span class="o">.</span><span class="n">e01100</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">records1</span> <span class="o">=</span> <span class="n">Records</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">gfactors</span><span class="o">=</span><span class="n">gfactors</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
+                           <span class="n">start_year</span><span class="o">=</span><span class="n">records_start_year</span><span class="p">)</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">records1</span> <span class="o">=</span> <span class="n">Records</span><span class="p">()</span>  <span class="c1"># pragma: no cover</span>
+
+    <span class="k">if</span> <span class="n">baseline</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reform</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running current law policy baseline&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Baseline policy is: &quot;</span><span class="p">,</span> <span class="n">reform</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reform</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running with current law as reform&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reform policy is: &quot;</span><span class="p">,</span> <span class="n">reform</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TYPE&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">reform</span><span class="p">))</span>
+    <span class="n">policy1</span><span class="o">.</span><span class="n">implement_reform</span><span class="p">(</span><span class="n">reform</span><span class="p">)</span>
+
+    <span class="c1"># the default set up increments year to 2013</span>
+    <span class="n">calc1</span> <span class="o">=</span> <span class="n">Calculator</span><span class="p">(</span><span class="n">records</span><span class="o">=</span><span class="n">records1</span><span class="p">,</span> <span class="n">policy</span><span class="o">=</span><span class="n">policy1</span><span class="p">)</span>
+
+    <span class="c1"># Check that start_year is appropriate</span>
+    <span class="k">if</span> <span class="n">calculator_start_year</span> <span class="o">&gt;</span> <span class="n">TC_LAST_YEAR</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Start year is beyond data extrapolation.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">calc1</span></div>
+
+
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../get_micro_data.html#ogusa.get_micro_data.get_data">[docs]</a><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">baseline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">reform</span><span class="o">=</span><span class="p">{},</span>
+             <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function creates dataframes of micro data with marginal tax</span>
+<span class="sd">    rates and information to compute effective tax rates from the</span>
+<span class="sd">    Tax-Calculator output.  The resulting dictionary of dataframes is</span>
+<span class="sd">    returned and saved to disk in a pickle file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        baseline (boolean): True if baseline tax policy</span>
+<span class="sd">        calculator_start_year (int): first year of budget window</span>
+<span class="sd">        reform (dictionary): IIT policy reform parameters, None if</span>
+<span class="sd">            baseline</span>
+<span class="sd">        data (DataFrame or str): DataFrame or path to datafile for</span>
+<span class="sd">            Records object</span>
+<span class="sd">        client (Dask Client object): client for Dask multiprocessing</span>
+<span class="sd">        num_workers (int): number of workers to use for Dask</span>
+<span class="sd">            multiprocessing</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        micro_data_dict (dict): dict of Pandas Dataframe, one for each</span>
+<span class="sd">            year from start_year to the maximum year Tax-Calculator can</span>
+<span class="sd">            analyze</span>
+<span class="sd">        taxcalc_version (str): version of Tax-Calculator used</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Compute MTRs and taxes or each year, but not beyond TC_LAST_YEAR</span>
+    <span class="n">lazy_values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">TC_LAST_YEAR</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">lazy_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">delayed</span><span class="p">(</span><span class="n">taxcalc_advance</span><span class="p">)(</span><span class="n">baseline</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">reform</span><span class="p">,</span>
+                                     <span class="n">data</span><span class="p">,</span> <span class="n">year</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">client</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">futures</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">lazy_values</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">futures</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span> <span class="o">=</span> <span class="n">compute</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">lazy_values</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="n">dask</span><span class="o">.</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
+            <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span>
+
+    <span class="c1"># dictionary of data frames to return</span>
+    <span class="n">micro_data_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">+</span> <span class="n">i</span>
+        <span class="n">micro_data_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)]</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">baseline</span><span class="p">:</span>
+        <span class="n">pkl_path</span> <span class="o">=</span> <span class="s2">&quot;micro_data_baseline.pkl&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pkl_path</span> <span class="o">=</span> <span class="s2">&quot;micro_data_policy.pkl&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pkl_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">micro_data_dict</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="c1"># Do some garbage collection</span>
+    <span class="k">del</span> <span class="n">results</span>
+
+    <span class="c1"># Pull Tax-Calc version for reference</span>
+    <span class="n">taxcalc_version</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s2">&quot;taxcalc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">version</span>
+
+    <span class="k">return</span> <span class="n">micro_data_dict</span><span class="p">,</span> <span class="n">taxcalc_version</span></div>
+
+
+<div class="viewcode-block" id="taxcalc_advance"><a class="viewcode-back" href="../../get_micro_data.html#ogusa.get_micro_data.taxcalc_advance">[docs]</a><span class="k">def</span> <span class="nf">taxcalc_advance</span><span class="p">(</span><span class="n">baseline</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">reform</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function advances the year used in Tax-Calculator, compute</span>
+<span class="sd">    taxes and rates, and save the results to a dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        calc1 (Tax-Calculator Calculator object): TC calculator</span>
+<span class="sd">        year (int): year to begin advancing from</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tax_dict (dict): a dictionary of microdata with marginal tax</span>
+<span class="sd">            rates and other information computed in TC</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">calc1</span> <span class="o">=</span> <span class="n">get_calculator</span><span class="p">(</span><span class="n">baseline</span><span class="o">=</span><span class="n">baseline</span><span class="p">,</span>
+                           <span class="n">calculator_start_year</span><span class="o">=</span><span class="n">start_year</span><span class="p">,</span>
+                           <span class="n">reform</span><span class="o">=</span><span class="n">reform</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">calc1</span><span class="o">.</span><span class="n">advance_to_year</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+    <span class="n">calc1</span><span class="o">.</span><span class="n">calc_all</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Year: &#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">calc1</span><span class="o">.</span><span class="n">current_year</span><span class="p">))</span>
+
+    <span class="c1"># define market income - taking expanded_income and excluding gov&#39;t</span>
+    <span class="c1"># transfer benefits found in the Tax-Calculator expanded income</span>
+    <span class="n">market_income</span> <span class="o">=</span> <span class="p">(</span><span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;expanded_income&#39;</span><span class="p">)</span> <span class="o">-</span>
+                     <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;benefit_value_total&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Compute mtr on capital income</span>
+    <span class="n">mtr_combined_capinc</span> <span class="o">=</span> <span class="n">cap_inc_mtr</span><span class="p">(</span><span class="n">calc1</span><span class="p">)</span>
+
+    <span class="c1"># Compute weighted avg mtr for labor income</span>
+    <span class="c1"># Note the index [2] in the mtr results means that we are pulling</span>
+    <span class="c1"># the combined mtr from the IIT + FICA taxes</span>
+    <span class="n">mtr_combined_labinc</span> <span class="o">=</span> <span class="p">((</span>
+        <span class="n">calc1</span><span class="o">.</span><span class="n">mtr</span><span class="p">(</span><span class="s1">&#39;e00200p&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;e00200&#39;</span><span class="p">))</span> <span class="o">+</span>
+        <span class="n">calc1</span><span class="o">.</span><span class="n">mtr</span><span class="p">(</span><span class="s1">&#39;e00900p&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;sey&#39;</span><span class="p">)))</span> <span class="o">/</span>
+        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;sey&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;e00200&#39;</span><span class="p">))))</span>
+
+    <span class="c1"># Put MTRs, income, tax liability, and other variables in dict</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;s006&#39;</span><span class="p">))</span>
+    <span class="n">tax_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;mtr_labinc&#39;</span><span class="p">:</span> <span class="n">mtr_combined_labinc</span><span class="p">,</span>
+        <span class="s1">&#39;mtr_capinc&#39;</span><span class="p">:</span> <span class="n">mtr_combined_capinc</span><span class="p">,</span>
+        <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;age_head&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;total_labinc&#39;</span><span class="p">:</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;sey&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;e00200&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;total_capinc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">market_income</span> <span class="o">-</span>
+                         <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;sey&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;e00200&#39;</span><span class="p">)),</span>
+        <span class="s1">&#39;market_income&#39;</span><span class="p">:</span> <span class="n">market_income</span><span class="p">,</span>
+        <span class="s1">&#39;total_tax_liab&#39;</span><span class="p">:</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;combined&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;payroll_tax_liab&#39;</span><span class="p">:</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;payrolltax&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;etr&#39;</span><span class="p">:</span> <span class="p">((</span><span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;combined&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;ubi&#39;</span><span class="p">))</span> <span class="o">/</span>
+                <span class="n">market_income</span><span class="p">),</span>
+        <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">calc1</span><span class="o">.</span><span class="n">current_year</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">length</span><span class="p">),</span>
+        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;s006&#39;</span><span class="p">)}</span>
+
+    <span class="c1"># garbage collection</span>
+    <span class="k">del</span> <span class="n">calc1</span>
+
+    <span class="k">return</span> <span class="n">tax_dict</span></div>
+
+
+<div class="viewcode-block" id="cap_inc_mtr"><a class="viewcode-back" href="../../get_micro_data.html#ogusa.get_micro_data.cap_inc_mtr">[docs]</a><span class="k">def</span> <span class="nf">cap_inc_mtr</span><span class="p">(</span><span class="n">calc1</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function computes the marginal tax rate on capital income,</span>
+<span class="sd">    which is calculated as a weighted average of the marginal tax rates</span>
+<span class="sd">    on different sources of capital income.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        calc1 (Tax-Calculator Calculator object): TC calculator</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mtr_combined_capinc (Numpy array): array with marginal tax rates</span>
+<span class="sd">            for each observation in the TC Records object</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Note: PUF does not have variable for non-taxable IRA distributions</span>
+    <span class="c1"># Exclude Sch E income (e02000) from this list since we&#39;ll compute</span>
+    <span class="c1"># MTRs for this income in two parts - one for overall Sch C and one</span>
+    <span class="c1"># for S Corp and Partnerhsip income (e26270) (note that TaxCalc</span>
+    <span class="c1"># doesn&#39;t allow for an MTR on rents and royalties alone)</span>
+    <span class="c1"># e00300 = interest income</span>
+    <span class="c1"># e00400 = nontaxable interest income</span>
+    <span class="c1"># e00600 = ordinary dividend income</span>
+    <span class="c1"># e00650 = qualified dividend income</span>
+    <span class="c1"># e01400 = taxable IRA distributions</span>
+    <span class="c1"># e01700 = pension and annuity income</span>
+    <span class="c1"># p22250 = short term cap gain/loss</span>
+    <span class="c1"># p23250 = long term cap gain/loss</span>
+    <span class="c1"># e26270 = partnership and s corp income/loss</span>
+    <span class="c1"># e02000 = Sch E income (includes e26270)</span>
+    <span class="n">capital_income_sources</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;e00300&#39;</span><span class="p">,</span> <span class="s1">&#39;e00400&#39;</span><span class="p">,</span> <span class="s1">&#39;e00600&#39;</span><span class="p">,</span> <span class="s1">&#39;e00650&#39;</span><span class="p">,</span> <span class="s1">&#39;e01400&#39;</span><span class="p">,</span> <span class="s1">&#39;e01700&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;p22250&#39;</span><span class="p">,</span> <span class="s1">&#39;p23250&#39;</span><span class="p">,</span> <span class="s1">&#39;e26270&#39;</span><span class="p">)</span>
+    <span class="n">rent_royalty_inc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
+        <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;e02000&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;e26270&#39;</span><span class="p">))</span>
+    <span class="c1"># assign overall Sch E mtr to rent and royalities since TC can&#39;t do</span>
+    <span class="c1"># this component separately</span>
+    <span class="n">rent_royalty_mtr</span> <span class="o">=</span> <span class="n">calc1</span><span class="o">.</span><span class="n">mtr</span><span class="p">(</span><span class="s1">&#39;e02000&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c1"># calculating MTRs separately - can skip items with zero tax</span>
+    <span class="n">all_mtrs</span> <span class="o">=</span> <span class="p">{</span><span class="n">income_source</span><span class="p">:</span> <span class="n">calc1</span><span class="o">.</span><span class="n">mtr</span><span class="p">(</span><span class="n">income_source</span><span class="p">)</span> <span class="k">for</span>
+                <span class="n">income_source</span> <span class="ow">in</span> <span class="n">capital_income_sources</span><span class="p">}</span>
+    <span class="c1"># Get each column of income sources, to include non-taxable income</span>
+    <span class="n">record_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">calc1</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">capital_income_sources</span><span class="p">]</span>
+    <span class="c1"># Compute weighted average of all those MTRs</span>
+    <span class="c1"># first find total capital income</span>
+    <span class="n">total_cap_inc</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">abs</span><span class="p">,</span> <span class="n">record_columns</span><span class="p">))</span> <span class="o">+</span> <span class="n">rent_royalty_inc</span><span class="p">)</span>
+    <span class="c1"># Note that all_mtrs gives fica (0), iit (1), and combined (2) mtrs</span>
+    <span class="c1"># We&#39;ll use the combined - hence all_mtrs[source][2]</span>
+    <span class="n">capital_mtr</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="o">*</span> <span class="n">all_mtrs</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span>
+                   <span class="nb">zip</span><span class="p">(</span><span class="n">record_columns</span><span class="p">,</span> <span class="n">capital_income_sources</span><span class="p">)]</span>
+    <span class="n">mtr_combined_capinc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">total_cap_inc</span><span class="p">)</span>
+    <span class="n">mtr_combined_capinc</span><span class="p">[</span><span class="n">total_cap_inc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">sum</span><span class="p">(</span><span class="n">capital_mtr</span> <span class="o">+</span> <span class="n">rent_royalty_mtr</span> <span class="o">*</span>
+            <span class="n">rent_royalty_inc</span><span class="p">)[</span><span class="n">total_cap_inc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span>
+        <span class="n">total_cap_inc</span><span class="p">[</span><span class="n">total_cap_inc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">mtr_combined_capinc</span><span class="p">[</span><span class="n">total_cap_inc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">all_mtrs</span><span class="p">[</span><span class="s1">&#39;e00300&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="n">total_cap_inc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">mtr_combined_capinc</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jason DeBacker and Richard W. Evans.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

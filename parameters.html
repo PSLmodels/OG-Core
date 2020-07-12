@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OG-USA Parameters &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tax Functions" href="tax.html" />
@@ -35,8 +37,135 @@
   <div class="section" id="og-usa-parameters">
 <span id="parameters"></span><h1>OG-USA Parameters<a class="headerlink" href="#og-usa-parameters" title="Permalink to this headline">¶</a></h1>
 <p><strong>OG-USA Parameters</strong></p>
-<div class="section" id="ogusa-parameters">
-<h2>ogusa.parameters<a class="headerlink" href="#ogusa-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.parameters">
+<span id="ogusa-parameters"></span><h2>ogusa.parameters<a class="headerlink" href="#module-ogusa.parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="ogusa.parameters.Specifications">
+<em class="property">class </em><code class="sig-prename descclassname">ogusa.parameters.</code><code class="sig-name descname">Specifications</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_micro</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tax_func_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_base</span><span class="o">=</span><span class="default_value">'OUTPUT_BASELINE'</span></em>, <em class="sig-param"><span class="n">baseline_dir</span><span class="o">=</span><span class="default_value">'OUTPUT_BASELINE'</span></em>, <em class="sig-param"><span class="n">test</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">time_path</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">baseline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">iit_reform</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">guid</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">'cps'</span></em>, <em class="sig-param"><span class="n">client</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_workers</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameters.html#Specifications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inherits ParamTools Parameters abstract base class.</p>
+<dl class="py method">
+<dt id="ogusa.parameters.Specifications.compute_default_params">
+<code class="sig-name descname">compute_default_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameters.html#Specifications.compute_default_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.compute_default_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does cheap calculations to return parameter values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ogusa.parameters.Specifications.get_tax_function_parameters">
+<code class="sig-name descname">get_tax_function_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">run_micro</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tax_func_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameters.html#Specifications.get_tax_function_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.get_tax_function_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads pickle file of tax function parameters or estimates the
+parameters from microsimulation model output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
+<li><p><strong>run_micro</strong> (<em>bool</em>) – whether to estimate parameters from
+microsimulation model</p></li>
+<li><p><strong>tax_func_path</strong> (<em>string</em>) – path where find or save tax
+function parameter estimates</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ogusa.parameters.Specifications.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameters.html#Specifications.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>ParametersBase reads JSON file and sets attributes to self
+Next call self.compute_default_params for further initialization</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ogusa.parameters.Specifications.read_tax_func_estimate">
+<code class="sig-name descname">read_tax_func_estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tax_func_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameters.html#Specifications.read_tax_func_estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.read_tax_func_estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function reads in tax function parameters from pickle
+files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tax_func_path</strong> (<em>str</em>) – path to pickle with tax function
+parameter estimates</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>dictionary containing arrays of tax</dt><dd><p>function parameters</p>
+</dd>
+</dl>
+<p>run_micro (bool): whether to estimate tax function parameters</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict_params (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ogusa.parameters.Specifications.update_specifications">
+<code class="sig-name descname">update_specifications</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">revision</span></em>, <em class="sig-param"><span class="n">raise_errors</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameters.html#Specifications.update_specifications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.update_specifications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates parameter specification with values in revision
+dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>revision</strong> (<em>dict</em>) – dictionary or JSON string with one or more
+<cite>PARAM: VALUE</cite> pairs</p></li>
+<li><p><strong>raise_errors</strong> (<em>boolean</em>) – <dl class="simple">
+<dt>if True (the default), raises ValueError when</dt><dd><p><cite>parameter_errors</cite> exists;</p>
+</dd>
+<dt>if False, does not raise ValueError when</dt><dd><p><cite>parameter_errors</cite> exists and leaves error
+handling to caller of the update_specifications
+method.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if raise_errors is True AND
+    <cite>_validate_parameter_names_types</cite> generates errors OR
+    <cite>_validate_parameter_values</cite> generates errors.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Given a reform dictionary, typical usage of the
+Specifications class is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">specs</span> <span class="o">=</span> <span class="n">Specifications</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specs</span><span class="o">.</span><span class="n">update_specifications</span><span class="p">(</span><span class="n">revision</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl>
+<dt>An example of a multi-parameter specification is as follows::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">revision</span> <span class="o">=</span> <span class="p">{</span>
+<span class="go">    frisch: [0.03]</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -119,7 +248,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wealth Functions &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Utilities Functions" href="utils.html" />
@@ -34,8 +36,55 @@
   <div class="section" id="wealth-functions">
 <span id="wealth"></span><h1>Wealth Functions<a class="headerlink" href="#wealth-functions" title="Permalink to this headline">¶</a></h1>
 <p><strong>Wealth</strong></p>
-<div class="section" id="ogusa-wealth">
-<h2>ogusa.wealth<a class="headerlink" href="#ogusa-wealth" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.wealth">
+<span id="ogusa-wealth"></span><h2>ogusa.wealth<a class="headerlink" href="#module-ogusa.wealth" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="ogusa.wealth.compute_wealth_moments">
+<code class="sig-prename descclassname">ogusa.wealth.</code><code class="sig-name descname">compute_wealth_moments</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scf</span></em>, <em class="sig-param"><span class="n">bin_weights</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/wealth.html#compute_wealth_moments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.wealth.compute_wealth_moments" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function computes moments from the distribution of wealth
+using SCF data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scf</strong> (<em>Pandas DataFrame</em>) – pooled cross-sectional data from SCFs</p></li>
+<li><p><strong>bin_weights</strong> (<em>Numpy Array</em>) – </p></li>
+<li><p><strong>J</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of wealth moments</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>wealth_moments (Numpy Array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.wealth.get_wealth_data">
+<code class="sig-prename descclassname">ogusa.wealth.</code><code class="sig-name descname">get_wealth_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scf_yrs_list</span><span class="o">=</span><span class="default_value">[2016, 2013, 2010, 2007]</span></em>, <em class="sig-param"><span class="n">web</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/wealth.html#get_wealth_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.wealth.get_wealth_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads wealth data from the 2007, 2010, 2013, and 2016 Survey of
+Consumer Finances (SCF) files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scf_yrs_list</strong> (<em>list</em>) – list of SCF years to import. Currently the
+largest set of years that will work is
+[2016, 2013, 2010, 2007]</p></li>
+<li><p><strong>web</strong> (<em>Boolean</em>) – =True if function retrieves data from internet</p></li>
+<li><p><strong>directory</strong> (<em>string</em><em> or </em><em>None</em>) – local directory location if data are
+stored on local drive, not use internet (web=False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pooled cross-sectional data from SCFs</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>df_scf (Pandas DataFrame)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -117,7 +166,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

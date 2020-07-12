@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elliptical Utility Function Estimation Functions &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Model Execution Functions" href="execute.html" />
@@ -35,8 +37,175 @@
   <div class="section" id="elliptical-utility-function-estimation-functions">
 <span id="elliptical-u-est"></span><h1>Elliptical Utility Function Estimation Functions<a class="headerlink" href="#elliptical-utility-function-estimation-functions" title="Permalink to this headline">¶</a></h1>
 <p><strong>Elliptical Utility Estimation</strong></p>
-<div class="section" id="ogusa-elliptical-u-est">
-<h2>ogusa.elliptical_u_est<a class="headerlink" href="#ogusa-elliptical-u-est" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.elliptical_u_est">
+<span id="ogusa-elliptical-u-est"></span><h2>ogusa.elliptical_u_est<a class="headerlink" href="#module-ogusa.elliptical_u_est" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="constant-frisch-elasticity-function-with-the-input-frisch-elasticity">
+<h3>constant Frisch elasticity function with the input Frisch elasticity.<a class="headerlink" href="#constant-frisch-elasticity-function-with-the-input-frisch-elasticity" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="ogusa.elliptical_u_est.CFE_mu">
+<code class="sig-prename descclassname">ogusa.elliptical_u_est.</code><code class="sig-name descname">CFE_mu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">l_tilde</span></em>, <em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/elliptical_u_est.html#CFE_mu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.elliptical_u_est.CFE_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Marginal disutility of labor supply from the constant Frisch
+elasticity utility function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<em>scalar</em>) – inverse of the Frisch elasticity of labor supply</p></li>
+<li><p><strong>l_tilde</strong> (<em>scalar</em>) – maximum amount of labor supply</p></li>
+<li><p><strong>n</strong> (<em>array_like</em>) – labor supply amount</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>marginal disutility of labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>mu (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.elliptical_u_est.CFE_u">
+<code class="sig-prename descclassname">ogusa.elliptical_u_est.</code><code class="sig-name descname">CFE_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">l_tilde</span></em>, <em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/elliptical_u_est.html#CFE_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.elliptical_u_est.CFE_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disutility of labor supply from the constant Frisch elasticity
+utility function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<em>scalar</em>) – inverse of the Frisch elasticity of labor supply</p></li>
+<li><p><strong>l_tilde</strong> (<em>scalar</em>) – maximum amount of labor supply</p></li>
+<li><p><strong>n</strong> (<em>array_like</em>) – labor supply amount</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>disutility of labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>u (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.elliptical_u_est.elliptical_mu">
+<code class="sig-prename descclassname">ogusa.elliptical_u_est.</code><code class="sig-name descname">elliptical_mu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">upsilon</span></em>, <em class="sig-param"><span class="n">l_tilde</span></em>, <em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/elliptical_u_est.html#elliptical_mu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.elliptical_u_est.elliptical_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Marginal disutility of labor supply from the elliptical utility
+function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b</strong> (<em>scalar</em>) – scale parameter of elliptical utility function</p></li>
+<li><p><strong>upsilon</strong> (<em>scalar</em>) – curvature parameter of elliptical utility
+function</p></li>
+<li><p><strong>l_tilde</strong> (<em>scalar</em>) – maximum amount of labor supply</p></li>
+<li><p><strong>n</strong> (<em>array_like</em>) – labor supply amount</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>marginal disutility of labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>mu (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.elliptical_u_est.elliptical_u">
+<code class="sig-prename descclassname">ogusa.elliptical_u_est.</code><code class="sig-name descname">elliptical_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">upsilon</span></em>, <em class="sig-param"><span class="n">l_tilde</span></em>, <em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/elliptical_u_est.html#elliptical_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.elliptical_u_est.elliptical_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disutility of labor supply from the elliptical utility function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b</strong> (<em>scalar</em>) – scale parameter of elliptical utility function</p></li>
+<li><p><strong>k</strong> (<em>scalar</em>) – shift parametr of elliptical utility function</p></li>
+<li><p><strong>upsilon</strong> (<em>scalar</em>) – curvature parameter of elliptical utility
+function</p></li>
+<li><p><strong>l_tilde</strong> (<em>scalar</em>) – maximum amount of labor supply</p></li>
+<li><p><strong>n</strong> (<em>array_like</em>) – labor supply amount</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>disutility of labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>u (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.elliptical_u_est.estimation">
+<code class="sig-prename descclassname">ogusa.elliptical_u_est.</code><code class="sig-name descname">estimation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frisch</span></em>, <em class="sig-param"><span class="n">l_tilde</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/elliptical_u_est.html#estimation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.elliptical_u_est.estimation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function estimates the parameters of an elliptical utility
+funcion that fits a constant frisch elasticty function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frisch</strong> (<em>scalar</em>) – Frisch elasticity of labor supply</p></li>
+<li><p><strong>l_tilde</strong> (<em>scalar</em>) – maximum amount of labor supply</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>estimated b from ellipitical utility function
+upsilon_MU_til (scalar): estimated upsilon from ellipitical</p>
+<blockquote>
+<div><p>utility function</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>b_MU_til (scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.elliptical_u_est.sumsq">
+<code class="sig-prename descclassname">ogusa.elliptical_u_est.</code><code class="sig-name descname">sumsq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">objs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/elliptical_u_est.html#sumsq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.elliptical_u_est.sumsq" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates the sum of squared deviations between the
+constant Frisch elasticity function and the elliptical utility
+function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>tuple</em>) – parameters to estimate, (b, k, upsilon)</p></li>
+<li><p><strong>objs</strong> (<em>tuple</em>) – other parameters of utility function,
+(theta, l_tilde, n_grid)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sum of squared errors</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ssqdev (scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.elliptical_u_est.sumsq_MU">
+<code class="sig-prename descclassname">ogusa.elliptical_u_est.</code><code class="sig-name descname">sumsq_MU</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">objs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/elliptical_u_est.html#sumsq_MU"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.elliptical_u_est.sumsq_MU" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates the sum of squared deviations between the
+marginals of the constant Frisch elasticity function and the
+elliptical utility function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>tuple</em>) – parameters to estimate, (b, k, upsilon)</p></li>
+<li><p><strong>objs</strong> (<em>tuple</em>) – other parameters of utility function,
+(theta, l_tilde, n_grid)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sum of squared errors</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ssqdev (scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 </div>
 
@@ -119,7 +288,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

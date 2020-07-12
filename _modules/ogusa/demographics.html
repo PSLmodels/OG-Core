@@ -1,0 +1,631 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogusa.demographics &#8212; OG-USA 0.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ogusa.demographics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">Functions for generating demographic objects necessary for the OG-USA</span>
+<span class="sd">model</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1"># Import packages</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">opt</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">si</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">parameter_plots</span> <span class="k">as</span> <span class="n">pp</span>
+
+
+<span class="c1"># create output director for figures</span>
+<span class="n">CUR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;OUTPUT&#39;</span><span class="p">,</span> <span class="s1">&#39;Demographics&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">F_OK</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">)</span>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">Define functions</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="get_fert"><a class="viewcode-back" href="../../demographics.html#ogusa.demographics.get_fert">[docs]</a><span class="k">def</span> <span class="nf">get_fert</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function generates a vector of fertility rates by model period</span>
+<span class="sd">    age that corresponds to the fertility rate data by age in years</span>
+<span class="sd">    (Source: National Vital Statistics Reports, Volume 64, Number 1,</span>
+<span class="sd">    January 15, 2015, Table 3, final 2013 data</span>
+<span class="sd">    http://www.cdc.gov/nchs/data/nvsr/nvsr64/nvsr64_01.pdf)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        totpers (int): total number of agent life periods (E+S), &gt;= 3</span>
+<span class="sd">        min_yr (int): age in years at which agents are born, &gt;= 0</span>
+<span class="sd">        max_yr (int): age in years at which agents die with certainty,</span>
+<span class="sd">            &gt;= 4</span>
+<span class="sd">        graph (bool): =True if want graphical output</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fert_rates (Numpy array): fertility rates for each model period</span>
+<span class="sd">            of life</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Get current population data (2013) for weighting</span>
+    <span class="n">pop_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;demographic&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_data.csv&#39;</span><span class="p">)</span>
+    <span class="n">pop_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">pop_file</span><span class="p">,</span> <span class="n">thousands</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">pop_data_samp</span> <span class="o">=</span> <span class="n">pop_data</span><span class="p">[(</span><span class="n">pop_data</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_yr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                             <span class="p">(</span><span class="n">pop_data</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_yr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">curr_pop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop_data_samp</span><span class="p">[</span><span class="s1">&#39;2013&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+    <span class="n">curr_pop_pct</span> <span class="o">=</span> <span class="n">curr_pop</span> <span class="o">/</span> <span class="n">curr_pop</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="c1"># Get fertility rate by age-bin data</span>
+    <span class="n">fert_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">12.3</span><span class="p">,</span> <span class="mf">47.1</span><span class="p">,</span> <span class="mf">80.7</span><span class="p">,</span> <span class="mf">105.5</span><span class="p">,</span> <span class="mf">98.0</span><span class="p">,</span>
+                           <span class="mf">49.3</span><span class="p">,</span> <span class="mf">10.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2000</span><span class="p">)</span>
+    <span class="c1"># Mid points of age bins</span>
+    <span class="n">age_midp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mf">18.5</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span>
+                         <span class="mi">55</span><span class="p">,</span> <span class="mi">56</span><span class="p">])</span>
+    <span class="c1"># Generate interpolation functions for fertility rates</span>
+    <span class="n">fert_func</span> <span class="o">=</span> <span class="n">si</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">age_midp</span><span class="p">,</span> <span class="n">fert_data</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
+    <span class="c1"># Calculate average fertility rate in each age bin using trapezoid</span>
+    <span class="c1"># method with a large number of points in each bin.</span>
+    <span class="n">binsize</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_yr</span> <span class="o">-</span> <span class="n">min_yr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">totpers</span>
+    <span class="n">num_sub_bins</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="n">len_subbins</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">num_sub_bins</span><span class="p">))</span> <span class="o">/</span> <span class="n">totpers</span>
+    <span class="n">age_sub</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">binsize</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_sub_bins</span><span class="p">,</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">max_yr</span><span class="p">),</span>
+                           <span class="nb">int</span><span class="p">(</span><span class="n">num_sub_bins</span><span class="o">*</span><span class="n">max_yr</span><span class="p">))</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span>
+               <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">binsize</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_sub_bins</span><span class="p">)</span>
+    <span class="n">curr_pop_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">curr_pop_pct</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_sub_bins</span><span class="p">,</span>
+                             <span class="n">num_sub_bins</span><span class="p">)</span>
+    <span class="n">fert_rates_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">curr_pop_sub</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">pred_ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">age_sub</span> <span class="o">&gt;</span> <span class="n">age_midp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">age_sub</span> <span class="o">&lt;</span> <span class="n">age_midp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">age_pred</span> <span class="o">=</span> <span class="n">age_sub</span><span class="p">[</span><span class="n">pred_ind</span><span class="p">]</span>
+    <span class="n">fert_rates_sub</span><span class="p">[</span><span class="n">pred_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">fert_func</span><span class="p">(</span><span class="n">age_pred</span><span class="p">))</span>
+    <span class="n">fert_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">totpers</span><span class="p">)</span>
+    <span class="n">end_sub_bin</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">totpers</span><span class="p">):</span>
+        <span class="n">beg_sub_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end_sub_bin</span><span class="p">)</span>
+        <span class="n">end_sub_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">len_subbins</span><span class="p">))</span>
+        <span class="n">fert_rates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span>
+            <span class="n">curr_pop_sub</span><span class="p">[</span><span class="n">beg_sub_bin</span><span class="p">:</span><span class="n">end_sub_bin</span><span class="p">]</span> <span class="o">*</span>
+            <span class="n">fert_rates_sub</span><span class="p">[</span><span class="n">beg_sub_bin</span><span class="p">:</span><span class="n">end_sub_bin</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span>
+            <span class="n">curr_pop_sub</span><span class="p">[</span><span class="n">beg_sub_bin</span><span class="p">:</span><span class="n">end_sub_bin</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="n">pp</span><span class="o">.</span><span class="n">plot_fert_rates</span><span class="p">(</span><span class="n">fert_func</span><span class="p">,</span> <span class="n">age_midp</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span>
+                           <span class="n">fert_data</span><span class="p">,</span> <span class="n">fert_rates</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fert_rates</span></div>
+
+
+<div class="viewcode-block" id="get_mort"><a class="viewcode-back" href="../../demographics.html#ogusa.demographics.get_mort">[docs]</a><span class="k">def</span> <span class="nf">get_mort</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function generates a vector of mortality rates by model period</span>
+<span class="sd">    age.</span>
+<span class="sd">    (Source: Male and Female death probabilities Actuarial Life table,</span>
+<span class="sd">    2011 Social Security Administration,</span>
+<span class="sd">    http://www.ssa.gov/oact/STATS/table4c6.html)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        totpers (int): total number of agent life periods (E+S), &gt;= 3</span>
+<span class="sd">        min_yr (int): age in years at which agents are born, &gt;= 0</span>
+<span class="sd">        max_yr (int): age in years at which agents die with certainty,</span>
+<span class="sd">            &gt;= 4</span>
+<span class="sd">        graph (bool): =True if want graphical output</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mort_rates (Numpy array) mortality rates that correspond to each</span>
+<span class="sd">            period of life</span>
+<span class="sd">        infmort_rate (scalar): infant mortality rate from 2015 U.S. CIA</span>
+<span class="sd">            World Factbook</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Get mortality rate by age data</span>
+    <span class="n">infmort_rate</span> <span class="o">=</span> <span class="mf">0.00587</span>  <span class="c1"># taken from 2015 U.S. infant mortality rate</span>
+    <span class="n">mort_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;demographic&#39;</span><span class="p">,</span> <span class="s1">&#39;mort_rates2011.csv&#39;</span><span class="p">)</span>
+    <span class="n">mort_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">mort_file</span><span class="p">,</span> <span class="n">thousands</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">age_year_all</span> <span class="o">=</span> <span class="n">mort_data</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">mort_rates_all</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">((</span><span class="n">mort_data</span><span class="p">[</span><span class="s1">&#39;Male Mort. Rate&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">mort_data</span><span class="p">[</span><span class="s1">&#39;Num. Male Lives&#39;</span><span class="p">])</span> <span class="o">+</span>
+         <span class="p">(</span><span class="n">mort_data</span><span class="p">[</span><span class="s1">&#39;Female Mort. Rate&#39;</span><span class="p">]</span> <span class="o">*</span>
+          <span class="n">mort_data</span><span class="p">[</span><span class="s1">&#39;Num. Female Lives&#39;</span><span class="p">]))</span> <span class="o">/</span>
+        <span class="p">(</span><span class="n">mort_data</span><span class="p">[</span><span class="s1">&#39;Num. Male Lives&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">mort_data</span><span class="p">[</span><span class="s1">&#39;Num. Female Lives&#39;</span><span class="p">]))</span>
+    <span class="n">age_year_all</span> <span class="o">=</span> <span class="n">age_year_all</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">mort_rates_all</span><span class="p">)]</span>
+    <span class="n">mort_rates_all</span> <span class="o">=</span> <span class="n">mort_rates_all</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">mort_rates_all</span><span class="p">)]</span>
+    <span class="c1"># Calculate implied mortality rates in sub-bins of mort_rates_all.</span>
+    <span class="n">mort_rates_mxyr</span> <span class="o">=</span> <span class="n">mort_rates_all</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_yr</span><span class="p">]</span>
+    <span class="n">num_sub_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">len_subbins</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">((</span><span class="n">max_yr</span> <span class="o">-</span> <span class="n">min_yr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_sub_bins</span><span class="p">))</span> <span class="o">/</span>
+                   <span class="n">totpers</span><span class="p">)</span>
+    <span class="n">mort_rates_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_sub_bins</span> <span class="o">*</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_yr</span><span class="p">):</span>
+        <span class="n">mort_rates_sub</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">num_sub_bins</span><span class="p">:(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_sub_bins</span><span class="p">]</span> <span class="o">=</span>\
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates_mxyr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">num_sub_bins</span><span class="p">)))</span>
+    <span class="n">mort_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">totpers</span><span class="p">)</span>
+    <span class="n">end_sub_bin</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">totpers</span><span class="p">):</span>
+        <span class="n">beg_sub_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end_sub_bin</span><span class="p">)</span>
+        <span class="n">end_sub_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">len_subbins</span><span class="p">))</span>
+        <span class="n">mort_rates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">mort_rates_sub</span><span class="p">[</span><span class="n">beg_sub_bin</span><span class="p">:</span><span class="n">end_sub_bin</span><span class="p">]))</span><span class="o">.</span><span class="n">prod</span><span class="p">())</span>
+    <span class="n">mort_rates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Mortality rate in last period is set to 1</span>
+
+    <span class="k">if</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="n">pp</span><span class="o">.</span><span class="n">plot_mort_rates_data</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">age_year_all</span><span class="p">,</span>
+                                <span class="n">mort_rates_all</span><span class="p">,</span> <span class="n">infmort_rate</span><span class="p">,</span>
+                                <span class="n">mort_rates</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mort_rates</span><span class="p">,</span> <span class="n">infmort_rate</span></div>
+
+
+<div class="viewcode-block" id="pop_rebin"><a class="viewcode-back" href="../../demographics.html#ogusa.demographics.pop_rebin">[docs]</a><span class="k">def</span> <span class="nf">pop_rebin</span><span class="p">(</span><span class="n">curr_pop_dist</span><span class="p">,</span> <span class="n">totpers_new</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    For cases in which totpers (E+S) is less than the number of periods</span>
+<span class="sd">    in the population distribution data, this function calculates a new</span>
+<span class="sd">    population distribution vector with totpers (E+S) elements.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        curr_pop_dist (Numpy array): population distribution over N</span>
+<span class="sd">            periods</span>
+<span class="sd">        totpers_new (int): number of periods to which we are</span>
+<span class="sd">            transforming the population distribution, &gt;= 3</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        curr_pop_new (Numpy array): new population distribution over</span>
+<span class="sd">            totpers (E+S) periods that approximates curr_pop_dist</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Number of periods in original data</span>
+    <span class="k">assert</span> <span class="n">totpers_new</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+    <span class="n">totpers_orig</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">curr_pop_dist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">totpers_new</span><span class="p">)</span> <span class="o">==</span> <span class="n">totpers_orig</span><span class="p">:</span>
+        <span class="n">curr_pop_new</span> <span class="o">=</span> <span class="n">curr_pop_dist</span>
+    <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">totpers_new</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">totpers_orig</span><span class="p">:</span>
+        <span class="n">num_sub_bins</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+        <span class="n">curr_pop_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">curr_pop_dist</span><span class="p">)</span> <span class="o">/</span>
+                                 <span class="n">num_sub_bins</span><span class="p">,</span> <span class="n">num_sub_bins</span><span class="p">)</span>
+        <span class="n">len_subbins</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">totpers_orig</span><span class="o">*</span><span class="n">num_sub_bins</span><span class="p">))</span> <span class="o">/</span>
+                       <span class="n">totpers_new</span><span class="p">)</span>
+        <span class="n">curr_pop_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">totpers_new</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">end_sub_bin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">totpers_new</span><span class="p">):</span>
+            <span class="n">beg_sub_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end_sub_bin</span><span class="p">)</span>
+            <span class="n">end_sub_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">len_subbins</span><span class="p">))</span>
+            <span class="n">curr_pop_new</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">curr_pop_sub</span><span class="p">[</span><span class="n">beg_sub_bin</span><span class="p">:</span><span class="n">end_sub_bin</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="c1"># Return curr_pop_new to single precision float (float32)</span>
+        <span class="c1"># datatype</span>
+        <span class="n">curr_pop_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">curr_pop_new</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">curr_pop_new</span></div>
+
+
+<div class="viewcode-block" id="get_imm_resid"><a class="viewcode-back" href="../../demographics.html#ogusa.demographics.get_imm_resid">[docs]</a><span class="k">def</span> <span class="nf">get_imm_resid</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate immigration rates by age as a residual given population</span>
+<span class="sd">    levels in different periods, then output average calculated</span>
+<span class="sd">    immigration rate. We have to replace the first mortality rate in</span>
+<span class="sd">    this function in order to adjust the first implied immigration rate</span>
+<span class="sd">    (Source: Population data come from Annual Estimates of the Resident</span>
+<span class="sd">    Population by Single Year of Age and Sex: April 1, 2010 to July 1,</span>
+<span class="sd">    2013 (Both sexes) National Characteristics, Vintage 2013, US Census</span>
+<span class="sd">    Bureau,</span>
+<span class="sd">    http://www.census.gov/popest/data/national/asrh/2013/index.html)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        totpers (int): total number of agent life periods (E+S), &gt;= 3</span>
+<span class="sd">        min_yr (int): age in years at which agents are born, &gt;= 0</span>
+<span class="sd">        max_yr (int): age in years at which agents die with certainty,</span>
+<span class="sd">            &gt;= 4</span>
+<span class="sd">        graph (bool): =True if want graphical output</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        imm_rates (Numpy array):immigration rates that correspond to</span>
+<span class="sd">            each period of life, length E+S</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">pop_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;demographic&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_data.csv&#39;</span><span class="p">)</span>
+    <span class="n">pop_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">pop_file</span><span class="p">,</span> <span class="n">thousands</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">pop_data_samp</span> <span class="o">=</span> <span class="n">pop_data</span><span class="p">[(</span><span class="n">pop_data</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_yr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                             <span class="p">(</span><span class="n">pop_data</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_yr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">pop_2010</span><span class="p">,</span> <span class="n">pop_2011</span><span class="p">,</span> <span class="n">pop_2012</span><span class="p">,</span> <span class="n">pop_2013</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop_data_samp</span><span class="p">[</span><span class="s1">&#39;2010&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop_data_samp</span><span class="p">[</span><span class="s1">&#39;2011&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop_data_samp</span><span class="p">[</span><span class="s1">&#39;2012&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop_data_samp</span><span class="p">[</span><span class="s1">&#39;2013&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">))</span>
+    <span class="n">pop_2010_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pop_2010</span><span class="p">,</span> <span class="n">totpers</span><span class="p">)</span>
+    <span class="n">pop_2011_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pop_2011</span><span class="p">,</span> <span class="n">totpers</span><span class="p">)</span>
+    <span class="n">pop_2012_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pop_2012</span><span class="p">,</span> <span class="n">totpers</span><span class="p">)</span>
+    <span class="n">pop_2013_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pop_2013</span><span class="p">,</span> <span class="n">totpers</span><span class="p">)</span>
+    <span class="c1"># Create three years of estimated immigration rates for youngest age</span>
+    <span class="c1"># individuals</span>
+    <span class="n">imm_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">totpers</span><span class="p">))</span>
+    <span class="n">pop11vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pop_2010_EpS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pop_2011_EpS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                         <span class="n">pop_2012_EpS</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">pop21vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pop_2011_EpS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pop_2012_EpS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                         <span class="n">pop_2013_EpS</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">fert_rates</span> <span class="o">=</span> <span class="n">get_fert</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">mort_rates</span><span class="p">,</span> <span class="n">infmort_rate</span> <span class="o">=</span> <span class="n">get_mort</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">newbornvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">pop_2010_EpS</span><span class="p">,</span>
+                                               <span class="n">pop_2011_EpS</span><span class="p">,</span>
+                                               <span class="n">pop_2012_EpS</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">imm_mat</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">pop21vec</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">infmort_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">newbornvec</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="n">pop11vec</span><span class="p">)</span>
+    <span class="c1"># Estimate 3 years of immigration rates for all other-aged</span>
+    <span class="c1"># individuals</span>
+    <span class="n">pop11mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">pop_2010_EpS</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">pop_2011_EpS</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">pop_2012_EpS</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">pop12mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">pop_2010_EpS</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">pop_2011_EpS</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+                          <span class="n">pop_2012_EpS</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="n">pop22mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">pop_2011_EpS</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">pop_2012_EpS</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+                          <span class="n">pop_2013_EpS</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="n">mort_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">mort_rates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">imm_mat</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">pop22mat</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_mat</span><span class="p">)</span> <span class="o">*</span> <span class="n">pop11mat</span><span class="p">)</span> <span class="o">/</span> <span class="n">pop12mat</span>
+    <span class="c1"># Final estimated immigration rates are the averages over 3 years</span>
+    <span class="n">imm_rates</span> <span class="o">=</span> <span class="n">imm_mat</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">imm_rates</span></div>
+
+
+<div class="viewcode-block" id="immsolve"><a class="viewcode-back" href="../../demographics.html#ogusa.demographics.immsolve">[docs]</a><span class="k">def</span> <span class="nf">immsolve</span><span class="p">(</span><span class="n">imm_rates</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function generates a vector of errors representing the</span>
+<span class="sd">    difference in two consecutive periods stationary population</span>
+<span class="sd">    distributions. This vector of differences is the zero-function</span>
+<span class="sd">    objective used to solve for the immigration rates vector, similar to</span>
+<span class="sd">    the original immigration rates vector from get_imm_resid(), that</span>
+<span class="sd">    sets the steady-state population distribution by age equal to the</span>
+<span class="sd">    population distribution in period int(1.5*S)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        imm_rates (Numpy array):immigration rates that correspond to</span>
+<span class="sd">            each period of life, length E+S</span>
+<span class="sd">        args (tuple): (fert_rates, mort_rates, infmort_rate, omega_cur,</span>
+<span class="sd">            g_n_SS)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        omega_errs (Numpy array): difference between omega_new and</span>
+<span class="sd">            omega_cur_pct, length E+S</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fert_rates</span><span class="p">,</span> <span class="n">mort_rates</span><span class="p">,</span> <span class="n">infmort_rate</span><span class="p">,</span> <span class="n">omega_cur_lev</span><span class="p">,</span> <span class="n">g_n_SS</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="n">omega_cur_pct</span> <span class="o">=</span> <span class="n">omega_cur_lev</span> <span class="o">/</span> <span class="n">omega_cur_lev</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">totpers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">)</span>
+    <span class="n">OMEGA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">totpers</span><span class="p">,</span> <span class="n">totpers</span><span class="p">))</span>
+    <span class="n">OMEGA</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">infmort_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">fert_rates</span> <span class="o">+</span>
+                   <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">imm_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">totpers</span><span class="o">-</span><span class="mi">1</span><span class="p">))))</span>
+    <span class="n">OMEGA</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">OMEGA</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">imm_rates</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">omega_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">OMEGA</span><span class="p">,</span> <span class="n">omega_cur_pct</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">g_n_SS</span><span class="p">)</span>
+    <span class="n">omega_errs</span> <span class="o">=</span> <span class="n">omega_new</span> <span class="o">-</span> <span class="n">omega_cur_pct</span>
+
+    <span class="k">return</span> <span class="n">omega_errs</span></div>
+
+
+<div class="viewcode-block" id="get_pop_objs"><a class="viewcode-back" href="../../demographics.html#ogusa.demographics.get_pop_objs">[docs]</a><span class="k">def</span> <span class="nf">get_pop_objs</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">curr_year</span><span class="p">,</span> <span class="n">GraphDiag</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function produces the demographics objects to be used in the</span>
+<span class="sd">    OG-USA model package.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        E (int): number of model periods in which agent is not</span>
+<span class="sd">            economically active, &gt;= 1</span>
+<span class="sd">        S (int): number of model periods in which agent is economically</span>
+<span class="sd">            active, &gt;= 3</span>
+<span class="sd">        T (int): number of periods to be simulated in TPI, &gt; 2*S</span>
+<span class="sd">        min_yr (int): age in years at which agents are born, &gt;= 0</span>
+<span class="sd">        max_yr (int): age in years at which agents die with certainty,</span>
+<span class="sd">            &gt;= 4</span>
+<span class="sd">        curr_year (int): current year for which analysis will begin,</span>
+<span class="sd">            &gt;= 2016</span>
+<span class="sd">        GraphDiag (bool): =True if want graphical output and printed</span>
+<span class="sd">                diagnostics</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        omega_path_S (Numpy array), time path of the population</span>
+<span class="sd">            distribution from the current state to the steady-state,</span>
+<span class="sd">            size T+S x S</span>
+<span class="sd">        g_n_SS (scalar): steady-state population growth rate</span>
+<span class="sd">        omega_SS (Numpy array): normalized steady-state population</span>
+<span class="sd">            distribution, length S</span>
+<span class="sd">        surv_rates (Numpy array): survival rates that correspond to</span>
+<span class="sd">            each model period of life, lenght S</span>
+<span class="sd">        mort_rates (Numpy array): mortality rates that correspond to</span>
+<span class="sd">            each model period of life, length S</span>
+<span class="sd">        g_n_path (Numpy array): population growth rates over the time</span>
+<span class="sd">            path, length T + S</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># age_per = np.linspace(min_yr, max_yr, E+S)</span>
+    <span class="n">fert_rates</span> <span class="o">=</span> <span class="n">get_fert</span><span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mort_rates</span><span class="p">,</span> <span class="n">infmort_rate</span> <span class="o">=</span> <span class="n">get_mort</span><span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span>
+                                        <span class="n">graph</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mort_rates_S</span> <span class="o">=</span> <span class="n">mort_rates</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span>
+    <span class="n">imm_rates_orig</span> <span class="o">=</span> <span class="n">get_imm_resid</span><span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">)</span>
+    <span class="n">OMEGA_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">))</span>
+    <span class="n">OMEGA_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">infmort_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">fert_rates</span> <span class="o">+</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">E</span><span class="o">+</span><span class="n">S</span><span class="o">-</span><span class="mi">1</span><span class="p">))))</span>
+    <span class="n">OMEGA_orig</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">OMEGA_orig</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+    <span class="c1"># Solve for steady-state population growth rate and steady-state</span>
+    <span class="c1"># population distribution by age using eigenvalue and eigenvector</span>
+    <span class="c1"># decomposition</span>
+    <span class="n">eigvalues</span><span class="p">,</span> <span class="n">eigvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">OMEGA_orig</span><span class="p">)</span>
+    <span class="n">g_n_SS</span> <span class="o">=</span> <span class="p">(</span><span class="n">eigvalues</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isreal</span><span class="p">(</span><span class="n">eigvalues</span><span class="p">)]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">eigvec_raw</span> <span class="o">=</span>\
+        <span class="n">eigvectors</span><span class="p">[:,</span>
+                   <span class="p">(</span><span class="n">eigvalues</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isreal</span><span class="p">(</span><span class="n">eigvalues</span><span class="p">)]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">()]</span><span class="o">.</span><span class="n">real</span>
+    <span class="n">omega_SS_orig</span> <span class="o">=</span> <span class="n">eigvec_raw</span> <span class="o">/</span> <span class="n">eigvec_raw</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="c1"># Generate time path of the nonstationary population distribution</span>
+    <span class="n">omega_path_lev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span><span class="p">))</span>
+    <span class="n">pop_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;demographic&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_data.csv&#39;</span><span class="p">)</span>
+    <span class="n">pop_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">pop_file</span><span class="p">,</span> <span class="n">thousands</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">pop_data_samp</span> <span class="o">=</span> <span class="n">pop_data</span><span class="p">[(</span><span class="n">pop_data</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_yr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
+                             <span class="p">(</span><span class="n">pop_data</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_yr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">pop_2013</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop_data_samp</span><span class="p">[</span><span class="s1">&#39;2013&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+    <span class="c1"># Generate the current population distribution given that E+S might</span>
+    <span class="c1"># be less than max_yr-min_yr+1</span>
+    <span class="n">age_per_EpS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">pop_2013_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pop_2013</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">pop_2013_pct</span> <span class="o">=</span> <span class="n">pop_2013_EpS</span> <span class="o">/</span> <span class="n">pop_2013_EpS</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="c1"># Age most recent population data to the current year of analysis</span>
+    <span class="n">pop_curr</span> <span class="o">=</span> <span class="n">pop_2013_EpS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">data_year</span> <span class="o">=</span> <span class="mi">2013</span>
+    <span class="n">pop_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">OMEGA_orig</span><span class="p">,</span> <span class="n">pop_curr</span><span class="p">)</span>
+    <span class="n">g_n_curr</span> <span class="o">=</span> <span class="p">((</span><span class="n">pop_next</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">pop_curr</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span>
+                <span class="n">pop_curr</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>  <span class="c1"># g_n in 2013</span>
+    <span class="n">pop_past</span> <span class="o">=</span> <span class="n">pop_curr</span>  <span class="c1"># assume 2012-2013 pop</span>
+    <span class="c1"># Age the data to the current year</span>
+    <span class="k">for</span> <span class="n">per</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">curr_year</span> <span class="o">-</span> <span class="n">data_year</span><span class="p">):</span>
+        <span class="n">pop_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">OMEGA_orig</span><span class="p">,</span> <span class="n">pop_curr</span><span class="p">)</span>
+        <span class="n">g_n_curr</span> <span class="o">=</span> <span class="p">((</span><span class="n">pop_next</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">pop_curr</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span>
+                    <span class="n">pop_curr</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">pop_past</span> <span class="o">=</span> <span class="n">pop_curr</span>
+        <span class="n">pop_curr</span> <span class="o">=</span> <span class="n">pop_next</span>
+
+    <span class="c1"># Generate time path of the population distribution</span>
+    <span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_curr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">per</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span><span class="p">):</span>
+        <span class="n">pop_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">OMEGA_orig</span><span class="p">,</span> <span class="n">pop_curr</span><span class="p">)</span>
+        <span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="n">per</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_next</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">pop_curr</span> <span class="o">=</span> <span class="n">pop_next</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Force the population distribution after 1.5*S periods to be the</span>
+    <span class="c1"># steady-state distribution by adjusting immigration rates, holding</span>
+    <span class="c1"># constant mortality, fertility, and SS growth rates</span>
+    <span class="n">imm_tol</span> <span class="o">=</span> <span class="mf">1e-14</span>
+    <span class="n">fixper</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">omega_SSfx</span> <span class="o">=</span> <span class="p">(</span><span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="n">fixper</span><span class="p">]</span> <span class="o">/</span>
+                  <span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="n">fixper</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">imm_objs</span> <span class="o">=</span> <span class="p">(</span><span class="n">fert_rates</span><span class="p">,</span> <span class="n">mort_rates</span><span class="p">,</span> <span class="n">infmort_rate</span><span class="p">,</span>
+                <span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="n">fixper</span><span class="p">],</span> <span class="n">g_n_SS</span><span class="p">)</span>
+    <span class="n">imm_fulloutput</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="n">immsolve</span><span class="p">,</span> <span class="n">imm_rates_orig</span><span class="p">,</span>
+                                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">imm_objs</span><span class="p">),</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">xtol</span><span class="o">=</span><span class="n">imm_tol</span><span class="p">)</span>
+    <span class="n">imm_rates_adj</span> <span class="o">=</span> <span class="n">imm_fulloutput</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">imm_diagdict</span> <span class="o">=</span> <span class="n">imm_fulloutput</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">omega_path_S</span> <span class="o">=</span> <span class="p">(</span><span class="n">omega_path_lev</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">/</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">omega_path_lev</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <span class="n">omega_path_S</span><span class="p">[:,</span> <span class="n">fixper</span><span class="p">:]</span> <span class="o">=</span> \
+        <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">omega_path_S</span><span class="p">[:,</span> <span class="n">fixper</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span> <span class="o">-</span> <span class="n">fixper</span><span class="p">))</span>
+    <span class="n">g_n_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">g_n_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">g_n_curr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">g_n_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="p">((</span><span class="n">omega_path_lev</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span>
+                    <span class="n">omega_path_lev</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span>
+                    <span class="n">omega_path_lev</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">g_n_path</span><span class="p">[</span><span class="n">fixper</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">g_n_SS</span>
+    <span class="n">omega_S_preTP</span> <span class="o">=</span> <span class="p">(</span><span class="n">pop_past</span><span class="o">.</span><span class="n">copy</span><span class="p">()[</span><span class="o">-</span><span class="n">S</span><span class="p">:])</span> <span class="o">/</span> <span class="p">(</span><span class="n">pop_past</span><span class="o">.</span><span class="n">copy</span><span class="p">()[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">imm_rates_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">imm_rates_orig</span><span class="p">[</span><span class="n">E</span><span class="p">:],</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fixper</span><span class="p">)),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">imm_rates_adj</span><span class="p">[</span><span class="n">E</span><span class="p">:],</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span> <span class="o">-</span> <span class="n">fixper</span><span class="p">))))</span>
+
+    <span class="k">if</span> <span class="n">GraphDiag</span><span class="p">:</span>
+        <span class="c1"># Check whether original SS population distribution is close to</span>
+        <span class="c1"># the period-T population distribution</span>
+        <span class="n">omegaSSmaxdif</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">omega_SS_orig</span> <span class="o">-</span>
+                                    <span class="p">(</span><span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="n">T</span><span class="p">]</span> <span class="o">/</span>
+                                     <span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="n">T</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">omegaSSmaxdif</span> <span class="o">&gt;</span> <span class="mf">0.0003</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;POP. WARNING: Max. abs. dist. between original SS &#39;</span> <span class="o">+</span>
+                  <span class="s2">&quot;pop. dist&#39;n and period-T pop. dist&#39;n is greater than&quot;</span> <span class="o">+</span>
+                  <span class="s1">&#39; 0.0003. It is &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">omegaSSmaxdif</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;POP. SUCCESS: orig. SS pop. dist is very close to &#39;</span> <span class="o">+</span>
+                  <span class="s2">&quot;period-T pop. dist&#39;n. The maximum absolute &quot;</span> <span class="o">+</span>
+                  <span class="s1">&#39;difference is &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">omegaSSmaxdif</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Plot the adjusted steady-state population distribution versus</span>
+        <span class="c1"># the original population distribution. The difference should be</span>
+        <span class="c1"># small</span>
+        <span class="n">omegaSSvTmaxdiff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">omega_SS_orig</span> <span class="o">-</span> <span class="n">omega_SSfx</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">omegaSSvTmaxdiff</span> <span class="o">&gt;</span> <span class="mf">0.0003</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;POP. WARNING: The maximimum absolute difference &#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;between any two corresponding points in the original&#39;</span>
+                  <span class="o">+</span> <span class="s1">&#39; and adjusted steady-state population &#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;distributions is&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">omegaSSvTmaxdiff</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;which is greater than 0.0003.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;POP. SUCCESS: The maximum absolute difference &#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;between any two corresponding points in the original&#39;</span>
+                  <span class="o">+</span> <span class="s1">&#39; and adjusted steady-state population &#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;distributions is &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">omegaSSvTmaxdiff</span><span class="p">))</span>
+
+        <span class="c1"># Print whether or not the adjusted immigration rates solved the</span>
+        <span class="c1"># zero condition</span>
+        <span class="n">immtol_solved</span> <span class="o">=</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">imm_diagdict</span><span class="p">[</span><span class="s1">&#39;fvec&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">&lt;</span> <span class="n">imm_tol</span>
+        <span class="k">if</span> <span class="n">immtol_solved</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;POP. SUCCESS: Adjusted immigration rates solved &#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;with maximum absolute error of &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">imm_diagdict</span><span class="p">[</span><span class="s1">&#39;fvec&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span> <span class="o">+</span>
+                  <span class="s1">&#39;, which is less than the tolerance of &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="n">imm_tol</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;POP. WARNING: Adjusted immigration rates did not &#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;solve. Maximum absolute error of &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">imm_diagdict</span><span class="p">[</span><span class="s1">&#39;fvec&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span> <span class="o">+</span>
+                  <span class="s1">&#39; is greater than the tolerance of &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">imm_tol</span><span class="p">))</span>
+
+        <span class="c1"># Test whether the steady-state growth rates implied by the</span>
+        <span class="c1"># adjusted OMEGA matrix equals the steady-state growth rate of</span>
+        <span class="c1"># the original OMEGA matrix</span>
+        <span class="n">OMEGA2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">))</span>
+        <span class="n">OMEGA2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">infmort_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">fert_rates</span> <span class="o">+</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">imm_rates_adj</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">E</span><span class="o">+</span><span class="n">S</span><span class="o">-</span><span class="mi">1</span><span class="p">))))</span>
+        <span class="n">OMEGA2</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">OMEGA2</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">imm_rates_adj</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="n">eigvalues2</span><span class="p">,</span> <span class="n">eigvectors2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">OMEGA2</span><span class="p">)</span>
+        <span class="n">g_n_SS_adj</span> <span class="o">=</span> <span class="p">(</span><span class="n">eigvalues</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isreal</span><span class="p">(</span><span class="n">eigvalues2</span><span class="p">)]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">g_n_SS_adj</span> <span class="o">-</span> <span class="n">g_n_SS</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;FAILURE: The steady-state population growth rate&#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39; from adjusted OMEGA is different (diff is &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="n">g_n_SS_adj</span> <span class="o">-</span> <span class="n">g_n_SS</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;) than the steady-&#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;state population growth rate from the original&#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39; OMEGA.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">g_n_SS_adj</span> <span class="o">-</span> <span class="n">g_n_SS</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SUCCESS: The steady-state population growth rate&#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39; from adjusted OMEGA is close to (diff is &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="n">g_n_SS_adj</span> <span class="o">-</span> <span class="n">g_n_SS</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;) the steady-&#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;state population growth rate from the original&#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39; OMEGA.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Do another test of the adjusted immigration rates. Create the</span>
+        <span class="c1"># new OMEGA matrix implied by the new immigration rates. Plug in</span>
+        <span class="c1"># the adjusted steady-state population distribution. Hit is with</span>
+        <span class="c1"># the new OMEGA transition matrix and it should return the new</span>
+        <span class="c1"># steady-state population distribution</span>
+        <span class="n">omega_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">OMEGA2</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">)</span>
+        <span class="n">omega_errs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">omega_new</span> <span class="o">-</span> <span class="n">omega_SSfx</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The maximum absolute difference between the adjusted &#39;</span> <span class="o">+</span>
+              <span class="s1">&#39;steady-state population distribution and the &#39;</span> <span class="o">+</span>
+              <span class="s1">&#39;distribution generated by hitting the adjusted OMEGA &#39;</span> <span class="o">+</span>
+              <span class="s1">&#39;transition matrix is &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">omega_errs</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+
+        <span class="c1"># Plot the original immigration rates versus the adjusted</span>
+        <span class="c1"># immigration rates</span>
+        <span class="n">immratesmaxdiff</span> <span class="o">=</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">imm_rates_orig</span> <span class="o">-</span> <span class="n">imm_rates_adj</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The maximum absolute distance between any two points &#39;</span> <span class="o">+</span>
+              <span class="s1">&#39;of the original immigration rates and adjusted &#39;</span> <span class="o">+</span>
+              <span class="s1">&#39;immigration rates is &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">immratesmaxdiff</span><span class="p">))</span>
+
+        <span class="c1"># plots</span>
+        <span class="n">pp</span><span class="o">.</span><span class="n">plot_omega_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SS_orig</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span>
+                            <span class="n">S</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">)</span>
+        <span class="n">pp</span><span class="o">.</span><span class="n">plot_imm_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_orig</span><span class="p">,</span> <span class="n">imm_rates_adj</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span>
+                          <span class="n">S</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">)</span>
+        <span class="n">pp</span><span class="o">.</span><span class="n">plot_population_path</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">pop_2013_pct</span><span class="p">,</span>
+                                <span class="n">omega_path_lev</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">curr_year</span><span class="p">,</span>
+                                <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">)</span>
+
+    <span class="c1"># return omega_path_S, g_n_SS, omega_SSfx, survival rates,</span>
+    <span class="c1"># mort_rates_S, and g_n_path</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">omega_path_S</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">g_n_SS</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span> <span class="o">/</span>
+            <span class="n">omega_SSfx</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="mi">1</span><span class="o">-</span><span class="n">mort_rates_S</span><span class="p">,</span> <span class="n">mort_rates_S</span><span class="p">,</span>
+            <span class="n">g_n_path</span><span class="p">,</span> <span class="n">imm_rates_mat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">omega_S_preTP</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jason DeBacker and Richard W. Evans.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

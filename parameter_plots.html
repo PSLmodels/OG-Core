@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OG-USA Parameter Plotting Functions &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="OG-USA Parameter Table Building Functions" href="parameter_tables.html" />
@@ -35,8 +37,116 @@
   <div class="section" id="og-usa-parameter-plotting-functions">
 <span id="parameter-plots"></span><h1>OG-USA Parameter Plotting Functions<a class="headerlink" href="#og-usa-parameter-plotting-functions" title="Permalink to this headline">¶</a></h1>
 <p><strong>OG-USA Parameter Plotting Functions</strong></p>
-<div class="section" id="ogusa-parameter-plots">
-<h2>ogusa.parameter_plots<a class="headerlink" href="#ogusa-parameter-plots" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.parameter_plots">
+<span id="ogusa-parameter-plots"></span><h2>ogusa.parameter_plots<a class="headerlink" href="#module-ogusa.parameter_plots" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_ability_profiles">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_ability_profiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameter_plots.html#plot_ability_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_ability_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of earnings ability profiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of earnings ability profiles</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_elliptical_u">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_elliptical_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">plot_MU</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameter_plots.html#plot_elliptical_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_elliptical_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of showing the fit of the elliptical utility function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
+<li><p><strong>plot_MU</strong> (<em>boolean</em>) – whether plot marginal utility or utility in
+levels</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of elliptical vs CFE utility</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_imm_rates">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_imm_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameter_plots.html#plot_imm_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_imm_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of immigration rates from OG-USA parameterization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
+<li><p><strong>year</strong> (<em>integer</em>) – year of mortality ratese to plot</p></li>
+<li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of immigration rates</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_mort_rates">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_mort_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameter_plots.html#plot_mort_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_mort_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of mortality rates from OG-USA parameterization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
+<li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of immigration rates</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_pop_growth">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_pop_growth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">start_year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">num_years_to_plot</span><span class="o">=</span><span class="default_value">150</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/parameter_plots.html#plot_pop_growth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_pop_growth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of population growth rates by year.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
+<li><p><strong>start_year</strong> (<em>integer</em>) – year to begin plotting</p></li>
+<li><p><strong>num_years_to_plot</strong> (<em>integer</em>) – number of years to plot</p></li>
+<li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of immigration rates</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -119,7 +229,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

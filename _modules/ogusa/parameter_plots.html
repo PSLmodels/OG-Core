@@ -1,0 +1,939 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogusa.parameter_plots &#8212; OG-USA 0.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ogusa.parameter_plots</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">GROUP_LABELS</span>
+<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span>
+<span class="n">CUR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">style_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;OGUSAplots.mplstyle&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">style_file</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="plot_imm_rates"><a class="viewcode-back" href="../../parameter_plots.html#ogusa.parameter_plots.plot_imm_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_imm_rates</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of immigration rates from OG-USA parameterization.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-USA Specifications class): parameters object</span>
+<span class="sd">        year (integer): year of mortality ratese to plot</span>
+<span class="sd">        include_title (bool): whether to include a title in the plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of immigration rates</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+    <span class="n">age_per</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">E</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">age_per</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[</span><span class="n">year</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span> <span class="p">:],</span> <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[</span><span class="n">year</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span> <span class="p">:])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age $s$ (model periods)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Imm. rate $i_</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yticks</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:,.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Immigration Rates in &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;imm_rates_orig&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_mort_rates"><a class="viewcode-back" href="../../parameter_plots.html#ogusa.parameter_plots.plot_mort_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_mort_rates</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of mortality rates from OG-USA parameterization.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-USA Specifications class): parameters object</span>
+<span class="sd">        include_title (bool): whether to include a title in the plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of immigration rates</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">age_per</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">E</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age $s$ (model periods)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Mortality Rates $\rho_</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yticks</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:,.0%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Mortality Rates&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;mortality_rates&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_pop_growth"><a class="viewcode-back" href="../../parameter_plots.html#ogusa.parameter_plots.plot_pop_growth">[docs]</a><span class="k">def</span> <span class="nf">plot_pop_growth</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
+                    <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of population growth rates by year.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-USA Specifications class): parameters object</span>
+<span class="sd">        start_year (integer): year to begin plotting</span>
+<span class="sd">        num_years_to_plot (integer): number of years to plot</span>
+<span class="sd">        include_title (bool): whether to include a title in the plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of immigration rates</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+    <span class="n">year_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">start_year</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">)</span>
+    <span class="n">start_index</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">start_year</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                             <span class="n">num_years_to_plot</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Year $t$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Population Growth Rate $g_{n, t}$&#39;</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yticks</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:,.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Population Growth Rates&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;pop_growth_rates&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">plot_population</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">years_to_plot</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">],</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot the distribution of the population over age for various years.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-USA Specifications class): parameters object</span>
+<span class="sd">        years_to_plot (list): list of years to plot, &#39;SS&#39; will denote</span>
+<span class="sd">            the steady-state period</span>
+<span class="sd">        include_title (bool): whether to include a title in the plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of population distribution</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">years_to_plot</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">v</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">start_year</span><span class="p">)</span>
+    <span class="n">age_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">E</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">years_to_plot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+            <span class="n">pop_dist</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pop_dist</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">v</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">pop_dist</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; pop.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age $s$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Pop. dist&#39;n $\omega_</span><span class="si">{s}</span><span class="s2">$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower left&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Population Distribution by Year&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;pop_distribution&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="plot_ability_profiles"><a class="viewcode-back" href="../../parameter_plots.html#ogusa.parameter_plots.plot_ability_profiles">[docs]</a><span class="k">def</span> <span class="nf">plot_ability_profiles</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of earnings ability profiles.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-USA Specifications class): parameters object</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of earnings ability profiles</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">age_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">starting_age</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">starting_age</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_prop_cycle</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="n">cm</span><span class="p">(</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="mi">7</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)])</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">GROUP_LABELS</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Earnings ability&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Lifecycle Profiles of Effective Labor Units&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ability_profiles&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_elliptical_u"><a class="viewcode-back" href="../../parameter_plots.html#ogusa.parameter_plots.plot_elliptical_u">[docs]</a><span class="k">def</span> <span class="nf">plot_elliptical_u</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">plot_MU</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of showing the fit of the elliptical utility function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-USA Specifications class): parameters object</span>
+<span class="sd">        plot_MU (boolean): whether plot marginal utility or utility in</span>
+<span class="sd">            levels</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of elliptical vs CFE utility</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">frisch</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">101</span>
+    <span class="n">n_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_MU</span><span class="p">:</span>
+        <span class="n">CFE</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">n_grid</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">theta</span><span class="p">)</span>
+        <span class="n">ellipse</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">*</span>
+                   <span class="p">((</span><span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">n_grid</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">**</span>
+                    <span class="p">((</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span> <span class="o">*</span>
+                   <span class="p">(</span><span class="n">n_grid</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">CFE</span> <span class="o">=</span> <span class="p">((</span><span class="n">n_grid</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">theta</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">theta</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># we don&#39;t estimate k, so not in parameters</span>
+        <span class="n">ellipse</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">n_grid</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span>
+                                        <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span>
+                                  <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">+</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_grid</span><span class="p">,</span> <span class="n">CFE</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;CFE&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_grid</span><span class="p">,</span> <span class="n">ellipse</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Elliptical U&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">plot_MU</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Marginal Utility of CFE and Elliptical&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Constant Frisch Elasticity vs. Elliptical Utility&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Labor Supply&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_MU</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Marginal Utility&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Utility&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center right&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ellipse_v_CFE&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">plot_chi_n</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of showing the values of the chi_n parameters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-USA Specifications class): parameters object</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of chi_n parameters</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">starting_age</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">ending_age</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">chi_n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Utility Weight on the Disutility of Labor Supply&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Age, $s$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\chi^</span><span class="si">{n}</span><span class="s1">_</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;chi_n_values&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_fert_rates</span><span class="p">(</span><span class="n">fert_func</span><span class="p">,</span> <span class="n">age_midp</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span>
+                    <span class="n">fert_data</span><span class="p">,</span> <span class="n">fert_rates</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot fertility rates from the data along with smoothed function to</span>
+<span class="sd">    use for model fertility rates.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fert_func (Scipy interpolation object): interpolated fertility</span>
+<span class="sd">            rates</span>
+<span class="sd">        age_midp (NumPy array): midpoint of age for each age group in</span>
+<span class="sd">            data</span>
+<span class="sd">        totpers (int): total number of agent life periods (E+S), &gt;= 3</span>
+<span class="sd">        min_yr (int): age in years at which agents are born, &gt;= 0</span>
+<span class="sd">        max_yr (int): age in years at which agents die with certainty,</span>
+<span class="sd">            &gt;= 4</span>
+<span class="sd">        fert_data (NumPy array): fertility rates by age group from data</span>
+<span class="sd">        fert_rates (NumPy array): fitted fertility rates for each of</span>
+<span class="sd">            totpers</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Generate finer age vector and fertility rate vector for</span>
+    <span class="c1"># graphing cubic spline interpolating function</span>
+    <span class="n">age_fine_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">age_midp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">age_midp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">300</span><span class="p">)</span>
+    <span class="n">fert_fine_pred</span> <span class="o">=</span> <span class="n">fert_func</span><span class="p">(</span><span class="n">age_fine_pred</span><span class="p">)</span>
+    <span class="n">age_fine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">min_yr</span><span class="p">,</span> <span class="n">age_fine_pred</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">))</span>
+    <span class="n">fert_fine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">fert_fine_pred</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">age_mid_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">max_yr</span><span class="p">)</span> <span class="o">/</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span>
+                               <span class="n">totpers</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">max_yr</span><span class="p">)</span> <span class="o">/</span>
+                                           <span class="n">totpers</span><span class="p">))</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">age_midp</span><span class="p">,</span> <span class="n">fert_data</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Data&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">age_mid_new</span><span class="p">,</span> <span class="n">fert_rates</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Model period (integrated)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_fine</span><span class="p">,</span> <span class="n">fert_fine</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Cubic spline&#39;</span><span class="p">)</span>
+    <span class="c1"># plt.title(&#39;Fitted fertility rate function by age ($f_{s}$)&#39;,</span>
+    <span class="c1">#     fontsize=20)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age $s$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Fertility rate $f_</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.023</span><span class="p">,</span>
+             <span class="s1">&#39;Source: National Vital Statistics Reports, &#39;</span> <span class="o">+</span>
+             <span class="s1">&#39;Volume 64, Number 1, January 15, 2015.&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># Save or return figure</span>
+    <span class="k">if</span> <span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;fert_rates&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+
+
+<span class="k">def</span> <span class="nf">plot_mort_rates_data</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">age_year_all</span><span class="p">,</span>
+                         <span class="n">mort_rates_all</span><span class="p">,</span> <span class="n">infmort_rate</span><span class="p">,</span>
+                         <span class="n">mort_rates</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plots mortality rates from the model and data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        totpers (int): total number of agent life periods (E+S), &gt;= 3</span>
+<span class="sd">        min_yr (int): age in years at which agents are born, &gt;= 0</span>
+<span class="sd">        max_yr (int): age in years at which agents die with certainty,</span>
+<span class="sd">            &gt;= 4</span>
+<span class="sd">        age_year_all (array_like): ages in mortality rate data</span>
+<span class="sd">        mort_rates_all (array_like): mortality rates by age from data,</span>
+<span class="sd">            average across males and females</span>
+<span class="sd">        infmort_rate (scalar): infant mortality rate</span>
+<span class="sd">        mort_rates (array_like): fitted mortality rates for each of</span>
+<span class="sd">            totpers</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">age_mid_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">max_yr</span><span class="p">)</span> <span class="o">/</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span>
+                               <span class="n">totpers</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">max_yr</span><span class="p">)</span> <span class="o">/</span>
+                                           <span class="n">totpers</span><span class="p">))</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">age_year_all</span><span class="p">]),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">infmort_rate</span><span class="p">,</span> <span class="n">mort_rates_all</span><span class="p">]),</span>
+                <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Data&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">age_mid_new</span><span class="p">]),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">infmort_rate</span><span class="p">,</span> <span class="n">mort_rates</span><span class="p">]),</span>
+                <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Model period (cumulative)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">age_year_all</span><span class="p">[</span><span class="n">min_yr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span><span class="n">max_yr</span><span class="p">]]),</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">infmort_rate</span><span class="p">,</span>
+                        <span class="n">mort_rates_all</span><span class="p">[</span><span class="n">min_yr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span><span class="n">max_yr</span><span class="p">]]))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">max_yr</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;0.65&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+    <span class="c1"># plt.title(&#39;Fitted mortality rate function by age ($rho_{s}$)&#39;,</span>
+    <span class="c1">#     fontsize=20)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age $s$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Mortality rate $\rho_</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span>
+             <span class="s1">&#39;Source: Actuarial Life table, 2011 Social Security &#39;</span> <span class="o">+</span>
+             <span class="s1">&#39;Administration.&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># Save or return figure</span>
+    <span class="k">if</span> <span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;mort_rates&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+
+
+<span class="k">def</span> <span class="nf">plot_omega_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SS_orig</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
+                     <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot the steady-state population distribution implied by the data</span>
+<span class="sd">    on fertility and mortality rates versus the the steady-state</span>
+<span class="sd">    population distribution after adjusting immigration rates so that</span>
+<span class="sd">    the stationary distribution is achieved a reasonable number of</span>
+<span class="sd">    model periods.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SS_orig</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original Dist&#39;n&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fixed Dist&#39;n&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Original steady-state population distribution vs. fixed&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age $s$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Pop. dist&#39;n $\omega_</span><span class="si">{s}</span><span class="s2">$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+    <span class="c1"># Save or return figure</span>
+    <span class="k">if</span> <span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;OrigVsFixSSpop&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+
+
+<span class="k">def</span> <span class="nf">plot_imm_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_orig</span><span class="p">,</span> <span class="n">imm_rates_adj</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
+                   <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot the immigration rates implied by the data on population,</span>
+<span class="sd">    mortality, and fertility versus the adjusted immigration rates</span>
+<span class="sd">    needed to achieve a stationary distribution of the population in a</span>
+<span class="sd">    reasonable number of model periods.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_orig</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original Imm. Rates&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_adj</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Adj. Imm. Rates&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Original immigration rates vs. adjusted&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age $s$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Imm. rates $i_</span><span class="si">{s}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">)</span>
+    <span class="c1"># Save or return figure</span>
+    <span class="k">if</span> <span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;OrigVsAdjImm&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+
+
+<span class="k">def</span> <span class="nf">plot_population_path</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">pop_2013_pct</span><span class="p">,</span> <span class="n">omega_path_lev</span><span class="p">,</span>
+                         <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">curr_year</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot the distribution of the population over age for various years.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">pop_2013_pct</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;2013 pop.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="p">(</span><span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span>
+                           <span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+             <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">curr_year</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; pop.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="p">(</span><span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">)]</span> <span class="o">/</span>
+                           <span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;T=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; pop.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="p">(</span><span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">S</span><span class="p">)]</span> <span class="o">/</span>
+                           <span class="n">omega_path_lev</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">S</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;T=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">S</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; pop.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Adj. SS pop.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Population distribution at points in time path&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age $s$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Pop. dist&#39;n $\omega_</span><span class="si">{s}</span><span class="s2">$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower left&#39;</span><span class="p">)</span>
+    <span class="c1"># Save or return figure</span>
+    <span class="k">if</span> <span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;PopDistPath&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+
+
+<span class="k">def</span> <span class="nf">gen_3Dscatters_hist</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create 3-D scatterplots and corresponding 3D histogram of ETR, MTRx,</span>
+<span class="sd">    and MTRy as functions of labor income and capital income with</span>
+<span class="sd">    truncated data in the income dimension</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (Pandas DataFrame): 11 variables with N observations of tax</span>
+<span class="sd">            rates</span>
+<span class="sd">        s (int): age of individual, &gt;= 21</span>
+<span class="sd">        t (int): year of analysis, &gt;= 2016</span>
+<span class="sd">        output_dir (str): output directory for saving plot files</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="kn">from</span> <span class="nn">ogusa.txfunc</span> <span class="kn">import</span> <span class="n">MAX_INC_GRAPH</span><span class="p">,</span> <span class="n">MIN_INC_GRAPH</span>
+    <span class="c1"># Truncate the data</span>
+    <span class="n">df_trnc</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_labinc&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">MIN_INC_GRAPH</span><span class="p">)</span> <span class="o">&amp;</span>
+                 <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_labinc&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">MAX_INC_GRAPH</span><span class="p">)</span> <span class="o">&amp;</span>
+                 <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_capinc&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">MIN_INC_GRAPH</span><span class="p">)</span> <span class="o">&amp;</span>
+                 <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_capinc&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">MAX_INC_GRAPH</span><span class="p">)]</span>
+    <span class="n">inc_lab</span> <span class="o">=</span> <span class="n">df_trnc</span><span class="p">[</span><span class="s1">&#39;total_labinc&#39;</span><span class="p">]</span>
+    <span class="n">inc_cap</span> <span class="o">=</span> <span class="n">df_trnc</span><span class="p">[</span><span class="s1">&#39;total_capinc&#39;</span><span class="p">]</span>
+    <span class="n">etr_data</span> <span class="o">=</span> <span class="n">df_trnc</span><span class="p">[</span><span class="s1">&#39;etr&#39;</span><span class="p">]</span>
+    <span class="n">mtrx_data</span> <span class="o">=</span> <span class="n">df_trnc</span><span class="p">[</span><span class="s1">&#39;mtr_labinc&#39;</span><span class="p">]</span>
+    <span class="n">mtry_data</span> <span class="o">=</span> <span class="n">df_trnc</span><span class="p">[</span><span class="s1">&#39;mtr_capinc&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Plot 3D scatterplot of ETR data</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">inc_lab</span><span class="p">,</span> <span class="n">inc_cap</span><span class="p">,</span> <span class="n">etr_data</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Total Labor Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Total Capital Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;ETR&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;ETR, Lab. Inc., and Cap. Inc., Age=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span>
+              <span class="s1">&#39;, Year=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ETR_age_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_Year_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_data.png&quot;</span><span class="p">)</span>
+    <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># Plot 3D histogram for all data</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">bin_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">hist</span><span class="p">,</span> <span class="n">xedges</span><span class="p">,</span> <span class="n">yedges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span><span class="n">inc_lab</span><span class="p">,</span> <span class="n">inc_cap</span><span class="p">,</span>
+                                          <span class="n">bins</span><span class="o">=</span><span class="n">bin_num</span><span class="p">)</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">hist</span> <span class="o">/</span> <span class="n">hist</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">x_midp</span> <span class="o">=</span> <span class="n">xedges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">xedges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xedges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">y_midp</span> <span class="o">=</span> <span class="n">yedges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">yedges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">yedges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xedges</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yedges</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ypos</span><span class="p">,</span> <span class="n">xpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">y_midp</span><span class="p">,</span> <span class="n">x_midp</span><span class="p">)</span>
+    <span class="n">xpos</span> <span class="o">=</span> <span class="n">xpos</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">ypos</span> <span class="o">=</span> <span class="n">ypos</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">zpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">xedges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xedges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">bin_num</span><span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="p">(</span><span class="n">yedges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">yedges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">bin_num</span><span class="p">)</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar3d</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">,</span> <span class="n">zpos</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">zsort</span><span class="o">=</span><span class="s1">&#39;average&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Total Labor Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Total Capital Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Percent of obs.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Histogram by lab. inc., and cap. inc., Age=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span>
+              <span class="s1">&#39;, Year=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Hist_Age_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_Year_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+    <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># Plot 3D scatterplot of MTRx data</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">inc_lab</span><span class="p">,</span> <span class="n">inc_cap</span><span class="p">,</span> <span class="n">mtrx_data</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Total Labor Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Total Capital Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Marginal Tax Rate, Labor Inc.)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;MTR Labor Income, Lab. Inc., and Cap. Inc., Age=&quot;</span>
+              <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, Year=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MTRx_Age_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_Year_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_data.png&quot;</span><span class="p">)</span>
+    <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># Plot 3D scatterplot of MTRy data</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">inc_lab</span><span class="p">,</span> <span class="n">inc_cap</span><span class="p">,</span> <span class="n">mtry_data</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Total Labor Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Total Capital Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Marginal Tax Rate (Capital Inc.)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;MTR Capital Income, Cap. Inc., and Cap. Inc., Age=&quot;</span> <span class="o">+</span>
+              <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, Year=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MTRy_Age_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_Year_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_data.png&quot;</span><span class="p">)</span>
+    <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># Garbage collection</span>
+    <span class="k">del</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_trnc</span><span class="p">,</span> <span class="n">inc_lab</span><span class="p">,</span> <span class="n">inc_cap</span><span class="p">,</span> <span class="n">etr_data</span><span class="p">,</span> <span class="n">mtrx_data</span><span class="p">,</span> <span class="n">mtry_data</span>
+
+
+<span class="k">def</span> <span class="nf">txfunc_graph</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">txrates</span><span class="p">,</span> <span class="n">rate_type</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span>
+                 <span class="n">get_tax_rates</span><span class="p">,</span> <span class="n">params_to_plot</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function creates a 3D plot of the fitted tax function against</span>
+<span class="sd">    the data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s (int): age of individual, &gt;= 21</span>
+<span class="sd">        t (int): year of analysis, &gt;= 2016</span>
+<span class="sd">        df (Pandas DataFrame): 11 variables with N observations of tax</span>
+<span class="sd">            rates</span>
+<span class="sd">        X (Pandas DataSeries): labor income</span>
+<span class="sd">        Y (Pandas DataSeries): capital income</span>
+<span class="sd">        Y (Pandas DataSeries): tax rates from the data</span>
+<span class="sd">        rate_type (str): type of tax rate: mtrx, mtry, etr</span>
+<span class="sd">        tax_func_type (str): functional form of tax functions</span>
+<span class="sd">        get_tax_rates (function): function to generate tax rates given</span>
+<span class="sd">            parameters</span>
+<span class="sd">        params_to_plot (Numpy Array): tax function parameters</span>
+<span class="sd">        output_dir (str): output directory for saving plot files</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cmap1</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;summer&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Make comparison plot with full income domains</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">txrates</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Total Labor Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Total Capital Income&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s1">&#39;etr&#39;</span><span class="p">:</span>
+        <span class="n">tx_label</span> <span class="o">=</span> <span class="s1">&#39;ETR&#39;</span>
+    <span class="k">elif</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s1">&#39;mtrx&#39;</span><span class="p">:</span>
+        <span class="n">tx_label</span> <span class="o">=</span> <span class="s1">&#39;MTRx&#39;</span>
+    <span class="k">elif</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s1">&#39;mtry&#39;</span><span class="p">:</span>
+        <span class="n">tx_label</span> <span class="o">=</span> <span class="s1">&#39;MTRy&#39;</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="n">tx_label</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">tx_label</span> <span class="o">+</span> <span class="s1">&#39; vs. Predicted &#39;</span> <span class="o">+</span> <span class="n">tx_label</span> <span class="o">+</span> <span class="s1">&#39;: Age=&#39;</span> <span class="o">+</span>
+              <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, Year=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+    <span class="n">gridpts</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">X_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">gridpts</span><span class="p">))</span>
+    <span class="n">Y_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">gridpts</span><span class="p">))</span>
+    <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">X_vec</span><span class="p">,</span> <span class="n">Y_vec</span><span class="p">)</span>
+    <span class="n">txrate_grid</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span><span class="n">params_to_plot</span><span class="p">,</span> <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">tax_func_type</span><span class="p">,</span> <span class="n">rate_type</span><span class="p">,</span>
+                                <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="n">txrate_grid</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap1</span><span class="p">,</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="n">tx_label</span> <span class="o">+</span> <span class="s1">&#39;_age_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_Year_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span>
+                <span class="s1">&#39;_vsPred.png&#39;</span><span class="p">)</span>
+    <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># Make comparison plot with truncated income domains</span>
+    <span class="n">df_trnc_gph</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_labinc&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span>
+                     <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_labinc&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">800000</span><span class="p">)</span> <span class="o">&amp;</span>
+                     <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_capinc&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span>
+                     <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_capinc&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">800000</span><span class="p">)]</span>
+    <span class="n">X_gph</span> <span class="o">=</span> <span class="n">df_trnc_gph</span><span class="p">[</span><span class="s1">&#39;total_labinc&#39;</span><span class="p">]</span>
+    <span class="n">Y_gph</span> <span class="o">=</span> <span class="n">df_trnc_gph</span><span class="p">[</span><span class="s1">&#39;total_capinc&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s1">&#39;etr&#39;</span><span class="p">:</span>
+        <span class="n">txrates_gph</span> <span class="o">=</span> <span class="n">df_trnc_gph</span><span class="p">[</span><span class="s1">&#39;etr&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s1">&#39;mtrx&#39;</span><span class="p">:</span>
+        <span class="n">txrates_gph</span> <span class="o">=</span> <span class="n">df_trnc_gph</span><span class="p">[</span><span class="s1">&#39;mtr_labinc&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s1">&#39;mtry&#39;</span><span class="p">:</span>
+        <span class="n">txrates_gph</span> <span class="o">=</span> <span class="n">df_trnc_gph</span><span class="p">[</span><span class="s1">&#39;mtr_capinc&#39;</span><span class="p">]</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_gph</span><span class="p">,</span> <span class="n">Y_gph</span><span class="p">,</span> <span class="n">txrates_gph</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Total Labor Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Total Capital Income&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="n">tx_label</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Truncated &#39;</span> <span class="o">+</span> <span class="n">tx_label</span> <span class="o">+</span> <span class="s1">&#39;, Lab. Inc., and Cap. &#39;</span> <span class="o">+</span>
+              <span class="s1">&#39;Inc., Age=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, Year=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+    <span class="n">gridpts</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">X_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">X_gph</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+                               <span class="n">gridpts</span><span class="p">))</span>
+    <span class="n">Y_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Y_gph</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+                               <span class="n">gridpts</span><span class="p">))</span>
+    <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">X_vec</span><span class="p">,</span> <span class="n">Y_vec</span><span class="p">)</span>
+    <span class="n">txrate_grid</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span>
+        <span class="n">params_to_plot</span><span class="p">,</span> <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span>
+        <span class="n">rate_type</span><span class="p">,</span> <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="n">txrate_grid</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap1</span><span class="p">,</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="n">tx_label</span> <span class="o">+</span> <span class="s1">&#39;trunc_age_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_Year_&#39;</span> <span class="o">+</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_vsPred.png&#39;</span><span class="p">)</span>
+    <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">txfunc_sse_plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">sse_mat</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">varstr</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span>
+                    <span class="nb">round</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot sum of squared errors of tax functions over age for each year</span>
+<span class="sd">    of budget window.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        age_vec (numpy array): vector of ages, length S</span>
+<span class="sd">        sse_mat (Numpy array): SSE for each estimated tax function,</span>
+<span class="sd">            size is SxBW</span>
+<span class="sd">        start_year (int): first year of budget window</span>
+<span class="sd">        varstr (str): name of tax function being evaluated</span>
+<span class="sd">        output_dir (str): path to save graph to</span>
+<span class="sd">        round (int): which round of sweeping for outliers (0, 1, or 2)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">BW</span> <span class="o">=</span> <span class="n">sse_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">BW</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">sse_mat</span><span class="p">[:,</span> <span class="n">y</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+    <span class="n">titletext</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Sum of Squared Errors by age and Tax Year&quot;</span> <span class="o">+</span>
+                 <span class="s2">&quot; minus outliers (Round &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;): &quot;</span> <span class="o">+</span> <span class="n">varstr</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">titletext</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;age $s$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;SSE&#39;</span><span class="p">)</span>
+    <span class="n">graphname</span> <span class="o">=</span> <span class="s2">&quot;SSE_&quot;</span> <span class="o">+</span> <span class="n">varstr</span> <span class="o">+</span> <span class="s2">&quot;_Round&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">)</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">graphname</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">plot_income_data</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">abil_midp</span><span class="p">,</span> <span class="n">abil_pcts</span><span class="p">,</span> <span class="n">emat</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">filesuffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot income profiles from models estimated from data.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function graphs ability matrix in 3D, 2D, log, and nolog</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ages (Numpy array) ages represented in sample, length S</span>
+<span class="sd">        abil_midp (Numpy array): midpoints of income percentile bins in</span>
+<span class="sd">            each ability group</span>
+<span class="sd">        abil_pcts (Numpy array): percent of population in each lifetime</span>
+<span class="sd">            income group, length J</span>
+<span class="sd">        emat (Numpy array): effective labor units by age and lifetime</span>
+<span class="sd">            income group, size SxJ</span>
+<span class="sd">        filesuffix (str): suffix to be added to plot files</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">abil_midp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">abil_mesh</span><span class="p">,</span> <span class="n">age_mesh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">abil_midp</span><span class="p">,</span> <span class="n">ages</span><span class="p">)</span>
+    <span class="n">cmap1</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;summer&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output_dir</span><span class="p">:</span>
+        <span class="c1"># Make sure that directory is created</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">J</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Plot of 2D, J=1 in levels</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">emat</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;ability_2D_lev&quot;</span> <span class="o">+</span> <span class="n">filesuffix</span>
+            <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="c1"># Plot of 2D, J=1 in logs</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">emat</span><span class="p">))</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;ability_2D_log&quot;</span> <span class="o">+</span> <span class="n">filesuffix</span>
+            <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Plot of 3D, J&gt;1 in levels</span>
+            <span class="n">fig10</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">ax10</span> <span class="o">=</span> <span class="n">fig10</span><span class="o">.</span><span class="n">gca</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+            <span class="n">ax10</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span>
+                <span class="n">age_mesh</span><span class="p">,</span> <span class="n">abil_mesh</span><span class="p">,</span> <span class="n">emat</span><span class="p">,</span> <span class="n">rstride</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">cmap</span><span class="o">=</span><span class="n">cmap1</span><span class="p">)</span>
+            <span class="n">ax10</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;age-$s$&#39;</span><span class="p">)</span>
+            <span class="n">ax10</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ability type -$j$&#39;</span><span class="p">)</span>
+            <span class="n">ax10</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ability $e_{j,s}$&#39;</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;ability_3D_lev&quot;</span> <span class="o">+</span> <span class="n">filesuffix</span>
+            <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="c1"># Plot of 3D, J&gt;1 in logs</span>
+            <span class="n">fig11</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">ax11</span> <span class="o">=</span> <span class="n">fig11</span><span class="o">.</span><span class="n">gca</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+            <span class="n">ax11</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span>
+                <span class="n">age_mesh</span><span class="p">,</span> <span class="n">abil_mesh</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">emat</span><span class="p">),</span> <span class="n">rstride</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">cmap</span><span class="o">=</span><span class="n">cmap1</span><span class="p">)</span>
+            <span class="n">ax11</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;age-$s$&#39;</span><span class="p">)</span>
+            <span class="n">ax11</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ability type -$j$&#39;</span><span class="p">)</span>
+            <span class="n">ax11</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;log ability $log(e_{j,s})$&#39;</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;ability_3D_log&quot;</span> <span class="o">+</span> <span class="n">filesuffix</span>
+            <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">J</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># Restricted because of line and marker types</span>
+                <span class="c1"># Plot of 2D lines from 3D version in logs</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+                <span class="n">linestyles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;-.&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="p">])</span>
+                <span class="n">markers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">])</span>
+                <span class="n">pct_lb</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">):</span>
+                    <span class="n">this_label</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">pct_lb</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot; - &quot;</span> <span class="o">+</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">pct_lb</span> <span class="o">+</span> <span class="mi">100</span><span class="o">*</span><span class="n">abil_pcts</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span><span class="p">)</span>
+                    <span class="n">pct_lb</span> <span class="o">+=</span> <span class="mi">100</span><span class="o">*</span><span class="n">abil_pcts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">emat</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]),</span> <span class="n">label</span><span class="o">=</span><span class="n">this_label</span><span class="p">,</span>
+                                <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyles</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">emat</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]),</span> <span class="n">label</span><span class="o">=</span><span class="n">this_label</span><span class="p">,</span>
+                                <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+                <span class="n">box</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="n">box</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">y0</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">height</span><span class="p">])</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;age-$s$&#39;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;log ability $log(e_{j,s})$&#39;</span><span class="p">)</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;ability_2D_log&quot;</span> <span class="o">+</span> <span class="n">filesuffix</span>
+                <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">J</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># Restricted because of line and marker types</span>
+            <span class="c1"># Plot of 2D lines from 3D version in logs</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+            <span class="n">linestyles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;-.&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="p">])</span>
+            <span class="n">markers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">])</span>
+            <span class="n">pct_lb</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">):</span>
+                <span class="n">this_label</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">pct_lb</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot; - &quot;</span> <span class="o">+</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">pct_lb</span> <span class="o">+</span> <span class="mi">100</span><span class="o">*</span><span class="n">abil_pcts</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span><span class="p">)</span>
+                <span class="n">pct_lb</span> <span class="o">+=</span> <span class="mi">100</span><span class="o">*</span><span class="n">abil_pcts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">emat</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]),</span> <span class="n">label</span><span class="o">=</span><span class="n">this_label</span><span class="p">,</span>
+                            <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyles</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">emat</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]),</span> <span class="n">label</span><span class="o">=</span><span class="n">this_label</span><span class="p">,</span>
+                            <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+            <span class="n">box</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="n">box</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">y0</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">height</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;age-$s$&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;log ability $log(e_{j,s})$&#39;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">ax</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jason DeBacker and Richard W. Evans.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

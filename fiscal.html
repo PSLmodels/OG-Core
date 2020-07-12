@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fiscal Functions &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Functions to Get Micro-data from Tax-Calculator" href="get_micro_data.html" />
@@ -35,8 +37,223 @@
   <div class="section" id="fiscal-functions">
 <span id="fiscal"></span><h1>Fiscal Functions<a class="headerlink" href="#fiscal-functions" title="Permalink to this headline">¶</a></h1>
 <p><strong>Government Budget Functions</strong></p>
-<div class="section" id="ogusa-fiscal">
-<h2>ogusa.fiscal<a class="headerlink" href="#ogusa-fiscal" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.fiscal">
+<span id="ogusa-fiscal"></span><h2>ogusa.fiscal<a class="headerlink" href="#module-ogusa.fiscal" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<p>Fiscal policy functions for unbalanced budgeting. In particular, some
+functions require time-path calculation.</p>
+<hr class="docutils" />
+<dl class="py function">
+<dt id="ogusa.fiscal.D_G_path">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">D_G_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_gov</span></em>, <em class="sig-param"><span class="n">dg_fixed_values</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/fiscal.html#D_G_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.D_G_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the time paths of debt and government spending</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  &amp;G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
+  &amp;\text{where}\quad g_{g,t} =
+    \begin{cases}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t &lt; T_{G1} \\
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}
+    \end{cases} \\
+  &amp;\quad\text{and}\quad g_{tr,t} = 1 \quad\forall t
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_gov</strong> (<em>Numpy array</em>) – interest rate on government debt over the
+time path</p></li>
+<li><p><strong>dg_fixed_values</strong> (<em>tuple</em>) – (Y, total_tax_revenue,
+agg_pension_outlays, TR, D0, G0) values of variables that
+are taken as given in the government budget constraint</p></li>
+<li><p><strong>Gbaseline</strong> (<em>Numpy array</em>) – government spending over the time path
+in the baseline equilibrium, used only if
+baseline_spending=True</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>fiscal variable path output:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>D (Numpy array): government debt over the time path</p></li>
+<li><p>G (Numpy array): government spending over the time path</p></li>
+<li><dl class="simple">
+<dt>D_d (Numpy array): domestic held government debt over the</dt><dd><p>time path</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>D_f (Numpy array): foreign held government debt over the</dt><dd><p>time path</p>
+</dd>
+</dl>
+</li>
+<li><p>new_borrowing_f: new borrowing from foreigners</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.fiscal.get_D_ss">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_D_ss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_gov</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/fiscal.html#get_D_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_D_ss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the steady-state values of government spending and debt</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+    \bar{D} = \alpha_D \bar{Y}\\
+    \bar{D_d} = \bar{D} - \bar{D}^{f}\\
+    \bar{D_f} = \zeta_{D}\bar{D} \\
+    \text{new borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
+    \bar{debt service} = \bar{r}_{gov}\bar{D} \\
+    \text{new foreign borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_gov</strong> (<em>scalar</em>) – steady-state interest rate on government debt</p></li>
+<li><p><strong>Y</strong> (<em>scalar</em>) – steady-state GDP</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>steady-state fiscal variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>D (scalar): steady-state government debt</p></li>
+<li><p>D_d (scalar): steady-state domestic held government debt</p></li>
+<li><p>D_f (scalar): steady-state foreign held government debt</p></li>
+<li><p>new_borrowing: steady-state new borrowing</p></li>
+<li><p>debt_service: steady-state debt service costs</p></li>
+<li><p>new_borrowing_f: steady-state borrowing from foreigners</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.fiscal.get_G_ss">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_G_ss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">total_tax_revenue</span></em>, <em class="sig-param"><span class="n">agg_pension_outlays</span></em>, <em class="sig-param"><span class="n">TR</span></em>, <em class="sig-param"><span class="n">new_borrowing</span></em>, <em class="sig-param"><span class="n">debt_service</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/fiscal.html#get_G_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the steady-state values of government spending.</p>
+<div class="math notranslate nohighlight">
+\[\bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>scalar</em>) – aggregate output</p></li>
+<li><p><strong>total_tax_revenue</strong> (<em>scalar</em>) – steady-state tax revenue</p></li>
+<li><p><strong>agg_pension_outlays</strong> (<em>scalar</em>) – steady-state pension outlays</p></li>
+<li><p><strong>TR</strong> (<em>scalar</em>) – steady-state transfer spending</p></li>
+<li><p><strong>new_borrowing</strong> (<em>scalar</em>) – steady-state amount of new borowing</p></li>
+<li><p><strong>debt_service</strong> (<em>scalar</em>) – steady-state debt service costs</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>steady-state government spending</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>G (tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.fiscal.get_TR">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_TR</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">TR</span></em>, <em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">total_tax_revenue</span></em>, <em class="sig-param"><span class="n">agg_pension_outlays</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/fiscal.html#get_TR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to compute aggregate transfers.  Note that this excludes
+transfer spending through the public pension system.</p>
+<dl>
+<dt>..math::</dt><dd><p>[
+TR^{‘}_{t}=
+begin{cases}</p>
+<blockquote>
+<div><p>Revenue,&amp; text{if balanced budget} \
+TR^{baseline}, &amp; text{if baseline spending}\
+alpha_{T,t}Y_{t},   &amp; text{otherwise}</p>
+</div></blockquote>
+<p>end{cases}
+]</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
+<li><p><strong>TR</strong> (<em>array_like</em>) – aggregate government transfers</p></li>
+<li><p><strong>G</strong> (<em>array_like</em>) – total government spending</p></li>
+<li><p><strong>total_tax_revenue</strong> (<em>array_like</em>) – total tax revenue net of
+government pension benefits</p></li>
+<li><p><strong>agg_pension_outlays</strong> (<em>array_like</em>) – total government pension
+outlays</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – whether doing SS or TP calculation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>new value of aggregate government transfers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>new_TR (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.fiscal.get_debt_service_f">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_debt_service_f</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_hh</span></em>, <em class="sig-param"><span class="n">D_f</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/fiscal.html#get_debt_service_f"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_debt_service_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to compute foreign debt service payments.</p>
+<dl class="simple">
+<dt>..math::</dt><dd><p>text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}</p>
+</dd>
+</dl>
+<p>Args:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>foreign debt service payment amount</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>debt_service_f (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.fiscal.get_r_gov">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_r_gov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/fiscal.html#get_r_gov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_r_gov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the interest rate on government debt</p>
+<div class="math notranslate nohighlight">
+\[r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – interest rate on private capital debt over the
+time path or in the steady state</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>interest rate on government debt over the</dt><dd><p>time path or in the steady-state</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>r_gov (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -119,7 +336,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

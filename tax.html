@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tax Functions &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tax Function Estimation Functions" href="txfunc.html" />
@@ -35,8 +37,320 @@
   <div class="section" id="tax-functions">
 <span id="tax"></span><h1>Tax Functions<a class="headerlink" href="#tax-functions" title="Permalink to this headline">¶</a></h1>
 <p><strong>Tax Functions</strong></p>
-<div class="section" id="ogusa-tax">
-<h2>ogusa.tax<a class="headerlink" href="#ogusa-tax" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.tax">
+<span id="ogusa-tax"></span><h2>ogusa.tax<a class="headerlink" href="#module-ogusa.tax" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions-for-taxes-in-the-steady-state-and-along-the-transition-path">
+<h3>Functions for taxes in the steady state and along the transition path.<a class="headerlink" href="#functions-for-taxes-in-the-steady-state-and-along-the-transition-path" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="ogusa.tax.ETR_income">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">ETR_income</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#ETR_income"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.ETR_income" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates effective personal income tax rate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to
+dollars</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – effective tax rate function parameters</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>effective tax rate on total income</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tau (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.ETR_wealth">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">ETR_wealth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">h_wealth</span></em>, <em class="sig-param"><span class="n">m_wealth</span></em>, <em class="sig-param"><span class="n">p_wealth</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#ETR_wealth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.ETR_wealth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the effective tax rate on wealth.</p>
+<div class="math notranslate nohighlight">
+\[T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings</p></li>
+<li><p><strong>h_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
+<li><p><strong>p_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
+<li><p><strong>m_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>effective tax rate on wealth, size = SxJ</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tau_w (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.MTR_income">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">MTR_income</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">mtr_capital</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">mtr_params</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#MTR_income"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.MTR_income" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the marginal tax rate on labor income for households.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to
+dollars</p></li>
+<li><p><strong>mtr_capital</strong> (<em>bool</em>) – whether to compute the marginal tax rate on
+capital income or labor income</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – effective tax rate function parameters</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>marginal tax rate on income source</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tau (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.MTR_wealth">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">MTR_wealth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">h_wealth</span></em>, <em class="sig-param"><span class="n">m_wealth</span></em>, <em class="sig-param"><span class="n">p_wealth</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#MTR_wealth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.MTR_wealth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the marginal tax rate on wealth from the wealth tax.</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} = \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings</p></li>
+<li><p><strong>h_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
+<li><p><strong>p_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
+<li><p><strong>m_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>marginal tax rate on wealth, size = SxJ</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tau_prime (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.bequest_tax_liab">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">bequest_tax_liab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#bequest_tax_liab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.bequest_tax_liab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate liability due from taxes on bequests for each household.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – real interest rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – bequests received</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bequest tax liability for each household</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>T_BQ (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.get_biz_tax">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">get_biz_tax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#get_biz_tax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.get_biz_tax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds total business income tax revenue.</p>
+<div class="math notranslate nohighlight">
+\[R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) - \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – real interest rate</p></li>
+<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
+<li><p><strong>L</strong> (<em>array_like</em>) – aggregate labor demand</p></li>
+<li><p><strong>K</strong> (<em>array_like</em>) – aggregate capital demand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>aggregate business tax revenue</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>business_revenue (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.income_tax_liab">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">income_tax_liab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#income_tax_liab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.income_tax_liab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate income and payroll tax liability for each household</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to
+dollars</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – effective tax rate function parameters</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>total income and payroll taxes paid for each</dt><dd><p>household</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>T_I (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.net_taxes">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">net_taxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">tr</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#net_taxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.net_taxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate net taxes paid for each household.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – bequests received</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to
+dollars</p></li>
+<li><p><strong>tr</strong> (<em>Numpy array</em>) – government transfers to the household</p></li>
+<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate value for
+lifetime income group j</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>shift</strong> (<em>bool</em>) – whether computing for periods 0–s or 1–(s+1),
+=True for 1–(s+1)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – effective tax rate function parameters</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>net taxes paid for each household</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>net_tax (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.pension_amount">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">pension_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#pension_amount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.pension_amount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate public pension benefit amounts for each household.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
+<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate value for
+lifetime income group j</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>shift</strong> (<em>bool</em>) – whether computing for periods 0–s or 1–(s+1),
+=True for 1–(s+1)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pension amount for each household</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pension (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.replacement_rate_vals">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">replacement_rate_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nssmat</span></em>, <em class="sig-param"><span class="n">wss</span></em>, <em class="sig-param"><span class="n">factor_ss</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#replacement_rate_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.replacement_rate_vals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates replacement rate values for the social security system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nssmat</strong> (<em>Numpy array</em>) – initial guess at labor supply, size = SxJ</p></li>
+<li><p><strong>new_w</strong> (<em>scalar</em>) – steady state real wage rate</p></li>
+<li><p><strong>factor_ss</strong> (<em>scalar</em>) – scaling factor converting model units to
+dollars</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>social security replacement rate value for</dt><dd><p>lifetime income group j</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>theta (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.tax.wealth_tax_liab">
+<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">wealth_tax_liab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/tax.html#wealth_tax_liab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.wealth_tax_liab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate wealth tax liability for each household.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – real interest rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>wealth tax liability for each household</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>T_W (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 </div>
 
@@ -119,7 +433,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

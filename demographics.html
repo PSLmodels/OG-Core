@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demographics Functions &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Elliptical Utility Function Estimation Functions" href="elliptical_u_est.html" />
@@ -35,8 +37,211 @@
   <div class="section" id="demographics-functions">
 <span id="demographics"></span><h1>Demographics Functions<a class="headerlink" href="#demographics-functions" title="Permalink to this headline">¶</a></h1>
 <p><strong>Demographics</strong></p>
-<div class="section" id="ogusa-demographics">
-<h2>ogusa.demographics<a class="headerlink" href="#ogusa-demographics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.demographics">
+<span id="ogusa-demographics"></span><h2>ogusa.demographics<a class="headerlink" href="#module-ogusa.demographics" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<dl class="py function">
+<dt id="ogusa.demographics.get_fert">
+<code class="sig-prename descclassname">ogusa.demographics.</code><code class="sig-name descname">get_fert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">totpers</span></em>, <em class="sig-param"><span class="n">min_yr</span></em>, <em class="sig-param"><span class="n">max_yr</span></em>, <em class="sig-param"><span class="n">graph</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/demographics.html#get_fert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.demographics.get_fert" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates a vector of fertility rates by model period
+age that corresponds to the fertility rate data by age in years
+(Source: National Vital Statistics Reports, Volume 64, Number 1,
+January 15, 2015, Table 3, final 2013 data
+<a class="reference external" href="http://www.cdc.gov/nchs/data/nvsr/nvsr64/nvsr64_01.pdf">http://www.cdc.gov/nchs/data/nvsr/nvsr64/nvsr64_01.pdf</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
+<li><p><strong>min_yr</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_yr</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4</p></li>
+<li><p><strong>graph</strong> (<em>bool</em>) – =True if want graphical output</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>fertility rates for each model period</dt><dd><p>of life</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fert_rates (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.demographics.get_imm_resid">
+<code class="sig-prename descclassname">ogusa.demographics.</code><code class="sig-name descname">get_imm_resid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">totpers</span></em>, <em class="sig-param"><span class="n">min_yr</span></em>, <em class="sig-param"><span class="n">max_yr</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/demographics.html#get_imm_resid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.demographics.get_imm_resid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate immigration rates by age as a residual given population
+levels in different periods, then output average calculated
+immigration rate. We have to replace the first mortality rate in
+this function in order to adjust the first implied immigration rate
+(Source: Population data come from Annual Estimates of the Resident
+Population by Single Year of Age and Sex: April 1, 2010 to July 1,
+2013 (Both sexes) National Characteristics, Vintage 2013, US Census
+Bureau,
+<a class="reference external" href="http://www.census.gov/popest/data/national/asrh/2013/index.html">http://www.census.gov/popest/data/national/asrh/2013/index.html</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
+<li><p><strong>min_yr</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_yr</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4</p></li>
+<li><p><strong>graph</strong> (<em>bool</em>) – =True if want graphical output</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>immigration rates that correspond to</dt><dd><p>each period of life, length E+S</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>imm_rates (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.demographics.get_mort">
+<code class="sig-prename descclassname">ogusa.demographics.</code><code class="sig-name descname">get_mort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">totpers</span></em>, <em class="sig-param"><span class="n">min_yr</span></em>, <em class="sig-param"><span class="n">max_yr</span></em>, <em class="sig-param"><span class="n">graph</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/demographics.html#get_mort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.demographics.get_mort" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates a vector of mortality rates by model period
+age.
+(Source: Male and Female death probabilities Actuarial Life table,
+2011 Social Security Administration,
+<a class="reference external" href="http://www.ssa.gov/oact/STATS/table4c6.html">http://www.ssa.gov/oact/STATS/table4c6.html</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
+<li><p><strong>min_yr</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_yr</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4</p></li>
+<li><p><strong>graph</strong> (<em>bool</em>) – =True if want graphical output</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>mort_rates (Numpy array) mortality rates that correspond to each</dt><dd><p>period of life</p>
+</dd>
+<dt>infmort_rate (scalar): infant mortality rate from 2015 U.S. CIA</dt><dd><p>World Factbook</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.demographics.get_pop_objs">
+<code class="sig-prename descclassname">ogusa.demographics.</code><code class="sig-name descname">get_pop_objs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">E</span></em>, <em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">T</span></em>, <em class="sig-param"><span class="n">min_yr</span></em>, <em class="sig-param"><span class="n">max_yr</span></em>, <em class="sig-param"><span class="n">curr_year</span></em>, <em class="sig-param"><span class="n">GraphDiag</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/demographics.html#get_pop_objs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.demographics.get_pop_objs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function produces the demographics objects to be used in the
+OG-USA model package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>E</strong> (<em>int</em>) – number of model periods in which agent is not
+economically active, &gt;= 1</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of model periods in which agent is economically
+active, &gt;= 3</p></li>
+<li><p><strong>T</strong> (<em>int</em>) – number of periods to be simulated in TPI, &gt; 2*S</p></li>
+<li><p><strong>min_yr</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_yr</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4</p></li>
+<li><p><strong>curr_year</strong> (<em>int</em>) – current year for which analysis will begin,
+&gt;= 2016</p></li>
+<li><p><strong>GraphDiag</strong> (<em>bool</em>) – =True if want graphical output and printed
+diagnostics</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>omega_path_S (Numpy array), time path of the population</dt><dd><p>distribution from the current state to the steady-state,
+size T+S x S</p>
+</dd>
+</dl>
+<p>g_n_SS (scalar): steady-state population growth rate
+omega_SS (Numpy array): normalized steady-state population</p>
+<blockquote>
+<div><p>distribution, length S</p>
+</div></blockquote>
+<dl class="simple">
+<dt>surv_rates (Numpy array): survival rates that correspond to</dt><dd><p>each model period of life, lenght S</p>
+</dd>
+<dt>mort_rates (Numpy array): mortality rates that correspond to</dt><dd><p>each model period of life, length S</p>
+</dd>
+<dt>g_n_path (Numpy array): population growth rates over the time</dt><dd><p>path, length T + S</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.demographics.immsolve">
+<code class="sig-prename descclassname">ogusa.demographics.</code><code class="sig-name descname">immsolve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">imm_rates</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/demographics.html#immsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.demographics.immsolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates a vector of errors representing the
+difference in two consecutive periods stationary population
+distributions. This vector of differences is the zero-function
+objective used to solve for the immigration rates vector, similar to
+the original immigration rates vector from get_imm_resid(), that
+sets the steady-state population distribution by age equal to the
+population distribution in period int(1.5*S)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>imm_rates</strong> (<em>Numpy array</em>) – immigration rates that correspond to
+each period of life, length E+S</p></li>
+<li><p><strong>args</strong> (<em>tuple</em>) – (fert_rates, mort_rates, infmort_rate, omega_cur,
+g_n_SS)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>difference between omega_new and</dt><dd><p>omega_cur_pct, length E+S</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>omega_errs (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.demographics.pop_rebin">
+<code class="sig-prename descclassname">ogusa.demographics.</code><code class="sig-name descname">pop_rebin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">curr_pop_dist</span></em>, <em class="sig-param"><span class="n">totpers_new</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/demographics.html#pop_rebin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.demographics.pop_rebin" title="Permalink to this definition">¶</a></dt>
+<dd><p>For cases in which totpers (E+S) is less than the number of periods
+in the population distribution data, this function calculates a new
+population distribution vector with totpers (E+S) elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>curr_pop_dist</strong> (<em>Numpy array</em>) – population distribution over N
+periods</p></li>
+<li><p><strong>totpers_new</strong> (<em>int</em>) – number of periods to which we are
+transforming the population distribution, &gt;= 3</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>new population distribution over</dt><dd><p>totpers (E+S) periods that approximates curr_pop_dist</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>curr_pop_new (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -119,7 +324,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

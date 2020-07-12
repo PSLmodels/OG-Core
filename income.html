@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Income Processes Functions &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="OG-USA Output Plotting Functions" href="output_plots.html" />
@@ -35,8 +37,268 @@
   <div class="section" id="income-processes-functions">
 <span id="income"></span><h1>Income Processes Functions<a class="headerlink" href="#income-processes-functions" title="Permalink to this headline">¶</a></h1>
 <p><strong>Income Processes Functions</strong></p>
-<div class="section" id="ogusa-income">
-<h2>ogusa.income<a class="headerlink" href="#ogusa-income" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.income">
+<span id="ogusa-income"></span><h2>ogusa.income<a class="headerlink" href="#module-ogusa.income" title="Permalink to this headline">¶</a></h2>
+<p>percentiles, as it uses fitted polynomials to those percentiles.
+For a more generic version, see income_nopoly.py.
+————————————————————————</p>
+<dl class="py function">
+<dt id="ogusa.income.arc_error">
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arc_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">abc_vals</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/income.html#arc_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arc_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a vector of errors in the three criteria on
+which the arctan function is fit to predict extrapolated ability in
+ages 81 to 100.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="p">)</span> <span class="n">The</span> <span class="n">arctan</span> <span class="n">function</span> <span class="n">value</span> <span class="n">at</span> <span class="n">age</span> <span class="mi">80</span> <span class="n">must</span> <span class="n">match</span> <span class="n">the</span> <span class="n">estimated</span>
+   <span class="n">original</span> <span class="n">function</span> <span class="n">value</span> <span class="n">at</span> <span class="n">age</span> <span class="mf">80.</span>
+<span class="mi">2</span><span class="p">)</span> <span class="n">The</span> <span class="n">arctan</span> <span class="n">function</span> <span class="n">slope</span> <span class="n">at</span> <span class="n">age</span> <span class="mi">80</span> <span class="n">must</span> <span class="n">match</span> <span class="n">the</span> <span class="n">estimated</span>
+   <span class="n">original</span> <span class="n">function</span> <span class="n">slope</span> <span class="n">at</span> <span class="n">age</span> <span class="mf">80.</span>
+<span class="mi">3</span><span class="p">)</span> <span class="n">The</span> <span class="n">level</span> <span class="n">of</span> <span class="n">ability</span> <span class="n">at</span> <span class="n">age</span> <span class="mi">100</span> <span class="n">must</span> <span class="n">be</span> <span class="n">a</span> <span class="n">given</span> <span class="n">fraction</span>
+   <span class="p">(</span><span class="n">abil_deprec</span><span class="p">)</span> <span class="n">below</span> <span class="n">the</span> <span class="n">ability</span> <span class="n">level</span> <span class="n">at</span> <span class="n">age</span> <span class="mf">80.</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abc_vals</strong> (<em>tuple</em>) – <p>contains (a,b,c)</p>
+<ul>
+<li><p>a (scalar): scale parameter for arctan function</p></li>
+<li><p>b (scalar): curvature parameter for arctan function</p></li>
+<li><p>c (scalar): shift parameter for arctan function</p></li>
+</ul>
+</p></li>
+<li><p><strong>params</strong> (<em>tuple</em>) – <p>contains (first_point, coef1, coef2, coef3,
+abil_deprec)</p>
+<ul>
+<li><p>first_point (scalar): ability level at age 80, &gt; 0</p></li>
+<li><dl class="simple">
+<dt>coef1 (scalar): coefficient in log ability equation on</dt><dd><p>linear term in age</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>coef2 (scalar): coefficient in log ability equation on</dt><dd><p>quadratic term in age</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>coef3 (scalar): coefficient in log ability equation on</dt><dd><p>cubic term in age</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>abil_deprec (scalar): ability depreciation rate between</dt><dd><p>ages 80 and 100, in (0, 1).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>errors ([error1, error2, error3])</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>error1 (scalar): error between ability level at age 80</dt><dd><p>from original function minus the predicted ability at
+age 80 from the arctan function given a, b, and c</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>error2 (scalar): error between the slope of the original</dt><dd><p>function at age 80 minus the slope of the arctan
+function at age 80 given a, b, and c</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>error3 (scalar): error between the ability level at age</dt><dd><p>100 predicted by the original model value times
+abil_deprec minus the ability predicted by the arctan
+function at age 100 given a, b, and c</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>error_vec (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.income.arctan_deriv_func">
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_deriv_func</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xvals</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">c</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/income.html#arctan_deriv_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_deriv_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates predicted derivatives of arctan function
+given data (xvals) and parameters a, b, and c. The functional form
+of the derivative of the function is the following:</p>
+<div class="math notranslate nohighlight">
+\[y = - (a * b) / (\pi * (1 + (b * xvals + c)^2))\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xvals</strong> (<em>Numpy array</em>) – data inputs to arctan derivative function</p></li>
+<li><p><strong>a</strong> (<em>scalar</em>) – scale parameter for arctan function</p></li>
+<li><p><strong>b</strong> (<em>scalar</em>) – curvature parameter for arctan function</p></li>
+<li><p><strong>c</strong> (<em>scalar</em>) – shift parameter for arctan function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>predicted values (output) of arctan</dt><dd><p>derivative function</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>yvals (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.income.arctan_fit">
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">first_point</span></em>, <em class="sig-param"><span class="n">coef1</span></em>, <em class="sig-param"><span class="n">coef2</span></em>, <em class="sig-param"><span class="n">coef3</span></em>, <em class="sig-param"><span class="n">abil_deprec</span></em>, <em class="sig-param"><span class="n">init_guesses</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/income.html#arctan_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function fits an arctan function to the last 20 years of the
+ability levels of a particular ability group to extrapolate
+abilities by trying to match the slope in the 80th year and the
+ability depreciation rate between years 80 and 100.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>first_point</strong> (<em>scalar</em>) – ability level at age 80, &gt; 0</p></li>
+<li><p><strong>coef1</strong> (<em>scalar</em>) – coefficient in log ability equation on linear
+term in age</p></li>
+<li><p><strong>coef2</strong> (<em>scalar</em>) – coefficient in log ability equation on
+quadratic term in age</p></li>
+<li><p><strong>coef3</strong> (<em>scalar</em>) – coefficient in log ability equation on cubic
+term in age</p></li>
+<li><p><strong>abil_deprec</strong> (<em>scalar</em>) – ability depreciation rate between
+ages 80 and 100, in (0, 1)</p></li>
+<li><p><strong>init_guesses</strong> (<em>Numpy array</em>) – initial guesses</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>extrapolated ability levels for ages</dt><dd><p>81 to 100, length 20</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>abil_last (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.income.arctan_func">
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_func</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xvals</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">c</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/income.html#arctan_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates predicted ability levels given data (xvals)
+and parameters a, b, and c, from the following arctan function:</p>
+<div class="math notranslate nohighlight">
+\[y = (-a / \pi) * \arctan(b * x + c) + (a / 2)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xvals</strong> (<em>Numpy array</em>) – data inputs to arctan function</p></li>
+<li><p><strong>a</strong> (<em>scalar</em>) – scale parameter for arctan function</p></li>
+<li><p><strong>b</strong> (<em>scalar</em>) – curvature parameter for arctan function</p></li>
+<li><p><strong>c</strong> (<em>scalar</em>) – shift parameter for arctan function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>predicted values (output) of arctan</dt><dd><p>function</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>yvals (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.income.get_e_interp">
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">get_e_interp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">age_wgts</span></em>, <em class="sig-param"><span class="n">age_wgts_80</span></em>, <em class="sig-param"><span class="n">abil_wgts</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/income.html#get_e_interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.get_e_interp" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes a source matrix of lifetime earnings profiles
+(abilities, emat) of size (80, 7), where 80 is the number of ages
+and 7 is the number of ability types in the source matrix, and
+interpolates new values of a new S x J sized matrix of abilities
+using linear interpolation. [NOTE: For this application, cubic
+spline interpolation introduces too much curvature.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>S</strong> (<em>int</em>) – number of ages to interpolate. This method assumes that
+ages are evenly spaced between the beginning of the 21st
+year and the end of the 100th year, &gt;= 3</p></li>
+<li><p><strong>age_wgts</strong> (<em>Numpy array</em>) – distribution of population in each age
+for the interpolated ages, length S</p></li>
+<li><p><strong>age_wgts_80</strong> (<em>Numpy array</em>) – percent of population in each
+one-year age from 21 to 100, length 80</p></li>
+<li><p><strong>abil_wgts</strong> (<em>Numpy array</em>) – distribution of population in each
+ability group, length J</p></li>
+<li><p><strong>plot</strong> (<em>bool</em>) – if True, creates plots of emat_orig and the new
+interpolated emat_new</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>interpolated ability matrix scaled</dt><dd><p>so that population-weighted average is 1, size SxJ</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>emat_new_scaled (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.income.get_e_orig">
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">get_e_orig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">age_wgts</span></em>, <em class="sig-param"><span class="n">abil_wgts</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/income.html#get_e_orig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.get_e_orig" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates the 80 x 7 matrix of lifetime earnings
+ability profiles, corresponding to annual ages from 21 to 100 and to
+paths based on income percentiles 0-25, 25-50, 50-70, 70-80, 80-90,
+90-99, 99-100. The ergodic population distribution is an input in
+order to rescale the paths so that the weighted average equals 1.</p>
+<p>The data come from the following file:</p>
+<blockquote>
+<div><p><cite>data/ability/FR_wage_profile_tables.xlsx</cite></p>
+</div></blockquote>
+<p>The polynomials are of the form</p>
+<div class="math notranslate nohighlight">
+\[\ln(abil) = \alpha + \beta_{1}\text{age} + \beta_{2}\text{age}^2
+    + \beta_{3}\text{age}^3\]</div>
+<p>Values come from regression analysis using IRS CWHS with hours
+imputed from the CPS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>age_wgts</strong> (<em>Numpy array</em>) – ergodic age distribution, length S</p></li>
+<li><p><strong>abil_wgts</strong> (<em>Numpy array</em>) – population weights in each lifetime
+earnings group, length J</p></li>
+<li><p><strong>plot</strong> (<em>bool</em>) – if True, generates 3D plots of ability paths</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>= lifetime ability profiles scaled</dt><dd><p>so that population-weighted average is 1, size SxJ</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>e_orig_scaled (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -119,7 +381,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

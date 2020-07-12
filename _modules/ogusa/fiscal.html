@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogusa.fiscal &#8212; OG-USA 0.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ogusa.fiscal</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+
+<span class="sd">Fiscal policy functions for unbalanced budgeting. In particular, some</span>
+<span class="sd">functions require time-path calculation.</span>
+
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Packages</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">    Functions</span>
+<span class="sd">------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="D_G_path"><a class="viewcode-back" href="../../fiscal.html#ogusa.fiscal.D_G_path">[docs]</a><span class="k">def</span> <span class="nf">D_G_path</span><span class="p">(</span><span class="n">r_gov</span><span class="p">,</span> <span class="n">dg_fixed_values</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the time paths of debt and government spending</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \begin{split}</span>
+<span class="sd">        &amp;G_t = g_{g,t}\:\alpha_{g}\: Y_t \\</span>
+<span class="sd">        &amp;\text{where}\quad g_{g,t} =</span>
+<span class="sd">          \begin{cases}</span>
+<span class="sd">            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t &lt; T_{G1} \\</span>
+<span class="sd">            \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\</span>
+<span class="sd">            \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}</span>
+<span class="sd">          \end{cases} \\</span>
+<span class="sd">        &amp;\quad\text{and}\quad g_{tr,t} = 1 \quad\forall t</span>
+<span class="sd">      \end{split}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r_gov (Numpy array): interest rate on government debt over the</span>
+<span class="sd">            time path</span>
+<span class="sd">        dg_fixed_values (tuple): (Y, total_tax_revenue,</span>
+<span class="sd">            agg_pension_outlays, TR, D0, G0) values of variables that</span>
+<span class="sd">            are taken as given in the government budget constraint</span>
+<span class="sd">        Gbaseline (Numpy array): government spending over the time path</span>
+<span class="sd">            in the baseline equilibrium, used only if</span>
+<span class="sd">            baseline_spending=True</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): fiscal variable path output:</span>
+
+<span class="sd">            * D (Numpy array): government debt over the time path</span>
+<span class="sd">            * G (Numpy array): government spending over the time path</span>
+<span class="sd">            * D_d (Numpy array): domestic held government debt over the</span>
+<span class="sd">                time path</span>
+<span class="sd">            * D_f (Numpy array): foreign held government debt over the</span>
+<span class="sd">                time path</span>
+<span class="sd">            * new_borrowing_f: new borrowing from foreigners</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">total_tax_revenue</span><span class="p">,</span> <span class="n">agg_pension_outlays</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">Gbaseline</span><span class="p">,</span>
+     <span class="n">D0_baseline</span><span class="p">)</span> <span class="o">=</span> <span class="n">dg_fixed_values</span>
+
+    <span class="n">growth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span>
+
+    <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
+        <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_debt_ratio</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">D0_baseline</span>
+
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">Gbaseline</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">D_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">D_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">new_borrowing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">debt_service</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">new_borrowing_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span>
+                                   <span class="n">G</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span>
+                                   <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
+                                   <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">tG2</span><span class="p">):</span>
+                <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">growth</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho_G</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span>
+                                     <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">rho_G</span><span class="p">)</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">-</span>
+                    <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span>
+                    <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">tG2</span><span class="p">:</span>
+                <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">growth</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">-</span>
+                    <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span>
+                    <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+            <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># in final period, growth rate has stabilized, so we can replace</span>
+        <span class="c1"># growth[t+1] with growth[t]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">G</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                               <span class="o">+</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
+                               <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+        <span class="n">D</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                                   <span class="o">+</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span>
+                                   <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+        <span class="n">D_ratio_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">D</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Maximum debt ratio: &#39;</span><span class="p">,</span> <span class="n">D_ratio_max</span><span class="p">)</span>
+
+        <span class="c1"># Find foreign and domestic debt holding</span>
+        <span class="c1"># Fix initial amount of foreign debt holding</span>
+        <span class="n">D_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">D_f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_foreign_debt_ratio</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
+            <span class="n">D_f</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">D_f</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span>
+                          <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta_D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
+                                          <span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))))</span>
+        <span class="n">D_d</span> <span class="o">=</span> <span class="n">D</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">-</span> <span class="n">D_f</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">new_borrowing</span> <span class="o">=</span> <span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span>
+                         <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">D</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
+        <span class="n">debt_service</span> <span class="o">=</span> <span class="n">r_gov</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">D</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">new_borrowing_f</span> <span class="o">=</span> <span class="p">(</span><span class="n">D_f</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span>
+                           <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">D_f</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">D_d</span><span class="p">,</span> <span class="n">D_f</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">new_borrowing</span><span class="p">,</span> <span class="n">debt_service</span><span class="p">,</span>
+            <span class="n">new_borrowing_f</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_D_ss"><a class="viewcode-back" href="../../fiscal.html#ogusa.fiscal.get_D_ss">[docs]</a><span class="k">def</span> <span class="nf">get_D_ss</span><span class="p">(</span><span class="n">r_gov</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the steady-state values of government spending and debt</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \begin{split}</span>
+<span class="sd">            \bar{D} = \alpha_D \bar{Y}\\</span>
+<span class="sd">            \bar{D_d} = \bar{D} - \bar{D}^{f}\\</span>
+<span class="sd">            \bar{D_f} = \zeta_{D}\bar{D} \\</span>
+<span class="sd">            \text{new borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\</span>
+<span class="sd">            \bar{debt service} = \bar{r}_{gov}\bar{D} \\</span>
+<span class="sd">            \text{new foreign borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\</span>
+<span class="sd">        \end{split}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r_gov (scalar): steady-state interest rate on government debt</span>
+<span class="sd">        Y (scalar): steady-state GDP</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): steady-state fiscal variables:</span>
+
+<span class="sd">            * D (scalar): steady-state government debt</span>
+<span class="sd">            * D_d (scalar): steady-state domestic held government debt</span>
+<span class="sd">            * D_f (scalar): steady-state foreign held government debt</span>
+<span class="sd">            * new_borrowing: steady-state new borrowing</span>
+<span class="sd">            * debt_service: steady-state debt service costs</span>
+<span class="sd">            * new_borrowing_f: steady-state borrowing from foreigners</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span>
+    <span class="n">debt_service</span> <span class="o">=</span> <span class="n">r_gov</span> <span class="o">*</span> <span class="n">D</span>
+    <span class="n">new_borrowing</span> <span class="o">=</span> <span class="n">D</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">D_f</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">zeta_D</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">D</span>
+    <span class="n">D_d</span> <span class="o">=</span> <span class="n">D</span> <span class="o">-</span> <span class="n">D_f</span>
+    <span class="n">new_borrowing_f</span> <span class="o">=</span> <span class="n">D_f</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">D</span><span class="p">,</span> <span class="n">D_d</span><span class="p">,</span> <span class="n">D_f</span><span class="p">,</span> <span class="n">new_borrowing</span><span class="p">,</span> <span class="n">debt_service</span><span class="p">,</span> <span class="n">new_borrowing_f</span></div>
+
+
+<div class="viewcode-block" id="get_G_ss"><a class="viewcode-back" href="../../fiscal.html#ogusa.fiscal.get_G_ss">[docs]</a><span class="k">def</span> <span class="nf">get_G_ss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">total_tax_revenue</span><span class="p">,</span> <span class="n">agg_pension_outlays</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span>
+             <span class="n">new_borrowing</span><span class="p">,</span> <span class="n">debt_service</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the steady-state values of government spending.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">            \bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        Y (scalar): aggregate output</span>
+<span class="sd">        total_tax_revenue (scalar): steady-state tax revenue</span>
+<span class="sd">        agg_pension_outlays (scalar): steady-state pension outlays</span>
+<span class="sd">        TR (scalar): steady-state transfer spending</span>
+<span class="sd">        new_borrowing (scalar): steady-state amount of new borowing</span>
+<span class="sd">        debt_service (scalar): steady-state debt service costs</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        G (tuple): steady-state government spending</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tax_revenue</span> <span class="o">+</span> <span class="n">new_borrowing</span> <span class="o">-</span>
+             <span class="p">(</span><span class="n">agg_pension_outlays</span> <span class="o">+</span> <span class="n">TR</span> <span class="o">+</span> <span class="n">debt_service</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="get_debt_service_f"><a class="viewcode-back" href="../../fiscal.html#ogusa.fiscal.get_debt_service_f">[docs]</a><span class="k">def</span> <span class="nf">get_debt_service_f</span><span class="p">(</span><span class="n">r_hh</span><span class="p">,</span> <span class="n">D_f</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function to compute foreign debt service payments.</span>
+
+<span class="sd">    ..math::</span>
+<span class="sd">        \text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        debt_service_f (array_like): foreign debt service payment amount</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">debt_service_f</span> <span class="o">=</span> <span class="n">r_hh</span> <span class="o">*</span> <span class="n">D_f</span>
+
+    <span class="k">return</span> <span class="n">debt_service_f</span></div>
+
+
+<div class="viewcode-block" id="get_TR"><a class="viewcode-back" href="../../fiscal.html#ogusa.fiscal.get_TR">[docs]</a><span class="k">def</span> <span class="nf">get_TR</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">total_tax_revenue</span><span class="p">,</span> <span class="n">agg_pension_outlays</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function to compute aggregate transfers.  Note that this excludes</span>
+<span class="sd">    transfer spending through the public pension system.</span>
+
+<span class="sd">    ..math::</span>
+<span class="sd">        \[</span>
+<span class="sd">        TR^{&#39;}_{t}=</span>
+<span class="sd">        \begin{cases}</span>
+<span class="sd">            Revenue,&amp; \text{if balanced budget} \\</span>
+<span class="sd">            TR^{baseline}, &amp; \text{if baseline spending}\\</span>
+<span class="sd">            \alpha_{T,t}Y_{t},   &amp; \text{otherwise}</span>
+<span class="sd">        \end{cases}</span>
+<span class="sd">        \]</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        Y (array_like): aggregate output</span>
+<span class="sd">        TR (array_like): aggregate government transfers</span>
+<span class="sd">        G (array_like): total government spending</span>
+<span class="sd">        total_tax_revenue (array_like): total tax revenue net of</span>
+<span class="sd">            government pension benefits</span>
+<span class="sd">        agg_pension_outlays (array_like): total government pension</span>
+<span class="sd">            outlays</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+<span class="sd">        method (str): whether doing SS or TP calculation</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        new_TR (array_like): new value of aggregate government transfers</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
+        <span class="n">new_TR</span> <span class="o">=</span> <span class="n">total_tax_revenue</span> <span class="o">-</span> <span class="n">agg_pension_outlays</span> <span class="o">-</span> <span class="n">G</span>
+    <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
+        <span class="n">new_TR</span> <span class="o">=</span> <span class="n">TR</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+            <span class="n">new_TR</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_T</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># time path case</span>
+            <span class="n">new_TR</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_T</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">new_TR</span></div>
+
+
+<div class="viewcode-block" id="get_r_gov"><a class="viewcode-back" href="../../fiscal.html#ogusa.fiscal.get_r_gov">[docs]</a><span class="k">def</span> <span class="nf">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Determine the interest rate on government debt</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): interest rate on private capital debt over the</span>
+<span class="sd">            time path or in the steady state</span>
+<span class="sd">        p (OG-USA Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        r_gov (array_like): interest rate on government debt over the</span>
+<span class="sd">            time path or in the steady-state</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">r_gov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">r_gov_scale</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_shift</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">r_gov</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jason DeBacker and Richard W. Evans.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

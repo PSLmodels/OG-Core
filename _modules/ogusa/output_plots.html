@@ -1,0 +1,922 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogusa.output_plots &#8212; OG-USA 0.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ogusa.output_plots</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">,</span> <span class="n">ToGDP_LABELS</span><span class="p">,</span> <span class="n">CBO_UNITS</span><span class="p">,</span>
+                             <span class="n">DEFAULT_START_YEAR</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">ogusa.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">ogusa.utils</span> <span class="kn">import</span> <span class="n">Inequality</span>
+
+<span class="n">cur_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">style_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cur_path</span><span class="p">,</span> <span class="s1">&#39;OGUSAplots.mplstyle&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">style_file</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="plot_aggregates"><a class="viewcode-back" href="../../output_plots.html#ogusa.output_plots.plot_aggregates">[docs]</a><span class="k">def</span> <span class="nf">plot_aggregates</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">],</span>
+                    <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;pct_diff&#39;</span><span class="p">,</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                    <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">vertical_line_years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of macro aggregates.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_tpi (dictionary): TPI output from baseline run</span>
+<span class="sd">        base_params (OG-USA Specifications class): baseline parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        reform_tpi (dictionary): TPI output from reform run</span>
+<span class="sd">        reform_params (OG-USA Specifications class): reform parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        var_list (list): names of variable to plot</span>
+<span class="sd">        plot_type (string): type of plot, can be:</span>
+<span class="sd">            &#39;pct_diff&#39;: plots percentage difference between baselien</span>
+<span class="sd">                and reform ((reform-base)/base)</span>
+<span class="sd">            &#39;diff&#39;: plots difference between baseline and reform</span>
+<span class="sd">                (reform-base)</span>
+<span class="sd">            &#39;levels&#39;: plot variables in model units</span>
+<span class="sd">            &#39;cbo&#39;: plots variables in levels relative to CBO baseline</span>
+<span class="sd">                projection (only available for macro variables in CBO</span>
+<span class="sd">                long-term forecasts)</span>
+<span class="sd">        num_years_to_plot (integer): number of years to include in plot</span>
+<span class="sd">        start_year (integer): year to start plot</span>
+<span class="sd">        vertical_line_years (list): list of integers for years want</span>
+<span class="sd">            vertical lines at</span>
+<span class="sd">        plot_title (string): title for plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of macro aggregates</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+    <span class="c1"># Make sure both runs cover same time period</span>
+    <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">)</span>
+    <span class="n">year_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">start_year</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">)</span>
+    <span class="n">start_index</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
+    <span class="c1"># Check that reform included if doing pct_diff or diff plot</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;pct_diff&#39;</span> <span class="ow">or</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;diff&#39;</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;pct_diff&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;r_gov&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;r_hh&#39;</span><span class="p">]:</span>
+                <span class="c1"># Compute just percentage point changes for rates</span>
+                <span class="n">plot_var</span> <span class="o">=</span> <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plot_var</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">/</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Pct. change&#39;</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span>
+                     <span class="n">plot_var</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                              <span class="n">num_years_to_plot</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;diff&#39;</span><span class="p">:</span>
+            <span class="n">plot_var</span> <span class="o">=</span> <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Difference (Model Units)&#39;</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span>
+                     <span class="n">plot_var</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                              <span class="n">num_years_to_plot</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;levels&#39;</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span>
+                     <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                                 <span class="n">num_years_to_plot</span><span class="p">],</span>
+                     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline &#39;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span>
+                         <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                                       <span class="n">num_years_to_plot</span><span class="p">],</span>
+                         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform &#39;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Model Units&#39;</span>
+        <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;cbo&#39;</span><span class="p">:</span>
+            <span class="c1"># Need reform and baseline to ensure CBO plot makes sense</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="c1"># read in CBO forecasts</span>
+            <span class="n">df_cbo</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_cbo_forecast</span><span class="p">()</span>
+            <span class="c1"># assert variable in cbo data</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">v</span> <span class="ow">in</span> <span class="n">df_cbo</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="c1"># assert cbo data has start year and end year</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">df_cbo</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">start_year</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">df_cbo</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">start_year</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">)</span>
+            <span class="n">cbo_data</span> <span class="o">=</span> <span class="n">df_cbo</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">df_cbo</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">start_year</span><span class="p">)</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="n">df_cbo</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">start_year</span> <span class="o">+</span>
+                 <span class="n">num_years_to_plot</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="c1"># Plot CBO baseline</span>
+            <span class="n">plot_var_base</span> <span class="o">=</span> <span class="n">cbo_data</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var_base</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline &#39;</span> <span class="o">+</span>
+                     <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+            <span class="c1"># Plot change in CBO baseline</span>
+            <span class="n">pct_change</span> <span class="o">=</span> <span class="p">((</span><span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">/</span>
+                          <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">])[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                                       <span class="n">num_years_to_plot</span><span class="p">]</span>
+            <span class="n">plot_var_reform</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">pct_change</span><span class="p">)</span> <span class="o">*</span> <span class="n">cbo_data</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var_reform</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform &#39;</span> <span class="o">+</span>
+                     <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+            <span class="c1"># making units labels will not work if multiple variables</span>
+            <span class="c1"># and they are in different units</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="n">CBO_UNITS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Please enter a valid plot type&#39;</span><span class="p">)</span>
+            <span class="k">assert</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># vertical markers at certain years</span>
+    <span class="k">if</span> <span class="n">vertical_line_years</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">yr</span> <span class="ow">in</span> <span class="n">vertical_line_years</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">yr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Year $t$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">get_yticks</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;pct_diff&#39;</span><span class="p">:</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:,.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span>
+              <span class="n">num_years_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig1</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">ss_3Dplot</span><span class="p">(</span><span class="n">base_params</span><span class="p">,</span> <span class="n">base_ss</span><span class="p">,</span> <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reform_ss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">var</span><span class="o">=</span><span class="s1">&#39;bssmat_splus1&#39;</span><span class="p">,</span> <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a 3d plot of household decisions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_params (OG-USA Specifications class): baseline parameters object</span>
+<span class="sd">        base_ss (dictionary): SS output from baseline run</span>
+<span class="sd">        reform_params (OG-USA Specifications class): reform parameters object</span>
+<span class="sd">        reform_ss (dictionary): SS output from reform run</span>
+<span class="sd">        var (string): name of variable to plot</span>
+<span class="sd">        plot_type (string): type of plot, can be:</span>
+<span class="sd">            &#39;pct_diff&#39;: plots percentage difference between baselien</span>
+<span class="sd">                and reform ((reform-base)/base)</span>
+<span class="sd">            &#39;diff&#39;: plots difference between baseline and reform (reform-base)</span>
+<span class="sd">            &#39;levels&#39;: plot variables in model units</span>
+<span class="sd">        plot_title (string): title for plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of household decisions</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">reform_params</span><span class="p">:</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">J</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">starting_age</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">ending_age</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">ending_age</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">S</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">starting_age</span><span class="p">,</span>
+                         <span class="n">base_params</span><span class="o">.</span><span class="n">ending_age</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">Jgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">):</span>
+        <span class="n">Jgrid</span><span class="p">[</span><span class="n">j</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;levels&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">base_ss</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;diff&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_ss</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_ss</span><span class="p">[</span><span class="n">var</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;pct_diff&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">((</span><span class="n">reform_ss</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_ss</span><span class="p">[</span><span class="n">var</span><span class="p">])</span> <span class="o">/</span> <span class="n">base_ss</span><span class="p">[</span><span class="n">var</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">cmap1</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">Jgrid</span><span class="p">)</span>
+    <span class="n">fig5</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax5</span> <span class="o">=</span> <span class="n">fig5</span><span class="o">.</span><span class="n">gca</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax5</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;age-$s$&#39;</span><span class="p">)</span>
+    <span class="n">ax5</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ability type-$j$&#39;</span><span class="p">)</span>
+    <span class="n">ax5</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;individual savings $\bar</span><span class="si">{b}</span><span class="s1">_{j,s}$&#39;</span><span class="p">)</span>
+    <span class="n">ax5</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">rstride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">plt</span>
+
+
+<div class="viewcode-block" id="plot_gdp_ratio"><a class="viewcode-back" href="../../output_plots.html#ogusa.output_plots.plot_gdp_ratio">[docs]</a><span class="k">def</span> <span class="nf">plot_gdp_ratio</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">],</span>
+                   <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">,</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                   <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">vertical_line_years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a plot of some variable to GDP.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_tpi (dictionary): TPI output from baseline run</span>
+<span class="sd">        base_params (OG-USA Specifications class): baseline parameters object</span>
+<span class="sd">        reform_tpi (dictionary): TPI output from reform run</span>
+<span class="sd">        reform_params (OG-USA Specifications class): reform parameters object</span>
+<span class="sd">        p (OG-USA Specifications class): parameters object</span>
+<span class="sd">        var_list (list): names of variable to plot</span>
+<span class="sd">        plot_type (string): type of plot, can be:</span>
+<span class="sd">            &#39;diff&#39;: plots difference between baseline and reform</span>
+<span class="sd">                (reform-base)</span>
+<span class="sd">            &#39;levels&#39;: plot variables in model units</span>
+<span class="sd">        num_years_to_plot (integer): number of years to include in plot</span>
+<span class="sd">        start_year (integer): year to start plot</span>
+<span class="sd">        vertical_line_years (list): list of integers for years want</span>
+<span class="sd">            vertical lines at</span>
+<span class="sd">        plot_title (string): title for plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of ratio of a variable to GDP</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;diff&#39;</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="c1"># Make sure both runs cover same time period</span>
+    <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">)</span>
+    <span class="n">year_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">start_year</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">)</span>
+    <span class="n">start_index</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
+    <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;levels&#39;</span><span class="p">:</span>
+            <span class="n">plot_var_base</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">/</span>
+                             <span class="n">base_tpi</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">][:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+                <span class="n">plot_var_reform</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">/</span>
+                                   <span class="n">reform_tpi</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">][:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var_base</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                                                 <span class="n">num_years_to_plot</span><span class="p">],</span>
+                         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline &#39;</span> <span class="o">+</span> <span class="n">ToGDP_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var_reform</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                                                   <span class="n">num_years_to_plot</span><span class="p">],</span>
+                         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform &#39;</span> <span class="o">+</span> <span class="n">ToGDP_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var_base</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                                                 <span class="n">num_years_to_plot</span><span class="p">],</span>
+                         <span class="n">label</span><span class="o">=</span><span class="n">ToGDP_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># if plotting differences in ratios</span>
+            <span class="n">var_base</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">/</span>
+                        <span class="n">base_tpi</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">][:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
+            <span class="n">var_reform</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">/</span>
+                          <span class="n">reform_tpi</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">][:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
+            <span class="n">plot_var</span> <span class="o">=</span> <span class="n">var_reform</span> <span class="o">-</span> <span class="n">var_base</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
+                                        <span class="n">num_years_to_plot</span><span class="p">],</span>
+                     <span class="n">label</span><span class="o">=</span><span class="n">ToGDP_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+    <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Percent of GDP&#39;</span>
+    <span class="c1"># vertical markers at certain years</span>
+    <span class="k">if</span> <span class="n">vertical_line_years</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">yr</span> <span class="ow">in</span> <span class="n">vertical_line_years</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">yr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Year $t$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">get_yticks</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;levels&#39;</span><span class="p">:</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:,.0%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:,.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span>
+              <span class="n">num_years_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig1</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ability_bar"><a class="viewcode-back" href="../../output_plots.html#ogusa.output_plots.ability_bar">[docs]</a><span class="k">def</span> <span class="nf">ability_bar</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="p">,</span>
+                <span class="n">reform_params</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;n_mat&#39;</span><span class="p">,</span> <span class="n">num_years</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plots percentage changes from baseline by ability group for a</span>
+<span class="sd">    given variable.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_tpi (dictionary): TPI output from baseline run</span>
+<span class="sd">        base_params (OG-USA Specifications class): baseline parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        reform_tpi (dictionary): TPI output from reform run</span>
+<span class="sd">        reform_params (OG-USA Specifications class): reform parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        var (string): name of variable to plot</span>
+<span class="sd">        num_year (integer): number of years to compute changes over</span>
+<span class="sd">        start_year (integer): year to start plot</span>
+<span class="sd">        plot_title (string): title for plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of results by ability type</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+    <span class="c1"># Make sure both runs cover same time period</span>
+    <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">J</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>  <span class="c1"># the x locations for the groups</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># the width of the bars</span>
+    <span class="n">start_index</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
+    <span class="n">omega_to_use</span> <span class="o">=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+        <span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_val</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_tpi</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">*</span> <span class="n">omega_to_use</span><span class="p">)[</span>
+        <span class="n">start_index</span><span class="p">:</span><span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">reform_val</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_tpi</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">*</span> <span class="n">omega_to_use</span><span class="p">)[</span>
+        <span class="n">start_index</span><span class="p">:</span><span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">var_to_plot</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_val</span> <span class="o">-</span> <span class="n">base_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">base_val</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">var_to_plot</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">((</span><span class="s1">&#39;0-25%&#39;</span><span class="p">,</span> <span class="s1">&#39;25-50%&#39;</span><span class="p">,</span> <span class="s1">&#39;50-70%&#39;</span><span class="p">,</span> <span class="s1">&#39;70-80%&#39;</span><span class="p">,</span> <span class="s1">&#39;80-90%&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;90-99%&#39;</span><span class="p">,</span> <span class="s1">&#39;Top 1%&#39;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Percentage Change in &#39;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ability_bar_ss"><a class="viewcode-back" href="../../output_plots.html#ogusa.output_plots.ability_bar_ss">[docs]</a><span class="k">def</span> <span class="nf">ability_bar_ss</span><span class="p">(</span><span class="n">base_ss</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_ss</span><span class="p">,</span> <span class="n">reform_params</span><span class="p">,</span>
+                   <span class="n">var</span><span class="o">=</span><span class="s1">&#39;nssmat&#39;</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plots percentage changes from baseline by ability group for a</span>
+<span class="sd">    given variable.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_ss (dictionary): SS output from baseline run</span>
+<span class="sd">        base_params (OG-USA Specifications class): baseline parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        reform_ss (dictionary): SS output from reform run</span>
+<span class="sd">        reform_params (OG-USA Specifications class): reform parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        var (string): name of variable to plot</span>
+<span class="sd">        plot_title (string): title for plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of results by ability type</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">J</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>  <span class="c1"># the x locations for the groups</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># the width of the bars</span>
+    <span class="n">base_val</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">base_ss</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">*</span>
+        <span class="n">base_params</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">reform_val</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">reform_ss</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">*</span>
+        <span class="n">reform_params</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">reform_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">var_to_plot</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_val</span> <span class="o">-</span> <span class="n">base_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">base_val</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">var_to_plot</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">((</span><span class="s1">&#39;0-25%&#39;</span><span class="p">,</span> <span class="s1">&#39;25-50%&#39;</span><span class="p">,</span> <span class="s1">&#39;50-70%&#39;</span><span class="p">,</span> <span class="s1">&#39;70-80%&#39;</span><span class="p">,</span> <span class="s1">&#39;80-90%&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;90-99%&#39;</span><span class="p">,</span> <span class="s1">&#39;Top 1%&#39;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Percentage Change in &#39;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="tpi_profiles"><a class="viewcode-back" href="../../output_plots.html#ogusa.output_plots.tpi_profiles">[docs]</a><span class="k">def</span> <span class="nf">tpi_profiles</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by_j</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;n_mat&#39;</span><span class="p">,</span>
+                 <span class="n">num_years</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot lifecycle profiles of given variable in the SS.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_ss (dictionary): TPI output from baseline run</span>
+<span class="sd">        base_params (OG-USA Specifications class): baseline parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        reform_ss (dictionary): TPI output from reform run</span>
+<span class="sd">        reform_params (OG-USA Specifications class): reform parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        var (string): name of variable to plot</span>
+<span class="sd">        num_year (integer): number of years to compute changes over</span>
+<span class="sd">        start_year (integer): year to start plot</span>
+<span class="sd">        plot_title (string): title for plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of lifecycle profiles</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">S</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">starting_age</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">ending_age</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">ending_age</span><span class="p">)</span>
+    <span class="n">age_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">starting_age</span><span class="p">,</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">starting_age</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">start_idx</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
+    <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">num_years</span>
+    <span class="k">if</span> <span class="n">by_j</span><span class="p">:</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_prop_cycle</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="n">cm</span><span class="p">(</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="mi">7</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)])</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span>
+                     <span class="n">base_tpi</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">start_idx</span><span class="p">:</span> <span class="n">end_idx</span><span class="p">,</span> <span class="p">:,</span>
+                                   <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_years</span><span class="p">,</span>
+                     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline, j = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span>
+                         <span class="n">reform_tpi</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">start_idx</span><span class="p">:</span> <span class="n">end_idx</span><span class="p">,</span> <span class="p">:,</span>
+                                         <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_years</span><span class="p">,</span>
+                         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform, j = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">base_var</span> <span class="o">=</span> <span class="p">((</span>
+            <span class="n">base_tpi</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">start_idx</span><span class="p">:</span> <span class="n">end_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span>
+            <span class="n">base_params</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_years</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">base_var</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+            <span class="n">reform_var</span> <span class="o">=</span> <span class="p">((</span>
+                <span class="n">reform_tpi</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">start_idx</span><span class="p">:</span> <span class="n">end_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span>
+                <span class="n">reform_params</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_years</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">reform_var</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform&#39;</span><span class="p">,</span>
+                     <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig1</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ss_profiles"><a class="viewcode-back" href="../../output_plots.html#ogusa.output_plots.ss_profiles">[docs]</a><span class="k">def</span> <span class="nf">ss_profiles</span><span class="p">(</span><span class="n">base_ss</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_ss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by_j</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;nssmat&#39;</span><span class="p">,</span>
+                <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot lifecycle profiles of given variable in the SS.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_ss (dictionary): SS output from baseline run</span>
+<span class="sd">        base_params (OG-USA Specifications class): baseline parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        reform_ss (dictionary): SS output from reform run</span>
+<span class="sd">        reform_params (OG-USA Specifications class): reform parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        var (string): name of variable to plot</span>
+<span class="sd">        plot_data (bool): whether to plot data values for given variable</span>
+<span class="sd">        plot_title (string): title for plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of lifecycle profiles</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">reform_ss</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">S</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">starting_age</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">ending_age</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">ending_age</span><span class="p">)</span>
+    <span class="n">age_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">starting_age</span><span class="p">,</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">starting_age</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">by_j</span><span class="p">:</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_prop_cycle</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="n">cm</span><span class="p">(</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="mi">7</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)])</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">base_ss</span><span class="p">[</span><span class="n">var</span><span class="p">][:,</span> <span class="n">j</span><span class="p">],</span>
+                     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline, j = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">reform_ss</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">reform_ss</span><span class="p">[</span><span class="n">var</span><span class="p">][:,</span> <span class="n">j</span><span class="p">],</span>
+                         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform, j = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">base_var</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">base_ss</span><span class="p">[</span><span class="n">var</span><span class="p">][:,</span> <span class="p">:]</span> <span class="o">*</span>
+            <span class="n">base_params</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">base_var</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reform_ss</span><span class="p">:</span>
+            <span class="n">reform_var</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">reform_ss</span><span class="p">[</span><span class="n">var</span><span class="p">][:,</span> <span class="p">:]</span> <span class="o">*</span>
+                <span class="n">reform_params</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">J</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">reform_var</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plot_data</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;nssmat&#39;</span>
+            <span class="n">labor_file</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span>
+                <span class="n">cur_path</span><span class="p">,</span> <span class="s2">&quot;data/labor/cps_hours_by_age_hourspct.txt&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">labor_file</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">piv</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;hours_pct&#39;</span><span class="p">,</span>
+                             <span class="n">values</span><span class="o">=</span><span class="s1">&#39;mean_hrs&#39;</span><span class="p">)</span>
+            <span class="n">lab_mat_basic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">piv</span><span class="p">)</span>
+            <span class="n">lab_mat_basic</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">lab_mat_basic</span><span class="p">)</span>
+            <span class="n">piv2</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;hours_pct&#39;</span><span class="p">,</span>
+                              <span class="n">values</span><span class="o">=</span><span class="s1">&#39;num_obs&#39;</span><span class="p">)</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">piv2</span><span class="p">)</span>
+            <span class="n">weights</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="mi">60</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">weighted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">((</span><span class="n">lab_mat_basic</span> <span class="o">*</span> <span class="n">weights</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">weighted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weighted</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+            <span class="n">weighted</span><span class="p">[</span><span class="mi">60</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">weighted</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Data&#39;</span><span class="p">,</span>
+                     <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Age&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig1</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_all"><a class="viewcode-back" href="../../output_plots.html#ogusa.output_plots.plot_all">[docs]</a><span class="k">def</span> <span class="nf">plot_all</span><span class="p">(</span><span class="n">base_output_path</span><span class="p">,</span> <span class="n">reform_output_path</span><span class="p">,</span> <span class="n">save_path</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function to plot all default output plots.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_output_path (str): path to baseline results</span>
+<span class="sd">        reform_output_path (str): path to reform results</span>
+<span class="sd">        save_path (str): path to save plots to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None: All output figures saved to disk.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Make directory in case it doesn&#39;t exist</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+    <span class="c1"># Read in data</span>
+    <span class="c1"># Read in TPI output and parameters</span>
+    <span class="n">base_tpi</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_output_path</span><span class="p">,</span> <span class="s1">&#39;TPI&#39;</span><span class="p">,</span> <span class="s1">&#39;TPI_vars.pkl&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">base_ss</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_output_path</span><span class="p">,</span> <span class="s1">&#39;SS&#39;</span><span class="p">,</span> <span class="s1">&#39;SS_vars.pkl&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">base_params</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_output_path</span><span class="p">,</span> <span class="s1">&#39;model_params.pkl&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">reform_tpi</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reform_output_path</span><span class="p">,</span> <span class="s1">&#39;TPI&#39;</span><span class="p">,</span> <span class="s1">&#39;TPI_vars.pkl&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">reform_ss</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reform_output_path</span><span class="p">,</span> <span class="s1">&#39;SS&#39;</span><span class="p">,</span> <span class="s1">&#39;SS_vars.pkl&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">reform_params</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reform_output_path</span><span class="p">,</span> <span class="s1">&#39;model_params.pkl&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Percentage changes in macro vars (Y, K, L, C)</span>
+    <span class="n">plot_aggregates</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="n">reform_tpi</span><span class="p">,</span>
+                    <span class="n">reform_params</span><span class="o">=</span><span class="n">reform_params</span><span class="p">,</span>
+                    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">],</span> <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;pct_diff&#39;</span><span class="p">,</span>
+                    <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+                    <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
+                    <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG2</span><span class="p">],</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Percentage Changes in Macro Aggregates&#39;</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;MacroAgg_PctChange.png&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Percentage change in fiscal vars (D, G, TR, Rev)</span>
+    <span class="n">plot_aggregates</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="n">reform_tpi</span><span class="p">,</span>
+                    <span class="n">reform_params</span><span class="o">=</span><span class="n">reform_params</span><span class="p">,</span>
+                    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;TR&#39;</span><span class="p">,</span> <span class="s1">&#39;total_tax_revenue&#39;</span><span class="p">],</span>
+                    <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;pct_diff&#39;</span><span class="p">,</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+                    <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
+                    <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG2</span><span class="p">],</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Percentage Changes in Fiscal Variables&#39;</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;Fiscal_PctChange.png&#39;</span><span class="p">))</span>
+
+    <span class="c1"># r and w in baseline and reform -- vertical lines at tG1, tG2</span>
+    <span class="n">plot_aggregates</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="n">reform_tpi</span><span class="p">,</span>
+                    <span class="n">reform_params</span><span class="o">=</span><span class="n">reform_params</span><span class="p">,</span>
+                    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
+                    <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">,</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+                    <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
+                    <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG2</span><span class="p">],</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Real Interest Rates Under Baseline and Reform&#39;</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;InterestRates.png&#39;</span><span class="p">))</span>
+
+    <span class="n">plot_aggregates</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="n">reform_tpi</span><span class="p">,</span>
+                    <span class="n">reform_params</span><span class="o">=</span><span class="n">reform_params</span><span class="p">,</span>
+                    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">],</span>
+                    <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">,</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+                    <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
+                    <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
+                        <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG2</span><span class="p">],</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Wage Rates Under Baseline and Reform&#39;</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;WageRates.png&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Debt-GDP in base and reform-- vertical lines at tG1, tG2</span>
+    <span class="n">plot_gdp_ratio</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="p">,</span> <span class="n">reform_params</span><span class="p">,</span>
+                   <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">],</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+                   <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
+                   <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
+                           <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
+                           <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG2</span><span class="p">],</span>
+                   <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Debt-to-GDP&#39;</span><span class="p">,</span>
+                   <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;DebtGDPratio.png&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Tax revenue to GDP in base and reform-- vertical lines at tG1, tG2</span>
+    <span class="n">plot_gdp_ratio</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="p">,</span> <span class="n">reform_params</span><span class="p">,</span>
+                   <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;total_tax_revenue&#39;</span><span class="p">],</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+                   <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
+                   <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
+                           <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
+                           <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG2</span><span class="p">],</span>
+                   <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Tax Revenue to GDP&#39;</span><span class="p">,</span>
+                   <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;RevenueGDPratio.png&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Pct change in c, n, b, y, etr, mtrx, mtry by ability group over 10 years</span>
+    <span class="n">var_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;c_path&#39;</span><span class="p">,</span> <span class="s1">&#39;n_mat&#39;</span><span class="p">,</span> <span class="s1">&#39;bmat_splus1&#39;</span><span class="p">,</span> <span class="s1">&#39;etr_path&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;mtrx_path&#39;</span><span class="p">,</span> <span class="s1">&#39;mtry_path&#39;</span><span class="p">,</span> <span class="s1">&#39;y_before_tax_mat&#39;</span><span class="p">]</span>
+    <span class="n">title_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;consumption&#39;</span><span class="p">,</span> <span class="s1">&#39;labor supply&#39;</span><span class="p">,</span> <span class="s1">&#39;savings&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;effective tax rates&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;marginal tax rates on labor income&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;marginal tax rates on capital income&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;before tax income&#39;</span><span class="p">]</span>
+    <span class="n">path_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Cons&#39;</span><span class="p">,</span> <span class="s1">&#39;Labor&#39;</span><span class="p">,</span> <span class="s1">&#39;Save&#39;</span><span class="p">,</span> <span class="s1">&#39;ETR&#39;</span><span class="p">,</span> <span class="s1">&#39;MTRx&#39;</span><span class="p">,</span> <span class="s1">&#39;MTRy&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;Income&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+        <span class="n">ability_bar</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="p">,</span> <span class="n">reform_params</span><span class="p">,</span>
+                    <span class="n">var</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">num_years</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                    <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Percentage changes in &#39;</span> <span class="o">+</span> <span class="n">title_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;PctChange_&#39;</span> <span class="o">+</span>
+                                      <span class="n">path_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">))</span>
+
+    <span class="c1"># lifetime profiles, base vs reform, SS for c, n, b, y - not by j</span>
+    <span class="n">var_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cssmat&#39;</span><span class="p">,</span> <span class="s1">&#39;nssmat&#39;</span><span class="p">,</span> <span class="s1">&#39;bssmat_splus1&#39;</span><span class="p">,</span> <span class="s1">&#39;etr_ss&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;mtrx_ss&#39;</span><span class="p">,</span> <span class="s1">&#39;mtry_ss&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+        <span class="n">ss_profiles</span><span class="p">(</span><span class="n">base_ss</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_ss</span><span class="p">,</span> <span class="n">reform_params</span><span class="p">,</span>
+                    <span class="n">by_j</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Lifecycle Profile of &#39;</span> <span class="o">+</span> <span class="n">title_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;SSLifecycleProfile_&#39;</span> <span class="o">+</span>
+                                      <span class="n">path_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">))</span>
+
+    <span class="c1"># lifetime profiles, c, n , b, y by j, separately for base and reform</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+        <span class="n">ss_profiles</span><span class="p">(</span><span class="n">base_ss</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span>
+                    <span class="n">by_j</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Lifecycle Profile of &#39;</span> <span class="o">+</span> <span class="n">title_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;SSLifecycleProfile_&#39;</span> <span class="o">+</span>
+                                      <span class="n">path_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_Baseline.png&#39;</span><span class="p">))</span>
+        <span class="n">ss_profiles</span><span class="p">(</span><span class="n">reform_ss</span><span class="p">,</span> <span class="n">reform_params</span><span class="p">,</span>
+                    <span class="n">by_j</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
+                    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;Lifecycle Profile of &#39;</span> <span class="o">+</span> <span class="n">title_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;SSLifecycleProfile_&#39;</span> <span class="o">+</span>
+                                      <span class="n">path_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_Reform.png&#39;</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">inequality_plot</span><span class="p">(</span>
+    <span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">var</span><span class="o">=</span><span class="s1">&#39;c_path&#39;</span><span class="p">,</span> <span class="n">ineq_measure</span><span class="o">=</span><span class="s1">&#39;gini&#39;</span><span class="p">,</span> <span class="n">pctiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">,</span>
+    <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
+    <span class="n">vertical_line_years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot measures of inequality over the time path.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_tpi (dictionary): TPI output from baseline run</span>
+<span class="sd">        base_params (OG-USA Specifications class): baseline parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        reform_tpi (dictionary): TPI output from reform run</span>
+<span class="sd">        reform_params (OG-USA Specifications class): reform parameters</span>
+<span class="sd">            object</span>
+<span class="sd">        var(string): name of variable to plot</span>
+<span class="sd">        ineq_measure (string): inequality measure to plot, can be:</span>
+<span class="sd">            &#39;gini&#39;: Gini coefficient</span>
+<span class="sd">            &#39;var_of_logs&#39;: variance of logs</span>
+<span class="sd">            &#39;pct_ratio&#39;: percentile ratio</span>
+<span class="sd">            &#39;top_share&#39;: top share of total</span>
+<span class="sd">        pctiles (tuple or None): percentiles for percentile ratios</span>
+<span class="sd">            (numerator, denominator) or percentile for top share (not</span>
+<span class="sd">            required for Gini or var_of_logs)</span>
+<span class="sd">        plot_type (string): type of plot, can be:</span>
+<span class="sd">            &#39;pct_diff&#39;: plots percentage difference between baselien</span>
+<span class="sd">                and reform ((reform-base)/base)</span>
+<span class="sd">            &#39;diff&#39;: plots difference between baseline and reform</span>
+<span class="sd">                (reform-base)</span>
+<span class="sd">            &#39;levels&#39;: plot variables in model units</span>
+<span class="sd">        num_years_to_plot (integer): number of years to include in plot</span>
+<span class="sd">        start_year (integer): year to start plot</span>
+<span class="sd">        vertical_line_years (list): list of integers for years want</span>
+<span class="sd">            vertical lines at</span>
+<span class="sd">        plot_title (string): title for plot</span>
+<span class="sd">        path (string): path to save figure to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of inequality measure</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+    <span class="c1"># Make sure both runs cover same time period</span>
+    <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">ineq_measure</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;gini&#39;</span><span class="p">,</span> <span class="s1">&#39;var_of_logs&#39;</span><span class="p">,</span> <span class="s1">&#39;pct_ratio&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;top_share&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;pct_ratio&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;top_share&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">pctiles</span>
+    <span class="n">year_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">start_year</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">)</span>
+    <span class="c1"># Check that reform included if doing pct_diff or diff plot</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;pct_diff&#39;</span> <span class="ow">or</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;diff&#39;</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">base_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">start_year</span><span class="p">)</span> <span class="o">-</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
+        <span class="n">ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
+            <span class="n">base_tpi</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">base_params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">base_params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;gini&#39;</span><span class="p">:</span>
+            <span class="n">base_values</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">()</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Gini Coefficient&#39;</span>
+        <span class="k">elif</span> <span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;var_of_logs&#39;</span><span class="p">:</span>
+            <span class="n">base_values</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">var_of_logs</span><span class="p">()</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;var(ln(&#39;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;))&#39;</span>
+        <span class="k">elif</span> <span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;pct_ratio&#39;</span><span class="p">:</span>
+            <span class="n">base_values</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">ratio_pct1_pct2</span><span class="p">(</span><span class="n">pctiles</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                  <span class="n">pctiles</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Ratio&#39;</span>
+        <span class="k">elif</span> <span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;top_share&#39;</span><span class="p">:</span>
+            <span class="n">base_values</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">top_share</span><span class="p">(</span><span class="n">pctiles</span><span class="p">)</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Share of Total &#39;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+        <span class="n">reform_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">base_values</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">start_year</span><span class="p">)</span> <span class="o">-</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
+            <span class="n">ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
+                <span class="n">reform_tpi</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:],</span>
+                <span class="n">reform_params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;gini&#39;</span><span class="p">:</span>
+                <span class="n">reform_values</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;var_of_logs&#39;</span><span class="p">:</span>
+                <span class="n">reform_values</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">var_of_logs</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;pct_ratio&#39;</span><span class="p">:</span>
+                <span class="n">reform_values</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">ratio_pct1_pct2</span><span class="p">(</span><span class="n">pctiles</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                        <span class="n">pctiles</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">ineq_measure</span> <span class="o">==</span> <span class="s1">&#39;top_share&#39;</span><span class="p">:</span>
+                <span class="n">reform_values</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">top_share</span><span class="p">(</span><span class="n">pctiles</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;pct_diff&#39;</span><span class="p">:</span>
+        <span class="n">plot_var</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_values</span> <span class="o">-</span> <span class="n">base_values</span><span class="p">)</span> <span class="o">/</span> <span class="n">base_values</span>
+        <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Pct. change&#39;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;diff&#39;</span><span class="p">:</span>
+        <span class="n">plot_var</span> <span class="o">=</span> <span class="n">reform_values</span> <span class="o">-</span> <span class="n">base_values</span>
+        <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Difference&#39;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;levels&#39;</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">base_values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">reform_values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform&#39;</span><span class="p">)</span>
+    <span class="c1"># vertical markers at certain years</span>
+    <span class="k">if</span> <span class="n">vertical_line_years</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">yr</span> <span class="ow">in</span> <span class="n">vertical_line_years</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">yr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Year $t$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">get_yticks</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;pct_diff&#39;</span><span class="p">:</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:,.2%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span>
+              <span class="n">num_years_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig1</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jason DeBacker and Richard W. Evans.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aggregates Equations &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Demographics Functions" href="demographics.html" />
@@ -35,8 +37,301 @@
   <div class="section" id="aggregates-equations">
 <span id="aggregates"></span><h1>Aggregates Equations<a class="headerlink" href="#aggregates-equations" title="Permalink to this headline">¶</a></h1>
 <p><strong>Aggregates</strong></p>
-<div class="section" id="ogusa-aggregates">
-<h2>ogusa.aggregates<a class="headerlink" href="#ogusa-aggregates" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.aggregates">
+<span id="ogusa-aggregates"></span><h2>ogusa.aggregates<a class="headerlink" href="#module-ogusa.aggregates" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions-to-compute-economic-aggregates">
+<h3>Functions to compute economic aggregates.<a class="headerlink" href="#functions-to-compute-economic-aggregates" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="ogusa.aggregates.get_B">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_B</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">preTP</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#get_B"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_B" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate aggregate savings</p>
+<div class="math notranslate nohighlight">
+\[B_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}b_{j,s,t}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b</strong> (<em>Numpy array</em>) – savings of households</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+<li><p><strong>preTP</strong> (<em>bool</em>) – whether calculation is for the pre-time path
+period amount of savings.  If True, then need to use
+<cite>omega_S_preTP</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>aggregate supply of savings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>B (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.aggregates.get_BQ">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_BQ</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">preTP</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#get_BQ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_BQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculation of aggregate bequests.  If <cite>use_zeta</cite> is False, then
+computes aggregate bequests within each lifetime income group.</p>
+<div class="math notranslate nohighlight">
+\[BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}\lambda_{j}b_{j,s+1,1}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>b_splus1</strong> (<em>numpy array</em>) – household savings one period ahead</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on SS or
+TPI</p></li>
+<li><p><strong>preTP</strong> (<em>bool</em>) – whether calculation is for the pre-time path
+period amount of savings.  If True, then need to use
+<cite>omega_S_preTP</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>aggregate bequests, overall or by lifetime</dt><dd><p>income group, depending on <cite>use_zeta</cite> value.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>BQ (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.aggregates.get_C">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_C</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#get_C"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_C" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculation of aggregate consumption.</p>
+<div class="math notranslate nohighlight">
+\[C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}c_{j,s,t}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> (<em>Numpy array</em>) – consumption of households</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>aggregate consumption</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>C (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.aggregates.get_I">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_I</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">K_p1</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#get_I"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_I" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate aggregate investment.</p>
+<div class="math notranslate nohighlight">
+\[I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \ (1+ g_{n,t+1})) - (1 - \delta)K_{t}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – savings of households</p></li>
+<li><p><strong>K_p1</strong> (<em>array_like</em>) – aggregate capital, one period ahead</p></li>
+<li><p><strong>K</strong> (<em>array_like</em>) – aggregate capital</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’, also compute total investment (not net of immigrants)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>aggregate investment</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>aggI (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.aggregates.get_K_splits">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_K_splits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">B</span></em>, <em class="sig-param"><span class="n">K_demand_open</span></em>, <em class="sig-param"><span class="n">D_d</span></em>, <em class="sig-param"><span class="n">zeta_K</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#get_K_splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_K_splits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns total domestic capital as well as amounts of domestic
+capital held by domestic and foreign investors separately.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+    \hat{K}_{t} = \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\
+    \hat{K}^{d}_{t} = \hat{B}_{t} + \hat{D}^{d}_{t}\\
+    \hat{K}^{f}_{t} = \zeta_{D}(\hat{K}^{open)_{t} - K^{d}_{t})\\
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>B</strong> (<em>array_like</em>) – aggregate savings by domestic households</p></li>
+<li><p><strong>K_demand_open</strong> (<em>array_like</em>) – capital demand at the world
+interest rate</p></li>
+<li><p><strong>D_d</strong> (<em>array_like</em>) – governmet debt held by domestic households</p></li>
+<li><p><strong>zeta_K</strong> (<em>array_like</em>) – fraction of excess capital demand satisfied
+by foreign investors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>series of capital stocks:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>K (array_like): total capital</p></li>
+<li><p>K_d (array_like): capital held by domestic households</p></li>
+<li><p>K_f (array_like): capital held by foreign households</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.aggregates.get_L">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_L</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#get_L"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_L" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate aggregate labor supply.</p>
+<div class="math notranslate nohighlight">
+\[L_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}n_{j,s,t}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply of households</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>aggregate labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>L (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.aggregates.get_r_hh">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_r_hh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">r_gov</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">D</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#get_r_hh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_r_hh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the interest rate on the household’s portfolio of assets,
+a mix of government debt and private equity.</p>
+<div class="math notranslate nohighlight">
+\[r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>r_gov</strong> (<em>array_like</em>) – the real interest rate on government debt</p></li>
+<li><p><strong>K</strong> (<em>array_like</em>) – aggregate capital</p></li>
+<li><p><strong>D</strong> (<em>array_like</em>) – aggregate government debt</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the real interest rate on the households</dt><dd><p>portfolio</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>r_hh (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.aggregates.resource_constraint">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">resource_constraint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">C</span></em>, <em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">K_f</span></em>, <em class="sig-param"><span class="n">new_borrowing_f</span></em>, <em class="sig-param"><span class="n">debt_service_f</span></em>, <em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#resource_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.resource_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the error in the resource constraint.</p>
+<div class="math notranslate nohighlight">
+\[\hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
+<li><p><strong>C</strong> (<em>array_like</em>) – aggregate consumption</p></li>
+<li><p><strong>G</strong> (<em>array_like</em>) – aggregate government spending</p></li>
+<li><p><strong>I</strong> (<em>array_like</em>) – aggregate investment</p></li>
+<li><p><strong>K_f</strong> (<em>array_like</em>) – aggregate capital that is foreign-owned</p></li>
+<li><p><strong>new_borrowing_f</strong> (<em>array_like</em>) – new borrowing of government debt
+from foreign investors</p></li>
+<li><p><strong>debt_service_f</strong> (<em>array_like</em>) – interest payments on government
+debt owned by foreigners</p></li>
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>error in the resource constraint</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>rc_error (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.aggregates.revenue">
+<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">revenue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/aggregates.html#revenue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.revenue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate aggregate tax revenue.</p>
+<div class="math notranslate nohighlight">
+\[R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}(T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} + \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) - \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – household savings</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>c</strong> (<em>Numpy array</em>) – household consumption</p></li>
+<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
+<li><p><strong>L</strong> (<em>array_like</em>) – aggregate labor</p></li>
+<li><p><strong>K</strong> (<em>array_like</em>) – aggregate capital</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to
+dollars</p></li>
+<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate for each
+lifetime income group</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – paramters of the effective tax rate
+functions</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>aggregate tax revenue
+iit_payroll_tax_revenue (array_like): aggregate income and</p>
+<blockquote>
+<div><p>payroll tax revenue</p>
+</div></blockquote>
+<dl class="simple">
+<dt>agg_pension_outlays (array_like): aggregate outlays for gov’t</dt><dd><p>pensions</p>
+</dd>
+</dl>
+<p>bequest_tax_revenue (array_like): aggregate bequest tax revenue
+wealth_tax_revenue (array_like): aggregate wealth tax revenue
+cons_tax_revenue (array_like): aggregate consumption tax revenue
+business_tax_revenue (array_like): aggregate business tax</p>
+<blockquote>
+<div><p>revenue</p>
+</div></blockquote>
+<p>payroll_tax_revenue (array_like): aggregate payroll tax revenue
+iit_tax_revenue (array_like): aggregate income tax revenue</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>total_tax_revenue (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 </div>
 
@@ -119,7 +414,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

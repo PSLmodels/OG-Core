@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Household Functions &#8212; OG-USA 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -12,6 +13,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Income Processes Functions" href="income.html" />
@@ -35,8 +37,294 @@
   <div class="section" id="household-functions">
 <span id="household"></span><h1>Household Functions<a class="headerlink" href="#household-functions" title="Permalink to this headline">¶</a></h1>
 <p><strong>Household Functions</strong></p>
-<div class="section" id="ogusa-household">
-<h2>ogusa.household<a class="headerlink" href="#ogusa-household" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ogusa.household">
+<span id="ogusa-household"></span><h2>ogusa.household<a class="headerlink" href="#module-ogusa.household" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Household functions.<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="ogusa.household.FOC_labor">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">FOC_labor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">tr</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">chi_n</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">tau_c</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">mtrx_params</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#FOC_labor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.FOC_labor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes errors for the FOC for labor supply in the steady
+state.  This function is usually looped through over J, so it does
+one lifetime income group at a time.</p>
+<div class="math notranslate nohighlight">
+\[w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – household savings</p></li>
+<li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – household savings one period ahead</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
+<li><p><strong>tr</strong> (<em>Numpy array</em>) – government tranfers to household</p></li>
+<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate for each
+lifetime income group</p></li>
+<li><p><strong>chi_n</strong> (<em>Numpy array</em>) – utility weight on the disutility of labor
+supply</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption tax rates</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – parameters of the effective tax rate
+functions</p></li>
+<li><p><strong>mtrx_params</strong> (<em>Numpy array</em>) – parameters of the marginal tax rate
+on labor income functions</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – model period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of ability type</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>error from FOC for labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>FOC_error (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.FOC_savings">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">FOC_savings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">tr</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">rho</span></em>, <em class="sig-param"><span class="n">tau_c</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">mtry_params</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#FOC_savings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.FOC_savings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes Euler errors for the FOC for savings in the steady state.
+This function is usually looped through over J, so it does one
+lifetime income group at a time.</p>
+<div class="math notranslate nohighlight">
+\[c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – household savings</p></li>
+<li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – household savings one period ahead</p></li>
+<li><p><strong>b_splus2</strong> (<em>Numpy array</em>) – household savings two periods ahead</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
+<li><p><strong>tr</strong> (<em>Numpy array</em>) – government tranfers to household</p></li>
+<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate for each
+lifetime income group</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>rho</strong> (<em>Numpy array</em>) – mortality rates</p></li>
+<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption tax rates</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – parameters of the effective tax rate
+functions</p></li>
+<li><p><strong>mtry_params</strong> (<em>Numpy array</em>) – parameters of the marginal tax rate
+on capital income functions</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – model period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of ability type</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Euler error from FOC for savings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>euler (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.constraint_checker_SS">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">constraint_checker_SS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bssmat</span></em>, <em class="sig-param"><span class="n">nssmat</span></em>, <em class="sig-param"><span class="n">cssmat</span></em>, <em class="sig-param"><span class="n">ltilde</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#constraint_checker_SS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.constraint_checker_SS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks constraints on consumption, savings, and labor supply in the
+steady state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bssmat</strong> (<em>Numpy array</em>) – steady state distribution of capital</p></li>
+<li><p><strong>nssmat</strong> (<em>Numpy array</em>) – steady state distribution of labor</p></li>
+<li><p><strong>cssmat</strong> (<em>Numpy array</em>) – steady state distribution of consumption</p></li>
+<li><p><strong>ltilde</strong> (<em>scalar</em>) – upper bound of household labor supply</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>Warnings</strong> – if constraints are violated, warnings printed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.constraint_checker_TPI">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">constraint_checker_TPI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_dist</span></em>, <em class="sig-param"><span class="n">n_dist</span></em>, <em class="sig-param"><span class="n">c_dist</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">ltilde</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#constraint_checker_TPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.constraint_checker_TPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks constraints on consumption, savings, and labor supply along
+the transition path. Does this for each period t separately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b_dist</strong> (<em>Numpy array</em>) – distribution of capital at time t</p></li>
+<li><p><strong>n_dist</strong> (<em>Numpy array</em>) – distribution of labor at time t</p></li>
+<li><p><strong>c_dist</strong> (<em>Numpy array</em>) – distribution of consumption at time t</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
+<li><p><strong>ltilde</strong> (<em>scalar</em>) – upper bound of household labor supply</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>Warnings</strong> – if constraints are violated, warnings printed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.get_bq">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_bq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">BQ</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#get_bq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_bq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate bequests to each household.</p>
+<div class="math notranslate nohighlight">
+\[bq_{j,s,t} = zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BQ</strong> (<em>array_like</em>) – aggregate bequests</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime ability group</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bequests received by each household</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bq (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.get_cons">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_cons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">net_tax</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">tau_c</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#get_cons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_cons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate household consumption.</p>
+<div class="math notranslate nohighlight">
+\[c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – household savings</p></li>
+<li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – household savings one period ahead</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>net_tax</strong> (<em>Numpy array</em>) – household net taxes paid</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption tax rates</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>household consumption</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cons (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.get_tr">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_tr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">TR</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#get_tr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_tr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate transfers to each household.</p>
+<div class="math notranslate nohighlight">
+\[tr_{j,s,t} = zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TR</strong> (<em>array_like</em>) – aggregate transfers</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime ability group</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bequests received by each household</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tr (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.get_y">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_y</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_hh</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b_s</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#get_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute houshold income before taxes.</p>
+<dl class="simple">
+<dt>..math::</dt><dd><p>y_{j,s,t} = r_{hh,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_hh</strong> (<em>array_like</em>) – real interest rate on the household portfolio</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
+<li><p><strong>b_s</strong> (<em>Numpy array</em>) – household savings coming into the period</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.marg_ut_cons">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">marg_ut_cons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#marg_ut_cons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.marg_ut_cons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the marginal utility of consumption.</p>
+<div class="math notranslate nohighlight">
+\[MU_{c} = c^{-\sigma}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> (<em>array_like</em>) – household consumption</p></li>
+<li><p><strong>sigma</strong> (<em>scalar</em>) – coefficient of relative risk aversion</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>marginal utility of consumption</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.household.marg_ut_labor">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">marg_ut_labor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">chi_n</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogusa/household.html#marg_ut_labor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.marg_ut_labor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the marginal disutility of labor.</p>
+<div class="math notranslate nohighlight">
+\[MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1-\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>array_like</em>) – household labor supply</p></li>
+<li><p><strong>chi_n</strong> (<em>array_like</em>) – utility weights on disutility of labor</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>marginal disutility of labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 </div>
 
@@ -119,7 +407,7 @@
       &copy;2019, Jason DeBacker and Richard W. Evans.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
