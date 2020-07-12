@@ -15,23 +15,17 @@ jobs:
       - name: Setup Miniconda
         uses: goanpeca/setup-miniconda@v1
         with:
-          auto-update-conda: true
-          auto-activate-base: false
-          miniconda-version: 'latest'
-          python-version: 3.7
-          environment-file: environment.yml
           activate-environment: ogusa-dev
+          environment-file: environment.yml
+          python-version: 3.7
+          auto-activate-base: false
 
       - name: Install and Build # install Sphinx and build docs
+        shell: bash -l {0}
         run: |
-          conda activate ogusa-dev
-          pip install -e .
           conda install sphinx
-          conda list
-          sphinx-build --version
-          ls
+          pip install -e .
           cd docs
-          ls
           make html
 
       - name: Deploy
@@ -39,4 +33,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: build/html # The folder the action should deploy.
+          FOLDER: docs/build/html # The folder the action should deploy.
