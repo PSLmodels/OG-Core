@@ -49,4 +49,4 @@ The CSV output file `./run_examples/ogusa_example_output.csv` can be compared to
 
 ## Citing OG-USA
 
-OG-USA (Version 0.6.2)[Source code], https://github.com/PSLmodels/OG-USA
+OG-USA (Version 0.6.3)[Source code], https://github.com/PSLmodels/OG-USA
