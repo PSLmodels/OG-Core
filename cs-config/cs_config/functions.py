@@ -24,7 +24,7 @@ TCPATH = inspect.getfile(Policy)
 TCDIR = os.path.dirname(TCPATH)
 with open(os.path.join(TCDIR, "policy_current_law.json"), "r") as f:
     pcl = json.loads(f.read())
-RES = convert_defaults(pcl)
+RES = pcl#convert_defaults(pcl)
 
 
 class TCParams(paramtools.Parameters):
