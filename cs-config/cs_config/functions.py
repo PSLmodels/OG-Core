@@ -295,7 +295,7 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
         in_memory_file2.seek(0)
         fig3 = op. plot_gdp_ratio(
             base_tpi, base_params, reform_tpi, reform_params,
-            var_list=['D', 'G', 'total_revenue'],
+            var_list=['D', 'G', 'total_tax_revenue'],
             plot_type='diff', num_years_to_plot=50,
             start_year=base_params.start_year,
             vertical_line_years=[
@@ -344,11 +344,11 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
         plot_title += ' Percentile Group'
         out_table = ot.macro_table_SS(
             base_ss, reform_ss,
-            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_tax_revenue',
                       'Lss', 'rss', 'wss'], table_format='csv')
         html_table = ot.macro_table_SS(
             base_ss, reform_ss,
-            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_tax_revenue',
                       'Lss', 'rss', 'wss'], table_format='html')
         fig = op.ability_bar_ss(
             base_ss, base_params, reform_ss, reform_params, var=var)
