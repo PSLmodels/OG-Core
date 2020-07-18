@@ -20,7 +20,9 @@
 - file: content/calibration/demographics
 - file: content/calibration/earnings
 
-
 - header: Appendix
 - file: content/theory/derivations
+
+- header: References
+- file: content/theory/references
 
