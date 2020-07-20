@@ -74,7 +74,7 @@ In this section, we describe what is arguably the most important economic agent 
   Because it is the marginal disutility of labor supply that matters for household decision making, we want to choose the parameters of the elliptical disutility of labor supply function $(b,\upsilon)$ so that the elliptical marginal utilities match the marginal utilities of the CFE disutility of labor supply. Figure \ref{FigMDUcompar} shows the fit of marginal utilities for a Frisch elasticity of $\theta=0.9$ and a total time endowment of $\tilde{l}=1.0$. The estimated elliptical utility parameters in this case are $b=0.527$ and $\upsilon=1.497$.\footnote{cite`Peterman:2016` shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor---such as `OG-USA`---a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates---which include both extensive and intensive margin agents---are observed.}
 
 
-\section{Optimality Conditions}\label{SecHHeulers}
+## [Optimality Conditions](#SecHHeulers)
 
   Households choose lifetime consumption $\{c_{j,s,t+s-1}\}_{s=1}^S$, labor supply $\{n_{j,s,t+s-1}\}_{s=1}^S$, and savings $\{b_{j,s+1,t+s}\}_{s=1}^{S}$ to maximize lifetime utility, subject to the budget constraints and non negativity constraints. The household period utility function is the following.
 
@@ -135,7 +135,7 @@ In this section, we describe what is arguably the most important economic agent 
   \end{equation}
 
 
-\section{Expectations}\label{SecHHexp}
+## [Expectations](#SecHHexp)
 
   To conclude the household's problem, we must make an assumption about how the age-$s$ household can forecast the time path of interest rates, wages, and total bequests $\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}$ over his remaining lifetime. As we will show in Chapters \ref{Chap_SSeqlb} and \ref{Chap_NSSeqlb}, the equilibrium interest rate $r_t$, wage $w_t$, and total bequests $BQ_t$ will be functions of the state vector $\bm{\Gamma}_t$, which turns out to be the entire distribution of savings at in period $t$.
 
