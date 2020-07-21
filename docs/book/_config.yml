@@ -44,6 +44,14 @@ repository:
   url                    : https://github.com/PSLmodels/OG-USA
   path_to_book           : 'book'
 
+#######################################################################################
+# Advanced and power-user settings
+sphinx:
+  extra_extensions          : ['sphinx.ext.autodoc', 'sphinx.ext.mathjax',
+                               'sphinx.ext.viewcode', 'sphinx.ext.napoleon',
+                               'alabaster']   # A list of extra extensions to load by Sphinx.
+  config                    :   # key-value pairs to directly over-ride the Sphinx configuration
+
 ####################################################
 # LaTeX information
 latex:
