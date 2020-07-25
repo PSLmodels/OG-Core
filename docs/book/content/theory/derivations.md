@@ -29,45 +29,51 @@ This appendix contains derivations from the theory in the body of this book.
 
   ### [Wages as a function of interest rates](#SecAppDerivCESwr)
 
-    The below shows that with the addition of public capital as a third factor of production, wages and interest rates are more than a function of the capital labor ratio.  This means that in the solution method for `OG-USA` we will need to guess both the interest rate $r_t$ and wage $w_t$.
+The below shows that with the addition of public capital as a third factor of production, wages and interest rates are more than a function of the capital labor ratio.  This means that in the solution method for `OG-USA` we will need to guess both the interest rate $r_t$ and wage $w_t$.
 
-    ```{math}
-    :label: EqAppDerivCES_YL
-    \begin{split}
-      Y &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
-      &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon}\left(\frac{L^\frac{\varepsilon-1}{\varepsilon}}{L^\frac{\varepsilon-1}{\varepsilon}}\right) + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon}\left(\frac{L^\frac{\varepsilon-1}{\varepsilon}}{L^\frac{\varepsilon-1}{\varepsilon}}\right) + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
-       \\
-      &= ZL\biggl[(\gamma)^\frac{1}{\varepsilon}\left(\frac{K}{L}\right)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{L}\right)^\frac{\varepsilon-1}{\varepsilon}+ (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}\\
-      \Rightarrow\quad \frac{Y}{L} &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}\left(\frac{K}{L}\right)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{L}\right)^\frac{\varepsilon-1}{\varepsilon}+ (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
-      \end{split}
-     ```
-
-    ```{math}
-    :label: EqAppDerivCES_YK
-      Y &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
-      &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon}\left(\frac{K^\frac{\varepsilon-1}{\varepsilon}}{K^\frac{\varepsilon-1}{\varepsilon}}\right) + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\left(\frac{K^\frac{\varepsilon-1}{\varepsilon}}{K^\frac{\varepsilon-1}{\varepsilon}}\right)\biggr]^\frac{\varepsilon}{\varepsilon-1}\\
-      &= ZK\biggl[(\gamma)^\frac{1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{K}\right)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{L}{K}\right)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
-      \Rightarrow\quad \frac{Y}{K} &= Z\biggl[(\gamma)^\frac{1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{K}\right)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{L}{K}\right)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+```{math}
+:label: EqAppDerivCES_YL
+\begin{split}
+    Y &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
+    &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon}\left(\frac{L^\frac{\varepsilon-1}{\varepsilon}}{L^\frac{\varepsilon-1}{\varepsilon}}\right) + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon}\left(\frac{L^\frac{\varepsilon-1}{\varepsilon}}{L^\frac{\varepsilon-1}{\varepsilon}}\right) + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+    \\
+    &= ZL\biggl[(\gamma)^\frac{1}{\varepsilon}\left(\frac{K}{L}\right)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{L}\right)^\frac{\varepsilon-1}{\varepsilon}+ (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}\\
+    \Rightarrow\quad \frac{Y}{L} &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}\left(\frac{K}{L}\right)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{L}\right)^\frac{\varepsilon-1}{\varepsilon}+ (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+    \end{split}
     ```
 
-    Solving for the firm's first order conditions for capital and labor demand from profit maximization {eq}`EqStnrzProfit` gives the following equations in their respective stationarized forms from Chapter \ref{Chap_Stnrz}.
-    
-    ```{math}
-    :label: EqFirmFOC_L
-      w &= (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y}{L}\right]^\frac{1}{\varepsilon} \label{EqFirmFOC_L}
-    ```
-    ```{math}
-    :label: EqFirmFOC_K
-      r &= (1 - \tau^{corp})(Z)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y}{K}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y}{K_{g}}\right)^\frac{1}{\varepsilon}\frac{K_{g}}{K}\right] - \delta + \tau^{corp}\delta^\tau
-    ```
+```{math}
+:label: EqAppDerivCES_YK
+    Y &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
+    &= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon}\left(\frac{K^\frac{\varepsilon-1}{\varepsilon}}{K^\frac{\varepsilon-1}{\varepsilon}}\right) + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\left(\frac{K^\frac{\varepsilon-1}{\varepsilon}}{K^\frac{\varepsilon-1}{\varepsilon}}\right)\biggr]^\frac{\varepsilon}{\varepsilon-1}\\
+    &= ZK\biggl[(\gamma)^\frac{1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{K}\right)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{L}{K}\right)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
+    \Rightarrow\quad \frac{Y}{K} &= Z\biggl[(\gamma)^\frac{1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{K}\right)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{L}{K}\right)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+```
 
-    As can be seen from {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`, the wage $w$ and interest rate $r$ are functions of $Y/L$ and $Y/K$ and $Y/K_{g}$, respectively. Equations {eq}`EqAppDerivCES_YL` and {eq}`EqAppDerivCES_YK` show that both $Y/L$ and $Y/K$ are functions of the capital-labor ratio $K/L$, the public-capital labor ratio, $K_{g}/L$, and the public-private capital ratio, $K/K_{g}$. We cannot solve these equations for $r$ and $w$ solely as functions of the same ratios.
+Solving for the firm's first order conditions for capital and labor demand from profit maximization {eq}`EqStnrzProfit` gives the following equations in their respective stationarized forms from Chapter \ref{Chap_Stnrz}.
+
+```{math}
+:label: EqFirmFOC_L
+    w = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y}{L}\right]^\frac{1}{\varepsilon}
+```
+
+```{math}
+:label: EqFirmFOC_K
+    r = (1 - \tau^{corp})(Z)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y}{K}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y}{K_{g}}\right)^\frac{1}{\varepsilon}\frac{K_{g}}{K}\right] - \delta + \tau^{corp}\delta^\tau
+```
+
+As can be seen from {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`, the wage $w$ and interest rate $r$ are functions of $Y/L$ and $Y/K$ and $Y/K_{g}$, respectively. Equations {eq}`EqAppDerivCES_YL` and {eq}`EqAppDerivCES_YK` show that both $Y/L$ and $Y/K$ are functions of the capital-labor ratio $K/L$, the public-capital labor ratio, $K_{g}/L$, and the public-private capital ratio, $K/K_{g}$. We cannot solve these equations for $r$ and $w$ solely as functions of the same ratios.
 
 
-    In the Cobb-Douglas unit elasticity case ($\varepsilon=1$) of the CES production function, the first order conditions are:
-    \begin{align}
-      \text{if}\:\:\,\varepsilon=1:\quad w &= (1-\gamma)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}} \label{EqAppDerivCES_CDFOCL} \\
-      \text{if}\:\:\:\varepsilon=1:\quad r &= (1 - \tau^{corp})\gamma Z\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}}\left(\frac{K_{g}}{K}\right)^{\gamma_{g}} - \delta + \tau^{corp}\delta^\tau \label{EqAppDerivCES_CDFOCK}
-    \end{align}
+In the Cobb-Douglas unit elasticity case ($\varepsilon=1$) of the CES production function, the first order conditions are:
+```{math}
+:label: EqAppDerivCES_CDFOCL
+    \text{if}\:\:\,\varepsilon=1:\quad w &= (1-\gamma)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}} \\
+    \text{if}\:\:\:\varepsilon=1:\quad r &= (1 - \tau^{corp})\gamma 
+```
+```{math}
+:label: EqAppDerivCES_CDFOCK   
+Z\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}}\left(\frac{K_{g}}{K}\right)^{\gamma_{g}} - \delta + \tau^{corp}\delta^\tau
+```
 
-    Again, even if this simple case, we cannot solve for $r$ as a function of $w$... there are 3 ratios here, not one as in the case without public capital in the production function.
+Again, even if this simple case, we cannot solve for $r$ as a function of $w$... there are 3 ratios here, not one as in the case without public capital in the production function.

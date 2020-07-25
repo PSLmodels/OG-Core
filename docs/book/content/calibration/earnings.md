@@ -3,19 +3,25 @@
 Among households in `OG-USA`, we model both age heterogeneity and within-age ability heterogeneity. We use this ability or productivity heterogeneity to generate the income heterogeneity that we see in the data.
 
 Differences among workers' productivity in terms of ability is one of the key dimensions of heterogeneity to model in a micro-founded macroeconomy. In this chapter, we characterize this heterogeneity as deterministic lifetime productivity paths to which new cohorts of agents in the model are randomly assigned. In `OG-USA`, households' labor income comes from the equilibrium wage and the agent's endogenous quantity of labor supply. In this section, we augment the labor income expression with an individual productivity $e_{j,s}$, where $j$ is the index of the ability type or path of the individual and $s$ is the age of the individual with that ability path.
-\begin{equation}\tag{\ref{EqTaxCalcLabInc}}
+
+```{math}
+:label: EqTaxCalcLabInc
   \text{labor income:}\quad x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
-\end{equation}
+```
+
 In this specification, $w_t$ is an equilibrium wage representing a portion of labor income that is common to all workers. Individual quantity of labor supply is $n_{j,s,t}$, and $e_{j,s}$ represents a labor productivity factor that augments or diminishes the productivity of a worker's labor supply relative to average productivity.
 
 We calibrate deterministic ability paths such that each lifetime income group has a different life-cycle profile of earnings. The distribution on income and wealth are often focal components of macroeconomic models. As such, we use a calibration of deterministic lifetime ability paths from cite`DeBackerEtAl:2017b` that can represent U.S. earners in the top 1\% of the distribution of lifetime income. cite`PikettySaez:2003` show that income and wealth attributable to these households has shown the greatest growth in recent decades. The data come from the U.S. Internal Revenue Services's (IRS) Statistics of Income program (SOI) Continuous Work History Sample (CWHS). cite`DeBackerEtAl:2017b` match the SOI data with Social Security Administration (SSA) data on age and Current Population Survey (CPS) data on hours in order to generate a non-top-coded measure of hourly wage.
 
-\begin{figure}[htbp]\centering \captionsetup{width=4.0in}
-  \caption{\label{FigLogAbil}\textbf{Exogenous life cycle income ability paths $\log(e_{j,s})$ with $S=80$ and $J=7$}}
-  \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/ability_log_2D.png}}}
-\end{figure}
+```{figure} ./images/ability_log_2D.png
+---
+height: 500px
+name: FigLogAbil
+---
+Exogenous life cycle income ability paths $\log(e_{j,s})$ with $S=80$ and $J=7$
+```
 
-Figure \ref{FigLogAbil} shows a calibration for $J=7$ deterministic lifetime ability paths $e_{j,s}$ corresponding to labor income percentiles $\bm{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]$. Because there are few individuals above age 80 in the data, cite`DeBackerEtAl:2017b` extrapolate these estimates for model ages 80-100 using an arctan function.
+Figure {ref}`FigLogAbil` shows a calibration for $J=7$ deterministic lifetime ability paths $e_{j,s}$ corresponding to labor income percentiles $\bm{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]$. Because there are few individuals above age 80 in the data, cite`DeBackerEtAl:2017b` extrapolate these estimates for model ages 80-100 using an arctan function.
 
 We calibrate the model such that each lifetime income group has a different life-cycle profile of earnings. Since the distribution on income and wealth are key aspects of our model, we calibrate these processes so that we can represent earners in the top 1 percent of the distribution of lifetime income. It is income and wealth attributable to these households that has shown the greatest growth in recent decades (see, for example, cite`PikettySaez:2003`). In order to have observations on the earnings of those at very top of the distribution that are not subject to top-coding we use data from the Internal Revenue Services's (IRS) Statistics of Income program (SOI).
 
@@ -65,11 +71,12 @@ We calibrate the model such that each lifetime income group has a different life
     \end{threeparttable}
   \end{table}
 
-  The parameter estimates, including the household fixed effects, from Equation \ref{eqn:wage_step1} are shown in Table \ref{tab:wage_step1}. These estimates are then used to impute values for log wages in years of each households' economic life for which we do not have data.  This creates a balanced panel of log wages of households with heads aged 21 to 80. The actual and imputed wage values are then used to calculate the net present value of lifetime labor endowments per adult for each household. Specifically, we define lifetime income for household $i$ as:
+  The parameter estimates, including the household fixed effects, from Equation {ref}`eqn:wage_step1` are shown in Table {ref}`tab:wage_step1`. These estimates are then used to impute values for log wages in years of each households' economic life for which we do not have data.  This creates a balanced panel of log wages of households with heads aged 21 to 80. The actual and imputed wage values are then used to calculate the net present value of lifetime labor endowments per adult for each household. Specifically, we define lifetime income for household $i$ as:
 
-  \begin{equation}\label{eqn:LI}
+  ```{math}
+:label: eqn:LI
     LI_{i} = \sum_{t=21}^{80}\left(\frac{1}{1+r}\right)^{t-21}(w_{i,t}*4000)
-  \end{equation}
+ ```
 
   \noindent\noindent Note that households are all have the same time endowment in each year (4000 hours).  Thus the amount of the time endowment scales lifetime income up or down, but does not change the lifetime income of one household relative to another. This is not the case with the interest rate, $r$, which we fix at 4\%. Changes in the interest rate differentially impact the lifetime income calculation for different individuals because they may face different earnings profiles. For example, a higher interest rate would reduced the discounted present value of lifetime income for those individuals whose wage profiles peaked later in their economic life by a larger amount than it would reduce the discounted present value of lifetime income for individuals whose wage profiles peaked earlier.
 
@@ -77,10 +84,12 @@ We calibrate the model such that each lifetime income group has a different life
 ## Profiles by Lifetime Income
 
   With observations of lifetime income for each household, we next sort households and find the percentile of the lifetime income distribution that each household falls in.  With these percentiles, we create our lifetime income groupings.
-  \begin{equation}\label{EqLfEarnLambda_j}
+  ```{math}
+  :label: EqLfEarnLambda_j
     \lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]
-  \end{equation}
-  That is, lifetime income group one includes those in below the 25th percentile, group two includes those from the 25th to the median, group three includes those from the median to the 70th percentile, group four includes those from the 70th to the 80th percentile, group 5 includes those from the 80th to 90th percentile, group 6 includes those from the 90th to 99th percentile, and group 7 consists of the top one percent in the lifetime income distribution.  Table \ref{tab:li_group_stats} presents descriptive statistics for each of these groups.
+  ```
+  
+  That is, lifetime income group one includes those in below the 25th percentile, group two includes those from the 25th to the median, group three includes those from the median to the 70th percentile, group four includes those from the 70th to the 80th percentile, group 5 includes those from the 80th to 90th percentile, group 6 includes those from the 90th to 99th percentile, and group 7 consists of the top one percent in the lifetime income distribution.  Table {ref}`tab:li_group_stats` presents descriptive statistics for each of these groups.
 
   \begin{table}[htbp] \centering \captionsetup{width=6.0in}
   \caption{\label{tab:li_group_stats}\textbf{Descriptive Statistics by Lifetime Income Category}}
@@ -115,10 +124,13 @@ We calibrate the model such that each lifetime income group has a different life
   \begin{equation}\label{eqn:wage_profile}
     ln(w_{i,t})=\alpha +  \beta_{1}age_{i,t} + \beta_{2}age_{i,t}^{2} + \beta_{3}*age_{i,t}^{3}+ \varepsilon_{i,t}
   \end{equation}
-  The estimated parameters from equation \eqref{eqn:wage_profile} are given in Table \ref{tab:wage_profiles}. The life-cycle earnings profiles implied by these parameters are plotted in Figure \ref{FigLogAbil}. Note that there are few individuals above age 80 in the data. To extrapolate these estimates for model ages 80-100, we use an arctan function of the following form:
-  \begin{equation}\label{EqLfEarnArctan}
+  The estimated parameters from equation {eq}`eqn:wage_profile` are given in Table {ref}`tab:wage_profiles`. The life-cycle earnings profiles implied by these parameters are plotted in Figure {ref}`FigLogAbil`. Note that there are few individuals above age 80 in the data. To extrapolate these estimates for model ages 80-100, we use an arctan function of the following form:
+  
+  ```{math}
+ :label: EqLfEarnArctan
     y = \left(\frac{-a}{\pi}\right)*arctan(bx+c)+\frac{a}{2}
-  \end{equation}
+```
+
   where $x$ is age, and $a$, $b$, and $c$ are the parameters we search over for the best fit of the function to the following three criteria: 1) the value of the function should match the value of the data at age 80 2) the slope of the arctan should match the slope of the data at age 80 and 3) the value of the function should match the value of the data at age 100 times a constant.  This constant is .5 for all lifetime income groups, except the 2nd highest ability is .7 (otherwise, the 2nd highest has a lower income than the 3rd highest ability group in the last few years).
 
   \begin{table}[htbp] \centering \captionsetup{width=6.0in}
