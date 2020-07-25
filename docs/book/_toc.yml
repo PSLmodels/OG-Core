@@ -26,13 +26,15 @@
     - file: content/api/wealth
 
 - header: OG-USA Theory
-- file: content/theory/households
-- file: content/theory/firms
-- file: content/theory/government
-- file: content/theory/market_clearing
-- file: content/theory/stationarization
-- file: content/theory/equilibrium
-- file: content/theory/open_economy
+- file: content/theory/intro
+  sections:
+    - file: content/theory/households
+    - file: content/theory/firms
+    - file: content/theory/government
+    - file: content/theory/market_clearing
+    - file: content/theory/stationarization
+    - file: content/theory/equilibrium
+    - file: content/theory/open_economy
 
 - header: Calibration
 - file: content/calibration/exogenous_parameters

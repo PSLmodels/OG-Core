@@ -148,7 +148,8 @@ Comparison of CFE marginal disutility of leisure $\theta=0.9$ to fitted elliptic
   To conclude the household's problem, we must make an assumption about how the age-$s$ household can forecast the time path of interest rates, wages, and total bequests $\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}$ over his remaining lifetime. As we will show in Chapters \ref{Chap_SSeqlb} and \ref{Chap_NSSeqlb}, the equilibrium interest rate $r_t$, wage $w_t$, and total bequests $BQ_t$ will be functions of the state vector $\boldsymbol{\Gamma}_t$, which turns out to be the entire distribution of savings at in period $t$.
 
   Define $\boldsymbol{\Gamma}_t$ as the distribution of household savings across households at time $t$.
-    ```{math}
+  
+  ```{math}
   :label: EqSavDist
     \boldsymbol{\Gamma}_t \equiv \bigl\{b_{j,s,t}\bigr\}_{s=E+2}^{E+S} \quad\forall j,t
   ```
