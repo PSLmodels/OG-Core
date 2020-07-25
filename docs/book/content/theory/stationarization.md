@@ -27,7 +27,7 @@ Table {ref}`TabStnrzStatVars` lists the definitions of stationary versions of th
   \end{threeparttable}
 \end{table}
 
-The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab` and {eq}`EqMarkClrCap`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections \ref{SecEqlbSSsoln} and \ref{SecEqlbNSSsoln} to solve for the equilibria in Definitions \ref{DefSSEql} and \ref{DefNSSEql}.
+The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab` and {eq}`EqMarkClrCap`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` to solve for the equilibria in Definitions {ref}`DefSSEql` and {ref}`DefNSSEql`.
 
 
 ## [Stationarized Household Equations](#SecStnrzHH)
@@ -72,7 +72,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   
   ```{math}
   :label: EqStnrzCESprodfun
-    \hat{Y}_t = F(\hat{K}_t, \hat{L}_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\ve}(\hat{K}_t)^\frac{\ve-1}{\ve} + (1-\gamma)^\frac{1}{\ve}(\hat{L}_t)^\frac{\ve-1}{\ve}\biggr]^\frac{\ve}{\ve-1} \quad\forall t
+    \hat{Y}_t = F(\hat{K}_t, \hat{L}_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
   ```
   Notice that the growth term multiplied by the labor input drops out in this stationarized version of the production function. We stationarize the nonstationary profit function {eq}`EqFirmsProfit} in the same way, by dividing both sides by $e^{g_y t}\tilde{N}_t$.
   
@@ -85,15 +85,15 @@ The usual definition of equilibrium would be allocations and prices such that ho
   
   ```{math}
   :label: EqStnrzFOC_L
-    \hat{w}_t = (Z_t)^\frac{\ve-1}{\ve}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\ve} \quad\forall t
+    \hat{w}_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon} \quad\forall t
   ```
 
   It can be seen from the firms' first order equation for capital demand {eq}`EqFirmFOC_K} that the interest rate is already stationary. If we multiply and divide the $\frac{Y_t}{K_t}$ term on the right-hand-side by $e^{t_y t}\tilde{N}_t$, those two aggregate variables become stationary. In other words, $Y_t$ and $K_t$ grow at the same rate and $\frac{Y_t}{K_t} = \frac{\hat{Y}_t}{\hat{K}_t}$.
   
   ```{math}
   :label: EqFirmFOC_K
-      r_t &= (1 - \tau^{corp})(Z_t)^\frac{\ve-1}{\ve}\left[\gamma\frac{\hat{Y}_t}{\hat{K}_t}\right]^\frac{1}{\ve} - \delta + \tau^{corp}\delta^\tau \quad\forall t \\
-      &= (1 - \tau^{corp})(Z_t)^\frac{\ve-1}{\ve}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\ve} - \delta + \tau^{corp}\delta^\tau \quad\forall t
+      r_t &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_t}{\hat{K}_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t \\
+      &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t
  ```
 
 

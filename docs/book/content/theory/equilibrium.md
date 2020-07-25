@@ -72,13 +72,13 @@ We implemented an automatic government budget closure rule using government spen
       	v. Use the firm's production function from Equation {eq}`EqStnrzCESprodfun` to compute an updated value of $\bar{Y}$ given the values for the factors of production:
       		
       		$$
-      			\bar{Y}^{i'} = \bar{Z}\biggl[(\gamma)^\frac{1}{\ve}(\bar{K}^{i})^\frac{\ve-1}{\ve} + (1-\gamma)^\frac{1}{\ve}(\bar{L}^{i})^\frac{\ve-1}{\ve}\biggr]^\frac{\ve}{\ve-1} 
+      			\bar{Y}^{i'} = \bar{Z}\biggl[(\gamma)^\frac{1}{\varepsilon}(\bar{K}^{i})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\bar{L}^{i})^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} 
       		$$
       		
       	vi. Use the firm's first order condition for its choice of capital to find the updated interest rate, 
       		
       		$$
-      		\bar{r}^{i'} = (1 - \tau^{corp})(\bar{Z})^\frac{\ve-1}{\ve}\left[\gamma\frac{\bar{Y}^{i'}}{\bar{K}^{i}}\right]^\frac{1}{\ve} - \delta + \tau^{corp}\delta^\tau
+      		\bar{r}^{i'} = (1 - \tau^{corp})(\bar{Z})^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\bar{Y}^{i'}}{\bar{K}^{i}}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
       		$$
       		
       by first using the market clearing conditions {eq}`EqStnrzMarkClrLab` and {eq}`EqStnrzMarkClrCap` together with the the long-run debt
@@ -275,13 +275,13 @@ In this chapter, we define the stationary nonsteady-state equilibrium of the `OG
     	vi. Use the firm's production function from Equation {eq}`EqStnrzCESprodfun` to compute an updated value of $\hat{Y}_{t}$ given the values for the factors of production:
     	
     		$$
-    			\hat{Y}_{t}^{i'} = Z_{t}\biggl[(\gamma)^\frac{1}{\ve}(\hat{K}_{t}^{i})^\frac{\ve-1}{\ve} + (1-\gamma)^\frac{1}{\ve}(\hat{L}_{t}^{i})^\frac{\ve-1}{\ve}\biggr]^\frac{\ve}{\ve-1} 
+    			\hat{Y}_{t}^{i'} = Z_{t}\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_{t}^{i})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\hat{L}_{t}^{i})^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} 
     		$$
     	
     	vii. Use the firm's first order condition for its choice of capital to find the updated path of interest rates, 
     	
     		$$
-    			r_{t}^{i'} = (1 - \tau_{t}^{corp})(Z_{t})^\frac{\ve-1}{\ve}\left[\gamma\frac{\hat{Y}_{t}^{i'}}{\hat{K}_{t}^{i}}\right]^\frac{1}{\ve} - \delta + \tau_{t}^{corp}\delta_{t}^\tau
+    			r_{t}^{i'} = (1 - \tau_{t}^{corp})(Z_{t})^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_{t}^{i'}}{\hat{K}_{t}^{i}}\right]^\frac{1}{\varepsilon} - \delta + \tau_{t}^{corp}\delta_{t}^\tau
     		$$
     	
     

@@ -9,14 +9,14 @@ The production side of the `OG-USA` model is populated by a unit measure of iden
 
   ```{math}
   :label: EqFirmsCESprodfun
-    Y_t = F(K_t, K_{g,t}, L_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\ve}(K_t)^\frac{\ve-1}{\ve} + (\gamma_{g})^\frac{1}{\ve}(K_{g,t})^\frac{\ve-1}{\ve} + (1-\gamma-\gamma_{g})^\frac{1}{\ve}(e^{g_y t}L_t)^\frac{\ve-1}{\ve}\biggr]^\frac{\ve}{\ve-1} \quad\forall t
+    Y_t = F(K_t, K_{g,t}, L_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
   ```
-  where $Z_t$ is an exogenous scale parameter (total factor productivity) that can be time dependent, $K_{g,t}$ is the stock of public capital, $\gamma$ represents private capital's share of income, $\gamma_{g}$ is public capital's share of income, and $\ve$ is the constant elasticity of substitution between capital and labor. We have included constant productivity growth $g_y$ as the rate of labor augmenting technological progress.
+  where $Z_t$ is an exogenous scale parameter (total factor productivity) that can be time dependent, $K_{g,t}$ is the stock of public capital, $\gamma$ represents private capital's share of income, $\gamma_{g}$ is public capital's share of income, and $\varepsilon$ is the constant elasticity of substitution between capital and labor. We have included constant productivity growth $g_y$ as the rate of labor augmenting technological progress.
 
-  A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for $\ve=1$.
+  A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for $\varepsilon=1$.
   ```{math}
   :label: EqFirmsCDprodfun
-    Y_t = Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\text{for}\quad \ve=1 \quad\forall t
+    Y_t = Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\text{for}\quad \varepsilon=1 \quad\forall t
   ```
 
 
@@ -39,8 +39,8 @@ The production side of the `OG-USA` model is populated by a unit measure of iden
   
   ```{math}
   :label: EqFirmFOC_K
-    w_t &= e^{g_y t}(Z_t)^\frac{\ve-1}{\ve}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\ve} \quad\forall t \label{EqFirmFOC_L} \\
-    r_t &= (1 - \tau^{corp})(Z_t)^\frac{\ve-1}{\ve}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\ve}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\ve}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t
+    w_t &= e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t \label{EqFirmFOC_L} \\
+    r_t &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\varepsilon}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t
   ```
 
   Note that the presence of the public capital good creates economic rents.  However, given perfect competition, any economic profits will be competed away.  We therefore assume that these rents are captured by the owners of capital, as can be seen through the second term inside the square brackets in Equation {eq}`EqFirmFOC_K`.
