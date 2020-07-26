@@ -1,9 +1,42 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: '0.8'
+    jupytext_version: '1.4.1'
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: ogusa-dev
+---
+
+(glue)=
+
 # [Exogenous Parameters](#SecExEnd_Exog)
 
 
 In this chapter, list the exogenous inputs to the model, options, and where the values come from (weak calibration vs. strong calibration). Point to the respective chapters for some of the inputs. Mention the code \texttt{parameters.py}.
 
   List all the exogenous parameters that are outputs of the model here.
+
++++
+```{code-cell} ogusa-dev
+:tags: [hide-cell]
+from myst_nb import glue
+import ogusa.parameter_tables as pt
+from ogusa import Specifications
+p = Specifications()
+table = pt.param_table(p, table_format=None, path=None)
+glue("param_table", table, display=False)
+```
+
+```{glue:figure} param_table
+:figwidth: 600px
+:name: "TabExogVars"
+
+List of exogenous parameters and baseline calibration values.
+```
 
   \begin{table}[htbp] \centering \captionsetup{width=4.7in}
     \caption{\label{TabExogVars}\textbf{List of exogenous parameters and baseline calibration values}}

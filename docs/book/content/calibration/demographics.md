@@ -1,3 +1,18 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: '0.8'
+    jupytext_version: '1.4.1'
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: ogusa-dev
+---
+
+(glue)=
+
 # Demographics
 
 We start the `OG-USA` section on modeling the household with a description of the demographics of the model. \citet{Nishiyama:2015} and \citet{DeBackerEtAl:2017} have recently shown that demographic dynamics are likely the biggest influence on macroeconomic time series, exhibiting more influence than fiscal variables or household preference parameters.
@@ -219,13 +234,23 @@ Original immigration rates vs. adjusted immigration rates to make fixed steady-s
 height: 500px
 name: FigPopDistPath
 ---
-Exogenous Stationary population distribution at periods along transition path
+Exogenous stationary population distribution at periods along transition path
 ```
 
-```{figure} ../theory/images/GrowthPath.png
----
-height: 500px
-name: FigGrowthPath
----
-Time path of the population growth rate $\tilde{g}_{n,t}$
++++
+```{code-cell} ogusa-dev
+:tags: [hide-cell]
+from myst_nb import glue
+import ogusa.parameter_plots as pp
+from ogusa import Specifications
+p = Specifications()
+fig = pp.plot_pop_growth(p, start_year=2021)
+glue("pop_grow", fig, display=False)
+```
+
+```{glue:figure} pop_grow
+:figwidth: 750px
+:name: "FigGrowthPath"
+
+Exogenous stationary population growth rates at periods along transition path
 ```

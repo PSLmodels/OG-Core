@@ -1,3 +1,18 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: '0.8'
+    jupytext_version: '1.4.1'
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: ogusa-dev
+---
+
+(glue)=
+
 # Lifetime Earnings Profiles
 
 Among households in `OG-USA`, we model both age heterogeneity and within-age ability heterogeneity. We use this ability or productivity heterogeneity to generate the income heterogeneity that we see in the data.
@@ -13,13 +28,24 @@ In this specification, $w_t$ is an equilibrium wage representing a portion of la
 
 We calibrate deterministic ability paths such that each lifetime income group has a different life-cycle profile of earnings. The distribution on income and wealth are often focal components of macroeconomic models. As such, we use a calibration of deterministic lifetime ability paths from {cite}`DeBackerEtAl:2017b` that can represent U.S. earners in the top 1\% of the distribution of lifetime income. {cite}`PikettySaez:2003` show that income and wealth attributable to these households has shown the greatest growth in recent decades. The data come from the U.S. Internal Revenue Services's (IRS) Statistics of Income program (SOI) Continuous Work History Sample (CWHS). {cite}`DeBackerEtAl:2017b` match the SOI data with Social Security Administration (SSA) data on age and Current Population Survey (CPS) data on hours in order to generate a non-top-coded measure of hourly wage.
 
-```{figure} ../theory/images/ability_log_2D.png
----
-height: 500px
-name: FigLogAbil
----
++++
+```{code-cell} ogusa-dev
+:tags: [hide-cell]
+from myst_nb import glue
+import ogusa.parameter_plots as pp
+from ogusa import Specifications
+p = Specifications()
+fig = pp.plot_ability_profiles(p)
+glue("earnings_profiles", fig, display=False)
+```
+
+```{glue:figure} earnings_profiles
+:figwidth: 750px
+:name: "FigLogAbil"
+
 Exogenous life cycle income ability paths $\log(e_{j,s})$ with $S=80$ and $J=7$
 ```
+
 
 Figure {numref}`FigLogAbil` shows a calibration for $J=7$ deterministic lifetime ability paths $e_{j,s}$ corresponding to labor income percentiles $\bm{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]$. Because there are few individuals above age 80 in the data, {cite}`DeBackerEtAl:2017b` extrapolate these estimates for model ages 80-100 using an arctan function.
 
