@@ -1,6 +1,6 @@
 import ogusa
 from ogusa.parameters import Specifications
-from ogusa.constants import REFORM_DIR, BASELINE_DIR
+from ogusa.constants import REFORM_DIR, BASELINE_DIR, DEFAULT_START_YEAR
 from ogusa import output_plots as op
 from ogusa import output_tables as ot
 from ogusa import SS, TPI, utils
@@ -42,7 +42,7 @@ class MetaParams(paramtools.Parameters):
             "title": "Start year",
             "description": "Year for parameters.",
             "type": "int",
-            "value": 2020,
+            "value": DEFAULT_START_YEAR,
             "validators": {"range": {"min": 2015, "max":
                                      Policy.LAST_BUDGET_YEAR}}
         },
@@ -65,7 +65,7 @@ class MetaParams(paramtools.Parameters):
 
 
 def get_version():
-    return "0.6.2"
+    return "0.6.3"
 
 
 def get_inputs(meta_param_dict):
@@ -78,7 +78,8 @@ def get_inputs(meta_param_dict):
     filter_list = [
         'chi_n_80', 'chi_b', 'eta', 'zeta', 'constant_demographics',
         'ltilde', 'use_zeta', 'constant_rates', 'zero_taxes',
-        'analytical_mtrs', 'age_specific', 'gamma_s', 'epsilon_s']
+        'analytical_mtrs', 'age_specific', 'gamma_s', 'epsilon_s',
+        'start_year']
     for k, v in ogusa_params.dump().items():
         if ((k not in filter_list) and
             (v.get("section_1", False) != "Model Solution Parameters")
@@ -173,7 +174,7 @@ def run_model(meta_param_dict, adjustment):
         'frisch', 'beta_annual', 'sigma', 'g_y_annual', 'gamma',
         'epsilon', 'Z', 'delta_annual', 'small_open', 'world_int_rate',
         'initial_foreign_debt_ratio', 'zeta_D', 'zeta_K', 'tG1', 'tG2',
-        'rho_G', 'debt_ratio_ss', 'start_year', 'budget_balance'}
+        'rho_G', 'debt_ratio_ss', 'budget_balance'}
     filtered_ogusa_params = OrderedDict()
     for k, v in adjustment['OG-USA Parameters'].items():
         if k in constant_param_set:
@@ -294,7 +295,7 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
         in_memory_file2.seek(0)
         fig3 = op. plot_gdp_ratio(
             base_tpi, base_params, reform_tpi, reform_params,
-            var_list=['D', 'G', 'total_revenue'],
+            var_list=['D', 'G', 'total_tax_revenue'],
             plot_type='diff', num_years_to_plot=50,
             start_year=base_params.start_year,
             vertical_line_years=[
@@ -343,11 +344,11 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
         plot_title += ' Percentile Group'
         out_table = ot.macro_table_SS(
             base_ss, reform_ss,
-            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_tax_revenue',
                       'Lss', 'rss', 'wss'], table_format='csv')
         html_table = ot.macro_table_SS(
             base_ss, reform_ss,
-            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_tax_revenue',
                       'Lss', 'rss', 'wss'], table_format='html')
         fig = op.ability_bar_ss(
             base_ss, base_params, reform_ss, reform_params, var=var)
