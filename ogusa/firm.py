@@ -118,7 +118,6 @@ def get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method):
     q = get_q(K, V, X)
     qp1 = get_q(Kp1, Vp1, Xp1)
     dPsi_dK = adj_cost_dK(K, Kp1, p, method)
-    print('adj costs  = ', dPsi_dK)
 
     r = ((
         (1 - tau_b) * (MPK - I * dPsi_dK) + (1 - p.delta) * qp1 - q) / q)

@@ -184,14 +184,27 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
-    K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
-    K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
+    z = firm.get_NPV_depr(r, p, 'SS')
+    V_d = B - D_d
+    V_f = p.zeta_K[-1] * V_d  # So that foreign equity holdings are some fraction of domestic holdings...
+    # this deviates from CBO method, but theirs doesn't work with dyn firms
+    # could also try to build in realistic repsonse to world and domestic rates - which CBO doesn't have
+    V = V_d + V_f
+    print("V values = ", V, V_d, V_f)
+    K, K_tau = firm.get_K_demand(None, V, None, z, p, 'SS')
+    print('K values = ', K, K_tau)
+
+    # K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
+    # K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
     Y = firm.get_Y(K, L, p, 'SS')
+    X = firm.get_X(z, K_tau)
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
-        new_r = firm.get_r(Y, K, p, 'SS')
-    new_w = firm.get_w_from_r(new_r, p, 'SS')
+        # new_r = firm.get_r(Y, K, p, 'SS')
+        new_r = firm.get_r(Y, K, K, V, V, X, X, p, 'SS')
+    # new_w = firm.get_w_from_r(new_r, p, 'SS')
+    new_w = firm.get_w(Y, L, p, 'SS')
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
@@ -318,14 +331,21 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
     (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
      new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
-    K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
-    Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
-        Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
+    # K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
+    # Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
+    #     Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
+    zss = firm.get_NPV_depr(rss, p, 'SS')
+    V_d_ss = Bss - D_d_ss
+    V_f_ss = p.zeta_K * V_d_ss  # So that foreign equity holdings are some fraction of domestic holdings...
+    # this deviates from CBO method, but theirs doesn't work with dyn firms
+    # could also try to build in realistic repsonse to world and domestic rates - which CBO doesn't have
+    Vss = V_d_ss + V_f_ss
+    Kss, K_tau_ss = firm.get_K_demand(None, Vss, None, zss, p, 'SS')
     Yss = firm.get_Y(Kss, Lss, p, 'SS')
     r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     # Note that implicity in this computation is that immigrants'
     # wealth is all in the form of private capital
-    I_d_ss = aggr.get_net_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
+    # I_d_ss = aggr.get_net_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
     Iss = aggr.get_net_I(bssmat_splus1, Kss, Kss, p, 'SS')
     wss = new_w
     BQss = new_BQ
@@ -404,9 +424,9 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
           np.absolute(euler_savings).max())
 
     # Return dictionary of SS results
-    output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
+    output = {'Kss': Kss, 'V_f_ss': V_f_ss, 'V_d_ss': V_d_ss,
               'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
-              'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
+              'Iss_total': Iss_total, 'nssmat': nssmat,
               'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
               'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss,
               'r_gov_ss': r_gov_ss, 'r_hh_ss': r_hh_ss, 'theta': theta,
