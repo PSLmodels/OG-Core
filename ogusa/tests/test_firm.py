@@ -645,11 +645,13 @@ V1 = 2
 K_tau0_1 = 1.2
 z1 = 0.08
 p1.delta = 0.05
+p1.g_n_ss = 0.02
+p1.g_y = 0.03
 p1.delta_tau = np.ones(p1.T + p1.S) * 0.065
 p1.tau_b = np.ones(p1.T + p1.S) * 0.21
 p1.mu = 0.06
 p1.psi = 1.2
-expected_val1 = (2.037617555, 1.567398119)
+expected_val1 = (2.037617555, 1.774276965)
 p2 = Specifications()
 p2.delta = 0.05
 p2.delta_tau = np.ones(p2.T + p2.S) * 0.0
@@ -671,8 +673,8 @@ p3.g_y = 0.03
 p3.tau_b = np.ones(p3.T + p3.S) * 0.21
 p3.mu = 0.06
 p3.psi = 1.2
-expected_val3 = (np.array([1.3, 1.6633939, 1.9097573]),
-                 np.array([1.2, 3.058132822, 3.662300635]))
+expected_val3 = (np.array([1.3, 1.71139819, 2.003907605]),
+                 np.array([1.2, 1.603888047, 1.883845458]))
 
 
 @pytest.mark.parametrize('K0,V,K_tau0,z,p,method,expected_val', [
@@ -708,7 +710,7 @@ def test_FOC_I():
     '''
     Test of firm.FOC_I()
     '''
-    expected_val = 0.186416301
+    expected_val = 0.192625343
     p = Specifications()
     Kp1 = 3.8
     K = 3.2
