@@ -357,7 +357,7 @@ filename6 = filename = os.path.join(
 param_updates7 = {'delta_tau_annual': [0.0]}
 filename7 = filename = os.path.join(
     CUR_PATH, 'test_io_data',
-    'run_TPI_outputs_baseline_baseline_delta_tau0_2.pkl')
+    'run_TPI_outputs_baseline_delta_tau0_2.pkl')
 
 
 @pytest.mark.full_run
