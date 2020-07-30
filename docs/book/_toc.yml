@@ -1,49 +1,55 @@
 - file: content/intro/intro
-
-- header: Contributing to OG-USA
-- file: content/contributing/contributor_guide
-
-- header: OG-USA API
-- file: content/api/public_api
+  numbered: true
+  
+- chapter: Contributing to OG-USA
   sections:
-    - file: content/api/aggregates
-    - file: content/api/demographics
-    - file: content/api/elliptical_u_est
-    - file: content/api/execute
-    - file: content/api/firm
-    - file: content/api/fiscal
-    - file: content/api/get_micro_data
-    - file: content/api/household
-    - file: content/api/income
-    - file: content/api/output_plots
-    - file: content/api/output_tables
-    - file: content/api/parameter_plots
-    - file: content/api/parameter_tables
-    - file: content/api/parameters
-    - file: content/api/tax
-    - file: content/api/txfunc
-    - file: content/api/utils
-    - file: content/api/wealth
+  - file: content/contributing/contributor_guide
 
-- header: OG-USA Theory
-- file: content/theory/intro
+- chapter: OG-USA API
   sections:
-    - file: content/theory/households
-    - file: content/theory/firms
-    - file: content/theory/government
-    - file: content/theory/market_clearing
-    - file: content/theory/stationarization
-    - file: content/theory/equilibrium
-    - file: content/theory/open_economy
+  - file: content/api/public_api
+    sections:
+      - file: content/api/aggregates
+      - file: content/api/demographics
+      - file: content/api/elliptical_u_est
+      - file: content/api/execute
+      - file: content/api/firm
+      - file: content/api/fiscal
+      - file: content/api/get_micro_data
+      - file: content/api/household
+      - file: content/api/income
+      - file: content/api/output_plots
+      - file: content/api/output_tables
+      - file: content/api/parameter_plots
+      - file: content/api/parameter_tables
+      - file: content/api/parameters
+      - file: content/api/tax
+      - file: content/api/txfunc
+      - file: content/api/utils
+      - file: content/api/wealth
 
-- header: Calibration
-- file: content/calibration/exogenous_parameters
-- file: content/calibration/demographics
-- file: content/calibration/earnings
+- chapter: OG-USA Theory
+  sections:
+  - file: content/theory/intro
+  - file: content/theory/households
+  - file: content/theory/firms
+  - file: content/theory/government
+  - file: content/theory/market_clearing
+  - file: content/theory/stationarization
+  - file: content/theory/equilibrium
+  - file: content/theory/open_economy
 
-- header: Appendix
-- file: content/theory/derivations
+- chapter: Calibration
+  sections:
+  - file: content/calibration/exogenous_parameters
+  - file: content/calibration/demographics
+  - file: content/calibration/earnings
 
-- header: References
-- file: content/theory/references
+- chapter: Appendix
+  sections:
+  - file: content/theory/derivations
+
+- chapter: References
+  sections:
+  - file: content/theory/references
 
