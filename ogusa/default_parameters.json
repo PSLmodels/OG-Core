@@ -218,44 +218,6 @@
             }
         }
     },
-    "gamma_s": {
-        "title": "Bond's share of assets in the household portfolio problem",
-        "description": "Bond's share of assets in the household portfolio problem.",
-        "section_1": "Household Parameters",
-        "section_2": "Behavioral Assumptions",
-        "notes": "",
-        "type": "float",
-        "value": [
-            {
-                "value": 0.5
-            }
-        ],
-        "validators": {
-            "range": {
-                "min": 0.0,
-                "max": 1.0
-            }
-        }
-    },
-    "epsilon_s": {
-        "title": "Elasticity of substitution between bonds and equity in the household portfolio problem",
-        "description": "Elasticity of substitution between bonds and equity in the household portfolio problem.",
-        "section_1": "Household Parameters",
-        "section_2": "Behavioral Assumptions",
-        "notes": "",
-        "type": "float",
-        "value": [
-            {
-                "value": 1.0
-            }
-        ],
-        "validators": {
-            "range": {
-                "min": 0.1,
-                "max": 10.0
-            }
-        }
-    },
     "gamma": {
         "title": "Capital's share of output in firm production function",
         "description": "Capital's share of output in firm production function.",
