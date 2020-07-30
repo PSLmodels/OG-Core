@@ -78,7 +78,7 @@ def get_inputs(meta_param_dict):
     filter_list = [
         'chi_n_80', 'chi_b', 'eta', 'zeta', 'constant_demographics',
         'ltilde', 'use_zeta', 'constant_rates', 'zero_taxes',
-        'analytical_mtrs', 'age_specific', 'gamma_s', 'epsilon_s',
+        'analytical_mtrs', 'age_specific', 'gamma', 'epsilon',
         'start_year']
     for k, v in ogusa_params.dump().items():
         if ((k not in filter_list) and
