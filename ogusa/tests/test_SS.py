@@ -302,17 +302,70 @@ expected5 = np.array([
     0.016714319543654727, 0.003033421127052222, -0.05535189569237248,
     0.06644990365361061])
 
+p6 = Specifications()
+(p6.J, p6.S, p6.T, p6.BW, p6.beta, p6.sigma, p6.alpha, p6.gamma, p6.epsilon,
+ Z, p6.delta, p6.ltilde, p6.nu, p6.g_y, p6.g_n_ss, tau_payroll,
+ tau_bq, p6.rho, p6.omega_SS, p6.budget_balance, alpha_T,
+ p6.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p6.e,
+ retire, p6.mean_income_data, h_wealth, p_wealth, m_wealth,
+ p6.b_ellipse, p6.upsilon) = ss_params
+p6.eta = (p6.omega_SS.reshape(p6.S, 1) *
+          p6.lambdas.reshape(1, p6.J)).reshape(1, p6.S, p6.J)
+p6.Z = np.ones(p6.T + p6.S) * Z
+p6.tau_bq = np.ones(p6.T + p6.S) * 0.0
+p6.tau_payroll = np.ones(p6.T + p6.S) * tau_payroll
+p6.alpha_T = np.ones(p6.T + p6.S) * alpha_T
+p6.tau_b = np.ones(p6.T + p6.S) * tau_b
+p6.delta_tau = np.ones(p6.T + p6.S) * 0.0
+p6.h_wealth = np.ones(p6.T + p6.S) * h_wealth
+p6.p_wealth = np.ones(p6.T + p6.S) * p_wealth
+p6.m_wealth = np.ones(p6.T + p6.S) * m_wealth
+p6.retire = (np.ones(p6.T + p6.S) * retire).astype(int)
+p6.lambdas = lambdas.reshape(p6.J, 1)
+p6.imm_rates = imm_rates.reshape(1, p6.S)
+p6.tax_func_type = 'DEP'
+p6.zeta_K = np.array([0.0])
+p6.zeta_D = np.array([0.0])
+p6.initial_foreign_debt_ratio = 0.0
+p6.r_gov_shift = np.array([0.0])
+p6.start_year = 2019
+p6.baseline = False
+p6.baseline = True
+p6.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
+    income_tax_params
+p6.etr_params = np.transpose(etr_params.reshape(
+    p6.S, 1, etr_params.shape[-1]), (1, 0, 2))
+p6.mtrx_params = np.transpose(mtrx_params.reshape(
+    p6.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
+p6.mtry_params = np.transpose(mtry_params.reshape(
+    p6.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p6.maxiter, p6.mindist_SS = iterative_params
+p6.chi_b, p6.chi_n = chi_params
+small_open, firm_r, hh_r = small_open_params
+p6.world_int_rate = np.ones(p6.T + p6.S) * firm_r
+p6.num_workers = 1
+BQ6 = np.ones((p6.J)) * 0.00019646295986015257
+guesses6 = [guesses_in[0]] + list(BQ6) + [guesses_in[1]] + [guesses_in[2]]
+args6 = (bssmat, nssmat, None, None, p6, client)
+expected6 = np.array([
+    0.07215505148288945, 0.015648438358930053, 0.020459875721456536,
+    0.022060136475180223, 0.013462001740302838, 0.015934473464005214,
+    0.018219674546277976, 0.0033400842357827754, -0.07119442016669195,
+    0.05562671567906091])
+
 
 @pytest.mark.parametrize('guesses,args,expected',
                          [(guesses1, args1, expected1),
                           (guesses2, args2, expected2),
                           (guesses3, args3, expected3),
                           (guesses4, args4, expected4),
-                          (guesses5, args5, expected5)],
+                          (guesses5, args5, expected5),
+                          (guesses6, args6, expected6)],
                          ids=['Baseline, Closed', 'Reform, Closed',
                               'Reform, Baseline spending=True, Closed',
                               'Baseline, Partial Open',
-                              'Baseline, Small Open'])
+                              'Baseline, Small Open',
+                              'Baseline, Closed, delta_tau = 0'])
 def test_SS_fsolve(guesses, args, expected):
     '''
     Test SS.SS_fsolve function.  Provide inputs to function and
@@ -328,8 +381,8 @@ filename1 = 'SS_solver_outputs_baseline.pkl'
 param_updates2 = {'start_year': 2020, 'budget_balance': True,
                   'alpha_G': [0.0]}
 filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
-# param_updates3 = {'baseline_spending': True}
-# filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
+param_updates3 = {'baseline_spending': True}
+filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
 param_updates4 = {'start_year': 2020, 'zeta_K': [1.0]}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
@@ -340,14 +393,51 @@ filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
-                          # (False, param_updates3, filename3),
+                        #   (False, param_updates3, filename3),
                           (True, param_updates4, filename4),
                           (True, param_updates5, filename5)],
                          ids=['Baseline', 'Baseline, budget balance',
-                              # 'Reform, baseline spending=True',
+                            #   'Reform, baseline spending=True',
                               'Baseline, small open',
                               'Baseline, small open, budget balance'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
+    # Test SS.SS_solver function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
+    p.update_specifications(param_updates)
+    p.output_base = CUR_PATH
+    p.get_tax_function_parameters(None, run_micro=False)
+    b_guess = np.ones((p.S, p.J)) * 0.07
+    n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
+    if p.zeta_K[-1] == 1.0:
+        rguess = p.world_int_rate[-1]
+    else:
+        rguess = 0.06483431412921253
+    TRguess = 0.05738932081035772
+    factorguess = 139355.1547340256
+    BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
+    Yguess = 0.6376591201150815
+
+    test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
+                             factorguess, Yguess, p, None, False)
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', filename))
+
+    for k, v in expected_dict.items():
+        print('Testing ', k)
+        assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
+
+
+param_updates6 = {'delta_tau_annual': [0.0]}
+filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates6, filename6)],
+                         ids=['Baseline, delta_tau = 0'])
+@pytest.mark.full_run
+def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline, client=dask_client,
@@ -400,6 +490,43 @@ filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
                               'Baseline', 'Reform',
                               'Reform, baseline spending'])
 def test_inner_loop(baseline, param_updates, filename, dask_client):
+    # Test SS.inner_loop function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
+    p.update_specifications(param_updates)
+    p.output_base = CUR_PATH
+    p.get_tax_function_parameters(None, run_micro=False)
+    bssmat = np.ones((p.S, p.J)) * 0.07
+    nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
+    if p.zeta_K[-1] == 1.0:
+        r = p.world_int_rate[-1]
+    else:
+        r = 0.05
+    TR = 0.12
+    Y = 1.3
+    factor = 100000
+    BQ = np.ones(p.J) * 0.00019646295986015257
+    if p.budget_balance:
+        outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor)
+    else:
+        outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
+    test_tuple = SS.inner_loop(outer_loop_vars, p, None)
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', filename))
+    for i, v in enumerate(expected_tuple):
+        assert(np.allclose(test_tuple[i], v, atol=1e-05))
+
+
+param_updates6 = {'delta_tau_annual': [0.0]}
+filename6 = 'inner_loop_outputs_baseline_delta_tau0.pkl'
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(False, param_updates6, filename6)],
+                         ids=['Baseline, delta_tau = 0'])
+@pytest.mark.full_run
+def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline, client=dask_client,
@@ -535,6 +662,8 @@ filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
 # filename9 = 'run_SS_reform_baseline_spend.pkl'
 # param_updates10 = {'baseline_spending': True, 'use_zeta': True}
 # filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
+param_updates11 = {'delta_tau_annual': [0.0]}
+filename11 = 'run_SS_baseline_delta_tau0.pkl'
 
 
 # @pytest.mark.parametrize('baseline,param_updates,filename',
@@ -564,13 +693,15 @@ filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
                           (False, param_updates5, filename5),
                           (False, param_updates6, filename6),
                           (False, param_updates7, filename7),
-                          (False, param_updates8, filename8)],
+                          (False, param_updates8, filename8),
+                          (False, param_updates11, filename11)],
                          ids=['Baseline', 'Baseline, use zeta',
                               'Baseline, small open',
                               'Baseline, small open use zeta',
                               'Reform', 'Reform, use zeta',
                               'Reform, small open',
-                              'Reform, small open use zeta'])
+                              'Reform, small open use zeta',
+                              'Baseline, delta_tau=0'])
 @pytest.mark.full_run
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
