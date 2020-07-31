@@ -188,6 +188,3 @@ Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted ellipti
   ```
 
   where the $e$ superscript signifies that $\boldsymbol{\Gamma}^e_{t+u}$ is the expected distribution of wealth at time $t+u$ based on general beliefs $\Omega(\cdot)$ that are not constrained to be correct.\footnote{In Chapter {ref}`Chap_Eqm` we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Definition {ref}`DefNSSEql}.}
-
-```{bibliography} ../../OGUSA_references.bib
-```

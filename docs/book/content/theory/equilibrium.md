@@ -120,7 +120,7 @@ We implemented an automatic government budget closure rule using government spen
     $$
       \max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| \leq toler_{ss,out}
     $$
-    
+
     then the steady-state has been found.
     1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
     2. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
@@ -321,7 +321,3 @@ In this chapter, we define the stationary nonsteady-state equilibrium of the `OG
 
 
 ### [Baseline Nonsteady-state Results](#SecNSSeqlbResults)
-
-
-```{bibliography} ../../OGUSA_references.bib
-```
