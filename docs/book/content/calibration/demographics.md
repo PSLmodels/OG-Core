@@ -13,6 +13,7 @@ kernelspec:
 
 (glue)=
 
+(Chap_Demog)=
 # Demographics
 
 We start the `OG-USA` section on modeling the household with a description of the demographics of the model. \citet{Nishiyama:2015} and \citet{DeBackerEtAl:2017} have recently shown that demographic dynamics are likely the biggest influence on macroeconomic time series, exhibiting more influence than fiscal variables or household preference parameters.
@@ -126,12 +127,12 @@ Immigration rates by age ($i_s$), residual, $E+S=100$
         \hat{\omega}_{1,t+1} \\ \hat{\omega}_{2,t+1} \\ \hat{\omega}_{2,t+1} \\ \vdots \\ \hat{\omega}_{E+S-1,t+1} \\ \hat{\omega}_{E+S,t+1}
       \end{bmatrix}= \frac{1}{1 + g_{n,t+1}} \times ... \\
       & \begin{bmatrix}
-        (1-\rho_0)f_1+i_1 & (1-\rho_0)f_2 & (1-\rho_0)f_3 & \hdots & (1-\rho_0)f_{E+S-1} & (1-\rho_0)f_{E+S} \\
-        1-\rho_1 & i_2 & 0 & \hdots & 0 & 0 \\
-        0 & 1-\rho_2 & i_3 & \hdots & 0 & 0 \\
+        (1-\rho_0)f_1+i_1 & (1-\rho_0)f_2 & (1-\rho_0)f_3 & \cdots & (1-\rho_0)f_{E+S-1} & (1-\rho_0)f_{E+S} \\
+        1-\rho_1 & i_2 & 0 & \cdots & 0 & 0 \\
+        0 & 1-\rho_2 & i_3 & \cdots & 0 & 0 \\
         \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
-        0 & 0 & 0 & \hdots & i_{E+S-1} & 0 \\
-        0 & 0 & 0 & \hdots & 1-\rho_{E+S-1} & i_{E+S}
+        0 & 0 & 0 & \cdots & i_{E+S-1} & 0 \\
+        0 & 0 & 0 & \cdots & 1-\rho_{E+S-1} & i_{E+S}
       \end{bmatrix}
       \begin{bmatrix}
         \hat{\omega}_{1,t} \\ \hat{\omega}_{2,t} \\ \hat{\omega}_{2,t} \\ \vdots \\ \hat{\omega}_{E+S-1,t} \\ \hat{\omega}_{E+S,t}
@@ -142,70 +143,70 @@ Immigration rates by age ($i_s$), residual, $E+S=100$
   
   ```{math}
   :label: EqPopLOMstatmat2
-    \bm{\hat{\omega}}_{t+1} = \frac{1}{1+g_{n,t+1}}\bm{\Omega}\bm{\hat{\omega}}_t \quad\forall t
+    \boldsymbol{\hat{\omega}}_{t+1} = \frac{1}{1+g_{n,t+1}}\boldsymbol{\Omega}\boldsymbol{\hat{\omega}}_t \quad\forall t
  ```
   
-  The stationary steady-state population distribution $\bm{\bar{\omega}}$ is the eigenvector $\bm{\omega}$ with eigenvalue $(1+\bar{g}_n)$ of the matrix $\bm{\Omega}$ that satisfies the following version of {eq}`EqPopLOMstatmat2`.
+  The stationary steady-state population distribution $\boldsymbol{\bar{\omega}}$ is the eigenvector $\boldsymbol{\omega}$ with eigenvalue $(1+\bar{g}_n)$ of the matrix $\boldsymbol{\Omega}$ that satisfies the following version of {eq}`EqPopLOMstatmat2`.
   
   ```{math}
   :label: EqPopLOMss
-    (1+\bar{g}_n)\bm{\bar{\omega}} = \bm{\Omega}\bm{\bar{\omega}}
+    (1+\bar{g}_n)\boldsymbol{\bar{\omega}} = \boldsymbol{\Omega}\boldsymbol{\bar{\omega}}
   ```
 
   \begin{proposition}
-    If the age $s=1$ immigration rate is $i_1>-(1-\rho_0)f_1$ and the other immigration rates are strictly positive $i_s>0$ for all $s\geq 2$ such that all elements of $\bm{\Omega}$ are nonnegative, then there exists a unique positive real eigenvector $\bm{\bar{\omega}}$ of the matrix $\bm{\Omega}$, and it is a stable equilibrium.
+    If the age $s=1$ immigration rate is $i_1>-(1-\rho_0)f_1$ and the other immigration rates are strictly positive $i_s>0$ for all $s\geq 2$ such that all elements of $\boldsymbol{\Omega}$ are nonnegative, then there exists a unique positive real eigenvector $\boldsymbol{\bar{\omega}}$ of the matrix $\boldsymbol{\Omega}$, and it is a stable equilibrium.
   \end{proposition}
 
   \begin{proof}
-    First, note that the matrix $\bm{\Omega}$ is square and non-negative.  This is enough for a general version of the Perron-Frobenius Theorem to state that a positive real eigenvector exists with a positive real eigenvalue. This is not yet enough for uniqueness. For it to be unique by a version of the Perron-Fobenius Theorem, we need to know that the matrix is irreducible. This can be easily shown. The matrix is of the form
-    $$\bm{\Omega} =
+    First, note that the matrix $\boldsymbol{\Omega}$ is square and non-negative.  This is enough for a general version of the Perron-Frobenius Theorem to state that a positive real eigenvector exists with a positive real eigenvalue. This is not yet enough for uniqueness. For it to be unique by a version of the Perron-Fobenius Theorem, we need to know that the matrix is irreducible. This can be easily shown. The matrix is of the form
+    $$\boldsymbol{\Omega} =
     \begin{bmatrix}
-      * & *  & * & \hdots & * & * & *\\
-      * & * & 0 & \hdots & 0 & 0 & 0 \\
-      0 & * & * & \hdots & 0 & 0 & 0 \\
+      * & *  & * & \cdots & * & * & *\\
+      * & * & 0 & \cdots & 0 & 0 & 0 \\
+      0 & * & * & \cdots & 0 & 0 & 0 \\
       \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
-      0 & 0 & 0 & \hdots & *  & * & 0 \\
-      0 & 0 & 0 & \hdots & 0 & * & *
+      0 & 0 & 0 & \cdots & *  & * & 0 \\
+      0 & 0 & 0 & \cdots & 0 & * & *
     \end{bmatrix}
     $$
     Where each * is strictly positive. It is clear to see that taking powers of the matrix causes the sub-diagonal positive elements to be moved down a row and another row of positive entries is added at the top. None of these go to zero since the elements were all non-negative to begin with.
-    $$\bm{\Omega}^2 =
+    $$\boldsymbol{\Omega}^2 =
     \begin{bmatrix}
-      * & *  & * & \hdots & * & * & *\\
-      * & * & * & \hdots & * & * & * \\
-      0 & * & * & \hdots & 0 & 0 & 0 \\
+      * & *  & * & \cdots & * & * & *\\
+      * & * & * & \cdots & * & * & * \\
+      0 & * & * & \cdots & 0 & 0 & 0 \\
       \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
-      0 & 0 & 0 & \hdots & *  & * & 0 \\
-      0 & 0 & 0 & \hdots & 0 & * & *
+      0 & 0 & 0 & \cdots & *  & * & 0 \\
+      0 & 0 & 0 & \cdots & 0 & * & *
     \end{bmatrix}; ~~~
-    \bm{\Omega}^{S+E-1} =
+    \boldsymbol{\Omega}^{S+E-1} =
     \begin{bmatrix}
-      * & *  & * & \hdots & * & * & *\\
-      * & * & * & \hdots & * & * & * \\
-      * & * & * & \hdots & * & * & * \\
+      * & *  & * & \cdots & * & * & *\\
+      * & * & * & \cdots & * & * & * \\
+      * & * & * & \cdots & * & * & * \\
       \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
-      * & * & * & \hdots & *  & * & * \\
-      0 & 0 & 0 & \hdots & 0 & * & *
+      * & * & * & \cdots & *  & * & * \\
+      0 & 0 & 0 & \cdots & 0 & * & *
     \end{bmatrix}
     $$
-    $$\bm{\Omega}^{S+E} =
+    $$\boldsymbol{\Omega}^{S+E} =
     \begin{bmatrix}
-      * & *  & * & \hdots & * & * & *\\
-      * & * & * & \hdots & * & * & * \\
-      * & * & * & \hdots & * & * & * \\
+      * & *  & * & \cdots & * & * & *\\
+      * & * & * & \cdots & * & * & * \\
+      * & * & * & \cdots & * & * & * \\
       \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
-      * & * & * & \hdots & * & * & * \\
-      * & * & * & \hdots & * & * & *
+      * & * & * & \cdots & * & * & * \\
+      * & * & * & \cdots & * & * & *
     \end{bmatrix}
     $$
     Existence of an $m \in \mathbb N $ such that $\left(\bf\Omega^m\right)_{ij} \neq 0 ~~ ( > 0)$ is one of the definitions of an irreducible (primitive) matrix. It is equivalent to saying that the directed graph associated with the matrix is strongly connected. Now the Perron-Frobenius Theorem for irreducible matrices gives us that the equilibrium vector is unique.
 
-    We also know from that theorem that the eigenvalue associated with the positive real eigenvector will be real and positive. This eigenvalue, $p$, is the Perron eigenvalue and it is the steady state population growth rate of the model. By the PF Theorem for irreducible matrices, $| \lambda_i | \leq p$ for all eigenvalues $\lambda_i$ and there will be exactly $h$ eigenvalues that are equal, where $h$ is the period of the matrix. Since our matrix $\bf\Omega$ is aperiodic, the steady state growth rate is the unique largest eigenvalue in magnitude. This implies that almost all initial vectors will converge to this eigenvector under iteration.
+  We also know from that theorem that the eigenvalue associated with the positive real eigenvector will be real and positive. This eigenvalue, $p$, is the Perron eigenvalue and it is the steady state population growth rate of the model. By the PF Theorem for irreducible matrices, $| \lambda_i | \leq p$ for all eigenvalues $\lambda_i$ and there will be exactly $h$ eigenvalues that are equal, where $h$ is the period of the matrix. Since our matrix $\bf\Omega$ is aperiodic, the steady state growth rate is the unique largest eigenvalue in magnitude. This implies that almost all initial vectors will converge to this eigenvector under iteration.
   \end{proof}
 
   For a full treatment and proof of the Perron-Frobenius Theorem, see \citet{Suzumura:1983}. Because the population growth process is exogenous to the model, we calibrate it to annual age data for age years $s=1$ to $s=100$.
 
-  Figure {numref}`FigOrigVsFixSSpop` shows the steady-state population distribution $\bm{\bar{\omega}}$ and the population distribution after 120 periods $\bm{\hat{\omega}}_{120}$. Although the two distributions look very close to each other, they are not exactly the same.
+  Figure {numref}`FigOrigVsFixSSpop` shows the steady-state population distribution $\boldsymbol{\bar{\omega}}$ and the population distribution after 120 periods $\boldsymbol{\hat{\omega}}_{120}$. Although the two distributions look very close to each other, they are not exactly the same.
 
 ```{figure} ../theory/images/OrigVsFixSSpop.png
 ---

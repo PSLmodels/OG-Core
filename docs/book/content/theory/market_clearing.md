@@ -1,3 +1,4 @@
+(Chap_MarkClr)=
 # Market Clearing
 
 Three markets must clear in `OG-USA`---the labor market, the capital market, and the goods market. By Walras' Law, we only need to use two of those market clearing conditions because the third one is redundant. In the model, we choose to use the labor market clearing condition and the capital market clearing condition, and to ignore the goods market clearing condition. But we present all three market clearing conditions here. Further, the redundant goods market clearing condition---sometimes referred to as the resource constraint---makes for a nice check on the solution method to see if everything worked.

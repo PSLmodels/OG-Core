@@ -1,10 +1,11 @@
+(Chap_Eqm)=
 # Equilibrium
 
 ## [Steady-State Equilibirum](#Chap_SSeqlb)
 
-In this chapter, we define the stationary steady-state equilibrium of the `OG-USA` model. Chapters \ref{Chap_Demog} through \ref{Chap_MarkClr} derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-USA` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter \ref{Chap_Demog}, and the potential for unbounded growth in government debt as described in Chapter \ref{Chap_UnbalGBC}.
+In this chapter, we define the stationary steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_Demog` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-USA` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter {ref}`Chap_Demog`, and the potential for unbounded growth in government debt as described in Chapter {ref}`Chap_UnbalGBC`.
 
-We implemented an automatic government budget closure rule using government spending $G_t$ as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in {eq}`EqUnbalGBCclosure`. And we showed in Chapter \ref{Chap_Stnrz} how to stationarize all the other characterizing equations.
+We implemented an automatic government budget closure rule using government spending $G_t$ as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in {eq}`EqUnbalGBCclosure`. And we showed in Chapter {ref}`Chap_Stnrz` how to stationarize all the other characterizing equations.
 
 
 ### [Stationary Steady-State Equilibrium Definition](#SecEqlbSSdef)
@@ -50,32 +51,31 @@ We implemented an automatic government budget closure rule using government spen
 2. Choose an initial guess for the values of the steady-state interest rate $\bar{r}^i$, total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
 3. Use $\bar{r}^i$ together with the firm's first order condition for its choice of capital, Equation {eq}`EqFirmFOC_K`, to solve for the capital labor ratio, $\frac{\overline{K}}{\overline{L}}$.  Then use $\frac{\bar{K}}{\bar{L}}$ in the firm's first order condition for its choice of labor to find the implied wage rate $\bar{w}^i$.
 4. Given guesses for $\bar{r}^i$, $\bar{w}^i$, $\overline{BQ}^{\,i}$, $\overline{TR}^{\,i}$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
-    \begin{enumerate}
-    a.  Do this by using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by Equations {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS` simultaneously for $j=1$.
-    b. Repeat this root-finding process for each household $j\in{2,...,J}$, using the solutions for households of type $j-1$ as the initial guesses in the root-finder.  
+    1.  Do this by using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by Equations {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS` simultaneously for $j=1$.
+    2. Repeat this root-finding process for each household $j\in{2,...,J}$, using the solutions for households of type $j-1$ as the initial guesses in the root-finder.  
 5. Given partial equilibrium household steady-state solutions $\{\bar{c}_{j,s},\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ based on macroeconomic variables $\bar{r}^i$, $\overline{BQ}^{\,i}$, $\overline{TR}^{\,i}$, and $factor^i$, compute updated values for the outer loop macroeconomic variables, $\bar{r}^{i'}$, $\bar{w}^{i'}$, $\overline{BQ}^{\,i'}$, $\overline{TR}^{\,i'}$, and $factor^{i'}$ .
-    a. We solve for the updated interest rate as follows: 
-        i. Use the guess at total transfers, $\overline{TR}^{i}$ and the transfer spending rule given in Equation {eq}`EqUnbalGBCtfer` to find the implied GDP: $\bar{Y}^{i} = \frac{\overline{TR}^{i}}{\alpha_{tr}}$.
-        ii. Use the long-run debt-to-GDP ratio and $\bar{Y}^{i}$ to find total government debt in the steady-state, $\bar{D}^{i} = \alpha_{D}\bar{Y}^{i}$.
-        iii. Use the capital market clearing condition from Equation {eq}`EqStnrzMarkClrCap` and $\bar{D}^{i}$ to find aggregate capital,
+    1. We solve for the updated interest rate as follows: 
+        1. Use the guess at total transfers, $\overline{TR}^{i}$ and the transfer spending rule given in Equation {eq}`EqUnbalGBCtfer` to find the implied GDP: $\bar{Y}^{i} = \frac{\overline{TR}^{i}}{\alpha_{tr}}$.
+        2. Use the long-run debt-to-GDP ratio and $\bar{Y}^{i}$ to find total government debt in the steady-state, $\bar{D}^{i} = \alpha_{D}\bar{Y}^{i}$.
+        3. Use the capital market clearing condition from Equation {eq}`EqStnrzMarkClrCap` and $\bar{D}^{i}$ to find aggregate capital,
       		
       		$$
       			\bar{K}^{i}=\frac{1}{1 + \bar{g}_{n}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\bar{\omega}_{s-1}\lambda_j \bar{b}_{j,s} + i_s\bar{\omega}_{s}\lambda_j \bar{b}_{j,s}\Bigr) - \bar{D}^{i}
       		$$
       		
-      	iv. Use the labor market clearing condition from Equation {eq}`EqStnrzMarkClrLab` to find aggregate labor supply:
+      	4. Use the labor market clearing condition from Equation {eq}`EqStnrzMarkClrLab` to find aggregate labor supply:
       		
       		$$
       			\bar{L}^{i}=\sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \bar{\omega}_{s}\lambda_j e_{j,s}\bar{n}_{j,s}
       		$$
       		
-      	v. Use the firm's production function from Equation {eq}`EqStnrzCESprodfun` to compute an updated value of $\bar{Y}$ given the values for the factors of production:
+      	5. Use the firm's production function from Equation {eq}`EqStnrzCESprodfun` to compute an updated value of $\bar{Y}$ given the values for the factors of production:
       		
       		$$
       			\bar{Y}^{i'} = \bar{Z}\biggl[(\gamma)^\frac{1}{\varepsilon}(\bar{K}^{i})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\bar{L}^{i})^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} 
       		$$
       		
-      	vi. Use the firm's first order condition for its choice of capital to find the updated interest rate, 
+      	6. Use the firm's first order condition for its choice of capital to find the updated interest rate, 
       		
       		$$
       		\bar{r}^{i'} = (1 - \tau^{corp})(\bar{Z})^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\bar{Y}^{i'}}{\bar{K}^{i}}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
@@ -84,15 +84,15 @@ We implemented an automatic government budget closure rule using government spen
       by first using the market clearing conditions {eq}`EqStnrzMarkClrLab` and {eq}`EqStnrzMarkClrCap` together with the the long-run debt
       
 
-    b. The stationarized law of motion for total bequests {eq}`EqStnrzMarkClrBQ` provides the expression in which household savings decisions $\{\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ imply a value for aggregate bequests, $\overline{BQ}^{\,i'}$. When computing aggregate bequests, we use the updated interest rate found above.
+    2. The stationarized law of motion for total bequests {eq}`EqStnrzMarkClrBQ` provides the expression in which household savings decisions $\{\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ imply a value for aggregate bequests, $\overline{BQ}^{\,i'}$. When computing aggregate bequests, we use the updated interest rate found above.
       
       $$
         \overline{BQ}^{\,i'} = \left(\frac{1+\bar{r}^{i'}}{1 + \bar{g}_{n}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\bar{\omega}_{s-1}\bar{b}_{j,s}\right)
       $$
       
-    c. In equation {eq}`EqStnrzTfer`, we defined total household transfers as a fixed percentage of GDP ($\overline{TR}=\alpha_{tr}\bar{Y}$).  To find the updated value for transfers, we find the amount of transfers implied by the most updated value of GDP, $\overline{TR}^{i'}=\alpha_{tr}\bar{Y}^{i'}$.
+    3. In equation {eq}`EqStnrzTfer`, we defined total household transfers as a fixed percentage of GDP ($\overline{TR}=\alpha_{tr}\bar{Y}$).  To find the updated value for transfers, we find the amount of transfers implied by the most updated value of GDP, $\overline{TR}^{i'}=\alpha_{tr}\bar{Y}^{i'}$.
       
-    d. The $factor$ that transforms the model units to U.S. dollar units for the tax functions {eq}`EqTaxCalcFactor` is already defined in terms of steady-state variables. The following is an expression in which household decisions $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ imply a value for the steady-state $factor^{i'}$. Note, as with the equation for $\overline{BQ}^{\,i'}$, that we include the updated values of $\bar{w}^{i'}$ and $\bar{r}^{i'}$ on the right-hand-side of the equation.[^mylabel]: The updated wage rate, $w^{i'}$, is found by using the updated interest rate, $r^{i'}$ as detailed in Step 3.
+    4. The $factor$ that transforms the model units to U.S. dollar units for the tax functions {eq}`EqTaxCalcFactor` is already defined in terms of steady-state variables. The following is an expression in which household decisions $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ imply a value for the steady-state $factor^{i'}$. Note, as with the equation for $\overline{BQ}^{\,i'}$, that we include the updated values of $\bar{w}^{i'}$ and $\bar{r}^{i'}$ on the right-hand-side of the equation.[^mylabel]: The updated wage rate, $w^{i'}$, is found by using the updated interest rate, $r^{i'}$ as detailed in Step 3.
       
       $$
         factor^{i'} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\bar{\omega}_s\left(\bar{w}^{i'}e_{j,s}\bar{n}_{j,s} + \bar{r}^{i'}\bar{b}_{j,s}\right)}
@@ -109,25 +109,28 @@ We implemented an automatic government budget closure rule using government spen
       \max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| > toler_{ss,out}
     $$
     then update the guesses for the outer loop variables as a convex combination governed by $\xi_{ss}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (5).[^mylabel]: In our code, there is also an option to use a Newton based root-finding algorithm to updated the outer-loop variables.  Such an algorithm is generally faster, but less robust than the functional iteration method outlined here.
+    
     $$
         \left[\bar{r}^{i+1},\overline{BQ}^{\,i+1},\overline{TR}^{\,i+1},factor^{i+1}\right] &= \xi_{ss}\left[\bar{r}^{i'},\overline{BQ}^{\,i'},\overline{TR}^{\,i'},factor^{i'}\right] + \\
-        &\qquad(1-\xi_{ss})\left[\bar{r}^{i},\overline{BQ}^{\,i},\overline{TR}^{\,i},factor^{i}\right]
+        \qquad(1-\xi_{ss})\left[\bar{r}^{i},\overline{BQ}^{\,i},\overline{TR}^{\,i},factor^{i}\right]
     $$
 
 8. If the maximum absolute error among the four outer loop error terms is less-than-or-equal-to some small positive tolerance $toler_{ss,out}$,
+    
     $$
       \max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| \leq toler_{ss,out}
     $$
+    
     then the steady-state has been found.
-    a. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
-    b. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
-    c. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
-    d. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
+    1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
+    2. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
+    3. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
+    4. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
 
-## [Baseline Steady-state Results}\label{SecSSeqlbResults}
+## [Baseline Steady-state Results](#SecSSeqlbResults)
 
-  In this section, we use the baseline calibration described in Chapter \ref{Chap_Calibr}, which includes the baseline tax law from \taxcalc, to show some steady-state results from `OG-USA`. Figure {ref}`FigSSeqlbHHvars` shows the household steady-state variables by age $s$ and lifetime income group $j$.
+  In this section, we use the baseline calibration described in Chapter {ref}`Chap_Calibr`, which includes the baseline tax law from \taxcalc, to show some steady-state results from `OG-USA`. Figure {ref}`FigSSeqlbHHvars` shows the household steady-state variables by age $s$ and lifetime income group $j$.
 
 
 ```{figure} ./images/HHcons_SS.png
@@ -210,7 +213,7 @@ name: FigSSeqlbHHsave
 
 ## [Stationary Nonsteady-State Equilibrium](#Chap_NSSeqlb)
 
-In this chapter, we define the stationary nonsteady-state equilibrium of the `OG-USA` model. Chapters \ref{Chap_Demog} through \ref{Chap_MarkClr} derive the equations that characterize the equilibrium of the model. We also need the steady-state solution from Chapter \ref{Chap_SSeqlb} to solve for the nonsteady-state equilibrium transition path. As with the steady-state equilibrium, we must use the stationarized version of the characterizing equations from Chapter \ref{Chap_Stnrz}.
+In this chapter, we define the stationary nonsteady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_Demog` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. We also need the steady-state solution from Chapter {ref}`Chap_SSeqlb` to solve for the nonsteady-state equilibrium transition path. As with the steady-state equilibrium, we must use the stationarized version of the characterizing equations from Chapter {ref}`Chap_Stnrz`.
 
 
 ### [Stationary Nonsteady-State Equilibrium Definition](#SecEqlbNSSdef)

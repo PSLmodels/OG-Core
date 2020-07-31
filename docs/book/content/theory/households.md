@@ -12,7 +12,7 @@ kernelspec:
 ---
 
 (glue)=
-
+(Chap_House)=
 # Households
 
 
@@ -21,9 +21,9 @@ In this section, we describe what is arguably the most important economic agent 
 
 ## [Budget Constraint](#SecHHBC)
 
-  We described the derivation and dynamics of the population distribution in Chapter \ref{Chap_Demog}. A measure $\omega_{1,t}$ of households is born each period, become economically relevant at age $s=E+1$ if they survive to that age, and live for up to $E+S$ periods ($S$ economically active periods), with the population of age-$s$ individuals in period $t$ being $\omega_{s,t}$. Let the age of a household be indexed by $s = \{1,2,...E+S\}$.
+  We described the derivation and dynamics of the population distribution in Chapter {ref}`Chap_Demog`. A measure $\omega_{1,t}$ of households is born each period, become economically relevant at age $s=E+1$ if they survive to that age, and live for up to $E+S$ periods ($S$ economically active periods), with the population of age-$s$ individuals in period $t$ being $\omega_{s,t}$. Let the age of a household be indexed by $s = \{1,2,...E+S\}$.
 
-  At birth, each household age $s=1$ is randomly assigned one of $J$ ability groups, indexed by $j$. Let $\lambda_j$ represent the fraction of individuals in each ability group, such that $\sum_j\lambda_j=1$. Note that this implies that the distribution across ability types in each age is given by $\boldsymbol{\lambda}=[\lambda_1,\lambda_2,...\lambda_J]$. Once an household is born and assigned to an ability type, it remains that ability type for its entire lifetime. This is deterministic ability heterogeneity as described in Chapter \ref{Chap_LfEarn}. Let $e_{j,s}>0$ be a matrix of ability-levels such that an individual of ability type $j$ will have lifetime abilities of $[e_{j,1},e_{j,2},...e_{j,E+S}]$. The budget constraint for the age-$s$ household in lifetime income group $j$ at time $t$ is the following,
+  At birth, each household age $s=1$ is randomly assigned one of $J$ ability groups, indexed by $j$. Let $\lambda_j$ represent the fraction of individuals in each ability group, such that $\sum_j\lambda_j=1$. Note that this implies that the distribution across ability types in each age is given by $\boldsymbol{\lambda}=[\lambda_1,\lambda_2,...\lambda_J]$. Once an household is born and assigned to an ability type, it remains that ability type for its entire lifetime. This is deterministic ability heterogeneity as described in Chapter {ref}`Chap_LfEarn}. Let $e_{j,s}>0$ be a matrix of ability-levels such that an individual of ability type $j$ will have lifetime abilities of $[e_{j,1},e_{j,2},...e_{j,E+S}]$. The budget constraint for the age-$s$ household in lifetime income group $j$ at time $t$ is the following,
   
 ```{math}
        :label: EqHHBC
@@ -34,7 +34,7 @@ In this section, we describe what is arguably the most important economic agent 
   
   where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_t$ is the interest rate (return on savings), $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the wage, and $n_{j,s,t}$ is labor supply.
 
-  The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. Chapter \ref{Chap_Beq} details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
+  The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. Chapter {ref}`Chap_Beq} details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
 
   The last two terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with government transfers and taxes, respectively. $TR_{t}$ is total government transfers to households in period $t$ and $\eta_{j,s,t}$ is the percent of those transfers that go to households of age $s$ and lifetime income group $j$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. This term is divided by the population of type $(j,s)$ households. We assume government transfers to be lump sum, so they do not create any direct distortions to household decisions.
 
@@ -47,7 +47,7 @@ In this section, we describe what is arguably the most important economic agent 
    ```
 
   
-  where the effective tax rate can be a function of both labor income and capital income $\tau^{etr}(x,y)$. Chapter \ref{Chap_TaxCalc} details exactly how we estimate these tax functions from microsimulation model data.
+  where the effective tax rate can be a function of both labor income and capital income $\tau^{etr}(x,y)$. Chapter {ref}`Chap_TaxCalc` details exactly how we estimate these tax functions from microsimulation model data.
 
   where many of the variables now have $j$ subscripts. The variables with three subscripts $(j,s,t)$ tell you to which ability type $j$ and age $s$ individual the variable belongs and in which period $t$.
 
@@ -114,11 +114,11 @@ Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted ellipti
       &\chi^b_j \rho_s \frac{(b_{j,s+1,t+1})^{1-\sigma} - 1}{1-\sigma} \quad\forall j,t \quad\text{and}\quad E+1 \leq s \leq E+S
   ```
 
-  The period utility function {eq}`EqHHPerUtil` is linearly separable in $c_{j,s,t}$, $n_{j,s,t}$, and $b_{j,s+1,t+1}$. The first term is a constant relative risk aversion (CRRA) utility of consumption. The second term is the elliptical disutility of labor described in Section {ref}`SecHHellipUtil`. The constant $\chi^n_s$ adjusts the disutility of labor supply relative to consumption and can vary by age $s$, which is helpful for calibrating the model to match labor market moments. See Chapter \ref{Chap_Calibr} for a discussion of the calibration.
+  The period utility function {eq}`EqHHPerUtil` is linearly separable in $c_{j,s,t}$, $n_{j,s,t}$, and $b_{j,s+1,t+1}$. The first term is a constant relative risk aversion (CRRA) utility of consumption. The second term is the elliptical disutility of labor described in Section {ref}`SecHHellipUtil`. The constant $\chi^n_s$ adjusts the disutility of labor supply relative to consumption and can vary by age $s$, which is helpful for calibrating the model to match labor market moments. See Chapter {ref}`Chap_Calibr` for a discussion of the calibration.
 
-  It is necessary to multiply the disutility of labor in {eq}`EqHHPerUtil` by $e^{g_y(1-\sigma)}$ because labor supply $n_{j,s,t}$ is stationary, but both consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ are growing at the rate of technological progress (see Chapter \ref{Chap_Stnrz}). The $e^{g_y(1-\sigma)}$ term keeps the relative utility values of consumption, labor supply, and savings in the same units.
+  It is necessary to multiply the disutility of labor in {eq}`EqHHPerUtil` by $e^{g_y(1-\sigma)}$ because labor supply $n_{j,s,t}$ is stationary, but both consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ are growing at the rate of technological progress (see Chapter {ref}`Chap_Stnrz`). The $e^{g_y(1-\sigma)}$ term keeps the relative utility values of consumption, labor supply, and savings in the same units.
 
-  The final term in the period utility function {eq}`EqHHPerUtil` is the "warm glow" bequest motive. It is a CRRA utility of savings, discounted by the mortality rate $\rho_s$.[^mylabel]: See Section \ref{SecDemogMort} of Chapter \ref{Chap_Demog} for a detailed discussion of mortality rates in `OG-USA`. Intuitively, it signifies the utility a household gets in the event that they don't live to the next period with probability $\rho_s$. It is a utility of savings beyond its usual benefit of allowing for more consumption in the next period. This utility of bequests also has constant $\chi^b_j$ which adjusts the utility of bequests relative to consumption and can vary by lifetime income group $j$. This is helpful for calibrating the model to match wealth distribution moments. See Chapter \ref{Chap_Calibr} for a discussion of the calibration. Note that any bequest before age $E+S$ is unintentional as it was bequeathed due an event of death that was uncertain. Intentional bequests are all bequests given in the final period of life in which death is certain $b_{j,E+S+1,t}$.
+  The final term in the period utility function {eq}`EqHHPerUtil` is the "warm glow" bequest motive. It is a CRRA utility of savings, discounted by the mortality rate $\rho_s$.[^mylabel]: See Section {ref}`SecDemogMort` of Chapter {ref}`Chap_Demog` for a detailed discussion of mortality rates in `OG-USA`. Intuitively, it signifies the utility a household gets in the event that they don't live to the next period with probability $\rho_s$. It is a utility of savings beyond its usual benefit of allowing for more consumption in the next period. This utility of bequests also has constant $\chi^b_j$ which adjusts the utility of bequests relative to consumption and can vary by lifetime income group $j$. This is helpful for calibrating the model to match wealth distribution moments. See Chapter {ref}`Chap_Beq` for a discussion of the calibration. Note that any bequest before age $E+S$ is unintentional as it was bequeathed due an event of death that was uncertain. Intentional bequests are all bequests given in the final period of life in which death is certain $b_{j,E+S+1,t}$.
 
   The household lifetime optimization problem is to choose consumption $c_{j,s,t}$, labor supply $n_{j,s,t}$, and savings $b_{j,s+1,t+1}$ in every period of life to maximize expected discounted lifetime utility, subject to budget constraints and upper-bound and lower-bound constraints.
 
@@ -156,7 +156,7 @@ Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted ellipti
 
 
 
-  The distortion of taxation on household decisions can be seen in Euler equations {eq}`EqHHeul_n` and {eq}`EqHHeul_b` in the terms that have a marginal tax rate $(1-\tau^{mtr})$. This comes from the expression for total tax liabilities as a function of the effective tax rate and total income as expressed in Equation {eq}`EqTaxCalcLiabETR`. Using the chain rule, we can break up the derivatives of total tax liability with respect to $n_{j,s,t}$ and $b_{j,s,t}$, respectively, into simpler functions of marginal tax rates. We discuss this in more detail in Chapter \ref{Chap_TaxCalc}.
+  The distortion of taxation on household decisions can be seen in Euler equations {eq}`EqHHeul_n` and {eq}`EqHHeul_b` in the terms that have a marginal tax rate $(1-\tau^{mtr})$. This comes from the expression for total tax liabilities as a function of the effective tax rate and total income as expressed in Equation {eq}`EqTaxCalcLiabETR`. Using the chain rule, we can break up the derivatives of total tax liability with respect to $n_{j,s,t}$ and $b_{j,s,t}$, respectively, into simpler functions of marginal tax rates. We discuss this in more detail in Chapter {ref}`Chap_TaxCalc`.
 
   ```{math}
    :label: EqMTRx_derive
@@ -171,7 +171,7 @@ Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted ellipti
 
 ## [Expectations](#SecHHexp)
 
-  To conclude the household's problem, we must make an assumption about how the age-$s$ household can forecast the time path of interest rates, wages, and total bequests $\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}$ over his remaining lifetime. As we will show in Chapters \ref{Chap_SSeqlb} and \ref{Chap_NSSeqlb}, the equilibrium interest rate $r_t$, wage $w_t$, and total bequests $BQ_t$ will be functions of the state vector $\boldsymbol{\Gamma}_t$, which turns out to be the entire distribution of savings at in period $t$.
+  To conclude the household's problem, we must make an assumption about how the age-$s$ household can forecast the time path of interest rates, wages, and total bequests $\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}$ over his remaining lifetime. As we will show in Chapter {ref}`Chap_Eqm`, the equilibrium interest rate $r_t$, wage $w_t$, and total bequests $BQ_t$ will be functions of the state vector $\boldsymbol{\Gamma}_t$, which turns out to be the entire distribution of savings at in period $t$.
 
   Define $\boldsymbol{\Gamma}_t$ as the distribution of household savings across households at time $t$.
   
@@ -187,7 +187,7 @@ Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted ellipti
     \boldsymbol{\Gamma}^e_{t+u} = \Omega^u\left(\boldsymbol{\Gamma}_t\right) \quad \forall t, \quad u\geq 1
   ```
 
-  where the $e$ superscript signifies that $\boldsymbol{\Gamma}^e_{t+u}$ is the expected distribution of wealth at time $t+u$ based on general beliefs $\Omega(\cdot)$ that are not constrained to be correct.\footnote{In Chapter \ref{Chap_NSSeqlb} we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Definition \ref{DefNSSEql}.}
+  where the $e$ superscript signifies that $\boldsymbol{\Gamma}^e_{t+u}$ is the expected distribution of wealth at time $t+u$ based on general beliefs $\Omega(\cdot)$ that are not constrained to be correct.\footnote{In Chapter {ref}`Chap_Eqm` we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Definition {ref}`DefNSSEql}.}
 
 ```{bibliography} ../../OGUSA_references.bib
 ```

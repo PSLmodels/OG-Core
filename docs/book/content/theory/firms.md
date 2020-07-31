@@ -1,3 +1,4 @@
+(Chap_Firms)=
 # Firms
 
 The production side of the `OG-USA` model is populated by a unit measure of identical perfectly competitive firms that rent capital $K_t$ and hire labor $L_t$ to produce output $Y_t$. Firms also face a flat corporate income tax $\tau^{corp}$ as well as a tax on the amount of capital they depreciate $\tau^\delta$.

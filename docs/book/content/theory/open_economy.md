@@ -1,3 +1,4 @@
+(Chap_SmOpEcn)=
 # Open Economy Options
 
 ## [Small Open Economy](#SecSmallOpen)
@@ -118,7 +119,7 @@ The stationarized version of this becomes:
   \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{t}\hat{D}^{f}_{t}
 ```
 
-Note that with a wedge between the interest rate on government debt and private capital as outlined in Chapter \ref{SecRateWedge} we need to be careful about the interest rates paid and the amount of capital and debt held.  In the case of the partially open economy with an interest rate wedge, we assume that domestic and foreign investors earn a rate of return on their portfolio of:
+Note that with a wedge between the interest rate on government debt and private capital as outlined in Chapter {ref}`SecRateWedge` we need to be careful about the interest rates paid and the amount of capital and debt held.  In the case of the partially open economy with an interest rate wedge, we assume that domestic and foreign investors earn a rate of return on their portfolio of:
 
 ```{math}
   r_{hh,t} = \frac{r_{t}K_{t} + r_{gov,t}D_{t}}{K_{t} + D_{t}}

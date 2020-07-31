@@ -12,8 +12,8 @@ kernelspec:
 ---
 
 (glue)=
-
-# [Exogenous Parameters](#SecExEnd_Exog)
+(Chap_Exog)=
+# Exogenous Parameters
 
 
 In this chapter, list the exogenous inputs to the model, options, and where the values come from (weak calibration vs. strong calibration). Point to the respective chapters for some of the inputs. Mention the code \texttt{parameters.py}.
@@ -56,12 +56,12 @@ List of exogenous parameters and baseline calibration values.
         & \quad for nonsteady-state equilibrium & \\
         $\nu$ & Dampening parameter for TPI & 0.4 \\
         \hline
-        $\{\{\omega_{s,0}\}_{s=1}^{E+S}\}_{t=0}^{T_2+S-1}$ & Initial population distribution by age & (see Ch. \ref{Chap_Demog}) \\
-        $\{f_s\}_{s=1}^{E+S}$ & Fertility rates by age & (see Sec. \ref{SecDemogFert}) \\
-        $\{i_s\}_{s=1}^{E+S}$ & Immigration rates by age & (see Sec. \ref{SecDemogMort}) \\
-        $\{\rho_s\}_{s=0}^{E+S}$ & Mortality rates by age & (see Sec. \ref{SecDemogImm}) \\
+        $\{\{\omega_{s,0}\}_{s=1}^{E+S}\}_{t=0}^{T_2+S-1}$ & Initial population distribution by age & (see Ch. {ref}`Chap_Demog`) \\
+        $\{f_s\}_{s=1}^{E+S}$ & Fertility rates by age & (see Sec. {ref}`SecDemogFert`) \\
+        $\{i_s\}_{s=1}^{E+S}$ & Immigration rates by age & (see Sec. {ref}`SecDemogMort`) \\
+        $\{\rho_s\}_{s=0}^{E+S}$ & Mortality rates by age & (see Sec. {ref}`SecDemogImm`) \\
 
-        % $\bm{\hat{\Gamma}}_1$ & Initial distribution of savings & $\bm{\bar{\Gamma}}$ \\
+        % $\boldsymbol{\hat{\Gamma}}_1$ & Initial distribution of savings & $\boldsymbol{\bar{\Gamma}}$ \\
 
         % $\{e_{j,s}\}_{j,s=1}^{J,S}$ & Deterministic ability process & (see \citealp{DEMPRW2015}) \\
         % $\{\lambda_j\}_{j=1}^J$ & Lifetime income group percentages & $[0.25,0.25,0.20,0.10,0.10,0.09,0.01]$ \\

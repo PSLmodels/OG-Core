@@ -13,6 +13,7 @@ kernelspec:
 
 (glue)=
 
+(Chap_LfEarn)=
 # Lifetime Earnings Profiles
 
 Among households in `OG-USA`, we model both age heterogeneity and within-age ability heterogeneity. We use this ability or productivity heterogeneity to generate the income heterogeneity that we see in the data.
@@ -47,7 +48,7 @@ Exogenous life cycle income ability paths $\log(e_{j,s})$ with $S=80$ and $J=7$
 ```
 
 
-Figure {numref}`FigLogAbil` shows a calibration for $J=7$ deterministic lifetime ability paths $e_{j,s}$ corresponding to labor income percentiles $\bm{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]$. Because there are few individuals above age 80 in the data, {cite}`DeBackerEtAl:2017b` extrapolate these estimates for model ages 80-100 using an arctan function.
+Figure {numref}`FigLogAbil` shows a calibration for $J=7$ deterministic lifetime ability paths $e_{j,s}$ corresponding to labor income percentiles $\boldsymbol{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]$. Because there are few individuals above age 80 in the data, {cite}`DeBackerEtAl:2017b` extrapolate these estimates for model ages 80-100 using an arctan function.
 
 We calibrate the model such that each lifetime income group has a different life-cycle profile of earnings. Since the distribution on income and wealth are key aspects of our model, we calibrate these processes so that we can represent earners in the top 1 percent of the distribution of lifetime income. It is income and wealth attributable to these households that has shown the greatest growth in recent decades (see, for example, {cite}`PikettySaez:2003`). In order to have observations on the earnings of those at very top of the distribution that are not subject to top-coding we use data from the Internal Revenue Services's (IRS) Statistics of Income program (SOI).
 

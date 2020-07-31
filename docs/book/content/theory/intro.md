@@ -1,3 +1,4 @@
+(Chap_Intro)=
 # Model Overview
 
 The overlapping generations model is a workhorse of dynamic fiscal analysis. `OG-USA` is dynamic in that households in the model make consumption, savings, and labor supply decisions based on their expectations over their entire lifetime, not just the current period. Because `OG-USA` is a general equilibrium model, behavioral changes by households and firms can cause macroeconomic variables and prices to adjust. This characteristic has recently become a required component of fiscal policy analysis in the United States.[^mylabel]: For a summary of the House rule adopted in 2015 that requires dynamic scoring of significant tax legislation see [this Politico article](http://thehill.com/blogs/floor-action/house/228684-house-adopts-dynamic-scoring-rule).
@@ -13,7 +14,7 @@ But the main characteristic that differentiates the overlapping generations mode
     * The only uncertainty households face is with respect to their mortality risk
     * realistic demographics: mortality rates, fertility rates, immigration rates, population growth, and population distribution dynamics
     * heterogeneous lifetime income groups within each age cohort, calibrated from U.S. tax data
-    * incorporation of detailed household tax data from \taxcalc microsimulation model
+    * incorporation of detailed household tax data from `Tax-Calculator` microsimulation model
     * calibrated intentional and unintentional bequests by households to surviving generations
 * Firms
     * representative perfectly competitive firm maximizes static profits with general CES production function by choosing capital and labor demand
