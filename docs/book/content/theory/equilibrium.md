@@ -179,7 +179,7 @@ name: FigSSeqlbHHsave
 
   Table {ref}`TabSSeqlbAggrVars` lists the steady-state prices and aggregate variable values along with some of the maximum error values from the characterizing equations.
 
-  \begin{table}[htbp] \centering \captionsetup{width=4.1in}
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=4.1in}
   \caption{\label{TabSSeqlbAggrVars}\textbf{Steady-state prices, aggregate variables, and maximum errors}}
     \begin{threeparttable}
     \begin{tabular}{>{\small}l >{\small}r |>{\small}l >{\small}r}
@@ -208,8 +208,36 @@ name: FigSSeqlbHHsave
       \scriptsize{\item[*]The steady-state computation time does not include any of the exogenous parameter computation processes, the longest of which is the estimation of the baseline tax functions which computation takes 1 hour and 15 minutes.}
     \end{tablenotes}
     \end{threeparttable}
-  \end{table}
+  \end{table} -->
 
+<div id="TabSSeqlbAggrVars">
+
+|                   |           |                    |                 |
+|:------------------|----------:|:-------------------|----------------:|
+| *r̄*               |     0.058 | *w̄*                |           1.148 |
+| *Ȳ*               |     0.630 | *C̄*                |           0.462 |
+| *Ī*               |     0.144 | *K̄*                |           1.810 |
+| *L̄*               |     0.357 | *B̄*                |           2.440 |
+| $\\overline{BQ}$  |     0.106 | *f**a**c**t**o**r* |         141,580 |
+| $\\overline{Rev}$ |     0.096 | $\\overline{TR}$   |           0.057 |
+| *Ḡ*               |     0.023 | *D̄*                |           0.630 |
+| Max. abs.         |  4.57e-13 | Max. abs.          |        8.52e-13 |
+| labor supply      |           | savings            |                 |
+| Euler error       |           | Euler error        |                 |
+| Resource          | -4.39e-15 | Serial             | 1 hr. 25.9 sec. |
+| constraint        |           | computation        |                 |
+| error             |           | time               |                 |
+
+<span id="TabSSeqlbAggrVars"
+label="TabSSeqlbAggrVars">\[TabSSeqlbAggrVars\]</span>**Steady-state
+prices, aggregate variables, and maximum errors**
+
+</div>
+
+The steady-state computation time does not include any of the exogenous
+parameter computation processes, the longest of which is the estimation
+of the baseline tax functions which computation takes 1 hour and 15
+minutes.
 
 ## [Stationary Nonsteady-State Equilibrium](#Chap_NSSeqlb)
 

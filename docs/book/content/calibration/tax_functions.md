@@ -111,7 +111,7 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
 
   This functional form for tax rates delivers flexible parametric functions that can fit the tax rate data shown in Figure {numref}`FigTaxCalc3Dtaxrates` as well as a wide variety of policy reforms. Further, these functional forms are monotonically increasing in both labor income $x$ and capital income $y$. This characteristic of monotonicity in $x$ and $y$ is essential for guaranteeing convex budget sets and thus uniqueness of solutions to the household Euler equations. The assumption of monotonicity does not appear to be a strong one when viewing the the tax rate data shown in Figure {numref}`FigTaxCalc3Dtaxrates`. While it does limit the potential tax systems to which one could apply our methodology, tax policies that do not satisfy this assumption would result in non-convex budget sets and thus require non-standard DGE model solutions methods and would not guarantee a unique equilibrium. The 12 parameters of our tax rate functional form from {eq}`EqTaxCalcTaxFuncForm` are summarized in Table {numref}`TabTaxCalcTfuncParams`.
 
-  \begin{table}[htbp] \centering \captionsetup{width=5.0in}
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=5.0in}
   \caption{\label{TabTaxCalcTfuncParams}\textbf{Description of tax rate function $\tau(x,y)$ parameters}}
     \begin{threeparttable}
     \begin{tabular}{>{\footnotesize}c |>{\footnotesize}l }
@@ -139,7 +139,28 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
     %   \scriptsize{\item[]Note: Maybe put sources here.}
     % \end{tablenotes}
     \end{threeparttable}
-  \end{table}
+  \end{table} -->
+
+
+<!-- :name: TabTaxCalcTfuncParams -->
+|            Symbol             | Description                                                                                                                |
+|:-----------------------------:|:---------------------------------------------------------------------------------------------------------------------------|
+|              $A$             | Coefficient on squared labor income term $x^2$ in $\tau(x)$                                                       |
+|              $B$              | Coefficient on labor income term $x$ in $\tau(x)$                                                                           |
+|              $C$              | Coefficient on squared capital income term $y^2$ in $\tau(y)$                                                     |
+|              $D$              | Coefficient on capital income term *y* in $\tau(y)$                                                                         |
+|    $max_{x}$   | Maximum tax rate on labor income $x$ given $x$ = 0                                                                         |
+|    $min_{x}$    | Minimum tax rate on labor income $x$ given $x$ = 0                                                                         |
+|    $max_{y}$    | Maximum tax rate on capital income $x$ given $x$ = 0                                                                       |
+|    $min_{y}$  | Minimum tax rate on capital income $x$ given $x$ = 0                                                                       |
+| $shift_{x}$ | shifter  &gt; \|$min_{x}$\| ensures that $\tau(x,y)$ + $shift_{x} \gte 0$ despite potentially |
+|                               | negative values for $\tau(x)$                                                                                               |
+| $shift_{y}$ | shifter  &gt; \|$min_{y}$\| ensures that $\tau(x,y)$ + $shift_{y} \gte 0$ despite potentially |
+|                               | negative values for $\tau(y)$                                                                                              |
+|       $shift$        | shifter (can be negative) allows for support of $\tau(x,y)$ to include                                                   |
+|                               | negative tax rates                                                                                                         |
+|              $\phi$             | Cobb-Douglas share parameter between 0 and 1                                                            
+
 
 ```{figure} ../theory/images/Age42_2017_vsPred.png
 ---
@@ -150,7 +171,7 @@ Estimated tax rate functions of ETR, MTRx, MTRy, and histogram as functions of l
 Note: Axes in the histogram in the lower-right panel have been switched relative to the other three figures in order to see the distribution.
 ```
 
-  \begin{table}[htbp] \centering \captionsetup{width=3.0in}
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=3.0in}
   \caption{\label{TabTaxCalcEst42}\textbf{Estimated baseline current law tax rate function $\tau_{s,t}(x,y)$ parameters for $s=42$, $t=2017$}}
     \begin{threeparttable}
     \begin{tabular}{>{\footnotesize}l |>{\footnotesize}r >{\footnotesize}r >{\footnotesize}r}
@@ -178,7 +199,25 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
     %   \scriptsize{\item[]Note: Maybe put sources here.}
     % \end{tablenotes}
     \end{threeparttable}
-  \end{table}
+  \end{table} -->
+
+  | Parameter            |          |          |          |
+|:---------------------|---------:|---------:|---------:|
+| *A*                  | 6.28E-12 | 3.43E-23 | 4.32E-11 |
+| *B*                  | 4.36E-05 | 4.50E-04 | 5.52E-05 |
+| *C*                  | 1.04E-23 | 9.81E-12 | 5.62E-12 |
+| *D*                  | 7.77E-09 | 5.30E-08 | 3.09E-06 |
+| $max_{x}$       |     0.80 |     0.71 |     0.44 |
+| $min_{x}$       |    -0.14 |    -0.17 | 0.00E+00 |
+| $max_{y}$     |     0.80 |     0.80 |     0.13 |
+| $min_{y}$      |    -0.15 |    -0.42 | 0.00E+00 |
+| $shift_{x}$ |     0.15 |     0.18 | 4.45E-03 |
+| $shift_{y}$ |     0.16 |     0.43 | 1.34E-03 |
+| $shift$      |    -0.15 |    -0.42 | 0.00E+00 |
+| $\phi$      |     0.84 |     0.96 |     0.86 |
+| Obs. (N)             |    3,105 |    3,105 |    1,990 |
+| SSE                  |  9122.68 | 15041.35 |  7756.54 |
+
 
   Let $\boldsymbol{\theta}_{s,t}=(A,B,C,D,max_x,min_x,max_y,min_y,shift_x,shift_y,shift,\phi)$ be the full vector of 12 parameters of the tax function for a particular type of tax rate, age of filers, and year. We first directly specify $min_x$ as the minimum tax rate and $max_x$ as the maximum tax rate in the data for age-$s$ and period-$t$ individuals for capital income close to 0 ($\$0<y<\$3,000$), and $min_y$ as the minimum tax rate and $max_y$ as the maximum tax rate for labor income close to 0 ($\$0<x<\$3,000$). We then set $shift_x = \min(0,|min_x|)+\ve$ and $shift_y = \min(0,|min_y|)+\ve$ so that the respective arguments in the brackets of {eq}`EqTaxCalcTaxFuncForm` are strictly positive. Then let $shift$ be be the minimum tax rate in the corresponding data minus $\ve$. Let $\bar{\boldsymbol{\theta}}_{s,t}=\{min_x,max_x,min_y,max_y,shift_x,shift_y, shift\}$ be the set of parameters we take directly from the data in this way.
 

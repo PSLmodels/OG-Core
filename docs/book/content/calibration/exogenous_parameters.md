@@ -38,7 +38,7 @@ glue("param_table", table, display=False)
 List of exogenous parameters and baseline calibration values.
 ```
 
-  \begin{table}[htbp] \centering \captionsetup{width=4.7in}
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=4.7in}
     \caption{\label{TabExogVars}\textbf{List of exogenous parameters and baseline calibration values}}
       \begin{threeparttable}
       \begin{tabular}{>{\footnotesize}c |>{\footnotesize}l |>{\footnotesize}c}
@@ -86,4 +86,28 @@ List of exogenous parameters and baseline calibration values.
         \hline\hline
       \end{tabular}
       \end{threeparttable}
-    \end{table}
+    \end{table} -->
+
+<div id="TabExogVars">
+
+|                                                        Symbol                                                        |                                               |                       Value                       |
+|:--------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------|:-------------------------------------------------:|
+|                                                         *S*                                                          | Maximum periods in economically active        |                        80                         |
+|                                                                                                                      | household life                                |                                                   |
+|                                                         *E*                                                          | Number of periods of youth economically       |   $\\text{round}\\left(\\frac{S}{4}\\right)=20$   |
+|                                                                                                                      | outside the model                             |                                                   |
+|                                                         *R*                                                          | Retirement age (period)                       | $E+\\text{round}\\left(\\frac{9}{16}S\\right)=65$ |
+|                                                   *T*<sub>1</sub>                                                    | Number of periods to steady state for initial |                        160                        |
+|                                                                                                                      | time path guesses                             |                                                   |
+|                                                   *T*<sub>2</sub>                                                    | Maximum number of periods to steady state     |                        160                        |
+|                                                                                                                      | for nonsteady-state equilibrium               |                                                   |
+|                                                         *ν*                                                          | Dampening parameter for TPI                   |                        0.4                        |
+| {{*ω*<sub>*s*, 0</sub>}<sub>*s* = 1</sub><sup>*E* + *S*</sup>}<sub>*t* = 0</sub><sup>*T*<sub>2</sub> + *S* − 1</sup> | Initial population distribution by age        |                 (see Ch. ref‘Chap                 |
+|                              {*f*<sub>*s*</sub>}<sub>*s* = 1</sub><sup>*E* + *S*</sup>                               | Fertility rates by age                        |           (see Sec. ref‘SecDemogFert‘)            |
+|                              {*i*<sub>*s*</sub>}<sub>*s* = 1</sub><sup>*E* + *S*</sup>                               | Immigration rates by age                      |           (see Sec. ref‘SecDemogMort‘)            |
+|                              {*ρ*<sub>*s*</sub>}<sub>*s* = 0</sub><sup>*E* + *S*</sup>                               | Mortality rates by age                        |            (see Sec. ref‘SecDemogImm‘)            |
+
+<span id="TabExogVars" label="TabExogVars">\[TabExogVars\]</span>**List
+of exogenous parameters and baseline calibration values**
+
+</div>

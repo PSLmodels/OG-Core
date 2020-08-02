@@ -67,6 +67,7 @@ name: FigFertRates
 Fertility rates by age ($f_s$) for $E+S=100$
 ```
 
+
   The large blue circles are the 2013 U.S. fertility rate data from \citet{MartinEtAl:2015}. These are 9 fertility rates $[0.3, 12.3, 47.1, 80.7, 105.5, 98.0, 49.3, 10.4, 0.8]$ that correspond to the midpoint ages of the following age (in years) bins $[10-14, 15-17, 18-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-49]$. In order to get our cubic spline interpolating function to fit better at the endpoints we added to fertility rates of zero to ages 9 and 10, and we added two fertility rates of zero to ages 55 and 56. The blue line in Figure {numref}`FigFertRates` shows the cubic spline interpolated function of the data.
 
   The red diamonds in Figure {numref}`FigFertRates` are the average fertility rate in age bins spanning households born at the beginning of period 1 (time = 0) and dying at the end of their 100th year. Let the total number of model years that a household lives be $E+S\leq 100$. Then the span from the beginning of period 1 (the beginning of year 0) to the end of period 100 (the end of year 99) is divided up into $E+S$ bins of equal length. We calculate the average fertility rate in each of the $E+S$ model-period bins as the average population-weighted fertility rate in that span. The red diamonds in Figure {numref}`FigFertRates` are the average fertility rates displayed at the midpoint in each of the $E+S$ model-period bins.
@@ -84,6 +85,24 @@ name: FigMortRates
 Mortality rates by age ($\rho_s$) for $E+S=100$
 ```
 
+<!-- +++
+```{code-cell} ogusa-dev
+:tags: [hide-cell]
+from myst_nb import glue
+import ogusa.parameter_plots as pp
+from ogusa import Specifications
+p = Specifications()
+fig = pp.plot_mort_rates(p)
+glue("mort_rates_plot", fig, display=False)
+```
+
+```{glue:figure} mort_rates_plot
+:figwidth: 750px
+:name: "FigMortRates"
+
+Mortality rates by age ($\rho_s$) for $E+S=100$
+``` -->
+
 
   The mortality rates in Figure {numref}`FigMortRates` are a population-weighted average of the male and female mortality rates reported in \citet{SocSec:2015}. Figure {numref}`FigMortRates` also shows that the data provide mortality rates for ages up to 111-years-old. We truncate the maximum age in years in our model to 100-years old. In addition, we constrain the mortality rate to be 1.0 or 100 percent at the maximum age of 100.
 
@@ -98,11 +117,22 @@ Mortality rates by age ($\rho_s$) for $E+S=100$
       i_{s+1} &= \frac{\omega_{s+1,t+1} - (1 - \rho_s)\omega_{s,t}}{\omega_{s+1,t}}\qquad\qquad\forall t\quad\text{and}\quad 1\leq s \leq E+S-1
   ```
 
-```{figure} ../theory/images/imm_rates_orig.png
----
-height: 500px
-name: FigImmRates
----
+
++++
+```{code-cell} ogusa-dev
+:tags: [hide-cell]
+from myst_nb import glue
+import ogusa.parameter_plots as pp
+from ogusa import Specifications
+p = Specifications()
+fig = pp.plot_imm_rates(p)
+glue("imm_rates_plot", fig, display=False)
+```
+
+```{glue:figure} imm_rates_plot
+:figwidth: 750px
+:name: "FigImmRates"
+
 Immigration rates by age ($i_s$), residual, $E+S=100$
 ```
 
@@ -228,7 +258,6 @@ Original immigration rates vs. adjusted immigration rates to make fixed steady-s
 ```
 
   The most recent year of population data come from \citet{Census:2015} population estimates for both sexes for 2013. We those data and use the population transition matrix {eq}`EqPopLOMstatmat2` to age it to the current model year of 2015. We then use {eq}`EqPopLOMstatmat2` to generate the transition path of the population distribution over the time period of the model. Figure {numref}`FigPopDistPath` shows the progression from the 2013 population data to the fixed steady-state at period $t=120$. The time path of the growth rate of the economically active population $\tilde{g}_{n,t}$ is shown in Figure {numref}`FigGrowthPath`.
-
 
 ```{figure} ../theory/images/PopDistPath.png
 ---

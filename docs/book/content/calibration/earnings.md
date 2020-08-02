@@ -69,7 +69,7 @@ We calibrate the model such that each lifetime income group has a different life
     ln(w_{i,t}) = \alpha_{i} + \beta_{1}age_{i,t} + \beta_{2}age_{i,t}^{2} + \beta_{3}*age_{i,t}^{3} + \varepsilon_{i,t}
   \end{equation}
 
-  \begin{table}[htbp]\centering\captionsetup{width=5.8in}
+  <!-- \begin{table}[htbp]\centering\captionsetup{width=5.8in}
     \caption{\label{tab:wage_step1}\textbf{Initial Log Wage Regressions}}
     \begin{threeparttable}
     \begin{tabular}{>{\scriptsize}l |>{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c}
@@ -96,7 +96,36 @@ We calibrate the model such that each lifetime income group has a different life
       \item[***]Significant at the 1 percent level ($p<0.01$).}
     \end{tablenotes}
     \end{threeparttable}
-  \end{table}
+  \end{table} -->
+
+<div id="tab:wage_step1">
+
+|                       |              |              |              |             |
+|:----------------------|:------------:|:------------:|:------------:|:-----------:|
+|                       |    Single    |    Single    |   Married,   |  Married,   |
+|                       |    males     |   females    |  male head   | female head |
+| *A**g**e*             | 0.177\*\*\*  | 0.143\*\*\*  | 0.134\*\*\*  |  0.065\*\*  |
+|                       |   (0.006)    |   (0.005)    |   (0.004)    |   (0.027)   |
+| *A**g**e*<sup>2</sup> | -0.003\*\*\* | -0.002\*\*\* | -0.002\*\*\* |   -0.000    |
+|                       |   (0.000)    |   (0.000)    |   (0.000)    |   (0.001)   |
+| *A**g**e*<sup>3</sup> | 0.000\*\*\*  | 0.000\*\*\*  | 0.000\*\*\*  |    0.000    |
+|                       |   (0.000)    |   (0.000)    |   (0.000)    |   (0.000)   |
+| Constant              | -0.839\*\*\* | -0.648\*\*\* |    -0.042    | 1.004\*\*\* |
+|                       |   (0.072)    |   (0.070)    |   (0.058)    |   (0.376)   |
+| Adj *R*<sup>2</sup>   |    -0.007    |    0.011     |    -0.032    |   -0.324    |
+| Observations          |    88,833    |    96,670    |   141,564    |    6,314    |
+
+<span id="tab:wage_step1"
+label="tab:wage_step1">\[tab:wage\_step1\]</span>**Initial Log Wage
+Regressions**
+
+</div>
+
+Source: CWHS data, 1991 – 2009.
+
+Significant at the 5 percent level (*p* &lt; 0.05).
+
+Significant at the 1 percent level (*p* &lt; 0.01).
 
   The parameter estimates, including the household fixed effects, from Equation {ref}`eqn:wage_step1` are shown in Table {ref}`tab:wage_step1`. These estimates are then used to impute values for log wages in years of each households' economic life for which we do not have data.  This creates a balanced panel of log wages of households with heads aged 21 to 80. The actual and imputed wage values are then used to calculate the net present value of lifetime labor endowments per adult for each household. Specifically, we define lifetime income for household $i$ as:
 
@@ -118,7 +147,7 @@ We calibrate the model such that each lifetime income group has a different life
   
   That is, lifetime income group one includes those in below the 25th percentile, group two includes those from the 25th to the median, group three includes those from the median to the 70th percentile, group four includes those from the 70th to the 80th percentile, group 5 includes those from the 80th to 90th percentile, group 6 includes those from the 90th to 99th percentile, and group 7 consists of the top one percent in the lifetime income distribution.  Table {ref}`tab:li_group_stats` presents descriptive statistics for each of these groups.
 
-  \begin{table}[htbp] \centering \captionsetup{width=6.0in}
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=6.0in}
   \caption{\label{tab:li_group_stats}\textbf{Descriptive Statistics by Lifetime Income Category}}
     \begin{threeparttable}
     \begin{tabular}{>{\scriptsize}l |>{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r}
@@ -145,7 +174,35 @@ We calibrate the model such that each lifetime income group has a different life
       \tiny{\item[*] CWHS data, 1991-2009, all nominal values in 2005\$.}
     \end{tablenotes}
     \end{threeparttable}
-  \end{table}
+  \end{table} -->
+
+<div id="tab:li_group_stats">
+
+|                  |         |           |           |           |           |           |            |           |
+|:-----------------|--------:|----------:|----------:|----------:|----------:|----------:|-----------:|----------:|
+|                  |         |           |           |           |           |           |            |           |
+|                  |         |           |           |           |           |           |            |           |
+| Percentiles      |    0-25 |     25-50 |     50-70 |     70-80 |     80-90 |     90-99 |     99-100 |     0-100 |
+| Observations     |  65,698 |   101,484 |    74,253 |    33,528 |    31,919 |    24,370 |      2,129 |   333,381 |
+| Fraction Single  |         |           |           |           |           |           |            |           |
+|    Females       |    0.30 |      0.24 |      0.25 |      0.32 |      0.38 |      0.40 |       0.22 |      0.28 |
+|    Males         |    0.18 |      0.22 |      0.30 |      0.35 |      0.38 |      0.37 |       0.20 |      0.26 |
+| Fraction Married |         |           |           |           |           |           |            |           |
+|    Female Head   |    0.08 |      0.00 |      0.00 |      0.00 |      0.00 |      0.00 |       0.00 |      0.02 |
+|    Male Head     |    0.45 |      0.53 |      0.45 |      0.32 |      0.23 |      0.23 |       0.57 |      0.39 |
+| Mean:            |         |           |           |           |           |           |            |           |
+| Age, Primary     |   51.72 |     44.15 |     38.05 |     34.09 |     31.53 |     30.79 |      40.17 |     39.10 |
+| Hourly Wage      |   11.60 |     16.98 |     20.46 |     23.04 |     26.06 |     40.60 |     237.80 |     21.33 |
+| Annual Wages     |  25,178 |    44,237 |    54,836 |    57,739 |    61,288 |    92,191 |    529,522 |    51,604 |
+| Lifetime Income  | 666,559 | 1,290,522 | 1,913,029 | 2,535,533 | 3,249,287 | 5,051,753 | 18,080,868 | 2,021,298 |
+
+<span id="tab:li_group_stats"
+label="tab:li_group_stats">\[tab:li\_group\_stats\]</span>**Descriptive
+Statistics by Lifetime Income Category**
+
+</div>
+
+CWHS data, 1991-2009, all nominal values in 2005$.
 
   To get a life-cycle profile of effective labor units for each group, we estimate the wage profile for each lifetime income group.  We do this by estimating the following regression model separately for each lifetime income group using data on actual (not imputed) wages:
   \begin{equation}\label{eqn:wage_profile}
@@ -160,7 +217,7 @@ We calibrate the model such that each lifetime income group has a different life
 
   where $x$ is age, and $a$, $b$, and $c$ are the parameters we search over for the best fit of the function to the following three criteria: 1) the value of the function should match the value of the data at age 80 2) the slope of the arctan should match the slope of the data at age 80 and 3) the value of the function should match the value of the data at age 100 times a constant.  This constant is .5 for all lifetime income groups, except the 2nd highest ability is .7 (otherwise, the 2nd highest has a lower income than the 3rd highest ability group in the last few years).
 
-  \begin{table}[htbp] \centering \captionsetup{width=6.0in}
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=6.0in}
   \caption{\label{tab:wage_profiles}\textbf{Log Wage Regressions, by Lifetime Income Group}}
     \begin{threeparttable}
     \begin{tabular}{>{\scriptsize}l |>{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c |>{\scriptsize}c}
@@ -192,4 +249,40 @@ We calibrate the model such that each lifetime income group has a different life
       \item[***]Significant at the 1 percent level ($p<0.01$).}
     \end{tablenotes}
     \end{threeparttable}
-  \end{table}
+  \end{table} -->
+
+  <div id="tab:wage_profiles">
+
+|           |                   |                   |                       |                       |              |
+|:----------|:-----------------:|:-----------------:|:---------------------:|:---------------------:|:------------:|
+|           |                   |                   |                       |                       |              |
+|           |                   |                   |                       |                       |              |
+|           |     Constant      |     *A**g**e*     | *A**g**e*<sup>2</sup> | *A**g**e*<sup>3</sup> | Observations |
+| 0 to 25   | 3.41000000\*\*\*  | -0.09720122\*\*\* |   0.00247639\*\*\*    |   -0.00001842\*\*\*   |    65,698    |
+|           |   (0.08718100)    |   (0.00543339)    |     (0.00010901)      |     (0.00000071)      |              |
+| 25 to 50  | 0.69689692\*\*\*  | 0.05995294\*\*\*  |      -0.00004086      |   -0.00000521\*\*\*   |   101,484    |
+|           |   (0.05020758)    |   (0.00345549)    |     (0.00007627)      |     (0.00000054)      |              |
+| 50 to 70  | -0.78761958\*\*\* | 0.17654618\*\*\*  |   -0.00240656\*\*\*   |   0.00001039\*\*\*    |    74,253    |
+|           |   (0.04519637)    |   (0.00338371)    |     (0.00008026)      |     (0.00000061)      |              |
+| 70 to 80  | -1.11000000\*\*\* | 0.21168263\*\*\*  |   -0.00306555\*\*\*   |   0.00001438\*\*\*    |    33,528    |
+|           |   (0.06838352)    |   (0.00530190)    |     (0.00012927)      |     (0.00000099)      |              |
+| 80 to 90  | -0.93939272\*\*\* | 0.21638731\*\*\*  |   -0.00321041\*\*\*   |   0.00001579\*\*\*    |    31,919    |
+|           |   (0.08333727)    |   (0.00664647)    |     (0.00016608)      |     (0.00000130)      |              |
+| 90 to 99  | 1.60000000\*\*\*  | 0.04500235\*\*\*  |   0.00094253\*\*\*    |   -0.00001470\*\*\*   |    24,370    |
+|           |   (0.11723131)    |   (0.00931334)    |     (0.00022879)      |     (0.00000176)      |              |
+| 99 to 100 | 1.89000000\*\*\*  |  0.09229392\*\*   |      0.00012902       |     -0.00001169\*     |    2,129     |
+|           |   (0.50501510)    |   (0.03858202)    |     (0.00090072)      |     (0.00000657)      |              |
+
+<span id="tab:wage_profiles"
+label="tab:wage_profiles">\[tab:wage\_profiles\]</span>**Log Wage
+Regressions, by Lifetime Income Group**
+
+</div>
+
+Source: CWHS data, 1991 – 2009.
+
+Significant at the 10 percent level (*p* &lt; 0.10).
+
+Significant at the 5 percent level (*p* &lt; 0.05).
+
+Significant at the 1 percent level (*p* &lt; 0.01).
