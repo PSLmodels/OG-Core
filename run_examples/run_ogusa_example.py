@@ -28,8 +28,7 @@ def main():
     # In this example the 'reform' is a change to 2017 law (the
     # baseline policy is tax law in 2018)
     reform_url = ('https://raw.githubusercontent.com/'
-                  'PSLmodels/Tax-Calculator/'
-                  taxcalc.__version__
+                  'PSLmodels/Tax-Calculator/' + taxcalc.__version__ +
                   '/taxcalc/reforms/2017_law.json')
     ref = Calculator.read_json_param_objects(reform_url, None)
     iit_reform = ref['policy']
