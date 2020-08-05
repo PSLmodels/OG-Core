@@ -3,8 +3,6 @@ name: "Check that docs build"
 on: [push, pull_request]
 
 jobs:
-  pre-commit:
-
   # Build the book to make sure that building the docs works
   build-book:
     name: Build docs
