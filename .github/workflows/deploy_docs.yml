@@ -1,4 +1,4 @@
-name: Build and Deploy Sphinx docs
+name: Build and Deploy Jupyter Book documentation
 on:
   push:
     branches:    
@@ -21,17 +21,17 @@ jobs:
           python-version: 3.7
           auto-activate-base: false
 
-      - name: Install and Build # install Sphinx and build docs
+      - name: Build # Build Jupyter Book
         shell: bash -l {0}
         run: |
-          conda install sphinx
+          pip install jupyter-book
           pip install -e .
           cd docs
-          make html
+          jb build ./book
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: docs/build/html # The folder the action should deploy.
+          FOLDER: docs/book/_build/html # The folder the action should deploy.
