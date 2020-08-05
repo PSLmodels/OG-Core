@@ -1,37 +1,300 @@
 
+
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ogusa.aggregates &#8212; OG-USA 0.6.2 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <title>ogusa.aggregates &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
-  
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/api/public_api.html">
+   OG-USA API
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/government.html">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/equilibrium.html">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/calibration/exogenous_parameters.html">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/calibration/demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/calibration/earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/calibration/tax_functions.html">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/calibration/bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
           
 
-          <div class="body" role="main">
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2F_modules/ogusa/aggregates.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <nav id="bd-toc-nav">
             
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
   <h1>Source code for ogusa.aggregates</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">------------------------------------------------------------------------</span>
@@ -50,7 +313,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 
 
-<div class="viewcode-block" id="get_L"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.get_L">[docs]</a><span class="k">def</span> <span class="nf">get_L</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<div class="viewcode-block" id="get_L"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.get_L">[docs]</a><span class="k">def</span> <span class="nf">get_L</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculate aggregate labor supply.</span>
 
@@ -78,7 +341,7 @@
     <span class="k">return</span> <span class="n">L</span></div>
 
 
-<div class="viewcode-block" id="get_I"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.get_I">[docs]</a><span class="k">def</span> <span class="nf">get_I</span><span class="p">(</span><span class="n">b_splus1</span><span class="p">,</span> <span class="n">K_p1</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<div class="viewcode-block" id="get_I"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.get_I">[docs]</a><span class="k">def</span> <span class="nf">get_I</span><span class="p">(</span><span class="n">b_splus1</span><span class="p">,</span> <span class="n">K_p1</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculate aggregate investment.</span>
 
@@ -135,7 +398,7 @@
     <span class="k">return</span> <span class="n">aggI</span></div>
 
 
-<div class="viewcode-block" id="get_B"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.get_B">[docs]</a><span class="k">def</span> <span class="nf">get_B</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
+<div class="viewcode-block" id="get_B"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.get_B">[docs]</a><span class="k">def</span> <span class="nf">get_B</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculate aggregate savings</span>
 
@@ -187,7 +450,7 @@
     <span class="k">return</span> <span class="n">B</span></div>
 
 
-<div class="viewcode-block" id="get_BQ"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.get_BQ">[docs]</a><span class="k">def</span> <span class="nf">get_BQ</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
+<div class="viewcode-block" id="get_BQ"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.get_BQ">[docs]</a><span class="k">def</span> <span class="nf">get_BQ</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculation of aggregate bequests.  If `use_zeta` is False, then</span>
 <span class="sd">    computes aggregate bequests within each lifetime income group.</span>
@@ -249,7 +512,7 @@
     <span class="k">return</span> <span class="n">BQ</span></div>
 
 
-<div class="viewcode-block" id="get_C"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.get_C">[docs]</a><span class="k">def</span> <span class="nf">get_C</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<div class="viewcode-block" id="get_C"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.get_C">[docs]</a><span class="k">def</span> <span class="nf">get_C</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculation of aggregate consumption.</span>
 
@@ -276,7 +539,7 @@
     <span class="k">return</span> <span class="n">aggC</span></div>
 
 
-<div class="viewcode-block" id="revenue"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.revenue">[docs]</a><span class="k">def</span> <span class="nf">revenue</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span>
+<div class="viewcode-block" id="revenue"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.revenue">[docs]</a><span class="k">def</span> <span class="nf">revenue</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculate aggregate tax revenue.</span>
@@ -362,7 +625,7 @@
             <span class="n">payroll_tax_revenue</span><span class="p">,</span> <span class="n">iit_revenue</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_r_hh"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.get_r_hh">[docs]</a><span class="k">def</span> <span class="nf">get_r_hh</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r_gov</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+<div class="viewcode-block" id="get_r_hh"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.get_r_hh">[docs]</a><span class="k">def</span> <span class="nf">get_r_hh</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r_gov</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Compute the interest rate on the household&#39;s portfolio of assets,</span>
 <span class="sd">    a mix of government debt and private equity.</span>
@@ -386,7 +649,7 @@
     <span class="k">return</span> <span class="n">r_hh</span></div>
 
 
-<div class="viewcode-block" id="resource_constraint"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.resource_constraint">[docs]</a><span class="k">def</span> <span class="nf">resource_constraint</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">K_f</span><span class="p">,</span> <span class="n">new_borrowing_f</span><span class="p">,</span>
+<div class="viewcode-block" id="resource_constraint"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.resource_constraint">[docs]</a><span class="k">def</span> <span class="nf">resource_constraint</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">K_f</span><span class="p">,</span> <span class="n">new_borrowing_f</span><span class="p">,</span>
                         <span class="n">debt_service_f</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Compute the error in the resource constraint.</span>
@@ -417,7 +680,7 @@
     <span class="k">return</span> <span class="n">rc_error</span></div>
 
 
-<div class="viewcode-block" id="get_K_splits"><a class="viewcode-back" href="../../aggregates.html#ogusa.aggregates.get_K_splits">[docs]</a><span class="k">def</span> <span class="nf">get_K_splits</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">K_demand_open</span><span class="p">,</span> <span class="n">D_d</span><span class="p">,</span> <span class="n">zeta_K</span><span class="p">):</span>
+<div class="viewcode-block" id="get_K_splits"><a class="viewcode-back" href="../../content/api/aggregates.html#ogusa.aggregates.get_K_splits">[docs]</a><span class="k">def</span> <span class="nf">get_K_splits</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">K_demand_open</span><span class="p">,</span> <span class="n">D_d</span><span class="p">,</span> <span class="n">zeta_K</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns total domestic capital as well as amounts of domestic</span>
 <span class="sd">    capital held by domestic and foreign investors separately.</span>
@@ -457,69 +720,33 @@
     <span class="k">return</span> <span class="n">K</span><span class="p">,</span> <span class="n">K_d</span><span class="p">,</span> <span class="n">K_f</span></div>
 </pre></div>
 
-          </div>
-          
+              </div>
+              
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">OG-USA</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../contributor_guide.html">Contributor Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">OG-USA API</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, Jason DeBacker and Richard W. Evans.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-    </div>
-
     
+    
+    <div class='prev-next-bottom'>
+        
 
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
     
   </body>
 </html>

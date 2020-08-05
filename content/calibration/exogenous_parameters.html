@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Exogenous Parameters &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Demographics" href="demographics.html" />
+    <link rel="prev" title="Open Economy Options" href="../theory/open_economy.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../api/public_api.html">
+   OG-USA API
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/government.html">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/equilibrium.html">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="tax_functions.html">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        <a class="dropdown-buttons"
+            href="../../_sources/content/calibration/exogenous_parameters.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download notebook file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/calibration/exogenous_parameters.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2Fcontent/calibration/exogenous_parameters.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="exogenous-parameters">
+<span id="chap-exog"></span><span id="glue"></span><h1>Exogenous Parameters<a class="headerlink" href="#exogenous-parameters" title="Permalink to this headline">¶</a></h1>
+<p>In this chapter, list the exogenous inputs to the model, options, and where the values come from (weak calibration vs. strong calibration). Point to the respective chapters for some of the inputs. Mention the code \texttt{parameters.py}.</p>
+<p>List all the exogenous parameters that are outputs of the model here.</p>
+<div class="cell tag_hide-cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myst_nb</span> <span class="kn">import</span> <span class="n">glue</span>
+<span class="kn">import</span> <span class="nn">ogusa.parameter_tables</span> <span class="k">as</span> <span class="nn">pt</span>
+<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">Specifications</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Specifications</span><span class="p">()</span>
+<span class="n">table</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">param_table</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">glue</span><span class="p">(</span><span class="s2">&quot;param_table&quot;</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="tabexogvars" style="width: 600px">
+<p class="caption"><span class="caption-number">Fig. 5 </span><span class="caption-text">List of exogenous parameters and baseline calibration values.</span><a class="headerlink" href="#tabexogvars" title="Permalink to this image">¶</a></p>
+</div>
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=4.7in}
+    \caption{\label{TabExogVars}\textbf{List of exogenous parameters and baseline calibration values}}
+      \begin{threeparttable}
+      \begin{tabular}{>{\footnotesize}c |>{\footnotesize}l |>{\footnotesize}c}
+        \hline\hline
+        Symbol & \multicolumn{1}{c}{\footnotesize{Description}} & Value \\
+        \hline
+        $S$ & Maximum periods in economically active & 80 \\[-1.5mm]
+        & \quad household life & \\
+        $E$ & Number of periods of youth economically & $\text{round}\left(\frac{S}{4}\right)=20$ \\[-1.5mm]
+        & \quad outside the model & \\
+        $R$ & Retirement age (period) & $E+\text{round}\left(\frac{9}{16}S\right)=65$ \\
+        $T_1$ & Number of periods to steady state for initial & 160 \\[-1.5mm]
+        & \quad time path guesses & \\
+        $T_2$ & Maximum number of periods to steady state & 160 \\[-1.5mm]
+        & \quad for nonsteady-state equilibrium & \\
+        $\nu$ & Dampening parameter for TPI & 0.4 \\
+        \hline
+        $\{\{\omega_{s,0}\}_{s=1}^{E+S}\}_{t=0}^{T_2+S-1}$ & Initial population distribution by age & (see Ch. {ref}`Chap_Demog`) \\
+        $\{f_s\}_{s=1}^{E+S}$ & Fertility rates by age & (see Sec. {ref}`SecDemogFert`) \\
+        $\{i_s\}_{s=1}^{E+S}$ & Immigration rates by age & (see Sec. {ref}`SecDemogMort`) \\
+        $\{\rho_s\}_{s=0}^{E+S}$ & Mortality rates by age & (see Sec. {ref}`SecDemogImm`) \\
+
+        % $\boldsymbol{\hat{\Gamma}}_1$ & Initial distribution of savings & $\boldsymbol{\bar{\Gamma}}$ \\
+
+        % $\{e_{j,s}\}_{j,s=1}^{J,S}$ & Deterministic ability process & (see \citealp{DEMPRW2015}) \\
+        % $\{\lambda_j\}_{j=1}^J$ & Lifetime income group percentages & $[0.25,0.25,0.20,0.10,0.10,0.09,0.01]$ \\
+        % $J$ & Number of lifetime income groups & 7 \\
+
+        % \hline
+        % $\tilde{l}$ & Maximum hours of labor supply & 1 \\
+        % $\beta$ & Discount factor & $(0.96)^\frac{80}{S}$ \\
+        % $\sigma$ & Coefficient of constant relative risk aversion & 1.5 \\
+        % $b$ & Scale parameter in utility of leisure & 0.573 \\
+        % $\upsilon$ & Shape parameter in utility of leisure & 2.856 \\
+        % $\chi^n_s$ & Disutility of labor level parameters & [19.041, 76.623] \\
+        % $\chi^b_j$ & Utility of bequests level parameters &  $[9.264 \times 10^{-5}, 118,648]$ \\ %$1.0 \ \forall j$ \\
+        % \hline
+        % $Z$ & Level parameter in production function & 1.0 \\
+        % $\alpha$ & Capital share of income & 0.35 \\
+        % $\delta$ & Capital depreciation rate & $1-(1-0.05)^\frac{80}{S}=0.05$ \\
+        % $g_y$ & Growth rate of labor augmenting & $(1+0.03)^\frac{80}{S}-1 = 0.03$ \\[-2mm]
+        % & \quad technological progress & \\
+        % \hline
+
+        \hline\hline
+      \end{tabular}
+      \end{threeparttable}
+    \end{table} -->
+<div id="TabExogVars">
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:center head"><p>Symbol</p></th>
+<th class="text-align:left head"><p></p></th>
+<th class="text-align:center head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:center"><p><em>S</em></p></td>
+<td class="text-align:left"><p>Maximum periods in economically active</p></td>
+<td class="text-align:center"><p>80</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p></p></td>
+<td class="text-align:left"><p>household life</p></td>
+<td class="text-align:center"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><em>E</em></p></td>
+<td class="text-align:left"><p>Number of periods of youth economically</p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\text{round}\\left(\\frac{S}{4}\\right)=20\)</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p></p></td>
+<td class="text-align:left"><p>outside the model</p></td>
+<td class="text-align:center"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><em>R</em></p></td>
+<td class="text-align:left"><p>Retirement age (period)</p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(E+\\text{round}\\left(\\frac{9}{16}S\\right)=65\)</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><em>T</em><sub>1</sub></p></td>
+<td class="text-align:left"><p>Number of periods to steady state for initial</p></td>
+<td class="text-align:center"><p>160</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p></p></td>
+<td class="text-align:left"><p>time path guesses</p></td>
+<td class="text-align:center"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><em>T</em><sub>2</sub></p></td>
+<td class="text-align:left"><p>Maximum number of periods to steady state</p></td>
+<td class="text-align:center"><p>160</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p></p></td>
+<td class="text-align:left"><p>for nonsteady-state equilibrium</p></td>
+<td class="text-align:center"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><em>ν</em></p></td>
+<td class="text-align:left"><p>Dampening parameter for TPI</p></td>
+<td class="text-align:center"><p>0.4</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p>{{<em>ω</em><sub><em>s</em>, 0</sub>}<sub><em>s</em> = 1</sub><sup><em>E</em> + <em>S</em></sup>}<sub><em>t</em> = 0</sub><sup><em>T</em><sub>2</sub> + <em>S</em> − 1</sup></p></td>
+<td class="text-align:left"><p>Initial population distribution by age</p></td>
+<td class="text-align:center"><p>(see Ch. ref‘Chap</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p>{<em>f</em><sub><em>s</em></sub>}<sub><em>s</em> = 1</sub><sup><em>E</em> + <em>S</em></sup></p></td>
+<td class="text-align:left"><p>Fertility rates by age</p></td>
+<td class="text-align:center"><p>(see Sec. ref‘SecDemogFert‘)</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p>{<em>i</em><sub><em>s</em></sub>}<sub><em>s</em> = 1</sub><sup><em>E</em> + <em>S</em></sup></p></td>
+<td class="text-align:left"><p>Immigration rates by age</p></td>
+<td class="text-align:center"><p>(see Sec. ref‘SecDemogMort‘)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p>{<em>ρ</em><sub><em>s</em></sub>}<sub><em>s</em> = 0</sub><sup><em>E</em> + <em>S</em></sup></p></td>
+<td class="text-align:left"><p>Mortality rates by age</p></td>
+<td class="text-align:center"><p>(see Sec. ref‘SecDemogImm‘)</p></td>
+</tr>
+</tbody>
+</table>
+<p><span id="TabExogVars" label="TabExogVars">[TabExogVars]</span><strong>List
+of exogenous parameters and baseline calibration values</strong></p>
+</div></div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "ogusa-dev"
+        },
+        kernelOptions: {
+            kernelName: "ogusa-dev",
+            path: "./content/calibration"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ogusa-dev'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="../theory/open_economy.html" title="previous page">Open Economy Options</a>
+    <a class='right-next' id="next-link" href="demographics.html" title="next page">Demographics</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
+    
+  </body>
+</html>

@@ -1,0 +1,483 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Open Economy Options &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Exogenous Parameters" href="../calibration/exogenous_parameters.html" />
+    <link rel="prev" title="Equilibrium" href="equilibrium.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../api/public_api.html">
+   OG-USA API
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="government.html">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="equilibrium.html">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/exogenous_parameters.html">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/tax_functions.html">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/theory/open_economy.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/open_economy.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#small-open-economy">
+   Small Open Economy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#partially-open-economy">
+   Partially Open Economy
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#stationarization">
+     Stationarization
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#foreign-debt-purchases">
+       Foreign debt purchases
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#foreign-capital-purchases">
+       Foreign capital purchases
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#resource-constraint">
+       Resource Constraint
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="open-economy-options">
+<span id="chap-smopecn"></span><h1>Open Economy Options<a class="headerlink" href="#open-economy-options" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="small-open-economy">
+<h2><a class="reference external" href="#SecSmallOpen">Small Open Economy</a><a class="headerlink" href="#small-open-economy" title="Permalink to this headline">¶</a></h2>
+<p>In the small open economy version of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, the county faces an exogenous world interest rate, <span class="math notranslate nohighlight">\(r^{*}_{t}\)</span> that determines the amount of savings and investment.  If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate.  Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., <span class="math notranslate nohighlight">\(K_{t}= K^{d}_{t}+K^{f}_{t}\)</span>.  Then foreign capital is given by:</p>
+<div class="math notranslate nohighlight">
+\[  K^{f}_{t} = K^{demand}_{t} - B_{t} - D_{t},\]</div>
+<p>where <span class="math notranslate nohighlight">\(B_{t}\)</span> is aggregate household savings and <span class="math notranslate nohighlight">\(D_{t}\)</span> is government borrowing.  Capital demand is determined from the firm’s first order condition for its choice of capital.</p>
+</div>
+<div class="section" id="partially-open-economy">
+<h2><a class="reference external" href="#SecPartialOpen">Partially Open Economy</a><a class="headerlink" href="#partially-open-economy" title="Permalink to this headline">¶</a></h2>
+<p>In the partially open economy version of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, the openness of the economy is modeled through two parameters that capture the extent of foreign lending to the domestic government and the amount of foreign lending of private capital to firms.</p>
+<p>The parameter <span class="math notranslate nohighlight">\(\zeta_{D}\)</span> gives the share of new debt issues that are purchased by foreigners.  The law of motion for foreign-held debt is therefore given by:</p>
+<div class="math notranslate nohighlight">
+\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t})\]</div>
+<p>Domestic debt holdings as then the remaining debt holdings needed to meet government demand for debt:</p>
+<div class="math notranslate nohighlight">
+\[  D^{d}_{t} = D_{t} - D^{f}_{t}\]</div>
+<p>The parameters <span class="math notranslate nohighlight">\(\zeta_{K}\)</span> helps to determine the share of domestic capital held by foreigners.  In particular, <span class="math notranslate nohighlight">\(\zeta_{D}\)</span> is the share of foreign capital held by foreigners in the small open economy specification:</p>
+<div class="math notranslate nohighlight">
+\[  K^{f}_{t} = \zeta_{K}K^{open}_{t}\]</div>
+<p><span class="math notranslate nohighlight">\(K^{open}_{t}\)</span> is the amount of capital that would need to flow into the country to meet firm demand for capital at the exogenous world interest rate from the small open economy specification, net of what domestic households can supply:</p>
+<div class="math notranslate nohighlight">
+\[  K^{open}_{t} = K^{demand, open}_{t} - (B_{t} - D^{d}_{t})\]</div>
+<p>where, <span class="math notranslate nohighlight">\(K^{demand, open}_{t}\)</span> is total capital demand by domestic firms at <span class="math notranslate nohighlight">\(r^
+{*}_{t}\)</span>, <span class="math notranslate nohighlight">\(B_{t}\)</span> are total asset holdings of domestic households, and <span class="math notranslate nohighlight">\(D^{d}_{t}\)</span> are holdings of government debt by domestic households.  Total asset holdings from households result from solving the household problem at the endogenous home country interest rate.  Note that there is a disconnect between the interest rates that determine firm capital demand and domestic household savings and the interest rate used to determine <span class="math notranslate nohighlight">\(K^{demand, open}_{t}\)</span>.  This assumption is useful in that it nests the small open economy case into the partial open economy model.  However, it does leave out the realistic responses of foreign capital supply to differentials in the home country interest rate and the world interest rate.</p>
+<p>Given the two equations above, we can find the total supply of capital as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}  K^{supply}_{t} &amp; = K^{d}_{t} + K^{f}_{t} \\
+   &amp; = B_{t} - D^{d}_{t} + \zeta_{K}K^{open}_{t} \\\end{split}\]</div>
+<div class="section" id="stationarization">
+<h3><a class="reference external" href="#SecOpenStationary">Stationarization</a><a class="headerlink" href="#stationarization" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="foreign-debt-purchases">
+<h4><a class="reference external" href="#SecForeignDebt">Foreign debt purchases</a><a class="headerlink" href="#foreign-debt-purchases" title="Permalink to this headline">¶</a></h4>
+<p>The amount of government debt is growing by the rate of productivity growth and the rate of population growth.  Thus, stationarized government debt is given by:</p>
+<div class="math notranslate nohighlight">
+\[  \hat{D}_{t} = \frac{D_{t}}{e^{g_{y}t}N_{t}}\]</div>
+<p>The stationarized form of the foreign and domestic capital holdings thus become:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}    \hat{D}^{f}_{t+1} &amp; = \frac{D^{f}_{t+1}}{e^{g_{y}t+1}N_{t+1}} = \frac{D^{f}_{t}}{e^{g_{y}t+1}N_{t+1}} + \zeta_{D}(\frac{D_{t+1}}{e^{g_{y}t+1}N_{t+1}} - \frac{D_{t}}{e^{g_{y}t+1}N_{t+1}}) \\
+    &amp; = \frac{\hat{D}^{f}_{t}N_{t}}{e^{g_{y}}N_{t+1}} + \zeta_{D}(\hat{D}_{t+1} - \frac{\hat{D}_{t}N_{t}}{e^{g_{y}}N_{t+1}}) = \frac{\hat{D}^{f}_{t}}{e^{g_{y}}g_{n,t+1}} + \zeta_{D}(\hat{D}_{t+1} - \frac{\hat{D}_{t}}{e^{g_{y}}g_{n,t+1}})\end{split}\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[  \hat{D}^{d}_{t} = \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}} = \frac{D_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{f}_{t}}{e^{g_{y}t}N_{t}} = \hat{D}_{t} - \hat{D}^{f}_{t}\]</div>
+<p>Note that in the steady-state, we still have <span class="math notranslate nohighlight">\(\hat{D}^{f} = \zeta_{D}\hat{D}\)</span></p>
+</div>
+<div class="section" id="foreign-capital-purchases">
+<h4><a class="reference external" href="#SecSForeignCapital">Foreign capital purchases</a><a class="headerlink" href="#foreign-capital-purchases" title="Permalink to this headline">¶</a></h4>
+<p>In the equation for foreign capital purchases, all quantities are growing at the rate of technological change and population growth.  Thus, to stationarize this equation, we find:</p>
+<div class="math notranslate nohighlight">
+\[  \hat{K}^{f}_{t} = \frac{K^{f}_{t}}{e^{g_{y}t}N_{t}}= \zeta_{K}\frac{K^{open}_{t}}{e^{g_{y}t}N_{t}} = \zeta_{K}\hat{K}^{open}_{t}\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[  \hat{K}^{open}_{t} = \frac{K^{open}_{t}}{e^{g_{y}t}N_{t}}= \frac{K^{demand, open}_{t}}{e^{g_{y}t}N_{t}} - \left(\frac{B_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}}\right) = \hat{K}^{demand, open}_{t} - (\hat{B}_{t}-\hat{D}_{t})\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}  \hat{K}^{supply}_{t} &amp;= \frac{K^{supply}_{t}}{e^{g_{y}t}N_{t}} = \frac{K^{d}_{t}}{e^{g_{y}t}N_{t}} + \frac{K^{f}_{t}}{e^{g_{y}t}N_{t}} = \hat{K}^{d}_{t} + \hat{K}^{f}_{t} \\
+   &amp; = \frac{B_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}} + \zeta_{K}\frac{K^{open}_{t}}{e^{g_{y}t}N_{t}} = \hat{B}_{t} - \hat{D}^{d}_{t} + \zeta_{K}\hat{K}^{open}_{t} \\\end{split}\]</div>
+</div>
+<div class="section" id="resource-constraint">
+<h4><a class="reference external" href="#SecOpenRC">Resource Constraint</a><a class="headerlink" href="#resource-constraint" title="Permalink to this headline">¶</a></h4>
+<p>As a result of the foreign ownership of capital, the resource constraint is modified.  In a closed economy, the resource constraint is given by:</p>
+<div class="math notranslate nohighlight">
+\[  Y_{t} = C_{t} + I_{t} + G_{t}\]</div>
+<p>In the partially open economy, some of the output is paid to the foreign owners of capital.  This amount is given by <span class="math notranslate nohighlight">\(r_{t}K^{f}_{t}\)</span>.  In addition, foreign lending to the home country’s government relaxes the resource constraint.  In the case , the resource constraint is given by:</p>
+<div class="math notranslate nohighlight">
+\[  Y_{t} = C_{t} + (K^{d}_{t+1} - K^{d}_{t}) + \delta K_{t} +  G_{t} + r_{t}K^{f}_{t} - (D^{f}_{t+1}-D^{f}_{t}) + rD^{f}_{t}\]</div>
+<p>The stationarized version of this becomes:</p>
+<div class="math notranslate nohighlight">
+\[  \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{t}\hat{D}^{f}_{t}\]</div>
+<p>Note that with a wedge between the interest rate on government debt and private capital as outlined in Chapter <span class="xref std std-ref">SecRateWedge</span> we need to be careful about the interest rates paid and the amount of capital and debt held.  In the case of the partially open economy with an interest rate wedge, we assume that domestic and foreign investors earn a rate of return on their portfolio of:</p>
+<div class="math notranslate nohighlight">
+\[  r_{hh,t} = \frac{r_{t}K_{t} + r_{gov,t}D_{t}}{K_{t} + D_{t}}\]</div>
+<p>In the partially open economy, the ratio of private capital to debt held by domestic households might differ from the ratio held by foreign households, but we assume they still earn the same rate of return on their portfolio.\footnote{One reason for this assumption is that it simplifies our solution since we do not need to know the domestic versus foreign holdings of capital before solving the households’ problems.}  With this assumption, we modify the resource constraint to be a function of this portfolio interest rate:</p>
+<div class="math notranslate nohighlight">
+\[  \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}\]</div>
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content/theory"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="equilibrium.html" title="previous page">Equilibrium</a>
+    <a class='right-next' id="next-link" href="../calibration/exogenous_parameters.html" title="next page">Exogenous Parameters</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
+    
+  </body>
+</html>

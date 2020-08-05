@@ -1,0 +1,833 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tax Function Estimation Functions &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Utilities Functions" href="utils.html" />
+    <link rel="prev" title="Tax Functions" href="tax.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1 current active">
+  <a class="reference internal" href="public_api.html">
+   OG-USA API
+  </a>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="aggregates.html">
+     Aggregates Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="elliptical_u_est.html">
+     Elliptical Utility Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="execute.html">
+     Model Execution Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="firm.html">
+     Firm Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="fiscal.html">
+     Fiscal Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="get_micro_data.html">
+     Functions to Get Micro-data from Tax-Calculator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="household.html">
+     Household Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="income.html">
+     Income Processes Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_plots.html">
+     OG-USA Output Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_tables.html">
+     OG-USA Output Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_plots.html">
+     OG-USA Parameter Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_tables.html">
+     OG-USA Parameter Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameters.html">
+     OG-USA Parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tax.html">
+     Tax Functions
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Tax Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="utils.html">
+     Utilities Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="wealth.html">
+     Wealth Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="aggregates.html">
+     Aggregates Equations
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/government.html">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/equilibrium.html">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/exogenous_parameters.html">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/tax_functions.html">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/api/txfunc.rst"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.rst</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2Fcontent/api/txfunc.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ogusa.txfunc">
+   ogusa.txfunc
+  </a>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="tax-function-estimation-functions">
+<span id="txfunc"></span><h1>Tax Function Estimation Functions<a class="headerlink" href="#tax-function-estimation-functions" title="Permalink to this headline">¶</a></h1>
+<p><strong>Tax Function Estimation Functions</strong></p>
+<div class="section" id="module-ogusa.txfunc">
+<span id="ogusa-txfunc"></span><h2>ogusa.txfunc<a class="headerlink" href="#module-ogusa.txfunc" title="Permalink to this headline">¶</a></h2>
+<p>tau_{s,t} is the effective tax rate, marginal tax rate on labor income,
+or the marginal tax rate on capital income, for a given age (s) in a
+particular year (t). x is total labor income, and y is total capital
+income.
+————————————————————————</p>
+<dl class="function">
+<dt id="ogusa.txfunc.get_tax_rates">
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">get_tax_rates</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">X</em>, <em class="sig-param">Y</em>, <em class="sig-param">wgts</em>, <em class="sig-param">tax_func_type</em>, <em class="sig-param">rate_type</em>, <em class="sig-param">for_estimation=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#get_tax_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.get_tax_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates tax rates given income data and the parameters of the tax
+functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>tuple</em>) – parameters of the tax function, varies by
+tax_func_type</p></li>
+<li><p><strong>X</strong> (<em>array_like</em>) – labor income data</p></li>
+<li><p><strong>Y</strong> (<em>array_like</em>) – capital income data</p></li>
+<li><p><strong>wgts</strong> (<em>array_like</em>) – weights for data observations</p></li>
+<li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
+<li><p><strong>rate_type</strong> (<em>str</em>) – type of tax rate: mtrx, mtry, etr</p></li>
+<li><p><strong>for_estimation</strong> (<em>bool</em>) – whether the results are used in
+estimation, if True, then tax rates are computed as
+deviations from the mean</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>model tax rates for each observation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>txrates (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.txfunc.wsumsq">
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">wsumsq</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#wsumsq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.wsumsq" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates the weighted sum of squared deviations of
+predicted values of tax rates (ETR, MTRx, or MTRy) from the tax
+rates from the data for the Cobb-Douglas functional form of the tax
+function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>tuple</em>) – tax function parameter values</p></li>
+<li><p><strong>args</strong> (<em>tuple</em>) – contains (fixed_tax_func_params, X, Y, txrates,
+wgts, tax_func_type, rate_type)</p></li>
+<li><p><strong>fixed_tax_func_params</strong> (<em>tuple</em>) – value of parameters of tax
+functions that are not estimated</p></li>
+<li><p><strong>X</strong> (<em>array_like</em>) – labor income data</p></li>
+<li><p><strong>Y</strong> (<em>array_like</em>) – capital income data</p></li>
+<li><p><strong>txrates</strong> (<em>array_like</em>) – tax rates data</p></li>
+<li><p><strong>wgts</strong> (<em>array_like</em>) – weights for data observations</p></li>
+<li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
+<li><p><strong>rate_type</strong> (<em>str</em>) – type of tax rate: mtrx, mtry, etr</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>weighted sum of squared deviations, &gt;0</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>wssqdev (scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.txfunc.find_outliers">
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">find_outliers</code><span class="sig-paren">(</span><em class="sig-param">sse_mat</em>, <em class="sig-param">age_vec</em>, <em class="sig-param">se_mult</em>, <em class="sig-param">start_year</em>, <em class="sig-param">varstr</em>, <em class="sig-param">graph=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#find_outliers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.find_outliers" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes a matrix of sum of squared errors (SSE) from
+tax function estimations for each age (s) in each year of the budget
+window (t) and marks estimations that have outlier SSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sse_mat</strong> (<em>Numpy array</em>) – SSE for each estimated tax function,
+size is SxBW</p></li>
+<li><p><strong>age_vec</strong> (<em>numpy array</em>) – vector of ages, length S</p></li>
+<li><p><strong>se_mult</strong> (<em>scalar</em>) – multiple of standard deviations before
+consider estimate an outlier</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – first year of budget window</p></li>
+<li><p><strong>varstr</strong> (<em>str</em>) – name of tax function being evaluated</p></li>
+<li><p><strong>graph</strong> (<em>bool</em>) – whether to output graphs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>indicators of weither tax function</dt><dd><p>is outlier, size is SxBW</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>sse_big_mat (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.txfunc.replace_outliers">
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">replace_outliers</code><span class="sig-paren">(</span><em class="sig-param">param_arr</em>, <em class="sig-param">sse_big_mat</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#replace_outliers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.replace_outliers" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function replaces outlier estimated tax function parameters
+with linearly interpolated tax function tax function parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_arr</strong> (<em>Numpy array</em>) – estimated tax function parameters,
+size is SxBWx#tax params</p></li>
+<li><p><strong>sse_big_mat</strong> (<em>Numpy array</em>) – indicators of weither tax function
+is outlier, size is SxBW</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>estimated and interpolated tax</dt><dd><p>function parameters, size SxBWx#tax params</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>param_arr_adj (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.txfunc.txfunc_est">
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">txfunc_est</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">s</em>, <em class="sig-param">t</em>, <em class="sig-param">rate_type</em>, <em class="sig-param">tax_func_type</em>, <em class="sig-param">numparams</em>, <em class="sig-param">output_dir</em>, <em class="sig-param">graph</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#txfunc_est"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.txfunc_est" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function uses tax tax rate and income data for individuals of a
+particular age (s) and a particular year (t) to estimate the
+parameters of a Cobb-Douglas aggregation function of two ratios of
+polynomials in labor income and capital income, respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>Pandas DataFrame</em>) – 11 variables with N observations of tax
+rates</p></li>
+<li><p><strong>s</strong> (<em>int</em>) – age of individual, &gt;= 21</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – year of analysis, &gt;= 2016</p></li>
+<li><p><strong>rate_type</strong> (<em>str</em>) – type of tax rate: mtrx, mtry, etr</p></li>
+<li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
+<li><p><strong>numparams</strong> (<em>int</em>) – number of parameters in the tax functions</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output directory for saving plot files</p></li>
+<li><p><strong>graph</strong> (<em>bool</em>) – whether to plot the estimated functions compared
+to the data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tax function estimation output:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>params (Numpy array): vector of estimated parameters</p></li>
+<li><dl class="simple">
+<dt>wsse (scalar): weighted sum of squared deviations from</dt><dd><p>minimization</p>
+</dd>
+</dl>
+</li>
+<li><p>obs (int): number of obervations in the data, &gt; 600</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.txfunc.tax_func_loop">
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">tax_func_loop</code><span class="sig-paren">(</span><em class="sig-param">t</em>, <em class="sig-param">data</em>, <em class="sig-param">start_year</em>, <em class="sig-param">s_min</em>, <em class="sig-param">s_max</em>, <em class="sig-param">age_specific</em>, <em class="sig-param">tax_func_type</em>, <em class="sig-param">analytical_mtrs</em>, <em class="sig-param">desc_data</em>, <em class="sig-param">graph_data</em>, <em class="sig-param">graph_est</em>, <em class="sig-param">output_dir</em>, <em class="sig-param">numparams</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#tax_func_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.tax_func_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates tax functions for a particular year.  Looped over.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>int</em>) – year of tax data to estimated tax functions for</p></li>
+<li><p><strong>data</strong> (<em>Pandas DataFrame</em>) – tax return data for year t</p></li>
+<li><p><strong>start_yr</strong> (<em>int</em>) – first year of budget window</p></li>
+<li><p><strong>s_min</strong> (<em>int</em>) – minimum age to estimate tax functions for</p></li>
+<li><p><strong>s_max</strong> (<em>int</em>) – maximum age to estimate tax functions for</p></li>
+<li><p><strong>age_specific</strong> (<em>bool</em>) – whether to estimate age specific tax
+functions</p></li>
+<li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
+<li><p><strong>analytical_mtrs</strong> (<em>bool</em>) – whether to use the analytical derivation
+of the marginal tax rates (and thus only need to estimate
+the effective tax rate functions)</p></li>
+<li><p><strong>desc_data</strong> (<em>bool</em>) – whether to print descriptive statistics</p></li>
+<li><p><strong>graph_data</strong> (<em>bool</em>) – whether to plot data</p></li>
+<li><p><strong>graph_est</strong> (<em>bool</em>) – whether to plot estimated coefficients</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to save output to</p></li>
+<li><p><strong>numparams</strong> (<em>int</em>) – number of parameters in tax functions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tax function estimation output:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>TotPop_yr (int): total population derived from micro data</p></li>
+<li><dl class="simple">
+<dt>Pct_age (Numpy array): fraction of observations that are</dt><dd><p>in each age bin</p>
+</dd>
+</dl>
+</li>
+<li><p>AvgInc (scalar): mean income in the data</p></li>
+<li><p>AvgETR (scalar): mean effective tax rate in data</p></li>
+<li><dl class="simple">
+<dt>AvgMTRx (scalar): mean marginal tax rate on labor income</dt><dd><p>in data</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>AvgMTRy (scalar): mean marginal tax rate on capital income</dt><dd><p>in data</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>frac_tax_payroll (scalar): fraction of total tax revenue</dt><dd><p>the comes from payroll taxes</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>etrparam_arr (Numpy array): parameters of the effective</dt><dd><p>tax rate functions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>etr_wsumsq_arr (Numpy array): weighted sum of squares from</dt><dd><p>estimation of the effective tax rate functions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>etr_obs_arr (Numpy array): weighted sum of squares from</dt><dd><p>estimation of the effective tax rate functions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mtrxparam_arr (Numpy array): parameters of the marginal</dt><dd><p>tax rate on labor income functions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mtrx_wsumsq_arr (Numpy array): weighted sum of squares</dt><dd><p>from estimation of the marginal tax rate on labor income
+functions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mtrx_obs_arr (Numpy array): weighted sum of squares from</dt><dd><p>estimation of the marginal tax rate on labor income
+functions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mtryparam_arr (Numpy array): parameters of the marginal</dt><dd><p>tax rate on capital income functions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mtry_wsumsq_arr (Numpy array): weighted sum of squares</dt><dd><p>from estimation of the marginal tax rate on capital
+income functions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mtry_obs_arr (Numpy array): weighted sum of squares from</dt><dd><p>estimation of the marginal tax rate on capital income
+functions</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.txfunc.tax_func_estimate">
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">tax_func_estimate</code><span class="sig-paren">(</span><em class="sig-param">BW</em>, <em class="sig-param">S</em>, <em class="sig-param">starting_age</em>, <em class="sig-param">ending_age</em>, <em class="sig-param">start_year=2021</em>, <em class="sig-param">baseline=True</em>, <em class="sig-param">analytical_mtrs=False</em>, <em class="sig-param">tax_func_type='DEP'</em>, <em class="sig-param">age_specific=False</em>, <em class="sig-param">reform={}</em>, <em class="sig-param">data=None</em>, <em class="sig-param">desc_data=False</em>, <em class="sig-param">graph_data=False</em>, <em class="sig-param">graph_est=False</em>, <em class="sig-param">client=None</em>, <em class="sig-param">num_workers=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#tax_func_estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.tax_func_estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function performs analysis on the source data from Tax-
+Calculator and estimates functions for the effective tax rate (ETR),
+marginal tax rate on labor income (MTRx), and marginal tax rate on
+capital income (MTRy).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BW</strong> (<em>int</em>) – number of years in the budget window (the period
+over which tax policy is assumed to vary)</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of model periods a model agent is economically
+active for</p></li>
+<li><p><strong>starting_age</strong> (<em>int</em>) – minimum age to estimate tax functions for</p></li>
+<li><p><strong>ending_age</strong> (<em>int</em>) – maximum age to estimate tax functions for</p></li>
+<li><p><strong>start_yr</strong> (<em>int</em>) – first year of budget window</p></li>
+<li><p><strong>baseline</strong> (<em>bool</em>) – whether these are the baseline tax functions</p></li>
+<li><p><strong>analytical_mtrs</strong> (<em>bool</em>) – whether to use the analytical derivation
+of the marginal tax rates (and thus only need to estimate
+the effective tax rate functions)</p></li>
+<li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
+<li><p><strong>age_specific</strong> (<em>bool</em>) – whether to estimate age specific tax
+functions</p></li>
+<li><p><strong>reform</strong> (<em>dict</em>) – policy reform dictionary for Tax-Calculator</p></li>
+<li><p><strong>data</strong> (<em>str</em><em> or </em><em>Pandas DataFrame</em>) – path to or data to use in
+Tax-Calculator</p></li>
+<li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – number of workers to use for parallelization
+with Dask</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary with tax function parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict_param (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.txfunc.get_tax_func_estimate">
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">get_tax_func_estimate</code><span class="sig-paren">(</span><em class="sig-param">BW</em>, <em class="sig-param">S</em>, <em class="sig-param">starting_age</em>, <em class="sig-param">ending_age</em>, <em class="sig-param">baseline=False</em>, <em class="sig-param">analytical_mtrs=False</em>, <em class="sig-param">tax_func_type='DEP'</em>, <em class="sig-param">age_specific=False</em>, <em class="sig-param">start_year=2021</em>, <em class="sig-param">reform={}</em>, <em class="sig-param">guid=''</em>, <em class="sig-param">tax_func_path=None</em>, <em class="sig-param">data=None</em>, <em class="sig-param">client=None</em>, <em class="sig-param">num_workers=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#get_tax_func_estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.get_tax_func_estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calls the tax function estimation routine and saves
+the resulting dictionary in pickle files corresponding to the
+baseline or reform policy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BW</strong> (<em>int</em>) – number of years in the budget window (the period over
+which tax policy is assumed to vary)</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of model periods a model agent is economically
+active for</p></li>
+<li><p><strong>starting_age</strong> (<em>int</em>) – minimum age to estimate tax functions for</p></li>
+<li><p><strong>ending_age</strong> (<em>int</em>) – maximum age to estimate tax functions for</p></li>
+<li><p><strong>baseline</strong> (<em>bool</em>) – whether these are the baseline tax functions</p></li>
+<li><p><strong>analytical_mtrs</strong> (<em>bool</em>) – whether to use the analytical derivation
+of the marginal tax rates (and thus only need to estimate
+the effective tax rate functions)</p></li>
+<li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
+<li><p><strong>age_specific</strong> (<em>bool</em>) – whether to estimate age specific tax
+functions</p></li>
+<li><p><strong>start_yr</strong> (<em>int</em>) – first year of budget window</p></li>
+<li><p><strong>reform</strong> (<em>dict</em>) – policy reform dictionary for Tax-Calculator</p></li>
+<li><p><strong>guid</strong> (<em>str</em>) – id for the particular run</p></li>
+<li><p><strong>tax_func_path</strong> (<em>str</em>) – path to save pickle with estimated tax
+function parameters to</p></li>
+<li><p><strong>data</strong> (<em>str</em><em> or </em><em>Pandas DataFrame</em>) – path to or data to use in
+Tax-Calculator</p></li>
+<li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em>) – number of workers to use for parallelization
+with Dask</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content/api"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="tax.html" title="previous page">Tax Functions</a>
+    <a class='right-next' id="next-link" href="utils.html" title="next page">Utilities Functions</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
+    
+  </body>
+</html>

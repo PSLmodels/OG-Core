@@ -1,0 +1,688 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fiscal Functions &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Functions to Get Micro-data from Tax-Calculator" href="get_micro_data.html" />
+    <link rel="prev" title="Firm Equations" href="firm.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1 current active">
+  <a class="reference internal" href="public_api.html">
+   OG-USA API
+  </a>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="aggregates.html">
+     Aggregates Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="elliptical_u_est.html">
+     Elliptical Utility Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="execute.html">
+     Model Execution Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="firm.html">
+     Firm Equations
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Fiscal Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="get_micro_data.html">
+     Functions to Get Micro-data from Tax-Calculator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="household.html">
+     Household Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="income.html">
+     Income Processes Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_plots.html">
+     OG-USA Output Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_tables.html">
+     OG-USA Output Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_plots.html">
+     OG-USA Parameter Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_tables.html">
+     OG-USA Parameter Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameters.html">
+     OG-USA Parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tax.html">
+     Tax Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="txfunc.html">
+     Tax Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="utils.html">
+     Utilities Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="wealth.html">
+     Wealth Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="aggregates.html">
+     Aggregates Equations
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/government.html">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/equilibrium.html">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/exogenous_parameters.html">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/tax_functions.html">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/api/fiscal.rst"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.rst</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2Fcontent/api/fiscal.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ogusa.fiscal">
+   ogusa.fiscal
+  </a>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="fiscal-functions">
+<span id="fiscal"></span><h1>Fiscal Functions<a class="headerlink" href="#fiscal-functions" title="Permalink to this headline">¶</a></h1>
+<p><strong>Government Budget Functions</strong></p>
+<div class="section" id="module-ogusa.fiscal">
+<span id="ogusa-fiscal"></span><h2>ogusa.fiscal<a class="headerlink" href="#module-ogusa.fiscal" title="Permalink to this headline">¶</a></h2>
+<hr class="docutils" />
+<p>Fiscal policy functions for unbalanced budgeting. In particular, some
+functions require time-path calculation.</p>
+<hr class="docutils" />
+<dl class="function">
+<dt id="ogusa.fiscal.D_G_path">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">D_G_path</code><span class="sig-paren">(</span><em class="sig-param">r_gov</em>, <em class="sig-param">dg_fixed_values</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#D_G_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.D_G_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the time paths of debt and government spending</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  &amp;G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
+  &amp;\text{where}\quad g_{g,t} =
+    \begin{cases}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t &lt; T_{G1} \\
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}
+    \end{cases} \\
+  &amp;\quad\text{and}\quad g_{tr,t} = 1 \quad\forall t
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_gov</strong> (<em>Numpy array</em>) – interest rate on government debt over the
+time path</p></li>
+<li><p><strong>dg_fixed_values</strong> (<em>tuple</em>) – (Y, total_tax_revenue,
+agg_pension_outlays, TR, D0, G0) values of variables that
+are taken as given in the government budget constraint</p></li>
+<li><p><strong>Gbaseline</strong> (<em>Numpy array</em>) – government spending over the time path
+in the baseline equilibrium, used only if
+baseline_spending=True</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>fiscal variable path output:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>D (Numpy array): government debt over the time path</p></li>
+<li><p>G (Numpy array): government spending over the time path</p></li>
+<li><dl class="simple">
+<dt>D_d (Numpy array): domestic held government debt over the</dt><dd><p>time path</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>D_f (Numpy array): foreign held government debt over the</dt><dd><p>time path</p>
+</dd>
+</dl>
+</li>
+<li><p>new_borrowing_f: new borrowing from foreigners</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.fiscal.get_D_ss">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_D_ss</code><span class="sig-paren">(</span><em class="sig-param">r_gov</em>, <em class="sig-param">Y</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_D_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_D_ss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the steady-state values of government spending and debt</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+    \bar{D} = \alpha_D \bar{Y}\\
+    \bar{D_d} = \bar{D} - \bar{D}^{f}\\
+    \bar{D_f} = \zeta_{D}\bar{D} \\
+    \text{new borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
+    \bar{debt service} = \bar{r}_{gov}\bar{D} \\
+    \text{new foreign borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_gov</strong> (<em>scalar</em>) – steady-state interest rate on government debt</p></li>
+<li><p><strong>Y</strong> (<em>scalar</em>) – steady-state GDP</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>steady-state fiscal variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>D (scalar): steady-state government debt</p></li>
+<li><p>D_d (scalar): steady-state domestic held government debt</p></li>
+<li><p>D_f (scalar): steady-state foreign held government debt</p></li>
+<li><p>new_borrowing: steady-state new borrowing</p></li>
+<li><p>debt_service: steady-state debt service costs</p></li>
+<li><p>new_borrowing_f: steady-state borrowing from foreigners</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.fiscal.get_G_ss">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_G_ss</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">total_tax_revenue</em>, <em class="sig-param">agg_pension_outlays</em>, <em class="sig-param">TR</em>, <em class="sig-param">new_borrowing</em>, <em class="sig-param">debt_service</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_G_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the steady-state values of government spending.</p>
+<div class="math notranslate nohighlight">
+\[\bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>scalar</em>) – aggregate output</p></li>
+<li><p><strong>total_tax_revenue</strong> (<em>scalar</em>) – steady-state tax revenue</p></li>
+<li><p><strong>agg_pension_outlays</strong> (<em>scalar</em>) – steady-state pension outlays</p></li>
+<li><p><strong>TR</strong> (<em>scalar</em>) – steady-state transfer spending</p></li>
+<li><p><strong>new_borrowing</strong> (<em>scalar</em>) – steady-state amount of new borowing</p></li>
+<li><p><strong>debt_service</strong> (<em>scalar</em>) – steady-state debt service costs</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>steady-state government spending</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>G (tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.fiscal.get_debt_service_f">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_debt_service_f</code><span class="sig-paren">(</span><em class="sig-param">r_hh</em>, <em class="sig-param">D_f</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_debt_service_f"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_debt_service_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to compute foreign debt service payments.</p>
+<dl class="simple">
+<dt>..math::</dt><dd><p>text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}</p>
+</dd>
+</dl>
+<p>Args:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>foreign debt service payment amount</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>debt_service_f (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.fiscal.get_TR">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_TR</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">TR</em>, <em class="sig-param">G</em>, <em class="sig-param">total_tax_revenue</em>, <em class="sig-param">agg_pension_outlays</em>, <em class="sig-param">p</em>, <em class="sig-param">method</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_TR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to compute aggregate transfers.  Note that this excludes
+transfer spending through the public pension system.</p>
+<dl>
+<dt>..math::</dt><dd><p>[
+TR^{‘}_{t}=
+begin{cases}</p>
+<blockquote>
+<div><p>Revenue,&amp; text{if balanced budget} \
+TR^{baseline}, &amp; text{if baseline spending}\
+alpha_{T,t}Y_{t},   &amp; text{otherwise}</p>
+</div></blockquote>
+<p>end{cases}
+]</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
+<li><p><strong>TR</strong> (<em>array_like</em>) – aggregate government transfers</p></li>
+<li><p><strong>G</strong> (<em>array_like</em>) – total government spending</p></li>
+<li><p><strong>total_tax_revenue</strong> (<em>array_like</em>) – total tax revenue net of
+government pension benefits</p></li>
+<li><p><strong>agg_pension_outlays</strong> (<em>array_like</em>) – total government pension
+outlays</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – whether doing SS or TP calculation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>new value of aggregate government transfers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>new_TR (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.fiscal.get_r_gov">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_r_gov</code><span class="sig-paren">(</span><em class="sig-param">r</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_r_gov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_r_gov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the interest rate on government debt</p>
+<div class="math notranslate nohighlight">
+\[r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – interest rate on private capital debt over the
+time path or in the steady state</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>interest rate on government debt over the</dt><dd><p>time path or in the steady-state</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>r_gov (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content/api"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="firm.html" title="previous page">Firm Equations</a>
+    <a class='right-next' id="next-link" href="get_micro_data.html" title="next page">Functions to Get Micro-data from Tax-Calculator</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
+    
+  </body>
+</html>

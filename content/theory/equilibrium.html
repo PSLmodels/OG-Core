@@ -1,0 +1,790 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Equilibrium &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Open Economy Options" href="open_economy.html" />
+    <link rel="prev" title="Stationarization" href="stationarization.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../api/public_api.html">
+   OG-USA API
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="government.html">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/exogenous_parameters.html">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/tax_functions.html">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/theory/equilibrium.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/equilibrium.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#steady-state-equilibirum">
+   Steady-State Equilibirum
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#stationary-steady-state-equilibrium-definition">
+     Stationary Steady-State Equilibrium Definition
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#stationary-steady-state-solution-method">
+     Stationary Steady-state Solution Method
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#baseline-steady-state-results">
+   Baseline Steady-state Results
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#stationary-nonsteady-state-equilibrium">
+   Stationary Nonsteady-State Equilibrium
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#stationary-nonsteady-state-equilibrium-definition">
+     Stationary Nonsteady-State Equilibrium Definition
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#stationary-nonsteady-state-solution-method">
+     Stationary Nonsteady-state Solution Method
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#baseline-nonsteady-state-results">
+     Baseline Nonsteady-state Results
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="equilibrium">
+<span id="chap-eqm"></span><h1>Equilibrium<a class="headerlink" href="#equilibrium" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="steady-state-equilibirum">
+<h2><a class="reference external" href="#Chap_SSeqlb">Steady-State Equilibirum</a><a class="headerlink" href="#steady-state-equilibirum" title="Permalink to this headline">¶</a></h2>
+<p>In this chapter, we define the stationary steady-state equilibrium of the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> model. Chapters <a class="reference internal" href="../calibration/demographics.html#chap-demog"><span class="std std-ref">Demographics</span></a> through <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a> derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> comes from productivity growth <span class="math notranslate nohighlight">\(g_y\)</span> in the production function <a class="reference internal" href="firms.html#equation-eqfirmscesprodfun">(16)</a>, population growth <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> as described in Chapter <a class="reference internal" href="../calibration/demographics.html#chap-demog"><span class="std std-ref">Demographics</span></a>, and the potential for unbounded growth in government debt as described in Chapter <span class="xref std std-ref">Chap_UnbalGBC</span>.</p>
+<p>We implemented an automatic government budget closure rule using government spending <span class="math notranslate nohighlight">\(G_t\)</span> as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in <code class="xref eq docutils literal notranslate"><span class="pre">EqUnbalGBCclosure</span></code>. And we showed in Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a> how to stationarize all the other characterizing equations.</p>
+<div class="section" id="stationary-steady-state-equilibrium-definition">
+<h3><a class="reference external" href="#SecEqlbSSdef">Stationary Steady-State Equilibrium Definition</a><a class="headerlink" href="#stationary-steady-state-equilibrium-definition" title="Permalink to this headline">¶</a></h3>
+<p>With the stationarized model, we can now define the stationary steady-state equilibrium. This equilibrium will be long-run values of the endogenous variables that are constant over time. In a perfect foresight model, the steady-state equilibrium is the state of the economy at which the model settles after a finite amount of time, regardless of the initial condition of the model. Once the model arrives at the steady-state, it stays there indefinitely unless it receives some type of shock or stimulus.</p>
+<p>These stationary values have all the growth components from productivity growth and population growth removed as defined in Table <span class="xref std std-ref">TabStnrzStatVars</span>. Because the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span> and population growth rate series <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> are exogenous. We can transform the stationary equilibrium values of the variables back to their nonstationary values by reversing the identities in Table <span class="xref std std-ref">TabStnrzStatVars</span>.</p>
+<p>\vspace{5mm}
+\hrule
+\vspace{-1mm}
+\begin{definition}[\textbf{Stationary steady-state equilibrium}]\label{DefSSEql}
+A non-autarkic stationary steady-state equilibrium in the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> model is defined as constant allocations of stationary household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}=\bar{n}_{j,s}\)</span> and savings <span class="math notranslate nohighlight">\(\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(t\)</span>, and <span class="math notranslate nohighlight">\(E+1\leq s\leq E+S\)</span>, and constant prices <span class="math notranslate nohighlight">\(\hat{w}_t=\bar{w}\)</span> and <span class="math notranslate nohighlight">\(r_t=\bar{r}\)</span> for all <span class="math notranslate nohighlight">\(t\)</span> such that the following conditions hold:
+\begin{enumerate}
+\item the population has reached its stationary steady-state distribution <span class="math notranslate nohighlight">\(\hat{\omega}_{s,t} = \bar{\omega}_s\)</span> for all <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(t\)</span> as characterized in Section <span class="xref std std-ref">SecDemogPopSSTP</span>,
+\item households optimize according to <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-n">(37)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-b">(38)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-b">(38)</a>,
+\item firms optimize according to <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-l">(42)</a> and <a class="reference internal" href="stationarization.html#equation-eqfirmfoc-k">(43)</a>,
+\item Government activity behaves according to <a class="reference internal" href="stationarization.html#equation-eqstnrzgovbc">(48)</a> and <code class="xref eq docutils literal notranslate"><span class="pre">EqStnrzClosureRule</span></code>, and
+\item markets clear according to <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrlab">(52)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrcap">(53)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrbq">(55)</a>.
+\end{enumerate}
+\end{definition}
+\vspace{-2mm}
+\hrule
+\vspace{5mm}</p>
+</div>
+<div class="section" id="stationary-steady-state-solution-method">
+<h3><a class="reference external" href="#SecEqlbSSsoln">Stationary Steady-state Solution Method</a><a class="headerlink" href="#stationary-steady-state-solution-method" title="Permalink to this headline">¶</a></h3>
+<p>\renewcommand\theenumi{\arabic{enumi}}
+\renewcommand\theenumii{\alph{enumii}}
+\renewcommand\theenumiii{\roman{enumiii}}</p>
+<p>This section describes the solution method for the stationary steady-state equilibrium described in Definition <span class="xref std std-ref">DefSSEql</span>. The steady-state is characterized by <span class="math notranslate nohighlight">\(2JS\)</span> equations and <span class="math notranslate nohighlight">\(2JS\)</span> unknowns. However, because some of the other equations cannot be solved for analytically and substituted into the Euler equations, we use a fixed point algorithm to solve for the steady-state. We begin by making a guess at steady-state interest rate <span class="math notranslate nohighlight">\(\bar{r}\)</span>, total bequests <span class="math notranslate nohighlight">\(\overline{BQ}\)</span>, total household transfers <span class="math notranslate nohighlight">\(\overline{TR}\)</span>, and income multiplier <span class="math notranslate nohighlight">\(factor\)</span>. We call these four steady-state variables the “outer loop” variables in our steady-state solution method and the determination of a fixed point over these variables the ``outer loop’’ of the steady-state solution method. The outer loop variables are the macroeconomic variables necessary to solve the household’s problem.</p>
+<p>For each iteration over these outer-loop variables, we solve the household problem given the values of these macroeconomic variables.  We call this solution the ``inner loop’’ of the steady-state solution method.  In the inner loop, we solve for the steady-state household decisions <span class="math notranslate nohighlight">\(\bar{b}_{j,s}\)</span> and labor supply <span class="math notranslate nohighlight">\(\bar{n}_{j,s}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(E+1\leq s\leq E+S\)</span>, and then use the household decisions to compute updated values for macroeconomics variables. Because the lifetime optimization problem of each household of type <span class="math notranslate nohighlight">\(j\)</span> is a highly nonlinear system of <span class="math notranslate nohighlight">\(2S\)</span> equations and <span class="math notranslate nohighlight">\(2S\)</span> unknowns, we solve for the <span class="math notranslate nohighlight">\(2S\)</span> household’s decisions simultaneously for a given type <span class="math notranslate nohighlight">\(j\)</span> household.  We then use the solutions for type-<span class="math notranslate nohighlight">\(j\)</span> households as the initial guesses a the solutions for type-<span class="math notranslate nohighlight">\(j+1\)</span> households.</p>
+<p>The macroeconomic variables computed from the solutions to the household problem are used to update the values of those macroeconomic variables in the outer-loop.  This process continues until a fixed point is found.  That is, until the macroeconomic variables in the outer loop result in household decisions that are consistent with those macroeconomic variables’ values.</p>
+<p>We outline this algorithm in the following steps.</p>
+<ol>
+<li><p>Use the techniques from Section <span class="xref std std-ref">SecDemogPopSSTP</span> to solve for the steady-state population distribution vector <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\omega}}\)</span> and steady-state growth rate <span class="math notranslate nohighlight">\(\bar{g}_n\)</span> of the exogenous population process.</p></li>
+<li><p>Choose an initial guess for the values of the steady-state interest rate <span class="math notranslate nohighlight">\(\bar{r}^i\)</span>, total bequests <span class="math notranslate nohighlight">\(\overline{BQ}^{\,i}\)</span>, total household transfers <span class="math notranslate nohighlight">\(\overline{TR}^{\,i}\)</span>, and income multiplier <span class="math notranslate nohighlight">\(factor^i\)</span>, where superscript <span class="math notranslate nohighlight">\(i\)</span> is the index of the iteration number of the guess.</p></li>
+<li><p>Use <span class="math notranslate nohighlight">\(\bar{r}^i\)</span> together with the firm’s first order condition for its choice of capital, Equation <a class="reference internal" href="stationarization.html#equation-eqfirmfoc-k">(43)</a>, to solve for the capital labor ratio, <span class="math notranslate nohighlight">\(\frac{\overline{K}}{\overline{L}}\)</span>.  Then use <span class="math notranslate nohighlight">\(\frac{\bar{K}}{\bar{L}}\)</span> in the firm’s first order condition for its choice of labor to find the implied wage rate <span class="math notranslate nohighlight">\(\bar{w}^i\)</span>.</p></li>
+<li><p>Given guesses for <span class="math notranslate nohighlight">\(\bar{r}^i\)</span>, <span class="math notranslate nohighlight">\(\bar{w}^i\)</span>, <span class="math notranslate nohighlight">\(\overline{BQ}^{\,i}\)</span>, <span class="math notranslate nohighlight">\(\overline{TR}^{\,i}\)</span>, and <span class="math notranslate nohighlight">\(factor^i\)</span>, solve for the steady-state household labor supply <span class="math notranslate nohighlight">\(\bar{n}_{j,s}\)</span> and savings <span class="math notranslate nohighlight">\(\bar{b}_{j,s}\)</span> decisions for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(E+1\leq s\leq E+S\)</span>.</p>
+<ol class="simple">
+<li><p>Do this by using a multivariate root-finder to solve the <span class="math notranslate nohighlight">\(2S\)</span> necessary conditions of the household given by Equations <a class="reference internal" href="households.html#equation-eqhheul-n">(9)</a>, <a class="reference internal" href="households.html#equation-eqhheul-b">(10)</a>, and <a class="reference internal" href="households.html#equation-eqhheul-bs">(11)</a> simultaneously for <span class="math notranslate nohighlight">\(j=1\)</span>.</p></li>
+<li><p>Repeat this root-finding process for each household <span class="math notranslate nohighlight">\(j\in{2,...,J}\)</span>, using the solutions for households of type <span class="math notranslate nohighlight">\(j-1\)</span> as the initial guesses in the root-finder.</p></li>
+</ol>
+</li>
+<li><p>Given partial equilibrium household steady-state solutions <span class="math notranslate nohighlight">\(\{\bar{c}_{j,s},\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}\)</span> based on macroeconomic variables <span class="math notranslate nohighlight">\(\bar{r}^i\)</span>, <span class="math notranslate nohighlight">\(\overline{BQ}^{\,i}\)</span>, <span class="math notranslate nohighlight">\(\overline{TR}^{\,i}\)</span>, and <span class="math notranslate nohighlight">\(factor^i\)</span>, compute updated values for the outer loop macroeconomic variables, <span class="math notranslate nohighlight">\(\bar{r}^{i'}\)</span>, <span class="math notranslate nohighlight">\(\bar{w}^{i'}\)</span>, <span class="math notranslate nohighlight">\(\overline{BQ}^{\,i'}\)</span>, <span class="math notranslate nohighlight">\(\overline{TR}^{\,i'}\)</span>, and <span class="math notranslate nohighlight">\(factor^{i'}\)</span> .</p>
+<ol>
+<li><p>We solve for the updated interest rate as follows:</p>
+<ol>
+<li><p>Use the guess at total transfers, <span class="math notranslate nohighlight">\(\overline{TR}^{i}\)</span> and the transfer spending rule given in Equation <a class="reference internal" href="government.html#equation-equnbalgbctfer">(24)</a> to find the implied GDP: <span class="math notranslate nohighlight">\(\bar{Y}^{i} = \frac{\overline{TR}^{i}}{\alpha_{tr}}\)</span>.</p></li>
+<li><p>Use the long-run debt-to-GDP ratio and <span class="math notranslate nohighlight">\(\bar{Y}^{i}\)</span> to find total government debt in the steady-state, <span class="math notranslate nohighlight">\(\bar{D}^{i} = \alpha_{D}\bar{Y}^{i}\)</span>.</p></li>
+<li><p>Use the capital market clearing condition from Equation <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrcap">(53)</a> and <span class="math notranslate nohighlight">\(\bar{D}^{i}\)</span> to find aggregate capital,</p>
+<div class="math notranslate nohighlight">
+\[
+      			\bar{K}^{i}=\frac{1}{1 + \bar{g}_{n}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\bar{\omega}_{s-1}\lambda_j \bar{b}_{j,s} + i_s\bar{\omega}_{s}\lambda_j \bar{b}_{j,s}\Bigr) - \bar{D}^{i}
+      		\]</div>
+</li>
+<li><p>Use the labor market clearing condition from Equation <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrlab">(52)</a> to find aggregate labor supply:</p>
+<div class="math notranslate nohighlight">
+\[
+      			\bar{L}^{i}=\sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \bar{\omega}_{s}\lambda_j e_{j,s}\bar{n}_{j,s}
+      		\]</div>
+</li>
+<li><p>Use the firm’s production function from Equation <a class="reference internal" href="stationarization.html#equation-eqstnrzcesprodfun">(40)</a> to compute an updated value of <span class="math notranslate nohighlight">\(\bar{Y}\)</span> given the values for the factors of production:</p>
+<div class="math notranslate nohighlight">
+\[
+      			\bar{Y}^{i'} = \bar{Z}\biggl[(\gamma)^\frac{1}{\varepsilon}(\bar{K}^{i})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\bar{L}^{i})^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} 
+      		\]</div>
+</li>
+<li><p>Use the firm’s first order condition for its choice of capital to find the updated interest rate,</p>
+<div class="math notranslate nohighlight">
+\[
+      		\bar{r}^{i'} = (1 - \tau^{corp})(\bar{Z})^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\bar{Y}^{i'}}{\bar{K}^{i}}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
+      		\]</div>
+</li>
+</ol>
+</li>
+</ol>
+<p>by first using the market clearing conditions <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrlab">(52)</a> and <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrcap">(53)</a> together with the the long-run debt</p>
+<ol class="simple">
+<li><p>The stationarized law of motion for total bequests <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrbq">(55)</a> provides the expression in which household savings decisions <span class="math notranslate nohighlight">\(\{\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}\)</span> imply a value for aggregate bequests, <span class="math notranslate nohighlight">\(\overline{BQ}^{\,i'}\)</span>. When computing aggregate bequests, we use the updated interest rate found above.</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+        \overline{BQ}^{\,i'} = \left(\frac{1+\bar{r}^{i'}}{1 + \bar{g}_{n}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\bar{\omega}_{s-1}\bar{b}_{j,s}\right)
+      \]</div>
+<ol class="simple">
+<li><p>In equation <a class="reference internal" href="stationarization.html#equation-eqstnrztfer">(46)</a>, we defined total household transfers as a fixed percentage of GDP (<span class="math notranslate nohighlight">\(\overline{TR}=\alpha_{tr}\bar{Y}\)</span>).  To find the updated value for transfers, we find the amount of transfers implied by the most updated value of GDP, <span class="math notranslate nohighlight">\(\overline{TR}^{i'}=\alpha_{tr}\bar{Y}^{i'}\)</span>.</p></li>
+<li><p>The <span class="math notranslate nohighlight">\(factor\)</span> that transforms the model units to U.S. dollar units for the tax functions <a class="reference internal" href="../calibration/tax_functions.html#equation-eqtaxcalcfactor">(79)</a> is already defined in terms of steady-state variables. The following is an expression in which household decisions <span class="math notranslate nohighlight">\(\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}\)</span> imply a value for the steady-state <span class="math notranslate nohighlight">\(factor^{i'}\)</span>. Note, as with the equation for <span class="math notranslate nohighlight">\(\overline{BQ}^{\,i'}\)</span>, that we include the updated values of <span class="math notranslate nohighlight">\(\bar{w}^{i'}\)</span> and <span class="math notranslate nohighlight">\(\bar{r}^{i'}\)</span> on the right-hand-side of the equation.[^mylabel]: The updated wage rate, <span class="math notranslate nohighlight">\(w^{i'}\)</span>, is found by using the updated interest rate, <span class="math notranslate nohighlight">\(r^{i'}\)</span> as detailed in Step 3.</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+        factor^{i'} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\bar{\omega}_s\left(\bar{w}^{i'}e_{j,s}\bar{n}_{j,s} + \bar{r}^{i'}\bar{b}_{j,s}\right)}
+      \]</div>
+</li>
+<li><p>The updated values for the outer loop variables are then used to compute the percentage differences between the initial and implied values:
+a. <span class="math notranslate nohighlight">\(error_r = \frac{\bar{r}^{i'} - \bar{r}^i}{\bar{r}^i}\)</span>
+b. <span class="math notranslate nohighlight">\(error_{bq} = \frac{\overline{BQ}^{\,i'} - \overline{BQ}^{\,i}}{\overline{BQ}^{\,i}}\)</span>
+c. <span class="math notranslate nohighlight">\(error_{tr} = \frac{\overline{TR}^{\,i'} - \overline{TR}^{\,i}}{\overline{TR}^{\,i}}\)</span>
+d. <span class="math notranslate nohighlight">\(error_f = \frac{factor^{i'} - factor^i}{factor^i}\)</span></p></li>
+<li><p>If the maximum absolute error among the four outer loop error terms is greater than some small positive tolerance <span class="math notranslate nohighlight">\(toler_{ss,out}\)</span>,
+<span class="math notranslate nohighlight">\($
+   \max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| &gt; toler_{ss,out}
+ $\)</span>
+then update the guesses for the outer loop variables as a convex combination governed by <span class="math notranslate nohighlight">\(\xi_{ss}\in(0,1]\)</span> of the respective initial guesses and the new implied values and repeat steps (3) through (5).[^mylabel]: In our code, there is also an option to use a Newton based root-finding algorithm to updated the outer-loop variables.  Such an algorithm is generally faster, but less robust than the functional iteration method outlined here.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+        \left[\bar{r}^{i+1},\overline{BQ}^{\,i+1},\overline{TR}^{\,i+1},factor^{i+1}\right] &amp;= \xi_{ss}\left[\bar{r}^{i'},\overline{BQ}^{\,i'},\overline{TR}^{\,i'},factor^{i'}\right] + \\
+        \qquad(1-\xi_{ss})\left[\bar{r}^{i},\overline{BQ}^{\,i},\overline{TR}^{\,i},factor^{i}\right]
+    \end{split}\]</div>
+</li>
+<li><p>If the maximum absolute error among the four outer loop error terms is less-than-or-equal-to some small positive tolerance <span class="math notranslate nohighlight">\(toler_{ss,out}\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[
+      \max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| \leq toler_{ss,out}
+    \]</div>
+<p>then the steady-state has been found.</p>
+<ol class="simple">
+<li><p>Make sure that steady-state government spending is nonnegative <span class="math notranslate nohighlight">\(\bar{G}\geq 0\)</span>. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. <span class="math notranslate nohighlight">\(\bar{G}&lt;0\)</span> is a good indicator of unsustainable policies.</p></li>
+<li><p>Make sure that the resource constraint (goods market clearing) <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrgoods">(54)</a> is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.</p></li>
+<li><p>Make sure that the government budget constraint <a class="reference internal" href="stationarization.html#equation-eqstnrzgovbc">(48)</a> binds.</p></li>
+<li><p>Make sure that all the <span class="math notranslate nohighlight">\(2JS\)</span> household Euler equations are solved to a satisfactory tolerance.</p></li>
+</ol>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="baseline-steady-state-results">
+<h2><a class="reference external" href="#SecSSeqlbResults">Baseline Steady-state Results</a><a class="headerlink" href="#baseline-steady-state-results" title="Permalink to this headline">¶</a></h2>
+<p>In this section, we use the baseline calibration described in Chapter <span class="xref std std-ref">Chap_Calibr</span>, which includes the baseline tax law from \taxcalc, to show some steady-state results from <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>. Figure <span class="xref std std-ref">FigSSeqlbHHvars</span> shows the household steady-state variables by age <span class="math notranslate nohighlight">\(s\)</span> and lifetime income group <span class="math notranslate nohighlight">\(j\)</span>.</p>
+<div class="figure align-default" id="figsseqlbhhcons">
+<a class="reference internal image-reference" href="../../_images/HHcons_SS.png"><img alt="../../_images/HHcons_SS.png" src="../../_images/HHcons_SS.png" style="height: 500px;" /></a>
+</div>
+<div class="figure align-default" id="figsseqlbhhlab">
+<a class="reference internal image-reference" href="../../_images/HHlab_SS.png"><img alt="../../_images/HHlab_SS.png" src="../../_images/HHlab_SS.png" style="height: 500px;" /></a>
+</div>
+<div class="figure align-default" id="figsseqlbhhsave">
+<a class="reference internal image-reference" href="../../_images/HHsav_SS.png"><img alt="../../_images/HHsav_SS.png" src="../../_images/HHsav_SS.png" style="height: 500px;" /></a>
+</div>
+  <!-- \begin{figure}[htb]\centering \captionsetup{width=6.0in}
+    \caption{\label{FigSSeqlbHHvars}\textbf{Steady-state distributions of household consumption $\bar{c}_{j,s}$, labor supply $\bar{n}_{j,s}$, and savings $\bar{b}_{j,s+1}$}}
+    \begin{subfigure}[b]{0.48\textwidth}
+      \includegraphics[width=\textwidth]{images/HHcons_SS.png}
+      \caption{Consumption $\bar{c}_{j,s}$}
+      \label{FigSSeqlbHHcons}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+      \includegraphics[width=\textwidth]{images/HHlab_SS.png}
+      \caption{Labor supply $\bar{n}_{j,s}$}
+      \label{FigSSeqlbHHlab}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+      \includegraphics[width=\textwidth]{images/HHsav_SS.png}
+      \caption{Savings $\bar{b}_{j,s+1}$}
+      \label{FigSSeqlbHHsav}
+    \end{subfigure}
+  \end{figure} -->
+<p>Table <span class="xref std std-ref">TabSSeqlbAggrVars</span> lists the steady-state prices and aggregate variable values along with some of the maximum error values from the characterizing equations.</p>
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=4.1in}
+  \caption{\label{TabSSeqlbAggrVars}\textbf{Steady-state prices, aggregate variables, and maximum errors}}
+    \begin{threeparttable}
+    \begin{tabular}{>{\small}l >{\small}r |>{\small}l >{\small}r}
+      \hline\hline
+      \multicolumn{1}{c}{\small{Variable}} & \multicolumn{1}{c}{\small{Value}} & \multicolumn{1}{c}{\small{Variable}} & \multicolumn{1}{c}{Value} \\
+      \hline
+      $\bar{r}$ & 0.058 & $\bar{w}$ & 1.148 \\
+      \hline
+      $\bar{Y}$ & 0.630 & $\bar{C}$ & 0.462 \\
+      $\bar{I}$ & 0.144 & $\bar{K}$ & 1.810 \\
+      $\bar{L}$ & 0.357 & $\bar{B}$ & 2.440 \\
+      $\overline{BQ}$ & 0.106 & $factor$  & 141,580 \\
+      \hline
+      $\overline{Rev}$ & 0.096 & $\overline{TR}$ & 0.057 \\
+      $\bar{G}$ & 0.023 & $\bar{D}$ & 0.630 \\
+      \hline
+      Max. abs.         & 4.57e-13 & Max. abs.  & 8.52e-13 \\[-2mm]
+      \:\: labor supply &   & \:\: savings &     \\[-2mm]
+      \:\: Euler error  &   & \:\: Euler error & \\
+      Resource        & -4.39e-15 & Serial & 1 hr. 25.9 sec.\tnote{*} \\[-2mm]
+      \:\: constraint & & \:\: computation & \\[-2mm]
+      \:\: error      & & \:\: time &  \\
+      \hline\hline
+    \end{tabular}
+    \begin{tablenotes}
+      \scriptsize{\item[*]The steady-state computation time does not include any of the exogenous parameter computation processes, the longest of which is the estimation of the baseline tax functions which computation takes 1 hour and 15 minutes.}
+    \end{tablenotes}
+    \end{threeparttable}
+  \end{table} -->
+<div id="TabSSeqlbAggrVars">
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p></p></th>
+<th class="text-align:right head"><p></p></th>
+<th class="text-align:left head"><p></p></th>
+<th class="text-align:right head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p><em>r̄</em></p></td>
+<td class="text-align:right"><p>0.058</p></td>
+<td class="text-align:left"><p><em>w̄</em></p></td>
+<td class="text-align:right"><p>1.148</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><em>Ȳ</em></p></td>
+<td class="text-align:right"><p>0.630</p></td>
+<td class="text-align:left"><p><em>C̄</em></p></td>
+<td class="text-align:right"><p>0.462</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><em>Ī</em></p></td>
+<td class="text-align:right"><p>0.144</p></td>
+<td class="text-align:left"><p><em>K̄</em></p></td>
+<td class="text-align:right"><p>1.810</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><em>L̄</em></p></td>
+<td class="text-align:right"><p>0.357</p></td>
+<td class="text-align:left"><p><em>B̄</em></p></td>
+<td class="text-align:right"><p>2.440</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(\\overline{BQ}\)</span></p></td>
+<td class="text-align:right"><p>0.106</p></td>
+<td class="text-align:left"><p><em>f<strong>a</strong>c<strong>t</strong>o**r</em></p></td>
+<td class="text-align:right"><p>141,580</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(\\overline{Rev}\)</span></p></td>
+<td class="text-align:right"><p>0.096</p></td>
+<td class="text-align:left"><p><span class="math notranslate nohighlight">\(\\overline{TR}\)</span></p></td>
+<td class="text-align:right"><p>0.057</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><em>Ḡ</em></p></td>
+<td class="text-align:right"><p>0.023</p></td>
+<td class="text-align:left"><p><em>D̄</em></p></td>
+<td class="text-align:right"><p>0.630</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>Max. abs.</p></td>
+<td class="text-align:right"><p>4.57e-13</p></td>
+<td class="text-align:left"><p>Max. abs.</p></td>
+<td class="text-align:right"><p>8.52e-13</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>labor supply</p></td>
+<td class="text-align:right"><p></p></td>
+<td class="text-align:left"><p>savings</p></td>
+<td class="text-align:right"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>Euler error</p></td>
+<td class="text-align:right"><p></p></td>
+<td class="text-align:left"><p>Euler error</p></td>
+<td class="text-align:right"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>Resource</p></td>
+<td class="text-align:right"><p>-4.39e-15</p></td>
+<td class="text-align:left"><p>Serial</p></td>
+<td class="text-align:right"><p>1 hr. 25.9 sec.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>constraint</p></td>
+<td class="text-align:right"><p></p></td>
+<td class="text-align:left"><p>computation</p></td>
+<td class="text-align:right"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>error</p></td>
+<td class="text-align:right"><p></p></td>
+<td class="text-align:left"><p>time</p></td>
+<td class="text-align:right"><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><span id="TabSSeqlbAggrVars"
+label="TabSSeqlbAggrVars">[TabSSeqlbAggrVars]</span><strong>Steady-state
+prices, aggregate variables, and maximum errors</strong></p>
+</div>
+<p>The steady-state computation time does not include any of the exogenous
+parameter computation processes, the longest of which is the estimation
+of the baseline tax functions which computation takes 1 hour and 15
+minutes.</p>
+</div>
+<div class="section" id="stationary-nonsteady-state-equilibrium">
+<h2><a class="reference external" href="#Chap_NSSeqlb">Stationary Nonsteady-State Equilibrium</a><a class="headerlink" href="#stationary-nonsteady-state-equilibrium" title="Permalink to this headline">¶</a></h2>
+<p>In this chapter, we define the stationary nonsteady-state equilibrium of the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> model. Chapters <a class="reference internal" href="../calibration/demographics.html#chap-demog"><span class="std std-ref">Demographics</span></a> through <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a> derive the equations that characterize the equilibrium of the model. We also need the steady-state solution from Chapter <span class="xref std std-ref">Chap_SSeqlb</span> to solve for the nonsteady-state equilibrium transition path. As with the steady-state equilibrium, we must use the stationarized version of the characterizing equations from Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>.</p>
+<div class="section" id="stationary-nonsteady-state-equilibrium-definition">
+<h3><a class="reference external" href="#SecEqlbNSSdef">Stationary Nonsteady-State Equilibrium Definition</a><a class="headerlink" href="#stationary-nonsteady-state-equilibrium-definition" title="Permalink to this headline">¶</a></h3>
+<p>We define a stationary nonsteady-state equilibrium as the following.</p>
+<p>\vspace{5mm}
+\hrule
+\vspace{-1mm}
+\begin{definition}[\textbf{Stationary Nonsteady-state functional equilibrium}]\label{DefNSSEql}
+A non autarkic nonsteady-state functional equilibrium in the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> model is defined as stationary allocation functions of the state <span class="math notranslate nohighlight">\(\bigl\{n_{j,s,t} = \phi_s\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}\)</span> and <span class="math notranslate nohighlight">\(\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(t\)</span> and stationary price functions <span class="math notranslate nohighlight">\(\hat{w}(\boldsymbol{\hat{\Gamma}}_t)\)</span> and <span class="math notranslate nohighlight">\(r(\boldsymbol{\hat{\Gamma}}_t)\)</span> for all <span class="math notranslate nohighlight">\(t\)</span> such that:
+\begin{enumerate}
+\item households have symmetric beliefs <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> about the evolution of the distribution of savings as characterized in <a class="reference internal" href="households.html#equation-eqbeliefs">(15)</a>, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
+\begin{equation*}
+\boldsymbol{\hat{\Gamma}}<em>{t+u} = \boldsymbol{\hat{\Gamma}}^e</em>{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
+\end{equation*}
+\item households optimize according to <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-n">(37)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-b">(38)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-b">(38)</a>,
+\item firms optimize according to <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-l">(42)</a> and <a class="reference internal" href="stationarization.html#equation-eqfirmfoc-k">(43)</a>,
+\item Government activity behaves according to <a class="reference internal" href="stationarization.html#equation-eqstnrzgovbc">(48)</a> and <code class="xref eq docutils literal notranslate"><span class="pre">EqStnrzClosureRule</span></code>, and
+\item markets clear according to <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrlab">(52)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrcap">(53)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrbq">(55)</a>.
+\end{enumerate}
+\end{definition}
+\vspace{-2mm}
+\hrule
+\vspace{5mm}</p>
+</div>
+<div class="section" id="stationary-nonsteady-state-solution-method">
+<h3><a class="reference external" href="#SecEqlbNSSsoln">Stationary Nonsteady-state Solution Method</a><a class="headerlink" href="#stationary-nonsteady-state-solution-method" title="Permalink to this headline">¶</a></h3>
+<p>This section describes the solution method for the stationary nonsteady-state equilibrium described in Definition <span class="xref std std-ref">DefNSSEql</span>. We use the time path iteration (TPI) method. This method was originally outlined in a series of papers between 1981 and 1985\footnote{See <span class="bibtex" id="id1">[AuerbachEtAl:1981]</span><span class="bibtex" id="id2">[AuerbachEtAl:1983]</span>, <span class="bibtex" id="id3">[AuerbachKotlikoff:1983a]</span><span class="bibtex" id="id4">[AuerbachKotlikoff:1983b]</span><span class="bibtex" id="id5">[AuerbachKotlikoff:1983c]</span>, and <span class="bibtex" id="id6">[AuerbachKotlikoff:1985]</span>.} and in the seminal book \citet[ch. 4]{AuerbachKotlikoff:1987} for the perfect foresight case and in \citet[Appendix II]{NishiyamaSmetters:2007} and \citet[Sec. 3.1]{EvansPhillips:2014} for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see \citet[ch. 17]{StokeyLucas1989}).</p>
+<p>The key assumption is that the economy will reach the steady-state equilibrium <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\Gamma}}\)</span> described in Definition <span class="xref std std-ref">DefSSEql</span> in a finite number of periods <span class="math notranslate nohighlight">\(T&lt;\infty\)</span> regardless of the initial state <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span>. The first step in solving for the nonsteady-state equilibrium transition path is to solve for the steady-state using the method described in Section <span class="xref std std-ref">SecEqlbSSsoln</span>. After solving for the steady-state, one must then find a fixed point over the entire path of endogenous objects.  We do this by first making an initial guess at these objects in a the general equilibrium ``outer loop’’ step, analogous to the outer loop described in the steady-state solution method. The time path iteration method then uses functional iteration to converge on a fixed point for the path of these objects.  The paths of aggregate variables that must be guessed in this outer loop are <span class="math notranslate nohighlight">\(\{\boldsymbol{r}^i,\boldsymbol{\hat{w}}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}\)</span>, where <span class="math notranslate nohighlight">\(\boldsymbol{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{\hat{BQ}}^i = \left\{\hat{BQ}_1^i,\hat{BQ}_2^i,...\hat{BQ}_T^i\right\}\)</span>, and <span class="math notranslate nohighlight">\(\boldsymbol{\hat{TR}}^i = \left\{\hat{TR}_1^i,\hat{TR}_2^i,...\hat{TR}_T^i\right\}\)</span>. The only requirement on these transition paths is that the initial total bequests <span class="math notranslate nohighlight">\(\hat{BQ}_1^i\)</span> conform to the initial state of the economy <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span>, and that the economy has reached the steady-state by period <span class="math notranslate nohighlight">\(t=T\)</span> <span class="math notranslate nohighlight">\(\{r_T^i, \hat{BQ}_T^i, \hat{TR}_T^i\} = \{\bar{r}, \bar{w}, \overline{BQ}, \overline{TR}\}\)</span>.</p>
+<p>The “inner loop” of the nonsteady-state transition path solution method is to solve for the full set of lifetime savings decisions <span class="math notranslate nohighlight">\(\bar{b}_{j,s+1,t+1}\)</span> and labor supply decisions <span class="math notranslate nohighlight">\(\bar{n}_{j,s,t}\)</span> for every household alive between periods <span class="math notranslate nohighlight">\(t=1\)</span> and <span class="math notranslate nohighlight">\(t=T\)</span>.  To solve for the <span class="math notranslate nohighlight">\(2JS\)</span> equations and unknowns for each household’s lifetime decisions we use a multivariate root finder.</p>
+<p>We outline the stationary non-steady state solution algorithm in the following steps.</p>
+<ol>
+<li><p>Compute the steady-state solution <span class="math notranslate nohighlight">\(\{\bar{n}_{j,s},\bar{b}_{j,s}\}_{s=E+1}^{E+S}\)</span> corresponding to Definition <span class="xref std std-ref">DefSSEql</span>.</p></li>
+<li><p>Given initial state of the economy <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span> and steady-state solutions <span class="math notranslate nohighlight">\(\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}\)</span>, guess transition paths of outer loop macroeconomic variables <span class="math notranslate nohighlight">\(\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}\)</span> such that <span class="math notranslate nohighlight">\(\hat{BQ}_1^i\)</span> is consistent with <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span> and <span class="math notranslate nohighlight">\(\{r_t^i, \hat{BQ}_t^i, \hat{TR}_t^i\} = \{\bar{r}, \overline{BQ}, \overline{TR}\}\)</span> for all <span class="math notranslate nohighlight">\(t\geq T\)</span>.</p></li>
+<li><p>Given initial condition <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span>, guesses for the aggregate time paths <span class="math notranslate nohighlight">\(\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}\)</span>, we solve for the inner loop lifetime decisions of every household that will be alive across the time path <span class="math notranslate nohighlight">\(\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(1\leq t\leq T\)</span>.
+a. Given time path guesses <span class="math notranslate nohighlight">\(\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}\)</span>, we can compute the path of wages, <span class="math notranslate nohighlight">\(\boldsymbol{w}^i\)</span> and then solve for each household’s lifetime decisions <span class="math notranslate nohighlight">\(\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(E+1\leq s \leq E+S\)</span>, and <span class="math notranslate nohighlight">\(1\leq t\leq T_2+S-1\)</span>.
+i. The household problem can be solved with a multivariate root finder solving the <span class="math notranslate nohighlight">\(2S\)</span> equations and unknowns at once for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(1\leq t\leq T+S-1\)</span>. The root finder uses <span class="math notranslate nohighlight">\(2S\)</span> household Euler equations <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-n">(37)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-b">(38)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrzhheul-bs">(39)</a> to solve for each household’s <span class="math notranslate nohighlight">\(2S\)</span> lifetime decisions.
+ii. After solving the first iteration of time path iteration, subsequent initial values for the <span class="math notranslate nohighlight">\(J\)</span>, <span class="math notranslate nohighlight">\(2S\)</span> root finding problems are based on the solution in the prior iteration. This speeds up computation further and makes the initial guess for the highly nonlinear system of equations start closer to the solution value.</p></li>
+<li><p>Given partial equilibrium household nonsteady-state solutions <span class="math notranslate nohighlight">\(\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(1\leq t\leq T\)</span> based on macroeconomic variable time path guesses <span class="math notranslate nohighlight">\(\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}\)</span>, compute new values for these aggregates implied by the households’ solutions, <span class="math notranslate nohighlight">\(\{\boldsymbol{r}^{i'},\boldsymbol{\hat{BQ}}^{i'}, \boldsymbol{\hat{TR}}^{i'}\}\)</span>.
+a. We solve for the updated interest rate as follows:
+i. Use the guess at the path of total transfers, <span class="math notranslate nohighlight">\(\hat{TR}_{t}^{i}\)</span> and the transfer spending rule given in Equation <a class="reference internal" href="government.html#equation-equnbalgbctfer">(24)</a> to find the implied path of GDP: <span class="math notranslate nohighlight">\(\hat{Y}_{t}^{i} = \frac{\hat{TR}_{t}^{i}}{\alpha_{tr}}\)</span>.
+ii. Using the path of GDP and the household savings and labor supply decisions, <span class="math notranslate nohighlight">\(\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}\)</span>, compute the path of stationarizaed total tax revenue, <span class="math notranslate nohighlight">\(\hat{Revenue}_{t}^{i}\)</span>.
+iii. Using the long-run debt-to-GDP ratio, the path of GDP, the path of total tax revenue, and Equation <a class="reference internal" href="government.html#equation-equnbalgbcclosure-gt">(28)</a>, find the path of stationarized government debt, <span class="math notranslate nohighlight">\(\hat{D}_{t}^{i}\)</span>.
+iv. se the capital market clearing condition from Equation <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrcap">(53)</a> and <span class="math notranslate nohighlight">\(D_{t}^{i}\)</span> to find aggregate capital in each period,</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> 		$$
+ 			\hat{K}_{t}^{i}=\frac{1}{1 + g_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\omega_{s-1,t-1}\lambda_j \hat{b}_{j,s,t} + i_s\omega_{s,t}\lambda_j \hat{b}_{j,s,t}\Bigr) - D_{t}^{i}
+ 		$$
+ 
+ v. Use the labor market clearing condition from Equation {eq}`EqStnrzMarkClrLab` to find the path of aggregate labor supply:
+ 
+ 		$$
+ 			\hat{L}_{t}^{i}=\sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \omega_{s,t}\lambda_j e_{j,s}n_{j,s,t}
+ 		$$
+ 
+ vi. Use the firm&#39;s production function from Equation {eq}`EqStnrzCESprodfun` to compute an updated value of $\hat{Y}_{t}$ given the values for the factors of production:
+ 
+ 	$$
+ 		\hat{Y}_{t}^{i&#39;} = Z_{t}\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_{t}^{i})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\hat{L}_{t}^{i})^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} 
+ 	$$
+ 
+ vii. Use the firm&#39;s first order condition for its choice of capital to find the updated path of interest rates, 
+ 
+ 	$$
+ 		r_{t}^{i&#39;} = (1 - \tau_{t}^{corp})(Z_{t})^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_{t}^{i&#39;}}{\hat{K}_{t}^{i}}\right]^\frac{1}{\varepsilon} - \delta + \tau_{t}^{corp}\delta_{t}^\tau
+ 	$$
+</pre></div>
+</div>
+<p>b. The stationarized law of motion for total bequests <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrbq">(55)</a> provides the expression in which household savings decisions <span class="math notranslate nohighlight">\(\{b_{j,s+1,t+1}\}_{s=E+1}^{E+S}\)</span> imply a value for aggregate bequests, <span class="math notranslate nohighlight">\(BQ_{t}^{\,i'}\)</span>. When computing aggregate bequests, we use the updated path of interest rates found above.
+<span class="math notranslate nohighlight">\($
+ 			\hat{BQ}_{t}^{\,i'} = \left(\frac{1+r_{t}^{i'}}{1 + g_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}\hat{b}_{j,s,t}\right)
+ 		$\)</span></p>
+<p>c. In equation <a class="reference internal" href="stationarization.html#equation-eqstnrztfer">(46)</a>, we defined total household transfers as a fixed percentage of GDP (<span class="math notranslate nohighlight">\(\hat{TR}_t=\alpha_{tr}\hat{Y}_t\)</span>).  To find the updated value for transfers, we find the amount of transfers implied by the most updated value of GDP, <span class="math notranslate nohighlight">\(\hat{TR}_{t}^{i'}=\alpha_{tr}\hat{Y}_{t}^{i'}\)</span>.</p>
+</li>
+<li><p>The updated values for the outer loop variables are then used to compute the percentage differences between the initial and implied values:
+a. <span class="math notranslate nohighlight">\(error_r = max\left\{\frac{r_{t}^{i'} - r_{t}^i}{r_{t}^i}\right\}_{t=0}^{T}\)</span>
+b. <span class="math notranslate nohighlight">\(error_{bq} =  max\left\{\frac{\hat{BQ}_{t}^{\,i'} - \hat{BQ}_{t}^{\,i}}{\hat{BQ}_{t}^{\,i}}\right\}_{t=0}^{T}\)</span>
+c. <span class="math notranslate nohighlight">\(error_{tr} = \left\{\frac{\hat{TR}_{t}^{\,i'} - \hat{TR}_{t}^{\,i}}{\hat{TR}_{t}^{\,i}}\right\}_{t=0}^{T}\)</span></p></li>
+<li><p>If the maximum absolute error among the three outer loop error terms is greater than some small positive tolerance <span class="math notranslate nohighlight">\(toler_{tpi,out}\)</span>,
+<span class="math notranslate nohighlight">\($
+ 		\max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| &gt; toler_{tpi,out}
+ 	$\)</span>
+then update the guesses for the outer loop variables as a convex combination governed by <span class="math notranslate nohighlight">\(\xi_{tpi}\in(0,1]\)</span> of the respective initial guesses and the new implied values and repeat steps (3) through (5).
+<span class="math notranslate nohighlight">\($
+ 		\left[\boldsymbol{r}^{i+1},\boldsymbol{\hat{BQ}}^{\,i+1},\boldsymbol{\hat{TR}}^{\,i+1}\right] &amp;= \xi_{tpi}\left[\boldsymbol{r}^{i'},\boldsymbol{\hat{BQ}}^{\,i'},\boldsymbol{\hat{TR}}^{\,i'}\right] + \\
+ 		&amp;\qquad(1-\xi_{tpi})\left[\boldsymbol{r}^{i},\boldsymbol{\hat{BQ}}^{\,i},\boldsymbol{\hat{TR}}^{\,i}\right]
+ $\)</span></p></li>
+<li><p>If the maximum absolute error among the five outer loop error terms is less-than-or-equal-to some small positive tolerance <span class="math notranslate nohighlight">\(toler_{tpi,out}\)</span> in each period along the transition path,
+<span class="math notranslate nohighlight">\($
+ 		\max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| \leq toler_{tpi,out}
+ 	$\)</span>
+then the non-steady-state equilibrium has been found.
+a. Make sure that the resource constraint (goods market clearing) <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrgoods">(54)</a> is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
+b. Make sure that the government budget constraint <a class="reference internal" href="stationarization.html#equation-eqstnrzgovbc">(48)</a> binds.
+c. Make sure that all the <span class="math notranslate nohighlight">\((T+S)\times2JS\)</span> household Euler equations are solved to a satisfactory tolerance.</p></li>
+</ol>
+</div>
+<div class="section" id="baseline-nonsteady-state-results">
+<h3><a class="reference external" href="#SecNSSeqlbResults">Baseline Nonsteady-state Results</a><a class="headerlink" href="#baseline-nonsteady-state-results" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content/theory"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="stationarization.html" title="previous page">Stationarization</a>
+    <a class='right-next' id="next-link" href="open_economy.html" title="next page">Open Economy Options</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
+    
+  </body>
+</html>

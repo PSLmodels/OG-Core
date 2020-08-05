@@ -1,0 +1,517 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Government &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Market Clearing" href="market_clearing.html" />
+    <link rel="prev" title="Firms" href="firms.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../api/public_api.html">
+   OG-USA API
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="equilibrium.html">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/exogenous_parameters.html">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/tax_functions.html">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/theory/government.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/government.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#government-tax-revenue">
+   Government Tax Revenue
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#government-budget-constraint">
+   Government Budget Constraint
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#interest-rate-on-government-debt">
+   Interest Rate on Government Debt
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#budget-closure-rule">
+   Budget Closure Rule
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#change-government-spending-only">
+     Change government spending only
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#change-government-transfers-only">
+     Change government transfers only
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#change-both-government-spending-and-transfers">
+     Change both government spending and transfers
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#some-caveats-and-alternatives">
+   Some Caveats and Alternatives
+  </a>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <p>(Chap_UnbalGBC)</p>
+<div class="section" id="government">
+<h1>Government<a class="headerlink" href="#government" title="Permalink to this headline">¶</a></h1>
+<p>In <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.</p>
+<div class="section" id="government-tax-revenue">
+<h2><a class="reference external" href="#SecUnbalGBCrev">Government Tax Revenue</a><a class="headerlink" href="#government-tax-revenue" title="Permalink to this headline">¶</a></h2>
+<p>We see from the household’s budget constraint that taxes <span class="math notranslate nohighlight">\(T_{s,t}\)</span> and transfers <span class="math notranslate nohighlight">\(TR_{t}\)</span> enter into the household’s decision,</p>
+<div class="math notranslate nohighlight" id="equation-eqhhbc">
+<span class="eqno">(20)<a class="headerlink" href="#equation-eqhhbc" title="Permalink to this equation">¶</a></span>\[\begin{split}    c_{j,s,t} + b_{j,s+1,t+1} &amp;= (1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} - T_{s,t}  \\
+    &amp;\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t\end{split}\]</div>
+<p>where we defined the tax liability function <span class="math notranslate nohighlight">\(T_{s,t}\)</span> in <a class="reference internal" href="households.html#equation-eqtaxcalcliabetr">(2)</a> as an effective tax rate times total income and the transfer distribution function <span class="math notranslate nohighlight">\(\eta_{j,s,t}\)</span> is uniform across all households as in <a class="reference internal" href="../calibration/tax_functions.html#equation-eqtaxcalcetajs">(80)</a>. And government revenue from the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span> and the tax on depreciation expensing <span class="math notranslate nohighlight">\(\tau^\delta\)</span> enters the firms’ profit function.</p>
+<div class="math notranslate nohighlight" id="equation-eqfirmsprofit">
+<span class="eqno">(21)<a class="headerlink" href="#equation-eqfirmsprofit" title="Permalink to this equation">¶</a></span>\[  PR_t = (1 - \tau^{corp})\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t\]</div>
+<p>We define total government revenue from taxes as the following.</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbcgovrev">
+<span class="eqno">(22)<a class="headerlink" href="#equation-equnbalgbcgovrev" title="Permalink to this equation">¶</a></span>\[  Rev_t = \underbrace{\tau^{corp}\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}\delta^\tau K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t\]</div>
+</div>
+<div class="section" id="government-budget-constraint">
+<h2><a class="reference external" href="#SecUnbalGBCbudgConstr">Government Budget Constraint</a><a class="headerlink" href="#government-budget-constraint" title="Permalink to this headline">¶</a></h2>
+<p>Let the level of government debt in period <span class="math notranslate nohighlight">\(t\)</span> be given by <span class="math notranslate nohighlight">\(D_t\)</span>. The government budget constraint requires that government revenue <span class="math notranslate nohighlight">\(Rev_t\)</span> plus the budget deficit (<span class="math notranslate nohighlight">\(D_{t+1} - D_t\)</span>) equal expenditures on interest of the debt, government spending on public goods <span class="math notranslate nohighlight">\(G_t\)</span>, and total transfer payments to households <span class="math notranslate nohighlight">\(TR_t\)</span> every period <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbcbudgconstr">
+<span class="eqno">(23)<a class="headerlink" href="#equation-equnbalgbcbudgconstr" title="Permalink to this equation">¶</a></span>\[  D_{t+1} + Rev_t = (1 + r_t)D_t + G_t + TR_t \quad\forall t\]</div>
+<p>We assume that total government transfers to households are a fixed fraction <span class="math notranslate nohighlight">\(\alpha_{tr}\)</span> of GDP each period.</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbctfer">
+<span class="eqno">(24)<a class="headerlink" href="#equation-equnbalgbctfer" title="Permalink to this equation">¶</a></span>\[  TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \quad\forall t\]</div>
+<p>The time dependent multiplier <span class="math notranslate nohighlight">\(g_{tr,t}\)</span> in front of the right-hand-side of <a class="reference internal" href="#equation-equnbalgbctfer">(24)</a> will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section <span class="xref std std-ref">SecUnbalGBCcloseRule</span>.</p>
+<p>We also assume that government spending on public goods is a fixed fraction of GDP each period in the initial periods.</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbc-gt">
+<span class="eqno">(25)<a class="headerlink" href="#equation-equnbalgbc-gt" title="Permalink to this equation">¶</a></span>\[  G_t = g_{g,t}\:\alpha_{g}\: Y_t\]</div>
+<p>Similar to transfers <span class="math notranslate nohighlight">\(TR_t\)</span>, the time dependent multiplier <span class="math notranslate nohighlight">\(g_{g,t}\)</span> in front of the right-hand-side of <a class="reference internal" href="#equation-equnbalgbc-gt">(25)</a> will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We make this more specific in the next section.</p>
+<p>Government spending on goods and services is comprised on spending on public infrastructure, <span class="math notranslate nohighlight">\(I_{g,t}\)</span> and non-capital expenditures, <span class="math notranslate nohighlight">\(G_{g,t}\)</span> such that <span class="math notranslate nohighlight">\(G_{t} = I_{g,t} + G_{g,t}\)</span>.  We assume that infrastructure spending is a fraction fo total government spending, <span class="math notranslate nohighlight">\(I_{g,t} = \alpha_{i,t} * G_{g,t}\)</span>.  The stock of public capital (i.e., infrastructure) evolves according to the law of motion, <span class="math notranslate nohighlight">\(K_{g,t+1} = (1 - \delta^{g}) K_{g,t} + I_{g,t}\)</span>.  The stock of public capital complements labor and private capital in the production function of the representative firm, in Equation <a class="reference internal" href="firms.html#equation-eqfirmscesprodfun">(16)</a>.</p>
+</div>
+<div class="section" id="interest-rate-on-government-debt">
+<h2><a class="reference external" href="#SecRateWedge">Interest Rate on Government Debt</a><a class="headerlink" href="#interest-rate-on-government-debt" title="Permalink to this headline">¶</a></h2>
+<p>Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt.  Doing so helps to add realism by including a risk premium.  <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> allows users to set an exogenous wedge between these two rates.  The interest rate on government debt,</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbc-rate-wedge">
+<span class="eqno">(27)<a class="headerlink" href="#equation-equnbalgbc-rate-wedge" title="Permalink to this equation">¶</a></span>\[  r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d}\]</div>
+<p>The two parameters, <span class="math notranslate nohighlight">\(\tau_{d,t}\)</span> and <span class="math notranslate nohighlight">\(\mu_{d,t}\)</span> can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premia.</p>
+<p>In the cases where there is a differential (<span class="math notranslate nohighlight">\(\tau_{d,t}\)</span> or <span class="math notranslate nohighlight">\(\mu_{d,t} \neq 0\)</span>), then we need to be careful to specify how the household chooses government debt and private capital in its portfolio of asset holdings.  We make the assumption that under the exogenous interest rate wedge, the household is indifferent between holding its assets as debt and private capital.  This amounts to an assumption that these two assets are perfect substitutes given the exogenous wedge in interest rates.  Given the indifference between government debt and private capital at these two interest rates, we assume that the household holds debt and capital in the same ratio that debt and capital are demanded by the government and private firms, respectively. The interest rate on the household portfolio of asset is thus given by:</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbc-rate-wedge">
+<span class="eqno">(27)<a class="headerlink" href="#equation-equnbalgbc-rate-wedge" title="Permalink to this equation">¶</a></span>\[  r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}\]</div>
+</div>
+<div class="section" id="budget-closure-rule">
+<h2><a class="reference external" href="#SecUnbalGBCcloseRule">Budget Closure Rule</a><a class="headerlink" href="#budget-closure-rule" title="Permalink to this headline">¶</a></h2>
+<p>If total government transfers to households <span class="math notranslate nohighlight">\(TR_t\)</span> and government spending on public goods <span class="math notranslate nohighlight">\(G_t\)</span> are both fixed fractions of GDP, one can imagine corporate and household tax structures that cause the debt level of the government to either tend toward infinity or to negative infinity, depending on whether too little revenue or too much revenue is raised, respectively.</p>
+<p>A virtue of dynamic general equilibrium models is that the model must be stationary in order to solve it. That is, no variables can be indefinitely growing as time moves forward. The labor augmenting productivity growth <span class="math notranslate nohighlight">\(g_y\)</span> from Chapter <a class="reference internal" href="firms.html#chap-firms"><span class="std std-ref">Firms</span></a> and the potential population growth <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> from Chapter <a class="reference internal" href="../calibration/demographics.html#chap-demog"><span class="std std-ref">Demographics</span></a> render the model nonstationary. But we show how to stationarize the model against those two sources of growth in Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>. However, even after stationarizing the effects of productivity and population growth, the model could be rendered nonstationary and, therefore, not solvable if government debt were becoming too positive or too negative too quickly.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> model offers three different options for budget closure rules. Each rule uses some combination of changes in government spending on public goods <span class="math notranslate nohighlight">\(G_t\)</span> and government transfers to households <span class="math notranslate nohighlight">\(TR_t\)</span> to stabilize the debt-to-GDP ratio in the long-run.</p>
+<ol class="simple">
+<li><p>Change only government spending on public goods <span class="math notranslate nohighlight">\(G_t\)</span>.</p></li>
+<li><p>Change only government transfers to households <span class="math notranslate nohighlight">\(TR_t\)</span>.</p></li>
+<li><p>Change both government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> by the same percentage.</p></li>
+</ol>
+<div class="section" id="change-government-spending-only">
+<h3><a class="reference external" href="#SecUnbalGBC_chgGt">Change government spending only</a><a class="headerlink" href="#change-government-spending-only" title="Permalink to this headline">¶</a></h3>
+<p>We specify a closure rule that is automatically implemented after some period <span class="math notranslate nohighlight">\(T_{G1}\)</span> to stabilize government debt as a percent of GDP (debt-to-GDP ratio). Let <span class="math notranslate nohighlight">\(\alpha_D\)</span> represent the long-run debt-to-GDP ratio at which we want the economy to eventually settle.</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbcclosure-gt">
+<span class="eqno">(28)<a class="headerlink" href="#equation-equnbalgbcclosure-gt" title="Permalink to this equation">¶</a></span>\[\begin{split}     G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
+     \text{where}\quad g_{g,t} =
+       \begin{cases}
+         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t &lt; T_{G1} \\
+         \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+         \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}
+       \end{cases} \\
+     \quad\text{and}\quad g_{tr,t} = 1 \quad\forall t\end{split}\]</div>
+<p>The first case in <a class="reference internal" href="#equation-equnbalgbcclosure-gt">(28)</a> says that government spending <span class="math notranslate nohighlight">\(G_t\)</span> will be a fixed fraction <span class="math notranslate nohighlight">\(\alpha_g\)</span> of GDP <span class="math notranslate nohighlight">\(Y_t\)</span> for every period before <span class="math notranslate nohighlight">\(T_{G1}\)</span>. The second case specifies that, starting in period <span class="math notranslate nohighlight">\(T_{G1}\)</span> and continuing until before period <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government spending be adjusted to set tomorrow’s debt <span class="math notranslate nohighlight">\(D_{t+1}\)</span> to be a convex combination between <span class="math notranslate nohighlight">\(\alpha_D Y_t\)</span> and the current debt level <span class="math notranslate nohighlight">\(D_t\)</span>, where <span class="math notranslate nohighlight">\(\alpha_D\)</span> is a target debt-to-GDP ratio and <span class="math notranslate nohighlight">\(\rho_d\in(0,1]\)</span> is the percent of the way to jump toward the target <span class="math notranslate nohighlight">\(\alpha_D Y_t\)</span> from the current debt level <span class="math notranslate nohighlight">\(D_t\)</span>. The last case specifies that, for every period after <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government spending <span class="math notranslate nohighlight">\(G_t\)</span> is set such that the next-period debt be a fixed target percentage <span class="math notranslate nohighlight">\(\alpha_D\)</span> of GDP.</p>
+</div>
+<div class="section" id="change-government-transfers-only">
+<h3><a class="reference external" href="#SecUnbalGBC_chgTRt">Change government transfers only</a><a class="headerlink" href="#change-government-transfers-only" title="Permalink to this headline">¶</a></h3>
+<p>If government transfers to households are specified by <a class="reference internal" href="#equation-equnbalgbctfer">(24)</a> and the long-run debt-to-GDP ratio can only be stabilized by changing transfers, then the budget closure rule must be the following.</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbcclosure-trt">
+<span class="eqno">(29)<a class="headerlink" href="#equation-equnbalgbcclosure-trt" title="Permalink to this equation">¶</a></span>\[\begin{split}     TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \\
+     \text{where}\quad g_{tr,t} =
+       \begin{cases}
+         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\text{if}\quad t &lt; T_{G1} \\
+         \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - G_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+         \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - G_{t} + Rev_{t}}{\alpha_{tr} Y_t} \qquad\qquad\quad\:\:\:\:\text{if}\quad t \geq T_{G2}
+       \end{cases} \\
+     \quad\text{and}\quad g_{g,t} = 1 \quad\forall t\end{split}\]</div>
+<p>The first case in <a class="reference internal" href="#equation-equnbalgbcclosure-trt">(29)</a> says that government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> will be a fixed fraction <span class="math notranslate nohighlight">\(\alpha_{tr}\)</span> of GDP <span class="math notranslate nohighlight">\(Y_t\)</span> for every period before <span class="math notranslate nohighlight">\(T_{G1}\)</span>. The second case specifies that, starting in period <span class="math notranslate nohighlight">\(T_{G1}\)</span> and continuing until before period <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government transfers be adjusted to set tomorrow’s debt <span class="math notranslate nohighlight">\(D_{t+1}\)</span> to be a convex combination between <span class="math notranslate nohighlight">\(\alpha_D Y_t\)</span> and the current debt level <span class="math notranslate nohighlight">\(D_t\)</span>. The last case specifies that, for every period after <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> are set such that the next-period debt be a fixed target percentage <span class="math notranslate nohighlight">\(\alpha_D\)</span> of GDP.</p>
+</div>
+<div class="section" id="change-both-government-spending-and-transfers">
+<h3><a class="reference external" href="#SecUnbalGBC_chgGtTRt">Change both government spending and transfers</a><a class="headerlink" href="#change-both-government-spending-and-transfers" title="Permalink to this headline">¶</a></h3>
+<p>In some cases, changing only government spending <span class="math notranslate nohighlight">\(G_t\)</span> or only government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> will not be enough. That is, there exist policies for which a decrease in government spending to zero after period <span class="math notranslate nohighlight">\(T_{G1}\)</span> will not stabilize the debt-to-GDP ratio. And negative government spending on public goods does not make sense.\footnote{Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period <span class="math notranslate nohighlight">\(T_{G2}\)</span>.} On the other hand, negative transfers do make sense. Notwithstanding, one might want the added stabilization ability of changing both government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> to stabilize the long-run debt-to-GDP ratio.</p>
+<p>In our specific form of this joint option, we assume that the factor by which we scale government spending and transfers is the same <span class="math notranslate nohighlight">\(g_{g,t} = g_{tr,t}\)</span> for all <span class="math notranslate nohighlight">\(t\)</span>. We label this single scaling factor <span class="math notranslate nohighlight">\(g_{trg,t}\)</span>.</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbcclosure-gtrgt">
+<span class="eqno">(30)<a class="headerlink" href="#equation-equnbalgbcclosure-gtrgt" title="Permalink to this equation">¶</a></span>\[  g_{trg,t}\equiv g_{g,t} = g_{tr,t} \quad\forall t\]</div>
+<p>If government spending on public goods is specified by <a class="reference internal" href="#equation-equnbalgbc-gt">(25)</a> and government transfers to households are specified by <a class="reference internal" href="#equation-equnbalgbctfer">(24)</a> and the long-run debt-to-GDP ratio can only be stabilized by changing both spending and transfers, then the budget closure rule must be the following.</p>
+<div class="math notranslate nohighlight" id="equation-equnbalgbcclosure-trgt">
+<span class="eqno">(31)<a class="headerlink" href="#equation-equnbalgbcclosure-trgt" title="Permalink to this equation">¶</a></span>\[\begin{split}    &amp;G_t + TR_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)Y_t \quad\Rightarrow\quad G_t = g_{trg,t}\:\alpha_g\: Y_t \quad\text{and}\quad TR_t = g_{trg,t}\:\alpha_{tr}\:Y_t \\
+    &amp;\text{where}\quad g_{trg,t} =
+      \begin{cases}
+        1 \qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t &lt; T_{G1} \\
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\:\text{if}\quad t \geq T_{G2}
+      \end{cases}\end{split}\]</div>
+<p>The first case in <a class="reference internal" href="#equation-equnbalgbcclosure-trgt">(31)</a> says that government spending and government transfers <span class="math notranslate nohighlight">\(Tr_t\)</span> will their respective fixed fractions <span class="math notranslate nohighlight">\(\alpha_g\)</span> and <span class="math notranslate nohighlight">\(\alpha_{tr}\)</span> of GDP <span class="math notranslate nohighlight">\(Y_t\)</span> for every period before <span class="math notranslate nohighlight">\(T_{G1}\)</span>. The second case specifies that, starting in period <span class="math notranslate nohighlight">\(T_{G1}\)</span> and continuing until before period <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government spending and transfers be adjusted by the same rate to set tomorrow’s debt <span class="math notranslate nohighlight">\(D_{t+1}\)</span> to be a convex combination between <span class="math notranslate nohighlight">\(\alpha_D Y_t\)</span> and the current debt level <span class="math notranslate nohighlight">\(D_t\)</span>. The last case specifies that, for every period after <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government spending and transfers are set such that the next-period debt be a fixed target percentage <span class="math notranslate nohighlight">\(\alpha_D\)</span> of GDP.</p>
+<p>Each of these budget closure rules <a class="reference internal" href="#equation-equnbalgbcclosure-gt">(28)</a>, <a class="reference internal" href="#equation-equnbalgbcclosure-trt">(29)</a>, and <a class="reference internal" href="#equation-equnbalgbcclosure-trgt">(31)</a> allows the government to run increasing deficits or surpluses in the short run (before period <span class="math notranslate nohighlight">\(T_{G1}\)</span>). But then the adjustment rule is implemented gradually beginning in period <span class="math notranslate nohighlight">\(t=T_{G1}\)</span> to return the debt-to-GDP ratio back to its long-run target of <span class="math notranslate nohighlight">\(\alpha_D\)</span>. Then the rule is implemented exactly in period <span class="math notranslate nohighlight">\(T_{G2}\)</span> by adjusting some combination of government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> to set the debt <span class="math notranslate nohighlight">\(D_{t+1}\)</span> such that it is exactly <span class="math notranslate nohighlight">\(\alpha_D\)</span> proportion of GDP <span class="math notranslate nohighlight">\(Y_t\)</span>.</p>
+</div>
+</div>
+<div class="section" id="some-caveats-and-alternatives">
+<h2><a class="reference external" href="#SecUnbalGBCcaveat">Some Caveats and Alternatives</a><a class="headerlink" href="#some-caveats-and-alternatives" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> adjusts some combination of government spending <span class="math notranslate nohighlight">\(G_t\)</span> and government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> as its closure rule instrument because of its simplicity and lack of distortionary effects. Since government spending does not enter into the household’s utility function, its level does not affect the solution of the household problem. In contrast, government transfers do appear in the household budget constraint. However, household decisions do not individually affect the amount of transfers, thereby rendering government transfers as exogenous from the household’s perspective. As an alternative, one could choose to adjust taxes to close the budget (or a combination of all of the government fiscal policy levers).</p>
+<p>There is no guarantee that any of our stated closure rules <a class="reference internal" href="#equation-equnbalgbcclosure-gt">(28)</a>, <a class="reference internal" href="#equation-equnbalgbcclosure-trt">(29)</a>, or <a class="reference internal" href="#equation-equnbalgbcclosure-trgt">(31)</a> is sufficient to stabilize the debt-to-GDP ratio in the long run. For large and growing deficits, the convex combination parameter <span class="math notranslate nohighlight">\(\rho_d\)</span> might be too gradual, or the budget closure initial period <span class="math notranslate nohighlight">\(T_{G1}\)</span> might be too far in the future, or the target debt-to-GDP ratio <span class="math notranslate nohighlight">\(\alpha_D\)</span> might be too high. The existence of any of these problems might be manifest in the steady state computation stage. However, it is possible for the steady-state to exist, but for the time path to never reach it. These problems can be avoided by choosing conservative values for <span class="math notranslate nohighlight">\(T_{G1}\)</span>, <span class="math notranslate nohighlight">\(\rho_d\)</span>, and <span class="math notranslate nohighlight">\(\alpha_D\)</span> that close the budget quickly.</p>
+<p>And finally, in closure rules <a class="reference internal" href="#equation-equnbalgbcclosure-gt">(28)</a> and <a class="reference internal" href="#equation-equnbalgbcclosure-trgt">(31)</a> in which government spending is used to stabilize the long-run budget, it is also possible that government spending is forced to be less than zero to make this happen. This would be the case if tax revenues bring in less than is needed to financed transfers and interest payments on the national debt. None of the equations we’ve specified above preclude that result, but it does raise conceptual difficulties. Namely, what does it mean for government spending to be negative? Is the government selling off pubic assets? We caution those using this budget closure rule to consider carefully how the budget is closed in the long run given their parameterization. We also note that such difficulties present themselves across all budget closure rules when analyzing tax or spending proposals that induce structural budget deficits. In particular, one probably needs a different closure instrument if government spending must be negative in the steady-state to hit your long-term debt-to-GDP target.</p>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content/theory"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="firms.html" title="previous page">Firms</a>
+    <a class='right-next' id="next-link" href="market_clearing.html" title="next page">Market Clearing</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
+    
+  </body>
+</html>

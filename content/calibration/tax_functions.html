@@ -1,0 +1,679 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tax Functions &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Bequest Process Calibration" href="bequests.html" />
+    <link rel="prev" title="Lifetime Earnings Profiles" href="earnings.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../api/public_api.html">
+   OG-USA API
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/government.html">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/equilibrium.html">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="exogenous_parameters.html">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/calibration/tax_functions.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2Fcontent/calibration/tax_functions.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#effective-and-marginal-tax-rates">
+   Effective and Marginal Tax Rates
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#microeconomic-data">
+   Microeconomic Data
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#fitting-tax-functions">
+   Fitting Tax Functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#factor-transforming-income-units">
+   Factor Transforming Income Units
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#household-transfers">
+   Household Transfers
+  </a>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="tax-functions">
+<span id="chap-taxcalc"></span><h1>Tax Functions<a class="headerlink" href="#tax-functions" title="Permalink to this headline">¶</a></h1>
+<p>The government is not an optimizing agent in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>. The government levies taxes on households, provides transfers to households, levies taxes on firms, spends resources on public goods, and makes rule-based adjustments to stabilize the economy in the long-run. The government can run budget deficits or surpluses in a given year and must, therefore, be able to accumulate debt or savings.</p>
+<p>The government sector influences households through two terms in the budget constraint <a class="reference internal" href="../theory/households.html#equation-eqhhbc">(1)</a>—government transfers <span class="math notranslate nohighlight">\(TR_{t}\)</span> and through the total tax liability function <span class="math notranslate nohighlight">\(T_{s,t}\)</span>, which can be decomposed into the effective tax rate times total income <a class="reference internal" href="../theory/households.html#equation-eqtaxcalcliabetr">(2)</a>. In this chapter, we detail the household tax component of government activity <span class="math notranslate nohighlight">\(T_{s,t}\)</span> in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, along with our method of incorporating detailed microsimulation data into a dynamic general equilibrium model.</p>
+<p>Incorporating realistic tax and incentive detail into a general equilibrium model is notoriously difficult for two reasons. First, it is impossible in a dynamic general equilibrium model to capture all of the dimensions of heterogeneity on which the real-world tax rate depends. For example, a household’s tax liability in reality depends on filing status, number of dependents, many types of income, and some characteristics correlated with age. A good heterogeneous agent DGE model tries to capture the most important dimensions of heterogeneity, and necessarily neglects the other dimensions.</p>
+<p>The second difficulty in modeling realistic tax and incentive detail is the need for good microeconomic data on the individuals who make up the economy from which to simulate behavioral responses and corresponding tax liabilities and tax rates.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> follows the method of <a class="bibtex reference internal" href="../citations.html#debackeretal-2017" id="id1">[DEP17]</a> of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>.</p>
+<div class="section" id="effective-and-marginal-tax-rates">
+<h2><a class="reference external" href="#SecTaxCalcRateTheory">Effective and Marginal Tax Rates</a><a class="headerlink" href="#effective-and-marginal-tax-rates" title="Permalink to this headline">¶</a></h2>
+<p>Before going into more detail regarding how we handle these two difficulties in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, we need to define some functions and make some notation. For notational simplicity, we will use the variable <span class="math notranslate nohighlight">\(x\)</span> to summarize labor income, and we will use the variable <span class="math notranslate nohighlight">\(y\)</span> to summarize capital income.</p>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalclabinc">
+<span class="eqno">(71)<a class="headerlink" href="#equation-eqtaxcalclabinc" title="Permalink to this equation">¶</a></span>\[  x_{j,s,t} \equiv w_{t}e_{j,s}n_{j,s,t} \quad\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S\]</div>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalclabinc">
+<span class="eqno">(71)<a class="headerlink" href="#equation-eqtaxcalclabinc" title="Permalink to this equation">¶</a></span>\[  y_{j,s,t} \equiv r_{t}b_{j,s,t} \qquad\:\:\:\,\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S\]</div>
+<p>We can express total tax liability <span class="math notranslate nohighlight">\(T_{s,t}\)</span> from the household budget constraint <a class="reference internal" href="../theory/households.html#equation-eqhhbc">(1)</a> as an effective tax rate multiplied by total income.</p>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalcliabetr">
+<span class="eqno">(72)<a class="headerlink" href="#equation-eqtaxcalcliabetr" title="Permalink to this equation">¶</a></span>\[  T_{s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right)\]</div>
+<p>Rearranging <a class="reference internal" href="../theory/households.html#equation-eqtaxcalcliabetr">(2)</a> gives the definition of an effective tax rate (<span class="math notranslate nohighlight">\(ETR\)</span>) as total tax liability divided by unadjusted gross income, or rather, total tax liability as a percent of unadjusted gross income.</p>
+<p>A marginal tax rate (<span class="math notranslate nohighlight">\(MTR\)</span>) is defined as the change in total tax liability from a small change income. In <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, we differentiate between the marginal tax rate on labor income (<span class="math notranslate nohighlight">\(MTRx\)</span>) and the marginal tax rate on labor income (<span class="math notranslate nohighlight">\(MTRy\)</span>).</p>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalcmtrx">
+<span class="eqno">(73)<a class="headerlink" href="#equation-eqtaxcalcmtrx" title="Permalink to this equation">¶</a></span>\[  \tau^{mtrx} \equiv \frac{\partial T_{s,t}}{\partial w_t e_{j,s}n_{j,s,t}} = \frac{\partial T_{s,t}}{\partial x_{j,s,t}} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S\]</div>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalcmtry">
+<span class="eqno">(74)<a class="headerlink" href="#equation-eqtaxcalcmtry" title="Permalink to this equation">¶</a></span>\[  \tau^{mtry} \equiv \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S\]</div>
+<p>As we show in Section <span class="xref std std-ref">SecHHeulers</span>, the derivative of total tax liability with respect to labor supply <span class="math notranslate nohighlight">\(\frac{\partial T_{s,t}}{n_{j,s,t}}\)</span> and the derivative of total tax liability next period with respect to savings <span class="math notranslate nohighlight">\(\frac{\partial T_{s+1,t+1}}{b_{j,s+1,t+1}}\)</span> show up in the household Euler equations for labor supply <a class="reference internal" href="../theory/households.html#equation-eqhheul-n">(9)</a> and savings <a class="reference internal" href="../theory/households.html#equation-eqhheul-b">(10)</a>, respectively. It is valuable to be able to express those marginal tax rates, for which we have no data, as marginal tax rates for which we do have data. The following two expressions show how the marginal tax rates of labor supply can be expressed as the marginal tax rate on labor income times the household-specific wage and how the marginal tax rate of savings can be expressed as the marginal tax rate of capital income times the interest rate.</p>
+<div class="math notranslate nohighlight" id="equation-eqmtrx-derive">
+<span class="eqno">(75)<a class="headerlink" href="#equation-eqmtrx-derive" title="Permalink to this equation">¶</a></span>\[  \frac{\partial T_{s,t}}{\partial n_{j,s,t}}  = \frac{\partial T_{s,t}}{\partial w_t e_{j,s}n_{j,s,t}}\frac{\partial w_{t}e_{j,s}n_{j,s,t}}{\partial n_{j,s,t}} = \frac{\partial T_{s,t}}{\partial w_{t}e_{j,s}n_{j,s,t}}w_t e_{j,s} = \tau^{mtrx}_{s,t}w_t e_{j,s}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqmtry-derive">
+<span class="eqno">(76)<a class="headerlink" href="#equation-eqmtry-derive" title="Permalink to this equation">¶</a></span>\[  \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{t}b_{j,s,t}}\frac{\partial r_t b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}}r_{t} = \tau^{mtry}_{s,t}r_t\]</div>
+</div>
+<div class="section" id="microeconomic-data">
+<h2><a class="reference external" href="#SecTaxCalcMicro">Microeconomic Data</a><a class="headerlink" href="#microeconomic-data" title="Permalink to this headline">¶</a></h2>
+<p>For <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, we use an open source microsimulation model called <code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code> that uses microeconomic data on U.S. households from the Internal Revenue Service (IRS) Statistics of Income (SOI) Public Use File (PUF).[^mylabel]:<code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code> is available through an open source repository <a class="reference external" href="https://github.com/open-source-economics/Tax-Calculator">https://github.com/open-source-economics/Tax-Calculator</a> as well as through a web application <a class="reference external" href="https://compute.studio/PSLmodels/Tax-Brain/">Tax-Brain</a>. Documentation for <code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code> is available at <a class="reference external" href="https://pslmodels.github.io/Tax-Calculator/">https://pslmodels.github.io/Tax-Calculator/</a>. For users that have not paid for access to the Public Use File (PUF), <code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code> has an option to use a CPS matched dataset that is publicly available free of charge that has the same general properties as the PUF.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code> starts with the underlying population microeconomic data, in which each observation is a filer with a population weight that renders the sample representative. It then processes the relevant income and demographic characteristics in order to calculate the tax liability of each individual, according to all the rich tax law of the United States tax code. <code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code> can then calculate effective tax rates for all of these individuals, thereby creating a sample of how ETR’s are related to other variables in our <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> model, such as total income <span class="math notranslate nohighlight">\(x + y\)</span>, labor income <span class="math notranslate nohighlight">\(x\)</span>, and capital income <span class="math notranslate nohighlight">\(y\)</span>. <code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code> can also generate marginal tax rates by adding a dollar to each filer’s income of a particular type and calculate how the filer’s tax liability changes. This is a finite difference calculation of a derivative.</p>
+<p>Figure <a class="reference internal" href="#figtaxcalcetrtotinc"><span class="std std-numref">Fig. 14</span></a> shows a scatter plot of <span class="math notranslate nohighlight">\(ETR\)</span>’s for 43-year-olds in 2017 and unadjusted gross income <span class="math notranslate nohighlight">\(x + y\)</span>. It is clear that <span class="math notranslate nohighlight">\(ETR\)</span> is positively related to income. It is also clear that a significant number of filers have a negative <span class="math notranslate nohighlight">\(ETR\)</span>. We will discuss in Section <span class="xref std std-ref">SecTaxCalcFuncs</span> the functional form <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> uses to best capture the main characteristics of these ETR data.</p>
+<div class="figure align-default" id="figtaxcalcetrtotinc">
+<a class="reference internal image-reference" href="../../_images/Compare_ETR_functions.png"><img alt="../../_images/Compare_ETR_functions.png" src="../../_images/Compare_ETR_functions.png" style="height: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 14 </span><span class="caption-text">Plot of estimated <span class="math notranslate nohighlight">\(ETR\)</span> functions: <span class="math notranslate nohighlight">\(t=2017\)</span> and <span class="math notranslate nohighlight">\(s=43\)</span> under current law</span><a class="headerlink" href="#figtaxcalcetrtotinc" title="Permalink to this image">¶</a></p>
+</div>
+<p>Figure <a class="reference internal" href="#figtaxcalc3dtaxrates"><span class="std std-numref">Fig. 15</span></a> shows 3D scatter plots of <span class="math notranslate nohighlight">\(ETR\)</span>, <span class="math notranslate nohighlight">\(MTRx\)</span>, and <span class="math notranslate nohighlight">\(MTRy\)</span> (and a histogram of the data) with the labor income and capital income, separately, of each age-42 filer in 2017, generated by <code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code>. This figure presents the main visual evidence for the functional form we use to fit tax functions to these data in Section <span class="xref std std-ref">SecTaxCalcFuncs</span>. Figure <a class="reference internal" href="#figtaxcalc3dtaxrates"><span class="std std-numref">Fig. 15</span></a> presents strong evidence that the tax rate—<span class="math notranslate nohighlight">\(ETR\)</span>, <span class="math notranslate nohighlight">\(MTRx\)</span>, and <span class="math notranslate nohighlight">\(MTRy\)</span>—is most accurately modeled as a function of labor income and capital income, separately: <span class="math notranslate nohighlight">\(\tau(x,y)\)</span>.</p>
+<div class="figure align-default" id="figtaxcalc3dtaxrates">
+<a class="reference internal image-reference" href="../../_images/Age42_2017_scatters.png"><img alt="../../_images/Age42_2017_scatters.png" src="../../_images/Age42_2017_scatters.png" style="height: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 15 </span><span class="caption-text">Scatter plot of ETR, MTRx, MTRy, and histogram as functions of labor income and capital income from microsimulation model: <span class="math notranslate nohighlight">\(t=2017\)</span> and <span class="math notranslate nohighlight">\(s=42\)</span> under current law.
+Note: Axes in the histogram in the lower-right panel have been switched relative to the other three figures in order to see the distribution more clearly.</span><a class="headerlink" href="#figtaxcalc3dtaxrates" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="fitting-tax-functions">
+<h2><a class="reference external" href="#SecTaxCalcFuncs">Fitting Tax Functions</a><a class="headerlink" href="#fitting-tax-functions" title="Permalink to this headline">¶</a></h2>
+<p>In looking at the 2D scatter plot on effective tax rates as a function of total income in Figure <a class="reference internal" href="#figtaxcalcetrtotinc"><span class="std std-numref">Fig. 14</span></a> and the 3D scatter plots of <span class="math notranslate nohighlight">\(ETR\)</span>, <span class="math notranslate nohighlight">\(MTRx\)</span>, and <span class="math notranslate nohighlight">\(MTRy\)</span> in Figure <a class="reference internal" href="#figtaxcalc3dtaxrates"><span class="std std-numref">Fig. 15</span></a>, it is clear that all of these rates exhibit negative exponential or logistic shape. This empirical regularity allows us to make an important and nonrestrictive assumption. We can fit parametric tax rate functions to these data that are constrained to be monotonically increasing in labor income and capital income. This assumption of monotonicity is computationally important as it preserves a convex budget set for each household, which is important for being able to solve many household lifetime problems over a large number of periods.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> follows the approach of <a class="bibtex reference internal" href="../citations.html#debackeretal-2017" id="id2">[DEP17]</a> in using the following functional form to estimate tax functions for each age <span class="math notranslate nohighlight">\(s=E+1, E+2, ... E+S\)</span> in each time period <span class="math notranslate nohighlight">\(t\)</span>. Equation {ref}`EqTaxCalcTaxFuncForm} is written as a generic tax rate, but we use this same functional form for <span class="math notranslate nohighlight">\(ETR\)</span>’s, <span class="math notranslate nohighlight">\(MTRx\)</span>’s, and <span class="math notranslate nohighlight">\(MTRy\)</span>’s.</p>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalctaxfuncform">
+<span class="eqno">(77)<a class="headerlink" href="#equation-eqtaxcalctaxfuncform" title="Permalink to this equation">¶</a></span>\[\begin{split}    \tau(x,y) = &amp;\Bigl[\tau(x) + shift_x\Bigr]^\phi\Bigl[\tau(y) + shift_y\Bigr]^{1-\phi} + shift \\
+    &amp;\text{where}\quad \tau(x) \equiv (max_x - min_x)\left(\frac{Ax^2 + Bx}{Ax^2 + Bx + 1}\right) + min_x \\
+    &amp;\quad\text{and}\quad \tau(y) \equiv (max_y - min_y)\left(\frac{Cy^2 + Dy}{Cy^2 + Dy + 1}\right) + min_y \\
+    &amp;\text{where}\quad A,B,C,D,max_x,max_y,shift_x,shift_y &gt; 0 \quad\text{and}\quad\phi\in[0,1] \\
+    &amp;\quad\text{and}\quad max_x &gt; min_x \quad\text{and}\quad max_y &gt; min_y\end{split}\]</div>
+<p>The parameters values will, in general, differ across the different functions (effective and marginal rate functions) and by age, <span class="math notranslate nohighlight">\(s\)</span>, and tax year, <span class="math notranslate nohighlight">\(t\)</span>.  We drop the subscripts for age and year from the above exposition for clarity.</p>
+<p>By assuming each tax function takes the same form, we are breaking the analytical link between the the effective tax rate function and the marginal rate functions.  In particular, one could assume an effective tax rate function and then use the analytical derivative of that to find the marginal tax rate function.  However, we’ve found it useful to separately estimate the marginal and average rate functions.  One reason is that we want the tax functions to be able to capture policy changes that have differential effects on marginal and average rates.  For example, a change in the standard deduction for tax payers would have a direct effect on their average tax rates.  But it will have secondary effect on marginal rates as well, as some filers will find themselves in different tax brackets after the policy change. These are smaller and second order effects. When tax functions are are fit to the new policy, in this case a lower standard deduction, we want them to be able to represent this differential impact on the marginal and average tax rates. The second reason is related to the first. As the additional flexibility allows us to model specific aspects of tax policy more closely, it also allows us to better fit the parameterized tax functions to the data.</p>
+<p>The key building blocks of the functional form Equation <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(77)</a> are the <span class="math notranslate nohighlight">\(\tau(x)\)</span> and <span class="math notranslate nohighlight">\(\tau(y)\)</span> univariate functions. The ratio of polynomials in the <span class="math notranslate nohighlight">\(\tau(x)\)</span> function <span class="math notranslate nohighlight">\(\frac{Ax^2 + Bx}{Ax^2 + Bx + 1}\)</span> with positive coefficients <span class="math notranslate nohighlight">\(A,B&gt;0\)</span> and positive support for labor income <span class="math notranslate nohighlight">\(x&gt;0\)</span> creates a negative-exponential-shaped function that is bounded between 0 and 1, and the curvature is governed by the ratio of quadratic polynomials. The multiplicative scalar term <span class="math notranslate nohighlight">\((max_x-min_x)\)</span> on the ratio of polynomials and the addition of <span class="math notranslate nohighlight">\(min_x\)</span> at the end of <span class="math notranslate nohighlight">\(\tau(x)\)</span> expands the range of the univariate negative-exponential-shaped function to <span class="math notranslate nohighlight">\(\tau(x)\in[min_x, max_x]\)</span>. The <span class="math notranslate nohighlight">\(\tau(y)\)</span> function is an analogous univariate negative-exponential-shaped function in capital income <span class="math notranslate nohighlight">\(y\)</span>, such that <span class="math notranslate nohighlight">\(\tau(y)\in[min_y,max_y]\)</span>.</p>
+<p>The respective <span class="math notranslate nohighlight">\(shift_x\)</span> and <span class="math notranslate nohighlight">\(shift_y\)</span> parameters in Equation <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(77)</a> are analogous to the additive constants in a Stone-Geary utility function. These constants ensure that the two sums <span class="math notranslate nohighlight">\(\tau(x) + shift_x\)</span> and <span class="math notranslate nohighlight">\(\tau(y) + shift_y\)</span> are both strictly positive. They allow for negative tax rates in the <span class="math notranslate nohighlight">\(\tau(\cdot)\)</span> functions despite the requirement that the arguments inside the brackets be strictly positive. The general <span class="math notranslate nohighlight">\(shift\)</span> parameter outside of the Cobb-Douglas brackets can then shift the tax rate function so that it can accommodate negative tax rates. The Cobb-Douglas share parameter <span class="math notranslate nohighlight">\(\phi\in[0,1]\)</span> controls the shape of the function between the two univariate functions <span class="math notranslate nohighlight">\(\tau(x)\)</span> and <span class="math notranslate nohighlight">\(\tau(y)\)</span>.</p>
+<p>This functional form for tax rates delivers flexible parametric functions that can fit the tax rate data shown in Figure <a class="reference internal" href="#figtaxcalc3dtaxrates"><span class="std std-numref">Fig. 15</span></a> as well as a wide variety of policy reforms. Further, these functional forms are monotonically increasing in both labor income <span class="math notranslate nohighlight">\(x\)</span> and capital income <span class="math notranslate nohighlight">\(y\)</span>. This characteristic of monotonicity in <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> is essential for guaranteeing convex budget sets and thus uniqueness of solutions to the household Euler equations. The assumption of monotonicity does not appear to be a strong one when viewing the the tax rate data shown in Figure <a class="reference internal" href="#figtaxcalc3dtaxrates"><span class="std std-numref">Fig. 15</span></a>. While it does limit the potential tax systems to which one could apply our methodology, tax policies that do not satisfy this assumption would result in non-convex budget sets and thus require non-standard DGE model solutions methods and would not guarantee a unique equilibrium. The 12 parameters of our tax rate functional form from <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(77)</a> are summarized in Table <code class="xref std std-numref docutils literal notranslate"><span class="pre">TabTaxCalcTfuncParams</span></code>.</p>
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=5.0in}
+  \caption{\label{TabTaxCalcTfuncParams}\textbf{Description of tax rate function $\tau(x,y)$ parameters}}
+    \begin{threeparttable}
+    \begin{tabular}{>{\footnotesize}c |>{\footnotesize}l }
+      \hline\hline
+      Symbol & \quad\quad\quad\quad Description  \\
+      \hline
+      $A$ & Coefficient on squared labor income term $x^2$ in $\tau(x)$ \\
+      $B$ & Coefficient on labor income term $x$ in $\tau(x)$ \\
+      $C$ & Coefficient on squared capital income term $y^2$ in $\tau(y)$ \\
+      $D$ & Coefficient on capital income term $y$ in $\tau(y)$ \\
+      $max_x$ & Maximum tax rate on labor income $x$ given $y=0$  \\
+      $min_x$ & Minimum tax rate on labor income $x$ given $y=0$ \\
+      $max_y$ & Maximum tax rate on capital income $y$ given $x=0$ \\
+      $min_y$ & Minimum tax rate on capital income $y$ given $x=0$ \\
+      $shift_x$ & shifter $>|min_x|$ ensures that $\tau(x) + shift_x > 0$ despite potentially \\
+      & \quad negative values for $\tau(x)$ \\
+      $shift_y$ & shifter $>|min_y|$ ensures that $\tau(y) + shift_y > 0$  despite potentially \\
+      & \quad negative values for $\tau(y)$ \\
+      $shift$ & shifter (can be negative) allows for support of $\tau(x,y)$ to include \\
+      & \quad negative tax rates \\
+      $\phi$ & Cobb-Douglas share parameter between 0 and 1 \\
+      \hline\hline
+    \end{tabular}
+    % \begin{tablenotes}
+    %   \scriptsize{\item[]Note: Maybe put sources here.}
+    % \end{tablenotes}
+    \end{threeparttable}
+  \end{table} -->
+<!-- :name: TabTaxCalcTfuncParams -->
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:center head"><p>Symbol</p></th>
+<th class="text-align:left head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(A\)</span></p></td>
+<td class="text-align:left"><p>Coefficient on squared labor income term <span class="math notranslate nohighlight">\(x^2\)</span> in <span class="math notranslate nohighlight">\(\tau(x)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(B\)</span></p></td>
+<td class="text-align:left"><p>Coefficient on labor income term <span class="math notranslate nohighlight">\(x\)</span> in <span class="math notranslate nohighlight">\(\tau(x)\)</span></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(C\)</span></p></td>
+<td class="text-align:left"><p>Coefficient on squared capital income term <span class="math notranslate nohighlight">\(y^2\)</span> in <span class="math notranslate nohighlight">\(\tau(y)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(D\)</span></p></td>
+<td class="text-align:left"><p>Coefficient on capital income term <em>y</em> in <span class="math notranslate nohighlight">\(\tau(y)\)</span></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(max_{x}\)</span></p></td>
+<td class="text-align:left"><p>Maximum tax rate on labor income <span class="math notranslate nohighlight">\(x\)</span> given <span class="math notranslate nohighlight">\(x\)</span> = 0</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(min_{x}\)</span></p></td>
+<td class="text-align:left"><p>Minimum tax rate on labor income <span class="math notranslate nohighlight">\(x\)</span> given <span class="math notranslate nohighlight">\(x\)</span> = 0</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(max_{y}\)</span></p></td>
+<td class="text-align:left"><p>Maximum tax rate on capital income <span class="math notranslate nohighlight">\(x\)</span> given <span class="math notranslate nohighlight">\(x\)</span> = 0</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(min_{y}\)</span></p></td>
+<td class="text-align:left"><p>Minimum tax rate on capital income <span class="math notranslate nohighlight">\(x\)</span> given <span class="math notranslate nohighlight">\(x\)</span> = 0</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(shift_{x}\)</span></p></td>
+<td class="text-align:left"><p>shifter  &gt; |<span class="math notranslate nohighlight">\(min_{x}\)</span>| ensures that <span class="math notranslate nohighlight">\(\tau(x,y)\)</span> + <span class="math notranslate nohighlight">\(shift_{x} \gte 0\)</span> despite potentially</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p></p></td>
+<td class="text-align:left"><p>negative values for <span class="math notranslate nohighlight">\(\tau(x)\)</span></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(shift_{y}\)</span></p></td>
+<td class="text-align:left"><p>shifter  &gt; |<span class="math notranslate nohighlight">\(min_{y}\)</span>| ensures that <span class="math notranslate nohighlight">\(\tau(x,y)\)</span> + <span class="math notranslate nohighlight">\(shift_{y} \gte 0\)</span> despite potentially</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p></p></td>
+<td class="text-align:left"><p>negative values for <span class="math notranslate nohighlight">\(\tau(y)\)</span></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(shift\)</span></p></td>
+<td class="text-align:left"><p>shifter (can be negative) allows for support of <span class="math notranslate nohighlight">\(\tau(x,y)\)</span> to include</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p></p></td>
+<td class="text-align:left"><p>negative tax rates</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(\phi\)</span></p></td>
+<td class="text-align:left"><p>Cobb-Douglas share parameter between 0 and 1</p></td>
+</tr>
+</tbody>
+</table>
+<div class="figure align-default" id="figtaxcalc3dvspred">
+<a class="reference internal image-reference" href="../../_images/Age42_2017_vsPred.png"><img alt="../../_images/Age42_2017_vsPred.png" src="../../_images/Age42_2017_vsPred.png" style="height: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 16 </span><span class="caption-text">Estimated tax rate functions of ETR, MTRx, MTRy, and histogram as functions of labor income and capital income from microsimulation model: <span class="math notranslate nohighlight">\(t=2017\)</span> and <span class="math notranslate nohighlight">\(s=42\)</span> under current law.
+Note: Axes in the histogram in the lower-right panel have been switched relative to the other three figures in order to see the distribution.</span><a class="headerlink" href="#figtaxcalc3dvspred" title="Permalink to this image">¶</a></p>
+</div>
+  <!-- \begin{table}[htbp] \centering \captionsetup{width=3.0in}
+  \caption{\label{TabTaxCalcEst42}\textbf{Estimated baseline current law tax rate function $\tau_{s,t}(x,y)$ parameters for $s=42$, $t=2017$}}
+    \begin{threeparttable}
+    \begin{tabular}{>{\footnotesize}l |>{\footnotesize}r >{\footnotesize}r >{\footnotesize}r}
+    \hline\hline
+    Parameter & \multicolumn{1}{c}{\footnotesize{$ETR$}} & \multicolumn{1}{c}{\footnotesize{$MTRx$}} & \multicolumn{1}{c}{\footnotesize{$MTRy$}} \\
+    \hline
+    $A$ & 6.28E-12 & 3.43E-23 & 4.32E-11 \\
+    $B$ & 4.36E-05 & 4.50E-04 & 5.52E-05 \\
+    $C$ & 1.04E-23 & 9.81E-12 & 5.62E-12 \\
+    $D$ & 7.77E-09 & 5.30E-08 & 3.09E-06 \\
+    $max\_{x}$ & 0.80  & 0.71  & 0.44  \\
+    $min\_{x}$ & -0.14 & -0.17 & 0.00E+00 \\
+    $max\_{y}$ & 0.80  & 0.80  & 0.13 \\
+    $min\_{y}$ & -0.15 & -0.42 & 0.00E+00 \\
+    $shift\_{x}$ & 0.15  & 0.18  & 4.45E-03 \\
+    $shift\_{y}$ & 0.16  & 0.43  & 1.34E-03 \\
+    $shift$ & -0.15 & -0.42 & 0.00E+00 \\
+    $share$ & 0.84  & 0.96  & 0.86 \\
+    \hline
+    Obs. (N) & 3,105 & 3,105 & 1,990 \\
+    SSE   & 9122.68 & 15041.35 & 7756.54 \\
+    \hline\hline
+    \end{tabular}
+    % \begin{tablenotes}
+    %   \scriptsize{\item[]Note: Maybe put sources here.}
+    % \end{tablenotes}
+    \end{threeparttable}
+  \end{table} -->
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>Parameter</p></th>
+<th class="text-align:right head"><p></p></th>
+<th class="text-align:right head"><p></p></th>
+<th class="text-align:right head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p><em>A</em></p></td>
+<td class="text-align:right"><p>6.28E-12</p></td>
+<td class="text-align:right"><p>3.43E-23</p></td>
+<td class="text-align:right"><p>4.32E-11</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><em>B</em></p></td>
+<td class="text-align:right"><p>4.36E-05</p></td>
+<td class="text-align:right"><p>4.50E-04</p></td>
+<td class="text-align:right"><p>5.52E-05</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><em>C</em></p></td>
+<td class="text-align:right"><p>1.04E-23</p></td>
+<td class="text-align:right"><p>9.81E-12</p></td>
+<td class="text-align:right"><p>5.62E-12</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><em>D</em></p></td>
+<td class="text-align:right"><p>7.77E-09</p></td>
+<td class="text-align:right"><p>5.30E-08</p></td>
+<td class="text-align:right"><p>3.09E-06</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(max_{x}\)</span></p></td>
+<td class="text-align:right"><p>0.80</p></td>
+<td class="text-align:right"><p>0.71</p></td>
+<td class="text-align:right"><p>0.44</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(min_{x}\)</span></p></td>
+<td class="text-align:right"><p>-0.14</p></td>
+<td class="text-align:right"><p>-0.17</p></td>
+<td class="text-align:right"><p>0.00E+00</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(max_{y}\)</span></p></td>
+<td class="text-align:right"><p>0.80</p></td>
+<td class="text-align:right"><p>0.80</p></td>
+<td class="text-align:right"><p>0.13</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(min_{y}\)</span></p></td>
+<td class="text-align:right"><p>-0.15</p></td>
+<td class="text-align:right"><p>-0.42</p></td>
+<td class="text-align:right"><p>0.00E+00</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(shift_{x}\)</span></p></td>
+<td class="text-align:right"><p>0.15</p></td>
+<td class="text-align:right"><p>0.18</p></td>
+<td class="text-align:right"><p>4.45E-03</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(shift_{y}\)</span></p></td>
+<td class="text-align:right"><p>0.16</p></td>
+<td class="text-align:right"><p>0.43</p></td>
+<td class="text-align:right"><p>1.34E-03</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(shift\)</span></p></td>
+<td class="text-align:right"><p>-0.15</p></td>
+<td class="text-align:right"><p>-0.42</p></td>
+<td class="text-align:right"><p>0.00E+00</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><span class="math notranslate nohighlight">\(\phi\)</span></p></td>
+<td class="text-align:right"><p>0.84</p></td>
+<td class="text-align:right"><p>0.96</p></td>
+<td class="text-align:right"><p>0.86</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>Obs. (N)</p></td>
+<td class="text-align:right"><p>3,105</p></td>
+<td class="text-align:right"><p>3,105</p></td>
+<td class="text-align:right"><p>1,990</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>SSE</p></td>
+<td class="text-align:right"><p>9122.68</p></td>
+<td class="text-align:right"><p>15041.35</p></td>
+<td class="text-align:right"><p>7756.54</p></td>
+</tr>
+</tbody>
+</table>
+<p>Let <span class="math notranslate nohighlight">\(\boldsymbol{\theta}_{s,t}=(A,B,C,D,max_x,min_x,max_y,min_y,shift_x,shift_y,shift,\phi)\)</span> be the full vector of 12 parameters of the tax function for a particular type of tax rate, age of filers, and year. We first directly specify <span class="math notranslate nohighlight">\(min_x\)</span> as the minimum tax rate and <span class="math notranslate nohighlight">\(max_x\)</span> as the maximum tax rate in the data for age-<span class="math notranslate nohighlight">\(s\)</span> and period-<span class="math notranslate nohighlight">\(t\)</span> individuals for capital income close to 0 ($$0&lt;y&lt;$3,000$), and <span class="math notranslate nohighlight">\(min_y\)</span> as the minimum tax rate and <span class="math notranslate nohighlight">\(max_y\)</span> as the maximum tax rate for labor income close to 0 ($$0&lt;x&lt;$3,000$). We then set <span class="math notranslate nohighlight">\(shift_x = \min(0,|min_x|)+\ve\)</span> and <span class="math notranslate nohighlight">\(shift_y = \min(0,|min_y|)+\ve\)</span> so that the respective arguments in the brackets of <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(77)</a> are strictly positive. Then let <span class="math notranslate nohighlight">\(shift\)</span> be be the minimum tax rate in the corresponding data minus <span class="math notranslate nohighlight">\(\ve\)</span>. Let <span class="math notranslate nohighlight">\(\bar{\boldsymbol{\theta}}_{s,t}=\{min_x,max_x,min_y,max_y,shift_x,shift_y, shift\}\)</span> be the set of parameters we take directly from the data in this way.</p>
+<p>We then estimate five remaining parameters <span class="math notranslate nohighlight">\(\tilde{\boldsymbol{\theta}}_{s,t}=(A,B,C,D,shift,\phi)\)</span> using the following nonlinear weighted least squares criterion,</p>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalcthetawssq">
+<span class="eqno">(78)<a class="headerlink" href="#equation-eqtaxcalcthetawssq" title="Permalink to this equation">¶</a></span>\[\begin{split}    \boldsymbol{\hat{\theta}}_{s,t} = \tilde{\boldsymbol{\theta}}_{s,t}:\quad &amp;\min_{\tilde{\boldsymbol{\theta}}_{s,t}}\sum_{i=1}^{N} \Bigl[\tau_{i}-\tau_{s,t}\bigl(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t}\bigr)\Bigr]^{2} w_i, \\
+    &amp;\qquad\text{subject to}\quad A, B, C, D &gt; 0 \quad\text{and}\quad \phi\in[0,1]\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\tau_{i}\)</span> is the tax rate for observation <span class="math notranslate nohighlight">\(i\)</span> from the microsimulation output, <span class="math notranslate nohighlight">\(\tau_{s,t}(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t})\)</span> is the predicted tax rate for filing-unit <span class="math notranslate nohighlight">\(i\)</span> with <span class="math notranslate nohighlight">\(x_{i}\)</span> labor income and <span class="math notranslate nohighlight">\(y_{i}\)</span> capital income given parameters <span class="math notranslate nohighlight">\(\boldsymbol{\theta}_{s,t}\)</span>, and <span class="math notranslate nohighlight">\(w_{i}\)</span> is the CPS sampling weight of this observation. The number <span class="math notranslate nohighlight">\(N\)</span> is the total number of observations from the microsimulation output for age <span class="math notranslate nohighlight">\(s\)</span> and year <span class="math notranslate nohighlight">\(t\)</span>. Figure <a class="reference internal" href="#figtaxcalc3dvspred"><span class="std std-numref">Fig. 16</span></a> shows the typical fit of an estimated tax function <span class="math notranslate nohighlight">\(\tau_{s,t}\bigl(x,y|\hat{\boldsymbol{\theta}}_{s,t}\bigr)\)</span> to the data. The data in Figure <a class="reference internal" href="#figtaxcalc3dvspred"><span class="std std-numref">Fig. 16</span></a> are the same age <span class="math notranslate nohighlight">\(s=42\)</span> and year <span class="math notranslate nohighlight">\(t=2017\)</span> as the data Figure <a class="reference internal" href="#figtaxcalc3dtaxrates"><span class="std std-numref">Fig. 15</span></a>.</p>
+<p>The underlying data can limit the number of tax functions that can be estimated. For example, we use the age of the primary filer from the PUF-CPS match to be equivalent to the age of the DGE model household. The DGE model we use allows for individuals up to age 100, however the data contain few primary filers with age above age 80. Because we cannot reliably estimate tax functions for <span class="math notranslate nohighlight">\(s&gt;80\)</span>, we apply the tax function estimates for 80 year-olds to those with model ages 81 to 100. In the case certain ages below age 80 have too few observations to enable precise estimation of the model parameters, we use a linear interpolation method to find the values for those ages <span class="math notranslate nohighlight">\(21\leq s &lt;80\)</span> that cannot be precisely estimated.\footnote{We use two criterion to determine whether the function should be interpolated. First, we require a minimum number of observations of filers of that age and in that tax year. Second, we require that that sum of squared errors meet a predefined threshold.}</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, we estimate the 12-parameter functional form <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(77)</a> using weighted nonlinear least squares to fit an effective tax rate function <span class="math notranslate nohighlight">\((\tau^{etr}_{s,t})\)</span>, a marginal tax rate of labor income function <span class="math notranslate nohighlight">\((\tau^{mtrx}_{s,t})\)</span>, and a marginal tax rate of capital income function <span class="math notranslate nohighlight">\((\tau^{mtry}_{s,t})\)</span> for each age <span class="math notranslate nohighlight">\(E+1\leq s\leq E+S\)</span> and each of the first 10 years from the current period.\footnote{We assume that whatever parameters the tax functions have in year 10 persist forever.} That means we have to perform 2,400 estimations of 12 parameters each. Figure <a class="reference internal" href="#figtaxcalc3dvspred"><span class="std std-numref">Fig. 16</span></a> shows the predicted surfaces for <span class="math notranslate nohighlight">\(\tau^{etr}_{s=42,t=2017}\)</span>, <span class="math notranslate nohighlight">\(\tau^{mtrx}_{s=42,t=2017}\)</span>, and <span class="math notranslate nohighlight">\(\tau^{mtry}_{s=42,t=2017}\)</span> along with the underlying scatter plot data from which those functions were estimated. Table <code class="xref std std-numref docutils literal notranslate"><span class="pre">TabTaxCalcEst42</span></code> shows the estimated values of those functional forms.</p>
+<p>The full set of estimated values are calculated in the <a class="reference external" href="https://github.com/open-source-economics/OG-USA/blob/master/ogusa/txfunc.py"><code class="docutils literal notranslate"><span class="pre">OG-USA/ogusa/txfunc.py</span></code></a> module in the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> repository. And the estimated values are stored in the <a class="reference external" href="https://github.com/open-source-economics/OG-USA/blob/master/TxFuncEst_baseline.pkl"><code class="docutils literal notranslate"><span class="pre">TxFuncEst_baseline.pkl</span></code></a> file.</p>
+</div>
+<div class="section" id="factor-transforming-income-units">
+<h2><a class="reference external" href="#SecTaxCalcFactor">Factor Transforming Income Units</a><a class="headerlink" href="#factor-transforming-income-units" title="Permalink to this headline">¶</a></h2>
+<p>The tax functions <span class="math notranslate nohighlight">\(\tau^{etr}_{s,t}\)</span>, <span class="math notranslate nohighlight">\(\tau^{mtrx}_{s,t}\)</span>, and <span class="math notranslate nohighlight">\(\tau^{mtry}_{s,t}\)</span> are estimated based on current U.S. tax filer reported incomes in dollars. However, the consumption units of the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> model are not in the same units as the real-world U.S. incomes data. For this reason, we have to transform the income by a <span class="math notranslate nohighlight">\(factor\)</span> so that it is in the same units as the income data on which the tax functions were estimated.</p>
+<p>The tax rate functions are each functions of capital income and labor income <span class="math notranslate nohighlight">\(\tau(x,y)\)</span>. In order to make the tax functions return accurate tax rates associated with the correct levels of income, we multiply the model income <span class="math notranslate nohighlight">\(x^m\)</span> and <span class="math notranslate nohighlight">\(y^m\)</span> by a <span class="math notranslate nohighlight">\(factor\)</span> so that they are in the same units as the real-world U.S. income data <span class="math notranslate nohighlight">\(\tau(factor\times x^m, factor\times y^m)\)</span>. We define the <span class="math notranslate nohighlight">\(factor\)</span> such that average steady-state household total income in the model times the <span class="math notranslate nohighlight">\(factor\)</span> equals the U.S. data average total income.</p>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalcfactor">
+<span class="eqno">(79)<a class="headerlink" href="#equation-eqtaxcalcfactor" title="Permalink to this equation">¶</a></span>\[  factor\Biggl[\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\bar{\omega}_s\left(\bar{w}e_{j,s}\bar{n}_{j,s} + \bar{r}\bar{b}_{j,s}\right)\Biggr] = \text{Avg. household income in data}\]</div>
+<p>We do not know the steady-state wage, interest rate, household labor supply, and savings <em>ex ante</em>. So the income <span class="math notranslate nohighlight">\(factor\)</span> is an endogenous variable in the steady-state equilibrium computational solution. We hold the factor constant throughout the nonsteady-state equilibrium solution.</p>
+</div>
+<div class="section" id="household-transfers">
+<h2><a class="reference external" href="#SecTaxCalcTfers">Household Transfers</a><a class="headerlink" href="#household-transfers" title="Permalink to this headline">¶</a></h2>
+<p>Total transfers to households by the government in a given period <span class="math notranslate nohighlight">\(t\)</span> is <span class="math notranslate nohighlight">\(TR_t\)</span>. The percent of those transfers given to all households of age <span class="math notranslate nohighlight">\(s\)</span> and lifetime income group <span class="math notranslate nohighlight">\(j\)</span> is <span class="math notranslate nohighlight">\(\eta_{j,s}\)</span> such that <span class="math notranslate nohighlight">\(\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1\)</span>. <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> currently has the transfer distribution function set to distribute transfers uniformly among the population.</p>
+<div class="math notranslate nohighlight" id="equation-eqtaxcalcetajs">
+<span class="eqno">(80)<a class="headerlink" href="#equation-eqtaxcalcetajs" title="Permalink to this equation">¶</a></span>\[  \eta_{j,s,t} = \frac{\lambda_j\omega_{s,t}}{\tilde{N}_t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S\]</div>
+<p>However, this distribution function <span class="math notranslate nohighlight">\(\eta_{j,s,t}\)</span> could also be modified to more accurately reflect the way transfers are distributed in the United States.</p>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content/calibration"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="earnings.html" title="previous page">Lifetime Earnings Profiles</a>
+    <a class='right-next' id="next-link" href="bequests.html" title="next page">Bequest Process Calibration</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
+    
+  </body>
+</html>

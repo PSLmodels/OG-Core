@@ -1,0 +1,766 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Household Functions &#8212; OG-USA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/mystnb.js"></script>
+    <script src="../../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Income Processes Functions" href="income.html" />
+    <link rel="prev" title="Functions to Get Micro-data from Tax-Calculator" href="get_micro_data.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../../index.html">
+  
+  <img src="../../_static/OG-USA_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">OG-USA</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro/intro.html">
+   OG-USA
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Contributing to OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributing/contributor_guide.html">
+   Contributor Guide
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA API
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1 current active">
+  <a class="reference internal" href="public_api.html">
+   OG-USA API
+  </a>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="aggregates.html">
+     Aggregates Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="elliptical_u_est.html">
+     Elliptical Utility Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="execute.html">
+     Model Execution Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="firm.html">
+     Firm Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="fiscal.html">
+     Fiscal Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="get_micro_data.html">
+     Functions to Get Micro-data from Tax-Calculator
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Household Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="income.html">
+     Income Processes Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_plots.html">
+     OG-USA Output Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_tables.html">
+     OG-USA Output Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_plots.html">
+     OG-USA Parameter Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_tables.html">
+     OG-USA Parameter Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameters.html">
+     OG-USA Parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tax.html">
+     Tax Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="txfunc.html">
+     Tax Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="utils.html">
+     Utilities Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="wealth.html">
+     Wealth Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="aggregates.html">
+     Aggregates Equations
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  OG-USA Theory
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/intro.html">
+   Model Overview
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/households.html">
+   Households
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/firms.html">
+   Firms
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/government.html">
+   Government
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/market_clearing.html">
+   Market Clearing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/stationarization.html">
+   Stationarization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/equilibrium.html">
+   Equilibrium
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Calibration
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/exogenous_parameters.html">
+   Exogenous Parameters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/demographics.html">
+   Demographics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/earnings.html">
+   Lifetime Earnings Profiles
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/tax_functions.html">
+   Tax Functions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/bequests.html">
+   Bequest Process Calibration
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Appendix
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/derivations.html">
+   Derivations
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  References
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/references.html">
+   References
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Citations of OG-USA
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../citations.html">
+   Citations and use cases of OG-USA
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/content/api/household.rst"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.rst</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/PSLmodels/OG-USA"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/PSLmodels/OG-USA/issues/new?title=Issue%20on%20page%20%2Fcontent/api/household.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ogusa.household">
+   ogusa.household
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id1">
+     Household functions.
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="household-functions">
+<span id="household"></span><h1>Household Functions<a class="headerlink" href="#household-functions" title="Permalink to this headline">¶</a></h1>
+<p><strong>Household Functions</strong></p>
+<div class="section" id="module-ogusa.household">
+<span id="ogusa-household"></span><h2>ogusa.household<a class="headerlink" href="#module-ogusa.household" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Household functions.<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="ogusa.household.marg_ut_cons">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">marg_ut_cons</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">sigma</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#marg_ut_cons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.marg_ut_cons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the marginal utility of consumption.</p>
+<div class="math notranslate nohighlight">
+\[MU_{c} = c^{-\sigma}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> (<em>array_like</em>) – household consumption</p></li>
+<li><p><strong>sigma</strong> (<em>scalar</em>) – coefficient of relative risk aversion</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>marginal utility of consumption</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.marg_ut_labor">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">marg_ut_labor</code><span class="sig-paren">(</span><em class="sig-param">n</em>, <em class="sig-param">chi_n</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#marg_ut_labor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.marg_ut_labor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the marginal disutility of labor.</p>
+<div class="math notranslate nohighlight">
+\[MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1-\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>array_like</em>) – household labor supply</p></li>
+<li><p><strong>chi_n</strong> (<em>array_like</em>) – utility weights on disutility of labor</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>marginal disutility of labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.get_bq">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_bq</code><span class="sig-paren">(</span><em class="sig-param">BQ</em>, <em class="sig-param">j</em>, <em class="sig-param">p</em>, <em class="sig-param">method</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_bq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_bq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate bequests to each household.</p>
+<div class="math notranslate nohighlight">
+\[bq_{j,s,t} = zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BQ</strong> (<em>array_like</em>) – aggregate bequests</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime ability group</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bequests received by each household</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bq (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.get_tr">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_tr</code><span class="sig-paren">(</span><em class="sig-param">TR</em>, <em class="sig-param">j</em>, <em class="sig-param">p</em>, <em class="sig-param">method</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_tr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_tr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate transfers to each household.</p>
+<div class="math notranslate nohighlight">
+\[tr_{j,s,t} = zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TR</strong> (<em>array_like</em>) – aggregate transfers</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime ability group</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bequests received by each household</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tr (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.get_cons">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_cons</code><span class="sig-paren">(</span><em class="sig-param">r</em>, <em class="sig-param">w</em>, <em class="sig-param">b</em>, <em class="sig-param">b_splus1</em>, <em class="sig-param">n</em>, <em class="sig-param">bq</em>, <em class="sig-param">net_tax</em>, <em class="sig-param">e</em>, <em class="sig-param">tau_c</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_cons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_cons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate household consumption.</p>
+<div class="math notranslate nohighlight">
+\[c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – household savings</p></li>
+<li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – household savings one period ahead</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>net_tax</strong> (<em>Numpy array</em>) – household net taxes paid</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption tax rates</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>household consumption</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cons (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.FOC_savings">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">FOC_savings</code><span class="sig-paren">(</span><em class="sig-param">r</em>, <em class="sig-param">w</em>, <em class="sig-param">b</em>, <em class="sig-param">b_splus1</em>, <em class="sig-param">n</em>, <em class="sig-param">bq</em>, <em class="sig-param">factor</em>, <em class="sig-param">tr</em>, <em class="sig-param">theta</em>, <em class="sig-param">e</em>, <em class="sig-param">rho</em>, <em class="sig-param">tau_c</em>, <em class="sig-param">etr_params</em>, <em class="sig-param">mtry_params</em>, <em class="sig-param">t</em>, <em class="sig-param">j</em>, <em class="sig-param">p</em>, <em class="sig-param">method</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#FOC_savings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.FOC_savings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes Euler errors for the FOC for savings in the steady state.
+This function is usually looped through over J, so it does one
+lifetime income group at a time.</p>
+<div class="math notranslate nohighlight">
+\[c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – household savings</p></li>
+<li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – household savings one period ahead</p></li>
+<li><p><strong>b_splus2</strong> (<em>Numpy array</em>) – household savings two periods ahead</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
+<li><p><strong>tr</strong> (<em>Numpy array</em>) – government tranfers to household</p></li>
+<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate for each
+lifetime income group</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>rho</strong> (<em>Numpy array</em>) – mortality rates</p></li>
+<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption tax rates</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – parameters of the effective tax rate
+functions</p></li>
+<li><p><strong>mtry_params</strong> (<em>Numpy array</em>) – parameters of the marginal tax rate
+on capital income functions</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – model period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of ability type</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Euler error from FOC for savings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>euler (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.FOC_labor">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">FOC_labor</code><span class="sig-paren">(</span><em class="sig-param">r</em>, <em class="sig-param">w</em>, <em class="sig-param">b</em>, <em class="sig-param">b_splus1</em>, <em class="sig-param">n</em>, <em class="sig-param">bq</em>, <em class="sig-param">factor</em>, <em class="sig-param">tr</em>, <em class="sig-param">theta</em>, <em class="sig-param">chi_n</em>, <em class="sig-param">e</em>, <em class="sig-param">tau_c</em>, <em class="sig-param">etr_params</em>, <em class="sig-param">mtrx_params</em>, <em class="sig-param">t</em>, <em class="sig-param">j</em>, <em class="sig-param">p</em>, <em class="sig-param">method</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#FOC_labor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.FOC_labor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes errors for the FOC for labor supply in the steady
+state.  This function is usually looped through over J, so it does
+one lifetime income group at a time.</p>
+<div class="math notranslate nohighlight">
+\[w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
+<li><p><strong>b</strong> (<em>Numpy array</em>) – household savings</p></li>
+<li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – household savings one period ahead</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
+<li><p><strong>tr</strong> (<em>Numpy array</em>) – government tranfers to household</p></li>
+<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate for each
+lifetime income group</p></li>
+<li><p><strong>chi_n</strong> (<em>Numpy array</em>) – utility weight on the disutility of labor
+supply</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption tax rates</p></li>
+<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – parameters of the effective tax rate
+functions</p></li>
+<li><p><strong>mtrx_params</strong> (<em>Numpy array</em>) – parameters of the marginal tax rate
+on labor income functions</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – model period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of ability type</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>error from FOC for labor supply</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>FOC_error (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.get_y">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_y</code><span class="sig-paren">(</span><em class="sig-param">r_hh</em>, <em class="sig-param">w</em>, <em class="sig-param">b_s</em>, <em class="sig-param">n</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute houshold income before taxes.</p>
+<dl class="simple">
+<dt>..math::</dt><dd><p>y_{j,s,t} = r_{hh,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_hh</strong> (<em>array_like</em>) – real interest rate on the household portfolio</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
+<li><p><strong>b_s</strong> (<em>Numpy array</em>) – household savings coming into the period</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.constraint_checker_SS">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">constraint_checker_SS</code><span class="sig-paren">(</span><em class="sig-param">bssmat</em>, <em class="sig-param">nssmat</em>, <em class="sig-param">cssmat</em>, <em class="sig-param">ltilde</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#constraint_checker_SS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.constraint_checker_SS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks constraints on consumption, savings, and labor supply in the
+steady state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bssmat</strong> (<em>Numpy array</em>) – steady state distribution of capital</p></li>
+<li><p><strong>nssmat</strong> (<em>Numpy array</em>) – steady state distribution of labor</p></li>
+<li><p><strong>cssmat</strong> (<em>Numpy array</em>) – steady state distribution of consumption</p></li>
+<li><p><strong>ltilde</strong> (<em>scalar</em>) – upper bound of household labor supply</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>Warnings</strong> – if constraints are violated, warnings printed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ogusa.household.constraint_checker_TPI">
+<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">constraint_checker_TPI</code><span class="sig-paren">(</span><em class="sig-param">b_dist</em>, <em class="sig-param">n_dist</em>, <em class="sig-param">c_dist</em>, <em class="sig-param">t</em>, <em class="sig-param">ltilde</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#constraint_checker_TPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.constraint_checker_TPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks constraints on consumption, savings, and labor supply along
+the transition path. Does this for each period t separately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b_dist</strong> (<em>Numpy array</em>) – distribution of capital at time t</p></li>
+<li><p><strong>n_dist</strong> (<em>Numpy array</em>) – distribution of labor at time t</p></li>
+<li><p><strong>c_dist</strong> (<em>Numpy array</em>) – distribution of consumption at time t</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
+<li><p><strong>ltilde</strong> (<em>scalar</em>) – upper bound of household labor supply</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>Warnings</strong> – if constraints are violated, warnings printed</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content/api"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="get_micro_data.html" title="previous page">Functions to Get Micro-data from Tax-Calculator</a>
+    <a class='right-next' id="next-link" href="income.html" title="next page">Income Processes Functions</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Jason DeBacker and Richard W. Evans<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../../_static/js/index.js"></script>
+    
+  </body>
+</html>
