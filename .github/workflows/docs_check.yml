@@ -1,23 +1,22 @@
-name: "Check that docs build"
-
+name: Check that docs build
 on: [push, pull_request]
 
 jobs:
-  # Build the book to make sure that building the docs works
-  build-book:
-    name: Build docs
+  build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.7
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .[sphinx]
-    - name: Build the book
-      run: |
-        jb build docs/
+      - name: Setup Miniconda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          activate-environment: ogusa-dev
+          environment-file: environment.yml
+          python-version: 3.7
+          auto-activate-base: false
+
+      - name: Build # Build Jupyter Book
+        shell: bash -l {0}
+        run: |
+          pip install jupyter-book
+          pip install -e .
+          cd docs
+          jb build ./book
