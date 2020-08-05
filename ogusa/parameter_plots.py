@@ -222,7 +222,7 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
         plt.ylabel(r'Marginal Utility')
     else:
         plt.ylabel(r'Utility')
-    plt.legend(loc='top left')
+    plt.legend(loc='upper left')
     if path is None:
         return fig
     else:
