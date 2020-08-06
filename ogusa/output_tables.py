@@ -73,7 +73,7 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
                  base_tpi[v][start_index: start_index +
                              num_years].sum()) /
                 base_tpi[v][start_index: start_index +
-                            num_years].sum())
+                            num_years].sum()) * 100
             results_SS = results[-1]
             results_for_table = results_years
             if include_overall:

@@ -1,0 +1,59 @@
+####################################################
+# Book settings
+title                    : OG-USA
+author                   : Jason DeBacker and Richard W. Evans
+copyright                : '2020'
+logo                     : '..//OG-USA_logo.png'
+
+####################################################
+# Execution settings
+execute:
+  execute_notebooks      : cache
+
+####################################################
+# HTML-specific settings
+html:
+  # favicon                : "_static/logo/favicon.ico"  # generated at https://www.favicon.cc/
+  use_edit_page_button   : false  # Whether to add an "edit this page" button to pages. If `true`, repository information in repository: must be filled in
+  use_repository_button  : true  # Whether to add a link to your repository button
+  use_issues_button      : true  # Whether to add an "open an issue" button
+  extra_navbar           : Powered by <a href="https://jupyterbook.org">Jupyter Book</a>  # Will be displayed underneath the left navbar.
+  # extra_footer           : ""  # Will be displayed underneath the footer.
+  # google_analytics_id    : ""  # A GA id that can be used to track book views.
+  home_page_in_navbar    : true  # Whether to include your home page in the left Navigation Bar
+  # baseurl                : ""  # The base URL where your book will be hosted. Used for creating image previews and social links. e.g.: https://mypage.com/mybook/
+
+####################################################
+# Launch button settings
+notebook_interface       : 'notebook'
+
+binder:
+  binderhub_url          : 'https://mybinder.org'
+  text                   : 'Launch binder'
+
+launch_buttons:
+  notebook_interface     : 'classic'  # The interface interactive links will activate ["classic", "jupyterlab"]
+  # binderhub_url          : https://mybinder.org  # The URL of the BinderHub (e.g., https://mybinder.org)
+  # jupyterhub_url         : ""  # The URL of the JupyterHub (e.g., https://datahub.berkeley.edu)
+  # thebelab               : false  # Add a thebelab button to pages (requires the repository to run on Binder)
+
+####################################################
+# Information about where the book exists on the web
+repository:
+  url                    : https://github.com/PSLmodels/OG-USA
+  path_to_book           : 'book'
+
+#######################################################################################
+# Advanced and power-user settings
+sphinx:
+  extra_extensions          : ['sphinx.ext.autodoc', 'sphinx.ext.mathjax',
+                               'sphinx.ext.viewcode', 'sphinx.ext.napoleon',
+                               'alabaster']   # A list of extra extensions to load by Sphinx.
+  config                    :   # key-value pairs to directly over-ride the Sphinx configuration
+
+####################################################
+# LaTeX information
+latex:
+  latex_engine           : 'xelatex'
+  latex_documents:
+    targetname           : book.tex
