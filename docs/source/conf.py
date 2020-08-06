@@ -26,7 +26,7 @@ author = 'Jason DeBacker and Richard W. Evans'
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.5.12'
+release = '0.6.2'
 
 
 # -- General configuration ---------------------------------------------------

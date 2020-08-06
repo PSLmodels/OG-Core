@@ -22,6 +22,7 @@ dependencies:
 - pylint
 - coverage
 - requests
+- xlwt
 - pip:
   - cs-kit
   - xlrd

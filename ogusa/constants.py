@@ -7,7 +7,7 @@ REFORM_DIR = "OUTPUT_REFORM"
 BASELINE_DIR = "OUTPUT_BASELINE"
 
 # Default year for model runs
-DEFAULT_START_YEAR = 2020
+DEFAULT_START_YEAR = 2021
 
 # Latest year TaxData extrapolates to
 TC_LAST_YEAR = taxcalc.Policy.LAST_BUDGET_YEAR
@@ -31,11 +31,11 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'r_gov': 'Real interest rate on gov debt ($r_{gov,t}$)',
               'r_hh': 'Real interest rate on HH portfolio ($r_{hh,t}$)',
               'w': 'Wage rate', 'BQ': 'Aggregate bequests ($BQ_{j,t}$)',
-              'total_revenue': 'Total tax revenue ($REV_t$)',
-              'business_revenue': 'Business tax revenue',
+              'total_tax_revenue': 'Total tax revenue ($REV_t$)',
+              'business_tax_revenue': 'Business tax revenue',
               'iit_revenue': 'Individual income tax revenue',
               'payroll_tax_revenue': 'Payroll tax revenue',
-              'IITpayroll_revenue': 'IIT and payroll tax revenue',
+              'iit_payroll_tax_revenue': 'IIT and payroll tax revenue',
               'n_mat': 'Labor Supply ($n_{j,s,t}$)',
               'c_path': 'Consumption ($c_{j,s,t}$)',
               'bmat_splus1': 'Savings ($b_{j,s+1,t+1}$)',
@@ -83,9 +83,6 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
                   'Real interest rate on HH portfolio ($\\bar{r}_{hh}$)',
               'wss': 'Wage rate ($\\bar{w}$)',
               'BQss': 'Aggregate bequests ($\\bar{BQ}_{j}$)',
-              'total_revenue_ss': 'Total tax revenue ($\\bar{REV}$)',
-              'business_revenue': 'Business tax revenue',
-              'IITpayroll_revenue': 'IIT and payroll tax revenue',
               'debt_service_ss':
                   'Debt service cost ($\\bar{r}_{gov}\\bar{D}$)',
               'D/Y': 'Debt to GDP ratio', 'T_Pss': 'Government Pensions'
@@ -102,7 +99,7 @@ ToGDP_LABELS = {'D': 'Debt-to-GDP ($D_{t}/Y_t$)',
                 'Foreign-owned Capital-Output Ratio ($K^f_{t}/Y_t$)',
                 'C': 'Consumption-Output Ratio ($C_{t}/Y_t$)',
                 'I': 'Investment-Output Ratio ($I_{t}/Y_t$)',
-                'total_revenue': 'Tax Revenue-to-GDP ($REV_{t}/Y_t$)'}
+                'total_tax_revenue': 'Tax Revenue-to-GDP ($REV_{t}/Y_t$)'}
 
 GROUP_LABELS = {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
                 4: '80-90%', 5: '90-99%', 6: 'Top 1%'}
@@ -110,10 +107,10 @@ GROUP_LABELS = {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
 CBO_UNITS = {
     'Y': r'Billions of \$', 'r': 'Percent', 'w_growth': 'Percent',
     'L_growth': 'Percent', 'I_total': r'Billions of \$', 'L': '2012=100',
-    'C': r'Billions of \$', 'T_P': r'Billions of \$',
+    'C': r'Billions of \$', 'agg_pension_outlays': r'Billions of \$',
     'G': r'Billions of \$', 'iit_revenue': r'Billions of \$',
     'payroll_tax_revenue': r'Billions of \$',
-    'business_revenue': r'Billions of \$', 'wL': r'Billions of \$',
+    'business_tax_revenue': r'Billions of \$', 'wL': r'Billions of \$',
     'D': r'Billions of \$'}
 
 PARAM_LABELS = {

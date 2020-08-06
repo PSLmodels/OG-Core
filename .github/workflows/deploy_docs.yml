@@ -1,0 +1,37 @@
+name: Build and Deploy Jupyter Book documentation
+on:
+  push:
+    branches:    
+      - master
+jobs:
+  build-and-deploy:
+    if: github.repository == 'PSLmodels/OG-USA'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+        with:
+          persist-credentials: false
+
+      - name: Setup Miniconda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          activate-environment: ogusa-dev
+          environment-file: environment.yml
+          python-version: 3.7
+          auto-activate-base: false
+
+      - name: Build # Build Jupyter Book
+        shell: bash -l {0}
+        run: |
+          pip install jupyter-book
+          pip install -e .
+          cd docs
+          jb build ./book
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: docs/book/_build/html # The folder the action should deploy.

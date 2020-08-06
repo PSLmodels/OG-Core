@@ -9,6 +9,7 @@ import time
 import numpy as np
 import os
 import psutil
+import taxcalc
 from taxcalc import Calculator
 from ogusa import output_tables as ot
 from ogusa import output_plots as op
@@ -40,8 +41,8 @@ def main():
     # In this example the 'reform' is a change to 2017 law (the
     # baseline policy is tax law in 2018)
     reform_url = ('https://raw.githubusercontent.com/'
-                  'PSLmodels/Tax-Calculator/master/taxcalc/'
-                  'reforms/2017_law.json')
+                  'PSLmodels/Tax-Calculator/' + taxcalc.__version__ +
+                  '/taxcalc/reforms/2017_law.json')
     ref = Calculator.read_json_param_objects(reform_url, None)
     iit_reform = ref['policy']
 
@@ -61,9 +62,11 @@ def main():
     alpha_G[0:3] = 0.05 - 0.01
     alpha_G[3:6] = 0.05 - 0.005
     alpha_G[6:] = 0.05
+    # Set start year for baseline and reform.
+    START_YEAR = 2021
     # Also adjust the Frisch elasticity, the start year, the
     # effective corporate income tax rate, and the SS debt-to-GDP ratio
-    og_spec = {'frisch': 0.41, 'start_year': 2020, 'cit_rate': [0.21],
+    og_spec = {'frisch': 0.41, 'start_year': START_YEAR, 'cit_rate': [0.21],
                'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}
 
@@ -93,7 +96,7 @@ def main():
     ------------------------------------------------------------------------
     '''
     # update the effective corporate income tax rate
-    og_spec = {'frisch': 0.41, 'start_year': 2020,
+    og_spec = {'frisch': 0.41, 'start_year': START_YEAR,
                'cit_rate': [0.35], 'debt_ratio_ss': 1.0,
                'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}

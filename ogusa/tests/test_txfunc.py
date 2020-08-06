@@ -149,16 +149,17 @@ def test_txfunc_est():
         'MTR capital income': 'mtr_capinc',
         'Total labor income': 'total_labinc',
         'Total capital income': 'total_capinc', 'ETR': 'etr',
+        'expanded_income': 'market_income',
         'Weights': 'weight'}, inplace=True)
     tax_func_type = 'DEP'
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, graph)
     expected_tuple = ((np.array([
-        6.37000261e-22, 2.73413298e-03, 1.49073835e-08, 1.39727771e-02,
-        2.32796890e-01, -3.69059719e-02, 1.00000000e-04,
-        -1.01967001e-01, 3.96030005e-02,  1.02987671e-01,
-        -1.30433574e-01,  1.00000000e+00]), 19527.162030362062, 3798))
+        6.37000261e-22, 2.73403892e-03, 1.28516622e-08, 1.26750240e-02,
+        2.32797219e-01, -3.69059719e-02, 1.00000000e-04, -1.01967001e-01,
+        3.96030038e-02, 1.02987671e-01, -1.30433574e-01, 1.0]),
+                       19527.162030046195, 3798))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
@@ -201,10 +202,11 @@ def test_tax_func_loop():
                                           +
                                           micro_data['SE income'].abs())))
     micro_data.rename(columns={
-        'Adjusted total income': 'expanded_income',
+        'Adjusted total income': 'market_income',
         'MTR capital income': 'mtr_capinc',
         'Total tax liability': 'total_tax_liab',
         'Year': 'year', 'Age': 'age',
+        'expanded_income': 'market_income',
         'Weights': 'weight'}, inplace=True)
     micro_data['payroll_tax_liab'] = 0
     test_tuple = txfunc.tax_func_loop(
@@ -301,7 +303,6 @@ def test_tax_func_estimate(dask_client):
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))
-    expected_dict['tax_func_type'] = 'DEP'
     del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
     for k, v in expected_dict.items():
         try:
