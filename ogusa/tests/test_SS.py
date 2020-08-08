@@ -390,6 +390,9 @@ param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 
 
+# Note that chaning the order in which these tests are run will cause
+# failures for the baseline spending=True tests which depend on the
+# output of the baseline run just prior
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
@@ -658,50 +661,41 @@ param_updates7 = {'start_year': 2020, 'zeta_K': [1.0]}
 filename7 = 'run_SS_reform_small_open.pkl'
 param_updates8 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True}
 filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
-# param_updates9 = {'baseline_spending': True}
-# filename9 = 'run_SS_reform_baseline_spend.pkl'
-# param_updates10 = {'baseline_spending': True, 'use_zeta': True}
-# filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
+param_updates9 = {'start_year': 2020, 'baseline_spending': True}
+filename9 = 'run_SS_reform_baseline_spend.pkl'
+param_updates10 = {'start_year': 2020, 'baseline_spending': True,
+                   'use_zeta': True}
+filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0]}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 
 
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates1, filename1),
-#                           (True, param_updates2, filename2),
-#                           (True, param_updates3, filename3),
-#                           (True, param_updates4, filename4),
-#                           (False, param_updates5, filename5),
-#                           (False, param_updates6, filename6),
-#                           (False, param_updates7, filename7),
-#                           (False, param_updates8, filename8),
-#                           (False, param_updates9, filename9),
-#                           (False, param_updates10, filename10)],
-#                          ids=['Baseline', 'Baseline, use zeta',
-#                               'Baseline, small open',
-#                               'Baseline, small open use zeta',
-#                               'Reform', 'Reform, use zeta',
-#                               'Reform, small open',
-#                               'Reform, small open use zeta',
-#                               'Reform, baseline spending',
-#                               'Reform, baseline spending, use zeta'])
+# Note that chaning the order in which these tests are run will cause
+# failures for the baseline spending=True tests which depend on the
+# output of the baseline run just prior
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
+                          (False, param_updates9, filename9),
                           (True, param_updates2, filename2),
+                        #   (False, param_updates10, filename10),
                           (True, param_updates3, filename3),
                           (True, param_updates4, filename4),
                           (False, param_updates5, filename5),
                           (False, param_updates6, filename6),
                           (False, param_updates7, filename7),
                           (False, param_updates8, filename8),
-                          (False, param_updates11, filename11)],
-                         ids=['Baseline', 'Baseline, use zeta',
+                          (False, param_updates11, filename11)
+                          ],
+                         ids=['Baseline', 'Reform, baseline spending',
+                              'Baseline, use zeta',
+                            #   'Reform, baseline spending, use zeta',
                               'Baseline, small open',
                               'Baseline, small open use zeta',
                               'Reform', 'Reform, use zeta',
                               'Reform, small open',
                               'Reform, small open use zeta',
-                              'Baseline, delta_tau=0'])
+                              'Baseline, delta_tau=0'
+                              ])
 @pytest.mark.full_run
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
