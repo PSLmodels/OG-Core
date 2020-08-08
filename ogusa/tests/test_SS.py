@@ -393,11 +393,11 @@ filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
-                        #   (False, param_updates3, filename3),
+                          (False, param_updates3, filename3),
                           (True, param_updates4, filename4),
                           (True, param_updates5, filename5)],
                          ids=['Baseline', 'Baseline, budget balance',
-                            #   'Reform, baseline spending=True',
+                              'Reform, baseline spending=True',
                               'Baseline, small open',
                               'Baseline, small open, budget balance'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
