@@ -44,4 +44,6 @@ run_examples/OUTPUT_BASELINE/*
 run_examples/OUTPUT_REFORM/*
 run_examples/ogusa_example_output.csv
 ogusa/tests/test_io_data/tax_func_loop_inputs_large.pkl
-
+ogusa/tests/OUTPUT/*
+ogusa/tests/OUTPUT_BASELINE/*
+ogusa/tests/OUTPUT_REFORM/*
