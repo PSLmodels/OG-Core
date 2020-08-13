@@ -61,5 +61,5 @@ def test_runner_reform(dask_client):
     runner(output_base=REFORM_DIR, baseline_dir=BASELINE_DIR,
            test=True, time_path=False, baseline=False,
            og_spec={'start_year': 2018}, run_micro=False,
-           tax_func_path=None, data='cps', client=dask_client,
+           tax_func_path=REFORM_TAX, data='cps', client=dask_client,
            num_workers=NUM_WORKERS)
