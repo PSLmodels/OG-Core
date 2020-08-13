@@ -10,7 +10,7 @@ import ogusa.output_tables as ot
 from ogusa.utils import REFORM_DIR, BASELINE_DIR, safe_read_pickle
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-PUF_PATH = os.path.join(CUR_PATH, '../ogusa/puf.csv')
+PUF_PATH = os.path.join(CUR_PATH, '..' , 'ogusa', 'puf.csv')
 
 client = Client(processes=False)
 CPU_COUNT = 4  # multiprocessing.cpu_count()
