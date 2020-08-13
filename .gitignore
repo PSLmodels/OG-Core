@@ -2,6 +2,7 @@
 MANIFEST
 build/*
 dist/*
+*.cache/
 .coverage
 .coveragerc
 htmlcov/*
@@ -34,7 +35,7 @@ htmlcov/*
 envs/
 *.egg-info/
 *dask-worker-space*
-*.ipynb_checkpoints/*
+*.ipynb_checkpoints*
 */__pycache__/*
 *regression_results*
 docs/book/_build/*
@@ -45,6 +46,8 @@ run_examples/OUTPUT_BASELINE/*
 run_examples/OUTPUT_REFORM/*
 run_examples/ogusa_example_output.csv
 ogusa/tests/test_io_data/tax_func_loop_inputs_large.pkl
+ogusa/tests/baseline/*
+ogusa/tests/reform/*
 ogusa/tests/OUTPUT/*
 ogusa/tests/OUTPUT_BASELINE/*
 ogusa/tests/OUTPUT_REFORM/*
