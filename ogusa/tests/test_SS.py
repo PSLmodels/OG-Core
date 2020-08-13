@@ -385,9 +385,6 @@ param_updates3 = {'baseline_spending': True}
 filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
 param_updates4 = {'start_year': 2020, 'zeta_K': [1.0]}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
-param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
-                  'budget_balance': True, 'alpha_G': [0.0]}
-filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 
 
 # Note that chaning the order in which these tests are run will cause
@@ -397,12 +394,10 @@ filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
                           (False, param_updates3, filename3),
-                          (True, param_updates4, filename4),
-                          (True, param_updates5, filename5)],
+                          (True, param_updates4, filename4)],
                          ids=['Baseline', 'Baseline, budget balance',
                               'Reform, baseline spending=True',
-                              'Baseline, small open',
-                              'Baseline, small open, budget balance'])
+                              'Baseline, small open'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -432,13 +427,18 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
 
 
+param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
+                  'budget_balance': True, 'alpha_G': [0.0]}
+filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 param_updates6 = {'delta_tau_annual': [0.0]}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates6, filename6)],
-                         ids=['Baseline, delta_tau = 0'])
+                         [(True, param_updates5, filename5),
+                          (True, param_updates6, filename6)],
+                         ids=['Baseline, small open, budget balance',
+                              'Baseline, delta_tau = 0'])
 @pytest.mark.full_run
 def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
