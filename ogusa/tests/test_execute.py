@@ -23,6 +23,8 @@ NUM_WORKERS = np.minimum(num_workers_max,
                                       mem_per_wkr_tot)))
 print('Max num worders=', num_workers_max, ', and NUM_WORKERS=', NUM_WORKERS)
 
+og_spec = {'start_year': 2018}
+
 # Set paths
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 BASELINE_DIR = os.path.join(CUR_PATH, 'OUTPUT_BASELINE')
@@ -46,12 +48,14 @@ def dask_client():
 @pytest.mark.full_run
 def test_runner_baseline(dask_client):
     runner(output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
-           test=True, time_path=True, baseline=True, run_micro=False,
-           data='cps', client=dask_client, num_workers=NUM_WORKERS)
+           test=True, time_path=True, baseline=True, og_spec=og_spec,
+           run_micro=False, data='cps', client=dask_client,
+           num_workers=NUM_WORKERS)
 
 
 @pytest.mark.full_run
 def test_runner_reform(dask_client):
     runner(output_base=REFORM_DIR, baseline_dir=BASELINE_DIR,
-           test=True, time_path=False, baseline=False, run_micro=False,
-           data='cps', client=dask_client, num_workers=NUM_WORKERS)
+           test=True, time_path=False, baseline=False, og_spec=og_spec,
+           run_micro=False, data='cps', client=dask_client,
+           num_workers=NUM_WORKERS)
