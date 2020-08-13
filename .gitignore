@@ -33,7 +33,8 @@ htmlcov/*
 */OUTPUT/*
 envs/
 *.egg-info/
-*/dask-worker-space/*
+*dask-worker-space*
+*.ipynb_checkpoints/*
 */__pycache__/*
 *regression_results*
 docs/book/_build/*
@@ -47,3 +48,6 @@ ogusa/tests/test_io_data/tax_func_loop_inputs_large.pkl
 ogusa/tests/OUTPUT/*
 ogusa/tests/OUTPUT_BASELINE/*
 ogusa/tests/OUTPUT_REFORM/*
+regression/OUTPUT_BASELINE/*
+regression/OUTPUT_REFORM*
+*default.profraw
