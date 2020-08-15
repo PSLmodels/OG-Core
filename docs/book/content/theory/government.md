@@ -5,7 +5,8 @@
 In `OG-USA`, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.
 
 
-## [Government Tax Revenue](#SecUnbalGBCrev)
+(SecUnbalGBCrev)=
+## Government Tax Revenue
 
   We see from the household's budget constraint that taxes $T_{s,t}$ and transfers $TR_{t}$ enter into the household's decision,
   
@@ -29,8 +30,8 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
     Rev_t = \underbrace{\tau^{corp}\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}\delta^\tau K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
 
-
-## [Government Budget Constraint](#SecUnbalGBCbudgConstr)
+(SecUnbalGBCbudgConstr)=
+## Government Budget Constraint
 
   Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest of the debt, government spending on public goods $G_t$, and total transfer payments to households $TR_t$ every period $t$.
 
@@ -59,7 +60,8 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
 
 Government spending on goods and services is comprised on spending on public infrastructure, $I_{g,t}$ and non-capital expenditures, $G_{g,t}$ such that $G_{t} = I_{g,t} + G_{g,t}$.  We assume that infrastructure spending is a fraction fo total government spending, $I_{g,t} = \alpha_{i,t} * G_{g,t}$.  The stock of public capital (i.e., infrastructure) evolves according to the law of motion, $K_{g,t+1} = (1 - \delta^{g}) K_{g,t} + I_{g,t}$.  The stock of public capital complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
 
-## [Interest Rate on Government Debt](#SecRateWedge)
+(SecRateWedge)=
+## Interest Rate on Government Debt
 
 Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt.  Doing so helps to add realism by including a risk premium.  `OG-USA` allows users to set an exogenous wedge between these two rates.  The interest rate on government debt,
 
@@ -78,8 +80,8 @@ In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$),
 ```
 
 
-
-## [Budget Closure Rule](#SecUnbalGBCcloseRule)
+(SecUnbalGBCcloseRule)=
+## Budget Closure Rule
 
   If total government transfers to households $TR_t$ and government spending on public goods $G_t$ are both fixed fractions of GDP, one can imagine corporate and household tax structures that cause the debt level of the government to either tend toward infinity or to negative infinity, depending on whether too little revenue or too much revenue is raised, respectively.
 
@@ -91,8 +93,8 @@ In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$),
 2. Change only government transfers to households $TR_t$.
 3. Change both government spending $G_t$ and transfers $TR_t$ by the same percentage.
 
-
-  ### [Change government spending only](#SecUnbalGBC_chgGt)
+(#SecUnbalGBC_chgGt)=
+### Change government spending only
 
  We specify a closure rule that is automatically implemented after some period $T_{G1}$ to stabilize government debt as a percent of GDP (debt-to-GDP ratio). Let $\alpha_D$ represent the long-run debt-to-GDP ratio at which we want the economy to eventually settle.
   
@@ -110,8 +112,8 @@ In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$),
 
  The first case in {eq}`EqUnbalGBCclosure_Gt` says that government spending $G_t$ will be a fixed fraction $\alpha_g$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between $\alpha_D Y_t$ and the current debt level $D_t$, where $\alpha_D$ is a target debt-to-GDP ratio and $\rho_d\in(0,1]$ is the percent of the way to jump toward the target $\alpha_D Y_t$ from the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending $G_t$ is set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
-
-  ### [Change government transfers only](#SecUnbalGBC_chgTRt)
+(#SecUnbalGBC_chgTRt)=
+### Change government transfers only
 
  If government transfers to households are specified by {eq}`EqUnbalGBCtfer` and the long-run debt-to-GDP ratio can only be stabilized by changing transfers, then the budget closure rule must be the following.
     
@@ -130,7 +132,8 @@ In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$),
  The first case in {eq}`EqUnbalGBCclosure_TRt` says that government transfers $TR_t$ will be a fixed fraction $\alpha_{tr}$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government transfers be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between $\alpha_D Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government transfers $TR_t$ are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
 
-  ### [Change both government spending and transfers](#SecUnbalGBC_chgGtTRt)
+(SecUnbalGBC_chgGtTRt)=
+### Change both government spending and transfers
 
  In some cases, changing only government spending $G_t$ or only government transfers $TR_t$ will not be enough. That is, there exist policies for which a decrease in government spending to zero after period $T_{G1}$ will not stabilize the debt-to-GDP ratio. And negative government spending on public goods does not make sense.\footnote{Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period $T_{G2}$.} On the other hand, negative transfers do make sense. Notwithstanding, one might want the added stabilization ability of changing both government spending $G_t$ and transfers $TR_t$ to stabilize the long-run debt-to-GDP ratio.
 
@@ -158,8 +161,8 @@ In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$),
 
  Each of these budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` allows the government to run increasing deficits or surpluses in the short run (before period $T_{G1}$). But then the adjustment rule is implemented gradually beginning in period $t=T_{G1}$ to return the debt-to-GDP ratio back to its long-run target of $\alpha_D$. Then the rule is implemented exactly in period $T_{G2}$ by adjusting some combination of government spending $G_t$ and transfers $TR_t$ to set the debt $D_{t+1}$ such that it is exactly $\alpha_D$ proportion of GDP $Y_t$.
 
-
-## [Some Caveats and Alternatives](#SecUnbalGBCcaveat)
+(SecUnbalGBCcaveat)=
+## Some Caveats and Alternatives
 
 `OG-USA` adjusts some combination of government spending $G_t$ and government transfers $TR_t$ as its closure rule instrument because of its simplicity and lack of distortionary effects. Since government spending does not enter into the household's utility function, its level does not affect the solution of the household problem. In contrast, government transfers do appear in the household budget constraint. However, household decisions do not individually affect the amount of transfers, thereby rendering government transfers as exogenous from the household's perspective. As an alternative, one could choose to adjust taxes to close the budget (or a combination of all of the government fiscal policy levers).
 

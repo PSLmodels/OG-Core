@@ -18,8 +18,8 @@ kernelspec:
 
 In this section, we describe what is arguably the most important economic agent in the `OG-USA` model: the household. We model households in `OG-USA` rather than individuals, because we want to abstract from the concepts of gender, marital status, and number of children. Furthermore, the household is the usual unit of account in tax data. Because `OG-USA` is primarily a fiscal policy model using U.S. data, it is advantageous to have the most granular unit of account be the household.
 
-
-## [Budget Constraint](#SecHHBC)
+(SecHHBC)=
+## Budget Constraint
 
   We described the derivation and dynamics of the population distribution in Chapter {ref}`Chap_Demog`. A measure $\omega_{1,t}$ of households is born each period, become economically relevant at age $s=E+1$ if they survive to that age, and live for up to $E+S$ periods ($S$ economically active periods), with the population of age-$s$ individuals in period $t$ being $\omega_{s,t}$. Let the age of a household be indexed by $s = \{1,2,...E+S\}$.
 
@@ -51,8 +51,8 @@ In this section, we describe what is arguably the most important economic agent 
 
   where many of the variables now have $j$ subscripts. The variables with three subscripts $(j,s,t)$ tell you to which ability type $j$ and age $s$ individual the variable belongs and in which period $t$.
 
-
-## [Elliptical Disutility of Labor Supply](#SecHHellipUtil)
+(SecHHellipUtil)=
+## Elliptical Disutility of Labor Supply
 
   In `OG-USA`, the period utility function of each household is a function of consumption $c_{j,s,t}$, savings $b_{j,s+1,t+1}$, and labor supply $n_{j,s,t}$.\footnote{Savings enters the period utility function to provide a ``warm glow'' bequest motive.} We detail this utility function, its justification, and functional form in Section {ref}`SecHHeulers`. With endogenous labor supply $n_{j,s,t}$, we must specify how labor enters an agent's utility function and what are the constraints. Assume that each household is endowed with a measure of time $\tilde{l}$ each period that it can choose to spend as either labor $n_{j,s,t}\in[0,\tilde{l}]$ or leisure $l_{j,s,t}\in[0,\tilde{l}]$.
 
@@ -103,8 +103,8 @@ Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted ellipti
 
   Because it is the marginal disutility of labor supply that matters for household decision making, we want to choose the parameters of the elliptical disutility of labor supply function $(b,\upsilon)$ so that the elliptical marginal utilities match the marginal utilities of the CFE disutility of labor supply. Figure {numref}`FigMDUcompar` shows the fit of marginal utilities for a Frisch elasticity of $\theta=0.9$ and a total time endowment of $\tilde{l}=1.0$. The estimated elliptical utility parameters in this case are $b=0.527$ and $\upsilon=1.497$.[^frisch_note]
 
-
-## [Optimality Conditions](#SecHHeulers)
+(SecHHeulers)=
+## Optimality Conditions
 
   Households choose lifetime consumption $\{c_{j,s,t+s-1}\}_{s=1}^S$, labor supply $\{n_{j,s,t+s-1}\}_{s=1}^S$, and savings $\{b_{j,s+1,t+s}\}_{s=1}^{S}$ to maximize lifetime utility, subject to the budget constraints and non negativity constraints. The household period utility function is the following.
 
@@ -168,8 +168,8 @@ Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted ellipti
     \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{t}b_{j,s,t}}\frac{\partial r_t b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}}r_{t} = \tau^{mtry}_{s,t}r_t
   ```
 
-
-## [Expectations](#SecHHexp)
+(SecHHexp)=
+## Expectations
 
   To conclude the household's problem, we must make an assumption about how the age-$s$ household can forecast the time path of interest rates, wages, and total bequests $\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}$ over his remaining lifetime. As we will show in Chapter {ref}`Chap_Eqm`, the equilibrium interest rate $r_t$, wage $w_t$, and total bequests $BQ_t$ will be functions of the state vector $\boldsymbol{\Gamma}_t$, which turns out to be the entire distribution of savings at in period $t$.
 
