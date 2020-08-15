@@ -4,8 +4,8 @@
 
 This appendix contains derivations from the theory in the body of this book.
 
-
-## [Properties of the CES Production Function](#SecAppDerivCES)
+(SecAppDerivCES)=
+## Properties of the CES Production Function
 
   The constant elasticity of substitution (CES) production function of capital and labor was introduced by \citet{Solow:1956} and further extended to a consumption aggregator by \citet{Armington:1969}. The CES production function of aggregate capital $K_t$ and aggregate labor $L_t$ we use in Chapter \ref{Chap_Firms} is the following,
 
@@ -27,8 +27,8 @@ This appendix contains derivations from the theory in the body of this book.
     Y = Z(K)^\gamma(K_{g})^{\gamma_{g}}(L)^{1-\gamma-\gamma_{g}}
   ```
 
-
-  ### [Wages as a function of interest rates](#SecAppDerivCESwr)
+(SecAppDerivCESwr)=
+### Wages as a function of interest rates
 
 The below shows that with the addition of public capital as a third factor of production, wages and interest rates are more than a function of the capital labor ratio.  This means that in the solution method for `OG-USA` we will need to guess both the interest rate $r_t$ and wage $w_t$.
 

@@ -50,8 +50,8 @@ variable definitions**
 
 The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab` and {eq}`EqMarkClrCap`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` to solve for the equilibria in Definitions {ref}`DefSSEql` and {ref}`DefNSSEql`.
 
-
-## [Stationarized Household Equations](#SecStnrzHH)
+(SecStnrzHH)=
+## Stationarized Household Equations
 
   The stationary version of the household budget constraint {eq}`EqHHBC} is found by dividing both sides of the equation by $e^{g_y t}$. For the savings term $b_{j,s+1,t+1}$, we must multiply and divide by $e^{g_y(t+1)}$, which leaves an $e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}$ in front of the stationarized variable.
   
@@ -84,8 +84,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
     (\hat{c}_{j,E+S,t})^{-\sigma} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
 
-
-## [Stationarized Firms Equations](#SecStnrzFirms)
+(SecStnrzFirms)=
+## Stationarized Firms Equations
 
   The nonstationary production function {eq}`EqFirmsCESprodfun} can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_t$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xL) = xF(K,L)$, which means the right-hand-side of the production function is stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
   
@@ -115,8 +115,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
       &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t
  ```
 
-
-## [Stationarized Government Equations](#SecStnrzGovt)
+(SecStnrzGovt)=
+## Stationarized Government Equations
 
   Each of the tax rate functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ is stationary. The total tax liability function $T_{s,t}$ is growing at the rate of labor productivity growth $g_y$ This can be see by looking at the decomposition of the total tax liability function into the effective tax rate times total income {eq}`EqTaxCalcLiabETR}. The effective tax rate function is stationary, and household income is growing at rate $g_y$. So household total tax liability is stationarized by dividing both sides of the equation by $e^{g_y t}$.
   
@@ -191,8 +191,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
           \end{cases}
   ```
 
-
-## [Stationarized Market Clearing Equations](#SecStnrzMC)
+(SecStnrzMC)=
+## Stationarized Market Clearing Equations
 
   The labor market clearing equation {eq}`EqMarkClrLab} is stationarized by dividing both sides by $\tilde{N}_t$.
   
