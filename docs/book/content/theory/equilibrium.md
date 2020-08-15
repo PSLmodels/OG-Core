@@ -1,14 +1,15 @@
 (Chap_Eqm)=
 # Equilibrium
 
-## [Steady-State Equilibirum](#Chap_SSeqlb)
+(Chap_SSeqlb)
+## Steady-State Equilibirum
 
 In this chapter, we define the stationary steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_Demog` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-USA` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter {ref}`Chap_Demog`, and the potential for unbounded growth in government debt as described in Chapter {ref}`Chap_UnbalGBC`.
 
 We implemented an automatic government budget closure rule using government spending $G_t$ as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in {eq}`EqUnbalGBCclosure`. And we showed in Chapter {ref}`Chap_Stnrz` how to stationarize all the other characterizing equations.
 
-
-### [Stationary Steady-State Equilibrium Definition](#SecEqlbSSdef)
+(SecEqlbSSdef)=
+### Stationary Steady-State Equilibrium Definition
 
   With the stationarized model, we can now define the stationary steady-state equilibrium. This equilibrium will be long-run values of the endogenous variables that are constant over time. In a perfect foresight model, the steady-state equilibrium is the state of the economy at which the model settles after a finite amount of time, regardless of the initial condition of the model. Once the model arrives at the steady-state, it stays there indefinitely unless it receives some type of shock or stimulus.
 
@@ -31,8 +32,8 @@ We implemented an automatic government budget closure rule using government spen
   \hrule
   \vspace{5mm}
 
-
-### [Stationary Steady-state Solution Method](#SecEqlbSSsoln)
+(SecEqlbSSsoln)=
+### Stationary Steady-state Solution Method
 
   \renewcommand\theenumi{\arabic{enumi}}
   \renewcommand\theenumii{\alph{enumii}}
@@ -92,7 +93,7 @@ We implemented an automatic government budget closure rule using government spen
       
     3. In equation {eq}`EqStnrzTfer`, we defined total household transfers as a fixed percentage of GDP ($\overline{TR}=\alpha_{tr}\bar{Y}$).  To find the updated value for transfers, we find the amount of transfers implied by the most updated value of GDP, $\overline{TR}^{i'}=\alpha_{tr}\bar{Y}^{i'}$.
       
-    4. The $factor$ that transforms the model units to U.S. dollar units for the tax functions {eq}`EqTaxCalcFactor` is already defined in terms of steady-state variables. The following is an expression in which household decisions $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ imply a value for the steady-state $factor^{i'}$. Note, as with the equation for $\overline{BQ}^{\,i'}$, that we include the updated values of $\bar{w}^{i'}$ and $\bar{r}^{i'}$ on the right-hand-side of the equation.[^mylabel]: The updated wage rate, $w^{i'}$, is found by using the updated interest rate, $r^{i'}$ as detailed in Step 3.
+    4. The $factor$ that transforms the model units to U.S. dollar units for the tax functions {eq}`EqTaxCalcFactor` is already defined in terms of steady-state variables. The following is an expression in which household decisions $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ imply a value for the steady-state $factor^{i'}$. Note, as with the equation for $\overline{BQ}^{\,i'}$, that we include the updated values of $\bar{w}^{i'}$ and $\bar{r}^{i'}$ on the right-hand-side of the equation.[^step3_note]
       
       $$
         factor^{i'} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\bar{\omega}_s\left(\bar{w}^{i'}e_{j,s}\bar{n}_{j,s} + \bar{r}^{i'}\bar{b}_{j,s}\right)}
@@ -108,7 +109,7 @@ We implemented an automatic government budget closure rule using government spen
     $$
       \max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| > toler_{ss,out}
     $$
-    then update the guesses for the outer loop variables as a convex combination governed by $\xi_{ss}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (5).[^mylabel]: In our code, there is also an option to use a Newton based root-finding algorithm to updated the outer-loop variables.  Such an algorithm is generally faster, but less robust than the functional iteration method outlined here.
+    then update the guesses for the outer loop variables as a convex combination governed by $\xi_{ss}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (5).[^rootfinder_note]
     
     $$
         \left[\bar{r}^{i+1},\overline{BQ}^{\,i+1},\overline{TR}^{\,i+1},factor^{i+1}\right] &= \xi_{ss}\left[\bar{r}^{i'},\overline{BQ}^{\,i'},\overline{TR}^{\,i'},factor^{i'}\right] + \\
@@ -127,8 +128,8 @@ We implemented an automatic government budget closure rule using government spen
     3. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
     4. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
-
-## [Baseline Steady-state Results](#SecSSeqlbResults)
+(SecSSeqlbResults)=
+## Baseline Steady-state Results
 
   In this section, we use the baseline calibration described in Chapter {ref}`Chap_Calibr`, which includes the baseline tax law from \taxcalc, to show some steady-state results from `OG-USA`. Figure {ref}`FigSSeqlbHHvars` shows the household steady-state variables by age $s$ and lifetime income group $j$.
 
@@ -239,12 +240,13 @@ parameter computation processes, the longest of which is the estimation
 of the baseline tax functions which computation takes 1 hour and 15
 minutes.
 
-## [Stationary Nonsteady-State Equilibrium](#Chap_NSSeqlb)
+(Chap_NSSeqlb)=
+## Stationary Nonsteady-State Equilibrium
 
 In this chapter, we define the stationary nonsteady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_Demog` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. We also need the steady-state solution from Chapter {ref}`Chap_SSeqlb` to solve for the nonsteady-state equilibrium transition path. As with the steady-state equilibrium, we must use the stationarized version of the characterizing equations from Chapter {ref}`Chap_Stnrz`.
 
-
-### [Stationary Nonsteady-State Equilibrium Definition](#SecEqlbNSSdef)
+(SecEqlbNSSdef)=
+### Stationary Nonsteady-State Equilibrium Definition
 
   We define a stationary nonsteady-state equilibrium as the following.
 
@@ -268,8 +270,8 @@ In this chapter, we define the stationary nonsteady-state equilibrium of the `OG
   \hrule
   \vspace{5mm}
 
-
-### [Stationary Nonsteady-state Solution Method](#SecEqlbNSSsoln)
+(SecEqlbNSSsoln)=
+### Stationary Nonsteady-state Solution Method
 
 
   This section describes the solution method for the stationary nonsteady-state equilibrium described in Definition {ref}`DefNSSEql`. We use the time path iteration (TPI) method. This method was originally outlined in a series of papers between 1981 and 1985\footnote{See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`.} and in the seminal book \citet[ch. 4]{AuerbachKotlikoff:1987} for the perfect foresight case and in \citet[Appendix II]{NishiyamaSmetters:2007} and \citet[Sec. 3.1]{EvansPhillips:2014} for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see \citet[ch. 17]{StokeyLucas1989}).
@@ -347,5 +349,10 @@ In this chapter, we define the stationary nonsteady-state equilibrium of the `OG
 	b. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
 	c. Make sure that all the $(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance.
 
+(SecNSSeqlbResults)=
+### Baseline Nonsteady-state Results
 
-### [Baseline Nonsteady-state Results](#SecNSSeqlbResults)
+
+[^step3_note]: The updated wage rate, $w^{i'}$, is found by using the updated interest rate, $r^{i'}$ as detailed in Step 3.
+
+[^rootfinder_note]: In our code, there is also an option to use a Newton based root-finding algorithm to updated the outer-loop variables.  Such an algorithm is generally faster, but less robust than the functional iteration method outlined here.

@@ -11,8 +11,8 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
 `OG-USA` follows the method of {cite}`DeBackerEtAl:2017` of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into `OG-USA`.
 
-
-## [Effective and Marginal Tax Rates](#SecTaxCalcRateTheory)
+(SecTaxCalcRateTheory)=
+## Effective and Marginal Tax Rates
 
 Before going into more detail regarding how we handle these two difficulties in `OG-USA`, we need to define some functions and make some notation. For notational simplicity, we will use the variable $x$ to summarize labor income, and we will use the variable $y$ to summarize capital income.
 
@@ -57,10 +57,10 @@ As we show in Section {ref}`SecHHeulers`, the derivative of total tax liability 
   \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{t}b_{j,s,t}}\frac{\partial r_t b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}}r_{t} = \tau^{mtry}_{s,t}r_t
 ```
 
+(SecTaxCalcMicro)=
+## Microeconomic Data
 
-## [Microeconomic Data](#SecTaxCalcMicro)
-
-  For `OG-USA`, we use an open source microsimulation model called `Tax-Calculator` that uses microeconomic data on U.S. households from the Internal Revenue Service (IRS) Statistics of Income (SOI) Public Use File (PUF).[^mylabel]:`Tax-Calculator` is available through an open source repository [https://github.com/open-source-economics/Tax-Calculator](https://github.com/open-source-economics/Tax-Calculator) as well as through a web application [Tax-Brain](https://compute.studio/PSLmodels/Tax-Brain/). Documentation for `Tax-Calculator` is available at [https://pslmodels.github.io/Tax-Calculator/](https://pslmodels.github.io/Tax-Calculator/). For users that have not paid for access to the Public Use File (PUF), `Tax-Calculator` has an option to use a CPS matched dataset that is publicly available free of charge that has the same general properties as the PUF.
+  For `OG-USA`, we use an open source microsimulation model called `Tax-Calculator` that uses microeconomic data on U.S. households from the Internal Revenue Service (IRS) Statistics of Income (SOI) Public Use File (PUF).[^taxcalc_note]  For users that have not paid for access to the Public Use File (PUF), `Tax-Calculator` has an option to use a CPS matched dataset that is publicly available free of charge that has the same general properties as the PUF.
 
   `Tax-Calculator` starts with the underlying population microeconomic data, in which each observation is a filer with a population weight that renders the sample representative. It then processes the relevant income and demographic characteristics in order to calculate the tax liability of each individual, according to all the rich tax law of the United States tax code. `Tax-Calculator` can then calculate effective tax rates for all of these individuals, thereby creating a sample of how ETR's are related to other variables in our `OG-USA` model, such as total income $x + y$, labor income $x$, and capital income $y$. `Tax-Calculator` can also generate marginal tax rates by adding a dollar to each filer's income of a particular type and calculate how the filer's tax liability changes. This is a finite difference calculation of a derivative.
 
@@ -86,8 +86,8 @@ Scatter plot of ETR, MTRx, MTRy, and histogram as functions of labor income and 
 Note: Axes in the histogram in the lower-right panel have been switched relative to the other three figures in order to see the distribution more clearly.
 ```
 
-
-## [Fitting Tax Functions](#SecTaxCalcFuncs)
+(SecTaxCalcFuncs)=
+## Fitting Tax Functions
 
   In looking at the 2D scatter plot on effective tax rates as a function of total income in Figure {numref}`FigTaxCalcETRtotinc` and the 3D scatter plots of $ETR$, $MTRx$, and $MTRy$ in Figure {numref}`FigTaxCalc3Dtaxrates`, it is clear that all of these rates exhibit negative exponential or logistic shape. This empirical regularity allows us to make an important and nonrestrictive assumption. We can fit parametric tax rate functions to these data that are constrained to be monotonically increasing in labor income and capital income. This assumption of monotonicity is computationally important as it preserves a convex budget set for each household, which is important for being able to solve many household lifetime problems over a large number of periods.
 
@@ -237,8 +237,8 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
 
   The full set of estimated values are calculated in the [`OG-USA/ogusa/txfunc.py`](https://github.com/open-source-economics/OG-USA/blob/master/ogusa/txfunc.py) module in the `OG-USA` repository. And the estimated values are stored in the [`TxFuncEst_baseline.pkl`](https://github.com/open-source-economics/OG-USA/blob/master/TxFuncEst_baseline.pkl) file.
 
-
-## [Factor Transforming Income Units](#SecTaxCalcFactor)
+(SecTaxCalcFactor)=
+## Factor Transforming Income Units
 
   The tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are estimated based on current U.S. tax filer reported incomes in dollars. However, the consumption units of the `OG-USA` model are not in the same units as the real-world U.S. incomes data. For this reason, we have to transform the income by a $factor$ so that it is in the same units as the income data on which the tax functions were estimated.
 
@@ -251,8 +251,8 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
 
   We do not know the steady-state wage, interest rate, household labor supply, and savings *ex ante*. So the income $factor$ is an endogenous variable in the steady-state equilibrium computational solution. We hold the factor constant throughout the nonsteady-state equilibrium solution.
 
-
-## [Household Transfers](#SecTaxCalcTfers)
+(SecTaxCalcTfers)=
+## Household Transfers
 
   Total transfers to households by the government in a given period $t$ is $TR_t$. The percent of those transfers given to all households of age $s$ and lifetime income group $j$ is $\eta_{j,s}$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. `OG-USA` currently has the transfer distribution function set to distribute transfers uniformly among the population.
   
@@ -262,3 +262,5 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
   ```
 
   However, this distribution function $\eta_{j,s,t}$ could also be modified to more accurately reflect the way transfers are distributed in the United States.
+
+[^taxcalc_note]:`Tax-Calculator` is available through an open source repository [https://github.com/open-source-economics/Tax-Calculator](https://github.com/open-source-economics/Tax-Calculator) as well as through a web application [Tax-Brain](https://compute.studio/PSLmodels/Tax-Brain/). Documentation for `Tax-Calculator` is available at [https://pslmodels.github.io/Tax-Calculator/](https://pslmodels.github.io/Tax-Calculator/).

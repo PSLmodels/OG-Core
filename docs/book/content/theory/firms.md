@@ -3,8 +3,8 @@
 
 The production side of the `OG-USA` model is populated by a unit measure of identical perfectly competitive firms that rent capital $K_t$ and hire labor $L_t$ to produce output $Y_t$. Firms also face a flat corporate income tax $\tau^{corp}$ as well as a tax on the amount of capital they depreciate $\tau^\delta$.
 
-
-## [Production Function](#EqFirmsProdFunc)
+(EqFirmsProdFunc)=
+## Production Function
 
   Firms produce output $Y_t$ using inputs of capital $K_t$ and labor $L_t$ according to a general constant elasticity (CES) of substitution production function,
 
@@ -20,8 +20,8 @@ The production side of the `OG-USA` model is populated by a unit measure of iden
     Y_t = Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\text{for}\quad \varepsilon=1 \quad\forall t
   ```
 
-
-## [Optimality Conditions](#EqFirmsFOC)
+(EqFirmsFOC)=
+## Optimality Conditions
 
   The profit function of the representative firm is the following.
 
