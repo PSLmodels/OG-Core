@@ -46,7 +46,7 @@ installation that came as part of your computer's operating system.
    where you would like your local repo to live.
 
 6. Create a local repo by entering at the command line the text after
-   the $. This step creates a directory called OG-USA in
+   the $.[^commandline_note]  This step creates a directory called OG-USA in
    the directory that you specified in the prior step:
 
     ```
@@ -198,9 +198,9 @@ situations, in which case other contributors are here to help.
 
 Examples coming soon...
 
-[1] The dollar sign is the end of the command prompt on a Mac.  If
+[^commandline_note]:The dollar sign is the end of the command prompt on a Mac.  If
        you're on Windows, this is usually the right angle bracket (>).
        No matter the symbol, you don't need to type it (or anything to
        its left, which shows the current working directory) at the
        command line before you enter a command; the prompt symbol and
-       preceding characters should already be there.
+       preceding characters should already be there. 
