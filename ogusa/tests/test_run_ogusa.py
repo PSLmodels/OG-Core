@@ -28,16 +28,15 @@ def run_micro_macro(iit_reform, og_spec, guid, client):
     guid = ''
     start_time = time.time()
 
-    REFORM_DIR = "./OUTPUT_REFORM_" + guid
-    BASELINE_DIR = "./OUTPUT_BASELINE_" + guid
-    tax_func_path_baseline = os.path.join(CUR_PATH, 'OUTPUT_BASELINE',
-                                          'TxFuncEst_baseline.pkl')
-    tax_func_path_reform = os.path.join(CUR_PATH, 'OUTPUT_REFORM',
-                                        'TxFuncEst_policy.pkl')
+    REFORM_DIR = os.path.join(CUR_PATH, "OUTPUT_REFORM_" + guid)
+    BASELINE_DIR = os.path.join(CUR_PATH, "OUTPUT_BASELINE" + guid)
+    tax_func_path_baseline = os.path.join(
+        CUR_PATH, 'TxFuncEst_baseline.pkl')
+    tax_func_path_reform = os.path.join(
+        CUR_PATH, 'TxFuncEst_policy.pkl')
 
     # Add start year from reform to user parameters
-    start_year = sorted(iit_reform.keys())[0]
-    og_spec['start_year'] = start_year
+    og_spec['start_year'] = 2018
 
     with open("log_{}.log".format(guid), 'w') as f:
         f.write("guid: {}\n".format(guid))
@@ -94,15 +93,15 @@ def run_micro_macro(iit_reform, og_spec, guid, client):
 def test_run_micro_macro(dask_client):
 
     iit_reform = {
-        2018: {
-            '_II_rt1': [.09],
-            '_II_rt2': [.135],
-            '_II_rt3': [.225],
-            '_II_rt4': [.252],
-            '_II_rt5': [.297],
-            '_II_rt6': [.315],
-            '_II_rt7': [0.3564],
-            }, }
+        "II_rt1": {2018: 0.09},
+        "II_rt2": {2018: 0.135},
+        "II_rt3": {2018: 0.225},
+        "II_rt4": {2018: 0.252},
+        "II_rt5": {2018: 0.297},
+        "II_rt6": {2018: 0.315},
+        "II_rt7": {2018: 0.3564}
+    }
+        
     run_micro_macro(iit_reform=iit_reform, og_spec={
         'frisch': 0.44, 'g_y_annual': 0.021}, guid='abc',
                     client=dask_client)

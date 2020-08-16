@@ -205,13 +205,7 @@ def test_taxcalc_advance():
 def test_cap_inc_mtr():
     '''
     Test of the get_micro_data.cap_inc_mtr() function
-
-    Note that this test may fail if the Tax-Calculator is not v 2.4.0
-    In that case, you can use the pickeld caculator object, however
-    this is too large for GitHub, so it won't be available there.
     '''
-    # calc1 = utils.safe_read_pickle(os.path.join(
-    #         CUR_PATH, 'test_io_data', 'calc_object_for_tests.pkl'))
     calc1 = get_micro_data.get_calculator(
         baseline=True, calculator_start_year=2028, reform={},
         data='cps')

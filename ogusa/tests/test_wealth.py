@@ -8,7 +8,6 @@ import numpy as np
 from ogusa import wealth
 
 
-# @pytest.mark.full_run
 def test_get_wealth_data():
     '''
     Test of reading wealth data.
@@ -21,7 +20,6 @@ def test_get_wealth_data():
     assert isinstance(df, pd.DataFrame)
 
 
-# @pytest.mark.full_run
 def test_compute_wealth_moments():
     '''
     Test of computation of wealth moments.
