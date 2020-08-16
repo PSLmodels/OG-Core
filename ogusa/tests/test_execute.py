@@ -1,7 +1,6 @@
 import multiprocessing
 from distributed import Client, LocalCluster
 import numpy as np
-import psutil
 import pytest
 from ogusa import SS, TPI
 from ogusa.execute import runner
