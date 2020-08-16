@@ -16,7 +16,7 @@ dependencies:
 - paramtools>=0.15.0
 - openpyxl
 - pip
-- pytest
+- pytest>=6.0
 - pytest-pep8
 - pytest-xdist
 - pycodestyle
