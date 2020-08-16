@@ -2,7 +2,6 @@ from ogusa import txfunc
 import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
-import pickle
 import numpy as np
 import os
 from ogusa import utils
