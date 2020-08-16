@@ -2,6 +2,7 @@ from ogusa import txfunc
 import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
+import pickle
 import numpy as np
 import os
 from ogusa import utils
@@ -304,10 +305,9 @@ def test_tax_func_estimate(dask_client):
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))
     del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
+    del test_dict['tfunc_time'], test_dict['taxcalc_version']
     for k, v in expected_dict.items():
-        try:
-            assert(all(test_dict[k] == v))
-        except ValueError:
-            assert((test_dict[k] == v).all())
-        except TypeError:
-            assert(test_dict[k] == v)
+        if isinstance(v, str):  # for testing tax_func_type object
+            assert test_dict[k] == v
+        else:  # for testing all other objects
+            assert np.all(np.isclose(test_dict[k], v))
