@@ -5,7 +5,8 @@ Three markets must clear in `OG-USA`---the labor market, the capital market, and
 
 We also characterize here the law of motion for total bequests $BQ_t$. Although it is not technically a market clearing condition, one could think of the bequests law of motion as the bequests market clearing condition.
 
-## [Market Clearing Conditions](#SecMarkClrMktClr)
+(SecMarkClrMktClr)=
+## Market Clearing Conditions
 
   Labor market clearing {eq}`EqMarkClrLab` requires that aggregate labor demand $L_t$ measured in efficiency units equal the sum of household efficiency labor supplied $e_{j,s}n_{j,s,t}$.
   
@@ -33,8 +34,8 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 
   Note that the extra terms with the immigration rate $i_s$ in the capital market clearing equation {eq}`EqMarkClrCap` and the resource constraint {eq}`EqMarkClrGoods` accounts for the assumption that age-$s$ immigrants in period $t$ bring with them (or take with them in the case of out-migration) the same amount of capital as their domestic counterparts of the same age. Note also that the term in parentheses with immigration rates $i_s$ in the sum acts is equivalent to a net exports term in the standard equation $Y=C+I+G+NX$. That is, if immigration rates are positive, then immigrants are bringing capital into the country and the term in parentheses has a negative sign in front of it. Negative exports are imports.
 
-
-## [Total Bequests Law of Motion](#SecMarkClrBQ)
+(SecMarkClrBQ)=
+## Total Bequests Law of Motion
 
   Total bequests $BQ_t$ are the collection of savings of household from the previous period who died at the end of the period. These savings are augmented by the interest rate because they are returned after being invested in the production process.
   

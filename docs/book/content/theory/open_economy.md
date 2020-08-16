@@ -1,7 +1,8 @@
 (Chap_SmOpEcn)=
 # Open Economy Options
 
-## [Small Open Economy](#SecSmallOpen)
+(SecSmallOpen)=
+## Small Open Economy
 In the small open economy version of `OG-USA`, the county faces an exogenous world interest rate, $r^{*}_{t}$ that determines the amount of savings and investment.  If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate.  Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$.  Then foreign capital is given by:
 
 ```{math}
@@ -10,7 +11,8 @@ In the small open economy version of `OG-USA`, the county faces an exogenous wor
 
 where $B_{t}$ is aggregate household savings and $D_{t}$ is government borrowing.  Capital demand is determined from the firm's first order condition for its choice of capital.
 
-## [Partially Open Economy](#SecPartialOpen)
+(SecPartialOpen)=
+## Partially Open Economy
 
 In the partially open economy version of `OG-USA`, the openness of the economy is modeled through two parameters that capture the extent of foreign lending to the domestic government and the amount of foreign lending of private capital to firms.
 
@@ -50,10 +52,11 @@ Given the two equations above, we can find the total supply of capital as:
    & = B_{t} - D^{d}_{t} + \zeta_{K}K^{open}_{t} \\
 ```
 
+(SecOpenStationary)=
+### Stationarization
 
-### [Stationarization](#SecOpenStationary)
-
-#### [Foreign debt purchases](#SecForeignDebt)
+(SecForeignDebt)=
+#### Foreign debt purchases
 
 The amount of government debt is growing by the rate of productivity growth and the rate of population growth.  Thus, stationarized government debt is given by:
 
@@ -77,8 +80,8 @@ and
 
 Note that in the steady-state, we still have $\hat{D}^{f} = \zeta_{D}\hat{D}$
 
-
-#### [Foreign capital purchases](#SecSForeignCapital)
+(SecSForeignCapital)=
+#### Foreign capital purchases
 
 In the equation for foreign capital purchases, all quantities are growing at the rate of technological change and population growth.  Thus, to stationarize this equation, we find:
 
@@ -99,7 +102,8 @@ and
    & = \frac{B_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}} + \zeta_{K}\frac{K^{open}_{t}}{e^{g_{y}t}N_{t}} = \hat{B}_{t} - \hat{D}^{d}_{t} + \zeta_{K}\hat{K}^{open}_{t} \\
 ```
 
-#### [Resource Constraint](#SecOpenRC)
+(SecOpenRC)=
+#### Resource Constraint
 
 As a result of the foreign ownership of capital, the resource constraint is modified.  In a closed economy, the resource constraint is given by:
 
