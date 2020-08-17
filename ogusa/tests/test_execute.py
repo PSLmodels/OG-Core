@@ -6,8 +6,6 @@ from ogusa import SS, TPI
 from ogusa.execute import runner
 import os
 
-# Get named tuple for RAM stats and compute total available RAM in GB and set
-# number of workers
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
 # Set paths
