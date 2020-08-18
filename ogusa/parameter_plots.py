@@ -834,3 +834,78 @@ def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
             ax.set_ylabel(r'log ability $log(e_{j,s})$')
 
             return ax
+
+
+def plot_2D_taxfunc(year, start_year, tax_param_list, age=None, tax_func_type='DEP',
+                    rate_type='etr', over_labinc=True, other_inc_val=1000,
+                    max_inc_amt=1000000, labels=None, title=None, path=None):
+    '''
+    This function plots OG-USA tax functions in two dimensions.
+    The tax rates are plotted over capital or labor income, as
+    entered by the user.
+    
+    Args:
+        year (int): year of policy tax functions represent
+        start_year (int): first year tax functions estimated for in
+            tax_param_list elements
+        tax_param_list (list): list of arrays containing tax function
+            parameters
+        age (int): age for tax functions to plot, use None if tax
+            function parameters were not age specific
+        tax_func_type (str): string that is in ["DEP", "DEP_totalinc",
+            "GS", "linear"] and specifies functional form of tax functions
+        rate_type (str): string that is in ["etr", "mtrx", "mtry"] and
+            determines the type of tax rate that is plotted
+        over_labinc (bool): indicates that x-axis of the plot is over
+            labor income, if False then plot is over capital income
+        other_inc_val (scalar): dollar value at which to hold constant
+            the amount of income that is not represented on the x-axis
+        max_inc_amt (scalar): largest income amount to represent on the
+            x-axis of the plot
+        labels (list): list of labels for tax function parameters
+        title (str): title for the plot
+        path (str): path to which to save plot, if None then figure returned
+    
+    Returns:
+        fig (Matplotlib plot object): plot of tax functions
+    
+    '''
+    # Set age and year to look at
+    s = age - 21
+    t = year - start_year
+    
+    # create rate_key to correspond to keys in tax func dicts
+    rate_key = 'tfunc_' + rate_type + '_params_S'
+
+    # Set income range to plot over
+    inc_sup = np.exp(np.linspace(np.log(5), np.log(max_inc_amt), 100))
+    # Set income value for other income
+    inc_fix = other_inc_val
+    
+    if over_labinc:
+        X = inc_sup
+        Y = inc_fix
+    else:
+        X = inc_fix
+        Y = inc_sup
+
+    # get tax rates for each point in the income support and plot
+    fig, ax = plt.subplots()
+    for i, tax_params in enumerate(tax_param_list):
+        rates = tax_rates(tax_params[rate_key][s, t, :], X, Y, tax_func_type, rate_type)
+        plt.plot(inc_sup, rates, label=labels[i])
+    
+    # add legend, labels, etc to plot
+    plt.legend(loc='center right')
+    if title:
+        plt.title(title)
+    if over_labinc:
+        plt.xlabel(r'Labor income')
+    else:
+        plt.xlabel(r'Capital income')
+    plt.ylabel(str.upper(rate_type))
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "pop_growth_rates")
+        plt.savefig(fig_path)
