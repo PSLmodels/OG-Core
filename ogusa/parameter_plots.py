@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
 from ogusa import utils
-from ogusa.constants import DEFAULT_START_YEAR
+from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -867,9 +867,11 @@ def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
             return ax
 
 
-def plot_2D_taxfunc(year, start_year, tax_param_list, age=None, tax_func_type='DEP',
-                    rate_type='etr', over_labinc=True, other_inc_val=1000,
-                    max_inc_amt=1000000, labels=None, title=None, path=None):
+def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
+                    tax_func_type='DEP', rate_type='etr',
+                    over_labinc=True, other_inc_val=1000,
+                    max_inc_amt=1000000, labels=None, title=None,
+                    path=None):
     '''
     This function plots OG-USA tax functions in two dimensions.
     The tax rates are plotted over capital or labor income, as
@@ -896,15 +898,25 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None, tax_func_type='D
         labels (list): list of labels for tax function parameters
         title (str): title for the plot
         path (str): path to which to save plot, if None then figure returned
-    
+
     Returns:
         fig (Matplotlib plot object): plot of tax functions
-    
+
     '''
+    # Check that inputs are valid
+    assert isinstance(start_year, int)
+    assert isinstance(year_year, int)
+    assert (start_year <= TC_LAST_YEAR)
+    assert (year <= TC_LAST_YEAR)
+    assert (tax_func_type is in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
+    assert (rate_type is in ['etr', 'mtrx', 'mtry'])
+
     # Set age and year to look at
-    s = age - 21
+    if age is not None:
+        assert isinstance(age, int)
+        s = age - 21
     t = year - start_year
-    
+
     # create rate_key to correspond to keys in tax func dicts
     rate_key = 'tfunc_' + rate_type + '_params_S'
 
@@ -912,7 +924,7 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None, tax_func_type='D
     inc_sup = np.exp(np.linspace(np.log(5), np.log(max_inc_amt), 100))
     # Set income value for other income
     inc_fix = other_inc_val
-    
+
     if over_labinc:
         X = inc_sup
         Y = inc_fix
@@ -923,9 +935,14 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None, tax_func_type='D
     # get tax rates for each point in the income support and plot
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
-        rates = tax_rates(tax_params[rate_key][s, t, :], X, Y, tax_func_type, rate_type)
+        if age is not None:
+            rates = tax_rates(tax_params[rate_key][s, t, :], X, Y,
+                              tax_func_type, rate_type)
+        else:
+            rates = tax_rates(tax_params[rate_key][t, :], X, Y,
+                              tax_func_type, rate_type)
         plt.plot(inc_sup, rates, label=labels[i])
-    
+
     # add legend, labels, etc to plot
     plt.legend(loc='center right')
     if title:
