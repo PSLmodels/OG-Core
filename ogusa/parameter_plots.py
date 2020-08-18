@@ -274,9 +274,11 @@ def plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
         fert_data (NumPy array): fertility rates by age group from data
         fert_rates (NumPy array): fitted fertility rates for each of
             totpers
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
-        None
+        fig (Matplotlib plot object): plot of fertility rates
 
     '''
     # Generate finer age vector and fertility rate vector for
@@ -330,9 +332,11 @@ def plot_mort_rates_data(totpers, min_yr, max_yr, age_year_all,
         infmort_rate (scalar): infant mortality rate
         mort_rates (array_like): fitted mortality rates for each of
             totpers
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
-        None
+        fig (Matplotlib plot object): plot of mortality rates
 
     '''
     age_mid_new = (np.linspace(np.float(max_yr) / totpers, max_yr,
@@ -379,9 +383,20 @@ def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S,
     model periods.
 
     Args:
+        age_per_EpS (array_like): list of ages over which to plot
+            population distribution
+        omega_SS_orig (Numpy array): population distribution in SS
+            without adjustment to immigration rates
+        omega_SSfx (Numpy array): population distribution in SS
+            after adjustment to immigration rates
+        E (int): age at which household becomes economically active
+        S (int): number of years which household is economically active
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
-        None
+        fig (Matplotlib plot object): plot of SS population distribution
+            before and after adjustment to immigration rates
 
     '''
     fig, ax = plt.subplots()
@@ -410,8 +425,18 @@ def plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E, S,
     reasonable number of model periods.
 
     Args:
+        age_per_EpS (array_like): list of ages over which to plot
+            population distribution
+        imm_rates_orig (Numpy array): immigration rates by age
+        imm_rates_adj (Numpy array): adjusted immigration rates by age
+        E (int): age at which household becomes economically active
+        S (int): number of years which household is economically active
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
+        fig (Matplotlib plot object): plot of immigration rates found
+            from residuals and the adjusted rates to hit SS sooner
 
     '''
     fig, ax = plt.subplots()
@@ -437,8 +462,22 @@ def plot_population_path(age_per_EpS, pop_2013_pct, omega_path_lev,
     Plot the distribution of the population over age for various years.
 
     Args:
+        age_per_EpS (array_like): list of ages over which to plot
+            population distribution
+        pop_2013_pct (array_like): population distribution in 2013
+        omega_path_lev (Numpy array): number of households by age
+            over the transition path
+        omega_SSfx (Numpy array): number of households by age
+            in the SS
+        curr_year (int): current year in the model
+        E (int): age at which household becomes economically active
+        S (int): number of years which household is economically active
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
+        fig (Matplotlib plot object): plot of population distribution
+            at points along the time path
 
     '''
     fig, ax = plt.subplots()
@@ -705,14 +744,6 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir,
 
 def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
                      filesuffix=""):
-    '''
-    Plot income profiles from models estimated from data.
-
-    Args:
-
-    Returns:
-
-    '''
     '''
     This function graphs ability matrix in 3D, 2D, log, and nolog
 
