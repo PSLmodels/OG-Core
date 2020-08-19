@@ -3,18 +3,20 @@ channels:
 - PSLmodels
 - conda-forge
 dependencies:
-- python
+- python>=3.7.7
 - ipython
 - setuptools
-- mkl
-- "scipy>=0.18.1"
+- mkl>=2020.2
+- psutil
+- scipy>=1.5.0
+- pandas>=1.0.5
 - matplotlib
-- "taxcalc>=2.4.2"
-- "dask>=0.20.0"
-- "paramtools>=0.13.0"
+- taxcalc>=2.9.0
+- dask>=2.20.0
+- paramtools>=0.15.0
 - openpyxl
 - pip
-- pytest
+- pytest>=6.0
 - pytest-pep8
 - pytest-xdist
 - pycodestyle

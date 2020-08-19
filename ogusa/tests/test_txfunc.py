@@ -156,10 +156,10 @@ def test_txfunc_est():
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, graph)
     expected_tuple = ((np.array([
-        6.37000261e-22, 2.73403892e-03, 1.28516622e-08, 1.26750240e-02,
-        2.32797219e-01, -3.69059719e-02, 1.00000000e-04, -1.01967001e-01,
-        3.96030038e-02, 1.02987671e-01, -1.30433574e-01, 1.0]),
-                       19527.162030046195, 3798))
+        6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
+        2.32797367e-01, -3.69059719e-02, 1.00000000e-04, -1.01967001e-01,
+        3.96030053e-02, 1.02987671e-01, -1.30433574e-01, 1.00000000e+00]),
+                        19527.16203007729, 3798))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
@@ -304,10 +304,9 @@ def test_tax_func_estimate(dask_client):
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))
     del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
+    del test_dict['tfunc_time'], test_dict['taxcalc_version']
     for k, v in expected_dict.items():
-        try:
-            assert(all(test_dict[k] == v))
-        except ValueError:
-            assert((test_dict[k] == v).all())
-        except TypeError:
-            assert(test_dict[k] == v)
+        if isinstance(v, str):  # for testing tax_func_type object
+            assert test_dict[k] == v
+        else:  # for testing all other objects
+            assert np.all(np.isclose(test_dict[k], v))
