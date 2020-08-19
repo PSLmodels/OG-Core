@@ -204,6 +204,8 @@ def inner_loop(outer_loop_vars, p, client):
         # new_r = firm.get_r(Y, K, p, 'SS')
         new_r = firm.get_r(Y, K, K, V, V, X, X, p, 'SS')
     # new_w = firm.get_w_from_r(new_r, p, 'SS')
+    print('New r = ', new_r)
+    print('new r + taub = ', new_r - 0.05 * p.tau_b[-1])
     new_w = firm.get_w(Y, L, p, 'SS')
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +

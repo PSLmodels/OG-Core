@@ -555,6 +555,7 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     for i, v in enumerate(expected_tuple):
+        print('Tuple item = ', i)
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
