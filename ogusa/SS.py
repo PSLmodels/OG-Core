@@ -185,7 +185,6 @@ def inner_loop(outer_loop_vars, p, client):
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
     z = firm.get_NPV_depr(r, p, 'SS')
-    print('D, D_d, D_f, Y = ', D, D_d, D_f, Y)
     V_d = B - D_d
     if np.any(V_d < 0):
         print('V_d has negative elements. Setting them ' +
