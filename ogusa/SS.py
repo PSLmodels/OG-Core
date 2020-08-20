@@ -185,7 +185,12 @@ def inner_loop(outer_loop_vars, p, client):
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
     z = firm.get_NPV_depr(r, p, 'SS')
+    print('D, D_d, D_f, Y = ', D, D_d, D_f, Y)
     V_d = B - D_d
+    if np.any(V_d < 0):
+        print('V_d has negative elements. Setting them ' +
+              'positive to prevent NAN.')
+        V_d = np.fmax(V_d, 0.05 * B)
     V_f = p.zeta_K[-1] * V_d  # So that foreign equity holdings are some fraction of domestic holdings...
     # this deviates from CBO method, but theirs doesn't work with dyn firms
     # could also try to build in realistic repsonse to world and domestic rates - which CBO doesn't have
