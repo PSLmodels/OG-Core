@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
-from ogusa import utils
+from ogusa import utils, tax
 from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
@@ -870,7 +870,9 @@ def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
 def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
                     tax_func_type='DEP', rate_type='etr',
                     over_labinc=True, other_inc_val=1000,
-                    max_inc_amt=1000000, labels=None, title=None,
+                    max_inc_amt=1000000,
+                    labels=['1st Functions'],
+                    title=None,
                     path=None):
     '''
     This function plots OG-USA tax functions in two dimensions.
@@ -905,11 +907,13 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     '''
     # Check that inputs are valid
     assert isinstance(start_year, int)
-    assert isinstance(year_year, int)
+    assert isinstance(year, int)
     assert (start_year <= TC_LAST_YEAR)
     assert (year <= TC_LAST_YEAR)
-    assert (tax_func_type is in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
-    assert (rate_type is in ['etr', 'mtrx', 'mtry'])
+    assert (year >= start_year)
+    assert (tax_func_type in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
+    assert (rate_type in ['etr', 'mtrx', 'mtry'])
+    assert (len(tax_param_list) == len(labels))
 
     # Set age and year to look at
     if age is not None:
@@ -936,11 +940,13 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
         if age is not None:
-            rates = tax_rates(tax_params[rate_key][s, t, :], X, Y,
-                              tax_func_type, rate_type)
+            rates = tax.tax_rates(
+                tax_params[rate_key][s, t, :], X, Y, tax_func_type,
+                rate_type)
         else:
-            rates = tax_rates(tax_params[rate_key][t, :], X, Y,
-                              tax_func_type, rate_type)
+            rates = tax.tax_rates(
+                tax_params[rate_key][t, :], X, Y, tax_func_type,
+                rate_type)
         plt.plot(inc_sup, rates, label=labels[i])
 
     # add legend, labels, etc to plot
@@ -955,5 +961,4 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     if path is None:
         return fig
     else:
-        fig_path = os.path.join(path, "pop_growth_rates")
-        plt.savefig(fig_path)
+        plt.savefig(path)

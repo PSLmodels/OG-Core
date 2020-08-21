@@ -14,6 +14,8 @@ from ogusa import utils, parameter_plots, income
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 base_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'model_params_baseline.pkl'))
+base_taxfunctions = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, 'test_io_data', 'TxFuncEst_baseline.pkl'))
 
 
 def test_plot_imm_rates():
@@ -296,3 +298,26 @@ def test_plot_income_data_save_fig(tmpdir):
     assert isinstance(img1, np.ndarray)
     assert isinstance(img2, np.ndarray)
     assert isinstance(img3, np.ndarray)
+
+
+def test_plot_2D_taxfunc():
+    '''
+    Test of plot_2D_taxfunc
+    '''
+    fig = parameter_plots.plot_2D_taxfunc(
+        2022, 2021, [base_taxfunctions], age=43)
+
+    assert fig
+
+
+def test_plot_2D_taxfunc_save_fig(tmpdir):
+    '''
+    Test of plot_2D_taxfunc saving figures to disk
+    '''
+    path_to_save = os.path.join(tmpdir, 'plot_save_file.png')
+    parameter_plots.plot_2D_taxfunc(
+        2022, 2021, [base_taxfunctions], age=43, path=path_to_save)
+    img1 = mpimg.imread(path_to_save)
+
+    assert isinstance(img1, np.ndarray)
+
