@@ -556,13 +556,7 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     test_tuple = SS.inner_loop(outer_loop_vars, p, None)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
-    print('Test Y = ', test_tuple[8])
-    print('Expected Y = ', expected_tuple[8])
     for i, v in enumerate(expected_tuple):
-        print('Tuple item = ', i)
-        if i == 3:
-            print('Test value = ', test_tuple[i])
-            print('Expected value = ', v)
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
