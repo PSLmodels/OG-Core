@@ -300,12 +300,17 @@ def test_plot_income_data_save_fig(tmpdir):
     assert isinstance(img3, np.ndarray)
 
 
-def test_plot_2D_taxfunc():
+@pytest.mark.parametrize('over_labinc,title',
+                         [(True, None),
+                          (False, 'Test title')],
+                         ids=['over_labinc=True', 'over_labinc=False'])
+def test_plot_2D_taxfunc(over_labinc, title):
     '''
     Test of plot_2D_taxfunc
     '''
     fig = parameter_plots.plot_2D_taxfunc(
-        2022, 2021, [base_taxfunctions], age=43)
+        2022, 2021, [base_taxfunctions], age=43,
+        over_labinc=over_labinc, title=title)
 
     assert fig
 

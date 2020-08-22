@@ -878,7 +878,7 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     This function plots OG-USA tax functions in two dimensions.
     The tax rates are plotted over capital or labor income, as
     entered by the user.
-    
+
     Args:
         year (int): year of policy tax functions represent
         start_year (int): first year tax functions estimated for in
