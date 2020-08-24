@@ -1,7 +1,7 @@
 import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 import numpy as np
 import os
 from ogusa.constants import CPS_START_YEAR, PUF_START_YEAR, TC_LAST_YEAR

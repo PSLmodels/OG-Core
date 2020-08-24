@@ -430,7 +430,8 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
 param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
                   'budget_balance': True, 'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
-param_updates6 = {'delta_tau_annual': [0.0]}
+param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+                  'zeta_D': [0.0]}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 
 
@@ -521,7 +522,8 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
-param_updates6 = {'delta_tau_annual': [0.0]}
+param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+                  'zeta_D': [0.0]}
 filename6 = 'inner_loop_outputs_baseline_delta_tau0.pkl'
 
 
@@ -666,7 +668,8 @@ filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'start_year': 2020, 'baseline_spending': True,
                    'use_zeta': True}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
-param_updates11 = {'delta_tau_annual': [0.0]}
+param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+                   'zeta_D': [0.0]}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 
 
