@@ -919,6 +919,8 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     if age is not None:
         assert isinstance(age, int)
         s = age - 21
+    else:
+        s = 0  # if not age-specific, all ages have the same values
     t = year - start_year
 
     # create rate_key to correspond to keys in tax func dicts
@@ -939,14 +941,9 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     # get tax rates for each point in the income support and plot
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
-        if age is not None:
-            rates = tax.tax_rates(
-                tax_params[rate_key][s, t, :], X, Y, tax_func_type,
-                rate_type)
-        else:
-            rates = tax.tax_rates(
-                tax_params[rate_key][t, :], X, Y, tax_func_type,
-                rate_type)
+        rates = tax.tax_rates(
+            tax_params[rate_key][s, t, :], X, Y, tax_func_type,
+            rate_type)
         plt.plot(inc_sup, rates, label=labels[i])
 
     # add legend, labels, etc to plot
