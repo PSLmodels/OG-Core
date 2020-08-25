@@ -464,6 +464,9 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
                              factorguess, Yguess, p, None, False)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
+    del expected_dict['K_f_ss']
+    del expected_dict['K_d_ss']
+    del expected_dict['I_d_ss']
 
     for k, v in expected_dict.items():
         print('Testing ', k)

@@ -340,7 +340,11 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     #     Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
     zss = firm.get_NPV_depr(rss, p, 'SS')
     V_d_ss = Bss - D_d_ss
-    V_f_ss = p.zeta_K * V_d_ss  # So that foreign equity holdings are some fraction of domestic holdings...
+    if np.any(V_d_ss < 0):
+        print('V_d_ss has negative elements. Setting them ' +
+              'positive to prevent NAN.')
+        V_d_ss = np.fmax(V_d_ss, 0.05 * Bss)
+    V_f_ss = p.zeta_K[-1] * V_d_ss  # So that foreign equity holdings are some fraction of domestic holdings...
     # this deviates from CBO method, but theirs doesn't work with dyn firms
     # could also try to build in realistic repsonse to world and domestic rates - which CBO doesn't have
     Vss = V_d_ss + V_f_ss
@@ -399,6 +403,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
 
     # solve resource constraint
     # net foreign borrowing
+    K_f_ss = 0 ## temporarily - will come back to open economy case
+    I_d_ss = Iss
     print('Foreign debt holdings = ', D_f_ss)
     print('Foreign capital holdings = ', K_f_ss)
     debt_service_f = fiscal.get_debt_service_f(r_hh_ss, D_f_ss)
