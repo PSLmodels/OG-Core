@@ -954,7 +954,10 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
         rate_type_dict = {'etr': 'etr', 'mtrx': 'mtr_labinc',
                           'mtry': 'mtr_capinc'}
         # censor data to range of the plot
-        data_to_plot = data[str(year)][data[str(year)][key1] < max_inc_amt]
+        data_to_plot = data[str(year)]
+        data_to_plot.drop(
+            data_to_plot[data_to_plot[key1] > max_inc_amt].index,
+            inplace=True)
         # other censoring used in txfunc.py
         data_to_plot = tax_data_sample(data_to_plot)
         plt.scatter(
