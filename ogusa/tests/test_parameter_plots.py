@@ -18,6 +18,9 @@ base_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TxFuncEst_baseline.pkl'))
 GS_nonage_spec_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TxFuncEst_GS_nonage.pkl'))
+micro_data = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, 'test_io_data',
+                 'micro_data_dict_for_tests.pkl'))
 
 
 def test_plot_imm_rates():
@@ -303,19 +306,21 @@ def test_plot_income_data_save_fig(tmpdir):
 
 
 @pytest.mark.parametrize(
-    'tax_funcs,age,tax_func_type,over_labinc,title',
-    [(base_taxfunctions, 43, 'DEP', True, None),
-     (base_taxfunctions, 43, 'DEP', False, 'Test title'),
-     (GS_nonage_spec_taxfunctions, None, 'GS', True, None)],
-     ids=['over_labinc=True', 'over_labinc=False','Non age-specific'])
+    'tax_funcs,age,tax_func_type,over_labinc,data,title',
+    [(base_taxfunctions, 43, 'DEP', True, None, None),
+     (base_taxfunctions, 43, 'DEP', False, None, 'Test title'),
+     (GS_nonage_spec_taxfunctions, None, 'GS', True, None, None),
+     (base_taxfunctions, 43, 'DEP', True, micro_data, None)],
+    ids=['over_labinc=True', 'over_labinc=False', 'Non age-specific',
+         'with data'])
 def test_plot_2D_taxfunc(tax_funcs, age, tax_func_type, over_labinc,
-    title):
+                         data, title):
     '''
     Test of plot_2D_taxfunc
     '''
     fig = parameter_plots.plot_2D_taxfunc(
-        2022, 2021, [tax_funcs], age=age, tax_func_type=tax_func_type,
-        over_labinc=over_labinc, title=title)
+        2030, 2021, [tax_funcs], age=age, tax_func_type=tax_func_type,
+        over_labinc=over_labinc, data=data, title=title)
 
     assert fig
 

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
 from ogusa import utils, tax
+from ogusa.txfunc import tax_data_sample
 from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
@@ -870,10 +871,8 @@ def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
 def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
                     tax_func_type='DEP', rate_type='etr',
                     over_labinc=True, other_inc_val=1000,
-                    max_inc_amt=1000000,
-                    labels=['1st Functions'],
-                    title=None,
-                    path=None):
+                    max_inc_amt=1000000, data=None,
+                    labels=['1st Functions'], title=None, path=None):
     '''
     This function plots OG-USA tax functions in two dimensions.
     The tax rates are plotted over capital or labor income, as
@@ -897,6 +896,8 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
             the amount of income that is not represented on the x-axis
         max_inc_amt (scalar): largest income amount to represent on the
             x-axis of the plot
+        data (DataFrame): data to scatter plot with tax functions, needs
+            to be of format output from ogusa.get_micro_data.get_data
         labels (list): list of labels for tax function parameters
         title (str): title for the plot
         path (str): path to which to save plot, if None then figure returned
@@ -926,15 +927,17 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     # create rate_key to correspond to keys in tax func dicts
     rate_key = 'tfunc_' + rate_type + '_params_S'
 
-    # Set income range to plot over
+    # Set income range to plot over (min income value hard coded to 5)
     inc_sup = np.exp(np.linspace(np.log(5), np.log(max_inc_amt), 100))
     # Set income value for other income
     inc_fix = other_inc_val
 
     if over_labinc:
+        key1 = 'total_labinc'
         X = inc_sup
         Y = inc_fix
     else:
+        key1 = 'total_capinc'
         X = inc_fix
         Y = inc_sup
 
@@ -945,6 +948,18 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
             tax_params[rate_key][s, t, :], X, Y, tax_func_type,
             rate_type)
         plt.plot(inc_sup, rates, label=labels[i])
+
+    # plot raw data (if passed)
+    if data is not None:
+        rate_type_dict = {'etr': 'etr', 'mtrx': 'mtr_labinc',
+                          'mtry': 'mtr_capinc'}
+        # censor data to range of the plot
+        data_to_plot = data[str(year)][data[str(year)][key1] < max_inc_amt]
+        # other censoring used in txfunc.py
+        data_to_plot = tax_data_sample(data_to_plot)
+        plt.scatter(
+            data_to_plot[key1], data_to_plot[rate_type_dict[rate_type]],
+            alpha= 0.1, color='gray')
 
     # add legend, labels, etc to plot
     plt.legend(loc='center right')
