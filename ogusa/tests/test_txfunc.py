@@ -2,6 +2,7 @@ from ogusa import txfunc
 import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
+import pandas as pd
 import numpy as np
 import os
 from ogusa import utils
@@ -163,6 +164,17 @@ def test_txfunc_est():
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
+
+
+def test_tax_data_sample():
+    '''
+    Test of txfunc.tax_data_sample() function
+    '''
+    data = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'micro_data_dict_for_tests.pkl'))
+    df = txfunc.tax_data_sample(data['2030'])
+    assert isinstance(df, pd.DataFrame)
 
 
 @pytest.mark.full_run

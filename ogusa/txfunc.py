@@ -486,6 +486,48 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
     return params, wsse, obs
 
 
+def tax_data_sample(data, max_etr=MAX_ETR, min_income=MIN_INCOME,
+                    max_mtr=MAX_MTR):
+    '''
+    Function to create sample tax data for estimation by dropping
+    observations with extreme values.
+
+    Args:
+        data (DataFrame): raw data from microsimulation model
+
+    Returns:
+        data (DataFrame): selected sample
+
+    '''
+    # drop all obs with ETR > MAX_ETR
+    data.drop(data[data['etr'] > MAX_ETR].index, inplace=True)
+    # drop all obs with ETR < MIN_ETR
+    # set min ETR to value at 10th percentile in distribution of ETRs
+    min_etr = data['etr'].quantile(q=0.10)
+    data.drop(data[data['etr'] < min_etr].index, inplace=True)
+    # drop all obs with total market income, labor income, or
+    # capital income < MIN_INCOME
+    data.drop(data[(data['market_income'] < MIN_INCOME) |
+                   (data['total_labinc'] < MIN_INCOME) |
+                   (data['total_capinc'] < MIN_INCOME)].index,
+              inplace=True)
+    # drop all obs with MTR on capital income > MAX_MTR
+    data.drop(data[data['mtr_capinc'] > MAX_MTR].index,
+              inplace=True)
+    # drop all obs with MTR on capital income < min_cap_mtr
+    # set min MTR to value at 10th percentile in distribution of MTRs
+    min_cap_mtr = data['mtr_capinc'].quantile(q=0.10)
+    data.drop(data[data['mtr_capinc'] < min_cap_mtr].index,
+              inplace=True)
+    # drop all obs with MTR on labor income > MAX_MTR
+    data.drop(data[data['mtr_labinc'] > MAX_MTR].index, inplace=True)
+    # drop all obs with MTR on labor income < min_lab_mtr
+    min_lab_mtr = data['mtr_labinc'].quantile(q=0.10)
+    data.drop(data[data['mtr_labinc'] < min_lab_mtr].index, inplace=True)
+
+    return data
+
+
 def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
                   tax_func_type, analytical_mtrs, desc_data, graph_data,
                   graph_est, output_dir, numparams):
@@ -591,31 +633,7 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
     TotPop_yr = data['weight'].sum()
 
     # Clean up the data by dropping outliers
-    # drop all obs with ETR > MAX_ETR
-    data.drop(data[data['etr'] > MAX_ETR].index, inplace=True)
-    # drop all obs with ETR < MIN_ETR
-    # set min ETR to value at 10th percentile in distribution of ETRs
-    MIN_ETR = data['etr'].quantile(q=0.10)
-    data.drop(data[data['etr'] < MIN_ETR].index, inplace=True)
-    # drop all obs with total market income, labor income, or
-    # capital income < MIN_INCOME
-    data.drop(data[(data['market_income'] < MIN_INCOME) |
-                   (data['total_labinc'] < MIN_INCOME) |
-                   (data['total_capinc'] < MIN_INCOME)].index,
-              inplace=True)
-    # drop all obs with MTR on capital income > MAX_MTR
-    data.drop(data[data['mtr_capinc'] > MAX_MTR].index,
-              inplace=True)
-    # drop all obs with MTR on capital income < MIN_CAP_MTR
-    # set min MTR to value at 10th percentile in distribution of MTRs
-    MIN_CAP_MTR = data['mtr_capinc'].quantile(q=0.10)
-    data.drop(data[data['mtr_capinc'] < MIN_CAP_MTR].index,
-              inplace=True)
-    # drop all obs with MTR on labor income > MAX_MTR
-    data.drop(data[data['mtr_labinc'] > MAX_MTR].index, inplace=True)
-    # drop all obs with MTR on labor income < MIN_LAB_MTR
-    MIN_LAB_MTR = data['mtr_labinc'].quantile(q=0.10)
-    data.drop(data[data['mtr_labinc'] < MIN_LAB_MTR].index, inplace=True)
+    data = tax_data_sample(data)
 
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data['age'].min(), s_min))
