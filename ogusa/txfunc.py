@@ -76,7 +76,8 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                                   ((income ** -phi1) + phi2)
                                   ** ((-1 - phi1) / phi1))))
     elif tax_func_type == 'DEP':
-        A, B, C, D, max_x, max_y, share, min_x, min_y, shift = params
+        (A, B, C, D, max_x, max_y, share, min_x, min_y, shift_x,
+         shift_y, shift) = params
         shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
         shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
         Etil = A + B
@@ -104,7 +105,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
             txrates = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
     elif tax_func_type == 'DEP_totalinc':
-        A, B, max_income, min_income, shift = params
+        A, B, max_income, min_income, shift_income, shift = params
         shift_income = (np.maximum(-min_income, 0.0) + 0.01 *
                         (max_income - min_income))
         Etil = A + B
@@ -373,8 +374,10 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         params_init = np.array([Atil_init, Btil_init, Ctil_init,
                                 Dtil_init, max_x_init, max_y_init,
                                 share_init])
-        tx_objs = (np.array([min_x, min_y, shift]), X, Y, txrates, wgts,
-                   tax_func_type, rate_type)
+        shift_x = 0.0  # temp value
+        shift_y = 0.0  # temp value
+        tx_objs = (np.array([min_x, min_y, shift_x, shift_y, shift]), X,
+                   Y, txrates, wgts, tax_func_type, rate_type)
         lb_max_x = np.maximum(min_x, 0.0) + 1e-4
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
         bnds = ((1e-12, None), (1e-12, None), (1e-12, None),
@@ -394,11 +397,9 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         params = np.zeros(numparams)
         params[:4] = (np.array([Atil, Btil, Ctil, Dtil]) /
                       np.array([X2bar, Xbar, Y2bar, Ybar]))
-        params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x,
-                               shift_y, shift, share])
-        params_to_plot = np.append(
-            params[:4], np.array([max_x, max_y, share, min_x, min_y,
-                                  shift]))
+        params[4:] = np.array([max_x, max_y, share, min_x, min_y,
+                              shift_x, shift_y, shift])
+        params_to_plot = params
     elif tax_func_type == 'DEP_totalinc':
         # '''
         # Estimate DeBacker, Evans, Phillips (2018) ratio of polynomial
@@ -417,9 +418,10 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         shift = txrates[(df['total_labinc'] < x_20pctl) |
                         (df['total_capinc'] < y_20pctl)].min()
         share_init = 0.5
+        shift_inc = 0.0  # temp value
         params_init = np.array([Atil_init, Btil_init, max_income_init])
-        tx_objs = (np.array([min_income, shift]), X, Y, txrates, wgts,
-                   tax_func_type, rate_type)
+        tx_objs = (np.array([min_income, shift_inc, shift]), X, Y,
+                   txrates, wgts, tax_func_type, rate_type)
         lb_max_income = np.maximum(min_income, 0.0) + 1e-4
         bnds = ((1e-12, None), (1e-12, None), (lb_max_income,
                                                MAX_ETR + 0.15))
@@ -432,13 +434,11 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         shift_income = (np.maximum(-min_income, 0.0) + 0.01 *
                         (max_income - min_income))
         params = np.zeros(numparams)
-        params[:4] = (np.array([Atil, Btil, 0.0, 0.0]) /
-                      np.array([income2bar, Ibar, Y2bar, Ybar]))
-        params[4:] = np.array([max_income, min_income, 0.0, 0.0,
-                               shift_income, 0.0, shift, 1.0])
-        params_to_plot = np.append(params[:4],
-                                   np.array([max_x, max_y, share, min_x,
-                                             min_y, shift]))
+        params[:2] = (np.array([Atil, Btil]) /
+                      np.array([income2bar, Ibar]))
+        params[2:] = np.array([max_income, min_income, shift_income,
+                              shift])
+        params_to_plot = params
     elif tax_func_type == "GS":
         # '''
         # Estimate Gouveia-Strauss parameters via least squares.
@@ -937,7 +937,9 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     end_yr = int(start_year + BW - 1)
     print('BW = ', BW, "begin year = ", start_year,
           "end year = ", end_yr)
-    numparams = int(12)
+    tax_func_type_num_params_dict = {
+        'DEP': 12, 'DEP_totalinc': 6, 'GS': 3, 'linear': 1}
+    numparams = int(tax_func_type_num_params_dict['tax_func_type'])
     years_list = np.arange(start_year, end_yr + 1)
     if age_specific:
         ages_list = np.arange(s_min, s_max+1)
