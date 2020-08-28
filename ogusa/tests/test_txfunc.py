@@ -246,15 +246,18 @@ share = 0.7
 phi0 = 0.6
 phi1 = 0.5
 phi2 = 0.6
+shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+avg_rate = 0.17
 
 
 @pytest.mark.parametrize(
     'tax_func_type,rate_type,params,for_estimation,expected',
     [('DEP', 'etr', np.array([A, B, C, D, max_x, max_y, share, min_x,
-                              min_y, 0.0, 0.0, shift]), True,
+                              min_y, shift_x, shift_y, shift]), True,
       np.array([0.1894527, 0.216354953, 0.107391574, 0.087371974])),
      ('DEP', 'etr', np.array([A, B, C, D, max_x, max_y, share, min_x,
-                              min_y, 0.0, 0.0, shift]), False,
+                              min_y, shift_x, shift_y, shift]), False,
       np.array([0.669061481, 0.678657921, 0.190301075, 0.103958946])),
      ('GS', 'etr', np.array([phi0, phi1, phi2]), False,
       np.array([0.58216409, 0.5876492, 0.441995766, 0.290991255])),
@@ -263,12 +266,13 @@ phi2 = 0.6
      ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, 0.0, shift]),
       True, np.array([0.110821747, 0.134980034, 0.085945843,
                       0.085573318])),
-     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, 0.0, shift]),
+     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift_x, shift]),
       False, np.array([0.628917903, 0.632722363, 0.15723913,
-                       0.089863997]))],
+                       0.089863997])),
+     ('linear', 'etr', np.array([avg_rate]), False, np.array([0.17]))],
     ids=['DEP for estimation', 'DEP not for estimation', 'GS, etr',
          'GS, mtr', 'DEP_totalinc for estimation',
-         'DEP_totalinc not for estimation'])
+         'DEP_totalinc not for estimation', 'linear'])
 def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
                        expected):
     '''

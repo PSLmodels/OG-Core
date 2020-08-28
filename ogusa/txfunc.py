@@ -121,7 +121,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
         income2 = income ** 2
         if for_estimation:
             shift_income = (np.maximum(-min_income, 0.0) + 0.01 *
-                        (max_income - min_income))
+                            (max_income - min_income))
             income2bar = (income2 * wgts).sum() / wgts.sum()
             Ibar = (income * wgts).sum() / wgts.sum()
             income2til = (income2 - income2bar) / income2bar
@@ -136,6 +136,9 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                            (A * income2 + B * income) /
                            (A * income2 + B * income + 1)) + min_income)
             txrates = tau_income + shift_income + shift
+    elif tax_func_type == 'linear':
+        rate =  np.squeeze(params[..., 0])
+        txrates = rate
 
     return txrates
 
