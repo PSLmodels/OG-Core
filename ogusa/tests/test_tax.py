@@ -141,10 +141,18 @@ p1.S = 2
 p1.J = 1
 p1.e = np.array([0.5, 0.45])
 p1.tax_func_type = 'DEP'
-etr_params1 = np.reshape(np.array([
+etr_params1_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15,
                     0.15, 0.16, -0.15, 0.83]]), (1, p1.S, 12))
+etr_params1 = etr_params1_old.copy()
+etr_params1[:, :, 5] = etr_params1_old[:, :, 6]
+etr_params1[:, :, 6] = etr_params1_old[:, :, 11]
+etr_params1[:, :, 7] = etr_params1_old[:, :, 5]
+etr_params1[:, :, 8] = etr_params1_old[:, :, 7]
+etr_params1[:, :, 9] = etr_params1_old[:, :, 8]
+etr_params1[:, :, 10] = etr_params1_old[:, :, 9]
+etr_params1[:, :, 11] = etr_params1_old[:, :, 10]
 
 p2 = Specifications()
 p2.S = 2
@@ -160,24 +168,38 @@ p3.S = 2
 p3.J = 1
 p3.e = np.array([0.5, 0.45])
 p3.tax_func_type = 'DEP_totalinc'
-etr_params3 = np.reshape(np.array([
+etr_params3_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
                     -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p3.S, 12))
+etr_params3 = np.zeros((1, p3.S, 6))
+etr_params3[:, :, 0] = etr_params3_old[:, :, 0]
+etr_params3[:, :, 1] = etr_params3_old[:, :, 1]
+etr_params3[:, :, 2] = etr_params3_old[:, :, 4]
+etr_params3[:, :, 3] = etr_params3_old[:, :, 5]
+etr_params3[:, :, 4] = etr_params3_old[:, :, 8]
+etr_params3[:, :, 5] = etr_params3_old[:, :, 10]
 
 p4 = Specifications()
 p4.S = 3
 p4.J = 1
 p4.e = np.array([0.5, 0.45, 0.3])
 p4.tax_func_type = 'DEP'
-etr_params4 = np.reshape(np.array([
+etr_params4_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83],
     [0.002, 0.001, 0.002, 0.04, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83],
     [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83]]), (1, p4.S, 12))
-
+etr_params4 = etr_params4_old.copy()
+etr_params4[:, :, 5] = etr_params4_old[:, :, 6]
+etr_params4[:, :, 6] = etr_params4_old[:, :, 11]
+etr_params4[:, :, 7] = etr_params4_old[:, :, 5]
+etr_params4[:, :, 8] = etr_params4_old[:, :, 7]
+etr_params4[:, :, 9] = etr_params4_old[:, :, 8]
+etr_params4[:, :, 10] = etr_params4_old[:, :, 9]
+etr_params4[:, :, 11] = etr_params4_old[:, :, 10]
 
 @pytest.mark.parametrize('b,n,etr_params,params,expected',
                          [(np.array([0.4, 0.4]), np.array([0.5, 0.4]),
@@ -201,8 +223,6 @@ def test_ETR_income(b, n, etr_params, params, expected):
     r = 0.04
     w = 1.2
     factor = 100000
-    # test_ETR_income = tax.ETR_income(r, w, b, n, factor,
-    #                                  (e, etr_params, tax_func_type))
     test_ETR_income = tax.ETR_income(r, w, b, n, factor, params.e,
                                      etr_params, params)
     assert np.allclose(test_ETR_income, expected)

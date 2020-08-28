@@ -7,6 +7,7 @@ Functions for taxes in the steady state and along the transition path.
 # Packages
 import numpy as np
 from ogusa import utils
+from ogusa.txfunc import get_tax_rates
 
 '''
 ------------------------------------------------------------------------
@@ -133,48 +134,9 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
     '''
     X = (w * e * n) * factor
     Y = (r * b) * factor
-    X2 = X ** 2
-    Y2 = Y ** 2
-    income = X + Y
-    income2 = income ** 2
 
-    if p.tax_func_type == 'GS':
-        phi0 = np.squeeze(etr_params[..., 0])
-        phi1 = np.squeeze(etr_params[..., 1])
-        phi2 = np.squeeze(etr_params[..., 2])
-        tau = ((phi0 * (income - ((income ** -phi1) + phi2) **
-                        (-1 / phi1))) / income)
-    elif p.tax_func_type == 'DEP_totalinc':
-        A = np.squeeze(etr_params[..., 0])
-        B = np.squeeze(etr_params[..., 1])
-        max_income = np.squeeze(etr_params[..., 4])
-        min_income = np.squeeze(etr_params[..., 5])
-        shift_income = np.squeeze(etr_params[..., 8])
-        shift = np.squeeze(etr_params[..., 10])
-        tau_income = (((max_income - min_income) *
-                       (A * income2 + B * income) /
-                       (A * income2 + B * income + 1)) + min_income)
-        tau = tau_income + shift_income + shift
-    else:  # DEP or linear
-        A = np.squeeze(etr_params[..., 0])
-        B = np.squeeze(etr_params[..., 1])
-        C = np.squeeze(etr_params[..., 2])
-        D = np.squeeze(etr_params[..., 3])
-        max_x = np.squeeze(etr_params[..., 4])
-        min_x = np.squeeze(etr_params[..., 5])
-        max_y = np.squeeze(etr_params[..., 6])
-        min_y = np.squeeze(etr_params[..., 7])
-        shift_x = np.squeeze(etr_params[..., 8])
-        shift_y = np.squeeze(etr_params[..., 9])
-        shift = np.squeeze(etr_params[..., 10])
-        share = np.squeeze(etr_params[..., 11])
-
-        tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-                 (A * X2 + B * X + 1) + min_x)
-        tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-                 (C * Y2 + D * Y + 1) + min_y)
-        tau = (((tau_x + shift_x) ** share) *
-               ((tau_y + shift_y) ** (1 - share))) + shift
+    tau = get_tax_rates(etr_params, X, Y, None, p.tax_func_type, 'etr',
+                        for_estimation=False)
 
     return tau
 

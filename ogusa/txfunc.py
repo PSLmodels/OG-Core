@@ -66,7 +66,9 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
     Y2 = Y ** 2
     income = X + Y
     if tax_func_type == 'GS':
-        phi0, phi1, phi2 = params[:3]
+        phi0, phi1, phi2 = (
+            np.squeeze(params[..., 0]), np.squeeze(params[..., 1]),
+            np.squeeze(params[..., 2]))
         if rate_type == 'etr':
             txrates = (
                 (phi0 * (income - ((income ** -phi1) + phi2) **
@@ -77,12 +79,18 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                                   ** ((-1 - phi1) / phi1))))
     elif tax_func_type == 'DEP':
         (A, B, C, D, max_x, max_y, share, min_x, min_y, shift_x,
-         shift_y, shift) = params
-        shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
-        shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+         shift_y, shift) = (
+             np.squeeze(params[..., 0]), np.squeeze(params[..., 1]),
+             np.squeeze(params[..., 2]), np.squeeze(params[..., 3]),
+             np.squeeze(params[..., 4]), np.squeeze(params[..., 5]),
+             np.squeeze(params[..., 6]), np.squeeze(params[..., 7]),
+             np.squeeze(params[..., 8]), np.squeeze(params[..., 9]),
+             np.squeeze(params[..., 10]), np.squeeze(params[..., 11]))
         Etil = A + B
         Ftil = C + D
         if for_estimation:
+            shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+            shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
             X2bar = (X2 * wgts).sum() / wgts.sum()
             Xbar = (X * wgts).sum() / wgts.sum()
             Y2bar = (Y2 * wgts).sum() / wgts.sum()
@@ -105,12 +113,15 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
             txrates = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
     elif tax_func_type == 'DEP_totalinc':
-        A, B, max_income, min_income, shift_income, shift = params
-        shift_income = (np.maximum(-min_income, 0.0) + 0.01 *
-                        (max_income - min_income))
+        A, B, max_income, min_income, shift_income, shift = (
+             np.squeeze(params[..., 0]), np.squeeze(params[..., 1]),
+             np.squeeze(params[..., 2]), np.squeeze(params[..., 3]),
+             np.squeeze(params[..., 4]), np.squeeze(params[..., 5]))
         Etil = A + B
         income2 = income ** 2
         if for_estimation:
+            shift_income = (np.maximum(-min_income, 0.0) + 0.01 *
+                        (max_income - min_income))
             income2bar = (income2 * wgts).sum() / wgts.sum()
             Ibar = (income * wgts).sum() / wgts.sum()
             income2til = (income2 - income2bar) / income2bar
