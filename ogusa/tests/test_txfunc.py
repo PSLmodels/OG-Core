@@ -156,11 +156,11 @@ def test_txfunc_est():
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, graph)
-    expected_tuple = ((np.array([
-        6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
-        2.32797367e-01, -3.69059719e-02, 1.00000000e-04, -1.01967001e-01,
-        3.96030053e-02, 1.02987671e-01, -1.30433574e-01, 1.00000000e+00]),
-                        19527.16203007729, 3798))
+    expected_tuple = ((np.array(
+        [6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
+         2.32797367e-01, 1.00000000e-04, 1.00000000e+00,
+         -3.69059719e-02, -1.01967001e-01, 3.96030053e-02,
+         1.02987671e-01, -1.30433574e-01]), 19527.16203007729, 3798))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
