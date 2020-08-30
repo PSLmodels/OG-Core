@@ -252,28 +252,46 @@ avg_rate = 0.17
 
 
 @pytest.mark.parametrize(
-    'tax_func_type,rate_type,params,for_estimation,expected',
+    'tax_func_type,rate_type,params,analytical_mtrs,mtr_capital,' +
+    'for_estimation,expected',
     [('DEP', 'etr', np.array([A, B, C, D, max_x, max_y, share, min_x,
-                              min_y, shift_x, shift_y, shift]), True,
+                              min_y, shift_x, shift_y, shift]), False,
+      False, True,
       np.array([0.1894527, 0.216354953, 0.107391574, 0.087371974])),
      ('DEP', 'etr', np.array([A, B, C, D, max_x, max_y, share, min_x,
                               min_y, shift_x, shift_y, shift]), False,
+      False, False,
       np.array([0.669061481, 0.678657921, 0.190301075, 0.103958946])),
-     ('GS', 'etr', np.array([phi0, phi1, phi2]), False,
+     ('GS', 'etr', np.array([phi0, phi1, phi2]), False, False, False,
       np.array([0.58216409, 0.5876492, 0.441995766, 0.290991255])),
-     ('GS', 'mtrx', np.array([phi0, phi1, phi2]), False,
+     ('GS', 'mtrx', np.array([phi0, phi1, phi2]), False, False, False,
       np.array([0.596924843, 0.598227987, 0.518917438, 0.37824137])),
-     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, 0.0, shift]),
-      True, np.array([0.110821747, 0.134980034, 0.085945843,
-                      0.085573318])),
      ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift_x, shift]),
-      False, np.array([0.628917903, 0.632722363, 0.15723913,
-                       0.089863997])),
-     ('linear', 'etr', np.array([avg_rate]), False, np.array([0.17]))],
+      False, False, True, np.array(
+          [0.110821747, 0.134980034, 0.085945843, 0.085573318])),
+     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift_x, shift]),
+      False, False, False, np.array(
+          [0.628917903, 0.632722363, 0.15723913, 0.089863997])),
+     ('linear', 'etr', np.array([avg_rate]), False, False, False,
+      np.array([0.17])),
+     ('DEP', 'mtr', np.array([A, B, C, D, max_x, max_y, share, min_x,
+                              min_y, shift_x, shift_y, shift]), True,
+      False, False,
+      np.array([0.7427211, 0.72450578, 0.30152417, 0.10923907])),
+     ('DEP', 'mtr', np.array([A, B, C, D, max_x, max_y, share, min_x,
+                              min_y, shift_x, shift_y, shift]), True,
+      True, False,
+      np.array([0.67250144, 0.68049134, 0.22151424, 0.25869779])),
+     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift_x, shift]),
+      True, False, False, np.array(
+          [0.64187414, 0.63823569, 0.27160586, 0.09619512]))],
     ids=['DEP for estimation', 'DEP not for estimation', 'GS, etr',
          'GS, mtr', 'DEP_totalinc for estimation',
-         'DEP_totalinc not for estimation', 'linear'])
-def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
+         'DEP_totalinc not for estimation', 'linear',
+         'DEP, analytical MTRs', 'DEP analytical capital MTRs',
+         'DEP_totalinc, analytical MTRs'])
+def test_get_tax_rates(tax_func_type, rate_type, params,
+                       analytical_mtrs, mtr_capital, for_estimation,
                        expected):
     '''
     Teset of txfunc.get_tax_rates() function.  There are 6 cases to
@@ -288,9 +306,10 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
     X = np.array([32.0, 44.0, 1.6, 0.4])
     Y = np.array([32.0, 55.0, 0.9, 0.03])
-    test_txrates = txfunc.get_tax_rates(params, X, Y, wgts,
-                                        tax_func_type, rate_type,
-                                        for_estimation)
+    print('Params = ', params)
+    test_txrates = txfunc.get_tax_rates(
+        params, X, Y, wgts, tax_func_type, rate_type, analytical_mtrs,
+        mtr_capital, for_estimation)
 
     assert np.allclose(test_txrates, expected)
 

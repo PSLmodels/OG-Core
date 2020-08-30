@@ -41,6 +41,7 @@ Define Functions
 
 
 def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
+                  analytical_mtrs=False, mtr_capital=False,
                   for_estimation=True):
     '''
     Generates tax rates given income data and the parameters of the tax
@@ -54,6 +55,9 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
         wgts (array_like): weights for data observations
         tax_func_type (str): functional form of tax functions
         rate_type (str): type of tax rate: mtrx, mtry, etr
+        analytical_mtrs (bool): whether to compute marginal tax rates
+            from the total tax function (for DEP functions only)
+        mtr_capital (bool): whether analytical mtr on capital income
         for_estimation (bool): whether the results are used in
             estimation, if True, then tax rates are computed as
             deviations from the mean
@@ -74,7 +78,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                 (phi0 * (income - ((income ** -phi1) + phi2) **
                          (-1 / phi1))) / income)
         else:  # marginal tax rate function
-            txrates = (phi0*(1 - (income ** (-phi1 - 1) *
+            txrates = (phi0 * (1 - (income ** (-phi1 - 1) *
                                   ((income ** -phi1) + phi2)
                                   ** ((-1 - phi1) / phi1))))
     elif tax_func_type == 'DEP':
@@ -106,12 +110,34 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
             txrates = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
         else:
-            tau_x = (((max_x - min_x) * (A * X2 + B * X) /
-                      (A * X2 + B * X + 1)) + min_x)
-            tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
-                      (C * Y2 + D * Y + 1)) + min_y)
-            txrates = (((tau_x + shift_x) ** share) *
+            if analytical_mtrs:
+                tau_x = ((max_x - min_x) * (A * X2 + B * X) /
+                         (A * X2 + B * X + 1) + min_x)
+                tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
+                         (C * Y2 + D * Y + 1) + min_y)
+                etr = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
+                if mtr_capital:
+                    d_etr = (
+                        (1-share) * ((tau_y + shift_y) ** (-share)) *
+                        (max_y - min_y) * ((2 * C * Y + D) /
+                                           ((C * Y2 + D * Y + 1) ** 2))
+                        * ((tau_x + shift_x) ** share))
+                    txrates = d_etr * income + etr
+                else:
+                    d_etr = (
+                        share * ((tau_x + shift_x) ** (share - 1)) *
+                        (max_x - min_x) * ((2 * A * X + B) /
+                                           ((A * X2 + B * X + 1) ** 2))
+                        * ((tau_y + shift_y) ** (1 - share)))
+                    txrates = d_etr * income + etr
+            else:
+                tau_x = (((max_x - min_x) * (A * X2 + B * X) /
+                          (A * X2 + B * X + 1)) + min_x)
+                tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
+                          (C * Y2 + D * Y + 1)) + min_y)
+                txrates = (((tau_x + shift_x) ** share) *
+                           ((tau_y + shift_y) ** (1 - share))) + shift
     elif tax_func_type == 'DEP_totalinc':
         A, B, max_income, min_income, shift_income, shift = (
              np.squeeze(params[..., 0]), np.squeeze(params[..., 1]),
@@ -132,12 +158,22 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                           min_income)
             txrates = tau_income + shift_income + shift
         else:
-            tau_income = (((max_income - min_income) *
-                           (A * income2 + B * income) /
-                           (A * income2 + B * income + 1)) + min_income)
-            txrates = tau_income + shift_income + shift
+            if analytical_mtrs:
+                d_etr = ((max_income - min_income) *
+                         ((2 * A * income + B) /
+                          ((A * income2 + B * income + 1) ** 2)))
+                etr = (((max_income - min_income) *
+                       ((A * income2 + B * income) /
+                        (A * income2 + B * income + 1)) + min_income) +
+                       shift_income + shift)
+                txrates = (d_etr * income) + (etr)
+            else:
+                tau_income = (((max_income - min_income) *
+                               (A * income2 + B * income) /
+                               (A * income2 + B * income + 1)) + min_income)
+                txrates = tau_income + shift_income + shift
     elif tax_func_type == 'linear':
-        rate =  np.squeeze(params[..., 0])
+        rate = np.squeeze(params[..., 0])
         txrates = rate
 
     return txrates
