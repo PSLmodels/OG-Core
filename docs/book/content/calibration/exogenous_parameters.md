@@ -107,7 +107,7 @@ List of exogenous parameters and baseline calibration values.
 |                              {*i*<sub>*s*</sub>}<sub>*s* = 1</sub><sup>*E* + *S*</sup>                               | Immigration rates by age                      |           (see Sec. ref‘SecDemogMort‘)            |
 |                              {*ρ*<sub>*s*</sub>}<sub>*s* = 0</sub><sup>*E* + *S*</sup>                               | Mortality rates by age                        |            (see Sec. ref‘SecDemogImm‘)            |
 
-<span id="TabExogVars" label="TabExogVars">\[TabExogVars\]</span>**List
+<span id="TabExogVars" label="TabExogVars"></span>**List
 of exogenous parameters and baseline calibration values**
 
 </div>

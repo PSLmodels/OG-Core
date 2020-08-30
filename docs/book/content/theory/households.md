@@ -77,9 +77,14 @@ fig = pp.plot_elliptical_u(p)
 glue("labor_utility", fig, display=False)
 ```
 
-```{glue:figure} labor_utility
-:figwidth: 750px
-:name: "FigMDUcompar"
+
+```{figure} ./images/EllipVsCFE_MargUtil.png
+---
+height: 500px
+name: FigMDUcompar
+---
+
+
 
 Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted elliptical utility
 ```
@@ -187,10 +192,12 @@ Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted ellipti
     \boldsymbol{\Gamma}^e_{t+u} = \Omega^u\left(\boldsymbol{\Gamma}_t\right) \quad \forall t, \quad u\geq 1
   ```
 
-  where the $e$ superscript signifies that $\boldsymbol{\Gamma}^e_{t+u}$ is the expected distribution of wealth at time $t+u$ based on general beliefs $\Omega(\cdot)$ that are not constrained to be correct.\footnote{In Chapter {ref}`Chap_Eqm` we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Definition {ref}`DefNSSEql}.}
+  where the $e$ superscript signifies that $\boldsymbol{\Gamma}^e_{t+u}$ is the expected distribution of wealth at time $t+u$ based on general beliefs $\Omega(\cdot)$ that are not constrained to be correct. [^nssequilibrium_note]
 
 [^frisch_note]: {cite}`Peterman:2016` shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor---such as `OG-USA`---a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates---which include both extensive and intensive margin agents---are observed.
 
 [^mort_rates_note]: See Section {ref}`SecDemogMort` of Chapter {ref}`Chap_Demog` for a detailed discussion of mortality rates in `OG-USA`. 
 
 [^constraint_note]: It is important to note that savings also has an implicit upper bound $b_{j,s,t}\leq k$ above which consumption would be negative in current period. However, this upper bound on savings in taken care of by the Inada condition on consumption. 
+
+[^nssequilibrium_note]: In Chapter {ref}`Chap_Eqm` we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Section {ref}`SecEqlbSSdef`.

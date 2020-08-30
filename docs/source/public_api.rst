@@ -13,8 +13,7 @@ There is also a link to the source code for each documented member.
 
 
 .. toctree::
-   :maxdepth: 1
-   :caption: API
+   :maxdepth: 1 
 
    aggregates
    demographics
@@ -34,3 +33,4 @@ There is also a link to the source code for each documented member.
    txfunc
    utils
    wealth
+
