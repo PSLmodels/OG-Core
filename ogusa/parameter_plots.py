@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
 from ogusa import utils, tax
-from ogusa.txfunc import tax_data_sample
+# from ogusa.txfunc import tax_data_sample, get_tax_rates
 from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
@@ -944,9 +944,12 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     # get tax rates for each point in the income support and plot
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
-        rates = tax.tax_rates(
-            tax_params[rate_key][s, t, :], X, Y, tax_func_type,
-            rate_type)
+        # rates = tax.tax_rates(
+        #     tax_params[rate_key][s, t, :], X, Y, tax_func_type,
+        #     rate_type)
+        rates = get_tax_rates(tax_params[rate_key][s, t, :], X, Y, None,
+                              tax_func_type, rate_type,
+                              for_estimation=False)
         plt.plot(inc_sup, rates, label=labels[i])
 
     # plot raw data (if passed)

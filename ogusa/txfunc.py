@@ -989,7 +989,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
           "end year = ", end_yr)
     tax_func_type_num_params_dict = {
         'DEP': 12, 'DEP_totalinc': 6, 'GS': 3, 'linear': 1}
-    numparams = int(tax_func_type_num_params_dict['tax_func_type'])
+    numparams = int(tax_func_type_num_params_dict[tax_func_type])
     years_list = np.arange(start_year, end_yr + 1)
     if age_specific:
         ages_list = np.arange(s_min, s_max+1)
