@@ -1,11 +1,11 @@
 
 
-
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; OG-USA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="_static/css/index.css" rel="stylesheet">
@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-dropdown.css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/sphinx-book-theme.js"></script>
     <script src="_static/jquery.js"></script>
@@ -25,12 +25,10 @@
     <script src="_static/togglebutton.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
-    <script src="_static/mystnb.js"></script>
     <script src="_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -503,7 +501,7 @@
 </li>
       <li><a href="content/api/household.html#ogusa.household.get_y">get_y() (in module ogusa.household)</a>
 </li>
-      <li><a href="content/api/utils.html#ogusa.utils.Inequality.gini">gini() (ogusa.utils.Inequality method)</a>, <a href="content/api/utils.html#ogusa.utils.Inequality.gini">[1]</a>
+      <li><a href="content/api/utils.html#id1">gini() (ogusa.utils.Inequality method)</a>, <a href="content/api/utils.html#ogusa.utils.Inequality.gini">[1]</a>
 </li>
       <li><a href="content/api/output_tables.html#ogusa.output_tables.gini_table">gini_table() (in module ogusa.output_tables)</a>
 </li>
@@ -521,7 +519,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/output_tables.html#ogusa.output_tables.ineq_table">ineq_table() (in module ogusa.output_tables)</a>
 </li>
-      <li><a href="content/api/utils.html#ogusa.utils.Inequality">Inequality (class in ogusa.utils)</a>, <a href="content/api/utils.html#ogusa.utils.Inequality">[1]</a>
+      <li><a href="content/api/utils.html#id0">Inequality (class in ogusa.utils)</a>, <a href="content/api/utils.html#ogusa.utils.Inequality">[1]</a>
 </li>
       <li><a href="content/api/parameters.html#ogusa.parameters.Specifications.initialize">initialize() (ogusa.parameters.Specifications method)</a>
 </li>
@@ -537,12 +535,53 @@
 </li>
       <li><a href="content/api/household.html#ogusa.household.marg_ut_cons">marg_ut_cons() (in module ogusa.household)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/household.html#ogusa.household.marg_ut_labor">marg_ut_labor() (in module ogusa.household)</a>
 </li>
       <li><a href="content/api/utils.html#ogusa.utils.mkdirs">mkdirs() (in module ogusa.utils)</a>
 </li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="content/api/aggregates.html#module-ogusa.aggregates">ogusa.aggregates</a>
+</li>
+        <li><a href="content/api/demographics.html#module-ogusa.demographics">ogusa.demographics</a>
+</li>
+        <li><a href="content/api/elliptical_u_est.html#module-ogusa.elliptical_u_est">ogusa.elliptical_u_est</a>
+</li>
+        <li><a href="content/api/execute.html#module-ogusa.execute">ogusa.execute</a>
+</li>
+        <li><a href="content/api/firm.html#module-ogusa.firm">ogusa.firm</a>
+</li>
+        <li><a href="content/api/fiscal.html#module-ogusa.fiscal">ogusa.fiscal</a>
+</li>
+        <li><a href="content/api/get_micro_data.html#module-ogusa.get_micro_data">ogusa.get_micro_data</a>
+</li>
+        <li><a href="content/api/household.html#module-ogusa.household">ogusa.household</a>
+</li>
+        <li><a href="content/api/income.html#module-ogusa.income">ogusa.income</a>
+</li>
+        <li><a href="content/api/output_plots.html#module-ogusa.output_plots">ogusa.output_plots</a>
+</li>
+        <li><a href="content/api/output_tables.html#module-ogusa.output_tables">ogusa.output_tables</a>
+</li>
+        <li><a href="content/api/parameter_plots.html#module-ogusa.parameter_plots">ogusa.parameter_plots</a>
+</li>
+        <li><a href="content/api/parameter_tables.html#module-ogusa.parameter_tables">ogusa.parameter_tables</a>
+</li>
+        <li><a href="content/api/parameters.html#module-ogusa.parameters">ogusa.parameters</a>
+</li>
+        <li><a href="content/api/tax.html#module-ogusa.tax">ogusa.tax</a>
+</li>
+        <li><a href="content/api/txfunc.html#module-ogusa.txfunc">ogusa.txfunc</a>
+</li>
+        <li><a href="content/api/utils.html#module-ogusa.utils">ogusa.utils</a>
+</li>
+        <li><a href="content/api/wealth.html#module-ogusa.wealth">ogusa.wealth</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/tax.html#ogusa.tax.MTR_income">MTR_income() (in module ogusa.tax)</a>
 </li>
       <li><a href="content/api/tax.html#ogusa.tax.MTR_wealth">MTR_wealth() (in module ogusa.tax)</a>
@@ -565,44 +604,134 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/api/aggregates.html#module-ogusa.aggregates">ogusa.aggregates (module)</a>
+      <li>
+    ogusa.aggregates
+
+      <ul>
+        <li><a href="content/api/aggregates.html#module-ogusa.aggregates">module</a>
 </li>
-      <li><a href="content/api/demographics.html#module-ogusa.demographics">ogusa.demographics (module)</a>
+      </ul></li>
+      <li>
+    ogusa.demographics
+
+      <ul>
+        <li><a href="content/api/demographics.html#module-ogusa.demographics">module</a>
 </li>
-      <li><a href="content/api/elliptical_u_est.html#module-ogusa.elliptical_u_est">ogusa.elliptical_u_est (module)</a>
+      </ul></li>
+      <li>
+    ogusa.elliptical_u_est
+
+      <ul>
+        <li><a href="content/api/elliptical_u_est.html#module-ogusa.elliptical_u_est">module</a>
 </li>
-      <li><a href="content/api/execute.html#module-ogusa.execute">ogusa.execute (module)</a>
+      </ul></li>
+      <li>
+    ogusa.execute
+
+      <ul>
+        <li><a href="content/api/execute.html#module-ogusa.execute">module</a>
 </li>
-      <li><a href="content/api/firm.html#module-ogusa.firm">ogusa.firm (module)</a>
+      </ul></li>
+      <li>
+    ogusa.firm
+
+      <ul>
+        <li><a href="content/api/firm.html#module-ogusa.firm">module</a>
 </li>
-      <li><a href="content/api/fiscal.html#module-ogusa.fiscal">ogusa.fiscal (module)</a>
+      </ul></li>
+      <li>
+    ogusa.fiscal
+
+      <ul>
+        <li><a href="content/api/fiscal.html#module-ogusa.fiscal">module</a>
 </li>
-      <li><a href="content/api/get_micro_data.html#module-ogusa.get_micro_data">ogusa.get_micro_data (module)</a>
+      </ul></li>
+      <li>
+    ogusa.get_micro_data
+
+      <ul>
+        <li><a href="content/api/get_micro_data.html#module-ogusa.get_micro_data">module</a>
 </li>
-      <li><a href="content/api/household.html#module-ogusa.household">ogusa.household (module)</a>
+      </ul></li>
+      <li>
+    ogusa.household
+
+      <ul>
+        <li><a href="content/api/household.html#module-ogusa.household">module</a>
 </li>
-      <li><a href="content/api/income.html#module-ogusa.income">ogusa.income (module)</a>
+      </ul></li>
+      <li>
+    ogusa.income
+
+      <ul>
+        <li><a href="content/api/income.html#module-ogusa.income">module</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/api/output_plots.html#module-ogusa.output_plots">ogusa.output_plots (module)</a>
+      <li>
+    ogusa.output_plots
+
+      <ul>
+        <li><a href="content/api/output_plots.html#module-ogusa.output_plots">module</a>
 </li>
-      <li><a href="content/api/output_tables.html#module-ogusa.output_tables">ogusa.output_tables (module)</a>
+      </ul></li>
+      <li>
+    ogusa.output_tables
+
+      <ul>
+        <li><a href="content/api/output_tables.html#module-ogusa.output_tables">module</a>
 </li>
-      <li><a href="content/api/parameter_plots.html#module-ogusa.parameter_plots">ogusa.parameter_plots (module)</a>
+      </ul></li>
+      <li>
+    ogusa.parameter_plots
+
+      <ul>
+        <li><a href="content/api/parameter_plots.html#module-ogusa.parameter_plots">module</a>
 </li>
-      <li><a href="content/api/parameter_tables.html#module-ogusa.parameter_tables">ogusa.parameter_tables (module)</a>
+      </ul></li>
+      <li>
+    ogusa.parameter_tables
+
+      <ul>
+        <li><a href="content/api/parameter_tables.html#module-ogusa.parameter_tables">module</a>
 </li>
-      <li><a href="content/api/parameters.html#module-ogusa.parameters">ogusa.parameters (module)</a>
+      </ul></li>
+      <li>
+    ogusa.parameters
+
+      <ul>
+        <li><a href="content/api/parameters.html#module-ogusa.parameters">module</a>
 </li>
-      <li><a href="content/api/tax.html#module-ogusa.tax">ogusa.tax (module)</a>
+      </ul></li>
+      <li>
+    ogusa.tax
+
+      <ul>
+        <li><a href="content/api/tax.html#module-ogusa.tax">module</a>
 </li>
-      <li><a href="content/api/txfunc.html#module-ogusa.txfunc">ogusa.txfunc (module)</a>
+      </ul></li>
+      <li>
+    ogusa.txfunc
+
+      <ul>
+        <li><a href="content/api/txfunc.html#module-ogusa.txfunc">module</a>
 </li>
-      <li><a href="content/api/utils.html#module-ogusa.utils">ogusa.utils (module)</a>
+      </ul></li>
+      <li>
+    ogusa.utils
+
+      <ul>
+        <li><a href="content/api/utils.html#module-ogusa.utils">module</a>
 </li>
-      <li><a href="content/api/wealth.html#module-ogusa.wealth">ogusa.wealth (module)</a>
+      </ul></li>
+      <li>
+    ogusa.wealth
+
+      <ul>
+        <li><a href="content/api/wealth.html#module-ogusa.wealth">module</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -647,7 +776,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/utils.html#ogusa.utils.rate_conversion">rate_conversion() (in module ogusa.utils)</a>
 </li>
-      <li><a href="content/api/utils.html#ogusa.utils.Inequality.ratio_pct1_pct2">ratio_pct1_pct2() (ogusa.utils.Inequality method)</a>, <a href="content/api/utils.html#ogusa.utils.Inequality.ratio_pct1_pct2">[1]</a>
+      <li><a href="content/api/utils.html#id2">ratio_pct1_pct2() (ogusa.utils.Inequality method)</a>, <a href="content/api/utils.html#ogusa.utils.Inequality.ratio_pct1_pct2">[1]</a>
 </li>
       <li><a href="content/api/utils.html#ogusa.utils.read_cbo_forecast">read_cbo_forecast() (in module ogusa.utils)</a>
 </li>
@@ -727,7 +856,7 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/api/utils.html#ogusa.utils.Inequality.var_of_logs">var_of_logs() (ogusa.utils.Inequality method)</a>, <a href="content/api/utils.html#ogusa.utils.Inequality.var_of_logs">[1]</a>
+      <li><a href="content/api/utils.html#id3">var_of_logs() (ogusa.utils.Inequality method)</a>, <a href="content/api/utils.html#ogusa.utils.Inequality.var_of_logs">[1]</a>
 </li>
   </ul></td>
 </tr></table>

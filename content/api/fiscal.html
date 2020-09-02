@@ -2,9 +2,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fiscal Functions &#8212; OG-USA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="../../_static/css/index.css" rel="stylesheet">
@@ -14,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-dropdown.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -24,12 +25,10 @@
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/mystnb.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -425,9 +424,9 @@
 <p>Fiscal policy functions for unbalanced budgeting. In particular, some
 functions require time-path calculation.</p>
 <hr class="docutils" />
-<dl class="function">
+<dl class="py function">
 <dt id="ogusa.fiscal.D_G_path">
-<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">D_G_path</code><span class="sig-paren">(</span><em class="sig-param">r_gov</em>, <em class="sig-param">dg_fixed_values</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#D_G_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.D_G_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">D_G_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_gov</span></em>, <em class="sig-param"><span class="n">dg_fixed_values</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#D_G_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.D_G_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the time paths of debt and government spending</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
@@ -481,9 +480,9 @@ baseline_spending=True</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="ogusa.fiscal.get_D_ss">
-<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_D_ss</code><span class="sig-paren">(</span><em class="sig-param">r_gov</em>, <em class="sig-param">Y</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_D_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_D_ss" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_D_ss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_gov</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_D_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_D_ss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the steady-state values of government spending and debt</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
@@ -522,9 +521,9 @@ baseline_spending=True</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="ogusa.fiscal.get_G_ss">
-<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_G_ss</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">total_tax_revenue</em>, <em class="sig-param">agg_pension_outlays</em>, <em class="sig-param">TR</em>, <em class="sig-param">new_borrowing</em>, <em class="sig-param">debt_service</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_G_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_G_ss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">total_tax_revenue</span></em>, <em class="sig-param"><span class="n">agg_pension_outlays</span></em>, <em class="sig-param"><span class="n">TR</span></em>, <em class="sig-param"><span class="n">new_borrowing</span></em>, <em class="sig-param"><span class="n">debt_service</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_G_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the steady-state values of government spending.</p>
 <div class="math notranslate nohighlight">
 \[\bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}\]</div>
@@ -549,28 +548,9 @@ baseline_spending=True</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="ogusa.fiscal.get_debt_service_f">
-<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_debt_service_f</code><span class="sig-paren">(</span><em class="sig-param">r_hh</em>, <em class="sig-param">D_f</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_debt_service_f"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_debt_service_f" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to compute foreign debt service payments.</p>
-<dl class="simple">
-<dt>..math::</dt><dd><p>text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}</p>
-</dd>
-</dl>
-<p>Args:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>foreign debt service payment amount</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>debt_service_f (array_like)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
+<dl class="py function">
 <dt id="ogusa.fiscal.get_TR">
-<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_TR</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">TR</em>, <em class="sig-param">G</em>, <em class="sig-param">total_tax_revenue</em>, <em class="sig-param">agg_pension_outlays</em>, <em class="sig-param">p</em>, <em class="sig-param">method</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_TR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_TR</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">TR</span></em>, <em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">total_tax_revenue</span></em>, <em class="sig-param"><span class="n">agg_pension_outlays</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_TR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to compute aggregate transfers.  Note that this excludes
 transfer spending through the public pension system.</p>
 <dl>
@@ -609,9 +589,28 @@ outlays</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
+<dt id="ogusa.fiscal.get_debt_service_f">
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_debt_service_f</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_hh</span></em>, <em class="sig-param"><span class="n">D_f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_debt_service_f"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_debt_service_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to compute foreign debt service payments.</p>
+<dl class="simple">
+<dt>..math::</dt><dd><p>text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}</p>
+</dd>
+</dl>
+<p>Args:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>foreign debt service payment amount</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>debt_service_f (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ogusa.fiscal.get_r_gov">
-<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_r_gov</code><span class="sig-paren">(</span><em class="sig-param">r</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_r_gov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_r_gov" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_r_gov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_r_gov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_r_gov" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine the interest rate on government debt</p>
 <div class="math notranslate nohighlight">
 \[r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}\]</div>

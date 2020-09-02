@@ -2,9 +2,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Demographics &#8212; OG-USA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="../../_static/css/index.css" rel="stylesheet">
@@ -14,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-dropdown.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -24,12 +25,10 @@
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/mystnb.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -298,6 +297,23 @@
 
         <!-- Launch buttons -->
 
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/PSLmodels/OG-USA/master?urlpath=tree/book/content/calibration/demographics.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
     </div>
 
     <!-- Table of contents -->
@@ -448,7 +464,7 @@ If the age <span class="math notranslate nohighlight">\(s=1\)</span> immigration
 \end{proposition}</p>
 <p>\begin{proof}
 First, note that the matrix <span class="math notranslate nohighlight">\(\boldsymbol{\Omega}\)</span> is square and non-negative.  This is enough for a general version of the Perron-Frobenius Theorem to state that a positive real eigenvector exists with a positive real eigenvalue. This is not yet enough for uniqueness. For it to be unique by a version of the Perron-Fobenius Theorem, we need to know that the matrix is irreducible. This can be easily shown. The matrix is of the form
-<span class="math notranslate nohighlight">\($\boldsymbol{\Omega} =
+$<span class="math notranslate nohighlight">\(\boldsymbol{\Omega} =
     \begin{bmatrix}
       * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
       * &amp; * &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
@@ -457,9 +473,9 @@ First, note that the matrix <span class="math notranslate nohighlight">\(\boldsy
       0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 \\
       0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
     \end{bmatrix}
-    $\)</span>
-Where each * is strictly positive. It is clear to see that taking powers of the matrix causes the sub-diagonal positive elements to be moved down a row and another row of positive entries is added at the top. None of these go to zero since the elements were all non-negative to begin with.
-<span class="math notranslate nohighlight">\($\boldsymbol{\Omega}^2 =
+    \)</span><span class="math notranslate nohighlight">\(
+    Where each * is strictly positive. It is clear to see that taking powers of the matrix causes the sub-diagonal positive elements to be moved down a row and another row of positive entries is added at the top. None of these go to zero since the elements were all non-negative to begin with.
+    \)</span><span class="math notranslate nohighlight">\(\boldsymbol{\Omega}^2 =
     \begin{bmatrix}
       * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
       * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
@@ -477,8 +493,8 @@ Where each * is strictly positive. It is clear to see that taking powers of the 
       * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * \\
       0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
     \end{bmatrix}
-    $\)</span>
-<span class="math notranslate nohighlight">\($\boldsymbol{\Omega}^{S+E} =
+    \)</span><span class="math notranslate nohighlight">\(
+    \)</span><span class="math notranslate nohighlight">\(\boldsymbol{\Omega}^{S+E} =
     \begin{bmatrix}
       * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
       * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
@@ -487,8 +503,8 @@ Where each * is strictly positive. It is clear to see that taking powers of the 
       * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
       * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; *
     \end{bmatrix}
-    $\)</span>
-Existence of an $m \in \mathbb N $ such that <span class="math notranslate nohighlight">\(\left(\bf\Omega^m\right)_{ij} \neq 0 ~~ ( &gt; 0)\)</span> is one of the definitions of an irreducible (primitive) matrix. It is equivalent to saying that the directed graph associated with the matrix is strongly connected. Now the Perron-Frobenius Theorem for irreducible matrices gives us that the equilibrium vector is unique.</p>
+    \)</span><span class="math notranslate nohighlight">\(
+    Existence of an \)</span>m \in \mathbb N <span class="math notranslate nohighlight">\( such that \)</span>\left(\bf\Omega^m\right)_{ij} \neq 0 ~~ ( &gt; 0)$ is one of the definitions of an irreducible (primitive) matrix. It is equivalent to saying that the directed graph associated with the matrix is strongly connected. Now the Perron-Frobenius Theorem for irreducible matrices gives us that the equilibrium vector is unique.</p>
 <p>We also know from that theorem that the eigenvalue associated with the positive real eigenvector will be real and positive. This eigenvalue, <span class="math notranslate nohighlight">\(p\)</span>, is the Perron eigenvalue and it is the steady state population growth rate of the model. By the PF Theorem for irreducible matrices, <span class="math notranslate nohighlight">\(| \lambda_i | \leq p\)</span> for all eigenvalues <span class="math notranslate nohighlight">\(\lambda_i\)</span> and there will be exactly <span class="math notranslate nohighlight">\(h\)</span> eigenvalues that are equal, where <span class="math notranslate nohighlight">\(h\)</span> is the period of the matrix. Since our matrix <span class="math notranslate nohighlight">\(\bf\Omega\)</span> is aperiodic, the steady state growth rate is the unique largest eigenvalue in magnitude. This implies that almost all initial vectors will converge to this eigenvector under iteration.
 \end{proof}</p>
 <p>For a full treatment and proof of the Perron-Frobenius Theorem, see \citet{Suzumura:1983}. Because the population growth process is exogenous to the model, we calibrate it to annual age data for age years <span class="math notranslate nohighlight">\(s=1\)</span> to <span class="math notranslate nohighlight">\(s=100\)</span>.</p>

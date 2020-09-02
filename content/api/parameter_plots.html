@@ -2,9 +2,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OG-USA Parameter Plotting Functions &#8212; OG-USA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="../../_static/css/index.css" rel="stylesheet">
@@ -14,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-dropdown.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -24,12 +25,10 @@
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/mystnb.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -421,9 +420,51 @@
 <p><strong>OG-USA Parameter Plotting Functions</strong></p>
 <div class="section" id="module-ogusa.parameter_plots">
 <span id="ogusa-parameter-plots"></span><h2>ogusa.parameter_plots<a class="headerlink" href="#module-ogusa.parameter_plots" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_ability_profiles">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_ability_profiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_ability_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_ability_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of earnings ability profiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of earnings ability profiles</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_elliptical_u">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_elliptical_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">plot_MU</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_elliptical_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_elliptical_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of showing the fit of the elliptical utility function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
+<li><p><strong>plot_MU</strong> (<em>boolean</em>) – whether plot marginal utility or utility in
+levels</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of elliptical vs CFE utility</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ogusa.parameter_plots.plot_imm_rates">
-<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_imm_rates</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">year=2021</em>, <em class="sig-param">include_title=False</em>, <em class="sig-param">path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_imm_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_imm_rates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_imm_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_imm_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_imm_rates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a plot of immigration rates from OG-USA parameterization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -443,9 +484,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="ogusa.parameter_plots.plot_mort_rates">
-<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_mort_rates</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">include_title=False</em>, <em class="sig-param">path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_mort_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_mort_rates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_mort_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_mort_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_mort_rates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a plot of mortality rates from OG-USA parameterization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -464,9 +505,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="ogusa.parameter_plots.plot_pop_growth">
-<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_pop_growth</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">start_year=2021</em>, <em class="sig-param">num_years_to_plot=150</em>, <em class="sig-param">include_title=False</em>, <em class="sig-param">path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_pop_growth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_pop_growth" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_pop_growth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">start_year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">num_years_to_plot</span><span class="o">=</span><span class="default_value">150</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_pop_growth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_pop_growth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a plot of population growth rates by year.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -480,48 +521,6 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>plot of immigration rates</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ogusa.parameter_plots.plot_ability_profiles">
-<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_ability_profiles</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">include_title=False</em>, <em class="sig-param">path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_ability_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_ability_profiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a plot of earnings ability profiles.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
-<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>plot of earnings ability profiles</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ogusa.parameter_plots.plot_elliptical_u">
-<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_elliptical_u</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">plot_MU=True</em>, <em class="sig-param">include_title=False</em>, <em class="sig-param">path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_elliptical_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_elliptical_u" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a plot of showing the fit of the elliptical utility function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
-<li><p><strong>plot_MU</strong> (<em>boolean</em>) – whether plot marginal utility or utility in
-levels</p></li>
-<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>plot of elliptical vs CFE utility</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>fig (Matplotlib plot object)</p>

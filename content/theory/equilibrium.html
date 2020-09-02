@@ -2,9 +2,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Equilibrium &#8212; OG-USA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="../../_static/css/index.css" rel="stylesheet">
@@ -14,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-dropdown.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -24,12 +25,10 @@
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/mystnb.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -453,7 +452,7 @@ A non-autarkic stationary steady-state equilibrium in the <code class="docutils 
 <div class="math notranslate nohighlight">
 \[
         factor^{i'} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\bar{\omega}_s\left(\bar{w}^{i'}e_{j,s}\bar{n}_{j,s} + \bar{r}^{i'}\bar{b}_{j,s}\right)}
-      \]</div>
+      $\]</div>
 </li>
 <li><p>The updated values for the outer loop variables are then used to compute the percentage differences between the initial and implied values:
 a. <span class="math notranslate nohighlight">\(error_r = \frac{\bar{r}^{i'} - \bar{r}^i}{\bar{r}^i}\)</span>
@@ -461,10 +460,10 @@ b. <span class="math notranslate nohighlight">\(error_{bq} = \frac{\overline{BQ}
 c. <span class="math notranslate nohighlight">\(error_{tr} = \frac{\overline{TR}^{\,i'} - \overline{TR}^{\,i}}{\overline{TR}^{\,i}}\)</span>
 d. <span class="math notranslate nohighlight">\(error_f = \frac{factor^{i'} - factor^i}{factor^i}\)</span></p></li>
 <li><p>If the maximum absolute error among the four outer loop error terms is greater than some small positive tolerance <span class="math notranslate nohighlight">\(toler_{ss,out}\)</span>,
-<span class="math notranslate nohighlight">\($
+$<span class="math notranslate nohighlight">\(
    \max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| &gt; toler_{ss,out}
- $\)</span>
-then update the guesses for the outer loop variables as a convex combination governed by <span class="math notranslate nohighlight">\(\xi_{ss}\in(0,1]\)</span> of the respective initial guesses and the new implied values and repeat steps (3) through (5).<a class="footnote-reference brackets" href="#rootfinder-note" id="id2">2</a></p>
+ \)</span><span class="math notranslate nohighlight">\(
+ then update the guesses for the outer loop variables as a convex combination governed by \)</span>\xi_{ss}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (5).<a class="footnote-reference brackets" href="#rootfinder-note" id="id2">2</a></p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
         \left[\bar{r}^{i+1},\overline{BQ}^{\,i+1},\overline{TR}^{\,i+1},factor^{i+1}\right] &amp;= \xi_{ss}\left[\bar{r}^{i'},\overline{BQ}^{\,i'},\overline{TR}^{\,i'},factor^{i'}\right] + \\
@@ -703,9 +702,9 @@ iv. se the capital market clearing condition from Equation <a class="reference i
 </pre></div>
 </div>
 <p>b. The stationarized law of motion for total bequests <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrbq">(55)</a> provides the expression in which household savings decisions <span class="math notranslate nohighlight">\(\{b_{j,s+1,t+1}\}_{s=E+1}^{E+S}\)</span> imply a value for aggregate bequests, <span class="math notranslate nohighlight">\(BQ_{t}^{\,i'}\)</span>. When computing aggregate bequests, we use the updated path of interest rates found above.
-<span class="math notranslate nohighlight">\($
+$<span class="math notranslate nohighlight">\(
  			\hat{BQ}_{t}^{\,i'} = \left(\frac{1+r_{t}^{i'}}{1 + g_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}\hat{b}_{j,s,t}\right)
- 		$\)</span></p>
+ 		\)</span>$</p>
 <p>c. In equation <a class="reference internal" href="stationarization.html#equation-eqstnrztfer">(46)</a>, we defined total household transfers as a fixed percentage of GDP (<span class="math notranslate nohighlight">\(\hat{TR}_t=\alpha_{tr}\hat{Y}_t\)</span>).  To find the updated value for transfers, we find the amount of transfers implied by the most updated value of GDP, <span class="math notranslate nohighlight">\(\hat{TR}_{t}^{i'}=\alpha_{tr}\hat{Y}_{t}^{i'}\)</span>.</p>
 </li>
 <li><p>The updated values for the outer loop variables are then used to compute the percentage differences between the initial and implied values:
@@ -713,22 +712,22 @@ a. <span class="math notranslate nohighlight">\(error_r = max\left\{\frac{r_{t}^
 b. <span class="math notranslate nohighlight">\(error_{bq} =  max\left\{\frac{\hat{BQ}_{t}^{\,i'} - \hat{BQ}_{t}^{\,i}}{\hat{BQ}_{t}^{\,i}}\right\}_{t=0}^{T}\)</span>
 c. <span class="math notranslate nohighlight">\(error_{tr} = \left\{\frac{\hat{TR}_{t}^{\,i'} - \hat{TR}_{t}^{\,i}}{\hat{TR}_{t}^{\,i}}\right\}_{t=0}^{T}\)</span></p></li>
 <li><p>If the maximum absolute error among the three outer loop error terms is greater than some small positive tolerance <span class="math notranslate nohighlight">\(toler_{tpi,out}\)</span>,
-<span class="math notranslate nohighlight">\($
+$<span class="math notranslate nohighlight">\(
  		\max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| &gt; toler_{tpi,out}
- 	$\)</span>
-then update the guesses for the outer loop variables as a convex combination governed by <span class="math notranslate nohighlight">\(\xi_{tpi}\in(0,1]\)</span> of the respective initial guesses and the new implied values and repeat steps (3) through (5).
-<span class="math notranslate nohighlight">\($
+ 	\)</span><span class="math notranslate nohighlight">\(
+ then update the guesses for the outer loop variables as a convex combination governed by \)</span>\xi_{tpi}\in(0,1]<span class="math notranslate nohighlight">\( of the respective initial guesses and the new implied values and repeat steps (3) through (5).
+ \)</span><span class="math notranslate nohighlight">\(
  		\left[\boldsymbol{r}^{i+1},\boldsymbol{\hat{BQ}}^{\,i+1},\boldsymbol{\hat{TR}}^{\,i+1}\right] &amp;= \xi_{tpi}\left[\boldsymbol{r}^{i'},\boldsymbol{\hat{BQ}}^{\,i'},\boldsymbol{\hat{TR}}^{\,i'}\right] + \\
  		&amp;\qquad(1-\xi_{tpi})\left[\boldsymbol{r}^{i},\boldsymbol{\hat{BQ}}^{\,i},\boldsymbol{\hat{TR}}^{\,i}\right]
- $\)</span></p></li>
+ \)</span>$</p></li>
 <li><p>If the maximum absolute error among the five outer loop error terms is less-than-or-equal-to some small positive tolerance <span class="math notranslate nohighlight">\(toler_{tpi,out}\)</span> in each period along the transition path,
-<span class="math notranslate nohighlight">\($
+$<span class="math notranslate nohighlight">\(
  		\max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| \leq toler_{tpi,out}
- 	$\)</span>
-then the non-steady-state equilibrium has been found.
-a. Make sure that the resource constraint (goods market clearing) <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrgoods">(54)</a> is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
-b. Make sure that the government budget constraint <a class="reference internal" href="stationarization.html#equation-eqstnrzgovbc">(48)</a> binds.
-c. Make sure that all the <span class="math notranslate nohighlight">\((T+S)\times2JS\)</span> household Euler equations are solved to a satisfactory tolerance.</p></li>
+ 	\)</span><span class="math notranslate nohighlight">\(
+ then the non-steady-state equilibrium has been found.
+ a. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
+ b. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
+ c. Make sure that all the \)</span>(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance.</p></li>
 </ol>
 </div>
 <div class="section" id="baseline-nonsteady-state-results">

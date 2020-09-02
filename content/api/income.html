@@ -2,9 +2,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Income Processes Functions &#8212; OG-USA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="../../_static/css/index.css" rel="stylesheet">
@@ -14,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-dropdown.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -24,12 +25,10 @@
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/mystnb.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -424,68 +423,9 @@
 <p>percentiles, as it uses fitted polynomials to those percentiles.
 For a more generic version, see income_nopoly.py.
 ————————————————————————</p>
-<dl class="function">
-<dt id="ogusa.income.arctan_func">
-<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_func</code><span class="sig-paren">(</span><em class="sig-param">xvals</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em>, <em class="sig-param">c</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#arctan_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function generates predicted ability levels given data (xvals)
-and parameters a, b, and c, from the following arctan function:</p>
-<div class="math notranslate nohighlight">
-\[y = (-a / \pi) * \arctan(b * x + c) + (a / 2)\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>xvals</strong> (<em>Numpy array</em>) – data inputs to arctan function</p></li>
-<li><p><strong>a</strong> (<em>scalar</em>) – scale parameter for arctan function</p></li>
-<li><p><strong>b</strong> (<em>scalar</em>) – curvature parameter for arctan function</p></li>
-<li><p><strong>c</strong> (<em>scalar</em>) – shift parameter for arctan function</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>predicted values (output) of arctan</dt><dd><p>function</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>yvals (Numpy array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ogusa.income.arctan_deriv_func">
-<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_deriv_func</code><span class="sig-paren">(</span><em class="sig-param">xvals</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em>, <em class="sig-param">c</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#arctan_deriv_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_deriv_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function generates predicted derivatives of arctan function
-given data (xvals) and parameters a, b, and c. The functional form
-of the derivative of the function is the following:</p>
-<div class="math notranslate nohighlight">
-\[y = - (a * b) / (\pi * (1 + (b * xvals + c)^2))\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>xvals</strong> (<em>Numpy array</em>) – data inputs to arctan derivative function</p></li>
-<li><p><strong>a</strong> (<em>scalar</em>) – scale parameter for arctan function</p></li>
-<li><p><strong>b</strong> (<em>scalar</em>) – curvature parameter for arctan function</p></li>
-<li><p><strong>c</strong> (<em>scalar</em>) – shift parameter for arctan function</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>predicted values (output) of arctan</dt><dd><p>derivative function</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>yvals (Numpy array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
+<dl class="py function">
 <dt id="ogusa.income.arc_error">
-<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arc_error</code><span class="sig-paren">(</span><em class="sig-param">abc_vals</em>, <em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#arc_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arc_error" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arc_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">abc_vals</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#arc_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arc_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function returns a vector of errors in the three criteria on
 which the arctan function is fit to predict extrapolated ability in
 ages 81 to 100.:</p>
@@ -568,9 +508,39 @@ function at age 100 given a, b, and c</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
+<dt id="ogusa.income.arctan_deriv_func">
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_deriv_func</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xvals</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">c</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#arctan_deriv_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_deriv_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates predicted derivatives of arctan function
+given data (xvals) and parameters a, b, and c. The functional form
+of the derivative of the function is the following:</p>
+<div class="math notranslate nohighlight">
+\[y = - (a * b) / (\pi * (1 + (b * xvals + c)^2))\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xvals</strong> (<em>Numpy array</em>) – data inputs to arctan derivative function</p></li>
+<li><p><strong>a</strong> (<em>scalar</em>) – scale parameter for arctan function</p></li>
+<li><p><strong>b</strong> (<em>scalar</em>) – curvature parameter for arctan function</p></li>
+<li><p><strong>c</strong> (<em>scalar</em>) – shift parameter for arctan function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>predicted values (output) of arctan</dt><dd><p>derivative function</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>yvals (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ogusa.income.arctan_fit">
-<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_fit</code><span class="sig-paren">(</span><em class="sig-param">first_point</em>, <em class="sig-param">coef1</em>, <em class="sig-param">coef2</em>, <em class="sig-param">coef3</em>, <em class="sig-param">abil_deprec</em>, <em class="sig-param">init_guesses</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#arctan_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_fit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">first_point</span></em>, <em class="sig-param"><span class="n">coef1</span></em>, <em class="sig-param"><span class="n">coef2</span></em>, <em class="sig-param"><span class="n">coef3</span></em>, <em class="sig-param"><span class="n">abil_deprec</span></em>, <em class="sig-param"><span class="n">init_guesses</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#arctan_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function fits an arctan function to the last 20 years of the
 ability levels of a particular ability group to extrapolate
 abilities by trying to match the slope in the 80th year and the
@@ -603,9 +573,38 @@ ages 80 and 100, in (0, 1)</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
+<dt id="ogusa.income.arctan_func">
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">arctan_func</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xvals</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">c</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#arctan_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.arctan_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates predicted ability levels given data (xvals)
+and parameters a, b, and c, from the following arctan function:</p>
+<div class="math notranslate nohighlight">
+\[y = (-a / \pi) * \arctan(b * x + c) + (a / 2)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xvals</strong> (<em>Numpy array</em>) – data inputs to arctan function</p></li>
+<li><p><strong>a</strong> (<em>scalar</em>) – scale parameter for arctan function</p></li>
+<li><p><strong>b</strong> (<em>scalar</em>) – curvature parameter for arctan function</p></li>
+<li><p><strong>c</strong> (<em>scalar</em>) – shift parameter for arctan function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>predicted values (output) of arctan</dt><dd><p>function</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>yvals (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ogusa.income.get_e_interp">
-<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">get_e_interp</code><span class="sig-paren">(</span><em class="sig-param">S</em>, <em class="sig-param">age_wgts</em>, <em class="sig-param">age_wgts_80</em>, <em class="sig-param">abil_wgts</em>, <em class="sig-param">plot=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#get_e_interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.get_e_interp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">get_e_interp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">age_wgts</span></em>, <em class="sig-param"><span class="n">age_wgts_80</span></em>, <em class="sig-param"><span class="n">abil_wgts</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#get_e_interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.get_e_interp" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function takes a source matrix of lifetime earnings profiles
 (abilities, emat) of size (80, 7), where 80 is the number of ages
 and 7 is the number of ability types in the source matrix, and
@@ -641,9 +640,9 @@ interpolated emat_new</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="ogusa.income.get_e_orig">
-<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">get_e_orig</code><span class="sig-paren">(</span><em class="sig-param">age_wgts</em>, <em class="sig-param">abil_wgts</em>, <em class="sig-param">plot=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#get_e_orig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.get_e_orig" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.income.</code><code class="sig-name descname">get_e_orig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">age_wgts</span></em>, <em class="sig-param"><span class="n">abil_wgts</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/income.html#get_e_orig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.income.get_e_orig" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function generates the 80 x 7 matrix of lifetime earnings
 ability profiles, corresponding to annual ages from 21 to 100 and to
 paths based on income percentiles 0-25, 25-50, 50-70, 70-80, 80-90,

@@ -2,9 +2,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tax Functions &#8212; OG-USA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="../../_static/css/index.css" rel="stylesheet">
@@ -14,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-dropdown.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -24,12 +25,10 @@
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/mystnb.js"></script>
     <script src="../../_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -598,7 +597,7 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
 </tr>
 </tbody>
 </table>
-<p>Let <span class="math notranslate nohighlight">\(\boldsymbol{\theta}_{s,t}=(A,B,C,D,max_x,min_x,max_y,min_y,shift_x,shift_y,shift,\phi)\)</span> be the full vector of 12 parameters of the tax function for a particular type of tax rate, age of filers, and year. We first directly specify <span class="math notranslate nohighlight">\(min_x\)</span> as the minimum tax rate and <span class="math notranslate nohighlight">\(max_x\)</span> as the maximum tax rate in the data for age-<span class="math notranslate nohighlight">\(s\)</span> and period-<span class="math notranslate nohighlight">\(t\)</span> individuals for capital income close to 0 ($$0&lt;y&lt;$3,000$), and <span class="math notranslate nohighlight">\(min_y\)</span> as the minimum tax rate and <span class="math notranslate nohighlight">\(max_y\)</span> as the maximum tax rate for labor income close to 0 ($$0&lt;x&lt;$3,000$). We then set <span class="math notranslate nohighlight">\(shift_x = \min(0,|min_x|)+\ve\)</span> and <span class="math notranslate nohighlight">\(shift_y = \min(0,|min_y|)+\ve\)</span> so that the respective arguments in the brackets of <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(77)</a> are strictly positive. Then let <span class="math notranslate nohighlight">\(shift\)</span> be be the minimum tax rate in the corresponding data minus <span class="math notranslate nohighlight">\(\ve\)</span>. Let <span class="math notranslate nohighlight">\(\bar{\boldsymbol{\theta}}_{s,t}=\{min_x,max_x,min_y,max_y,shift_x,shift_y, shift\}\)</span> be the set of parameters we take directly from the data in this way.</p>
+<p>Let <span class="math notranslate nohighlight">\(\boldsymbol{\theta}_{s,t}=(A,B,C,D,max_x,min_x,max_y,min_y,shift_x,shift_y,shift,\phi)\)</span> be the full vector of 12 parameters of the tax function for a particular type of tax rate, age of filers, and year. We first directly specify <span class="math notranslate nohighlight">\(min_x\)</span> as the minimum tax rate and <span class="math notranslate nohighlight">\(max_x\)</span> as the maximum tax rate in the data for age-<span class="math notranslate nohighlight">\(s\)</span> and period-<span class="math notranslate nohighlight">\(t\)</span> individuals for capital income close to 0 (<span class="math notranslate nohighlight">\(\$0&lt;y&lt;\$3,000\)</span>), and <span class="math notranslate nohighlight">\(min_y\)</span> as the minimum tax rate and <span class="math notranslate nohighlight">\(max_y\)</span> as the maximum tax rate for labor income close to 0 (<span class="math notranslate nohighlight">\(\$0&lt;x&lt;\$3,000\)</span>). We then set <span class="math notranslate nohighlight">\(shift_x = \min(0,|min_x|)+\ve\)</span> and <span class="math notranslate nohighlight">\(shift_y = \min(0,|min_y|)+\ve\)</span> so that the respective arguments in the brackets of <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(77)</a> are strictly positive. Then let <span class="math notranslate nohighlight">\(shift\)</span> be be the minimum tax rate in the corresponding data minus <span class="math notranslate nohighlight">\(\ve\)</span>. Let <span class="math notranslate nohighlight">\(\bar{\boldsymbol{\theta}}_{s,t}=\{min_x,max_x,min_y,max_y,shift_x,shift_y, shift\}\)</span> be the set of parameters we take directly from the data in this way.</p>
 <p>We then estimate five remaining parameters <span class="math notranslate nohighlight">\(\tilde{\boldsymbol{\theta}}_{s,t}=(A,B,C,D,shift,\phi)\)</span> using the following nonlinear weighted least squares criterion,</p>
 <div class="math notranslate nohighlight" id="equation-eqtaxcalcthetawssq">
 <span class="eqno">(78)<a class="headerlink" href="#equation-eqtaxcalcthetawssq" title="Permalink to this equation">¶</a></span>\[\begin{split}    \boldsymbol{\hat{\theta}}_{s,t} = \tilde{\boldsymbol{\theta}}_{s,t}:\quad &amp;\min_{\tilde{\boldsymbol{\theta}}_{s,t}}\sum_{i=1}^{N} \Bigl[\tau_{i}-\tau_{s,t}\bigl(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t}\bigr)\Bigr]^{2} w_i, \\
