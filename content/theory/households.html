@@ -391,7 +391,8 @@
 </div>
 </div>
 </div>
-<div class="figure align-default" id="figmducompar" style="width: 750px">
+<div class="figure align-default" id="figmducompar">
+<a class="reference internal image-reference" href="../../_images/EllipVsCFE_MargUtil.png"><img alt="../../_images/EllipVsCFE_MargUtil.png" src="../../_images/EllipVsCFE_MargUtil.png" style="height: 500px;" /></a>
 <p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Comparison of CFE marginal disutility of leisure <span class="math notranslate nohighlight">\(\theta=1.67\)</span> to fitted elliptical utility</span><a class="headerlink" href="#figmducompar" title="Permalink to this image">¶</a></p>
 </div>
 <p><a class="bibtex reference internal" href="references.html#evansphillips-2017" id="id2">[EP17]</a> propose using an equation for an ellipse to match the disutility of labor supply to whatever traditional functional form one wants. Our preferred specification in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> is to fit an elliptical disutility of labor supply function to approximate a linearly separable constant Frisch elasticity (CFE) functional form. Let <span class="math notranslate nohighlight">\(v(n)\)</span> be a general disutility of labor function. A CFE disutility of labor function is the following,</p>
@@ -443,17 +444,20 @@
 <p>Let general beliefs about the future distribution of capital in period <span class="math notranslate nohighlight">\(t+u\)</span> be characterized by the operator <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> such that:</p>
 <div class="math notranslate nohighlight" id="equation-eqbeliefs">
 <span class="eqno">(15)<a class="headerlink" href="#equation-eqbeliefs" title="Permalink to this equation">¶</a></span>\[  \boldsymbol{\Gamma}^e_{t+u} = \Omega^u\left(\boldsymbol{\Gamma}_t\right) \quad \forall t, \quad u\geq 1\]</div>
-<p>where the <span class="math notranslate nohighlight">\(e\)</span> superscript signifies that <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}^e_{t+u}\)</span> is the expected distribution of wealth at time <span class="math notranslate nohighlight">\(t+u\)</span> based on general beliefs <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> that are not constrained to be correct.\footnote{In Chapter <a class="reference internal" href="equilibrium.html#chap-eqm"><span class="std std-ref">Equilibrium</span></a> we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Definition {ref}`DefNSSEql}.}</p>
+<p>where the <span class="math notranslate nohighlight">\(e\)</span> superscript signifies that <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}^e_{t+u}\)</span> is the expected distribution of wealth at time <span class="math notranslate nohighlight">\(t+u\)</span> based on general beliefs <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> that are not constrained to be correct. <a class="footnote-reference brackets" href="#nssequilibrium-note" id="id6">4</a></p>
 <hr class="docutils" />
 <dl class="footnote brackets">
 <dt class="label" id="frisch-note"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
-<dd><p><a class="bibtex reference internal" href="references.html#peterman-2016" id="id6">[Pet16]</a> shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor—such as <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>—a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates—which include both extensive and intensive margin agents—are observed.</p>
+<dd><p><a class="bibtex reference internal" href="references.html#peterman-2016" id="id7">[Pet16]</a> shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor—such as <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>—a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates—which include both extensive and intensive margin agents—are observed.</p>
 </dd>
 <dt class="label" id="mort-rates-note"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
-<dd><p>See Section <span class="xref std std-ref">SecDemogMort</span> of Chapter <a class="reference internal" href="../calibration/demographics.html#chap-demog"><span class="std std-ref">Demographics</span></a> for a detailed discussion of mortality rates in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>.</p>
+<dd><p>See Section <a class="reference internal" href="../calibration/demographics.html#secdemogmort"><span class="std std-ref">Mortality rates</span></a> of Chapter <a class="reference internal" href="../calibration/demographics.html#chap-demog"><span class="std std-ref">Demographics</span></a> for a detailed discussion of mortality rates in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>.</p>
 </dd>
 <dt class="label" id="constraint-note"><span class="brackets"><a class="fn-backref" href="#id5">3</a></span></dt>
 <dd><p>It is important to note that savings also has an implicit upper bound <span class="math notranslate nohighlight">\(b_{j,s,t}\leq k\)</span> above which consumption would be negative in current period. However, this upper bound on savings in taken care of by the Inada condition on consumption.</p>
+</dd>
+<dt class="label" id="nssequilibrium-note"><span class="brackets"><a class="fn-backref" href="#id6">4</a></span></dt>
+<dd><p>In Chapter <a class="reference internal" href="equilibrium.html#chap-eqm"><span class="std std-ref">Equilibrium</span></a> we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Section <a class="reference internal" href="equilibrium.html#seceqlbssdef"><span class="std std-ref">Stationary Steady-State Equilibrium Definition</span></a>.</p>
 </dd>
 </dl>
 </div>

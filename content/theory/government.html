@@ -355,9 +355,8 @@
         
               <div>
                 
-  <p>(Chap_UnbalGBC)</p>
-<div class="section" id="government">
-<h1>Government<a class="headerlink" href="#government" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="government">
+<span id="chap-unbalgbc"></span><h1>Government<a class="headerlink" href="#government" title="Permalink to this headline">¶</a></h1>
 <p>In <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.</p>
 <div class="section" id="government-tax-revenue">
 <span id="secunbalgbcrev"></span><h2>Government Tax Revenue<a class="headerlink" href="#government-tax-revenue" title="Permalink to this headline">¶</a></h2>
@@ -365,7 +364,7 @@
 <div class="math notranslate nohighlight" id="equation-eqhhbc">
 <span class="eqno">(20)<a class="headerlink" href="#equation-eqhhbc" title="Permalink to this equation">¶</a></span>\[\begin{split}    c_{j,s,t} + b_{j,s+1,t+1} &amp;= (1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} - T_{s,t}  \\
     &amp;\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t\end{split}\]</div>
-<p>where we defined the tax liability function <span class="math notranslate nohighlight">\(T_{s,t}\)</span> in <a class="reference internal" href="households.html#equation-eqtaxcalcliabetr">(2)</a> as an effective tax rate times total income and the transfer distribution function <span class="math notranslate nohighlight">\(\eta_{j,s,t}\)</span> is uniform across all households as in <a class="reference internal" href="../calibration/tax_functions.html#equation-eqtaxcalcetajs">(80)</a>. And government revenue from the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span> and the tax on depreciation expensing <span class="math notranslate nohighlight">\(\tau^\delta\)</span> enters the firms’ profit function.</p>
+<p>where we defined the tax liability function <span class="math notranslate nohighlight">\(T_{s,t}\)</span> in <a class="reference internal" href="households.html#equation-eqtaxcalcliabetr">(2)</a> as an effective tax rate times total income and the transfer distribution function <span class="math notranslate nohighlight">\(\eta_{j,s,t}\)</span> is uniform across all households as in <a class="reference internal" href="../calibration/tax_functions.html#equation-eqtaxcalcetajs">(81)</a>. And government revenue from the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span> and the tax on depreciation expensing <span class="math notranslate nohighlight">\(\tau^\delta\)</span> enters the firms’ profit function.</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmsprofit">
 <span class="eqno">(21)<a class="headerlink" href="#equation-eqfirmsprofit" title="Permalink to this equation">¶</a></span>\[  PR_t = (1 - \tau^{corp})\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t\]</div>
 <p>We define total government revenue from taxes as the following.</p>
@@ -407,9 +406,8 @@
 <li><p>Change only government transfers to households <span class="math notranslate nohighlight">\(TR_t\)</span>.</p></li>
 <li><p>Change both government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> by the same percentage.</p></li>
 </ol>
-<p>(#SecUnbalGBC_chgGt)=</p>
 <div class="section" id="change-government-spending-only">
-<h3>Change government spending only<a class="headerlink" href="#change-government-spending-only" title="Permalink to this headline">¶</a></h3>
+<span id="secunbalgbc-chggt"></span><h3>Change government spending only<a class="headerlink" href="#change-government-spending-only" title="Permalink to this headline">¶</a></h3>
 <p>We specify a closure rule that is automatically implemented after some period <span class="math notranslate nohighlight">\(T_{G1}\)</span> to stabilize government debt as a percent of GDP (debt-to-GDP ratio). Let <span class="math notranslate nohighlight">\(\alpha_D\)</span> represent the long-run debt-to-GDP ratio at which we want the economy to eventually settle.</p>
 <div class="math notranslate nohighlight" id="equation-equnbalgbcclosure-gt">
 <span class="eqno">(28)<a class="headerlink" href="#equation-equnbalgbcclosure-gt" title="Permalink to this equation">¶</a></span>\[\begin{split}     G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
@@ -421,10 +419,9 @@
        \end{cases} \\
      \quad\text{and}\quad g_{tr,t} = 1 \quad\forall t\end{split}\]</div>
 <p>The first case in <a class="reference internal" href="#equation-equnbalgbcclosure-gt">(28)</a> says that government spending <span class="math notranslate nohighlight">\(G_t\)</span> will be a fixed fraction <span class="math notranslate nohighlight">\(\alpha_g\)</span> of GDP <span class="math notranslate nohighlight">\(Y_t\)</span> for every period before <span class="math notranslate nohighlight">\(T_{G1}\)</span>. The second case specifies that, starting in period <span class="math notranslate nohighlight">\(T_{G1}\)</span> and continuing until before period <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government spending be adjusted to set tomorrow’s debt <span class="math notranslate nohighlight">\(D_{t+1}\)</span> to be a convex combination between <span class="math notranslate nohighlight">\(\alpha_D Y_t\)</span> and the current debt level <span class="math notranslate nohighlight">\(D_t\)</span>, where <span class="math notranslate nohighlight">\(\alpha_D\)</span> is a target debt-to-GDP ratio and <span class="math notranslate nohighlight">\(\rho_d\in(0,1]\)</span> is the percent of the way to jump toward the target <span class="math notranslate nohighlight">\(\alpha_D Y_t\)</span> from the current debt level <span class="math notranslate nohighlight">\(D_t\)</span>. The last case specifies that, for every period after <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government spending <span class="math notranslate nohighlight">\(G_t\)</span> is set such that the next-period debt be a fixed target percentage <span class="math notranslate nohighlight">\(\alpha_D\)</span> of GDP.</p>
-<p>(#SecUnbalGBC_chgTRt)=</p>
 </div>
 <div class="section" id="change-government-transfers-only">
-<h3>Change government transfers only<a class="headerlink" href="#change-government-transfers-only" title="Permalink to this headline">¶</a></h3>
+<span id="secunbalgbc-chgtrt"></span><h3>Change government transfers only<a class="headerlink" href="#change-government-transfers-only" title="Permalink to this headline">¶</a></h3>
 <p>If government transfers to households are specified by <a class="reference internal" href="#equation-equnbalgbctfer">(24)</a> and the long-run debt-to-GDP ratio can only be stabilized by changing transfers, then the budget closure rule must be the following.</p>
 <div class="math notranslate nohighlight" id="equation-equnbalgbcclosure-trt">
 <span class="eqno">(29)<a class="headerlink" href="#equation-equnbalgbcclosure-trt" title="Permalink to this equation">¶</a></span>\[\begin{split}     TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \\
