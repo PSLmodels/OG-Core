@@ -14,7 +14,7 @@ from distributed import Client
 from taxcalc import Policy
 from collections import OrderedDict
 from .helpers import retrieve_puf
-from .inputs import convert_policy_defaults, convert_policy_adjustment
+from .inputs import convert_policy_adjustment
 
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
