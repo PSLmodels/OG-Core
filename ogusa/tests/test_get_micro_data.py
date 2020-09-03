@@ -188,15 +188,12 @@ def test_taxcalc_advance():
     '''
     Test of the get_micro_data.taxcalc_advance() function
 
-    Note that this test may fail if the Tax-Calculator is not v 2.4.0
-    In that case, you can use the pickeld calculator object, however
-    this is too large for GitHub, so it won't be available there.
+    Note that this test may fail if the Tax-Calculator is not v 3.0.0
     '''
     expected_dict = utils.safe_read_pickle(os.path.join(
         CUR_PATH, 'test_io_data', 'tax_dict_for_tests.pkl'))
     test_dict = get_micro_data.taxcalc_advance(True, 2028, {}, 'cps',
                                                2028)
-    del test_dict['payroll_tax_liab']
     for k, v in test_dict.items():
         assert np.allclose(expected_dict[k], v, equal_nan=True)
 
