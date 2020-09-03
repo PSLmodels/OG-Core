@@ -51,7 +51,7 @@ def convert_checkbox(policy_params):
     return params
 
 
-def convert_data_source(defaults: dict, data_source: Union["puf", "cps"]):
+def convert_data_source(defaults: dict, data_source: Union["PUF", "CPS"]):
     """
     Handle parameters that are incompatible with the selected dataset.
     """
@@ -59,11 +59,37 @@ def convert_data_source(defaults: dict, data_source: Union["puf", "cps"]):
     for param, data in defaults.items():
         if (
             defaults.get("compatible_data") is not None
-            and not defaults["compatible_data"][data_source]
+            and not defaults["compatible_data"][data_source.lower()]
         ):
             new_defaults[param] = dict(data, value=[])
         else:
             new_defaults[param] = data
+    return new_defaults
+
+
+def convert_indexed_to_checkbox(defaults: dict):
+    """
+    C/S expects there to be a checkbox attribute instead of
+    indexed in the defaults.
+    """
+    new_defaults = {}
+    for param, data in defaults.items():
+
+        if param == "schema":
+            data["additional_members"]["checkbox"] = dict(
+                data["additional_members"]["indexed"]
+            )
+            new_defaults["schema"] = data
+
+        elif data["indexable"] and data.get("indexed", None) is True:
+            new_defaults[param] = dict(data, checkbox= True)
+
+        elif data["indexable"] and not data.get("indexed", None) is False:
+            new_defaults[param] = dict(data, checkbox=False)
+
+        else:
+            new_defaults[param] = data
+
     return new_defaults
 
 
