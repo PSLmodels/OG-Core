@@ -12,6 +12,7 @@ def convert_policy_defaults(meta_params: Parameters, policy_params: Parameters):
     init = policy_params.dump()
     defaults = convert_sections(init)
     defaults = convert_data_source(defaults, meta_params.data_source)
+    defaults = convert_indexed_to_checkbox(defaults)
     return defaults
 
 
