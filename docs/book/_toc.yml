@@ -1,12 +1,12 @@
 - file: content/intro/intro
   numbered: false
-  
-- chapter: Contributing to OG-USA
-  sections:
+
+- part: Contributing to OG-USA
+  chapters:
   - file: content/contributing/contributor_guide
 
-- chapter: OG-USA API
-  sections:
+- part: OG-USA API
+  chapters:
   - file: content/api/public_api
     sections:
       - file: content/api/aggregates
@@ -28,8 +28,8 @@
       - file: content/api/utils
       - file: content/api/wealth
 
-- chapter: OG-USA Theory
-  sections:
+- part: OG-USA Theory
+  chapters:
   - file: content/theory/intro
   - file: content/theory/households
   - file: content/theory/firms
@@ -39,8 +39,8 @@
   - file: content/theory/equilibrium
   - file: content/theory/open_economy
 
-- chapter: Calibration
-  sections:
+- part: Calibration
+  chapters:
   - file: content/calibration/exogenous_parameters
   - file: content/calibration/demographics
   - file: content/calibration/earnings
@@ -48,15 +48,14 @@
   - file: content/calibration/bequests
 
 
-- chapter: Appendix
-  sections:
+- part: Appendix
+  chapters:
   - file: content/theory/derivations
 
-- chapter: References
-  sections:
+- part: References
+  chapters:
   - file: content/theory/references
 
-- chapter: Citations of OG-USA
-  sections:
+- part: Citations of OG-USA
+  chapters:
   - file: content/citations
-
