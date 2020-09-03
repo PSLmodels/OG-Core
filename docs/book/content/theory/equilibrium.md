@@ -1,7 +1,7 @@
 (Chap_Eqm)=
 # Equilibrium
 
-(Chap_SSeqlb)
+(Chap_SSeqlb)=
 ## Steady-State Equilibirum
 
 In this chapter, we define the stationary steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_Demog` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-USA` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter {ref}`Chap_Demog`, and the potential for unbounded growth in government debt as described in Chapter {ref}`Chap_UnbalGBC`.

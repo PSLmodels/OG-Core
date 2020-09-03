@@ -1,5 +1,5 @@
 
-(Chap_UnbalGBC)
+(Chap_UnbalGBC)=
 # Government
 
 In `OG-USA`, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.
@@ -93,7 +93,7 @@ In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$),
 2. Change only government transfers to households $TR_t$.
 3. Change both government spending $G_t$ and transfers $TR_t$ by the same percentage.
 
-(#SecUnbalGBC_chgGt)=
+(SecUnbalGBC_chgGt)=
 ### Change government spending only
 
  We specify a closure rule that is automatically implemented after some period $T_{G1}$ to stabilize government debt as a percent of GDP (debt-to-GDP ratio). Let $\alpha_D$ represent the long-run debt-to-GDP ratio at which we want the economy to eventually settle.
@@ -112,7 +112,7 @@ In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$),
 
  The first case in {eq}`EqUnbalGBCclosure_Gt` says that government spending $G_t$ will be a fixed fraction $\alpha_g$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between $\alpha_D Y_t$ and the current debt level $D_t$, where $\alpha_D$ is a target debt-to-GDP ratio and $\rho_d\in(0,1]$ is the percent of the way to jump toward the target $\alpha_D Y_t$ from the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending $G_t$ is set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
-(#SecUnbalGBC_chgTRt)=
+(SecUnbalGBC_chgTRt)=
 ### Change government transfers only
 
  If government transfers to households are specified by {eq}`EqUnbalGBCtfer` and the long-run debt-to-GDP ratio can only be stabilized by changing transfers, then the budget closure rule must be the following.
