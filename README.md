@@ -1,3 +1,8 @@
+[![PSL cataloged](https://img.shields.io/badge/PSL-cataloged-a0a0a0.svg)](https://www.PSLmodels.org)
+[![Python 3.7+](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/downloads/release/python-377/)
+[![Build Status](https://travis-ci.com/PSLmodels/OG-USA.svg?branch=master)](https://travis-ci.com/PSLmodels/OG-USA)
+[![Codecov](https://codecov.io/gh/PSLmodels/OG-USA/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-USA)
+
 # OG-USA
 
 OG-USA is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal tax policy. The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Documentation of the model theory--its output, and solution method--is available [here](https://github.com/PSLmodels/OG-USA/blob/master/docs/OGUSAdoc.pdf) and is regularly updated.  Documentation for the Python API for OG-USA is available [here](https://og-usa.readthedocs.io/en/latest/index.html).
