@@ -537,13 +537,21 @@ BQ1 = np.array([0.3])
 bq1 = BQ1 / p1.lambdas[0]
 tr1 = np.array([0.12])
 theta1 = np.array([0.225])
-etr_params1 = np.reshape(np.array([
+etr_params1_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83],
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83],
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83]]), (1, p1.S, 12))
+etr_params1 = etr_params1_old.copy()
+etr_params1[:, :, 5] = etr_params1_old[:, :, 6]
+etr_params1[:, :, 6] = etr_params1_old[:, :, 11]
+etr_params1[:, :, 7] = etr_params1_old[:, :, 5]
+etr_params1[:, :, 8] = etr_params1_old[:, :, 7]
+etr_params1[:, :, 9] = etr_params1_old[:, :, 8]
+etr_params1[:, :, 10] = etr_params1_old[:, :, 9]
+etr_params1[:, :, 11] = etr_params1_old[:, :, 10]
 j1 = 0
 shift1 = True
 method1 = 'SS'
@@ -572,9 +580,17 @@ bq3 = np.tile(np.reshape(BQ3 / p3.lambdas[0], (p3.T, 1)), (1, p3.S))
 tr3 = np.tile(np.reshape(np.array([0.12, 0.1, 0.11]), (p3.T, 1)),
               (1, p3.S))
 theta3 = theta1
-etr_params3 = np.tile(np.reshape(np.array(
+etr_params3_old = np.tile(np.reshape(np.array(
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83]), (1, 1, 12)), (p3.T, p3.S, 1))
+etr_params3 = etr_params3_old.copy()
+etr_params3[:, :, 5] = etr_params3_old[:, :, 6]
+etr_params3[:, :, 6] = etr_params3_old[:, :, 11]
+etr_params3[:, :, 7] = etr_params3_old[:, :, 5]
+etr_params3[:, :, 8] = etr_params3_old[:, :, 7]
+etr_params3[:, :, 9] = etr_params3_old[:, :, 8]
+etr_params3[:, :, 10] = etr_params3_old[:, :, 9]
+etr_params3[:, :, 11] = etr_params3_old[:, :, 10]
 j3 = 0
 shift3 = True
 method3 = 'TPI'
@@ -607,15 +623,24 @@ bq5 = BQ5 / p5.lambdas.reshape(1, 1, p5.J)
 tr5 = np.tile(np.reshape(np.array([0.12, 0.1, 0.11]), (p5.T, 1, 1)),
               (1, p5.S, p5.J))
 theta5 = np.array([0.225, 0.3])
-etr_params = np.tile(np.reshape(np.array([
+etr_params_old = np.tile(np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83],
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83],
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83]]), (1, p5.S, 12)), (p5.T, 1, 1))
+etr_params = etr_params_old.copy()
+etr_params[:, :, 5] = etr_params_old[:, :, 6]
+etr_params[:, :, 6] = etr_params_old[:, :, 11]
+etr_params[:, :, 7] = etr_params_old[:, :, 5]
+etr_params[:, :, 8] = etr_params_old[:, :, 7]
+etr_params[:, :, 9] = etr_params_old[:, :, 8]
+etr_params[:, :, 10] = etr_params_old[:, :, 9]
+etr_params[:, :, 11] = etr_params_old[:, :, 10]
 etr_params5 = np.tile(np.reshape(etr_params, (p5.T, p5.S, 1, 12)),
                       (1, 1, p5.J, 1))
+
 j5 = None
 shift5 = False
 method5 = 'TPI'
