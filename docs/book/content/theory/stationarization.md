@@ -43,17 +43,18 @@ Table {ref}`TabStnrzStatVars` lists the definitions of stationary versions of th
 |  $\\hat{T}\_{s,t}\\equiv\\frac{T\_{j,s,t}}{e^{g\_y t}}$  |                                                                     |     $\\hat{TR}\_t\\equiv\\frac{TR\_t}{e^{g\_y t}\\tilde{N}\_t}$     |                             |
 
 <span id="TabStnrzStatVars"
-label="TabStnrzStatVars">\[TabStnrzStatVars\]</span>**Stationary
-variable definitions**
+label="TabStnrzStatVars" ></span>
 
 </div>
 
+(TabStnrzStatVars)=
+## Stationary variable definitions
 The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab` and {eq}`EqMarkClrCap`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` to solve for the equilibria in Definitions {ref}`DefSSEql` and {ref}`DefNSSEql`.
 
 (SecStnrzHH)=
 ## Stationarized Household Equations
 
-  The stationary version of the household budget constraint {eq}`EqHHBC} is found by dividing both sides of the equation by $e^{g_y t}$. For the savings term $b_{j,s+1,t+1}$, we must multiply and divide by $e^{g_y(t+1)}$, which leaves an $e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}$ in front of the stationarized variable.
+  The stationary version of the household budget constraint {eq}`EqHHBC` is found by dividing both sides of the equation by $e^{g_y t}$. For the savings term $b_{j,s+1,t+1}$, we must multiply and divide by $e^{g_y(t+1)}$, which leaves an $e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}$ in front of the stationarized variable.
   
   ```{math}
   :label: EqStnrzHHBCstat
@@ -63,7 +64,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   Because total bequests $BQ_t$ and total government transfers $TR_t$ grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population $\tilde{N}_t$. This stationarizes total bequests $\hat{BQ}_t$, total transfers $\hat{TR}_t$, and the respective population level in the denominator $\hat{\omega}_{s,t}$.
 
-  We stationarize the Euler equations for labor supply {eq}`EqHHeul_n} by dividing both sides by $e^{g_y(1-\sigma)}$. On the left-hand-side, $e^{g_y}$ stationarizes the wage $\hat{w}_t$ and $e^{-\sigma g_y}$ goes inside the parentheses and stationarizes consumption $\hat{c}_{j,s,t}$. On the right-and-side, the $e^{g_y(1-\sigma)}$ terms cancel out.
+  We stationarize the Euler equations for labor supply {eq}`EqHHeul_n` by dividing both sides by $e^{g_y(1-\sigma)}$. On the left-hand-side, $e^{g_y}$ stationarizes the wage $\hat{w}_t$ and $e^{-\sigma g_y}$ goes inside the parentheses and stationarizes consumption $\hat{c}_{j,s,t}$. On the right-and-side, the $e^{g_y(1-\sigma)}$ terms cancel out.
   
   ```{math}
   :label: EqStnrzHHeul_n
@@ -87,27 +88,27 @@ The usual definition of equilibrium would be allocations and prices such that ho
 (SecStnrzFirms)=
 ## Stationarized Firms Equations
 
-  The nonstationary production function {eq}`EqFirmsCESprodfun} can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_t$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xL) = xF(K,L)$, which means the right-hand-side of the production function is stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
+  The nonstationary production function {eq}`EqFirmsCESprodfun` can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_t$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xL) = xF(K,L)$, which means the right-hand-side of the production function is stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
   
   ```{math}
   :label: EqStnrzCESprodfun
     \hat{Y}_t = F(\hat{K}_t, \hat{L}_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
   ```
-  Notice that the growth term multiplied by the labor input drops out in this stationarized version of the production function. We stationarize the nonstationary profit function {eq}`EqFirmsProfit} in the same way, by dividing both sides by $e^{g_y t}\tilde{N}_t$.
+  Notice that the growth term multiplied by the labor input drops out in this stationarized version of the production function. We stationarize the nonstationary profit function {eq}`EqFirmsProfit` in the same way, by dividing both sides by $e^{g_y t}\tilde{N}_t$.
   
   ```{math}
   :label: EqStnrzProfit
     \hat{PR}_t = (1 - \tau^{corp})\Bigl[F(\hat{K}_t,\hat{L}_t) - \hat{w}_t \hat{L}_t\Bigr] - \bigl(r_t + \delta\bigr)\hat{K}_t + \tau^{corp}\delta^\tau \hat{K}_t \quad\forall t
   ```
 
-  The firms' first order equation for labor demand {eq}`EqFirmFOC_L} is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_t}{e^{g_y t}L_t}$ term on the right-hand-side by $\tilde{N}_t$.
+  The firms' first order equation for labor demand {eq}`EqFirmFOC_L` is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_t}{e^{g_y t}L_t}$ term on the right-hand-side by $\tilde{N}_t$.
   
   ```{math}
   :label: EqStnrzFOC_L
     \hat{w}_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon} \quad\forall t
   ```
 
-  It can be seen from the firms' first order equation for capital demand {eq}`EqFirmFOC_K} that the interest rate is already stationary. If we multiply and divide the $\frac{Y_t}{K_t}$ term on the right-hand-side by $e^{t_y t}\tilde{N}_t$, those two aggregate variables become stationary. In other words, $Y_t$ and $K_t$ grow at the same rate and $\frac{Y_t}{K_t} = \frac{\hat{Y}_t}{\hat{K}_t}$.
+  It can be seen from the firms' first order equation for capital demand {eq}`EqFirmFOC_K` that the interest rate is already stationary. If we multiply and divide the $\frac{Y_t}{K_t}$ term on the right-hand-side by $e^{t_y t}\tilde{N}_t$, those two aggregate variables become stationary. In other words, $Y_t$ and $K_t$ grow at the same rate and $\frac{Y_t}{K_t} = \frac{\hat{Y}_t}{\hat{K}_t}$.
   
   ```{math}
   :label: EqFirmFOC_K
@@ -118,7 +119,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 (SecStnrzGovt)=
 ## Stationarized Government Equations
 
-  Each of the tax rate functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ is stationary. The total tax liability function $T_{s,t}$ is growing at the rate of labor productivity growth $g_y$ This can be see by looking at the decomposition of the total tax liability function into the effective tax rate times total income {eq}`EqTaxCalcLiabETR}. The effective tax rate function is stationary, and household income is growing at rate $g_y$. So household total tax liability is stationarized by dividing both sides of the equation by $e^{g_y t}$.
+  Each of the tax rate functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ is stationary. The total tax liability function $T_{s,t}$ is growing at the rate of labor productivity growth $g_y$ This can be see by looking at the decomposition of the total tax liability function into the effective tax rate times total income {eq}`EqTaxCalcLiabETR`. The effective tax rate function is stationary, and household income is growing at rate $g_y$. So household total tax liability is stationarized by dividing both sides of the equation by $e^{g_y t}$.
   
   ```{math}
   :label: EqStnrzLiabETR
@@ -139,13 +140,13 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   where the time varying multipliers $g_{g,t}$ and $g_{tr,t}$, respectively, are defined in {eq}`EqStnrzClosureRule_Gt` and {eq}`EqStnrzClosureRule_TRt` below. These multipliers $g_{g,t}$ and $g_{tr,t}$ do not have a ``$\:\,\hat{}\,\:$'' on them because their specifications {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclosure_TRt` that are functions of nonstationary variables are equivalent to {eq}`EqStnrzClosureRule_Gt` and {eq}`EqStnrzClosureRule_TRt` specified in stationary variables.
 
-  We can stationarize the expression for total government revenue $Rev_t$ in {eq}`EqUnbalGBCgovRev} by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.
+  We can stationarize the expression for total government revenue $Rev_t$ in {eq}`EqUnbalGBCgovRev` by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.
   ```{math}
   :label: EqStnrzGovRev
     \hat{Rev}_t = \underbrace{\tau^{corp}\bigl[\hat{Y}_t - \hat{w}_t\hat{L}_t\bigr] - \tau^{corp}\delta^\tau \hat{K}_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
   
-  Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr} is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
+  Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
   
   ```{math}
   :label: EqStnrzGovBC
@@ -194,21 +195,21 @@ The usual definition of equilibrium would be allocations and prices such that ho
 (SecStnrzMC)=
 ## Stationarized Market Clearing Equations
 
-  The labor market clearing equation {eq}`EqMarkClrLab} is stationarized by dividing both sides by $\tilde{N}_t$.
+  The labor market clearing equation {eq}`EqMarkClrLab` is stationarized by dividing both sides by $\tilde{N}_t$.
   
   ```{math}
   :label: EqStnrzMarkClrLab
     \hat{L}_t = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \hat{\omega}_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t
   ```
   
-  The capital market clearing equation {eq}`EqMarkClrCap} is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the right-hand-side has population levels from the previous period $\omega_{s,t-1}$, we have to multiply and divide both terms inside the parentheses by $\tilde{N}_{t-1}$ which leaves us with the term in front of $\frac{1}{1+\tilde{g}_{n,t}}$.
+  The capital market clearing equation {eq}`EqMarkClrCap` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the right-hand-side has population levels from the previous period $\omega_{s,t-1}$, we have to multiply and divide both terms inside the parentheses by $\tilde{N}_{t-1}$ which leaves us with the term in front of $\frac{1}{1+\tilde{g}_{n,t}}$.
   
   ```{math}
   :label: EqStnrzMarkClrCap
     \hat{K}_t + \hat{D}_t = \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,t-1}\lambda_j \hat{b}_{j,s,t} + i_s\hat{\omega}_{s,t-1}\lambda_j \hat{b}_{j,s,t}\Bigr) \quad \forall t
   ```
 
-  We stationarize the goods market clearing {eq}`EqMarkClrGoods} condition by dividing both sides by $e^{g_y t}\tilde{N}_t$. On the right-hand-side, we must multiply and divide the $K_{t+1}$ term by $e^{g_y(t+1)}\tilde{N}_{t+1}$ leaving the coefficient $e^{g_y}(1+\tilde{g}_{n,t+1})$. And the term that subtracts the sum of imports of next period's immigrant savings we must multiply and divide by $e^{g_(t+1)}$, which leaves the term $e^{g_y}$.
+  We stationarize the goods market clearing {eq}`EqMarkClrGoods` condition by dividing both sides by $e^{g_y t}\tilde{N}_t$. On the right-hand-side, we must multiply and divide the $K_{t+1}$ term by $e^{g_y(t+1)}\tilde{N}_{t+1}$ leaving the coefficient $e^{g_y}(1+\tilde{g}_{n,t+1})$. And the term that subtracts the sum of imports of next period's immigrant savings we must multiply and divide by $e^{g_(t+1)}$, which leaves the term $e^{g_y}$.
   
   ```{math}
   :label: EqStnrzMarkClrGoods
@@ -216,7 +217,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
       &\quad\text{where}\quad \hat{C}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j\hat{c}_{j,s,t}
   ```
 
-  We stationarize the law of motion for total bequests $BQ_t$ in {eq}`EqMarkClrBQ} by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the population levels in the summation are from period $t-1$, we must multiply and divide the summed term by $\tilde{N}_{t-1}$ leaving the term in the denominator of $1+\tilde{g}_{n,t}$.
+  We stationarize the law of motion for total bequests $BQ_t$ in {eq}`EqMarkClrBQ` by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the population levels in the summation are from period $t-1$, we must multiply and divide the summed term by $\tilde{N}_{t-1}$ leaving the term in the denominator of $1+\tilde{g}_{n,t}$.
   
   ```{math}
   :label: EqStnrzMarkClrBQ

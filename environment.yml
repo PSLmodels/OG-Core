@@ -11,10 +11,11 @@ dependencies:
 - scipy>=1.5.0
 - pandas>=1.0.5
 - matplotlib
-- taxcalc>=2.9.0
+- taxcalc>=3.0.0
 - dask>=2.20.0
 - paramtools>=0.15.0
 - openpyxl
+- sphinx>=3.1.2
 - pip
 - pytest>=6.0
 - pytest-pep8
@@ -25,5 +26,6 @@ dependencies:
 - requests
 - xlwt
 - pip:
+  - jupyter-book>=0.8.0
   - cs-kit
   - xlrd

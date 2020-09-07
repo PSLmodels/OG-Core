@@ -173,7 +173,7 @@ def get_tr(TR, j, p, method):
             'TPI'
 
     Returns:
-        tr (array_like): bequests received by each household
+        tr (array_like): transfers received by each household
 
     '''
     if j is not None:
