@@ -614,16 +614,16 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
 
 
-param_updates1 = {'start_year': 2020, 'zeta_K': [1.0]}
+param_updates1 = {'start_year': 2021, 'zeta_K': [1.0]}
 filename1 = 'inner_loop_outputs_baseline_small_open.pkl'
-param_updates2 = {'start_year': 2020, 'budget_balance': True,
+param_updates2 = {'start_year': 2021, 'budget_balance': True,
                   'alpha_G': [0.0]}
 filename2 = 'inner_loop_outputs_baseline_balance_budget.pkl'
-param_updates3 = {'start_year': 2020}
+param_updates3 = {'start_year': 2021}
 filename3 = 'inner_loop_outputs_baseline.pkl'
-param_updates4 = {'start_year': 2020}
+param_updates4 = {'start_year': 2021}
 filename4 = 'inner_loop_outputs_reform.pkl'
-param_updates5 = {'start_year': 2020, 'baseline_spending': True}
+param_updates5 = {'start_year': 2021, 'baseline_spending': True}
 filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
 
 
@@ -663,6 +663,8 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     for i, v in enumerate(expected_tuple):
+        print('Max diff = ', np.absolute(test_tuple[i]- v).max())
+        print('Checking item = ', i)
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
