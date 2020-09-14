@@ -1,15 +1,21 @@
 import multiprocessing
 import time
 import os, sys
-
-currentdir = os.path.dirname(os.path.realpath(__file__))
-parentdir = os.path.dirname(currentdir)
-sys.path.append(parentdir)
-from run_examples import run_ogusa_example
+import importlib.util
+from pathlib import Path
 
 
 def call_run_ogusa_example():
-    run_ogusa_example.main()
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    path = Path(cur_path)
+    roe_fldr = os.path.join(path.parent.parent, "run_examples")
+    roe_file_path = os.path.join(roe_fldr, "run_ogusa_example.py")
+    spec = importlib.util.spec_from_file_location('run_ogusa_example.py', 
+                                                   roe_file_path)
+    roe_module = importlib.util.module_from_spec(spec)
+    sys.modules['run_ogusa_example.py'] = roe_module
+    spec.loader.exec_module(roe_module)
+    roe_module.main()
 
 
 def test_run_ogusa_example(f = call_run_ogusa_example):
