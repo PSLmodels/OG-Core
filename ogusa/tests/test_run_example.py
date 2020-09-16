@@ -1,24 +1,21 @@
-'''
-This test checks whether starting the run_ogusa_example.py script run without
-shutting down for 5 minutes (300 seconds)
-'''
-# Import packages
 import multiprocessing
 import time
-import importlib
-import os
+import os, sys
+import importlib.util
 from pathlib import Path
-
-# Import run_ogusa_example.py, which is not part of the ogusa package
-OG_USA_path = Path(__file__).parents[2]
-run_examples_path = os.path.join(OG_USA_path, 'run_examples')
-print('Test directory is :', run_examples_path)
-module_path = os.path.join(run_examples_path, 'run_ogusa_example.py')
-run_ogusa_example = importlib.import_module(module_path)
 
 
 def call_run_ogusa_example():
-    run_ogusa_example.main()
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    path = Path(cur_path)
+    roe_fldr = os.path.join(path.parent.parent, "run_examples")
+    roe_file_path = os.path.join(roe_fldr, "run_ogusa_example.py")
+    spec = importlib.util.spec_from_file_location('run_ogusa_example.py',
+                                                   roe_file_path)
+    roe_module = importlib.util.module_from_spec(spec)
+    sys.modules['run_ogusa_example.py'] = roe_module
+    spec.loader.exec_module(roe_module)
+    roe_module.main()
 
 
 def test_run_ogusa_example(f = call_run_ogusa_example):
