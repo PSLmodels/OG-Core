@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
-from ogusa import utils, tax
+from ogusa import utils, tax, txfunc
 # from ogusa.txfunc import tax_data_sample, get_tax_rates
 from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
@@ -869,7 +869,7 @@ def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
 
 
 def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
-                    tax_func_type='DEP', rate_type='etr',
+                    tax_func_type=['DEP'], rate_type='etr',
                     over_labinc=True, other_inc_val=1000,
                     max_inc_amt=1000000, data=None,
                     labels=['1st Functions'], title=None, path=None):
@@ -886,8 +886,9 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
             parameters
         age (int): age for tax functions to plot, use None if tax
             function parameters were not age specific
-        tax_func_type (str): string that is in ["DEP", "DEP_totalinc",
+        tax_func_type (list): list of strings in ["DEP", "DEP_totalinc",
             "GS", "linear"] and specifies functional form of tax functions
+            in tax_param_list
         rate_type (str): string that is in ["etr", "mtrx", "mtry"] and
             determines the type of tax rate that is plotted
         over_labinc (bool): indicates that x-axis of the plot is over
@@ -912,7 +913,12 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     assert (start_year <= TC_LAST_YEAR)
     assert (year <= TC_LAST_YEAR)
     assert (year >= start_year)
-    assert (tax_func_type in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
+    # if list of tax function types less than list of params, assume
+    # all the same functional form
+    if length(tax_func_type) < length(tax_param_list):
+        tax_func_type = tax_func_type[0] * length(tax_param_list)
+    for i, v in enumerate(tax_func_type):
+        assert (v in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
     assert (rate_type in ['etr', 'mtrx', 'mtry'])
     assert (len(tax_param_list) == len(labels))
 
@@ -945,11 +951,11 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
         # rates = tax.tax_rates(
-        #     tax_params[rate_key][s, t, :], X, Y, tax_func_type,
+        #     tax_params[rate_key][s, t, :], X, Y, tax_func_type[i],
         #     rate_type)
-        rates = get_tax_rates(tax_params[rate_key][s, t, :], X, Y, None,
-                              tax_func_type, rate_type,
-                              for_estimation=False)
+        rates = txfunc.get_tax_rates(
+            tax_params[rate_key][s, t, :], X, Y, None, tax_func_type[i],
+            rate_type, for_estimation=False)
         plt.plot(inc_sup, rates, label=labels[i])
 
     # plot raw data (if passed)
