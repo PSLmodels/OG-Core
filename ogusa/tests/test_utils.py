@@ -578,3 +578,18 @@ def test_save_return_table_write(df, output_type, path):
     except UnicodeDecodeError:
         from openpyxl import load_workbook
         wb = load_workbook(filename=path)
+
+
+def test_wavg():
+    '''
+    Test of utils.wavg() function
+    '''
+    dict1 = {'id': ['a', 'a', 'a'],
+             'var1': [1, 2, 3],
+             'var2': [2, 4, 6],
+             'wgt_var': [0.25, 0.5, 0.25]}
+    df1 = pd.DataFrame.from_dict(dict1)
+    expected_val = 2.0
+    test_val = utils.wavg(df1, 'var1', 'wgt_var')
+
+    assert np.allclose(test_val, expected_val)
