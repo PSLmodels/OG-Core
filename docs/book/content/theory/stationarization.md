@@ -36,11 +36,11 @@ Table {ref}`TabStnrzStatVars` lists the definitions of stationary versions of th
 |                                                          |                                                                     |                                                                     |                             |
 |            *e*<sup>*g*<sub>*y*</sub>*t*</sup>            |                          *Ñ*<sub>*t*</sub>                          |         *e*<sup>*g*<sub>*y*</sub>*t*</sup>*Ñ*<sub>*t*</sub>         |           growing           |
 |                                                          |                                                                     |                                                                     |                             |
-| $\\hat{c}\_{j,s,t}\\equiv\\frac{c\_{j,s,t}}{e^{g\_y t}}$ | $\\hat{\\omega}\_{s,t}\\equiv\\frac{\\omega\_{s,t}}{\\tilde{N}\_t}$ |      $\\hat{Y}\_t\\equiv\\frac{Y\_t}{e^{g\_y t}\\tilde{N}\_t}$      | *n*<sub>*j*, *s*, *t*</sub> |
-| $\\hat{b}\_{j,s,t}\\equiv\\frac{b\_{j,s,t}}{e^{g\_y t}}$ |           $\\hat{L}\_t\\equiv\\frac{L\_t}{\\tilde{N}\_t}$           |      $\\hat{K}\_t\\equiv\\frac{K\_t}{e^{g\_y t}\\tilde{N}\_t}$      |      *r*<sub>*t*</sub>      |
-|       $\\hat{w}\_t\\equiv\\frac{w\_t}{e^{g\_y t}}$       |                                                                     | $\\hat{BQ}\_{j,t}\\equiv\\frac{BQ\_{j,t}}{e^{g\_y t}\\tilde{N}\_t}$ |                             |
-| $\\hat{y}\_{j,s,t}\\equiv\\frac{y\_{j,s,t}}{e^{g\_y t}}$ |                                                                     |     $\\hat{C}\_t\\equiv \\frac{C\_t}{e^{g\_y t}\\tilde{N}\_t}$      |                             |
-|  $\\hat{T}\_{s,t}\\equiv\\frac{T\_{j,s,t}}{e^{g\_y t}}$  |                                                                     |     $\\hat{TR}\_t\\equiv\\frac{TR\_t}{e^{g\_y t}\\tilde{N}\_t}$     |                             |
+| $\hat{c}_{j,s,t}\equiv\frac{c_{j,s,t}}{e^{g_y t}}$ | $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}$ |      $\hat{Y}_t\equiv\frac{Y_t}{e^{g_y t}\tilde{N}_t}$      | *n*<sub>*j*, *s*, *t*</sub> |
+| $\hat{b}_{j,s,t}\equiv\frac{b_{j,s,t}}{e^{g_y t}}$ |           $\hat{L}_t\equiv\frac{L_t}{\tilde{N}_t}$           |      $\hat{K}_t\equiv\frac{K_t}{e^{g_y t}\tilde{N}_t}$      |      *r*<sub>*t*</sub>      |
+|       $\hat{w}_t\equiv\frac{w_t}{e^{g_y t}}$       |                                                                     | $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$ |                             |
+| $\hat{y}_{j,s,t}\equiv\frac{y_{j,s,t}}{e^{g_y t}}$ |                                                                     |     $\hat{C}_t\equiv \frac{C_t}{e^{g_y t}\tilde{N}_t}$      |                             |
+|  $\hat{T}_{s,t}\equiv\frac{T_{j,s,t}}{e^{g_y t}}$  |                                                                     |     $\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}$     |                             |
 
 <span id="TabStnrzStatVars"
 label="TabStnrzStatVars" ></span>

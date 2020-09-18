@@ -66,9 +66,9 @@ We calibrate the model such that each lifetime income group has a different life
 
   First, since our panel data do not allow us to observe the complete life cycle of earnings for each household (because of sample attrition, death or the finite sample period of the data), we use an imputation to estimate wages in the years of the household's economic life for which they do not appear in the CWHS. To do this, we estimate the following equation, separately by household type (where household types are single male, single female, couple with male head, or couple with female head):
   
-  \begin{equation}\label{wage_step1}
+  <!-- \begin{equation}\label{wage_step1}
     ln(w_{i,t}) = \alpha_{i} + \beta_{1}age_{i,t} + \beta_{2}age_{i,t}^{2} + \beta_{3}*age_{i,t}^{3} + \varepsilon_{i,t}
-  \end{equation}
+  \end{equation} -->
 
    ```{math}
   :label: wage_step1
