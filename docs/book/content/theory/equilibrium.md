@@ -11,26 +11,26 @@ We implemented an automatic government budget closure rule using government spen
 (SecEqlbSSdef)=
 ### Stationary Steady-State Equilibrium Definition
 
-  With the stationarized model, we can now define the stationary steady-state equilibrium. This equilibrium will be long-run values of the endogenous variables that are constant over time. In a perfect foresight model, the steady-state equilibrium is the state of the economy at which the model settles after a finite amount of time, regardless of the initial condition of the model. Once the model arrives at the steady-state, it stays there indefinitely unless it receives some type of shock or stimulus.
+With the stationarized model, we can now define the stationary steady-state equilibrium. This equilibrium will be long-run values of the endogenous variables that are constant over time. In a perfect foresight model, the steady-state equilibrium is the state of the economy at which the model settles after a finite amount of time, regardless of the initial condition of the model. Once the model arrives at the steady-state, it stays there indefinitely unless it receives some type of shock or stimulus.
 
-  These stationary values have all the growth components from productivity growth and population growth removed as defined in Table {ref}`TabStnrzStatVars`. Because the productivity growth rate $g_y$ and population growth rate series $\tilde{g}_{n,t}$ are exogenous. We can transform the stationary equilibrium values of the variables back to their nonstationary values by reversing the identities in Table {ref}`TabStnrzStatVars`.
+These stationary values have all the growth components from productivity growth and population growth removed as defined in Table {ref}`TabStnrzStatVars`. Because the productivity growth rate $g_y$ and population growth rate series $\tilde{g}_{n,t}$ are exogenous. We can transform the stationary equilibrium values of the variables back to their nonstationary values by reversing the identities in Table {ref}`TabStnrzStatVars`.
 
-  \vspace{5mm}
+<!--   \vspace{5mm}
   \hrule
   \vspace{-1mm}
-  \begin{definition}[\textbf{Stationary steady-state equilibrium}]\label{DefSSEql}
-    A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defined as constant allocations of stationary household labor supply $n_{j,s,t}=\bar{n}_{j,s}$ and savings $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ for all $j$, $t$, and $E+1\leq s\leq E+S$, and constant prices $\hat{w}_t=\bar{w}$ and $r_t=\bar{r}$ for all $t$ such that the following conditions hold:
-    \begin{enumerate}
-      \item the population has reached its stationary steady-state distribution $\hat{\omega}_{s,t} = \bar{\omega}_s$ for all $s$ and $t$ as characterized in Section {ref}`SecDemogPopSSTP`,
-      \item households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_b`,
-      \item firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`,
-      \item Government activity behaves according to {eq}`EqStnrzGovBC` and {eq}`EqStnrzClosureRule`, and
-      \item markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrzMarkClrCap`, and {eq}`EqStnrzMarkClrBQ`.
-    \end{enumerate}
+  \begin{definition}[\textbf{Stationary steady-state equilibrium}]\label{DefSSEql} -->
+
+**A non-autarkic stationary steady-state equilibrium in the `OG-USA` model** is defined as constant allocations of stationary household labor supply $n_{j,s,t}=\bar{n}_{j,s}$ and savings $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ for all $j$, $t$, and $E+1\leq s\leq E+S$, and constant prices $\hat{w}_t=\bar{w}$ and $r_t=\bar{r}$ for all $t$ such that the following conditions hold:
+1. The population has reached its stationary steady-state distribution $\hat{\omega}_{s,t} = \bar{\omega}_s$ for all $s$ and $t$ as characterized in Section {ref}`SecDemogPopSSTP`,
+2. households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_b`,
+3. firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`,
+4. Government activity behaves according to {eq}`EqStnrzGovBC` and {eq}`EqStnrzClosureRule`, and
+5. markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrzMarkClrCap`, and {eq}`EqStnrzMarkClrBQ`.
+<!--     \end{enumerate}
   \end{definition}
   \vspace{-2mm}
   \hrule
-  \vspace{5mm}
+  \vspace{5mm} -->
 
 (SecEqlbSSsoln)=
 ### Stationary Steady-state Solution Method
