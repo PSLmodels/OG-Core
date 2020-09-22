@@ -318,7 +318,7 @@ We outline the stationary non-steady state solution algorithm in the following s
     1. $error_r = max\left\{\frac{r_{t}^{i'} - r_{t}^i}{r_{t}^i}\right\}_{t=0}^{T}$
     2. $error_{bq} =  max\left\{\frac{\hat{BQ}_{t}^{\,i'} - \hat{BQ}_{t}^{\,i}}{\hat{BQ}_{t}^{\,i}}\right\}_{t=0}^{T}$
     3. $error_{tr} = \left\{\frac{\hat{TR}_{t}^{\,i'} - \hat{TR}_{t}^{\,i}}{\hat{TR}_{t}^{\,i}}\right\}_{t=0}^{T}$
-6. If the maximum absolute error among the three outer loop error terms is greater than some small positive tolerance $toler_{tpi,out}$, $\max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| > toler_{tpi,out}, then update the guesses for the outer loop variables as a convex combination governed by $\xi_{tpi}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (5).
+6. If the maximum absolute error among the three outer loop error terms is greater than some small positive tolerance $toler_{tpi,out}$, $\max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| > toler_{tpi,out}$, then update the guesses for the outer loop variables as a convex combination governed by $\xi_{tpi}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (5).
 
 $$
   [\boldsymbol{r}^{i+1},\boldsymbol{\hat{BQ}}^{i+1},\boldsymbol{\hat{TR}}^{i+1} ] = \xi_{tpi}[\boldsymbol{r}^{i'},\boldsymbol{\hat{BQ}}^{i'},\boldsymbol{\hat{TR}}^{i'}] + (1-\xi_{tpi})[\boldsymbol{r}^{i},\boldsymbol{\hat{BQ}}^{i},\boldsymbol{\hat{TR}}^{i}]
