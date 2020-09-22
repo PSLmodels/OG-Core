@@ -229,7 +229,7 @@ name: FigSSeqlbHHsave
 <span id="TabSSeqlbAggrVars"
 label="TabSSeqlbAggrVars">\[TabSSeqlbAggrVars\]</span>**Steady-state
 prices, aggregate variables, and maximum errors**
-
+ 
 </div>
 
 The steady-state computation time does not include any of the exogenous
