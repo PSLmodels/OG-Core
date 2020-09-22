@@ -20,12 +20,19 @@ These stationary values have all the growth components from productivity growth 
   \vspace{-1mm}
   \begin{definition}[\textbf{Stationary steady-state equilibrium}]\label{DefSSEql} -->
 
+We define a stationary steady-state equilibrium as the following.
+
+```{admonition} Definition
+
 **A non-autarkic stationary steady-state equilibrium in the `OG-USA` model** is defined as constant allocations of stationary household labor supply $n_{j,s,t}=\bar{n}_{j,s}$ and savings $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ for all $j$, $t$, and $E+1\leq s\leq E+S$, and constant prices $\hat{w}_t=\bar{w}$ and $r_t=\bar{r}$ for all $t$ such that the following conditions hold:
 1. The population has reached its stationary steady-state distribution $\hat{\omega}_{s,t} = \bar{\omega}_s$ for all $s$ and $t$ as characterized in Section {ref}`SecDemogPopSSTP`,
 2. households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_b`,
 3. firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`,
 4. Government activity behaves according to {eq}`EqStnrzGovBC` and {eq}`EqStnrzClosureRule`, and
 5. markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrzMarkClrCap`, and {eq}`EqStnrzMarkClrBQ`.
+
+```
+
 <!--     \end{enumerate}
   \end{definition}
   \vspace{-2mm}
@@ -243,7 +250,9 @@ In this chapter, we define the stationary nonsteady-state equilibrium of the `OG
 
 We define a stationary nonsteady-state equilibrium as the following.
 
-__A non autarkic nonsteady-state functional equilibrium in the `OG-USA` model__ is defined as stationary allocation functions of the state $\bigl\{n_{j,s,t} = \phi_s\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ and $\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ for all $j$ and $t$ and stationary price functions $\hat{w}(\boldsymbol{\hat{\Gamma}}_t)$ and $r(\boldsymbol{\hat{\Gamma}}_t)$ for all $t$ such that:
+```{admonition} Definition
+
+**A non autarkic nonsteady-state functional equilibrium in the `OG-USA` model** is defined as stationary allocation functions of the state $\bigl\{n_{j,s,t} = \phi_s\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ and $\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ for all $j$ and $t$ and stationary price functions $\hat{w}(\boldsymbol{\hat{\Gamma}}_t)$ and $r(\boldsymbol{\hat{\Gamma}}_t)$ for all $t$ such that:
 
 1. Households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings as characterized in {eq}`EqBeliefs`, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
 
@@ -255,6 +264,8 @@ $$
 3. Firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`,
 4. Government activity behaves according to {eq}`EqStnrzGovBC` and {eq}`EqStnrzClosureRule`, and
 5. Markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrzMarkClrCap`, and {eq}`EqStnrzMarkClrBQ`.
+
+```
 
 (SecEqlbNSSsoln)=
 ### Stationary Nonsteady-state Solution Method
