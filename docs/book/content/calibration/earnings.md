@@ -189,7 +189,7 @@ We calibrate the model such that each lifetime income group has a different life
     \end{threeparttable}
   \end{table} -->
 
-<div id="tab:li_group_stats">
+<!-- <div id="tab:li_group_stats">
 
 |                  |         |           |           |           |           |           |            |           |
 |:-----------------|--------:|----------:|----------:|----------:|----------:|----------:|-----------:|----------:|
@@ -213,24 +213,153 @@ We calibrate the model such that each lifetime income group has a different life
 label="tab:li_group_stats">\[tab:li\_group\_stats\]</span>**Descriptive
 Statistics by Lifetime Income Category**
 
-</div>
+</div> -->
 
-CWHS data, 1991-2009, all nominal values in 2005$.
 
-  To get a life-cycle profile of effective labor units for each group, we estimate the wage profile for each lifetime income group.  We do this by estimating the following regression model separately for each lifetime income group using data on actual (not imputed) wages:
+```{list-table} **Descriptive Statistics by Lifetime Income Category** Source: CWHS data, 1991-2009, all nominal values in 2005
+:name: li_group_stats
+* - Percentiles
+  - 0-25
+  - 25-50
+  - 50-75
+  - 70-80
+  - 80-90
+  - 90-99
+  - 99-100
+  - 0-100
+* - Observations
+  - 65,698
+  - 101,484
+  - 74,253
+  - 33,528
+  - 31,919
+  - 24,370
+  - 2,129
+  - 333,381
+* - **Fraction Single**
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+* - Females
+  - 0.30
+  - 0.24
+  - 0.25
+  - 0.32
+  - 0.38
+  - 0.40
+  - 0.22
+  - 0.28
+* - Males
+  - 0.18
+  - 0.22
+  - 0.30
+  - 0.35
+  - 0.38
+  - 0.37
+  - 0.20
+  - 0.26
+* - **Fraction Married**
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+* - Female Head
+  - 0.08
+  - 0.00
+  - 0.00
+  - 0.00
+  - 0.00
+  - 0.00
+  - 0.00
+  - 0.02
+* - Male Head
+  - 0.45
+  - 0.53
+  - 0.45
+  - 0.32
+  - 0.23
+  - 0.23
+  - 0.57
+  - 0.39
+* - **Mean:**
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+* - Age, Primary
+  - 51.72
+  - 44.15
+  - 38.05
+  - 34.09
+  - 31.53
+  - 30.79
+  - 40.17
+  - 39.10
+* - Hourly Wage
+  - 11.60
+  - 16.98
+  - 20.46
+  - 23.04
+  - 26.06
+  - 40.60
+  - 237.80
+  - 21.33
+* - Annual Wages
+  - 25,178
+  - 44,237
+  - 54,836
+  - 57,739
+  - 61,288
+  - 92,191
+  - 529,522
+  - 51,604
+* - Lifetime Income
+  - 666,559
+  - 1,290,522
+  - 1,913,029
+  - 2,535,533
+  - 3,249,287
+  - 5,051,753
+  - 18,080,868
+  - 2,021,298
+```
+
+
+
+
+
+
+<!-- CWHS data, 1991-2009, all nominal values in 2005$. -->
+
+To get a life-cycle profile of effective labor units for each group, we estimate the wage profile for each lifetime income group.  We do this by estimating the following regression model separately for each lifetime income group using data on actual (not imputed) wages:
+
+$$
   \begin{equation}\label{eqn:wage_profile}
     ln(w_{i,t})=\alpha +  \beta_{1}age_{i,t} + \beta_{2}age_{i,t}^{2} + \beta_{3}*age_{i,t}^{3}+ \varepsilon_{i,t}
   \end{equation}
-  The estimated parameters from equation {eq}`eqn:wage_profile` are given in Table {ref}`tab:wage_profiles`. The life-cycle earnings profiles implied by these parameters are plotted in Figure {numref}`FigLogAbil`. Note that there are few individuals above age 80 in the data. To extrapolate these estimates for model ages 80-100, we use an arctan function of the following form:
+$$
 
-  ```{math}
+The estimated parameters from equation {eq}`eqn:wage_profile` are given in Table {ref}`tab:wage_profiles`. The life-cycle earnings profiles implied by these parameters are plotted in Figure {numref}`FigLogAbil`. Note that there are few individuals above age 80 in the data. To extrapolate these estimates for model ages 80-100, we use an arctan function of the following form:
+```{math}
  :label: EqLfEarnArctan
     y = \left(\frac{-a}{\pi}\right)*arctan(bx+c)+\frac{a}{2}
 ```
+where $x$ is age, and $a$, $b$, and $c$ are the parameters we search over for the best fit of the function to the following three criteria: 1) the value of the function should match the value of the data at age 80 2) the slope of the arctan should match the slope of the data at age 80 and 3) the value of the function should match the value of the data at age 100 times a constant.  This constant is .5 for all lifetime income groups, except the 2nd highest ability is .7 (otherwise, the 2nd highest has a lower income than the 3rd highest ability group in the last few years).
 
-  where $x$ is age, and $a$, $b$, and $c$ are the parameters we search over for the best fit of the function to the following three criteria: 1) the value of the function should match the value of the data at age 80 2) the slope of the arctan should match the slope of the data at age 80 and 3) the value of the function should match the value of the data at age 100 times a constant.  This constant is .5 for all lifetime income groups, except the 2nd highest ability is .7 (otherwise, the 2nd highest has a lower income than the 3rd highest ability group in the last few years).
-
-  <!-- \begin{table}[htbp] \centering \captionsetup{width=6.0in}
+<!--   \begin{table}[htbp] \centering \captionsetup{width=6.0in}
   \caption{\label{tab:wage_profiles}\textbf{Log Wage Regressions, by Lifetime Income Group}}
     \begin{threeparttable}
     \begin{tabular}{>{\scriptsize}l |>{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c |>{\scriptsize}c}
@@ -264,13 +393,11 @@ CWHS data, 1991-2009, all nominal values in 2005$.
     \end{threeparttable}
   \end{table} -->
 
-  <div id="tab:wage_profiles">
+<!--   <div id="tab:wage_profiles">
 
 |           |                   |                   |                       |                       |              |
-|:----------|:-----------------:|:-----------------:|:---------------------:|:---------------------:|:------------:|
-|           |                   |                   |                       |                       |              |
-|           |                   |                   |                       |                       |              |
 |           |     Constant      |     *A**g**e*     | *A**g**e*<sup>2</sup> | *A**g**e*<sup>3</sup> | Observations |
+|:----------|:-----------------:|:-----------------:|:---------------------:|:---------------------:|:------------:|
 | 0 to 25   | 3.41000000\*\*\*  | -0.09720122\*\*\* |   0.00247639\*\*\*    |   -0.00001842\*\*\*   |    65,698    |
 |           |   (0.08718100)    |   (0.00543339)    |     (0.00010901)      |     (0.00000071)      |              |
 | 25 to 50  | 0.69689692\*\*\*  | 0.05995294\*\*\*  |      -0.00004086      |   -0.00000521\*\*\*   |   101,484    |
@@ -298,7 +425,109 @@ Significant at the 10 percent level (*p* &lt; 0.10).
 
 Significant at the 5 percent level (*p* &lt; 0.05).
 
-Significant at the 1 percent level (*p* &lt; 0.01).
+Significant at the 1 percent level (*p* &lt; 0.01). -->
+
+
+
+```{list-table} **Log Wage Regressions, by Lifetime Income Group**
+:header-rows: 1
+:name: wage_profiles
+* - 
+  - Constant
+  - $Age$
+  - $Age^2$
+  - $Age^3$
+  - Observations
+* - 0 to 25
+  - 3.41000000\*\*\*
+  - -0.09720122\*\*\*
+  - 0.00247639\*\*\*
+  - -0.00001842\*\*\*
+  - 65,698
+* - 
+  - (0.08718100)
+  - (0.00543339)
+  - (0.00010901)
+  - (0.00000071)
+  - 
+* - 25 to 50
+  - 0.69689692\*\*\*
+  - 0.05995294\*\*\*
+  - -0.00004086
+  - -0.00000521\*\*\*
+  - 101,484
+* - 
+  - (0.05020758)
+  - (0.00345549)
+  - (0.00007627)
+  - (0.00000054)
+  - 
+* - 50 to 70
+  - -0.78761958\*\*\*
+  - 0.17654618\*\*\*
+  - -0.00240656\*\*\*
+  - 0.00001039\*\*\*
+  - 74,253
+* - 
+  - (0.04519637)
+  - (0.00338371)
+  - (0.00008026)
+  - (0.00000061)
+  - 
+* - 70 to 80
+  - -1.11000000\*\*\*
+  - 0.21168263\*\*\*
+  - -0.00306555\*\*\*
+  - 0.00001438\*\*\*
+  - 33,528
+* - 
+  - (0.06838352)
+  - (0.00530190)
+  - (0.00012927)
+  - (0.00000099)
+  - 
+* - 80 to 90
+  - -0.93939272\*\*\*
+  - 0.21638731\*\*\*
+  - -0.00321041\*\*\*
+  - 0.00001579\*\*\*
+  - 31,919
+* - 
+  - (0.08333727)
+  - (0.00664647)
+  - (0.00016608)
+  - (0.00000130)
+  - 
+* - 90 to 99
+  - 1.60000000\*\*\*
+  - 0.04500235\*\*\*
+  - 0.00094253\*\*\*
+  - -0.00001470\*\*\*
+  - 24,370
+* - 
+  - (0.11723131)
+  - (0.00931334)
+  - (0.00022879)
+  - (0.00000176)
+  - 
+* - 99 to 100
+  - 1.89000000\*\*\*
+  - 0.09229392\*\*
+  - 0.00012902
+  - -0.00001169\*
+  - 2,129
+* - 
+  - (0.50501510)
+  - (0.03858202)
+  - (0.00090072)
+  - (0.00000657)
+  - 
+```
+
+
+
+
+
 
 [^retroquest_note]: The CPS survey asks retrospective questions about income in the last year and average hours worked per week (and weeks worked) in the last year).  Therefore, these CPS surveys line up with tax years 1991-2009.
 

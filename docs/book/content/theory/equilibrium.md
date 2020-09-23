@@ -143,7 +143,7 @@ We define a stationary steady-state equilibrium as the following.
 height: 500px
 name: FigSSeqlbHHcons
 ---
-
+Consumption $c_{j,s}$ by age $s$ and lifetime income group $j$
 ```
 
 ```{figure} ./images/HHlab_SS.png
@@ -151,7 +151,7 @@ name: FigSSeqlbHHcons
 height: 500px
 name: FigSSeqlbHHlab
 ---
-
+Labor supply $n_{j,s}$ by age $s$ and lifetime income group $j$
 ```
 
 ```{figure} ./images/HHsav_SS.png
@@ -159,7 +159,7 @@ name: FigSSeqlbHHlab
 height: 500px
 name: FigSSeqlbHHsave
 ---
-
+Savings $b_{j,s}$ by age $s$ and lifetime income group $j$
 ```
 
 
@@ -215,7 +215,7 @@ name: FigSSeqlbHHsave
     \end{threeparttable}
   \end{table} -->
 
-<div id="TabSSeqlbAggrVars">
+<!-- <div id="TabSSeqlbAggrVars">
 
 |                                    |           |                               |                 |
 |:-----------------------------------|----------:|:------------------------------|----------------:|
@@ -233,7 +233,56 @@ name: FigSSeqlbHHsave
 label="TabSSeqlbAggrVars">\[TabSSeqlbAggrVars\]</span>**Steady-state
 prices, aggregate variables, and maximum errors**
  
-</div>
+</div> -->
+
+
+```{list-table} **Steady-state prices, aggregate variables, and maximum errors**
+:header-rows: 1
+:name: TabSSeqlbAggrVars
+* - 
+  - 
+  - 
+  - 
+* - $\bar{r}$
+  - 0.630
+  - $\bar{w}$
+  - 1.148
+* - $\bar{Y}$
+  - 0.630
+  - $\bar{C}*
+  - 0.462
+* - $\bar{I}$
+  - 0.144
+  - $\bar{K}
+  - 1.810
+* - $\bar{L}$
+  - 0.357
+  - $\bar{B}$
+  - 2.440
+* - $\overline{BQ}$
+  - 0.106
+  - *f**a**c**t**o**r*
+  - 141,580
+* - $\overline{Rev}$
+  - 0.096
+  - $\overline{TR}$
+  - 0.057
+* - $\bar{G}$
+  - 0.023
+  - $\bar{D}$
+  - 0.630
+* - Max. abs. labor supply Euler error
+  - 4.57e-13
+  - Max. abs. savings Euler error
+  - 8.52e-13
+* - Resource constraint error
+  - -4.39e-15
+  - Serial computation time
+  - 1 hr. 25.9 sec.
+```
+
+
+
 
 The steady-state computation time does not include any of the exogenous
 parameter computation processes, the longest of which is the estimation

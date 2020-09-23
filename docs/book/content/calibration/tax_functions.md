@@ -143,7 +143,7 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
 
 
 <!-- :name: TabTaxCalcTfuncParams -->
-|            Symbol             | Description                                                                                                                |
+<!-- |            Symbol             | Description                                                                                                                |
 |:-----------------------------:|:---------------------------------------------------------------------------------------------------------------------------|
 |              $A$             | Coefficient on squared labor income term $x^2$ in $\tau(x)$                                                       |
 |              $B$              | Coefficient on labor income term $x$ in $\tau(x)$                                                                           |
@@ -153,13 +153,49 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
 |    $min_{x}$    | Minimum tax rate on labor income $x$ given $x$ = 0                                                                         |
 |    $max_{y}$    | Maximum tax rate on capital income $x$ given $x$ = 0                                                                       |
 |    $min_{y}$  | Minimum tax rate on capital income $x$ given $x$ = 0                                                                       |
-| $shift_{x}$ | shifter  &gt; \|$min_{x}$\| ensures that $\tau(x,y)$ + $shift_{x} \gte 0$ despite potentially |
+| $shift_{x}$ | shifter  &gt; \|$min_{x}$\| ensures that $\tau(x,y)$ + $shift_{x} \geq 0$ despite potentially |
 |                               | negative values for $\tau(x)$                                                                                               |
-| $shift_{y}$ | shifter  &gt; \|$min_{y}$\| ensures that $\tau(x,y)$ + $shift_{y} \gte 0$ despite potentially |
+| $shift_{y}$ | shifter  &gt; \|$min_{y}$\| ensures that $\tau(x,y)$ + $shift_{y} \geq 0$ despite potentially |
 |                               | negative values for $\tau(y)$                                                                                              |
 |       $shift$        | shifter (can be negative) allows for support of $\tau(x,y)$ to include                                                   |
 |                               | negative tax rates                                                                                                         |
 |              $\phi$             | Cobb-Douglas share parameter between 0 and 1                                                            
+ -->
+
+```{list-table}
+:header-rows: 1
+:name: TabTaxCalcTfuncParams
+* - Symbol
+  - Description
+* - $A$
+  - Coefficient on squared labor income term $x^2$ in $\tau(x)$
+* - $B$
+  - Coefficient on labor income term $x$ in $\tau(x)$
+* - $C$
+  - Coefficient on squared capital income term $y^2$ in $\tau(y)$
+* - $D$
+  - Coefficient on capital income term *y* in $\tau(y)$
+* - $max_{x}$
+  - Maximum tax rate on labor income $x$ given $x$ = 0
+* - $min_{x}$
+  - Minimum tax rate on labor income $x$ given $x$ = 0
+* - $max_{y}$
+  - Maximum tax rate on capital income $x$ given $x$ = 0
+* - $min_{y}$
+  - Minimum tax rate on capital income $x$ given $x$ = 0
+* - $shift_{x}$
+  - shifter  $> \|min_{x}\|$ ensures that $\tau(x,y)$ + $shift_{x} \geq 0$ despite potentially
+* - $shift_{y}$
+  - shifter  $> \|min_{y}\|$ ensures that $\tau(x,y)$ + $shift_{y} \geq 0$ despite potentially
+* - $shift$
+  - shifter (can be negative) allows for support of $\tau(x,y)$ to include
+* - $\phi$
+  - Cobb-Douglas share parameter between 0 and 1
+```
+
+
+
+
 
 
 ```{figure} ../theory/images/Age42_2017_vsPred.png
@@ -219,7 +255,7 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
 | SSE                  |  9122.68 | 15041.35 |  7756.54 |
 
 
-  Let $\boldsymbol{\theta}_{s,t}=(A,B,C,D,max_x,min_x,max_y,min_y,shift_x,shift_y,shift,\phi)$ be the full vector of 12 parameters of the tax function for a particular type of tax rate, age of filers, and year. We first directly specify $min_x$ as the minimum tax rate and $max_x$ as the maximum tax rate in the data for age-$s$ and period-$t$ individuals for capital income close to 0 ($\$0<y<\$3,000$), and $min_y$ as the minimum tax rate and $max_y$ as the maximum tax rate for labor income close to 0 ($\$0<x<\$3,000$). We then set $shift_x = \min(0,|min_x|)+\ve$ and $shift_y = \min(0,|min_y|)+\ve$ so that the respective arguments in the brackets of {eq}`EqTaxCalcTaxFuncForm` are strictly positive. Then let $shift$ be be the minimum tax rate in the corresponding data minus $\ve$. Let $\bar{\boldsymbol{\theta}}_{s,t}=\{min_x,max_x,min_y,max_y,shift_x,shift_y, shift\}$ be the set of parameters we take directly from the data in this way.
+  Let $\boldsymbol{\theta}_{s,t}=(A,B,C,D,max_x,min_x,max_y,min_y,shift_x,shift_y,shift,\phi)$ be the full vector of 12 parameters of the tax function for a particular type of tax rate, age of filers, and year. We first directly specify $min_x$ as the minimum tax rate and $max_x$ as the maximum tax rate in the data for age-$s$ and period-$t$ individuals for capital income close to 0 ($\$0<y<\$3,000$), and $min_y$ as the minimum tax rate and $max_y$ as the maximum tax rate for labor income close to 0 ($\$0<x<\$3,000$). We then set $shift_x = \min(0,|min_x|)+\epsilon$ and $shift_y = \min(0,|min_y|)+\epsilon$ so that the respective arguments in the brackets of {eq}`EqTaxCalcTaxFuncForm` are strictly positive. Then let $shift$ be be the minimum tax rate in the corresponding data minus $\epsilon$. Let $\bar{\boldsymbol{\theta}}_{s,t}=\{min_x,max_x,min_y,max_y,shift_x,shift_y, shift\}$ be the set of parameters we take directly from the data in this way.
 
   We then estimate five remaining parameters $\tilde{\boldsymbol{\theta}}_{s,t}=(A,B,C,D,shift,\phi)$ using the following nonlinear weighted least squares criterion,
   

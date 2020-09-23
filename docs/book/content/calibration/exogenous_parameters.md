@@ -31,12 +31,12 @@ table = pt.param_table(p, table_format=None, path=None)
 glue("param_table", table, display=False)
 ```
 
-```{glue:figure} param_table
+<!-- ```{glue:figure} param_table
 :figwidth: 600px
 :name: "TabExogVars"
 
 List of exogenous parameters and baseline calibration values.
-```
+``` -->
 
   <!-- \begin{table}[htbp] \centering \captionsetup{width=4.7in}
     \caption{\label{TabExogVars}\textbf{List of exogenous parameters and baseline calibration values}}
@@ -88,7 +88,7 @@ List of exogenous parameters and baseline calibration values.
       \end{threeparttable}
     \end{table} -->
 
-<div id="TabExogVars">
+<!-- <div id="TabExogVars">
 
 |                                                        Symbol                                                        |                                               |                       Value                       |
 |:--------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------|:-------------------------------------------------:|
@@ -110,4 +110,45 @@ List of exogenous parameters and baseline calibration values.
 <span id="TabExogVars" label="TabExogVars"></span>**List
 of exogenous parameters and baseline calibration values**
 
-</div>
+</div> -->
+
+
+
+
+```{list-table} **List of exogenous parameters and baseline calibration values**
+:header-rows: 1
+:name: TabExogVars
+* - **Symbol**
+  - 
+  - **Value**
+* - $S$
+  - Maximum periods in economically active
+  - 80
+* - $E$
+  - Number of periods of youth economically outside the model
+  - $\text{round} \frac{S}{4}$=20
+* - $R$
+  - Retirement age (period)
+  - $E + \text{round} (\frac{9}{16} S) = 65$
+* - $T_1$
+  - Number of periods to steady state for initial time path guesses
+  - 160
+* - $T_2$
+  - Maximum number of periods to steady state for nonsteady-state equilibrium
+  - 160
+* - $v$
+  - Dampening parameter for TPI
+  - 0.4
+* - ${ \{ { \{ \omega_{s,0} \} }_{s=1}^{E+S}  \}}_{t=0}^{T_2 + S - 1}$
+  - Initial population distribution by age
+  - (see Ch. ref‘Chap
+* - ${ \{ f_s \}}_{s=1}^{E+S}$
+  - Fertility rates by age
+  - (see Sec. {ref}`SecDemogFert`)
+* - ${ \{ i_s \}}_{s=1}^{E+S}$
+  - Immigration rates by age
+  - (see Sec. {ref}`SecDemogMort`)
+* - ${ \{ \rho_s \}}_{s=0}^{E+S}$
+  - Mortality rates by age
+  - (see Sec. {ref}`SecDemogImm`)
+```
