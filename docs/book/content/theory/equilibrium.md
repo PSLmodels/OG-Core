@@ -110,6 +110,7 @@ A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defi
 (SecSSeqlbResults)=
 ## Baseline Steady-state Results
 
+
   In this section, we use the baseline calibration described in Chapter {ref}`Chap_Calibr`, which includes the baseline tax law from `Tax-Calculator`, to show some steady-state results from `OG-USA`. Figures {numref}`FigSSeqlbHHcons`, {numref}`FigSSeqlbHHlab`, and {numref}`FigSSeqlbHHsave` show the household steady-state variables by age $s$ and lifetime income group $j$.
 
   ```{figure} ./images/HHcons_SS.png
@@ -185,6 +186,7 @@ A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defi
 
   The steady-state computation time does not include any of the exogenous parameter computation processes, the longest of which is the estimation of the baseline tax functions which computation takes 1 hour and 15 minutes.
 
+
 (Chap_NSSeqlb)=
 ## Stationary Nonsteady-State Equilibrium
 
@@ -193,7 +195,8 @@ A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defi
 (SecEqlbNSSdef)=
 ### Stationary Nonsteady-State Equilibrium Definition
 
-  We define a stationary nonsteady-state equilibrium as the following.
+We define a stationary nonsteady-state equilibrium as the following.
+
 
   ```{admonition} **Definition: Stationary Non-steady-state functional equilibrium**
   :class: note
@@ -220,6 +223,7 @@ This section describes the solution method for the stationary nonsteady-state eq
 
 The key assumption is that the economy will reach the steady-state equilibrium $\boldsymbol{\bar{\Gamma}}$ described in Definition {ref}`DefSSEql` in a finite number of periods $T<\infty$ regardless of the initial state $\boldsymbol{\hat{\Gamma}}_1$. The first step in solving for the nonsteady-state equilibrium transition path is to solve for the steady-state using the method described in Section {ref}`SecEqlbSSsoln`. After solving for the steady-state, one must then find a fixed point over the entire path of endogenous objects.  We do this by first making an initial guess at these objects in a the general equilibrium ``outer loop'' step, analogous to the outer loop described in the steady-state solution method. The time path iteration method then uses functional iteration to converge on a fixed point for the path of these objects.  The paths of aggregate variables that must be guessed in this outer loop are $\{\boldsymbol{r}^i,\boldsymbol{\hat{w}}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$, where $\boldsymbol{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$, $\boldsymbol{\hat{BQ}}^i = \left\{\hat{BQ}_1^i,\hat{BQ}_2^i,...\hat{BQ}_T^i\right\}$, and $\boldsymbol{\hat{TR}}^i = \left\{\hat{TR}_1^i,\hat{TR}_2^i,...\hat{TR}_T^i\right\}$. The only requirement on these transition paths is that the initial total bequests $\hat{BQ}_1^i$ conform to the initial state of the economy $\boldsymbol{\hat{\Gamma}}_1$, and that the economy has reached the steady-state by period $t=T$ $\{r_T^i, \hat{BQ}_T^i, \hat{TR}_T^i\} = \{\bar{r}, \bar{w}, \overline{BQ}, \overline{TR}\}$.
 
+
 The "inner loop" of the nonsteady-state transition path solution method is to solve for the full set of lifetime savings decisions $\bar{b}_{j,s+1,t+1}$ and labor supply decisions $\bar{n}_{j,s,t}$ for every household alive between periods $t=1$ and $t=T$.  To solve for the $2JS$ equations and unknowns for each household's lifetime decisions we use a multivariate root finder.
 
 We outline the stationary non-steady state solution algorithm in the following steps.
@@ -231,12 +235,12 @@ We outline the stationary non-steady state solution algorithm in the following s
         2. The household problem can be solved with a multivariate root finder solving the $2S$ equations and unknowns at once for all $j$ and $1\leq t\leq T+S-1$. The root finder uses $2S$ household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` to solve for each household's $2S$ lifetime decisions.
         1. After solving the first iteration of time path iteration, subsequent initial values for the $J$, $2S$ root finding problems are based on the solution in the prior iteration. This speeds up computation further and makes the initial guess for the highly nonlinear system of equations start closer to the solution value.
 4. Given partial equilibrium household nonsteady-state solutions $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$ and $1\leq t\leq T$ based on macroeconomic variable time path guesses $\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$, compute new values for these aggregates implied by the households' solutions, $\{\boldsymbol{r}^{i'},\boldsymbol{\hat{BQ}}^{i'}, \boldsymbol{\hat{TR}}^{i'}\}$.
+
     1. We solve for the updated interest rate as follows:
         1. Use the guess at the path of total transfers, $\hat{TR}_{t}^{i}$ and the transfer spending rule given in Equation {eq}`EqUnbalGBCtfer` to find the implied path of GDP: $\hat{Y}_{t}^{i} = \frac{\hat{TR}_{t}^{i}}{\alpha_{tr}}$.
         2. Using the path of GDP and the household savings and labor supply decisions, $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$, compute the path of stationarizaed total tax revenue, $\hat{Revenue}_{t}^{i}$.
         3. Using the long-run debt-to-GDP ratio, the path of GDP, the path of total tax revenue, and Equation {eq}`EqUnbalGBCclosure_Gt`, find the path of stationarized government debt, $\hat{D}_{t}^{i}$.
         4. Use the capital market clearing condition from Equation {eq}`EqStnrzMarkClrCap` and $D_{t}^{i}$ to find aggregate capital in each period,
-
         $$
   		    \hat{K}_{t}^{i}=\frac{1}{1 + g_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\omega_{s-1,t-1}\lambda_j   \hat{b}_{j,s,t} + i_s\omega_{s,t}\lambda_j \hat{b}_{j,s,t}\Bigr) - D_{t}^{i}
   		  $$
@@ -250,17 +254,16 @@ We outline the stationary non-steady state solution algorithm in the following s
         6. Use the firm's production function from Equation {eq}`EqStnrzCESprodfun` to compute an updated value of $\hat{Y}_{t}$ given the values for the factors of production:
 
 		    $$
+
 		      \hat{Y}_{t}^{i'} = Z_{t}\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_{t}^{i})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\hat{L}_{t}^{i})^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
 		    $$
 
         7. Use the firm's first order condition for its choice of capital to find the updated path of interest rates,
-
         $$
   		    r_{t}^{i'} = (1 - \tau_{t}^{corp})(Z_{t})^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_{t}^{i'}}{\hat{K}_{t}^{i}}\right]^\frac{1}{\varepsilon} - \delta + \tau_{t}^{corp}\delta_{t}^\tau
   		  $$
 
     2. The stationarized law of motion for total bequests {eq}`EqStnrzMarkClrBQ` provides the expression in which household savings decisions $\{b_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ imply a value for aggregate bequests, $BQ_{t}^{\,i'}$. When computing aggregate bequests, we use the updated path of interest rates found above.
-
     $$
 	    \hat{BQ}_{t}^{\,i'} = \left(\frac{1+r_{t}^{i'}}{1 + g_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}\hat{b}_{j,s,t}\right)
     $$

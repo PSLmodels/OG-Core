@@ -10,7 +10,7 @@ This appendix contains derivations from the theory in the body of this book.
   The constant elasticity of substitution (CES) production function of capital and labor was introduced by {cite}`Solow:1956` and further extended to a consumption aggregator by {cite}`Armington:1969`. The CES production function of aggregate capital $K_t$ and aggregate labor $L_t$ we use in Chapter {ref}`Chap_Firms` is the following,
 
   ```{math}
-  :label: EqFirmsCESprodfun
+:label: EqFirmsCESprodfun
     Y_t = F(K_t, K_{g,t}, L_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
   ```
 

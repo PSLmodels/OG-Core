@@ -87,6 +87,7 @@ We calibrate the model such that each lifetime income group has a different life
     LI_{i} = \sum_{t=21}^{80}\left(\frac{1}{1+r}\right)^{t-21}(w_{i,t}*4000)
   ```
 
+
   ```{list-table} **Initial log wage regressions.** Source: CWHS data, 1991-2009. \*\* Significant at the 5-percent level ($p<0.05$). \*\*\* Significant at the 1-percent level ($p<0.01$).
   :header-rows: 1
   :name: TabWage_step1
@@ -147,6 +148,7 @@ We calibrate the model such that each lifetime income group has a different life
     - 6,314
   ```
 
+
   Note that households are all have the same time endowment in each year (4000 hours). Thus the amount of the time endowment scales lifetime income up or down, but does not change the lifetime income of one household relative to another. This is not the case with the interest rate, $r$, which we fix at 4\%. Changes in the interest rate differentially impact the lifetime income calculation for different individuals because they may face different earnings profiles. For example, a higher interest rate would reduced the discounted present value of lifetime income for those individuals whose wage profiles peaked later in their economic life by a larger amount than it would reduce the discounted present value of lifetime income for individuals whose wage profiles peaked earlier.
 
 
@@ -157,6 +159,7 @@ We calibrate the model such that each lifetime income group has a different life
   :label: EqLfEarnLambda_j
     \lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]
   ```
+
 
   That is, lifetime income group one includes those in below the 25th percentile, group two includes those from the 25th to the median, group three includes those from the median to the 70th percentile, group four includes those from the 70th to the 80th percentile, group 5 includes those from the 80th to 90th percentile, group 6 includes those from the 90th to 99th percentile, and group 7 consists of the top one percent in the lifetime income distribution.  {numref}`Tab_li_group_stats` presents descriptive statistics for each of these groups.
 
@@ -305,6 +308,7 @@ We calibrate the model such that each lifetime income group has a different life
   ```
   where $x$ is age, and $a$, $b$, and $c$ are the parameters we search over for the best fit of the function to the following three criteria: 1) the value of the function should match the value of the data at age 80 2) the slope of the arctan should match the slope of the data at age 80 and 3) the value of the function should match the value of the data at age 100 times a constant.  This constant is .5 for all lifetime income groups, except the 2nd highest ability is .7 (otherwise, the 2nd highest has a lower income than the 3rd highest ability group in the last few years).
 
+
 <!--   \begin{table}[htbp] \centering \captionsetup{width=6.0in}
   \caption{\label{tab:wage_profiles}\textbf{Log Wage Regressions, by Lifetime Income Group}}
     \begin{threeparttable}
@@ -372,6 +376,7 @@ Significant at the 10 percent level (*p* &lt; 0.10).
 Significant at the 5 percent level (*p* &lt; 0.05).
 
 Significant at the 1 percent level (*p* &lt; 0.01). -->
+
 
 
 
@@ -469,7 +474,6 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
   - (0.00000657)
   -
 ```
-
 
 [^retroquest_note]: The CPS survey asks retrospective questions about income in the last year and average hours worked per week (and weeks worked) in the last year).  Therefore, these CPS surveys line up with tax years 1991-2009.
 
