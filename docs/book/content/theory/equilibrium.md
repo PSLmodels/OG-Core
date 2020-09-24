@@ -250,31 +250,35 @@ In this chapter, we define the stationary nonsteady-state equilibrium of the `OG
 
   We define a stationary nonsteady-state equilibrium as the following.
 
-  \vspace{5mm}
-  \hrule
-  \vspace{-1mm}
-  \begin{definition}[\textbf{Stationary Nonsteady-state functional equilibrium}]\label{DefNSSEql}
-    A non autarkic nonsteady-state functional equilibrium in the `OG-USA` model is defined as stationary allocation functions of the state $\bigl\{n_{j,s,t} = \phi_s\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ and $\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ for all $j$ and $t$ and stationary price functions $\hat{w}(\boldsymbol{\hat{\Gamma}}_t)$ and $r(\boldsymbol{\hat{\Gamma}}_t)$ for all $t$ such that:
-    \begin{enumerate}
-      \item households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings as characterized in {eq}`EqBeliefs`, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
-      \begin{equation*}
-        \boldsymbol{\hat{\Gamma}}_{t+u} = \boldsymbol{\hat{\Gamma}}^e_{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
-      \end{equation*}
-      \item households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_b`,
-      \item firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`,
-      \item Government activity behaves according to {eq}`EqStnrzGovBC` and {eq}`EqStnrzClosureRule`, and
-      \item markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrzMarkClrCap`, and {eq}`EqStnrzMarkClrBQ`.
-    \end{enumerate}
-  \end{definition}
-  \vspace{-2mm}
-  \hrule
-  \vspace{5mm}
+  
+      \vspace{5mm}
+      \hrule
+      \vspace{-1mm}
+      \begin{definition}[\textbf{Stationary Nonsteady-state functional equilibrium}]\label{DefNSSEql}
+        A non autarkic nonsteady-state functional equilibrium in the `OG-USA` model is defined as stationary allocation functions of the state $\bigl\{n_{j,s,t} = \phi_s\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ and $\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ for all $j$ and $t$ and stationary price functions $\hat{w}(\boldsymbol{\hat{\Gamma}}_t)$ and $r(\boldsymbol{\hat{\Gamma}}_t)$ for all $t$ such that:
+        \begin{enumerate}
+          \item households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings as characterized in {eq}`EqBeliefs`, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
+          \begin{equation*}
+            \boldsymbol{\hat{\Gamma}}_{t+u} = \boldsymbol{\hat{\Gamma}}^e_{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
+          \end{equation*}
+          \item households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_b`,
+          \item firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`,
+          \item Government activity behaves according to {eq}`EqStnrzGovBC` and {eq}`EqStnrzClosureRule`, and
+          \item markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrzMarkClrCap`, and {eq}`EqStnrzMarkClrBQ`.
+        \end{enumerate}
+      \end{definition}
+      \vspace{-2mm}
+      \hrule
+      \vspace{5mm}
+  
 
 (SecEqlbNSSsoln)=
 ### Stationary Nonsteady-state Solution Method
 
 
-  This section describes the solution method for the stationary nonsteady-state equilibrium described in Definition {ref}`DefNSSEql`. We use the time path iteration (TPI) method. This method was originally outlined in a series of papers between 1981 and 1985\footnote{See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`.} and in the seminal book \citet[ch. 4]{AuerbachKotlikoff:1987} for the perfect foresight case and in \citet[Appendix II]{NishiyamaSmetters:2007} and \citet[Sec. 3.1]{EvansPhillips:2014} for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see \citet[ch. 17]{StokeyLucas1989}).
+  TEST: {ref}`content:references`
+
+  This section describes the solution method for the stationary nonsteady-state equilibrium described in Definition {ref}`DefNSSEql`. We use the time path iteration (TPI) method. This method was originally outlined in a series of papers between 1981 and 1985[^sta_TPI_note] and in Chapter 4 of the seminal book {cite}`AuerbachKotlikoff:1987` for the perfect foresight case and in \citet[Appendix II]{NishiyamaSmetters:2007} and \citet[Sec. 3.1]{EvansPhillips:2014} for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see \citet[ch. 17]{StokeyLucas1989}).
 
   The key assumption is that the economy will reach the steady-state equilibrium $\boldsymbol{\bar{\Gamma}}$ described in Definition {ref}`DefSSEql` in a finite number of periods $T<\infty$ regardless of the initial state $\boldsymbol{\hat{\Gamma}}_1$. The first step in solving for the nonsteady-state equilibrium transition path is to solve for the steady-state using the method described in Section {ref}`SecEqlbSSsoln`. After solving for the steady-state, one must then find a fixed point over the entire path of endogenous objects.  We do this by first making an initial guess at these objects in a the general equilibrium ``outer loop'' step, analogous to the outer loop described in the steady-state solution method. The time path iteration method then uses functional iteration to converge on a fixed point for the path of these objects.  The paths of aggregate variables that must be guessed in this outer loop are $\{\boldsymbol{r}^i,\boldsymbol{\hat{w}}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$, where $\boldsymbol{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$, $\boldsymbol{\hat{BQ}}^i = \left\{\hat{BQ}_1^i,\hat{BQ}_2^i,...\hat{BQ}_T^i\right\}$, and $\boldsymbol{\hat{TR}}^i = \left\{\hat{TR}_1^i,\hat{TR}_2^i,...\hat{TR}_T^i\right\}$. The only requirement on these transition paths is that the initial total bequests $\hat{BQ}_1^i$ conform to the initial state of the economy $\boldsymbol{\hat{\Gamma}}_1$, and that the economy has reached the steady-state by period $t=T$ $\{r_T^i, \hat{BQ}_T^i, \hat{TR}_T^i\} = \{\bar{r}, \bar{w}, \overline{BQ}, \overline{TR}\}$.
 
@@ -356,3 +360,5 @@ In this chapter, we define the stationary nonsteady-state equilibrium of the `OG
 [^step3_note]: The updated wage rate, $w^{i'}$, is found by using the updated interest rate, $r^{i'}$ as detailed in Step 3.
 
 [^rootfinder_note]: In our code, there is also an option to use a Newton based root-finding algorithm to updated the outer-loop variables.  Such an algorithm is generally faster, but less robust than the functional iteration method outlined here.
+
+[^sta_TPI_note]: See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`
