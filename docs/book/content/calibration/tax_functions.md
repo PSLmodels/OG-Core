@@ -237,7 +237,7 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
     \end{threeparttable}
   \end{table} -->
 
-  | Parameter            |          |          |          |
+<!--   | Parameter            |          |          |          |
 |:---------------------|---------:|---------:|---------:|
 | *A*                  | 6.28E-12 | 3.43E-23 | 4.32E-11 |
 | *B*                  | 4.36E-05 | 4.50E-04 | 5.52E-05 |
@@ -248,11 +248,83 @@ Note: Axes in the histogram in the lower-right panel have been switched relative
 | $max_{y}$     |     0.80 |     0.80 |     0.13 |
 | $min_{y}$      |    -0.15 |    -0.42 | 0.00E+00 |
 | $shift_{x}$ |     0.15 |     0.18 | 4.45E-03 |
-| $shift_{y}$ |     0.16 |     0.43 | 1.34E-03 |
+| $shift_{y}$ |      |
 | $shift$      |    -0.15 |    -0.42 | 0.00E+00 |
 | $\phi$      |     0.84 |     0.96 |     0.86 |
 | Obs. (N)             |    3,105 |    3,105 |    1,990 |
-| SSE                  |  9122.68 | 15041.35 |  7756.54 |
+| SSE                  |  9122.68 | 15041.35 |  7756.54 | -->
+
+
+
+```{list-table} Estimated baseline current law tax rate function $\tau_{s,t}(x,y)$ parameters for $s=42$, $t=2017$
+:header-rows: 1
+:name: TabTaxCalcEst42
+* - Parameter
+  - 
+  - 
+  - 
+* - $A$
+  - 6.28E-12
+  - 3.43E-23
+  - 4.32E-11
+* - $B$
+  - 4.36E-05
+  - 4.50E-04
+  - 5.52E-05
+* - $C$
+  - 1.04E-23
+  - 9.81E-12
+  - 5.62E-12
+* - $D$
+  - 7.77E-09
+  - 5.30E-08
+  - 3.09E-06
+* - $max_{x}$
+  - 0.80
+  - 0.71
+  - 0.44
+* - $min_{x}$
+  - -0.14
+  - -0.17
+  - 0.00E+00
+* - $max_{y}$
+  - 0.80
+  - 0.80
+  - 0.13
+* - $min_{y}$
+  - -0.15
+  - -0.42
+  - 0.00E+00
+* - $shift_{x}$
+  - 0.15
+  - 0.18
+  - 4.45E-03
+* - $shift_{y}$
+  - 0.16
+  - 0.43
+  - 1.34E-03
+* - $shift$
+  - -0.15
+  - -0.42
+  - 0.00E+00
+* - $\phi$
+  - 0.84
+  - 0.96
+  - 0.86
+* - Observations (N)
+  - 3,105
+  - 3,105
+  - 1,990
+* - SSE
+  - 9122.68
+  - 15041.35
+  - 7756.54
+```
+
+
+
+
+
 
 
   Let $\boldsymbol{\theta}_{s,t}=(A,B,C,D,max_x,min_x,max_y,min_y,shift_x,shift_y,shift,\phi)$ be the full vector of 12 parameters of the tax function for a particular type of tax rate, age of filers, and year. We first directly specify $min_x$ as the minimum tax rate and $max_x$ as the maximum tax rate in the data for age-$s$ and period-$t$ individuals for capital income close to 0 ($\$0<y<\$3,000$), and $min_y$ as the minimum tax rate and $max_y$ as the maximum tax rate for labor income close to 0 ($\$0<x<\$3,000$). We then set $shift_x = \min(0,|min_x|)+\epsilon$ and $shift_y = \min(0,|min_y|)+\epsilon$ so that the respective arguments in the brackets of {eq}`EqTaxCalcTaxFuncForm` are strictly positive. Then let $shift$ be be the minimum tax rate in the corresponding data minus $\epsilon$. Let $\bar{\boldsymbol{\theta}}_{s,t}=\{min_x,max_x,min_y,max_y,shift_x,shift_y, shift\}$ be the set of parameters we take directly from the data in this way.
