@@ -10,7 +10,7 @@ This appendix contains derivations from the theory in the body of this book.
   The constant elasticity of substitution (CES) production function of capital and labor was introduced by {cite}`Solow:1956` and further extended to a consumption aggregator by {cite}`Armington:1969`. The CES production function of aggregate capital $K_t$ and aggregate labor $L_t$ we use in Chapter {ref}`Chap_Firms` is the following,
 
   ```{math}
-:label: EqFirmsCESprodfun
+  :label: EqFirmsCESprodfun
     Y_t = F(K_t, K_{g,t}, L_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
   ```
 
@@ -72,12 +72,11 @@ As can be seen from {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`, the wage $w$ and i
 In the Cobb-Douglas unit elasticity case ($\varepsilon=1$) of the CES production function, the first order conditions are:
 ```{math}
 :label: EqAppDerivCES_CDFOCL
-    \text{if}\:\:\,\varepsilon=1:\quad w &= (1-\gamma)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}} \\
-    \text{if}\:\:\:\varepsilon=1:\quad r &= (1 - \tau^{corp})\gamma 
+  \text{if}\:\:\,\varepsilon=1:\quad w = (1-\gamma)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}}
 ```
 ```{math}
-:label: EqAppDerivCES_CDFOCK   
-Z\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}}\left(\frac{K_{g}}{K}\right)^{\gamma_{g}} - \delta + \tau^{corp}\delta^\tau
+:label: EqAppDerivCES_CDFOCK
+ \text{if}\:\:\:\varepsilon=1:\quad r = (1 - \tau^{corp})\gamma Z\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}}\left(\frac{K_{g}}{K}\right)^{\gamma_{g}} - \delta + \tau^{corp}\delta^\tau
 ```
 
 Again, even if this simple case, we cannot solve for $r$ as a function of $w$... there are 3 ratios here, not one as in the case without public capital in the production function.
