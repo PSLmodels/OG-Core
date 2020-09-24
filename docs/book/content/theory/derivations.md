@@ -72,12 +72,11 @@ As can be seen from {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`, the wage $w$ and i
 In the Cobb-Douglas unit elasticity case ($\varepsilon=1$) of the CES production function, the first order conditions are:
 ```{math}
 :label: EqAppDerivCES_CDFOCL
-    \text{if}\:\:\,\varepsilon=1:\quad w &= (1-\gamma)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}} \\
-    \text{if}\:\:\:\varepsilon=1:\quad r &= (1 - \tau^{corp})\gamma 
+  \text{if}\:\:\,\varepsilon=1:\quad w = (1-\gamma)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}}
 ```
 ```{math}
-:label: EqAppDerivCES_CDFOCK   
-Z\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}}\left(\frac{K_{g}}{K}\right)^{\gamma_{g}} - \delta + \tau^{corp}\delta^\tau
+:label: EqAppDerivCES_CDFOCK
+ \text{if}\:\:\:\varepsilon=1:\quad r = (1 - \tau^{corp})\gamma Z\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}}\left(\frac{K_{g}}{K}\right)^{\gamma_{g}} - \delta + \tau^{corp}\delta^\tau
 ```
 
 Again, even if this simple case, we cannot solve for $r$ as a function of $w$... there are 3 ratios here, not one as in the case without public capital in the production function.
