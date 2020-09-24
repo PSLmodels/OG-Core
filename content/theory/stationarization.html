@@ -304,11 +304,6 @@
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#stationary-variable-definitions">
-   Stationary variable definitions
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#stationarized-household-equations">
    Stationarized Household Equations
   </a>
@@ -341,99 +336,62 @@
   <div class="section" id="stationarization">
 <span id="chap-stnrz"></span><h1>Stationarization<a class="headerlink" href="#stationarization" title="Permalink to this headline">¶</a></h1>
 <p>The previous chapters derive all the equations necessary to solve for the steady-state and nonsteady-state equilibria of this model. However, because labor productivity is growing at rate <span class="math notranslate nohighlight">\(g_y\)</span> as can be seen in the firms’ production function <a class="reference internal" href="firms.html#equation-eqfirmscesprodfun">(16)</a> and the population is growing at rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> as defined in <a class="reference internal" href="../calibration/demographics.html#equation-eqpopgrowthtil">(60)</a>, the model is not stationary. Different endogenous variables of the model are growing at different rates. We have already specified three potential budget closure rules <a class="reference internal" href="government.html#equation-equnbalgbcclosure-gt">(28)</a>, <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trt">(29)</a>, and <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trgt">(31)</a> using some combination of government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> that stationarize the debt-to-GDP ratio.</p>
-<p>Table <a class="reference internal" href="#tabstnrzstatvars"><span class="std std-ref">Stationary variable definitions</span></a> lists the definitions of stationary versions of these endogenous variables. Variables with a ``<span class="math notranslate nohighlight">\(\:\,\hat{}\,\:\)</span>’’ signify stationary variables. The first column of variables are growing at the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span>. These variables are most closely associated with individual variables. The second column of variables are growing at the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span>. These variables are most closely associated with population values. The third column of variables are growing at both the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span> and the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span>. These variables are most closely associated with aggregate variables. The last column shows that the interest rate <span class="math notranslate nohighlight">\(r_t\)</span> and household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> are already stationary.</p>
-<!-- \begin{table}[htbp] \centering \captionsetup{width=3.5in}
-\caption{\label{TabStnrzStatVars}\textbf{Stationary variable definitions}}
-  \begin{threeparttable}
-  \begin{tabular}{>{\small}c >{\small}c >{\small}c |>{\small}c}
-    \hline\hline
-    \multicolumn{3}{c}{Sources of growth} & Not \\
-    & & & \\[-4mm]
-    $e^{g_y t}$ & $\tilde{N}_t$ & $e^{g_y t}\tilde{N}_t$ & growing\tnote{a} \\
-    \hline
-    & & \\[-4mm]
-    $\hat{c}_{j,s,t}\equiv\frac{c_{j,s,t}}{e^{g_y t}}$ & $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}$ & $\hat{Y}_t\equiv\frac{Y_t}{e^{g_y t}\tilde{N}_t}$ & $n_{j,s,t}$ \\[2mm]
-    $\hat{b}_{j,s,t}\equiv\frac{b_{j,s,t}}{e^{g_y t}}$ & $\hat{L}_t\equiv\frac{L_t}{\tilde{N}_t}$ & $\hat{K}_t\equiv\frac{K_t}{e^{g_y t}\tilde{N}_t}$ & $r_t$ \\[2mm]
-    $\hat{w}_t\equiv\frac{w_t}{e^{g_y t}}$ &  & $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$ &  \\[2mm]
-    $\hat{y}_{j,s,t}\equiv\frac{y_{j,s,t}}{e^{g_y t}}$ &  & $\hat{C}_t\equiv \frac{C_t}{e^{g_y t}\tilde{N}_t}$  &  \\[2mm]
-    $\hat{T}_{s,t}\equiv\frac{T_{j,s,t}}{e^{g_y t}}$ &  & $\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}$ &  \\[2mm]
-    \hline\hline
-  \end{tabular}
-  \begin{tablenotes}
-    \scriptsize{\item[a]The interest rate $r_t$ in {eq}`EqFirmFOC_K} is already stationary because $Y_t$ and $K_t$ grow at the same rate. Household labor supply $n_{j,s,t}\in[0,\tilde{l}]$ is stationary.}
-  \end{tablenotes}
-  \end{threeparttable}
-\end{table} -->
-<div id="TabStnrzStatVars">
-<table class="colwidths-auto table">
+<p>Table <a class="reference internal" href="#tabstnrzstatvars"><span class="std std-ref">Stationary variable definitions. Note: The interest rate r_t in firm first order condition is already stationary because Y_t and K_t grow at the same rate. Household labor supply n_{j,s,t}\in[0,\tilde{l}] is stationary.</span></a> lists the definitions of stationary versions of these endogenous variables. Variables with a ``<span class="math notranslate nohighlight">\(\:\,\hat{}\,\:\)</span>’’ signify stationary variables. The first column of variables are growing at the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span>. These variables are most closely associated with individual variables. The second column of variables are growing at the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span>. These variables are most closely associated with population values. The third column of variables are growing at both the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span> and the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span>. These variables are most closely associated with aggregate variables. The last column shows that the interest rate <span class="math notranslate nohighlight">\(r_t\)</span> and household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> are already stationary.</p>
+<table class="table" id="tabstnrzstatvars">
+<caption><span class="caption-number">Table 1 </span><span class="caption-text"><strong>Stationary variable definitions.</strong> Note: The interest rate <span class="math notranslate nohighlight">\(r_t\)</span> in firm first order condition is already stationary because <span class="math notranslate nohighlight">\(Y_t\)</span> and <span class="math notranslate nohighlight">\(K_t\)</span> grow at the same rate. Household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span> is stationary.</span><a class="headerlink" href="#tabstnrzstatvars" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
-<tr class="row-odd"><th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
+<tr class="row-odd"><th class="head"><p><strong>Sources of growth</strong></p></th>
+<th class="head"></th>
+<th class="head"></th>
+<th class="head"></th>
+</tr>
+<tr class="row-even"><th class="head"><p><span class="math notranslate nohighlight">\(e^{g_y t}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\tilde{N}_t\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span></p></th>
+<th class="head"><p>Not growing</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p>Not</p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\hat{c}_{j,s,t}\equiv \frac{c_{j,s,t}}{e^{g_y t}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{Y}_t\equiv\frac{Y_t}{e^{g_y t}\tilde{N}_t}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(n_{j,s,t}\)</span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\hat{b}_{j,s,t}\equiv \frac{b_{j,s,t}}{e^{g_y t}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{L}_t\equiv\frac{L_t}{\tilde{N}_t}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{K}_t\equiv\frac{K_t}{e^{g_y t}\tilde{N}_t}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(r_t\)</span></p></td>
 </tr>
-<tr class="row-even"><td class="text-align:center"><p><em>e</em><sup><em>g</em><sub><em>y</em></sub><em>t</em></sup></p></td>
-<td class="text-align:center"><p><em>Ñ</em><sub><em>t</em></sub></p></td>
-<td class="text-align:center"><p><em>e</em><sup><em>g</em><sub><em>y</em></sub><em>t</em></sup><em>Ñ</em><sub><em>t</em></sub></p></td>
-<td class="text-align:center"><p>growing</p></td>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}\)</span></p></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}\)</span></p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\hat{y}_{j,s,t}\equiv \frac{y_{j,s,t}}{e^{g_y t}}\)</span></p></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{C}_t\equiv\frac{C_t}{e^{g_y t}\tilde{N}_t}\)</span></p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{c}\_{j,s,t}\\equiv\\frac{c\_{j,s,t}}{e^{g\_y t}}\)</span></p></td>
-<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{\\omega}\_{s,t}\\equiv\\frac{\\omega\_{s,t}}{\\tilde{N}\_t}\)</span></p></td>
-<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{Y}\_t\\equiv\\frac{Y\_t}{e^{g\_y t}\\tilde{N}\_t}\)</span></p></td>
-<td class="text-align:center"><p><em>n</em><sub><em>j</em>, <em>s</em>, <em>t</em></sub></p></td>
-</tr>
-<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{b}\_{j,s,t}\\equiv\\frac{b\_{j,s,t}}{e^{g\_y t}}\)</span></p></td>
-<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{L}\_t\\equiv\\frac{L\_t}{\\tilde{N}\_t}\)</span></p></td>
-<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{K}\_t\\equiv\\frac{K\_t}{e^{g\_y t}\\tilde{N}\_t}\)</span></p></td>
-<td class="text-align:center"><p><em>r</em><sub><em>t</em></sub></p></td>
-</tr>
-<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{w}\_t\\equiv\\frac{w\_t}{e^{g\_y t}}\)</span></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{BQ}\_{j,t}\\equiv\\frac{BQ\_{j,t}}{e^{g\_y t}\\tilde{N}\_t}\)</span></p></td>
-<td class="text-align:center"><p></p></td>
-</tr>
-<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{y}\_{j,s,t}\\equiv\\frac{y\_{j,s,t}}{e^{g\_y t}}\)</span></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{C}\_t\\equiv \\frac{C\_t}{e^{g\_y t}\\tilde{N}\_t}\)</span></p></td>
-<td class="text-align:center"><p></p></td>
-</tr>
-<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{T}\_{s,t}\\equiv\\frac{T\_{j,s,t}}{e^{g\_y t}}\)</span></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\\hat{TR}\_t\\equiv\\frac{TR\_t}{e^{g\_y t}\\tilde{N}\_t}\)</span></p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\hat{T}_{j,s,t}\equiv \frac{T_{j,s,t}}{e^{g_y t}}\)</span></p></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}\)</span></p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<p><span id="TabStnrzStatVars"
-label="TabStnrzStatVars" ></span></p>
-</div>
-<div class="section" id="stationary-variable-definitions">
-<span id="tabstnrzstatvars"></span><h2>Stationary variable definitions<a class="headerlink" href="#stationary-variable-definitions" title="Permalink to this headline">¶</a></h2>
-<p>The usual definition of equilibrium would be allocations and prices such that households optimize <a class="reference internal" href="households.html#equation-eqhheul-n">(9)</a>, <a class="reference internal" href="households.html#equation-eqhheul-b">(10)</a>, and <a class="reference internal" href="households.html#equation-eqhheul-bs">(11)</a>, firms optimize <a class="reference internal" href="derivations.html#equation-eqfirmfoc-l">(86)</a> and <a class="reference internal" href="#equation-eqfirmfoc-k">(43)</a>, and markets clear <a class="reference internal" href="market_clearing.html#equation-eqmarkclrlab">(32)</a> and <a class="reference internal" href="market_clearing.html#equation-eqmarkclrcap">(33)</a>, and <a class="reference internal" href="market_clearing.html#equation-eqmarkclrbq">(35)</a>. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections <a class="reference internal" href="equilibrium.html#seceqlbsssoln"><span class="std std-ref">Stationary Steady-state Solution Method</span></a> and <a class="reference internal" href="equilibrium.html#seceqlbnsssoln"><span class="std std-ref">Stationary Nonsteady-state Solution Method</span></a> to solve for the equilibria in Definitions <span class="xref std std-ref">DefSSEql</span> and <span class="xref std std-ref">DefNSSEql</span>.</p>
-</div>
+<p>The usual definition of equilibrium would be allocations and prices such that households optimize <a class="reference internal" href="households.html#equation-eqhheul-n">(9)</a>, <a class="reference internal" href="households.html#equation-eqhheul-b">(10)</a>, and <a class="reference internal" href="households.html#equation-eqhheul-bs">(11)</a>, firms optimize <a class="reference internal" href="derivations.html#equation-eqfirmfoc-l">(88)</a> and <a class="reference internal" href="#equation-eqfirmfoc-k">(43)</a>, and markets clear <a class="reference internal" href="market_clearing.html#equation-eqmarkclrlab">(32)</a> and <a class="reference internal" href="market_clearing.html#equation-eqmarkclrcap">(33)</a>, and <a class="reference internal" href="market_clearing.html#equation-eqmarkclrbq">(35)</a>. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections <a class="reference internal" href="equilibrium.html#seceqlbsssoln"><span class="std std-ref">Stationary Steady-state Solution Method</span></a> and <a class="reference internal" href="equilibrium.html#seceqlbnsssoln"><span class="std std-ref">Stationary Nonsteady-state Solution Method</span></a> to solve for the equilibria in the steady-state and transition path equilibrium definitions.</p>
 <div class="section" id="stationarized-household-equations">
 <span id="secstnrzhh"></span><h2>Stationarized Household Equations<a class="headerlink" href="#stationarized-household-equations" title="Permalink to this headline">¶</a></h2>
 <p>The stationary version of the household budget constraint <a class="reference internal" href="households.html#equation-eqhhbc">(1)</a> is found by dividing both sides of the equation by <span class="math notranslate nohighlight">\(e^{g_y t}\)</span>. For the savings term <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span>, we must multiply and divide by <span class="math notranslate nohighlight">\(e^{g_y(t+1)}\)</span>, which leaves an <span class="math notranslate nohighlight">\(e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}\)</span> in front of the stationarized variable.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzhhbcstat">
-<span class="eqno">(36)<a class="headerlink" href="#equation-eqstnrzhhbcstat" title="Permalink to this equation">¶</a></span>\[\begin{split}    \hat{c}_{j,s,t} + e^{g_y}\hat{b}_{j,s+1,t+1} &amp;= (1 + r_{t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} - \hat{T}_{s,t}  \\
-    \quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t\end{split}\]</div>
+<span class="eqno">(36)<a class="headerlink" href="#equation-eqstnrzhhbcstat" title="Permalink to this equation">¶</a></span>\[\begin{split}  \hat{c}_{j,s,t} + e^{g_y}\hat{b}_{j,s+1,t+1} &amp;= (1 + r_{t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} - \hat{T}_{s,t}  \\
+  &amp;\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t\end{split}\]</div>
 <p>Because total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> and total government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population <span class="math notranslate nohighlight">\(\tilde{N}_t\)</span>. This stationarizes total bequests <span class="math notranslate nohighlight">\(\hat{BQ}_t\)</span>, total transfers <span class="math notranslate nohighlight">\(\hat{TR}_t\)</span>, and the respective population level in the denominator <span class="math notranslate nohighlight">\(\hat{\omega}_{s,t}\)</span>.</p>
 <p>We stationarize the Euler equations for labor supply <a class="reference internal" href="households.html#equation-eqhheul-n">(9)</a> by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y(1-\sigma)}\)</span>. On the left-hand-side, <span class="math notranslate nohighlight">\(e^{g_y}\)</span> stationarizes the wage <span class="math notranslate nohighlight">\(\hat{w}_t\)</span> and <span class="math notranslate nohighlight">\(e^{-\sigma g_y}\)</span> goes inside the parentheses and stationarizes consumption <span class="math notranslate nohighlight">\(\hat{c}_{j,s,t}\)</span>. On the right-and-side, the <span class="math notranslate nohighlight">\(e^{g_y(1-\sigma)}\)</span> terms cancel out.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzhheul-n">
@@ -454,7 +412,7 @@ label="TabStnrzStatVars" ></span></p>
 <p>Notice that the growth term multiplied by the labor input drops out in this stationarized version of the production function. We stationarize the nonstationary profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(21)</a> in the same way, by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzprofit">
 <span class="eqno">(41)<a class="headerlink" href="#equation-eqstnrzprofit" title="Permalink to this equation">¶</a></span>\[  \hat{PR}_t = (1 - \tau^{corp})\Bigl[F(\hat{K}_t,\hat{L}_t) - \hat{w}_t \hat{L}_t\Bigr] - \bigl(r_t + \delta\bigr)\hat{K}_t + \tau^{corp}\delta^\tau \hat{K}_t \quad\forall t\]</div>
-<p>The firms’ first order equation for labor demand <a class="reference internal" href="derivations.html#equation-eqfirmfoc-l">(86)</a> is stationarized by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\)</span>. This stationarizes the wage <span class="math notranslate nohighlight">\(\hat{w}_t\)</span> on the left-hand-side and cancels out the <span class="math notranslate nohighlight">\(e^{g_y t}\)</span> term in front of the right-hand-side. To complete the stationarization, we multiply and divide the <span class="math notranslate nohighlight">\(\frac{Y_t}{e^{g_y t}L_t}\)</span> term on the right-hand-side by <span class="math notranslate nohighlight">\(\tilde{N}_t\)</span>.</p>
+<p>The firms’ first order equation for labor demand <a class="reference internal" href="derivations.html#equation-eqfirmfoc-l">(88)</a> is stationarized by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\)</span>. This stationarizes the wage <span class="math notranslate nohighlight">\(\hat{w}_t\)</span> on the left-hand-side and cancels out the <span class="math notranslate nohighlight">\(e^{g_y t}\)</span> term in front of the right-hand-side. To complete the stationarization, we multiply and divide the <span class="math notranslate nohighlight">\(\frac{Y_t}{e^{g_y t}L_t}\)</span> term on the right-hand-side by <span class="math notranslate nohighlight">\(\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzfoc-l">
 <span class="eqno">(42)<a class="headerlink" href="#equation-eqstnrzfoc-l" title="Permalink to this equation">¶</a></span>\[  \hat{w}_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon} \quad\forall t\]</div>
 <p>It can be seen from the firms’ first order equation for capital demand <a class="reference internal" href="#equation-eqfirmfoc-k">(43)</a> that the interest rate is already stationary. If we multiply and divide the <span class="math notranslate nohighlight">\(\frac{Y_t}{K_t}\)</span> term on the right-hand-side by <span class="math notranslate nohighlight">\(e^{t_y t}\tilde{N}_t\)</span>, those two aggregate variables become stationary. In other words, <span class="math notranslate nohighlight">\(Y_t\)</span> and <span class="math notranslate nohighlight">\(K_t\)</span> grow at the same rate and <span class="math notranslate nohighlight">\(\frac{Y_t}{K_t} = \frac{\hat{Y}_t}{\hat{K}_t}\)</span>.</p>

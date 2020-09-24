@@ -356,377 +356,298 @@
 <span class="eqno">(66)<a class="headerlink" href="#equation-eqtaxcalclabinc" title="Permalink to this equation">¶</a></span>\[  \text{labor income:}\quad x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S\]</div>
 <p>In this specification, <span class="math notranslate nohighlight">\(w_t\)</span> is an equilibrium wage representing a portion of labor income that is common to all workers. Individual quantity of labor supply is <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>, and <span class="math notranslate nohighlight">\(e_{j,s}\)</span> represents a labor productivity factor that augments or diminishes the productivity of a worker’s labor supply relative to average productivity.</p>
 <p>We calibrate deterministic ability paths such that each lifetime income group has a different life-cycle profile of earnings. The distribution on income and wealth are often focal components of macroeconomic models. As such, we use a calibration of deterministic lifetime ability paths from <a class="bibtex reference internal" href="../theory/references.html#debackeretal-2017b" id="id1">[DEM+7b]</a> that can represent U.S. earners in the top 1% of the distribution of lifetime income. <a class="bibtex reference internal" href="../theory/references.html#pikettysaez-2003" id="id2">[PS03]</a> show that income and wealth attributable to these households has shown the greatest growth in recent decades. The data come from the U.S. Internal Revenue Services’s (IRS) Statistics of Income program (SOI) Continuous Work History Sample (CWHS). <a class="bibtex reference internal" href="../theory/references.html#debackeretal-2017b" id="id3">[DEM+7b]</a> match the SOI data with Social Security Administration (SSA) data on age and Current Population Survey (CPS) data on hours in order to generate a non-top-coded measure of hourly wage.</p>
-<div class="cell tag_hide-cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myst_nb</span> <span class="kn">import</span> <span class="n">glue</span>
-<span class="kn">import</span> <span class="nn">ogusa.parameter_plots</span> <span class="k">as</span> <span class="nn">pp</span>
-<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">Specifications</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">Specifications</span><span class="p">()</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">plot_ability_profiles</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-<span class="n">glue</span><span class="p">(</span><span class="s2">&quot;earnings_profiles&quot;</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
+<div class="figure align-default" id="figlogabil">
+<a class="reference internal image-reference" href="../../_images/ability_log_2D.png"><img alt="../../_images/ability_log_2D.png" src="../../_images/ability_log_2D.png" style="height: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">Exogenous life cycle income ability paths <span class="math notranslate nohighlight">\(\log(e_{j,s})\)</span> with <span class="math notranslate nohighlight">\(S=80\)</span> and <span class="math notranslate nohighlight">\(J=7\)</span></span><a class="headerlink" href="#figlogabil" title="Permalink to this image">¶</a></p>
 </div>
-</div>
-</div>
-<div class="figure align-default" id="figlogabil" style="width: 750px">
-<p class="caption"><span class="caption-number">Fig. 13 </span><span class="caption-text">Exogenous life cycle income ability paths <span class="math notranslate nohighlight">\(\log(e_{j,s})\)</span> with <span class="math notranslate nohighlight">\(S=80\)</span> and <span class="math notranslate nohighlight">\(J=7\)</span></span><a class="headerlink" href="#figlogabil" title="Permalink to this image">¶</a></p>
-</div>
-<p>Figure <a class="reference internal" href="#figlogabil"><span class="std std-numref">Fig. 13</span></a> shows a calibration for <span class="math notranslate nohighlight">\(J=7\)</span> deterministic lifetime ability paths <span class="math notranslate nohighlight">\(e_{j,s}\)</span> corresponding to labor income percentiles <span class="math notranslate nohighlight">\(\boldsymbol{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]\)</span>. Because there are few individuals above age 80 in the data, <a class="bibtex reference internal" href="../theory/references.html#debackeretal-2017b" id="id4">[DEM+7b]</a> extrapolate these estimates for model ages 80-100 using an arctan function.</p>
+<!-- +++
+```{code-cell} ogusa-dev
+:tags: [hide-cell]
+from myst_nb import glue
+import ogusa.parameter_plots as pp
+from ogusa import Specifications
+p = Specifications()
+fig = pp.plot_ability_profiles(p)
+glue("earnings_profiles", fig, display=False)
+```
+
+```{glue:figure} earnings_profiles
+:figwidth: 750px
+:name: "FigLogAbil"
+
+Exogenous life cycle income ability paths $\log(e_{j,s})$ with $S=80$ and $J=7$
+```
+-->
+<p>Figure <a class="reference internal" href="#figlogabil"><span class="std std-numref">Fig. 12</span></a> shows a calibration for <span class="math notranslate nohighlight">\(J=7\)</span> deterministic lifetime ability paths <span class="math notranslate nohighlight">\(e_{j,s}\)</span> corresponding to labor income percentiles <span class="math notranslate nohighlight">\(\boldsymbol{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]\)</span>. Because there are few individuals above age 80 in the data, <a class="bibtex reference internal" href="../theory/references.html#debackeretal-2017b" id="id4">[DEM+7b]</a> extrapolate these estimates for model ages 80-100 using an arctan function.</p>
 <p>We calibrate the model such that each lifetime income group has a different life-cycle profile of earnings. Since the distribution on income and wealth are key aspects of our model, we calibrate these processes so that we can represent earners in the top 1 percent of the distribution of lifetime income. It is income and wealth attributable to these households that has shown the greatest growth in recent decades (see, for example, <a class="bibtex reference internal" href="../theory/references.html#pikettysaez-2003" id="id5">[PS03]</a>). In order to have observations on the earnings of those at very top of the distribution that are not subject to top-coding we use data from the Internal Revenue Services’s (IRS) Statistics of Income program (SOI).</p>
 <div class="section" id="continuous-work-history-sample">
 <span id="seclfearncwhs"></span><h2>Continuous Work History Sample<a class="headerlink" href="#continuous-work-history-sample" title="Permalink to this headline">¶</a></h2>
 <p>The SOI data we draw from are the Continuous Work History Sample (CWHS).  From this CWHS, we use a panel that is a 1-in-5000 random sample of tax filers from 1991 to 2009.  For each filer-year observation we are able to observe detailed information reported on Form 1040 and the associated forms and schedules.  We are also able to merge these tax data with Social Security Administration (SSA) records to get information on the age and gender of the primary and secondary filers.  Our model variable of effective labor units maps into wage rates, because the market wage rate in the model, <span class="math notranslate nohighlight">\(w_{t}\)</span>, is constant across households.  Earnings per hour thus depend upon effective labor units and equal <span class="math notranslate nohighlight">\(e_{j,s,t}\times w_{t}\)</span> for household in lifetime income group <span class="math notranslate nohighlight">\(j\)</span>, with age <span class="math notranslate nohighlight">\(s\)</span>, in year <span class="math notranslate nohighlight">\(t\)</span>.  Income tax data, however, do not contain information on hourly earnings or hours works.  Rather, we only observe total earned income (wage and salaries plus self-employment income) over the tax year.  In order to find hourly earnings for tax filers, we use an imputation procedure.  This is described in detail in <a class="bibtex reference internal" href="../theory/references.html#debackerramnath-2017" id="id6">[DR17]</a>.  The methodology applies an imputation for hours worked for a filing unit based on a model of hours worked for a filing unit estimated from the Current Population Survey (CPS) for the years 1992-2010.<a class="footnote-reference brackets" href="#retroquest-note" id="id7">1</a> We then use the imputed hours to calculate hourly earnings rates for tax filing units in the CWHS.</p>
-<p>We exclude from our sample filer-year observations with earned income (wages and salaries plus business income) of less than $1,250. We further exclude those with positive annual wages, but with hourly wages below $5.00 (in 2005$). We also drop one observation where the hourly wage rate exceeds $25,000.<a class="footnote-reference brackets" href="#threshold-note" id="id8">2</a> Economic life in the model runs from age 21 to 100. Our data have few observations on filers with ages exceeding 80 years old. Our sample is therefore restricted to those from ages 21 to 80. After these restrictions, our final sample size is 333,381 filer-year observations.</p>
+<p>We exclude from our sample filer-year observations with earned income (wages and salaries plus business income) of less than $1,250. We further exclude those with positive annual wages, but with hourly wages below $5.00 (in 2005 $). We also drop one observation where the hourly wage rate exceeds $25,000.<a class="footnote-reference brackets" href="#threshold-note" id="id8">2</a> Economic life in the model runs from age 21 to 100. Our data have few observations on filers with ages exceeding 80 years old. Our sample is therefore restricted to those from ages 21 to 80. After these restrictions, our final sample size is 333,381 filer-year observations.</p>
 </div>
 <div class="section" id="lifetime-income">
 <span id="seclfearnlifinc"></span><h2>Lifetime Income<a class="headerlink" href="#lifetime-income" title="Permalink to this headline">¶</a></h2>
 <p>In our model, labor supply and savings, and thus lifetime income, are endogenous. We therefore define lifetime income as the present value of lifetime labor endowments and not the value of lifetime labor earnings. Note that our data are at the tax filing unit.  We take this unit to be equivalent to a household.  Because of differences in household structure (i.e., singles versus couples), our definition of lifetime labor income will be in per adult terms.  In particular, for filing units with a primary and secondary filer, our imputed wage represents the average hourly earnings between the two. When calculating lifetime income we assign single and couple households the same labor endowment.  This has the effect of making our lifetime income metric a per adult metric, there is therefore not an over-representation of couple households in the higher lifetime income groups simply because their time endowment is higher than for singles. We use the following approach to measure the lifetime income.</p>
 <p>First, since our panel data do not allow us to observe the complete life cycle of earnings for each household (because of sample attrition, death or the finite sample period of the data), we use an imputation to estimate wages in the years of the household’s economic life for which they do not appear in the CWHS. To do this, we estimate the following equation, separately by household type (where household types are single male, single female, couple with male head, or couple with female head):</p>
-<p>\begin{equation}\label{wage_step1}
-ln(w_{i,t}) = \alpha_{i} + \beta_{1}age_{i,t} + \beta_{2}age_{i,t}^{2} + \beta_{3}*age_{i,t}^{3} + \varepsilon_{i,t}
-\end{equation}</p>
 <div class="math notranslate nohighlight" id="equation-wage-step1">
-<span class="eqno">(67)<a class="headerlink" href="#equation-wage-step1" title="Permalink to this equation">¶</a></span>\[ ln(w_{i,t}) = \alpha_{i} + \beta_{1}age_{i,t} + \beta_{2}age_{i,t}^{2} + \beta_{3}*age_{i,t}^{3} + \varepsilon_{i,t}\]</div>
-  <!-- \begin{table}[htbp]\centering\captionsetup{width=5.8in}
-    \caption{\label{tab:wage_step1}\textbf{Initial Log Wage Regressions}}
-    \begin{threeparttable}
-    \begin{tabular}{>{\scriptsize}l |>{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c}
-    \hline\hline
-    \multicolumn{1}{c}{\scriptsize{Dependent}} & Single & Single & Married, & Married, \\[-2mm]
-    \multicolumn{1}{c}{\scriptsize{variables}}  & males & females & male head  & female head \\
-    \hline
-    $Age$ & 0.177*** & 0.143*** & 0.134*** & 0.065** \\
-          & (0.006) & (0.005) & (0.004) & (0.027) \\
-    $Age^{2}$ & -0.003*** & -0.002*** & -0.002*** & -0.000 \\
-              & (0.000) & (0.000) & (0.000) & (0.001) \\
-    $Age^{3}$ & 0.000*** & 0.000*** & 0.000*** & 0.000 \\
-              & (0.000) & (0.000) & (0.000) & (0.000) \\
-    Constant & -0.839*** & -0.648*** & -0.042 & 1.004*** \\
-             & (0.072) & (0.070) & (0.058) & (0.376) \\
-    \hline
-    Adj $R^{2}$  & -0.007 & 0.011 & -0.032 & -0.324 \\
-    Observations & 88,833 & 96,670 & 141,564 & 6,314 \\
-    \hline\hline
-    \end{tabular}
-    \begin{tablenotes}
-      \scriptsize{\item[]Source: CWHS data, 1991 -- 2009.
-      \item[**]Significant at the 5 percent level ($p<0.05$).
-      \item[***]Significant at the 1 percent level ($p<0.01$).}
-    \end{tablenotes}
-    \end{threeparttable}
-  \end{table} -->
-<div id="tab:wage_step1">
-<table class="colwidths-auto table">
+<span class="eqno">(67)<a class="headerlink" href="#equation-wage-step1" title="Permalink to this equation">¶</a></span>\[  ln(w_{i,t}) = \alpha_{i} + \beta_{1}age_{i,t} + \beta_{2}age_{i,t}^{2} + \beta_{3}*age_{i,t}^{3} + \varepsilon_{i,t}\]</div>
+<p>The parameter estimates, including the household fixed effects, from Equation <a class="reference internal" href="#equation-wage-step1">(67)</a> are shown in <a class="reference internal" href="#tabwage-step1"><span class="std std-numref">Table 4</span></a>. These estimates are then used to impute values for log wages in years of each households’ economic life for which we do not have data.  This creates a balanced panel of log wages of households with heads aged 21 to 80. The actual and imputed wage values are then used to calculate the net present value of lifetime labor endowments per adult for each household. Specifically, we define lifetime income for household <span class="math notranslate nohighlight">\(i\)</span> as:</p>
+<div class="math notranslate nohighlight" id="equation-eqn-li">
+<span class="eqno">(68)<a class="headerlink" href="#equation-eqn-li" title="Permalink to this equation">¶</a></span>\[  LI_{i} = \sum_{t=21}^{80}\left(\frac{1}{1+r}\right)^{t-21}(w_{i,t}*4000)\]</div>
+<table class="table" id="tabwage-step1">
+<caption><span class="caption-number">Table 4 </span><span class="caption-text"><strong>Initial log wage regressions.</strong> Source: CWHS data, 1991-2009. ** Significant at the 5-percent level (<span class="math notranslate nohighlight">\(p&lt;0.05\)</span>). *** Significant at the 1-percent level (<span class="math notranslate nohighlight">\(p&lt;0.01\)</span>).</span><a class="headerlink" href="#tabwage-step1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
 <thead>
-<tr class="row-odd"><th class="text-align:left head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
+<tr class="row-odd"><th class="head"><p>Dependent variable</p></th>
+<th class="head"><p>Single male</p></th>
+<th class="head"><p>Single female</p></th>
+<th class="head"><p>Married male head</p></th>
+<th class="head"><p>Married female head</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>Single</p></td>
-<td class="text-align:center"><p>Single</p></td>
-<td class="text-align:center"><p>Married,</p></td>
-<td class="text-align:center"><p>Married,</p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Age\)</span></p></td>
+<td><p>0.177***</p></td>
+<td><p>0.143***</p></td>
+<td><p>0.134***</p></td>
+<td><p>0.065**</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>males</p></td>
-<td class="text-align:center"><p>females</p></td>
-<td class="text-align:center"><p>male head</p></td>
-<td class="text-align:center"><p>female head</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.006)</p></td>
+<td><p>(0.005)</p></td>
+<td><p>(0.004)</p></td>
+<td><p>(0.027)</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p><em>A<strong>g</strong>e</em></p></td>
-<td class="text-align:center"><p>0.177***</p></td>
-<td class="text-align:center"><p>0.143***</p></td>
-<td class="text-align:center"><p>0.134***</p></td>
-<td class="text-align:center"><p>0.065**</p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Age^2\)</span></p></td>
+<td><p>-0.003***</p></td>
+<td><p>-0.002***</p></td>
+<td><p>-0.002***</p></td>
+<td><p>-0.000</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.006)</p></td>
-<td class="text-align:center"><p>(0.005)</p></td>
-<td class="text-align:center"><p>(0.004)</p></td>
-<td class="text-align:center"><p>(0.027)</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.000)</p></td>
+<td><p>(0.000)</p></td>
+<td><p>(0.000)</p></td>
+<td><p>(0.001)</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p><em>A<strong>g</strong>e</em><sup>2</sup></p></td>
-<td class="text-align:center"><p>-0.003***</p></td>
-<td class="text-align:center"><p>-0.002***</p></td>
-<td class="text-align:center"><p>-0.002***</p></td>
-<td class="text-align:center"><p>-0.000</p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Age^3\)</span></p></td>
+<td><p>0.000***</p></td>
+<td><p>0.000***</p></td>
+<td><p>0.000***</p></td>
+<td><p>0.000</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.000)</p></td>
-<td class="text-align:center"><p>(0.000)</p></td>
-<td class="text-align:center"><p>(0.000)</p></td>
-<td class="text-align:center"><p>(0.001)</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.000)</p></td>
+<td><p>(0.000)</p></td>
+<td><p>(0.000)</p></td>
+<td><p>(0.000)</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p><em>A<strong>g</strong>e</em><sup>3</sup></p></td>
-<td class="text-align:center"><p>0.000***</p></td>
-<td class="text-align:center"><p>0.000***</p></td>
-<td class="text-align:center"><p>0.000***</p></td>
-<td class="text-align:center"><p>0.000</p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Constant\)</span></p></td>
+<td><p>-0.839***</p></td>
+<td><p>-0.648***</p></td>
+<td><p>-0.042</p></td>
+<td><p>1.004***</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.000)</p></td>
-<td class="text-align:center"><p>(0.000)</p></td>
-<td class="text-align:center"><p>(0.000)</p></td>
-<td class="text-align:center"><p>(0.000)</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.072)</p></td>
+<td><p>(0.070)</p></td>
+<td><p>(0.058)</p></td>
+<td><p>(0.376)</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p>Constant</p></td>
-<td class="text-align:center"><p>-0.839***</p></td>
-<td class="text-align:center"><p>-0.648***</p></td>
-<td class="text-align:center"><p>-0.042</p></td>
-<td class="text-align:center"><p>1.004***</p></td>
+<tr class="row-even"><td><p>Adjusted <span class="math notranslate nohighlight">\(R^2\)</span></p></td>
+<td><p>-0.007</p></td>
+<td><p>0.011</p></td>
+<td><p>-0.032</p></td>
+<td><p>-0.324</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.072)</p></td>
-<td class="text-align:center"><p>(0.070)</p></td>
-<td class="text-align:center"><p>(0.058)</p></td>
-<td class="text-align:center"><p>(0.376)</p></td>
-</tr>
-<tr class="row-even"><td class="text-align:left"><p>Adj <em>R</em><sup>2</sup></p></td>
-<td class="text-align:center"><p>-0.007</p></td>
-<td class="text-align:center"><p>0.011</p></td>
-<td class="text-align:center"><p>-0.032</p></td>
-<td class="text-align:center"><p>-0.324</p></td>
-</tr>
-<tr class="row-odd"><td class="text-align:left"><p>Observations</p></td>
-<td class="text-align:center"><p>88,833</p></td>
-<td class="text-align:center"><p>96,670</p></td>
-<td class="text-align:center"><p>141,564</p></td>
-<td class="text-align:center"><p>6,314</p></td>
+<tr class="row-odd"><td><p>Observations</p></td>
+<td><p>88,833</p></td>
+<td><p>96,670</p></td>
+<td><p>141,564</p></td>
+<td><p>6,314</p></td>
 </tr>
 </tbody>
 </table>
-<p><span id="tab:wage_step1"
-label="tab:wage_step1"></span><strong>Initial Log Wage
-Regressions</strong></p>
-</div>
-<p>Source: CWHS data, 1991 – 2009.</p>
-<p>Significant at the 5 percent level (<em>p</em> &lt; 0.05).</p>
-<p>Significant at the 1 percent level (<em>p</em> &lt; 0.01).</p>
-<p>The parameter estimates, including the household fixed effects, from Equation <a class="reference internal" href="#equation-wage-step1">(67)</a> are shown in Table <span class="xref std std-ref">tab:wage_step1</span>. These estimates are then used to impute values for log wages in years of each households’ economic life for which we do not have data.  This creates a balanced panel of log wages of households with heads aged 21 to 80. The actual and imputed wage values are then used to calculate the net present value of lifetime labor endowments per adult for each household. Specifically, we define lifetime income for household <span class="math notranslate nohighlight">\(i\)</span> as:</p>
-<div class="math notranslate nohighlight" id="equation-eqn-li">
-<span class="eqno">(68)<a class="headerlink" href="#equation-eqn-li" title="Permalink to this equation">¶</a></span>\[  LI_{i} = \sum_{t=21}^{80}\left(\frac{1}{1+r}\right)^{t-21}(w_{i,t}*4000)\]</div>
-<p>\noindent\noindent Note that households are all have the same time endowment in each year (4000 hours).  Thus the amount of the time endowment scales lifetime income up or down, but does not change the lifetime income of one household relative to another. This is not the case with the interest rate, <span class="math notranslate nohighlight">\(r\)</span>, which we fix at 4%. Changes in the interest rate differentially impact the lifetime income calculation for different individuals because they may face different earnings profiles. For example, a higher interest rate would reduced the discounted present value of lifetime income for those individuals whose wage profiles peaked later in their economic life by a larger amount than it would reduce the discounted present value of lifetime income for individuals whose wage profiles peaked earlier.</p>
+<p>Note that households are all have the same time endowment in each year (4000 hours). Thus the amount of the time endowment scales lifetime income up or down, but does not change the lifetime income of one household relative to another. This is not the case with the interest rate, <span class="math notranslate nohighlight">\(r\)</span>, which we fix at 4%. Changes in the interest rate differentially impact the lifetime income calculation for different individuals because they may face different earnings profiles. For example, a higher interest rate would reduced the discounted present value of lifetime income for those individuals whose wage profiles peaked later in their economic life by a larger amount than it would reduce the discounted present value of lifetime income for individuals whose wage profiles peaked earlier.</p>
 </div>
 <div class="section" id="profiles-by-lifetime-income">
 <h2>Profiles by Lifetime Income<a class="headerlink" href="#profiles-by-lifetime-income" title="Permalink to this headline">¶</a></h2>
 <p>With observations of lifetime income for each household, we next sort households and find the percentile of the lifetime income distribution that each household falls in.  With these percentiles, we create our lifetime income groupings.</p>
 <div class="math notranslate nohighlight" id="equation-eqlfearnlambda-j">
 <span class="eqno">(69)<a class="headerlink" href="#equation-eqlfearnlambda-j" title="Permalink to this equation">¶</a></span>\[  \lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]\]</div>
-<p>That is, lifetime income group one includes those in below the 25th percentile, group two includes those from the 25th to the median, group three includes those from the median to the 70th percentile, group four includes those from the 70th to the 80th percentile, group 5 includes those from the 80th to 90th percentile, group 6 includes those from the 90th to 99th percentile, and group 7 consists of the top one percent in the lifetime income distribution.  Table <span class="xref std std-ref">tab:li_group_stats</span> presents descriptive statistics for each of these groups.</p>
-  <!-- \begin{table}[htbp] \centering \captionsetup{width=6.0in}
-  \caption{\label{tab:li_group_stats}\textbf{Descriptive Statistics by Lifetime Income Category}}
-    \begin{threeparttable}
-    \begin{tabular}{>{\scriptsize}l |>{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r >{\scriptsize}r}
-      \hline\hline
-      \multicolumn{1}{c}{\scriptsize{Lifetime Income}} & & & & & & & & \\
-      \multicolumn{1}{c}{\scriptsize{Category:}} & \multicolumn{1}{c}{\scriptsize{1}} & \multicolumn{1}{c}{\scriptsize{2}} & \multicolumn{1}{c}{\scriptsize{3}} & \multicolumn{1}{c}{\scriptsize{4}} & \multicolumn{1}{c}{\scriptsize{5}} & \multicolumn{1}{c}{\scriptsize{6}} & \multicolumn{1}{c}{\scriptsize{7}} & \multicolumn{1}{c}{\scriptsize{All}} \\
-      \hline
-      Percentiles & 0-25  & 25-50 & 50-70 & 70-80 & 80-90 & 90-99 & 99-100 & 0-100 \\
-      Observations & 65,698 & 101,484 & 74,253 & 33,528 & 31,919 & 24,370 & 2,129 & 333,381 \\
-      Fraction Single & & & & & & & & \\
-      \ \ \ Females & 0.30  & 0.24  & 0.25  & 0.32  & 0.38  & 0.40  & 0.22  & 0.28 \\
-      \ \ \  Males & 0.18  & 0.22  & 0.30  & 0.35  & 0.38  & 0.37  & 0.20  & 0.26 \\
-      Fraction Married & & & & & & & & \\
-      \ \ \ Female Head & 0.08  & 0.00  & 0.00  & 0.00  & 0.00  & 0.00  & 0.00  & 0.02 \\
-      \ \ \ Male Head & 0.45  & 0.53  & 0.45  & 0.32  & 0.23  & 0.23  & 0.57  & 0.39 \\
-      Mean: & & & & & & & & \\
-      Age, Primary & 51.72 & 44.15 & 38.05 & 34.09 & 31.53 & 30.79 & 40.17 & 39.10 \\
-      Hourly Wage & 11.60 & 16.98 & 20.46 & 23.04 & 26.06 & 40.60 & 237.80 & 21.33 \\
-      Annual Wages & 25,178 & 44,237 & 54,836 & 57,739 & 61,288 & 92,191 & 529,522 & 51,604 \\
-      Lifetime Income & 666,559 & 1,290,522 & 1,913,029 & 2,535,533 & 3,249,287 & 5,051,753 & 18,080,868 & 2,021,298 \\
-      \hline\hline
-    \end{tabular}%
-    \begin{tablenotes}
-      \tiny{\item[*] CWHS data, 1991-2009, all nominal values in 2005\$.}
-    \end{tablenotes}
-    \end{threeparttable}
-  \end{table} -->
-<div id="tab:li_group_stats">
-<table class="colwidths-auto table">
+<p>That is, lifetime income group one includes those in below the 25th percentile, group two includes those from the 25th to the median, group three includes those from the median to the 70th percentile, group four includes those from the 70th to the 80th percentile, group 5 includes those from the 80th to 90th percentile, group 6 includes those from the 90th to 99th percentile, and group 7 consists of the top one percent in the lifetime income distribution.  <a class="reference internal" href="#tab-li-group-stats"><span class="std std-numref">Table 5</span></a> presents descriptive statistics for each of these groups.</p>
+<table class="table" id="tab-li-group-stats">
+<caption><span class="caption-number">Table 5 </span><span class="caption-text"><strong>Descriptive Statistics by Lifetime Income Category.</strong> Source: CWHS data, 1991-2009, all nominal values in 2005 $.</span><a class="headerlink" href="#tab-li-group-stats" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+</colgroup>
 <thead>
-<tr class="row-odd"><th class="text-align:left head"><p></p></th>
-<th class="text-align:right head"><p></p></th>
-<th class="text-align:right head"><p></p></th>
-<th class="text-align:right head"><p></p></th>
-<th class="text-align:right head"><p></p></th>
-<th class="text-align:right head"><p></p></th>
-<th class="text-align:right head"><p></p></th>
-<th class="text-align:right head"><p></p></th>
-<th class="text-align:right head"><p></p></th>
+<tr class="row-odd"><th class="head"><p>Lifetime Income Category</p></th>
+<th class="head"><p>1</p></th>
+<th class="head"><p>2</p></th>
+<th class="head"><p>3</p></th>
+<th class="head"><p>4</p></th>
+<th class="head"><p>5</p></th>
+<th class="head"><p>6</p></th>
+<th class="head"><p>7</p></th>
+<th class="head"><p>All</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
+<tr class="row-even"><td><p>Percentiles</p></td>
+<td><p>0-25</p></td>
+<td><p>25-50</p></td>
+<td><p>50-75</p></td>
+<td><p>70-80</p></td>
+<td><p>80-90</p></td>
+<td><p>90-99</p></td>
+<td><p>99-100</p></td>
+<td><p>0-100</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
+<tr class="row-odd"><td><p>Observations</p></td>
+<td><p>65,698</p></td>
+<td><p>101,484</p></td>
+<td><p>74,253</p></td>
+<td><p>33,528</p></td>
+<td><p>31,919</p></td>
+<td><p>24,370</p></td>
+<td><p>2,129</p></td>
+<td><p>333,381</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p>Percentiles</p></td>
-<td class="text-align:right"><p>0-25</p></td>
-<td class="text-align:right"><p>25-50</p></td>
-<td class="text-align:right"><p>50-70</p></td>
-<td class="text-align:right"><p>70-80</p></td>
-<td class="text-align:right"><p>80-90</p></td>
-<td class="text-align:right"><p>90-99</p></td>
-<td class="text-align:right"><p>99-100</p></td>
-<td class="text-align:right"><p>0-100</p></td>
+<tr class="row-even"><td><p><strong>Fraction Single</strong></p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>Observations</p></td>
-<td class="text-align:right"><p>65,698</p></td>
-<td class="text-align:right"><p>101,484</p></td>
-<td class="text-align:right"><p>74,253</p></td>
-<td class="text-align:right"><p>33,528</p></td>
-<td class="text-align:right"><p>31,919</p></td>
-<td class="text-align:right"><p>24,370</p></td>
-<td class="text-align:right"><p>2,129</p></td>
-<td class="text-align:right"><p>333,381</p></td>
+<tr class="row-odd"><td><p>Females</p></td>
+<td><p>0.30</p></td>
+<td><p>0.24</p></td>
+<td><p>0.25</p></td>
+<td><p>0.32</p></td>
+<td><p>0.38</p></td>
+<td><p>0.40</p></td>
+<td><p>0.22</p></td>
+<td><p>0.28</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p>Fraction Single</p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
+<tr class="row-even"><td><p>Males</p></td>
+<td><p>0.18</p></td>
+<td><p>0.22</p></td>
+<td><p>0.30</p></td>
+<td><p>0.35</p></td>
+<td><p>0.38</p></td>
+<td><p>0.37</p></td>
+<td><p>0.20</p></td>
+<td><p>0.26</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>Females</p></td>
-<td class="text-align:right"><p>0.30</p></td>
-<td class="text-align:right"><p>0.24</p></td>
-<td class="text-align:right"><p>0.25</p></td>
-<td class="text-align:right"><p>0.32</p></td>
-<td class="text-align:right"><p>0.38</p></td>
-<td class="text-align:right"><p>0.40</p></td>
-<td class="text-align:right"><p>0.22</p></td>
-<td class="text-align:right"><p>0.28</p></td>
+<tr class="row-odd"><td><p><strong>Fraction Married</strong></p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p>Males</p></td>
-<td class="text-align:right"><p>0.18</p></td>
-<td class="text-align:right"><p>0.22</p></td>
-<td class="text-align:right"><p>0.30</p></td>
-<td class="text-align:right"><p>0.35</p></td>
-<td class="text-align:right"><p>0.38</p></td>
-<td class="text-align:right"><p>0.37</p></td>
-<td class="text-align:right"><p>0.20</p></td>
-<td class="text-align:right"><p>0.26</p></td>
+<tr class="row-even"><td><p>Female Head</p></td>
+<td><p>0.08</p></td>
+<td><p>0.00</p></td>
+<td><p>0.00</p></td>
+<td><p>0.00</p></td>
+<td><p>0.00</p></td>
+<td><p>0.00</p></td>
+<td><p>0.00</p></td>
+<td><p>0.02</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>Fraction Married</p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
+<tr class="row-odd"><td><p>Male Head</p></td>
+<td><p>0.45</p></td>
+<td><p>0.53</p></td>
+<td><p>0.45</p></td>
+<td><p>0.32</p></td>
+<td><p>0.23</p></td>
+<td><p>0.23</p></td>
+<td><p>0.57</p></td>
+<td><p>0.39</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p>Female Head</p></td>
-<td class="text-align:right"><p>0.08</p></td>
-<td class="text-align:right"><p>0.00</p></td>
-<td class="text-align:right"><p>0.00</p></td>
-<td class="text-align:right"><p>0.00</p></td>
-<td class="text-align:right"><p>0.00</p></td>
-<td class="text-align:right"><p>0.00</p></td>
-<td class="text-align:right"><p>0.00</p></td>
-<td class="text-align:right"><p>0.02</p></td>
+<tr class="row-even"><td><p><strong>Mean:</strong></p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>Male Head</p></td>
-<td class="text-align:right"><p>0.45</p></td>
-<td class="text-align:right"><p>0.53</p></td>
-<td class="text-align:right"><p>0.45</p></td>
-<td class="text-align:right"><p>0.32</p></td>
-<td class="text-align:right"><p>0.23</p></td>
-<td class="text-align:right"><p>0.23</p></td>
-<td class="text-align:right"><p>0.57</p></td>
-<td class="text-align:right"><p>0.39</p></td>
+<tr class="row-odd"><td><p>Age, Primary</p></td>
+<td><p>51.72</p></td>
+<td><p>44.15</p></td>
+<td><p>38.05</p></td>
+<td><p>34.09</p></td>
+<td><p>31.53</p></td>
+<td><p>30.79</p></td>
+<td><p>40.17</p></td>
+<td><p>39.10</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p>Mean:</p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
-<td class="text-align:right"><p></p></td>
+<tr class="row-even"><td><p>Hourly Wage</p></td>
+<td><p>11.60</p></td>
+<td><p>16.98</p></td>
+<td><p>20.46</p></td>
+<td><p>23.04</p></td>
+<td><p>26.06</p></td>
+<td><p>40.60</p></td>
+<td><p>237.80</p></td>
+<td><p>21.33</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>Age, Primary</p></td>
-<td class="text-align:right"><p>51.72</p></td>
-<td class="text-align:right"><p>44.15</p></td>
-<td class="text-align:right"><p>38.05</p></td>
-<td class="text-align:right"><p>34.09</p></td>
-<td class="text-align:right"><p>31.53</p></td>
-<td class="text-align:right"><p>30.79</p></td>
-<td class="text-align:right"><p>40.17</p></td>
-<td class="text-align:right"><p>39.10</p></td>
+<tr class="row-odd"><td><p>Annual Wages</p></td>
+<td><p>25,178</p></td>
+<td><p>44,237</p></td>
+<td><p>54,836</p></td>
+<td><p>57,739</p></td>
+<td><p>61,288</p></td>
+<td><p>92,191</p></td>
+<td><p>529,522</p></td>
+<td><p>51,604</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p>Hourly Wage</p></td>
-<td class="text-align:right"><p>11.60</p></td>
-<td class="text-align:right"><p>16.98</p></td>
-<td class="text-align:right"><p>20.46</p></td>
-<td class="text-align:right"><p>23.04</p></td>
-<td class="text-align:right"><p>26.06</p></td>
-<td class="text-align:right"><p>40.60</p></td>
-<td class="text-align:right"><p>237.80</p></td>
-<td class="text-align:right"><p>21.33</p></td>
-</tr>
-<tr class="row-odd"><td class="text-align:left"><p>Annual Wages</p></td>
-<td class="text-align:right"><p>25,178</p></td>
-<td class="text-align:right"><p>44,237</p></td>
-<td class="text-align:right"><p>54,836</p></td>
-<td class="text-align:right"><p>57,739</p></td>
-<td class="text-align:right"><p>61,288</p></td>
-<td class="text-align:right"><p>92,191</p></td>
-<td class="text-align:right"><p>529,522</p></td>
-<td class="text-align:right"><p>51,604</p></td>
-</tr>
-<tr class="row-even"><td class="text-align:left"><p>Lifetime Income</p></td>
-<td class="text-align:right"><p>666,559</p></td>
-<td class="text-align:right"><p>1,290,522</p></td>
-<td class="text-align:right"><p>1,913,029</p></td>
-<td class="text-align:right"><p>2,535,533</p></td>
-<td class="text-align:right"><p>3,249,287</p></td>
-<td class="text-align:right"><p>5,051,753</p></td>
-<td class="text-align:right"><p>18,080,868</p></td>
-<td class="text-align:right"><p>2,021,298</p></td>
+<tr class="row-even"><td><p>Lifetime Income</p></td>
+<td><p>666,559</p></td>
+<td><p>1,290,522</p></td>
+<td><p>1,913,029</p></td>
+<td><p>2,535,533</p></td>
+<td><p>3,249,287</p></td>
+<td><p>5,051,753</p></td>
+<td><p>18,080,868</p></td>
+<td><p>2,021,298</p></td>
 </tr>
 </tbody>
 </table>
-<p><span id="tab:li_group_stats"
-label="tab:li_group_stats">[tab:li_group_stats]</span><strong>Descriptive
-Statistics by Lifetime Income Category</strong></p>
-</div>
-<p>CWHS data, 1991-2009, all nominal values in 2005$.</p>
-<p>To get a life-cycle profile of effective labor units for each group, we estimate the wage profile for each lifetime income group.  We do this by estimating the following regression model separately for each lifetime income group using data on actual (not imputed) wages:
-\begin{equation}\label{eqn:wage_profile}
-ln(w_{i,t})=\alpha +  \beta_{1}age_{i,t} + \beta_{2}age_{i,t}^{2} + \beta_{3}*age_{i,t}^{3}+ \varepsilon_{i,t}
-\end{equation}
-The estimated parameters from equation <code class="xref eq docutils literal notranslate"><span class="pre">eqn:wage_profile</span></code> are given in Table <span class="xref std std-ref">tab:wage_profiles</span>. The life-cycle earnings profiles implied by these parameters are plotted in Figure <a class="reference internal" href="#figlogabil"><span class="std std-numref">Fig. 13</span></a>. Note that there are few individuals above age 80 in the data. To extrapolate these estimates for model ages 80-100, we use an arctan function of the following form:</p>
+<p>To get a life-cycle profile of effective labor units for each group, we estimate the wage profile for each lifetime income group. We do this by estimating the following regression model Equation {eq}`` separately for each lifetime income group using data on actual (not imputed) wages:</p>
+<div class="math notranslate nohighlight" id="equation-eqwage-profile">
+<span class="eqno">(70)<a class="headerlink" href="#equation-eqwage-profile" title="Permalink to this equation">¶</a></span>\[  ln(w_{j,t}) = \alpha_{j} + \beta_{1}age_{j,t} + \beta_{2}age_{j,t}^{2} + \beta_{3}*age_{j,t}^{3} + \varepsilon_{j,t}\]</div>
+<p>The estimated parameters from equation <a class="reference internal" href="#equation-eqwage-profile">(70)</a> are given in <a class="reference internal" href="#tabwage-profiles"><span class="std std-numref">Table 6</span></a>. The life-cycle earnings profiles implied by these parameters are plotted in <a class="reference internal" href="#figlogabil"><span class="std std-numref">Fig. 12</span></a>. Note that there are few individuals above age 80 in the data. To extrapolate these estimates for model ages 80-100, we use an arctan function of the following form:</p>
 <div class="math notranslate nohighlight" id="equation-eqlfearnarctan">
-<span class="eqno">(70)<a class="headerlink" href="#equation-eqlfearnarctan" title="Permalink to this equation">¶</a></span>\[  y = \left(\frac{-a}{\pi}\right)*arctan(bx+c)+\frac{a}{2}\]</div>
+<span class="eqno">(71)<a class="headerlink" href="#equation-eqlfearnarctan" title="Permalink to this equation">¶</a></span>\[    y = \left(\frac{-a}{\pi}\right)*arctan(bx+c)+\frac{a}{2}\]</div>
 <p>where <span class="math notranslate nohighlight">\(x\)</span> is age, and <span class="math notranslate nohighlight">\(a\)</span>, <span class="math notranslate nohighlight">\(b\)</span>, and <span class="math notranslate nohighlight">\(c\)</span> are the parameters we search over for the best fit of the function to the following three criteria: 1) the value of the function should match the value of the data at age 80 2) the slope of the arctan should match the slope of the data at age 80 and 3) the value of the function should match the value of the data at age 100 times a constant.  This constant is .5 for all lifetime income groups, except the 2nd highest ability is .7 (otherwise, the 2nd highest has a lower income than the 3rd highest ability group in the last few years).</p>
-  <!-- \begin{table}[htbp] \centering \captionsetup{width=6.0in}
+<!--   \begin{table}[htbp] \centering \captionsetup{width=6.0in}
   \caption{\label{tab:wage_profiles}\textbf{Log Wage Regressions, by Lifetime Income Group}}
     \begin{threeparttable}
     \begin{tabular}{>{\scriptsize}l |>{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c |>{\scriptsize}c}
@@ -759,147 +680,159 @@ The estimated parameters from equation <code class="xref eq docutils literal not
     \end{tablenotes}
     \end{threeparttable}
   \end{table} -->
-  <div id="tab:wage_profiles">
-<table class="colwidths-auto table">
+<!--   <div id="tab:wage_profiles">
+
+|           |                   |                   |                       |                       |              |
+|           |     Constant      |     *A**g**e*     | *A**g**e*<sup>2</sup> | *A**g**e*<sup>3</sup> | Observations |
+|:----------|:-----------------:|:-----------------:|:---------------------:|:---------------------:|:------------:|
+| 0 to 25   | 3.41000000\*\*\*  | -0.09720122\*\*\* |   0.00247639\*\*\*    |   -0.00001842\*\*\*   |    65,698    |
+|           |   (0.08718100)    |   (0.00543339)    |     (0.00010901)      |     (0.00000071)      |              |
+| 25 to 50  | 0.69689692\*\*\*  | 0.05995294\*\*\*  |      -0.00004086      |   -0.00000521\*\*\*   |   101,484    |
+|           |   (0.05020758)    |   (0.00345549)    |     (0.00007627)      |     (0.00000054)      |              |
+| 50 to 70  | -0.78761958\*\*\* | 0.17654618\*\*\*  |   -0.00240656\*\*\*   |   0.00001039\*\*\*    |    74,253    |
+|           |   (0.04519637)    |   (0.00338371)    |     (0.00008026)      |     (0.00000061)      |              |
+| 70 to 80  | -1.11000000\*\*\* | 0.21168263\*\*\*  |   -0.00306555\*\*\*   |   0.00001438\*\*\*    |    33,528    |
+|           |   (0.06838352)    |   (0.00530190)    |     (0.00012927)      |     (0.00000099)      |              |
+| 80 to 90  | -0.93939272\*\*\* | 0.21638731\*\*\*  |   -0.00321041\*\*\*   |   0.00001579\*\*\*    |    31,919    |
+|           |   (0.08333727)    |   (0.00664647)    |     (0.00016608)      |     (0.00000130)      |              |
+| 90 to 99  | 1.60000000\*\*\*  | 0.04500235\*\*\*  |   0.00094253\*\*\*    |   -0.00001470\*\*\*   |    24,370    |
+|           |   (0.11723131)    |   (0.00931334)    |     (0.00022879)      |     (0.00000176)      |              |
+| 99 to 100 | 1.89000000\*\*\*  |  0.09229392\*\*   |      0.00012902       |     -0.00001169\*     |    2,129     |
+|           |   (0.50501510)    |   (0.03858202)    |     (0.00090072)      |     (0.00000657)      |              |
+
+<span id="tab:wage_profiles"
+label="tab:wage_profiles">\[tab:wage\_profiles\]</span>**Log Wage
+Regressions, by Lifetime Income Group**
+
+</div>
+
+Source: CWHS data, 1991 – 2009.
+
+Significant at the 10 percent level (*p* &lt; 0.10).
+
+Significant at the 5 percent level (*p* &lt; 0.05).
+
+Significant at the 1 percent level (*p* &lt; 0.01). -->
+<table class="table" id="tabwage-profiles">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text"><strong>Log Wage Regressions, by Lifetime Income Group.</strong> Source: CWHS data, 1991-2009. * Significant at the 10-percent level (<span class="math notranslate nohighlight">\(p&lt;0.10\)</span>). ** Significant at the 5-percent level (<span class="math notranslate nohighlight">\(p&lt;0.05\)</span>). *** Significant at the 1-percent level (<span class="math notranslate nohighlight">\(p&lt;0.01\)</span>).</span><a class="headerlink" href="#tabwage-profiles" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
 <thead>
-<tr class="row-odd"><th class="text-align:left head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
-<th class="text-align:center head"><p></p></th>
+<tr class="row-odd"><th class="head"><p>Lifetime income groups (percentiles)</p></th>
+<th class="head"><p>Constant</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(Age\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(Age^2\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(Age^3\)</span></p></th>
+<th class="head"><p>Observations</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-even"><td><p>0 to 25</p></td>
+<td><p>3.41000000***</p></td>
+<td><p>-0.09720122***</p></td>
+<td><p>0.00247639***</p></td>
+<td><p>-0.00001842***</p></td>
+<td><p>65,698</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.08718100)</p></td>
+<td><p>(0.00543339)</p></td>
+<td><p>(0.00010901)</p></td>
+<td><p>(0.00000071)</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>Constant</p></td>
-<td class="text-align:center"><p><em>A<strong>g</strong>e</em></p></td>
-<td class="text-align:center"><p><em>A<strong>g</strong>e</em><sup>2</sup></p></td>
-<td class="text-align:center"><p><em>A<strong>g</strong>e</em><sup>3</sup></p></td>
-<td class="text-align:center"><p>Observations</p></td>
+<tr class="row-even"><td><p>25 to 50</p></td>
+<td><p>0.69689692***</p></td>
+<td><p>0.05995294***</p></td>
+<td><p>-0.00004086</p></td>
+<td><p>-0.00000521***</p></td>
+<td><p>101,484</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>0 to 25</p></td>
-<td class="text-align:center"><p>3.41000000***</p></td>
-<td class="text-align:center"><p>-0.09720122***</p></td>
-<td class="text-align:center"><p>0.00247639***</p></td>
-<td class="text-align:center"><p>-0.00001842***</p></td>
-<td class="text-align:center"><p>65,698</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.05020758)</p></td>
+<td><p>(0.00345549)</p></td>
+<td><p>(0.00007627)</p></td>
+<td><p>(0.00000054)</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.08718100)</p></td>
-<td class="text-align:center"><p>(0.00543339)</p></td>
-<td class="text-align:center"><p>(0.00010901)</p></td>
-<td class="text-align:center"><p>(0.00000071)</p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-even"><td><p>50 to 70</p></td>
+<td><p>-0.78761958***</p></td>
+<td><p>0.17654618***</p></td>
+<td><p>-0.00240656***</p></td>
+<td><p>0.00001039***</p></td>
+<td><p>74,253</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>25 to 50</p></td>
-<td class="text-align:center"><p>0.69689692***</p></td>
-<td class="text-align:center"><p>0.05995294***</p></td>
-<td class="text-align:center"><p>-0.00004086</p></td>
-<td class="text-align:center"><p>-0.00000521***</p></td>
-<td class="text-align:center"><p>101,484</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.04519637)</p></td>
+<td><p>(0.00338371)</p></td>
+<td><p>(0.00008026)</p></td>
+<td><p>(0.00000061)</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.05020758)</p></td>
-<td class="text-align:center"><p>(0.00345549)</p></td>
-<td class="text-align:center"><p>(0.00007627)</p></td>
-<td class="text-align:center"><p>(0.00000054)</p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-even"><td><p>70 to 80</p></td>
+<td><p>-1.11000000***</p></td>
+<td><p>0.21168263***</p></td>
+<td><p>-0.00306555***</p></td>
+<td><p>0.00001438***</p></td>
+<td><p>33,528</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>50 to 70</p></td>
-<td class="text-align:center"><p>-0.78761958***</p></td>
-<td class="text-align:center"><p>0.17654618***</p></td>
-<td class="text-align:center"><p>-0.00240656***</p></td>
-<td class="text-align:center"><p>0.00001039***</p></td>
-<td class="text-align:center"><p>74,253</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.06838352)</p></td>
+<td><p>(0.00530190)</p></td>
+<td><p>(0.00012927)</p></td>
+<td><p>(0.00000099)</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.04519637)</p></td>
-<td class="text-align:center"><p>(0.00338371)</p></td>
-<td class="text-align:center"><p>(0.00008026)</p></td>
-<td class="text-align:center"><p>(0.00000061)</p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-even"><td><p>80 to 90</p></td>
+<td><p>-0.93939272***</p></td>
+<td><p>0.21638731***</p></td>
+<td><p>-0.00321041***</p></td>
+<td><p>0.00001579***</p></td>
+<td><p>31,919</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>70 to 80</p></td>
-<td class="text-align:center"><p>-1.11000000***</p></td>
-<td class="text-align:center"><p>0.21168263***</p></td>
-<td class="text-align:center"><p>-0.00306555***</p></td>
-<td class="text-align:center"><p>0.00001438***</p></td>
-<td class="text-align:center"><p>33,528</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.08333727)</p></td>
+<td><p>(0.00664647)</p></td>
+<td><p>(0.00016608)</p></td>
+<td><p>(0.00000130)</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.06838352)</p></td>
-<td class="text-align:center"><p>(0.00530190)</p></td>
-<td class="text-align:center"><p>(0.00012927)</p></td>
-<td class="text-align:center"><p>(0.00000099)</p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-even"><td><p>90 to 99</p></td>
+<td><p>1.60000000***</p></td>
+<td><p>0.04500235***</p></td>
+<td><p>0.00094253***</p></td>
+<td><p>-0.00001470***</p></td>
+<td><p>24,370</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>80 to 90</p></td>
-<td class="text-align:center"><p>-0.93939272***</p></td>
-<td class="text-align:center"><p>0.21638731***</p></td>
-<td class="text-align:center"><p>-0.00321041***</p></td>
-<td class="text-align:center"><p>0.00001579***</p></td>
-<td class="text-align:center"><p>31,919</p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.11723131)</p></td>
+<td><p>(0.00931334)</p></td>
+<td><p>(0.00022879)</p></td>
+<td><p>(0.00000176)</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.08333727)</p></td>
-<td class="text-align:center"><p>(0.00664647)</p></td>
-<td class="text-align:center"><p>(0.00016608)</p></td>
-<td class="text-align:center"><p>(0.00000130)</p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-even"><td><p>99 to 100</p></td>
+<td><p>1.89000000***</p></td>
+<td><p>0.09229392**</p></td>
+<td><p>0.00012902</p></td>
+<td><p>-0.00001169*</p></td>
+<td><p>2,129</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p>90 to 99</p></td>
-<td class="text-align:center"><p>1.60000000***</p></td>
-<td class="text-align:center"><p>0.04500235***</p></td>
-<td class="text-align:center"><p>0.00094253***</p></td>
-<td class="text-align:center"><p>-0.00001470***</p></td>
-<td class="text-align:center"><p>24,370</p></td>
-</tr>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.11723131)</p></td>
-<td class="text-align:center"><p>(0.00931334)</p></td>
-<td class="text-align:center"><p>(0.00022879)</p></td>
-<td class="text-align:center"><p>(0.00000176)</p></td>
-<td class="text-align:center"><p></p></td>
-</tr>
-<tr class="row-odd"><td class="text-align:left"><p>99 to 100</p></td>
-<td class="text-align:center"><p>1.89000000***</p></td>
-<td class="text-align:center"><p>0.09229392**</p></td>
-<td class="text-align:center"><p>0.00012902</p></td>
-<td class="text-align:center"><p>-0.00001169*</p></td>
-<td class="text-align:center"><p>2,129</p></td>
-</tr>
-<tr class="row-even"><td class="text-align:left"><p></p></td>
-<td class="text-align:center"><p>(0.50501510)</p></td>
-<td class="text-align:center"><p>(0.03858202)</p></td>
-<td class="text-align:center"><p>(0.00090072)</p></td>
-<td class="text-align:center"><p>(0.00000657)</p></td>
-<td class="text-align:center"><p></p></td>
+<tr class="row-odd"><td></td>
+<td><p>(0.50501510)</p></td>
+<td><p>(0.03858202)</p></td>
+<td><p>(0.00090072)</p></td>
+<td><p>(0.00000657)</p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<p><span id="tab:wage_profiles"
-label="tab:wage_profiles">[tab:wage_profiles]</span><strong>Log Wage
-Regressions, by Lifetime Income Group</strong></p>
-</div>
-<p>Source: CWHS data, 1991 – 2009.</p>
-<p>Significant at the 10 percent level (<em>p</em> &lt; 0.10).</p>
-<p>Significant at the 5 percent level (<em>p</em> &lt; 0.05).</p>
-<p>Significant at the 1 percent level (<em>p</em> &lt; 0.01).</p>
 <hr class="docutils" />
 <dl class="footnote brackets">
 <dt class="label" id="retroquest-note"><span class="brackets"><a class="fn-backref" href="#id7">1</a></span></dt>

@@ -374,39 +374,40 @@
 <p>We discuss the approach to estimating fertility rates <span class="math notranslate nohighlight">\(f_s\)</span>, mortality rates <span class="math notranslate nohighlight">\(\rho_s\)</span>, and immigration rates <span class="math notranslate nohighlight">\(i_s\)</span> in Sections <a class="reference internal" href="#secdemogfert"><span class="std std-ref">Fertility rates</span></a>, <a class="reference internal" href="#secdemogmort"><span class="std std-ref">Mortality rates</span></a>, and <a class="reference internal" href="#secdemogimm"><span class="std std-ref">Immigration rates</span></a>.</p>
 <div class="section" id="fertility-rates">
 <span id="secdemogfert"></span><h2>Fertility rates<a class="headerlink" href="#fertility-rates" title="Permalink to this headline">¶</a></h2>
-<p>In <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, we assume that the fertility rates for each age cohort <span class="math notranslate nohighlight">\(f_s\)</span> are constant across time. However, this assumption is conceptually straightforward to relax. Our data for U.S. fertility rates by age come from <a class="bibtex reference internal" href="../theory/references.html#martinetal-2015" id="id5">[MHO+15]</a> National Vital Statistics Report, which is final fertility rate data for 2013. Figure <a class="reference internal" href="#figfertrates"><span class="std std-numref">Fig. 6</span></a> shows the fertility-rate data and the estimated average fertility rates for <span class="math notranslate nohighlight">\(E+S=100\)</span>.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, we assume that the fertility rates for each age cohort <span class="math notranslate nohighlight">\(f_s\)</span> are constant across time. However, this assumption is conceptually straightforward to relax. Our data for U.S. fertility rates by age come from <a class="bibtex reference internal" href="../theory/references.html#martinetal-2015" id="id5">[MHO+15]</a> National Vital Statistics Report, which is final fertility rate data for 2013. Figure <a class="reference internal" href="#figfertrates"><span class="std std-numref">Fig. 5</span></a> shows the fertility-rate data and the estimated average fertility rates for <span class="math notranslate nohighlight">\(E+S=100\)</span>.</p>
 <div class="figure align-default" id="figfertrates">
 <a class="reference internal image-reference" href="../../_images/fert_rates.png"><img alt="../../_images/fert_rates.png" src="../../_images/fert_rates.png" style="height: 500px;" /></a>
-<p class="caption"><span class="caption-number">Fig. 6 </span><span class="caption-text">Fertility rates by age (<span class="math notranslate nohighlight">\(f_s\)</span>) for <span class="math notranslate nohighlight">\(E+S=100\)</span></span><a class="headerlink" href="#figfertrates" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 5 </span><span class="caption-text">Fertility rates by age (<span class="math notranslate nohighlight">\(f_s\)</span>) for <span class="math notranslate nohighlight">\(E+S=100\)</span></span><a class="headerlink" href="#figfertrates" title="Permalink to this image">¶</a></p>
 </div>
-<p>The large blue circles are the 2013 U.S. fertility rate data from <a class="bibtex reference internal" href="../theory/references.html#martinetal-2015" id="id6">[MHO+15]</a>. These are 9 fertility rates <span class="math notranslate nohighlight">\([0.3, 12.3, 47.1, 80.7, 105.5, 98.0, 49.3, 10.4, 0.8]\)</span> that correspond to the midpoint ages of the following age (in years) bins <span class="math notranslate nohighlight">\([10-14, 15-17, 18-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-49]\)</span>. In order to get our cubic spline interpolating function to fit better at the endpoints we added to fertility rates of zero to ages 9 and 10, and we added two fertility rates of zero to ages 55 and 56. The blue line in Figure <a class="reference internal" href="#figfertrates"><span class="std std-numref">Fig. 6</span></a> shows the cubic spline interpolated function of the data.</p>
-<p>The red diamonds in Figure <a class="reference internal" href="#figfertrates"><span class="std std-numref">Fig. 6</span></a> are the average fertility rate in age bins spanning households born at the beginning of period 1 (time = 0) and dying at the end of their 100th year. Let the total number of model years that a household lives be <span class="math notranslate nohighlight">\(E+S\leq 100\)</span>. Then the span from the beginning of period 1 (the beginning of year 0) to the end of period 100 (the end of year 99) is divided up into <span class="math notranslate nohighlight">\(E+S\)</span> bins of equal length. We calculate the average fertility rate in each of the <span class="math notranslate nohighlight">\(E+S\)</span> model-period bins as the average population-weighted fertility rate in that span. The red diamonds in Figure <a class="reference internal" href="#figfertrates"><span class="std std-numref">Fig. 6</span></a> are the average fertility rates displayed at the midpoint in each of the <span class="math notranslate nohighlight">\(E+S\)</span> model-period bins.</p>
+<p>The large blue circles are the 2013 U.S. fertility rate data from <a class="bibtex reference internal" href="../theory/references.html#martinetal-2015" id="id6">[MHO+15]</a>. These are 9 fertility rates [0.3, 12.3, 47.1, 80.7, 105.5, 98.0, 49.3, 10.4, 0.8] that correspond to the midpoint ages of the following age (in years) bins [10-14, 15-17, 18-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-49]. In order to get our cubic spline interpolating function to fit better at the endpoints we added to fertility rates of zero to ages 9 and 10, and we added two fertility rates of zero to ages 55 and 56. The blue line in Figure <a class="reference internal" href="#figfertrates"><span class="std std-numref">Fig. 5</span></a> shows the cubic spline interpolated function of the data.</p>
+<p>The red diamonds in Figure <a class="reference internal" href="#figfertrates"><span class="std std-numref">Fig. 5</span></a> are the average fertility rate in age bins spanning households born at the beginning of period 1 (time = 0) and dying at the end of their 100th year. Let the total number of model years that a household lives be <span class="math notranslate nohighlight">\(E+S\leq 100\)</span>. Then the span from the beginning of period 1 (the beginning of year 0) to the end of period 100 (the end of year 99) is divided up into <span class="math notranslate nohighlight">\(E+S\)</span> bins of equal length. We calculate the average fertility rate in each of the <span class="math notranslate nohighlight">\(E+S\)</span> model-period bins as the average population-weighted fertility rate in that span. The red diamonds in Figure <a class="reference internal" href="#figfertrates"><span class="std std-numref">Fig. 5</span></a> are the average fertility rates displayed at the midpoint in each of the <span class="math notranslate nohighlight">\(E+S\)</span> model-period bins.</p>
 </div>
 <div class="section" id="mortality-rates">
 <span id="secdemogmort"></span><h2>Mortality rates<a class="headerlink" href="#mortality-rates" title="Permalink to this headline">¶</a></h2>
-<p>The mortality rates in our model <span class="math notranslate nohighlight">\(\rho_s\)</span> are a one-period hazard rate and represent the probability of dying within one year, given that an household is alive at the beginning of period <span class="math notranslate nohighlight">\(s\)</span>. We assume that the mortality rates for each age cohort <span class="math notranslate nohighlight">\(\rho_s\)</span> are constant across time. The infant mortality rate of <span class="math notranslate nohighlight">\(\rho_0=0.00587\)</span> comes from the 2015 U.S. CIA World Factbook. Our data for U.S. mortality rates by age come from the Actuarial Life Tables of the U.S. Social Security Administration <a class="bibtex reference internal" href="../theory/references.html#socsec-2015" id="id7">[BM15]</a>, from which the most recent mortality rate data is for 2011. Figure <a class="reference internal" href="#figmortrates"><span class="std std-numref">Fig. 7</span></a> shows the mortality rate data and the corresponding model-period mortality rates for <span class="math notranslate nohighlight">\(E+S=100\)</span>.</p>
+<p>The mortality rates in our model <span class="math notranslate nohighlight">\(\rho_s\)</span> are a one-period hazard rate and represent the probability of dying within one year, given that an household is alive at the beginning of period <span class="math notranslate nohighlight">\(s\)</span>. We assume that the mortality rates for each age cohort <span class="math notranslate nohighlight">\(\rho_s\)</span> are constant across time. The infant mortality rate of <span class="math notranslate nohighlight">\(\rho_0=0.00587\)</span> comes from the 2015 U.S. CIA World Factbook. Our data for U.S. mortality rates by age come from the Actuarial Life Tables of the U.S. Social Security Administration <a class="bibtex reference internal" href="../theory/references.html#socsec-2015" id="id7">[BM15]</a>, from which the most recent mortality rate data is for 2011. Figure <a class="reference internal" href="#figmortrates"><span class="std std-numref">Fig. 6</span></a> shows the mortality rate data and the corresponding model-period mortality rates for <span class="math notranslate nohighlight">\(E+S=100\)</span>.</p>
 <div class="figure align-default" id="figmortrates">
 <a class="reference internal image-reference" href="../../_images/mort_rates.png"><img alt="../../_images/mort_rates.png" src="../../_images/mort_rates.png" style="height: 500px;" /></a>
-<p class="caption"><span class="caption-number">Fig. 7 </span><span class="caption-text">Mortality rates by age (<span class="math notranslate nohighlight">\(\rho_s\)</span>) for <span class="math notranslate nohighlight">\(E+S=100\)</span></span><a class="headerlink" href="#figmortrates" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 6 </span><span class="caption-text">Mortality rates by age (<span class="math notranslate nohighlight">\(\rho_s\)</span>) for <span class="math notranslate nohighlight">\(E+S=100\)</span></span><a class="headerlink" href="#figmortrates" title="Permalink to this image">¶</a></p>
 </div>
-<!-- +++
-```{code-cell} ogusa-dev
-:tags: [hide-cell]
-from myst_nb import glue
-import ogusa.parameter_plots as pp
-from ogusa import Specifications
-p = Specifications()
-fig = pp.plot_mort_rates(p)
-glue("mort_rates_plot", fig, display=False)
-```
+  <!-- +++
+  ```{code-cell} ogusa-dev
+  :tags: [hide-cell]
+  from myst_nb import glue
+  import ogusa.parameter_plots as pp
+  from ogusa import Specifications
+  p = Specifications()
+  fig = pp.plot_mort_rates(p)
+  glue("mort_rates_plot", fig, display=False)
+  ```
 
-```{glue:figure} mort_rates_plot
-:figwidth: 750px
-:name: "FigMortRates"
+  ```{glue:figure} mort_rates_plot
+  :figwidth: 750px
+  :name: "FigMortRates"
 
-Mortality rates by age ($\rho_s$) for $E+S=100$
-``` -->
-<p>The mortality rates in Figure <a class="reference internal" href="#figmortrates"><span class="std std-numref">Fig. 7</span></a> are a population-weighted average of the male and female mortality rates reported in <a class="bibtex reference internal" href="../theory/references.html#socsec-2015" id="id8">[BM15]</a>. Figure <a class="reference internal" href="#figmortrates"><span class="std std-numref">Fig. 7</span></a> also shows that the data provide mortality rates for ages up to 111-years-old. We truncate the maximum age in years in our model to 100-years old. In addition, we constrain the mortality rate to be 1.0 or 100 percent at the maximum age of 100.</p>
+  Mortality rates by age ($\rho_s$) for $E+S=100$
+  ```
+  -->
+<p>The mortality rates in Figure <a class="reference internal" href="#figmortrates"><span class="std std-numref">Fig. 6</span></a> are a population-weighted average of the male and female mortality rates reported in <a class="bibtex reference internal" href="../theory/references.html#socsec-2015" id="id8">[BM15]</a>. Figure <a class="reference internal" href="#figmortrates"><span class="std std-numref">Fig. 6</span></a> also shows that the data provide mortality rates for ages up to 111-years-old. We truncate the maximum age in years in our model to 100-years old. In addition, we constrain the mortality rate to be 1.0 or 100 percent at the maximum age of 100.</p>
 </div>
 <div class="section" id="immigration-rates">
 <span id="secdemogimm"></span><h2>Immigration rates<a class="headerlink" href="#immigration-rates" title="Permalink to this headline">¶</a></h2>
@@ -414,22 +415,29 @@ Mortality rates by age ($\rho_s$) for $E+S=100$
 <div class="math notranslate nohighlight" id="equation-eqpopimmrates">
 <span class="eqno">(61)<a class="headerlink" href="#equation-eqpopimmrates" title="Permalink to this equation">¶</a></span>\[\begin{split}    i_1 &amp;= \frac{\omega_{1,t+1} - (1 - \rho_0)\sum_{s=1}^{E+S}f_s\omega_{s,t}}{\omega_{1,t}}\quad\forall t \\
     i_{s+1} &amp;= \frac{\omega_{s+1,t+1} - (1 - \rho_s)\omega_{s,t}}{\omega_{s+1,t}}\qquad\qquad\forall t\quad\text{and}\quad 1\leq s \leq E+S-1\end{split}\]</div>
-<div class="cell tag_hide-cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myst_nb</span> <span class="kn">import</span> <span class="n">glue</span>
-<span class="kn">import</span> <span class="nn">ogusa.parameter_plots</span> <span class="k">as</span> <span class="nn">pp</span>
-<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">Specifications</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">Specifications</span><span class="p">()</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">plot_imm_rates</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-<span class="n">glue</span><span class="p">(</span><span class="s2">&quot;imm_rates_plot&quot;</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
+<div class="figure align-default" id="figimmrates">
+<a class="reference internal image-reference" href="../../_images/imm_rates_orig.png"><img alt="../../_images/imm_rates_orig.png" src="../../_images/imm_rates_orig.png" style="height: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 7 </span><span class="caption-text">Immigration rates by age (<span class="math notranslate nohighlight">\(i_s\)</span>), residual, <span class="math notranslate nohighlight">\(E+S=100\)</span></span><a class="headerlink" href="#figimmrates" title="Permalink to this image">¶</a></p>
 </div>
-</div>
-</div>
-<div class="figure align-default" id="figimmrates" style="width: 750px">
-<p class="caption"><span class="caption-number">Fig. 8 </span><span class="caption-text">Immigration rates by age (<span class="math notranslate nohighlight">\(i_s\)</span>), residual, <span class="math notranslate nohighlight">\(E+S=100\)</span></span><a class="headerlink" href="#figimmrates" title="Permalink to this image">¶</a></p>
-</div>
-<p>We calculate our immigration rates for three different consecutive-year-periods of population distribution data (2010 through 2013). Our four years of population distribution by age data come from <a class="bibtex reference internal" href="../theory/references.html#census-2015" id="id9">[CensusBureau15]</a>. The immigration rates <span class="math notranslate nohighlight">\(i_s\)</span> that we use in our model are the the residuals described in <a class="reference internal" href="#equation-eqpopimmrates">(61)</a> averaged across the three periods. Figure <a class="reference internal" href="#figimmrates"><span class="std std-numref">Fig. 8</span></a> shows the estimated immigration rates for <span class="math notranslate nohighlight">\(E+S=100\)</span> and given the fertility rates from Section <a class="reference internal" href="#secdemogfert"><span class="std std-ref">Fertility rates</span></a> and the mortality rates from Section <a class="reference internal" href="#secdemogmort"><span class="std std-ref">Mortality rates</span></a>.</p>
+  <!-- +++
+  ```{code-cell} ogusa-dev
+  :tags: [hide-cell]
+  from myst_nb import glue
+  import ogusa.parameter_plots as pp
+  from ogusa import Specifications
+  p = Specifications()
+  fig = pp.plot_imm_rates(p)
+  glue("imm_rates_plot", fig, display=False)
+  ```
+
+  ```{glue:figure} imm_rates_plot
+  :figwidth: 750px
+  :name: "FigImmRates"
+
+  Immigration rates by age ($i_s$), residual, $E+S=100$
+  ```
+  -->
+<p>We calculate our immigration rates for three different consecutive-year-periods of population distribution data (2010 through 2013). Our four years of population distribution by age data come from <a class="bibtex reference internal" href="../theory/references.html#census-2015" id="id9">[CensusBureau15]</a>. The immigration rates <span class="math notranslate nohighlight">\(i_s\)</span> that we use in our model are the the residuals described in <a class="reference internal" href="#equation-eqpopimmrates">(61)</a> averaged across the three periods. Figure <a class="reference internal" href="#figimmrates"><span class="std std-numref">Fig. 7</span></a> shows the estimated immigration rates for <span class="math notranslate nohighlight">\(E+S=100\)</span> and given the fertility rates from Section <a class="reference internal" href="#secdemogfert"><span class="std std-ref">Fertility rates</span></a> and the mortality rates from Section <a class="reference internal" href="#secdemogmort"><span class="std std-ref">Mortality rates</span></a>.</p>
 <p>At the end of Section <a class="reference internal" href="#secdemogpopsstp"><span class="std std-ref">Population steady-state and transition path</span></a>, we describe a small adjustment that we make to the immigration rates after a certain number of periods in order to make computation of the transition path equilibrium of the model compute more robustly.</p>
 </div>
 <div class="section" id="population-steady-state-and-transition-path">
@@ -459,84 +467,79 @@ Mortality rates by age ($\rho_s$) for $E+S=100$
 <p>The stationary steady-state population distribution <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\omega}}\)</span> is the eigenvector <span class="math notranslate nohighlight">\(\boldsymbol{\omega}\)</span> with eigenvalue <span class="math notranslate nohighlight">\((1+\bar{g}_n)\)</span> of the matrix <span class="math notranslate nohighlight">\(\boldsymbol{\Omega}\)</span> that satisfies the following version of <a class="reference internal" href="#equation-eqpoplomstatmat2">(64)</a>.</p>
 <div class="math notranslate nohighlight" id="equation-eqpoplomss">
 <span class="eqno">(65)<a class="headerlink" href="#equation-eqpoplomss" title="Permalink to this equation">¶</a></span>\[  (1+\bar{g}_n)\boldsymbol{\bar{\omega}} = \boldsymbol{\Omega}\boldsymbol{\bar{\omega}}\]</div>
-<p>\begin{proposition}
-If the age <span class="math notranslate nohighlight">\(s=1\)</span> immigration rate is <span class="math notranslate nohighlight">\(i_1&gt;-(1-\rho_0)f_1\)</span> and the other immigration rates are strictly positive <span class="math notranslate nohighlight">\(i_s&gt;0\)</span> for all <span class="math notranslate nohighlight">\(s\geq 2\)</span> such that all elements of <span class="math notranslate nohighlight">\(\boldsymbol{\Omega}\)</span> are nonnegative, then there exists a unique positive real eigenvector <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\omega}}\)</span> of the matrix <span class="math notranslate nohighlight">\(\boldsymbol{\Omega}\)</span>, and it is a stable equilibrium.
-\end{proposition}</p>
-<p>\begin{proof}
-First, note that the matrix <span class="math notranslate nohighlight">\(\boldsymbol{\Omega}\)</span> is square and non-negative.  This is enough for a general version of the Perron-Frobenius Theorem to state that a positive real eigenvector exists with a positive real eigenvalue. This is not yet enough for uniqueness. For it to be unique by a version of the Perron-Fobenius Theorem, we need to know that the matrix is irreducible. This can be easily shown. The matrix is of the form
-$<span class="math notranslate nohighlight">\(\boldsymbol{\Omega} =
+<div class="tip admonition">
+<p class="admonition-title">Proposition</p>
+<p>If the age <span class="math notranslate nohighlight">\(s=1\)</span> immigration rate is <span class="math notranslate nohighlight">\(i_1&gt;-(1-\rho_0)f_1\)</span> and the other immigration rates are strictly positive <span class="math notranslate nohighlight">\(i_s&gt;0\)</span> for all <span class="math notranslate nohighlight">\(s\geq 2\)</span> such that all elements of <span class="math notranslate nohighlight">\(\boldsymbol{\Omega}\)</span> are nonnegative, then there exists a unique positive real eigenvector <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\omega}}\)</span> of the matrix <span class="math notranslate nohighlight">\(\boldsymbol{\Omega}\)</span>, and it is a stable equilibrium.</p>
+<p><strong>Proof:</strong>
+First, note that the matrix <span class="math notranslate nohighlight">\(\boldsymbol{\Omega}\)</span> is square and non-negative.  This is enough for a general version of the Perron-Frobenius Theorem to state that a positive real eigenvector exists with a positive real eigenvalue. This is not yet enough for uniqueness. For it to be unique by a version of the Perron-Fobenius Theorem, we need to know that the matrix is irreducible. This can be easily shown. The matrix is of the form</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\boldsymbol{\Omega} =
+  \begin{bmatrix}
+    * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
+    * &amp; * &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
+    0 &amp; * &amp; * &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
+    0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
+  \end{bmatrix}
+\end{split}\]</div>
+<p>Where each * is strictly positive. It is clear to see that taking powers of the matrix causes the sub-diagonal positive elements to be moved down a row and another row of positive entries is added at the top. None of these go to zero since the elements were all non-negative to begin with.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\boldsymbol{\Omega}^2 =
+  \begin{bmatrix}
+    * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
+    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
+    0 &amp; * &amp; * &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
+    0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
+  \end{bmatrix}; ~~~
+  \boldsymbol{\Omega}^{S+E-1} =
+  \begin{bmatrix}
+    * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
+    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
+    * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * \\
+    0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
+  \end{bmatrix}
+  \end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\boldsymbol{\Omega}^{S+E} =
     \begin{bmatrix}
-      * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
-      * &amp; * &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
-      0 &amp; * &amp; * &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
-      \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
-      0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 \\
-      0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
-    \end{bmatrix}
-    \)</span><span class="math notranslate nohighlight">\(
-    Where each * is strictly positive. It is clear to see that taking powers of the matrix causes the sub-diagonal positive elements to be moved down a row and another row of positive entries is added at the top. None of these go to zero since the elements were all non-negative to begin with.
-    \)</span><span class="math notranslate nohighlight">\(\boldsymbol{\Omega}^2 =
-    \begin{bmatrix}
-      * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
-      * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-      0 &amp; * &amp; * &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
-      \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
-      0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 \\
-      0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
-    \end{bmatrix}; ~~~
-    \boldsymbol{\Omega}^{S+E-1} =
-    \begin{bmatrix}
-      * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
-      * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-      * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-      \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
-      * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * \\
-      0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
-    \end{bmatrix}
-    \)</span><span class="math notranslate nohighlight">\(
-    \)</span><span class="math notranslate nohighlight">\(\boldsymbol{\Omega}^{S+E} =
-    \begin{bmatrix}
-      * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
-      * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-      * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-      \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
-      * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-      * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; *
-    \end{bmatrix}
-    \)</span><span class="math notranslate nohighlight">\(
-    Existence of an \)</span>m \in \mathbb N <span class="math notranslate nohighlight">\( such that \)</span>\left(\bf\Omega^m\right)_{ij} \neq 0 ~~ ( &gt; 0)$ is one of the definitions of an irreducible (primitive) matrix. It is equivalent to saying that the directed graph associated with the matrix is strongly connected. Now the Perron-Frobenius Theorem for irreducible matrices gives us that the equilibrium vector is unique.</p>
-<p>We also know from that theorem that the eigenvalue associated with the positive real eigenvector will be real and positive. This eigenvalue, <span class="math notranslate nohighlight">\(p\)</span>, is the Perron eigenvalue and it is the steady state population growth rate of the model. By the PF Theorem for irreducible matrices, <span class="math notranslate nohighlight">\(| \lambda_i | \leq p\)</span> for all eigenvalues <span class="math notranslate nohighlight">\(\lambda_i\)</span> and there will be exactly <span class="math notranslate nohighlight">\(h\)</span> eigenvalues that are equal, where <span class="math notranslate nohighlight">\(h\)</span> is the period of the matrix. Since our matrix <span class="math notranslate nohighlight">\(\bf\Omega\)</span> is aperiodic, the steady state growth rate is the unique largest eigenvalue in magnitude. This implies that almost all initial vectors will converge to this eigenvector under iteration.
-\end{proof}</p>
+    * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
+    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
+    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; *
+  \end{bmatrix}
+\end{split}\]</div>
+<p>Existence of an <span class="math notranslate nohighlight">\(m \in \mathbb{N}\)</span> such that <span class="math notranslate nohighlight">\(\left(\bf\Omega^m\right)_{ij} \neq 0 ~~ ( &gt; 0)\)</span> is one of the definitions of an irreducible (primitive) matrix. It is equivalent to saying that the directed graph associated with the matrix is strongly connected. Now the Perron-Frobenius Theorem for irreducible matrices gives us that the equilibrium vector is unique.</p>
+<p>We also know from that theorem that the eigenvalue associated with the positive real eigenvector will be real and positive. This eigenvalue, <span class="math notranslate nohighlight">\(p\)</span>, is the Perron eigenvalue and it is the steady state population growth rate of the model. By the PF Theorem for irreducible matrices, <span class="math notranslate nohighlight">\(| \lambda_i | \leq p\)</span> for all eigenvalues <span class="math notranslate nohighlight">\(\lambda_i\)</span> and there will be exactly <span class="math notranslate nohighlight">\(h\)</span> eigenvalues that are equal, where <span class="math notranslate nohighlight">\(h\)</span> is the period of the matrix. Since our matrix <span class="math notranslate nohighlight">\(\bf\Omega\)</span> is aperiodic, the steady state growth rate is the unique largest eigenvalue in magnitude. This implies that almost all initial vectors will converge to this eigenvector under iteration.</p>
+</div>
 <p>For a full treatment and proof of the Perron-Frobenius Theorem, see <a class="bibtex reference internal" href="../theory/references.html#suzumura-1983" id="id10">[Suz83]</a>. Because the population growth process is exogenous to the model, we calibrate it to annual age data for age years <span class="math notranslate nohighlight">\(s=1\)</span> to <span class="math notranslate nohighlight">\(s=100\)</span>.</p>
-<p>Figure <a class="reference internal" href="#figorigvsfixsspop"><span class="std std-numref">Fig. 9</span></a> shows the steady-state population distribution <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\omega}}\)</span> and the population distribution after 120 periods <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\omega}}_{120}\)</span>. Although the two distributions look very close to each other, they are not exactly the same.</p>
+<p>Figure <a class="reference internal" href="#figorigvsfixsspop"><span class="std std-numref">Fig. 8</span></a> shows the steady-state population distribution <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\omega}}\)</span> and the population distribution after 120 periods <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\omega}}_{120}\)</span>. Although the two distributions look very close to each other, they are not exactly the same.</p>
 <div class="figure align-default" id="figorigvsfixsspop">
 <a class="reference internal image-reference" href="../../_images/OrigVsFixSSpop.png"><img alt="../../_images/OrigVsFixSSpop.png" src="../../_images/OrigVsFixSSpop.png" style="height: 500px;" /></a>
-<p class="caption"><span class="caption-number">Fig. 9 </span><span class="caption-text">Theoretical steady-state population distribution vs. population distribution at period <span class="math notranslate nohighlight">\(t=120\)</span></span><a class="headerlink" href="#figorigvsfixsspop" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 8 </span><span class="caption-text">Theoretical steady-state population distribution vs. population distribution at period <span class="math notranslate nohighlight">\(t=120\)</span></span><a class="headerlink" href="#figorigvsfixsspop" title="Permalink to this image">¶</a></p>
 </div>
-<p>Further, we find that the maximum absolute difference between the population levels <span class="math notranslate nohighlight">\(\hat{\omega}_{s,t}\)</span> and <span class="math notranslate nohighlight">\(\hat{\omega}_{s,t+1}\)</span> was <span class="math notranslate nohighlight">\(1.3852\times 10^{-5}\)</span> after 160 periods. That is to say, that after 160 periods, given the estimated mortality, fertility, and immigration rates, the population has not achieved its steady state. For convergence in our solution method over a reasonable time horizon, we want the population to reach a stationary distribution after <span class="math notranslate nohighlight">\(T\)</span> periods. To do this, we artificially impose that the population distribution in period <span class="math notranslate nohighlight">\(t=120\)</span> is the steady-state. As can be seen from Figure <a class="reference internal" href="#figorigvsfixsspop"><span class="std std-numref">Fig. 9</span></a>, this assumption is not very restrictive. Figure <a class="reference internal" href="#figimmratechg"><span class="std std-numref">Fig. 10</span></a> shows the change in immigration rates that would make the period <span class="math notranslate nohighlight">\(t=120\)</span> population distribution equal be the steady-state. The maximum absolute difference between any two corresponding immigration rates in Figure <a class="reference internal" href="#figimmratechg"><span class="std std-numref">Fig. 10</span></a> is 0.0028.</p>
+<p>Further, we find that the maximum absolute difference between the population levels <span class="math notranslate nohighlight">\(\hat{\omega}_{s,t}\)</span> and <span class="math notranslate nohighlight">\(\hat{\omega}_{s,t+1}\)</span> was <span class="math notranslate nohighlight">\(1.3852\times 10^{-5}\)</span> after 160 periods. That is to say, that after 160 periods, given the estimated mortality, fertility, and immigration rates, the population has not achieved its steady state. For convergence in our solution method over a reasonable time horizon, we want the population to reach a stationary distribution after <span class="math notranslate nohighlight">\(T\)</span> periods. To do this, we artificially impose that the population distribution in period <span class="math notranslate nohighlight">\(t=120\)</span> is the steady-state. As can be seen from Figure <a class="reference internal" href="#figorigvsfixsspop"><span class="std std-numref">Fig. 8</span></a>, this assumption is not very restrictive. Figure <a class="reference internal" href="#figimmratechg"><span class="std std-numref">Fig. 9</span></a> shows the change in immigration rates that would make the period <span class="math notranslate nohighlight">\(t=120\)</span> population distribution equal be the steady-state. The maximum absolute difference between any two corresponding immigration rates in Figure <a class="reference internal" href="#figimmratechg"><span class="std std-numref">Fig. 9</span></a> is 0.0028.</p>
 <div class="figure align-default" id="figimmratechg">
 <a class="reference internal image-reference" href="../../_images/OrigVsAdjImm.png"><img alt="../../_images/OrigVsAdjImm.png" src="../../_images/OrigVsAdjImm.png" style="height: 500px;" /></a>
-<p class="caption"><span class="caption-number">Fig. 10 </span><span class="caption-text">Original immigration rates vs. adjusted immigration rates to make fixed steady-state population distribution</span><a class="headerlink" href="#figimmratechg" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 9 </span><span class="caption-text">Original immigration rates vs. adjusted immigration rates to make fixed steady-state population distribution</span><a class="headerlink" href="#figimmratechg" title="Permalink to this image">¶</a></p>
 </div>
-<p>The most recent year of population data come from <a class="bibtex reference internal" href="../theory/references.html#census-2015" id="id11">[CensusBureau15]</a> population estimates for both sexes for 2013. We those data and use the population transition matrix <a class="reference internal" href="#equation-eqpoplomstatmat2">(64)</a> to age it to the current model year of 2015. We then use <a class="reference internal" href="#equation-eqpoplomstatmat2">(64)</a> to generate the transition path of the population distribution over the time period of the model. Figure <a class="reference internal" href="#figpopdistpath"><span class="std std-numref">Fig. 11</span></a> shows the progression from the 2013 population data to the fixed steady-state at period <span class="math notranslate nohighlight">\(t=120\)</span>. The time path of the growth rate of the economically active population <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> is shown in Figure <a class="reference internal" href="#figgrowthpath"><span class="std std-numref">Fig. 12</span></a>.</p>
+<p>The most recent year of population data come from <a class="bibtex reference internal" href="../theory/references.html#census-2015" id="id11">[CensusBureau15]</a> population estimates for both sexes for 2013. We those data and use the population transition matrix <a class="reference internal" href="#equation-eqpoplomstatmat2">(64)</a> to age it to the current model year of 2015. We then use <a class="reference internal" href="#equation-eqpoplomstatmat2">(64)</a> to generate the transition path of the population distribution over the time period of the model. Figure <a class="reference internal" href="#figpopdistpath"><span class="std std-numref">Fig. 10</span></a> shows the progression from the 2013 population data to the fixed steady-state at period <span class="math notranslate nohighlight">\(t=120\)</span>. The time path of the growth rate of the economically active population <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> is shown in Figure <a class="reference internal" href="#figgrowthpath"><span class="std std-numref">Fig. 11</span></a>.</p>
 <div class="figure align-default" id="figpopdistpath">
 <a class="reference internal image-reference" href="../../_images/PopDistPath.png"><img alt="../../_images/PopDistPath.png" src="../../_images/PopDistPath.png" style="height: 500px;" /></a>
-<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Exogenous stationary population distribution at periods along transition path</span><a class="headerlink" href="#figpopdistpath" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 10 </span><span class="caption-text">Exogenous stationary population distribution at periods along transition path</span><a class="headerlink" href="#figpopdistpath" title="Permalink to this image">¶</a></p>
 </div>
-<div class="cell tag_hide-cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myst_nb</span> <span class="kn">import</span> <span class="n">glue</span>
-<span class="kn">import</span> <span class="nn">ogusa.parameter_plots</span> <span class="k">as</span> <span class="nn">pp</span>
-<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">Specifications</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">Specifications</span><span class="p">()</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">plot_pop_growth</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="mi">2021</span><span class="p">)</span>
-<span class="n">glue</span><span class="p">(</span><span class="s2">&quot;pop_grow&quot;</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="figure align-default" id="figgrowthpath" style="width: 750px">
-<p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">Exogenous stationary population growth rates at periods along transition path</span><a class="headerlink" href="#figgrowthpath" title="Permalink to this image">¶</a></p>
+<div class="figure align-default" id="figgrowthpath">
+<a class="reference internal image-reference" href="../../_images/GrowthPath.png"><img alt="../../_images/GrowthPath.png" src="../../_images/GrowthPath.png" style="height: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Time path of the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span></span><a class="headerlink" href="#figgrowthpath" title="Permalink to this image">¶</a></p>
 </div>
 <hr class="docutils" />
 <dl class="footnote brackets">
