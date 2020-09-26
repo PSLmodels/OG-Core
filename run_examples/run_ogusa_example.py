@@ -7,7 +7,7 @@ import multiprocessing
 from distributed import Client
 import time
 import numpy as np
-import os
+import os, sys
 import taxcalc
 from taxcalc import Calculator
 from ogusa import output_tables as ot
@@ -20,7 +20,7 @@ from ogusa.utils import safe_read_pickle
 def main():
     # Define parameters to use for multiprocessing
     client = Client()
-    num_workers = min(multiprocessing.cpu_count(), 7)
+    num_workers = min(multiprocessing.cpu_count(), 2)
     print('Number of workers = ', num_workers)
     run_start_time = time.time()
 
@@ -66,7 +66,7 @@ def main():
         CUR_DIR, '..', 'ogusa', 'data', 'tax_functions',
         'TxFuncEst_baseline_CPS.pkl')  # use cached baseline estimates
     kwargs = {'output_base': base_dir, 'baseline_dir': base_dir,
-              'test': False, 'time_path': True, 'baseline': True,
+              'test': False, 'time_path': False, 'baseline': True,
               'og_spec': og_spec, 'guid': '_example',
               'run_micro': False, 'tax_func_path': tax_func_path,
               'data': 'cps', 'client': client,
@@ -87,7 +87,7 @@ def main():
                'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}
     kwargs = {'output_base': reform_dir, 'baseline_dir': base_dir,
-              'test': False, 'time_path': True, 'baseline': False,
+              'test': False, 'time_path': False, 'baseline': False,
               'og_spec': og_spec, 'guid': '_example',
               'iit_reform': iit_reform, 'run_micro': True, 'data': 'cps',
               'client': client, 'num_workers': num_workers}
@@ -122,7 +122,10 @@ def main():
     ans.to_csv('ogusa_example_output.csv')
     client.close()
 
-
 if __name__ == "__main__":
     # execute only if run as a script
+    main()
+
+if __name__ == "test_run_example-wi-pathlib":
+    # execute also if in related test
     main()
