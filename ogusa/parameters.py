@@ -89,6 +89,13 @@ class Specifications(paramtools.Parameters):
             None
 
         '''
+        # reshape lambdas
+        self.lambdas = self.lambdas.reshape(self.lambdas.shape[0], 1)
+        # cast integers as integers
+        self.S = int(self.S)
+        self.T = int(self.T)
+        self.J = len(self.lambdas)
+
         # get parameters of elliptical utility function
         self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
             self.frisch,
@@ -198,12 +205,6 @@ class Specifications(paramtools.Parameters):
                          (self.S, 1, 1))), axis=0)
         setattr(self, 'eta',  eta_to_set)
 
-        # reshape lambdas
-        self.lambdas = self.lambdas.reshape(self.lambdas.shape[0], 1)
-        # cast integers as integers
-        self.S = int(self.S)
-        self.T = int(self.T)
-        self.J = int(self.J)
 
         # make sure zeta matrix sums to one (e.g., default off due to rounding)
         self.zeta = self.zeta / self.zeta.sum()

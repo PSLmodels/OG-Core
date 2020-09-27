@@ -188,15 +188,15 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
     # Get original 80 x 7 ability matrix
     abil_wgts_orig = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
     emat_orig = get_e_orig(age_wgts_80, abil_wgts_orig, plot)
-
-    # Return emat_orig if S = 80 and abil_wgts = abil_wgts_orig
     if (S == 80 and np.array_equal(
-            abil_wgts, np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]))
+            np.squeeze(abil_wgts),
+            np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]))
             is True):
         emat_new_scaled = emat_orig
     if (S == 80 and np.array_equal(
-            abil_wgts, np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005,
-                                 0.004, 0.0009, 0.0001])) is True):
+            np.squeeze(abil_wgts),
+            np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005,
+                      0.004, 0.0009, 0.0001])) is True):
         emat_new = np.zeros((S, len(abil_wgts)))
         emat_new[:, :7] = emat_orig
         # Create profiles for top 0.5%, top 0.1% and top 0.01% using
