@@ -761,9 +761,11 @@ expected_vals3[:, :7] = np.array([
     1.23276662, 1.31778745],
    [0.15734076, 0.27939849, 0.55685325, 0.76217892, 1.07274816,
     1.21360393, 1.28374303]])
-expected_vals3[:, 7] = expected_vals3[:, 6] * 1.846833491
-expected_vals3[:, 8] = expected_vals3[:, 6] * 5.915296226
-expected_vals3[:, 9] = expected_vals3[:, 6] * 40.86812144
+old_vals = expected_vals3[:, 6].copy()
+expected_vals3[:, 6] = old_vals * 0.458759521
+expected_vals3[:, 7] = old_vals * 0.847252448
+expected_vals3[:, 8] = old_vals * 2.713698465
+expected_vals3[:, 9] = old_vals * 18.74863983
 age_wgts = np.ones(80) * 1 / 80
 expected_vals3 = (expected_vals3 /
                   (expected_vals3 * age_wgts.reshape(80, 1)
