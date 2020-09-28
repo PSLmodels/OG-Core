@@ -30,7 +30,7 @@ def test_run_ogusa_example(f = call_run_ogusa_example):
     p = multiprocessing.Process(target = f,
                                 name="run_ogusa_example", args=())
     p.start()
-    time.sleep(5)
+    time.sleep(300)
     if p.is_alive():
         p.terminate()
         p.join()
