@@ -125,7 +125,3 @@ def main():
 if __name__ == "__main__":
     # execute only if run as a script
     main()
-
-if __name__ == "test_run_example-wi-pathlib":
-    # execute also if in related test
-    main()
