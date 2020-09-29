@@ -8,6 +8,7 @@ import time
 import os, sys
 import importlib.util
 from pathlib import Path
+import pytest
 
 
 def call_run_ogusa_example():
