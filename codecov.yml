@@ -1,3 +1,4 @@
 ignore:
   - "./cs-config/**/*"  # ignore folders and all its contents
   - "./ogusa/tests/*"  # ignore folders and files in tests
+  - "./ogusa/tests/**/*"  # ignore folders and all its contents
