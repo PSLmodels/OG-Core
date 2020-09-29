@@ -29,5 +29,4 @@ dependencies:
   - jupyter-book>=0.8.0
   - cs-kit
   - xlrd
-
-
+  - cs2tc
