@@ -101,8 +101,11 @@ ToGDP_LABELS = {'D': 'Debt-to-GDP ($D_{t}/Y_t$)',
                 'I': 'Investment-Output Ratio ($I_{t}/Y_t$)',
                 'total_tax_revenue': 'Tax Revenue-to-GDP ($REV_{t}/Y_t$)'}
 
-GROUP_LABELS = {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
-                4: '80-90%', 5: '90-99%', 6: 'Top 1%'}
+GROUP_LABELS = {7: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
+                4: '80-90%', 5: '90-99%', 6: 'Top 1%'},
+                10: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
+                     4: '80-90%', 5: '90-99%', 6: 'Top 1%', 7: 'Top 0.5%',
+                     8: 'Top 0.1%', 9: 'Top 0.01%'}}
 
 CBO_UNITS = {
     'Y': r'Billions of \$', 'r': 'Percent', 'w_growth': 'Percent',
