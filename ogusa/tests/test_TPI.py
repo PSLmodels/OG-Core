@@ -293,10 +293,9 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates2, filename2),
                           (True, param_updates1, filename1),
-                          (False, param_updates3, filename3),
-                          (False, param_updates4, filename4)],
+                          (False, param_updates3, filename3)],
                          ids=['Baseline, balanced budget', 'Baseline',
-                              'Reform', 'Reform, baseline spending'])
+                              'Reform'])
 def test_run_TPI(baseline, param_updates, filename, tmp_path,
                  dask_client):
     '''
@@ -364,10 +363,12 @@ filename7 = filename = os.path.join(
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates5, filename5),
                           (True, param_updates6, filename6),
-                          (True, param_updates7, filename7)],
+                          (True, param_updates7, filename7),
+                          (False, param_updates4, filename4)],
                          ids=['Baseline, small open',
                               'Baseline, small open for some periods',
-                              'Baseline, delta_tau = 0'])
+                              'Baseline, delta_tau = 0',
+                              'Reform, baseline spending'])
 def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
                        dask_client):
     '''
