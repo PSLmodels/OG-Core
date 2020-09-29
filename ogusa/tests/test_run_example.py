@@ -22,7 +22,7 @@ def call_run_ogusa_example():
     spec.loader.exec_module(roe_module)
     roe_module.main()
 
-
+@pytest.mark.full_run
 def test_run_ogusa_example(f = call_run_ogusa_example):
     '''
     test that run_ogusa_example runs for at least 5 minutes
