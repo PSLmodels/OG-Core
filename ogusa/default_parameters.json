@@ -185,11 +185,19 @@
         "description": "Annual rate of time preference for households.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
-        "notes": "Default value from Carroll (JME, 2009).",
+        "notes": "Default value from Carroll (JME, 2009).  Allows for each type to have a different value.",
         "type": "float",
         "value": [
             {
-                "value": 0.96
+                "value": [
+                    0.96,
+                    0.96,
+                    0.96,
+                    0.96,
+                    0.96,
+                    0.96,
+                    0.96
+                ]
             }
         ],
         "validators": {
