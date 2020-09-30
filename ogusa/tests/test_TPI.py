@@ -128,6 +128,9 @@ def test_twist_doughnut(file_inputs, file_outputs):
     ensure that output returned matches what it has been before.
     '''
     input_tuple = utils.safe_read_pickle(file_inputs)
+    p = input_tuple[-1]
+    beta = p.beta
+    p.beta = np.ones(p.J) * beta
     test_list = TPI.twist_doughnut(*input_tuple)
     expected_list = utils.safe_read_pickle(file_outputs)
 
