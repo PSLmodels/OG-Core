@@ -187,6 +187,7 @@
         "section_2": "Behavioral Assumptions",
         "notes": "Default value from Carroll (JME, 2009).  Allows for each type to have a different value.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
