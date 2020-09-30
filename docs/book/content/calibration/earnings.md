@@ -479,7 +479,7 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
 
 In addition to lifecycle profiles of the seven percentile groups above, `OG-USA` has calibrations of income at the very top.  This includes breaking out percentiles at fine as the top 0.01% of earners.  The two alternative $\lambda$ vectors are $\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.001]$ and $\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.0009, 0.0001]$.
 
-Because we do not have panel data that allow us to observe such top percentile groups, we make the following assumptions in calibrating income at the very top.  First, we assume the shape of the lifecycle profile of these top earners is the same as the top 1% overall.  Second, we 2018 estimates from the methodolgy of {cite}`PS2003` to provide factors to scale earnings process we estimate for groups inside the top 1%.[^PS_note]
+Because we do not have panel data that allow us to observe such top percentile groups, we make the following assumptions in calibrating income at the very top.  First, we assume the shape of the lifecycle profile of these top earners is the same as the top 1% overall.  Second, we 2018 estimates from the methodolgy of {cite}`PikettySaez:2003` to provide factors to scale earnings process we estimate for groups inside the top 1%.[^PS_note]
 
 
 ```{list-table} **Incomes at the very top** Source: Piketty and Saez (2003) 2018 estimates.
