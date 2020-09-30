@@ -193,7 +193,7 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
             np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]))
             is True):
         emat_new_scaled = emat_orig
-    if (S == 80 and np.array_equal(
+    elif (S == 80 and np.array_equal(
             np.squeeze(abil_wgts),
             np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005,
                       0.004, 0.0009, 0.0001])) is True):
@@ -212,6 +212,24 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
         emat_new[:, 9] = emat_orig[:, -1] * 18.74863983
         emat_new_scaled = emat_new / (emat_new * age_wgts.reshape(80, 1)
                                       * abil_wgts.reshape(1, 10)).sum()
+    elif (S == 80 and np.array_equal(
+            np.squeeze(abil_wgts),
+            np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005,
+                      0.004, 0.001])) is True):
+        emat_new = np.zeros((S, len(abil_wgts)))
+        emat_new[:, :7] = emat_orig
+        # Create profiles for top 0.5%, top 0.1% using
+        # Piketty and Saez estimates
+        # (https://eml.berkeley.edu/~saez/pikettyqje.pdf)
+        # updated for 2018 to create scaling factor
+        # assumption is that profile shape of these top 3 groups are
+        # same as the top 1% estimated in tax data, just scaled up by
+        # ratio determined from P&S 2018 estimates (Table 0, ex cap gains)
+        emat_new[:, 6] = emat_orig[:, -1] * 0.458759521
+        emat_new[:, 7] = emat_orig[:, -1] * 0.847252448
+        emat_new[:, 8] = emat_orig[:, -1] * 4.317192601
+        emat_new_scaled = emat_new / (emat_new * age_wgts.reshape(80, 1)
+                                      * abil_wgts.reshape(1, 9)).sum()
     else:
         # generate abil_midp vector
         J = abil_wgts.shape[0]
