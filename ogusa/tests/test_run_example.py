@@ -8,7 +8,6 @@ import time
 import os, sys
 import importlib.util
 from pathlib import Path
-import pytest
 
 
 def call_run_ogusa_example():
@@ -23,7 +22,7 @@ def call_run_ogusa_example():
     spec.loader.exec_module(roe_module)
     roe_module.main()
 
-@pytest.mark.full_run
+
 def test_run_ogusa_example(f = call_run_ogusa_example):
     '''
     test that run_ogusa_example runs for at least 5 minutes
@@ -31,7 +30,11 @@ def test_run_ogusa_example(f = call_run_ogusa_example):
     p = multiprocessing.Process(target = f,
                                 name="run_ogusa_example", args=())
     p.start()
-    time.sleep(300)
+
+    for i in range(30):
+        time.sleep(10)
+        print("Still here!")
+
     if p.is_alive():
         p.terminate()
         p.join()
