@@ -31,8 +31,8 @@ def test_run_ogusa_example(f = call_run_ogusa_example):
                                 name="run_ogusa_example", args=())
     p.start()
 
-    for i in range(30):
-        time.sleep(10)
+    for i in range(60):
+        time.sleep(5)
         print("Still here!")
 
     if p.is_alive():
