@@ -34,7 +34,7 @@ def test_run_ogusa_example(f = call_run_ogusa_example):
     for i in range(60):
         time.sleep(5)
         p.is_alive()
-        print("Still here!")
+        print("Still here!", p.is_alive())
 
     if p.is_alive():
         p.terminate()
