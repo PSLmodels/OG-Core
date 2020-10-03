@@ -72,12 +72,13 @@ def test_firstdoughnutring(dask_client):
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
     p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
+    (p.J, p.S, p.T, p.BW, beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
      tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
      p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
+    p.beta = np.ones(p.J) * beta
     p.Z = np.ones(p.T + p.S) * Z
 
     p.tau_bq = np.ones(p.T + p.S) * 0.0
@@ -127,6 +128,9 @@ def test_twist_doughnut(file_inputs, file_outputs):
     ensure that output returned matches what it has been before.
     '''
     input_tuple = utils.safe_read_pickle(file_inputs)
+    p = input_tuple[-1]
+    beta = p.beta
+    p.beta = np.ones(p.J) * beta
     test_list = TPI.twist_doughnut(*input_tuple)
     expected_list = utils.safe_read_pickle(file_outputs)
 
@@ -144,12 +148,13 @@ def test_inner_loop(dask_client):
     initial_values = initial_values[:-1]
     tpi_params = tpi_params
     p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
+    (p.J, p.S, p.T, p.BW, beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
      tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
      p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
+    p.beta = np.ones(p.J) * beta
     p.eta = p.omega.reshape(p.T + p.S, p.S, 1) * p.lambdas.reshape(1, p.J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
