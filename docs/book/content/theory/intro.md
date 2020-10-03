@@ -14,6 +14,7 @@ But the main characteristic that differentiates the overlapping generations mode
     * The only uncertainty households face is with respect to their mortality risk
     * realistic demographics: mortality rates, fertility rates, immigration rates, population growth, and population distribution dynamics
     * heterogeneous lifetime income groups within each age cohort, calibrated from U.S. tax data
+        * each lifetime income group has its own discount factor $\beta_j$ following {cite}`CarrollEtAl:2017`
     * incorporation of detailed household tax data from `Tax-Calculator` microsimulation model
     * calibrated intentional and unintentional bequests by households to surviving generations
 * Firms

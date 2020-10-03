@@ -235,7 +235,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     lifetime income group at a time.
 
     .. math::
-        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]
+        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]
 
     Args:
         r (array_like): the real interest rate
