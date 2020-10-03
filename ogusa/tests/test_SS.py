@@ -30,12 +30,13 @@ params = params + (None, 1)
 (bssmat, nssmat, chi_params, ss_params, income_tax_params,
  iterative_params, small_open_params, client, num_workers) = params
 p1 = Specifications()
-(p1.J, p1.S, p1.T, p1.BW, p1.beta, p1.sigma, p1.alpha, p1.gamma, p1.epsilon,
+(p1.J, p1.S, p1.T, p1.BW, beta, p1.sigma, p1.alpha, p1.gamma, p1.epsilon,
  Z, p1.delta, p1.ltilde, p1.nu, p1.g_y, p1.g_n_ss, tau_payroll,
  tau_bq, p1.rho, p1.omega_SS, p1.budget_balance, alpha_T,
  p1.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p1.e,
  retire, p1.mean_income_data, h_wealth, p_wealth, m_wealth,
  p1.b_ellipse, p1.upsilon) = ss_params
+p1.beta = np.ones(p1.J) * beta
 p1.eta = (p1.omega_SS.reshape(p1.S, 1) *
           p1.lambdas.reshape(1, p1.J)).reshape(1, p1.S, p1.J)
 p1.Z = np.ones(p1.T + p1.S) * Z
@@ -88,12 +89,13 @@ params = params + (None, 1)
  iterative_params, factor, small_open_params, client,
  num_workers) = params
 p2 = Specifications()
-(p2.J, p2.S, p2.T, p2.BW, p2.beta, p2.sigma, p2.alpha, p2.gamma, p2.epsilon,
+(p2.J, p2.S, p2.T, p2.BW, beta, p2.sigma, p2.alpha, p2.gamma, p2.epsilon,
  Z, p2.delta, p2.ltilde, p2.nu, p2.g_y, p2.g_n_ss, tau_payroll,
  tau_bq, p2.rho, p2.omega_SS, p2.budget_balance, alpha_T,
  p2.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p2.e,
  retire, p2.mean_income_data, h_wealth, p_wealth, m_wealth,
  p2.b_ellipse, p2.upsilon) = ss_params
+p2.beta = np.ones(p2.J) * beta
 p2.eta = (p2.omega_SS.reshape(p2.S, 1) *
           p2.lambdas.reshape(1, p2.J)).reshape(1, p2.S, p2.J)
 p2.Z = np.ones(p2.T + p2.S) * Z
@@ -147,12 +149,13 @@ params = params + (None, 1)
  iterative_params, factor_ss, small_open_params, client,
  num_workers) = params
 p3 = Specifications()
-(p3.J, p3.S, p3.T, p3.BW, p3.beta, p3.sigma, p3.alpha, p3.gamma, p3.epsilon,
+(p3.J, p3.S, p3.T, p3.BW, beta, p3.sigma, p3.alpha, p3.gamma, p3.epsilon,
  Z, p3.delta, p3.ltilde, p3.nu, p3.g_y, p3.g_n_ss, tau_payroll,
  tau_bq, p3.rho, p3.omega_SS, p3.budget_balance, alpha_T,
  p3.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p3.e,
  retire, p3.mean_income_data, h_wealth, p_wealth, m_wealth,
  p3.b_ellipse, p3.upsilon) = ss_params
+p3.beta = np.ones(p3.J) * beta
 p3.eta = (p3.omega_SS.reshape(p3.S, 1) *
           p3.lambdas.reshape(1, p3.J)).reshape(1, p3.S, p3.J)
 p3.Z = np.ones(p3.T + p3.S) * Z
@@ -209,12 +212,13 @@ new_param_values = {
     'zeta_K': [0.2]
 }
 p4.update_specifications(new_param_values)
-(p4.J, p4.S, p4.T, p4.BW, p4.beta, p4.sigma, p4.alpha, p4.gamma, p4.epsilon,
+(p4.J, p4.S, p4.T, p4.BW, beta, p4.sigma, p4.alpha, p4.gamma, p4.epsilon,
  Z, p4.delta, p4.ltilde, p4.nu, p4.g_y, p4.g_n_ss, tau_payroll,
  tau_bq, p4.rho, p4.omega_SS, p4.budget_balance, alpha_T,
  p4.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p4.e,
  retire, p4.mean_income_data, h_wealth, p_wealth, m_wealth,
  p4.b_ellipse, p4.upsilon) = ss_params
+p4.beta = np.ones(p4.J) * beta
 p4.eta = (p4.omega_SS.reshape(p4.S, 1) *
           p4.lambdas.reshape(1, p4.J)).reshape(1, p4.S, p4.J)
 p4.Z = np.ones(p4.T + p4.S) * Z
@@ -258,12 +262,13 @@ params = params + (None, 1)
 (bssmat, nssmat, chi_params, ss_params, income_tax_params,
  iterative_params, small_open_params, client, num_workers) = params
 p5 = Specifications()
-(p5.J, p5.S, p5.T, p5.BW, p5.beta, p5.sigma, p5.alpha, p5.gamma, p5.epsilon,
+(p5.J, p5.S, p5.T, p5.BW, beta, p5.sigma, p5.alpha, p5.gamma, p5.epsilon,
  Z, p5.delta, p5.ltilde, p5.nu, p5.g_y, p5.g_n_ss, tau_payroll,
  tau_bq, p5.rho, p5.omega_SS, p5.budget_balance, alpha_T,
  p5.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p5.e,
  retire, p5.mean_income_data, h_wealth, p_wealth, m_wealth,
  p5.b_ellipse, p5.upsilon) = ss_params
+p5.beta = np.ones(p5.J) * beta
 p5.eta = (p5.omega_SS.reshape(p5.S, 1) *
           p5.lambdas.reshape(1, p5.J)).reshape(1, p5.S, p5.J)
 p5.zeta_K = np.ones(p5.T + p5.S) * 1.0
@@ -303,12 +308,13 @@ expected5 = np.array([
     0.06644990365361061])
 
 p6 = Specifications()
-(p6.J, p6.S, p6.T, p6.BW, p6.beta, p6.sigma, p6.alpha, p6.gamma, p6.epsilon,
+(p6.J, p6.S, p6.T, p6.BW, beta, p6.sigma, p6.alpha, p6.gamma, p6.epsilon,
  Z, p6.delta, p6.ltilde, p6.nu, p6.g_y, p6.g_n_ss, tau_payroll,
  tau_bq, p6.rho, p6.omega_SS, p6.budget_balance, alpha_T,
  p6.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p6.e,
  retire, p6.mean_income_data, h_wealth, p_wealth, m_wealth,
  p6.b_ellipse, p6.upsilon) = ss_params
+p6.beta = np.ones(p6.J) * beta
 p6.eta = (p6.omega_SS.reshape(p6.S, 1) *
           p6.lambdas.reshape(1, p6.J)).reshape(1, p6.S, p6.J)
 p6.Z = np.ones(p6.T + p6.S) * Z
@@ -567,11 +573,12 @@ def test_euler_equation_solver(dask_client):
         os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
     p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
-    (r, w, TR, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,
+    (r, w, TR, factor, j, p.J, p.S, beta, p.sigma, p.ltilde, p.g_y,
      p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
      p.chi_n, tau_bq, p.rho, lambdas, p.omega_SS, p.e,
      p.analytical_mtrs, etr_params, mtrx_params, mtry_params) = params
+    p.beta = np.ones(p.J) * beta
     p.eta = (p.omega_SS.reshape(p.S, 1) *
              p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.tau_bq = np.ones(p.T + p.S) * 0.0

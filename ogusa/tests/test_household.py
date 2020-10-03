@@ -312,13 +312,13 @@ def test_get_cons(model_args, expected):
 p1 = Specifications()
 p1.e = np.array([1.0, 0.9, 1.4]).reshape(3, 1)
 p1.sigma = 2.0
-p1.beta = 0.96
+p1.J = 1
+p1.beta = np.ones(p1.J) * 0.96
 p1.g_y = 0.03
 p1.chi_b = np.array([1.5])
 p1.tau_bq = np.array([0.0])
 p1.rho = np.array([0.1, 0.2, 1.0])
 p1.lambdas = np.array([1.0])
-p1.J = 1
 p1.S = 3
 p1.T = 3
 p1.analytical_mtrs = False

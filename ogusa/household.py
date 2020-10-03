@@ -268,8 +268,10 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     '''
     if j is not None:
         chi_b = p.chi_b[j]
+        beta = p.beta[j]
     else:
         chi_b = p.chi_b
+        beta = p.beta
     if method == 'SS':
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
@@ -291,7 +293,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
         euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) *
-                            (1 / (1 + tau_c[:-1])) - p.beta *
+                            (1 / (1 + tau_c[:-1])) - beta *
                             (1 - rho[:-1]) * deriv[1:] *
                             marg_ut_cons(cons[1:], p.sigma) *
                             (1 / (1 + tau_c[1:])) * np.exp(-p.sigma * p.g_y)
