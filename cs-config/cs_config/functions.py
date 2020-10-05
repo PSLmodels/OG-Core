@@ -13,7 +13,8 @@ import paramtools
 from distributed import Client
 from taxcalc import Policy
 from collections import OrderedDict
-from .helpers import retrieve_puf, convert_adj, convert_defaults
+from .helpers import retrieve_puf
+from cs2tc import convert_policy_adjustment
 
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
@@ -24,7 +25,7 @@ TCPATH = inspect.getfile(Policy)
 TCDIR = os.path.dirname(TCPATH)
 with open(os.path.join(TCDIR, "policy_current_law.json"), "r") as f:
     pcl = json.loads(f.read())
-RES = convert_defaults(pcl)
+RES = convert_policy_adjustment(pcl)
 
 
 class TCParams(paramtools.Parameters):
@@ -145,9 +146,8 @@ def run_model(meta_param_dict, adjustment):
         # set name of cached baseline file in case use below
         cached_pickle = 'TxFuncEst_baseline_CPS.pkl'
     # Get TC params adjustments
-    iit_mods = convert_adj(adjustment[
-        "Tax-Calculator Parameters"],
-                           meta_params.year.tolist())
+    iit_mods = convert_policy_adjustment(adjustment[
+        "Tax-Calculator Parameters"])
     # Create output directory structure
     base_dir = os.path.join(CUR_DIR, BASELINE_DIR)
     reform_dir = os.path.join(CUR_DIR, REFORM_DIR)

@@ -173,7 +173,7 @@ def get_tr(TR, j, p, method):
             'TPI'
 
     Returns:
-        tr (array_like): bequests received by each household
+        tr (array_like): transfers received by each household
 
     '''
     if j is not None:
@@ -235,7 +235,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     lifetime income group at a time.
 
     .. math::
-        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]
+        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]
 
     Args:
         r (array_like): the real interest rate
@@ -268,8 +268,10 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     '''
     if j is not None:
         chi_b = p.chi_b[j]
+        beta = p.beta[j]
     else:
         chi_b = p.chi_b
+        beta = p.beta
     if method == 'SS':
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
@@ -291,7 +293,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
         euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) *
-                            (1 / (1 + tau_c[:-1])) - p.beta *
+                            (1 / (1 + tau_c[:-1])) - beta *
                             (1 - rho[:-1]) * deriv[1:] *
                             marg_ut_cons(cons[1:], p.sigma) *
                             (1 / (1 + tau_c[1:])) * np.exp(-p.sigma * p.g_y)
