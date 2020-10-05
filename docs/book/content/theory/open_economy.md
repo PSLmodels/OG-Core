@@ -129,8 +129,10 @@ Note that with a wedge between the interest rate on government debt and private 
   r_{hh,t} = \frac{r_{t}K_{t} + r_{gov,t}D_{t}}{K_{t} + D_{t}}
 ```
 
-In the partially open economy, the ratio of private capital to debt held by domestic households might differ from the ratio held by foreign households, but we assume they still earn the same rate of return on their portfolio.\footnote{One reason for this assumption is that it simplifies our solution since we do not need to know the domestic versus foreign holdings of capital before solving the households' problems.}  With this assumption, we modify the resource constraint to be a function of this portfolio interest rate:
+In the partially open economy, the ratio of private capital to debt held by domestic households might differ from the ratio held by foreign households, but we assume they still earn the same rate of return on their portfolio. [^assumption_note]  With this assumption, we modify the resource constraint to be a function of this portfolio interest rate:
 
 ```{math}
   \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}
 ```
+
+[^assumption_note]: One reason for this assumption is that it simplifies our solution since we do not need to know the domestic versus foreign holdings of capital before solving the households' problems.
