@@ -6,16 +6,16 @@ from ogusa import utils
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 
 
-def get_wealth_data(scf_yrs_list=[2016, 2013, 2010, 2007], web=True,
+def get_wealth_data(scf_yrs_list=[2019, 2016, 2013, 2010, 2007], web=True,
                     directory=None):
     '''
-    Reads wealth data from the 2007, 2010, 2013, and 2016 Survey of
+    Reads wealth data from the 2007, 2010, 2013, 2016, and 2019 Survey of
     Consumer Finances (SCF) files.
 
     Args:
         scf_yrs_list (list): list of SCF years to import. Currently the
             largest set of years that will work is
-            [2016, 2013, 2010, 2007]
+            [2019, 2016, 2013, 2010, 2007]
         web (Boolean): =True if function retrieves data from internet
         directory (string or None): local directory location if data are
             stored on local drive, not use internet (web=False)
@@ -25,11 +25,18 @@ def get_wealth_data(scf_yrs_list=[2016, 2013, 2010, 2007], web=True,
         df_scf (Pandas DataFrame): pooled cross-sectional data from SCFs
 
     '''
-    # Hard code cpi list for given years (2015=100)
-    cpi_dict = {'cpi2016': 101.2615832057050,
-                'cpi2013': 98.2870778608004,
-                'cpi2010': 91.9999409325069,
-                'cpi2007': 87.4799768230408}
+    # Hard code cpi list for given years. Index values are annual average index
+    # values from monthly FRED Consumer Price Index for All Urban Consumers:
+    # All Items Less Food and Energy in U.S. City Average (CPILFESL,
+    # https://fred.stlouisfed.org/series/CPILFESL). Base year is 1982-1984=100.
+    # Values are [263.209, 247.585, 233.810, 221.336, 210.725].
+    # We then reset the base year to 2019 by dividing each annual average by
+    # the 2019 annual average and multiply by 100. Base year is 2019=100
+    cpi_dict = {'cpi2019': 100.000,
+                'cpi2016': 94.06403464,
+                'cpi2013': 88.83067929,
+                'cpi2010': 84.09125952,
+                'cpi2007': 80.05995867}
     if web:
         # Throw an error if the machine is not connected to the internet
         if utils.not_connected():
