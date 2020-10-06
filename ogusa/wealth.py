@@ -116,16 +116,17 @@ def compute_wealth_moments(scf, bin_weights):
     total_weight_wealth = scf.weight_networth.sum()
     cumsum = scf.wgt.cumsum()
     J = bin_weights.shape[0]
-    pct_wealth = np.zeros(J)
-    top_pct_wealth = np.zeros(J)
+    # pct_wealth = np.zeros(J)
+    # top_pct_wealth = np.zeros(J)
     wealth = np.zeros((J,))
     cum_weights = bin_weights.cumsum()
     for i in range(J):
-        cutoff = scf.wgt.sum() / (1. / cum_weights[i])
-        pct_wealth[i] = scf.networth[cumsum >= cutoff].iloc[0]
-        top_pct_wealth[i] = 1 - (
-            (scf.weight_networth[cumsum < cutoff].sum()) /
-            total_weight_wealth)
+        # Get number of individuals at top of percentile bin
+        cutoff = scf.wgt.sum() * cum_weights[i]
+        # pct_wealth[i] = scf.networth[cumsum >= cutoff].iloc[0]
+        # top_pct_wealth[i] = 1 - (
+        #     (scf.weight_networth[cumsum < cutoff].sum()) /
+        #     total_weight_wealth)
         wealth[i] = ((
             scf.weight_networth[cumsum < cutoff].sum()) /
             total_weight_wealth)
