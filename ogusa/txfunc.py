@@ -519,7 +519,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         params = np.zeros(numparams)
         wsse = 0.0
         obs = df.shape[0]
-        params[10] = txrates.mean()
+        params[10] = (
+            (txrates * wgts * income).sum() / (income * wgts).sum())
         params_to_plot = params[1:11]
     else:
         raise RuntimeError("Choice of tax function is not in the set of"
