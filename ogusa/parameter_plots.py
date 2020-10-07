@@ -917,7 +917,7 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     # if list of tax function types less than list of params, assume
     # all the same functional form
     if len(tax_func_type) < len(tax_param_list):
-        tax_func_type =  [tax_func_type[0]] * len(tax_param_list)
+        tax_func_type = [tax_func_type[0]] * len(tax_param_list)
     for i, v in enumerate(tax_func_type):
         assert (v in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
     assert (rate_type in ['etr', 'mtrx', 'mtry'])
@@ -962,7 +962,7 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
         #                   'mtry': 'mtr_capinc'}
         # censor data to range of the plot
         for d, data in enumerate(data_list):
-            data_to_plot = data[str(year)]
+            data_to_plot = data[str(year)].copy()
             data_to_plot.drop(
                 data_to_plot[data_to_plot[key1] > max_inc_amt].index,
                 inplace=True)
