@@ -917,7 +917,7 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     # if list of tax function types less than list of params, assume
     # all the same functional form
     if len(tax_func_type) < len(tax_param_list):
-        tax_func_type = tax_func_type[0] * len(tax_param_list)
+        tax_func_type =  [tax_func_type[0]] * len(tax_param_list)
     for i, v in enumerate(tax_func_type):
         assert (v in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
     assert (rate_type in ['etr', 'mtrx', 'mtry'])
@@ -972,11 +972,11 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
             n_bins = min(100, np.floor_divide(max_inc_amt, 1000))
             # need to compute weighted averages by group...
             wm = lambda x: np.average(
-                x,weights=data_to_plot.loc[x.index, "weight"])
+                x, weights=data_to_plot.loc[x.index, "weight"])
             data_to_plot['inc_bin'] = pd.cut(data_to_plot[key1], n_bins)
             groups = pd.DataFrame(data_to_plot.groupby(["inc_bin"]).agg(
                 rate=(rate_type, wm), income=(key1, wm)))
-            plt.scatter(groups['income'], groups['rate'],alpha= 0.1)
+            plt.scatter(groups['income'], groups['rate'], alpha=0.1)
     # add legend, labels, etc to plot
     plt.legend(loc='center right')
     if title:
