@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ogusa.wealth &#8212; OG-USA</title>
     
-  <link rel="stylesheet" href="../../_static/css/index.d431a4ee1c1efae0e38bdfebc22debff.css">
+  <link rel="stylesheet" href="../../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
 
     
   <link rel="stylesheet"
@@ -25,7 +25,7 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.bfb7730f9caf2ec0b46a44615585038c.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.2d2078699c18a0efb88233928e1cf6ed.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.30270b6e4c972e43c488.js">
+  <link rel="preload" as="script" href="../../_static/js/index.3da636dd464baa7582d2.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -294,7 +294,8 @@
 
         <!-- Full screen (wrap in <a> to have style consistency -->
         <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
                     class="fas fa-expand"></i></button></a>
 
         <!-- Launch buttons -->
@@ -320,16 +321,16 @@
 <span class="n">CUR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="get_wealth_data"><a class="viewcode-back" href="../../content/api/wealth.html#ogusa.wealth.get_wealth_data">[docs]</a><span class="k">def</span> <span class="nf">get_wealth_data</span><span class="p">(</span><span class="n">scf_yrs_list</span><span class="o">=</span><span class="p">[</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">2013</span><span class="p">,</span> <span class="mi">2010</span><span class="p">,</span> <span class="mi">2007</span><span class="p">],</span> <span class="n">web</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="get_wealth_data"><a class="viewcode-back" href="../../content/api/wealth.html#ogusa.wealth.get_wealth_data">[docs]</a><span class="k">def</span> <span class="nf">get_wealth_data</span><span class="p">(</span><span class="n">scf_yrs_list</span><span class="o">=</span><span class="p">[</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">2016</span><span class="p">,</span> <span class="mi">2013</span><span class="p">,</span> <span class="mi">2010</span><span class="p">,</span> <span class="mi">2007</span><span class="p">],</span> <span class="n">web</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Reads wealth data from the 2007, 2010, 2013, and 2016 Survey of</span>
+<span class="sd">    Reads wealth data from the 2007, 2010, 2013, 2016, and 2019 Survey of</span>
 <span class="sd">    Consumer Finances (SCF) files.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        scf_yrs_list (list): list of SCF years to import. Currently the</span>
 <span class="sd">            largest set of years that will work is</span>
-<span class="sd">            [2016, 2013, 2010, 2007]</span>
+<span class="sd">            [2019, 2016, 2013, 2010, 2007]</span>
 <span class="sd">        web (Boolean): =True if function retrieves data from internet</span>
 <span class="sd">        directory (string or None): local directory location if data are</span>
 <span class="sd">            stored on local drive, not use internet (web=False)</span>
@@ -339,11 +340,18 @@
 <span class="sd">        df_scf (Pandas DataFrame): pooled cross-sectional data from SCFs</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c1"># Hard code cpi list for given years (2015=100)</span>
-    <span class="n">cpi_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cpi2016&#39;</span><span class="p">:</span> <span class="mf">101.2615832057050</span><span class="p">,</span>
-                <span class="s1">&#39;cpi2013&#39;</span><span class="p">:</span> <span class="mf">98.2870778608004</span><span class="p">,</span>
-                <span class="s1">&#39;cpi2010&#39;</span><span class="p">:</span> <span class="mf">91.9999409325069</span><span class="p">,</span>
-                <span class="s1">&#39;cpi2007&#39;</span><span class="p">:</span> <span class="mf">87.4799768230408</span><span class="p">}</span>
+    <span class="c1"># Hard code cpi list for given years. Index values are annual average index</span>
+    <span class="c1"># values from monthly FRED Consumer Price Index for All Urban Consumers:</span>
+    <span class="c1"># All Items Less Food and Energy in U.S. City Average (CPILFESL,</span>
+    <span class="c1"># https://fred.stlouisfed.org/series/CPILFESL). Base year is 1982-1984=100.</span>
+    <span class="c1"># Values are [263.209, 247.585, 233.810, 221.336, 210.725].</span>
+    <span class="c1"># We then reset the base year to 2019 by dividing each annual average by</span>
+    <span class="c1"># the 2019 annual average and multiply by 100. Base year is 2019=100</span>
+    <span class="n">cpi_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cpi2019&#39;</span><span class="p">:</span> <span class="mf">100.000</span><span class="p">,</span>
+                <span class="s1">&#39;cpi2016&#39;</span><span class="p">:</span> <span class="mf">94.06403464</span><span class="p">,</span>
+                <span class="s1">&#39;cpi2013&#39;</span><span class="p">:</span> <span class="mf">88.83067929</span><span class="p">,</span>
+                <span class="s1">&#39;cpi2010&#39;</span><span class="p">:</span> <span class="mf">84.09125952</span><span class="p">,</span>
+                <span class="s1">&#39;cpi2007&#39;</span><span class="p">:</span> <span class="mf">80.05995867</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">web</span><span class="p">:</span>
         <span class="c1"># Throw an error if the machine is not connected to the internet</span>
         <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">not_connected</span><span class="p">():</span>
@@ -405,8 +413,8 @@
 
 <div class="viewcode-block" id="compute_wealth_moments"><a class="viewcode-back" href="../../content/api/wealth.html#ogusa.wealth.compute_wealth_moments">[docs]</a><span class="k">def</span> <span class="nf">compute_wealth_moments</span><span class="p">(</span><span class="n">scf</span><span class="p">,</span> <span class="n">bin_weights</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    This function computes moments from the distribution of wealth</span>
-<span class="sd">    using SCF data.</span>
+<span class="sd">    This function computes moments (wealth shares, Gini coefficient,</span>
+<span class="sd">    var[ln(wealth)]) from the distribution of wealth using SCF data.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        scf (Pandas DataFrame): pooled cross-sectional data from SCFs</span>
@@ -423,16 +431,11 @@
     <span class="n">total_weight_wealth</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">weight_networth</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">cumsum</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
     <span class="n">J</span> <span class="o">=</span> <span class="n">bin_weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">pct_wealth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
-    <span class="n">top_pct_wealth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
     <span class="n">wealth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">J</span><span class="p">,))</span>
     <span class="n">cum_weights</span> <span class="o">=</span> <span class="n">bin_weights</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">):</span>
-        <span class="n">cutoff</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">cum_weights</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="n">pct_wealth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">networth</span><span class="p">[</span><span class="n">cumsum</span> <span class="o">&gt;=</span> <span class="n">cutoff</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">top_pct_wealth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">scf</span><span class="o">.</span><span class="n">weight_networth</span><span class="p">[</span><span class="n">cumsum</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span>
-            <span class="n">total_weight_wealth</span><span class="p">)</span>
+        <span class="c1"># Get number of individuals at top of percentile bin</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">cum_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">wealth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span>
             <span class="n">scf</span><span class="o">.</span><span class="n">weight_networth</span><span class="p">[</span><span class="n">cumsum</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span>
             <span class="n">total_weight_wealth</span><span class="p">)</span>
@@ -490,7 +493,7 @@
     </div>
 
     
-  <script src="../../_static/js/index.30270b6e4c972e43c488.js"></script>
+  <script src="../../_static/js/index.3da636dd464baa7582d2.js"></script>
 
 
     
