@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import matplotlib
@@ -871,7 +872,7 @@ def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
 def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
                     tax_func_type=['DEP'], rate_type='etr',
                     over_labinc=True, other_inc_val=1000,
-                    max_inc_amt=1000000, data=None,
+                    max_inc_amt=1000000, data_list=None,
                     labels=['1st Functions'], title=None, path=None):
     '''
     This function plots OG-USA tax functions in two dimensions.
@@ -897,7 +898,7 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
             the amount of income that is not represented on the x-axis
         max_inc_amt (scalar): largest income amount to represent on the
             x-axis of the plot
-        data (DataFrame): data to scatter plot with tax functions, needs
+        data_list (list): list of DataFrames with data to scatter plot with tax functions, needs
             to be of format output from ogusa.get_micro_data.get_data
         labels (list): list of labels for tax function parameters
         title (str): title for the plot
@@ -915,8 +916,8 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     assert (year >= start_year)
     # if list of tax function types less than list of params, assume
     # all the same functional form
-    if length(tax_func_type) < length(tax_param_list):
-        tax_func_type = tax_func_type[0] * length(tax_param_list)
+    if len(tax_func_type) < len(tax_param_list):
+        tax_func_type = tax_func_type[0] * len(tax_param_list)
     for i, v in enumerate(tax_func_type):
         assert (v in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
     assert (rate_type in ['etr', 'mtrx', 'mtry'])
@@ -950,47 +951,32 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     # get tax rates for each point in the income support and plot
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
-        # rates = tax.tax_rates(
-        #     tax_params[rate_key][s, t, :], X, Y, tax_func_type[i],
-        #     rate_type)
         rates = txfunc.get_tax_rates(
             tax_params[rate_key][s, t, :], X, Y, None, tax_func_type[i],
             rate_type, for_estimation=False)
         plt.plot(inc_sup, rates, label=labels[i])
 
     # plot raw data (if passed)
-    if data is not None:
-        rate_type_dict = {'etr': 'etr', 'mtrx': 'mtr_labinc',
-                          'mtry': 'mtr_capinc'}
+    if data_list is not None:
+        # rate_type_dict = {'etr': 'etr', 'mtrx': 'mtr_labinc',
+        #                   'mtry': 'mtr_capinc'}
         # censor data to range of the plot
-        data_to_plot = data[str(year)]
-        data_to_plot.drop(
-            data_to_plot[data_to_plot[key1] > max_inc_amt].index,
-            inplace=True)
-        # other censoring used in txfunc.py
-        data_to_plot = txfunc.tax_data_sample(data_to_plot)
-
-
-        # set number of bins to 100 or bins of $1000 dollars
-        n_bins = min(100, np.floor_divide(max_inc_amt, 1000))
-        # bin_edges = np.linspace(0, len(y), n_bins + 1).astype(int)
-        # assert len(bin_edges) == n_bins + 1
-        # bins = [slice(bin_edges[i], bin_edges[i + 1]) for i in
-        #         range(len(bin_edges) - 1)]
-        # assert len(bins) == n_bins
-
-        # x_means = [np.mean(x_data[bin_]) for bin_ in bins]
-        # y_means = [np.mean(y_data[bin_]) for bin_ in bins]
-
-        # need to compute weighted averages by group...
-        groups = df.groupby(pandas.cut(df[key1], n_bins)).apply(wavg)...
-        x_means = groups.mean().b
-        y_means = groups
-        plt.scatter(x_means, y_means,alpha= 0.1, color='gray')
-        # plt.scatter(
-        #     data_to_plot[key1], data_to_plot[rate_type_dict[rate_type]],
-        #     alpha= 0.1, color='gray')
-
+        for d, data in enumerate(data_list):
+            data_to_plot = data[str(year)]
+            data_to_plot.drop(
+                data_to_plot[data_to_plot[key1] > max_inc_amt].index,
+                inplace=True)
+            # other censoring used in txfunc.py
+            data_to_plot = txfunc.tax_data_sample(data_to_plot)
+            # set number of bins to 100 or bins of $1000 dollars
+            n_bins = min(100, np.floor_divide(max_inc_amt, 1000))
+            # need to compute weighted averages by group...
+            wm = lambda x: np.average(
+                x,weights=data_to_plot.loc[x.index, "weight"])
+            data_to_plot['inc_bin'] = pd.cut(data_to_plot[key1], n_bins)
+            groups = pd.DataFrame(data_to_plot.groupby(["inc_bin"]).agg(
+                rate=(rate_type, wm), income=(key1, wm)))
+            plt.scatter(groups['income'], groups['rate'],alpha= 0.1)
     # add legend, labels, etc to plot
     plt.legend(loc='center right')
     if title:
