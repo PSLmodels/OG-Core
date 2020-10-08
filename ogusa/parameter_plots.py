@@ -898,11 +898,13 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
             the amount of income that is not represented on the x-axis
         max_inc_amt (scalar): largest income amount to represent on the
             x-axis of the plot
-        data_list (list): list of DataFrames with data to scatter plot with tax functions, needs
-            to be of format output from ogusa.get_micro_data.get_data
+        data_list (list): list of DataFrames with data to scatter plot
+            with tax functions, needs to be of format output from
+            ogusa.get_micro_data.get_data
         labels (list): list of labels for tax function parameters
         title (str): title for the plot
-        path (str): path to which to save plot, if None then figure returned
+        path (str): path to which to save plot, if None then figure
+            returned
 
     Returns:
         fig (Matplotlib plot object): plot of tax functions
