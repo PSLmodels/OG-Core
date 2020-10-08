@@ -310,7 +310,7 @@ def test_plot_income_data_save_fig(tmpdir):
     [(base_taxfunctions, 43, 'DEP', True, None, None),
      (base_taxfunctions, 43, 'DEP', False, None, 'Test title'),
      (GS_nonage_spec_taxfunctions, None, 'GS', True, None, None),
-     (base_taxfunctions, 43, 'DEP', True, micro_data, None)],
+     (base_taxfunctions, 43, 'DEP', True, [micro_data], None)],
     ids=['over_labinc=True', 'over_labinc=False', 'Non age-specific',
          'with data'])
 def test_plot_2D_taxfunc(tax_funcs, age, tax_func_type, over_labinc,
@@ -319,8 +319,8 @@ def test_plot_2D_taxfunc(tax_funcs, age, tax_func_type, over_labinc,
     Test of plot_2D_taxfunc
     '''
     fig = parameter_plots.plot_2D_taxfunc(
-        2030, 2021, [tax_funcs], age=age, tax_func_type=tax_func_type,
-        over_labinc=over_labinc, data=data, title=title)
+        2030, 2021, [tax_funcs], age=age, tax_func_type=[tax_func_type],
+        over_labinc=over_labinc, data_list=data, title=title)
 
     assert fig
 
