@@ -192,8 +192,6 @@ def test_twist_doughnut(file_inputs, file_outputs):
                    etr_params, mtrx_params, mtry_params, initial_b, p)
     test_list = TPI.twist_doughnut(*input_tuple)
     expected_list = utils.safe_read_pickle(file_outputs)
-    print("MAX diff = ", np.absolute(np.array(test_list) -
-          np.array(expected_list)).max())
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
