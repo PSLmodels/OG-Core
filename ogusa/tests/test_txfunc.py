@@ -47,7 +47,7 @@ def test_wsumsq(tax_func_type, expected):
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
     if tax_func_type == 'DEP':
         params = A, B, C, D, max_x, max_y, share
-        args = ((min_x, min_y, shift), X, Y, txrates, wgts,
+        args = ((min_x, min_y, shift_x, shift_y, shift), X, Y, txrates, wgts,
                 tax_func_type, rate_type)
     elif tax_func_type == 'GS':
         params = phi0, phi1, phi2
@@ -229,6 +229,45 @@ def test_tax_func_loop():
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_outputs.pkl'))
+    (TotPop_yr, PopPct_age, AvgInc, AvgETR, AvgMTRx, AvgMTRy,
+     frac_tax_payroll, etrparam_arr, etr_wsumsq_arr, etr_obs_arr,
+     mtrxparam_arr, mtrx_wsumsq_arr, mtrx_obs_arr,
+     mtryparam_arr, mtry_wsumsq_arr, mtry_obs_arr) = expected_tuple
+    etr_old = etrparam_arr
+    etr_new = etr_old.copy()
+    etr_new[..., 5] = etr_old[..., 6]
+    etr_new[..., 6] = etr_old[..., 11]
+    etr_new[..., 7] = etr_old[..., 5]
+    etr_new[..., 8] = etr_old[..., 7]
+    etr_new[..., 9] = etr_old[..., 8]
+    etr_new[..., 10] = etr_old[..., 9]
+    etr_new[..., 11] = etr_old[..., 10]
+    mtrx_old = mtrxparam_arr
+    mtrx_new = mtrx_old.copy()
+    mtrx_new[..., 5] = mtrx_old[..., 6]
+    mtrx_new[..., 6] = mtrx_old[..., 11]
+    mtrx_new[..., 7] = mtrx_old[..., 5]
+    mtrx_new[..., 8] = mtrx_old[..., 7]
+    mtrx_new[..., 9] = mtrx_old[..., 8]
+    mtrx_new[..., 10] = mtrx_old[..., 9]
+    mtrx_new[..., 11] = mtrx_old[..., 10]
+    mtry_old = mtryparam_arr
+    mtry_new = mtry_old.copy()
+    mtry_new[..., 5] = mtry_old[..., 6]
+    mtry_new[..., 6] = mtry_old[..., 11]
+    mtry_new[..., 7] = mtry_old[..., 5]
+    mtry_new[..., 8] = mtry_old[..., 7]
+    mtry_new[..., 9] = mtry_old[..., 8]
+    mtry_new[..., 10] = mtry_old[..., 9]
+    mtry_new[..., 11] = mtry_old[..., 10]
+    etrparam_arr = etr_new
+    mtrxparam_arr = mtrx_new
+    mtryparam_arr = mtry_new
+    expected_tuple = (
+        TotPop_yr, PopPct_age, AvgInc, AvgETR, AvgMTRx, AvgMTRy,
+        frac_tax_payroll, etrparam_arr, etr_wsumsq_arr, etr_obs_arr,
+        mtrxparam_arr, mtrx_wsumsq_arr, mtrx_obs_arr,
+        mtryparam_arr, mtry_wsumsq_arr, mtry_obs_arr)
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
@@ -340,8 +379,41 @@ def test_tax_func_estimate(dask_client):
                      'tax_func_estimate_outputs.pkl'))
     del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
     del test_dict['tfunc_time'], test_dict['taxcalc_version']
+
+    etr_old = expected_dict['tfunc_etr_params_S']
+    etr_new = etr_old.copy()
+    etr_new[:, :, 5] = etr_old[:, :, 6]
+    etr_new[:, :, 6] = etr_old[:, :, 11]
+    etr_new[:, :, 7] = etr_old[:, :, 5]
+    etr_new[:, :, 8] = etr_old[:, :, 7]
+    etr_new[:, :, 9] = etr_old[:, :, 8]
+    etr_new[:, :, 10] = etr_old[:, :, 9]
+    etr_new[:, :, 11] = etr_old[:, :, 10]
+    mtrx_old = expected_dict['tfunc_mtrx_params_S']
+    mtrx_new = mtrx_old.copy()
+    mtrx_new[:, :, 5] = mtrx_old[:, :, 6]
+    mtrx_new[:, :, 6] = mtrx_old[:, :, 11]
+    mtrx_new[:, :, 7] = mtrx_old[:, :, 5]
+    mtrx_new[:, :, 8] = mtrx_old[:, :, 7]
+    mtrx_new[:, :, 9] = mtrx_old[:, :, 8]
+    mtrx_new[:, :, 10] = mtrx_old[:, :, 9]
+    mtrx_new[:, :, 11] = mtrx_old[:, :, 10]
+    mtry_old = expected_dict['tfunc_mtry_params_S']
+    mtry_new = mtry_old.copy()
+    mtry_new[:, :, 5] = mtry_old[:, :, 6]
+    mtry_new[:, :, 6] = mtry_old[:, :, 11]
+    mtry_new[:, :, 7] = mtry_old[:, :, 5]
+    mtry_new[:, :, 8] = mtry_old[:, :, 7]
+    mtry_new[:, :, 9] = mtry_old[:, :, 8]
+    mtry_new[:, :, 10] = mtry_old[:, :, 9]
+    mtry_new[:, :, 11] = mtry_old[:, :, 10]
+    expected_dict['tfunc_etr_params_S'] = etr_new
+    expected_dict['tfunc_mtrx_params_S'] = mtrx_new
+    expected_dict['tfunc_mtry_params_S'] = mtry_new
+
     for k, v in expected_dict.items():
         if isinstance(v, str):  # for testing tax_func_type object
             assert test_dict[k] == v
         else:  # for testing all other objects
+            print('Max diff for ', k, ' = ', np.absolute(test_dict[k] - v).max())
             assert np.all(np.isclose(test_dict[k], v))
