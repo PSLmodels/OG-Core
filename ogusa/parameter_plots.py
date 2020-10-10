@@ -4,8 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
-from ogusa import utils, tax, txfunc
-# from ogusa.txfunc import tax_data_sample, get_tax_rates
+from ogusa import utils, txfunc
 from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
@@ -657,9 +656,9 @@ def txfunc_graph(s, t, df, X, Y, txrates, rate_type, tax_func_type,
     X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
     Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
     X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-    txrate_grid = get_tax_rates(params_to_plot, X_grid, Y_grid, None,
-                                tax_func_type, rate_type,
-                                for_estimation=False)
+    txrate_grid = txfunc.get_tax_rates(
+        params_to_plot, X_grid, Y_grid, None, tax_func_type, rate_type,
+        for_estimation=False)
     ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                     linewidth=0)
     filename = (tx_label + '_age_' + str(s) + '_Year_' + str(t) +
@@ -697,7 +696,7 @@ def txfunc_graph(s, t, df, X, Y, txrates, rate_type, tax_func_type,
     Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
                                gridpts))
     X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-    txrate_grid = get_tax_rates(
+    txrate_grid = txfunc.get_tax_rates(
         params_to_plot, X_grid, Y_grid, None, tax_func_type,
         rate_type, for_estimation=False)
     ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
