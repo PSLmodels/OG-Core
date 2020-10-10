@@ -6,7 +6,9 @@ from ogusa.execute import runner
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '..', 'puf.csv')
-TAX_FUNC_PATH = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
+TAX_FUNC_PATH = os.path.join(
+    CUR_PATH, '..', 'data','tax_functions','TxFuncEst_baseline_CPS.pkl')
+    # os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
 OUTPUT_DIR = os.path.join(CUR_PATH, "OUTPUT")
 
 
