@@ -964,6 +964,11 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
         # censor data to range of the plot
         for d, data in enumerate(data_list):
             data_to_plot = data[str(year)].copy()
+            if age is not None:
+                data_to_plot.drop(
+                    data_to_plot[data_to_plot['age'] != age].index,
+                    inplace=True)
+            # other censoring 
             data_to_plot.drop(
                 data_to_plot[data_to_plot[key1] > max_inc_amt].index,
                 inplace=True)
