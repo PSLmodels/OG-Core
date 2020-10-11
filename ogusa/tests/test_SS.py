@@ -727,7 +727,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(None, run_micro=False,
                                   tax_func_path=tax_func_path)
-    test_dict = SS.run_SS(p, None)
+    test_dict = SS.run_SS(p, client=None)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 

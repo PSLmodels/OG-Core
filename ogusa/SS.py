@@ -519,12 +519,16 @@ def SS_fsolve(guesses, *args):
     return errors
 
 
-def run_SS(p, client=None):
+def run_SS(p, rguess=0.0648, TRguess=0.057, factorguess=139355.154,
+           client=None):
     '''
     Solve for steady-state equilibrium of OG-USA.
 
     Args:
         p (OG-USA Specifications object): model parameters
+        rguess (scalar): initial guess at SS interest rate
+        TRguess (scalar): initial guess at aggregate SS transfers
+        factorguess (scalar): initial guess at SS factor
         client (Dask client object): client
 
     Returns:
@@ -537,18 +541,12 @@ def run_SS(p, client=None):
     if p.baseline:
         if p.zeta_D[-1] == 1.0:
             rguess = p.world_int_rate[-1]
-        else:
-            rguess = 0.0648
         if p.use_zeta:
             b_guess = np.ones((p.S, p.J)) * 0.0055
             n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-            TRguess = 0.057
-            factorguess = 139292.27
         else:
             b_guess = np.ones((p.S, p.J)) * 0.07
             n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
-        TRguess = 0.057
-        factorguess = 139355.154
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         ss_params_baseline = (b_guess, n_guess, None, None, p, client)
         if p.use_zeta:
