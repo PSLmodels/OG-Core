@@ -223,18 +223,6 @@
   </a>
  </li>
 </ul>
-<p class="caption">
- <span class="caption-text">
-  Citations of OG-USA
- </span>
-</p>
-<ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="../../content/citations.html">
-   Citations and use cases of OG-USA
-  </a>
- </li>
-</ul>
 
 </nav>
 
@@ -404,17 +392,23 @@
 <span class="sd">            None</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># reshape lambdas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># cast integers as integers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span>
+
         <span class="c1"># get parameters of elliptical utility function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b_ellipse</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">=</span> <span class="n">elliptical_u_est</span><span class="o">.</span><span class="n">estimation</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">frisch</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ltilde</span>
-        <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frisch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span>
         <span class="c1"># determine length of budget window from start year and last</span>
         <span class="c1"># year in TC</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">BW</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">TC_LAST_YEAR</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Find number of economically active periods of life</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">E</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">starting_age</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ending_age</span> <span class="o">-</span>
-                                                    <span class="bp">self</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">E</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">starting_age</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ending_age</span> <span class="o">-</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)))</span>
         <span class="c1"># Find rates in model periods from annualized rates</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="p">(</span>
             <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">rate_conversion</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_annual</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
@@ -513,12 +507,6 @@
                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;eta&#39;</span><span class="p">,</span>  <span class="n">eta_to_set</span><span class="p">)</span>
 
-        <span class="c1"># reshape lambdas</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="c1"># cast integers as integers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
 
         <span class="c1"># make sure zeta matrix sums to one (e.g., default off due to rounding)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>

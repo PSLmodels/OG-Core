@@ -225,18 +225,6 @@
   </a>
  </li>
 </ul>
-<p class="caption">
- <span class="caption-text">
-  Citations of OG-USA
- </span>
-</p>
-<ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="../citations.html">
-   Citations and use cases of OG-USA
-  </a>
- </li>
-</ul>
 
 </nav>
 
@@ -357,6 +345,11 @@
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#profiles-by-lifetime-income">
    Profiles by Lifetime Income
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#income-at-the-very-top">
+   Income at the very top
   </a>
  </li>
 </ul>
@@ -855,6 +848,51 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section" id="income-at-the-very-top">
+<h2>Income at the very top<a class="headerlink" href="#income-at-the-very-top" title="Permalink to this headline">¶</a></h2>
+<p>In addition to lifecycle profiles of the seven percentile groups above, <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> has calibrations of income at the very top.  This includes breaking out percentiles at fine as the top 0.01% of earners.  The two alternative <span class="math notranslate nohighlight">\(\lambda\)</span> vectors are <span class="math notranslate nohighlight">\(\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.001]\)</span> and <span class="math notranslate nohighlight">\(\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.0009, 0.0001]\)</span>.</p>
+<p>Because we do not have panel data that allow us to observe such top percentile groups, we make the following assumptions in calibrating income at the very top.  First, we assume the shape of the lifecycle profile of these top earners is the same as the top 1% overall.  Second, we 2018 estimates from the methodology of <a class="bibtex reference internal" href="../theory/references.html#pikettysaez-2003" id="id9">[PS03]</a> to provide factors to scale earnings process we estimate for groups inside the top 1%.<a class="footnote-reference brackets" href="#ps-note" id="id10">3</a></p>
+<table class="table" id="tab-top-incomes">
+<caption><span class="caption-number">Table 7 </span><span class="caption-text"><strong>Incomes at the very top</strong> Source: Piketty and Saez (2003) 2018 estimates.</span><a class="headerlink" href="#tab-top-incomes" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Income Percentile Range</p></th>
+<th class="head"><p>Ratio to Top 1%</p></th>
+<th class="head"><p>Mean Income</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Top 1%</p></td>
+<td><p>$1,143,687</p></td>
+<td><p>1.000</p></td>
+</tr>
+<tr class="row-odd"><td><p>Top 1-0.5%</p></td>
+<td><p>$524,677</p></td>
+<td><p>0.459</p></td>
+</tr>
+<tr class="row-even"><td><p>Top 0.5-0.1%</p></td>
+<td><p>$968,991</p></td>
+<td><p>0.847</p></td>
+</tr>
+<tr class="row-odd"><td><p>Top 0.1-0.01%</p></td>
+<td><p>$3,103,621</p></td>
+<td><p>2.714</p></td>
+</tr>
+<tr class="row-even"><td><p>Top 0.1%</p></td>
+<td><p>$4,937,516</p></td>
+<td><p>4.317</p></td>
+</tr>
+<tr class="row-odd"><td><p>Top 0.01%</p></td>
+<td><p>$21,442,570</p></td>
+<td><p>18.749</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 <dl class="footnote brackets">
 <dt class="label" id="retroquest-note"><span class="brackets"><a class="fn-backref" href="#id7">1</a></span></dt>
@@ -862,6 +900,9 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
 </dd>
 <dt class="label" id="threshold-note"><span class="brackets"><a class="fn-backref" href="#id8">2</a></span></dt>
 <dd><p>This threshold is equivalent to $50 million of wage income in one year at full time (40 hours per week) of work.</p>
+</dd>
+<dt class="label" id="ps-note"><span class="brackets"><a class="fn-backref" href="#id10">3</a></span></dt>
+<dd><p>These data are available from the website of Emmanuel Saez: <a class="reference external" href="https://eml.berkeley.edu/~saez/">https://eml.berkeley.edu/~saez/</a>.  We use numbers from Table0, Panel B, “Income excluding realized capital gains.”</p>
 </dd>
 </dl>
 </div>

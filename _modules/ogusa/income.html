@@ -223,18 +223,6 @@
   </a>
  </li>
 </ul>
-<p class="caption">
- <span class="caption-text">
-  Citations of OG-USA
- </span>
-</p>
-<ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="../../content/citations.html">
-   Citations and use cases of OG-USA
-  </a>
- </li>
-</ul>
 
 </nav>
 
@@ -482,6 +470,11 @@
 <span class="sd">    using linear interpolation. [NOTE: For this application, cubic</span>
 <span class="sd">    spline interpolation introduces too much curvature.]</span>
 
+<span class="sd">    This function also includes the two cases in which J = 9 and J = 10</span>
+<span class="sd">    that include higher lifetime earning percentiles calibrated using</span>
+<span class="sd">    Piketty and Saez (2003).</span>
+
+
 <span class="sd">    Args:</span>
 <span class="sd">        S (int): number of ages to interpolate. This method assumes that</span>
 <span class="sd">            ages are evenly spaced between the beginning of the 21st</span>
@@ -503,12 +496,48 @@
     <span class="c1"># Get original 80 x 7 ability matrix</span>
     <span class="n">abil_wgts_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">])</span>
     <span class="n">emat_orig</span> <span class="o">=</span> <span class="n">get_e_orig</span><span class="p">(</span><span class="n">age_wgts_80</span><span class="p">,</span> <span class="n">abil_wgts_orig</span><span class="p">,</span> <span class="n">plot</span><span class="p">)</span>
-
-    <span class="c1"># Return emat_orig if S = 80 and abil_wgts = abil_wgts_orig</span>
-    <span class="k">if</span> <span class="n">S</span> <span class="o">==</span> <span class="mi">80</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">abil_wgts</span><span class="p">,</span>
-                                  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span>
-                                            <span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">]))</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">S</span> <span class="o">==</span> <span class="mi">80</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">abil_wgts</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">]))</span>
+            <span class="ow">is</span> <span class="kc">True</span><span class="p">):</span>
         <span class="n">emat_new_scaled</span> <span class="o">=</span> <span class="n">emat_orig</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">S</span> <span class="o">==</span> <span class="mi">80</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">abil_wgts</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">,</span>
+                      <span class="mf">0.004</span><span class="p">,</span> <span class="mf">0.0009</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">]))</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">emat_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">abil_wgts</span><span class="p">)))</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span>
+        <span class="c1"># Create profiles for top 0.5%, top 0.1% and top 0.01% using</span>
+        <span class="c1"># Piketty and Saez estimates</span>
+        <span class="c1"># (https://eml.berkeley.edu/~saez/pikettyqje.pdf)</span>
+        <span class="c1"># updated for 2018 to create scaling factor</span>
+        <span class="c1"># assumption is that profile shape of these top 3 groups are</span>
+        <span class="c1"># same as the top 1% estimated in tax data, just scaled up by</span>
+        <span class="c1"># ratio determined from P&amp;S 2018 estimates (Table 0, ex cap gains)</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.458759521</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.847252448</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">2.713698465</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">18.74863983</span>
+        <span class="n">emat_new_scaled</span> <span class="o">=</span> <span class="n">emat_new</span> <span class="o">/</span> <span class="p">(</span><span class="n">emat_new</span> <span class="o">*</span> <span class="n">age_wgts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                                      <span class="o">*</span> <span class="n">abil_wgts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">S</span> <span class="o">==</span> <span class="mi">80</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">abil_wgts</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">,</span>
+                      <span class="mf">0.004</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">]))</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">emat_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">abil_wgts</span><span class="p">)))</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span>
+        <span class="c1"># Create profiles for top 0.5%, top 0.1% using</span>
+        <span class="c1"># Piketty and Saez estimates</span>
+        <span class="c1"># (https://eml.berkeley.edu/~saez/pikettyqje.pdf)</span>
+        <span class="c1"># updated for 2018 to create scaling factor</span>
+        <span class="c1"># assumption is that profile shape of these top 3 groups are</span>
+        <span class="c1"># same as the top 1% estimated in tax data, just scaled up by</span>
+        <span class="c1"># ratio determined from P&amp;S 2018 estimates (Table 0, ex cap gains)</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.458759521</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.847252448</span>
+        <span class="n">emat_new</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">emat_orig</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">4.317192601</span>
+        <span class="n">emat_new_scaled</span> <span class="o">=</span> <span class="n">emat_new</span> <span class="o">/</span> <span class="p">(</span><span class="n">emat_new</span> <span class="o">*</span> <span class="n">age_wgts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                                      <span class="o">*</span> <span class="n">abil_wgts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># generate abil_midp vector</span>
         <span class="n">J</span> <span class="o">=</span> <span class="n">abil_wgts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
