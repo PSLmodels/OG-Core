@@ -71,7 +71,6 @@ def test_read_file_from_egg():
     assert isinstance(bytes_data, io.StringIO)
 
 
-@pytest.mark.full_run
 def test_pickle_file_compare():
     '''
     Test of utils.pickle_file_compare() function
@@ -512,7 +511,6 @@ def test_print_progress():
     assert utils.print_progress(0, 5) == 'Incomplete'
 
 
-@pytest.mark.full_run
 def test_fetch_files_from_web():
     '''
     Test fetch_files_from_web() that it returns a list of local

@@ -2,12 +2,12 @@
 This test tests whether starting a `run_ogusa_example.py` run of the model does
 not break down (is still running) after 5 minutes or 300 seconds.
 '''
-
 import multiprocessing
 import time
 import os, sys
 import importlib.util
 from pathlib import Path
+import pytest
 
 
 def call_run_ogusa_example():
@@ -23,26 +23,19 @@ def call_run_ogusa_example():
     roe_module.main()
 
 
+@pytest.mark.full_run
 def test_run_ogusa_example(f = call_run_ogusa_example):
-    '''
-    test that run_ogusa_example runs for at least 5 minutes
-    '''
-    p = multiprocessing.Process(target = f,
+    p = multiprocessing.Process(target = f, 
                                 name="run_ogusa_example", args=())
     p.start()
-
-    for i in range(60):
-        time.sleep(5)
-        p.is_alive()
-        print("Still here!", p.is_alive())
-
+    time.sleep(300)
     if p.is_alive():
-        p.terminate()
+        p.terminate() 
         p.join()
         timetest = True
     else:
         print("run_ogusa_example did not run for minimum time")
         timetest = False
     print('timetest ==', timetest)
-
+    
     assert timetest == True
