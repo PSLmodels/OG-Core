@@ -475,6 +475,42 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
   -
 ```
 
+## Income at the very top
+
+In addition to lifecycle profiles of the seven percentile groups above, `OG-USA` has calibrations of income at the very top.  This includes breaking out percentiles at fine as the top 0.01% of earners.  The two alternative $\lambda$ vectors are $\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.001]$ and $\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.0009, 0.0001]$.
+
+Because we do not have panel data that allow us to observe such top percentile groups, we make the following assumptions in calibrating income at the very top.  First, we assume the shape of the lifecycle profile of these top earners is the same as the top 1% overall.  Second, we 2018 estimates from the methodology of {cite}`PikettySaez:2003` to provide factors to scale earnings process we estimate for groups inside the top 1%.[^PS_note]
+
+
+```{list-table} **Incomes at the very top** Source: Piketty and Saez (2003) 2018 estimates.
+:header-rows: 1
+:name: tab:top_incomes
+
+* - Income Percentile Range
+  - Ratio to Top 1%
+  - Mean Income
+* - Top 1%
+  - $1,143,687
+  - 1.000
+* - Top 1-0.5%
+  - $524,677
+  - 0.459 
+* - Top 0.5-0.1%
+  - $968,991
+  - 0.847
+* - Top 0.1-0.01%
+  - $3,103,621
+  - 2.714
+* - Top 0.1%
+  - $4,937,516
+  - 4.317
+* - Top 0.01%
+  - $21,442,570
+  - 18.749
+```
+
 [^retroquest_note]: The CPS survey asks retrospective questions about income in the last year and average hours worked per week (and weeks worked) in the last year).  Therefore, these CPS surveys line up with tax years 1991-2009.
 
 [^threshold_note]: This threshold is equivalent to \$50 million of wage income in one year at full time (40 hours per week) of work.
+
+[^PS_note]: These data are available from the website of Emmanuel Saez: [https://eml.berkeley.edu/~saez/](https://eml.berkeley.edu/~saez/).  We use numbers from Table0, Panel B, "Income excluding realized capital gains."
