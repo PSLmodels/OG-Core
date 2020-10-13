@@ -167,6 +167,11 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
     using linear interpolation. [NOTE: For this application, cubic
     spline interpolation introduces too much curvature.]
 
+    This function also includes the two cases in which J = 9 and J = 10
+    that include higher lifetime earning percentiles calibrated using
+    Piketty and Saez (2003).
+
+
     Args:
         S (int): number of ages to interpolate. This method assumes that
             ages are evenly spaced between the beginning of the 21st
