@@ -2,9 +2,8 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import matplotlib
-from ogusa.constants import GROUP_LABELS
+from ogusa.constants import GROUP_LABELS, DEFAULT_START_YEAR
 from ogusa import utils
-from ogusa.constants import DEFAULT_START_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -165,9 +164,9 @@ def plot_ability_profiles(p, include_title=False, path=None):
     age_vec = np.arange(p.starting_age, p.starting_age + p.S)
     fig, ax = plt.subplots()
     cm = plt.get_cmap('coolwarm')
-    ax.set_prop_cycle(color=[cm(1. * i / 7) for i in range(7)])
+    ax.set_prop_cycle(color=[cm(1. * i / p.J) for i in range(p.J)])
     for j in range(p.J):
-        plt.plot(age_vec, p.e[:, j], label=GROUP_LABELS[j])
+        plt.plot(age_vec, p.e[:, j], label=GROUP_LABELS[p.J][j])
     plt.xlabel(r'Age')
     plt.ylabel(r'Earnings ability')
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)

@@ -8,6 +8,7 @@ from ogusa.parameters import Specifications
 p = Specifications()
 new_param_values = {
     'S': 4,
+    'lambdas': [1.0],
     'J': 1,
     'T': 4,
     'eta': (np.ones((4, 1)) / (4 * 1))
@@ -59,6 +60,7 @@ b1 = np.array([0.1, 0.5, 0.9])
 p1 = Specifications()
 new_param_values = {
     'S': 3,
+    'lambdas': [1.0],
     'J': 1,
     'T': 3,
     'eta': (np.ones((3, 1)) / (3 * 1)),
@@ -71,6 +73,7 @@ expected1 = np.array([0.14285714, 0.6, 0.93103448])
 p2 = Specifications()
 new_param_values2 = {
     'S': 3,
+    'lambdas': [1.0],
     'J': 1,
     'T': 3,
     'eta': (np.ones((3, 1)) / (3 * 1)),
@@ -99,6 +102,7 @@ b1 = np.array([0.2, 0.6, 0.8])
 p1 = Specifications()
 new_param_values = {
     'S': 3,
+    'lambdas': [1.0],
     'J': 1,
     'T': 3,
     'eta': (np.ones((3, 1)) / (3 * 1)),
@@ -112,6 +116,7 @@ b2 = np.array([0.1, 0.5, 0.9])
 p2 = Specifications()
 new_param_values2 = {
     'S': 3,
+    'lambdas': [1.0],
     'J': 1,
     'T': 3,
     'eta': (np.ones((3, 1)) / (3 * 1)),

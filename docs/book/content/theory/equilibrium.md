@@ -31,9 +31,9 @@ A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defi
 (SecEqlbSSsoln)=
 ### Stationary Steady-state Solution Method
 
-This section describes the solution method for the stationary steady-state equilibrium described in Definition {ref}`DefSSEql`. The steady-state is characterized by $2JS$ equations and $2JS$ unknowns. However, because some of the other equations cannot be solved for analytically and substituted into the Euler equations, we use a fixed point algorithm to solve for the steady-state. We begin by making a guess at steady-state interest rate $\bar{r}$, total bequests $\overline{BQ}$, total household transfers $\overline{TR}$, and income multiplier $factor$. We call these four steady-state variables the "outer loop" variables in our steady-state solution method and the determination of a fixed point over these variables the ``outer loop'' of the steady-state solution method. The outer loop variables are the macroeconomic variables necessary to solve the household's problem.
+This section describes the solution method for the stationary steady-state equilibrium described in Definition {ref}`DefSSEql`. The steady-state is characterized by $2JS$ equations and $2JS$ unknowns. However, because some of the other equations cannot be solved for analytically and substituted into the Euler equations, we use a fixed point algorithm to solve for the steady-state. We begin by making a guess at steady-state interest rate $\bar{r}$, total bequests $\overline{BQ}$, total household transfers $\overline{TR}$, and income multiplier $factor$. We define the four steady-state variables $\bar{r}$, $\overline{BQ}$, $\overline{TR}$, and $factor$ as "outer loop" variables. The outer loop variables are the smallest set of macroeconomic variables necessary to solve each household’s lifetime problem independently. Our solution method for the steady-state iterates on the four outer loop variables, solving a smaller "inner loop" problem at each iteration, until we find the unique fixed point.
 
-For each iteration over these outer-loop variables, we solve the household problem given the values of these macroeconomic variables.  We call this solution the ``inner loop'' of the steady-state solution method.  In the inner loop, we solve for the steady-state household decisions $\bar{b}_{j,s}$ and labor supply $\bar{n}_{j,s}$ for all $j$ and $E+1\leq s\leq E+S$, and then use the household decisions to compute updated values for macroeconomics variables. Because the lifetime optimization problem of each household of type $j$ is a highly nonlinear system of $2S$ equations and $2S$ unknowns, we solve for the $2S$ household's decisions simultaneously for a given type $j$ household.  We then use the solutions for type-$j$ households as the initial guesses a the solutions for type-$j+1$ households.
+For each iteration over these outer-loop variables, we solve the household problem given the values of these macroeconomic variables. We call this solution the "inner loop" of the steady-state solution method.  In the inner loop, we solve for the steady-state household decisions $\bar{b}_{j,s}$ and labor supply $\bar{n}_{j,s}$ for all $j$ and $E+1\leq s\leq E+S$, and then use the household decisions to compute updated values for macroeconomics variables. Because the lifetime optimization problem of each household of type $j$ is a highly nonlinear system of $2S$ equations and $2S$ unknowns, we solve for the $2S$ household's decisions simultaneously for a given type $j$ household.  We then use the solutions for type-$j$ households as the initial guesses a the solutions for type-$j+1$ households.
 
 The macroeconomic variables computed from the solutions to the household problem are used to update the values of those macroeconomic variables in the outer-loop.  This process continues until a fixed point is found.  That is, until the macroeconomic variables in the outer loop result in household decisions that are consistent with those macroeconomic variables' values.
 
@@ -65,19 +65,19 @@ We outline this algorithm in the following steps.
       		$$
 
 		4. Use the labor market clearing condition from Equation {eq}`EqStnrzMarkClrLab` to find aggregate labor supply:
-		
+
 			$$
 				\bar{L}^{i}=\sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \bar{\omega}_{s}\lambda_j e_{j,s}\bar{n}_{j,s}
 			$$
 
 		5. Use the firm's production function from Equation {eq}`EqStnrzCESprodfun` to compute an updated value of $\bar{Y}$ given the values for the factors of production:
-		
+
 			$$
 				\bar{Y}^{i'} = \bar{Z}\biggl[(\gamma)^\frac{1}{\varepsilon}(\bar{K}^{i})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\bar{L}^{i})^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
 			$$
 
 		6. Use the firm's first order condition for its choice of capital to find the updated interest rate,
-		
+
 			$$
 				\bar{r}^{i'} = (1 - \tau^{corp})(\bar{Z})^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\bar{Y}^{i'}}{\bar{K}^{i}}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
 			$$
@@ -247,7 +247,7 @@ We outline the stationary non-steady state solution algorithm in the following s
 
 	- Given time path guesses $\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$, we can compute the path of wages, $\boldsymbol{w}^i$ and then solve for each household's lifetime decisions $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$, $E+1\leq s \leq E+S$, and $1\leq t\leq T_2+S-1$.
         2. The household problem can be solved with a multivariate root finder solving the $2S$ equations and unknowns at once for all $j$ and $1\leq t\leq T+S-1$. The root finder uses $2S$ household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` to solve for each household's $2S$ lifetime decisions.
-        
+
     	- After solving the first iteration of time path iteration, subsequent initial values for the $J$, $2S$ root finding problems are based on the solution in the prior iteration. This speeds up computation further and makes the initial guess for the highly nonlinear system of equations start closer to the solution value.
 
 4. Given partial equilibrium household nonsteady-state solutions $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$ and $1\leq t\leq T$ based on macroeconomic variable time path guesses $\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$, compute new values for these aggregates implied by the households' solutions, $\{\boldsymbol{r}^{i'},\boldsymbol{\hat{BQ}}^{i'}, \boldsymbol{\hat{TR}}^{i'}\}$.
@@ -283,7 +283,7 @@ We outline the stationary non-steady state solution algorithm in the following s
   		  	$$
 
     2. The stationarized law of motion for total bequests {eq}`EqStnrzMarkClrBQ` provides the expression in which household savings decisions $\{b_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ imply a value for aggregate bequests, $BQ_{t}^{\,i'}$. When computing aggregate bequests, we use the updated path of interest rates found above.
-    
+
 	    $$
 		    \hat{BQ}_{t}^{\,i'} = \left(\frac{1+r_{t}^{i'}}{1 + g_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}\hat{b}_{j,s,t}\right)
 	    $$
@@ -303,7 +303,7 @@ We outline the stationary non-steady state solution algorithm in the following s
 	$$
 
 7. If the maximum absolute error among the five outer loop error terms is less-than-or-equal-to some small positive tolerance $toler_{tpi,out}$ in each period along the transition path, $\max\big|\left(error_r,error_{bq},error_{tr},error_f\right)\bigr| \leq toler_{tpi,out}$ then the non-steady-state equilibrium has been found.
-    
+
 	1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
 	2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
 	3. Make sure that all the $(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance.

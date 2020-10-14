@@ -28,9 +28,9 @@ def test_compute_wealth_moments():
     be flagged so as to not run on TravisCI.
     '''
     expected_moments = np.array([
-        -4.36938131e-03, 1.87063661e-02, 5.89720538e-02, 6.10665862e-02,
-        1.17776715e-01, 3.87790368e-01, 3.60041151e-01, 8.45051216e-01,
-        4.97530422e+00])
+        -4.42248572e-03, 1.87200063e-02, 5.78230550e-02, 5.94466440e-02,
+        1.15413004e-01, 3.88100712e-01, 3.64919063e-01, 8.47639595e-01,
+        5.04231901e+00])
     df = wealth.get_wealth_data()
     test_moments = wealth.compute_wealth_moments(
         df, np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]))
