@@ -22,15 +22,15 @@ As the default rate of labor augmenting technological change, $g_y$, we use a va
 
 ## Aggregate Production Function and Capital Accumulation
 
-Chapter {ref}`Chap_Firm` outlines the constant returns to scale, constant elasticity of substitution production function of the representative firm.  This function has two parameters; the elasticity of substitution and capital's share of output.  
+Chapter {ref}`Chap_Firms` outlines the constant returns to scale, constant elasticity of substitution production function of the representative firm.  This function has two parameters; the elasticity of substitution and capital's share of output.  
 
 ### Elasticity of substitution
 
-`OG-USA`'s default parameterization has an elasticity of substitution of one, which implies a Cobb-Douglas production function.  
+`OG-USA`'s default parameterization has an elasticity of substitution of $\varepsilon=1.0$, which implies a Cobb-Douglas production function.  
 
 ### Capital's share of output
 
-The historical value in U.S. is about 0.33, but {cite}`EHS:2013` find capital's share is increasing.  We therefore use the slightly higher value of 0.35.  Note that the mean of capital's share of income from 1950 onwards is 0.38 from the Penn World Tables.
+The historical value in U.S. is about 0.33, but {cite}`EHS:2013` find capital's share is increasing.  We therefore use the slightly higher value of $\gamma =0.35$.  Note that the mean of capital's share of income from 1950 onwards is 0.38 from the Penn World Tables.
 
 
 ## Open Economy Parameters
@@ -42,29 +42,29 @@ The path of foreign holding of domestic debt is endogenous, but the initial peri
 
 ### Foreign purchases of newly issued debt
 
-We set $zeta_D = 0.4$.  This is the average share of foreign purchases of newly issued government debt found from the Financial Accounts of the United States.
+We set $\zeta_D = 0.4$.  This is the average share of foreign purchases of newly issued government debt found from the Financial Accounts of the United States.
 
 ### Foreign holdings of excess capital
 
-We set $zeta_K = 0.1$.  
+We set $\zeta_K = 0.1$.  
 
 
 ## Government Debt, Spending and Transfers
 
 ### Government Debt
 
-The path of government debt is endogenous.  But the initial value is exogenous.  To avoid converting between model units and dollars, we calibrate the initial debt to GDP ratio, rather than the dollar value of the debt.  This is the model parameter $alpha_D$.  We compute this from the ratio of publicly held debt outstanding to GDP.  Based on 2019 values, this gives us a ratio of 0.78.
+The path of government debt is endogenous.  But the initial value is exogenous.  To avoid converting between model units and dollars, we calibrate the initial debt to GDP ratio, rather than the dollar value of the debt.  This is the model parameter $\alpha_D$.  We compute this from the ratio of publicly held debt outstanding to GDP.  Based on 2019 values, this gives us a ratio of 0.78.
 
 ### Aggregate transfers
 
 Aggregate (non-Social Security) transfers to households are set as a share of GDP with the parameter $\alpha_T$.  Using the [OMB Fiscal Year 2017 Historical Tables](https://www.whitehouse.gov/sites/default/files/omb/budget/fy2017/assets/hist.pdf), we define transfers as:
-    $$Transfers = VA Benefits and Services (700) + Income Security (600) + Medicare (570) + Healthcare Services (551)$$
+    <center>Transfers = VA Benefits and Services (700) + Income Security (600) + Medicare (570) + Healthcare Services (551)</center>
 
 We exclude Social Security from transfers since it is modeled specifically. With this definition, the share of transfers to GDP in 2015 is 0.09.
 
 ### Government expenditures
 
 Government spending on goods and services are also set as a share of GDP with the parameter $\alpha_G$.  Using the [OMB Fiscal Year 2017 Historical Tables](https://www.whitehouse.gov/sites/default/files/omb/budget/fy2017/assets/hist.pdf), we define government spending as:
-    $$Government Spending = Total Outlays - Transfers - Net Interest on Debt - Social Security$$
+    <center>Government Spending = Total Outlays - Transfers - Net Interest on Debt - Social Security</center>
 
 
