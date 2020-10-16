@@ -298,10 +298,9 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates2, filename2),
                           (True, param_updates1, filename1),
-                          (False, param_updates3, filename3),
-                          (False, param_updates4, filename4)],
+                          (False, param_updates3, filename3)],
                          ids=['Baseline, balanced budget', 'Baseline',
-                              'Reform', 'Reform, baseline spending'])
+                              'Reform'])
 def test_run_TPI(baseline, param_updates, filename, tmp_path,
                  dask_client):
     '''
@@ -369,10 +368,13 @@ filename7 = filename = os.path.join(
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates5, filename5),
                           (True, param_updates6, filename6),
-                          (True, param_updates7, filename7)],
+                          (True, param_updates7, filename7),
+                          (True, param_updates1, filename1),
+                          (False, param_updates4, filename4)],
                          ids=['Baseline, small open',
                               'Baseline, small open for some periods',
-                              'Baseline, delta_tau = 0'])
+                              'Baseline, delta_tau = 0', 'Baseline',
+                              'Reform, baseline spending'])
 def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
                        dask_client):
     '''
@@ -380,8 +382,11 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
     ensure that output returned matches what it has been before.
     '''
     baseline_dir = os.path.join(CUR_PATH, 'baseline')
-    output_base = baseline_dir
-    p = Specifications(baseline=True, baseline_dir=baseline_dir,
+    if baseline:
+        output_base = baseline_dir
+    else:
+        output_base = os.path.join(CUR_PATH, 'reform')
+    p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, test=True,
                        client=dask_client, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
@@ -395,6 +400,21 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
     ss_outputs = SS.run_SS(p, None)
+
+    if p.baseline:
+        utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
+        ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
+    else:
+        utils.mkdirs(os.path.join(p.output_base, "SS"))
+        ss_dir = os.path.join(p.output_base, "SS", "SS_vars.pkl")
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
+
+    TPI.ENFORCE_SOLUTION_CHECKS = False
+    test_dict = TPI.run_TPI(p, None)
+    expected_dict = utils.safe_read_pickle(filename)
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
