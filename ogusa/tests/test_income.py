@@ -603,7 +603,6 @@ expected_vals2 = np.array([
     'abil_wgts,expected_vals', [
         (abil_wgts1, expected_vals1), (abil_wgts2, expected_vals2)],
     ids=['default weights', 'non-default weights'])
-@pytest.mark.full_run
 def test_get_e_interp(abil_wgts, expected_vals):
     '''
     Test of get_e_interp
@@ -615,7 +614,6 @@ def test_get_e_interp(abil_wgts, expected_vals):
     assert np.allclose(test_vals, expected_vals)
 
 
-@pytest.mark.full_run
 def test_get_e_interp_exception():
     '''
     Test that RuntimeError is abil_wgts not suitable for interpolation
