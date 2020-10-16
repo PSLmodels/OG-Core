@@ -89,17 +89,23 @@ class Specifications(paramtools.Parameters):
             None
 
         '''
+        # reshape lambdas
+        self.lambdas = self.lambdas.reshape(self.lambdas.shape[0], 1)
+        # cast integers as integers
+        self.S = int(self.S)
+        self.T = int(self.T)
+        self.J = len(self.lambdas)
+
         # get parameters of elliptical utility function
         self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
-            self.frisch,
-            self.ltilde
-        )
+            self.frisch, self.ltilde)
         # determine length of budget window from start year and last
         # year in TC
         self.BW = int(TC_LAST_YEAR - self.start_year + 1)
         # Find number of economically active periods of life
-        self.E = int(self.starting_age * (self.S / (self.ending_age -
-                                                    self.starting_age)))
+        self.E = int(
+            self.starting_age * (self.S / (self.ending_age -
+                                           self.starting_age)))
         # Find rates in model periods from annualized rates
         self.beta = (
             1 / (rate_conversion(1 / self.beta_annual - 1,
@@ -198,12 +204,6 @@ class Specifications(paramtools.Parameters):
                          (self.S, 1, 1))), axis=0)
         setattr(self, 'eta',  eta_to_set)
 
-        # reshape lambdas
-        self.lambdas = self.lambdas.reshape(self.lambdas.shape[0], 1)
-        # cast integers as integers
-        self.S = int(self.S)
-        self.T = int(self.T)
-        self.J = int(self.J)
 
         # make sure zeta matrix sums to one (e.g., default off due to rounding)
         self.zeta = self.zeta / self.zeta.sum()
