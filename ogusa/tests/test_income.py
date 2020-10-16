@@ -597,12 +597,39 @@ expected_vals2 = np.array([
      1.22758655, 1.31225013],
     [0.1688341, 0.30892323, 0.55451336, 0.75897625, 1.06824048,
      1.20850438, 1.27834876]])
+abil_wgts3 = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005,
+                       0.004, 0.0009, 0.0001])
+expected_vals3 = np.zeros((80, 10))
+expected_vals3[:, :7] = expected_vals1.copy()
+old_vals = expected_vals1[:, 6].copy()
+expected_vals3[:, 6] = old_vals * 0.458759521
+expected_vals3[:, 7] = old_vals * 0.847252448
+expected_vals3[:, 8] = old_vals * 2.713698465
+expected_vals3[:, 9] = old_vals * 18.74863983
+age_wgts = np.ones(80) * 1 / 80
+expected_vals3 = (expected_vals3 /
+                  (expected_vals3 * age_wgts.reshape(80, 1)
+                   * abil_wgts3.reshape(1, 10)).sum())
+
+abil_wgts4 = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005,
+                       0.004, 0.001])
+expected_vals4 = np.zeros((80, 9))
+expected_vals4[:, :7] = expected_vals1.copy()
+old_vals = expected_vals1[:, 6].copy()
+expected_vals4[:, 6] = old_vals * 0.458759521
+expected_vals4[:, 7] = old_vals * 0.847252448
+expected_vals4[:, 8] = old_vals * 4.317192601
+expected_vals4 = (expected_vals4 /
+                  (expected_vals4 * age_wgts.reshape(80, 1)
+                   * abil_wgts4.reshape(1, 9)).sum())
 
 
 @pytest.mark.parametrize(
     'abil_wgts,expected_vals', [
-        (abil_wgts1, expected_vals1), (abil_wgts2, expected_vals2)],
-    ids=['default weights', 'non-default weights'])
+        (abil_wgts1, expected_vals1), (abil_wgts2, expected_vals2),
+        (abil_wgts3, expected_vals3), (abil_wgts4, expected_vals4)],
+    ids=['J=7, default weights', 'non-default weights',
+         'J=10 weights', 'J=9 weights'])
 def test_get_e_interp(abil_wgts, expected_vals):
     '''
     Test of get_e_interp
