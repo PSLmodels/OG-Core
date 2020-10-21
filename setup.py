@@ -21,7 +21,6 @@ config = {
     'install_requires': [],
     'package_data': {
                      'ogusa': [
-                               'parameters_metadata.json',
                                'default_parameters.json',
                                'data/ability/*',
                                'data/demographic/*',
