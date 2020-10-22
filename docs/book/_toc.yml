@@ -42,6 +42,7 @@
 - part: Calibration
   chapters:
   - file: content/calibration/exogenous_parameters
+  - file: content/calibration/macro
   - file: content/calibration/demographics
   - file: content/calibration/earnings
   - file: content/calibration/tax_functions

@@ -11,7 +11,7 @@
         "description": "Frisch elasticity of labor supply.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
-        "notes": "See Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity.",
+        "notes": "See Altonji (JPE, 1986) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity.",
         "type": "float",
         "value": [
             {
