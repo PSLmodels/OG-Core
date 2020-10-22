@@ -141,8 +141,7 @@ def test_get_calculator_puf():
         }
     calc = get_micro_data.get_calculator(
         baseline=False, calculator_start_year=2017, reform=iit_reform,
-        data=None,
-        records_start_year=PUF_START_YEAR)
+        data=PUF_PATH, records_start_year=PUF_START_YEAR)
     assert calc.current_year == 2013
 
 
