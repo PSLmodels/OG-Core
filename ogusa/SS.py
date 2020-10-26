@@ -538,17 +538,15 @@ def run_SS(p, client=None):
         if p.zeta_D[-1] == 1.0:
             rguess = p.world_int_rate[-1]
         else:
-            rguess = 0.0648
+            rguess = p.initial_guess_r_SS
         if p.use_zeta:
             b_guess = np.ones((p.S, p.J)) * 0.0055
             n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-            TRguess = 0.057
-            factorguess = 139292.27
         else:
             b_guess = np.ones((p.S, p.J)) * 0.07
             n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
-        TRguess = 0.057
-        factorguess = 139355.154
+        TRguess = p.initial_guess_TR_SS
+        factorguess = p.initial_guess_factor_SS
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         ss_params_baseline = (b_guess, n_guess, None, None, p, client)
         if p.use_zeta:
@@ -594,9 +592,9 @@ def run_SS(p, client=None):
             if p.zeta_D[-1] == 1.0:
                 rguess = p.world_int_rate[-1]
             else:
-                rguess = 0.09
-            TRguess = 0.12
-            factorguess = 70000
+                rguess = p.initial_guess_r_SS
+            TRguess = p.initial_guess_TR_SS
+            factorguess = p.initial_guess_factor_SS
             BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         if p.baseline_spending:
             TR_ss = TRguess

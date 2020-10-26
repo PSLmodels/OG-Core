@@ -1074,7 +1074,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
     p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 
-    test_dict = SS.run_SS(p, dask_client)
+    test_dict = SS.run_SS(p, client=None)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
