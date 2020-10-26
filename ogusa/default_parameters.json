@@ -267,7 +267,7 @@
     },
     "Z": {
         "title": "Total factor productivity in firm production function",
-        "description": "Total factor productivity in firm production function.",
+        "description": "Total factor productivity in firm production function.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "",
@@ -327,7 +327,7 @@
     },
     "world_int_rate_annual": {
         "title": "Exogenous annual world interest rate to be used when modeling a small open economy",
-        "description": "Exogenous annual world interest rate to be used when modeling a small open economy.",
+        "description": "Exogenous annual world interest rate to be used when modeling a small open economy. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Open Economy Parameters",
         "notes": "",
         "type": "float",
@@ -366,7 +366,7 @@
     },
     "zeta_D": {
         "title": "Share of new debt issues from government that are purchased by foreigners",
-        "description": "Share of new debt issues from government that are purchased by foreigners.",
+        "description": "Share of new debt issues from government that are purchased by foreigners. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Open Economy Parameters",
         "notes": "This value is about 0.4 historically for the U.S., set to zero to have closed econ as default.",
         "type": "float",
@@ -387,7 +387,7 @@
     },
     "zeta_K": {
         "title": "Share of excess demand for capital that is supplied by foreigners",
-        "description": "Share of excess demand for capital that is supplied by foreigners.",
+        "description": "Share of excess demand for capital that is supplied by foreigners. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Open Economy Parameters",
         "notes": "Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down.",
         "type": "float",
@@ -446,7 +446,7 @@
     },
     "alpha_T": {
         "title": "Exogenous ratio of government transfers to GDP when budget balance is false",
-        "description": "Exogenous ratio of government transfers to GDP when budget balance is false.",
+        "description": "Exogenous ratio of government transfers to GDP when budget balance is false. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -468,7 +468,7 @@
     },
     "alpha_G": {
         "title": "Exogenous ratio of government spending to GDP when budget balance is false",
-        "description": "Exogenous ratio of government spending to GDP when budget balance is false.",
+        "description": "Exogenous ratio of government spending to GDP when budget balance is false. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -582,7 +582,7 @@
     },
     "cit_rate": {
         "title": "Corporate income tax rate",
-        "description": "Corporate income tax rate.",
+        "description": "Corporate income tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This is the top marginal corporate income tax rate.",
@@ -604,7 +604,7 @@
     },
     "tau_c": {
         "title": "Consumption tax rate",
-        "description": "Consumption tax rate.",
+        "description": "Consumption tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a SxJ matrix.",
@@ -626,7 +626,7 @@
     },
     "delta_tau_annual": {
         "title": "Annual rate of depreciation of capital for tax purposes",
-        "description": "Annual rate of depreciation of capital for tax purposes.",
+        "description": "Annual rate of depreciation of capital for tax purposes.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter.",
@@ -648,7 +648,7 @@
     },
     "h_wealth": {
         "title": "Numerator in wealth tax function",
-        "description": "Numerator in wealth tax function.",
+        "description": "Numerator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -670,7 +670,7 @@
     },
     "m_wealth": {
         "title": "Term in denominator in wealth tax function",
-        "description": "Term in denominator in wealth tax function.",
+        "description": "Term in denominator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -692,7 +692,7 @@
     },
     "p_wealth": {
         "title": "Scale parameter in wealth tax function",
-        "description": "Scale parameter in wealth tax function.",
+        "description": "Scale parameter in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Set to 0 to have no wealth tax.",
@@ -714,7 +714,7 @@
     },
     "tau_bq": {
         "title": "Linear tax rate on bequests",
-        "description": "Linear tax rate on bequests.",
+        "description": "Linear tax rate on bequests. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -736,7 +736,7 @@
     },
     "tau_payroll": {
         "title": "Linear payroll tax rate",
-        "description": "Linear payroll tax rate.",
+        "description": "Linear payroll tax rate. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Set to zero as default since tax functions include income and payroll taxes.",
@@ -2437,7 +2437,7 @@
     },
     "retirement_age": {
         "title": "Age at which agents can collect Social Security benefits",
-        "description": "Age at which agents can collect Social Security benefits.",
+        "description": "Age at which agents can collect Social Security benefits. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -2611,7 +2611,7 @@
     },
     "replacement_rate_adjust": {
         "title": "Adjustment to the Social Security retirement benefits replacement rate",
-        "description": "Adjustment to the Social Security retirement benefits replacement rate.",
+        "description": "Adjustment to the Social Security retirement benefits replacement rate. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
