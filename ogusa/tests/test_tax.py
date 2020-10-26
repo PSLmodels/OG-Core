@@ -146,10 +146,18 @@ p1.S = 2
 p1.J = 1
 p1.e = np.array([0.5, 0.45])
 p1.tax_func_type = 'DEP'
-etr_params1 = np.reshape(np.array([
+etr_params1_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15,
                     0.15, 0.16, -0.15, 0.83]]), (1, p1.S, 12))
+etr_params1 = etr_params1_old.copy()
+etr_params1[:, :, 5] = etr_params1_old[:, :, 6]
+etr_params1[:, :, 6] = etr_params1_old[:, :, 11]
+etr_params1[:, :, 7] = etr_params1_old[:, :, 5]
+etr_params1[:, :, 8] = etr_params1_old[:, :, 7]
+etr_params1[:, :, 9] = etr_params1_old[:, :, 8]
+etr_params1[:, :, 10] = etr_params1_old[:, :, 9]
+etr_params1[:, :, 11] = etr_params1_old[:, :, 10]
 
 p2 = Specifications()
 p2.S = 2
@@ -165,24 +173,38 @@ p3.S = 2
 p3.J = 1
 p3.e = np.array([0.5, 0.45])
 p3.tax_func_type = 'DEP_totalinc'
-etr_params3 = np.reshape(np.array([
+etr_params3_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
                     -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p3.S, 12))
+etr_params3 = np.zeros((1, p3.S, 6))
+etr_params3[:, :, 0] = etr_params3_old[:, :, 0]
+etr_params3[:, :, 1] = etr_params3_old[:, :, 1]
+etr_params3[:, :, 2] = etr_params3_old[:, :, 4]
+etr_params3[:, :, 3] = etr_params3_old[:, :, 5]
+etr_params3[:, :, 4] = etr_params3_old[:, :, 8]
+etr_params3[:, :, 5] = etr_params3_old[:, :, 10]
 
 p4 = Specifications()
 p4.S = 3
 p4.J = 1
 p4.e = np.array([0.5, 0.45, 0.3])
 p4.tax_func_type = 'DEP'
-etr_params4 = np.reshape(np.array([
+etr_params4_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83],
     [0.002, 0.001, 0.002, 0.04, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83],
     [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83]]), (1, p4.S, 12))
-
+etr_params4 = etr_params4_old.copy()
+etr_params4[:, :, 5] = etr_params4_old[:, :, 6]
+etr_params4[:, :, 6] = etr_params4_old[:, :, 11]
+etr_params4[:, :, 7] = etr_params4_old[:, :, 5]
+etr_params4[:, :, 8] = etr_params4_old[:, :, 7]
+etr_params4[:, :, 9] = etr_params4_old[:, :, 8]
+etr_params4[:, :, 10] = etr_params4_old[:, :, 9]
+etr_params4[:, :, 11] = etr_params4_old[:, :, 10]
 
 @pytest.mark.parametrize('b,n,etr_params,params,expected',
                          [(np.array([0.4, 0.4]), np.array([0.5, 0.4]),
@@ -206,8 +228,6 @@ def test_ETR_income(b, n, etr_params, params, expected):
     r = 0.04
     w = 1.2
     factor = 100000
-    # test_ETR_income = tax.ETR_income(r, w, b, n, factor,
-    #                                  (e, etr_params, tax_func_type))
     test_ETR_income = tax.ETR_income(r, w, b, n, factor, params.e,
                                      etr_params, params)
     assert np.allclose(test_ETR_income, expected)
@@ -219,7 +239,7 @@ p1.S = 3
 p1.J = 1
 p1.tax_func_type = 'DEP'
 p1.analytical_mtrs = True
-etr_params1 = np.reshape(np.array([
+etr_params1_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8,
      -0.14, 0.8, -0.15, 0.15, 0.16, -0.15,
      0.83],
@@ -227,7 +247,7 @@ etr_params1 = np.reshape(np.array([
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83],
     [0.011, 0.001, 0.003, 0.06, 0.8, -0.14,
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p1.S, 12))
-mtrx_params1 = np.reshape(np.array([
+mtrx_params1_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.68,
      -0.17, 0.8, -0.42, 0.18, 0.43, -0.42,
      0.96],
@@ -237,6 +257,22 @@ mtrx_params1 = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.56,
      -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
      0.65]]), (1, p1.S, 12))
+etr_params1 = etr_params1_old.copy()
+etr_params1[:, :, 5] = etr_params1_old[:, :, 6]
+etr_params1[:, :, 6] = etr_params1_old[:, :, 11]
+etr_params1[:, :, 7] = etr_params1_old[:, :, 5]
+etr_params1[:, :, 8] = etr_params1_old[:, :, 7]
+etr_params1[:, :, 9] = etr_params1_old[:, :, 8]
+etr_params1[:, :, 10] = etr_params1_old[:, :, 9]
+etr_params1[:, :, 11] = etr_params1_old[:, :, 10]
+mtrx_params1 = mtrx_params1_old.copy()
+mtrx_params1[:, :, 5] = mtrx_params1_old[:, :, 6]
+mtrx_params1[:, :, 6] = mtrx_params1_old[:, :, 11]
+mtrx_params1[:, :, 7] = mtrx_params1_old[:, :, 5]
+mtrx_params1[:, :, 8] = mtrx_params1_old[:, :, 7]
+mtrx_params1[:, :, 9] = mtrx_params1_old[:, :, 8]
+mtrx_params1[:, :, 10] = mtrx_params1_old[:, :, 9]
+mtrx_params1[:, :, 11] = mtrx_params1_old[:, :, 10]
 
 p2 = Specifications()
 p2.e = np.array([0.5, 0.45, 0.3])
@@ -244,7 +280,7 @@ p2.S = 3
 p2.J = 1
 p2.tax_func_type = 'DEP'
 p2.analytical_mtrs = True
-etr_params2 = np.reshape(np.array([
+etr_params2_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8,
      -0.14, 0.8, -0.15, 0.15, 0.16, -0.15,
      0.83],
@@ -252,7 +288,7 @@ etr_params2 = np.reshape(np.array([
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83],
     [0.011, 0.001, 0.003, 0.06, 0.8, -0.14,
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p2.S, 12))
-mtry_params2 = np.reshape(np.array([
+mtry_params2_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.68,
      -0.17, 0.8, -0.42, 0.18, 0.43, -0.42,
      0.96],
@@ -262,6 +298,22 @@ mtry_params2 = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.56,
      -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
      0.65]]), (1, p2.S, 12))
+etr_params2 = etr_params2_old.copy()
+etr_params2[:, :, 5] = etr_params2_old[:, :, 6]
+etr_params2[:, :, 6] = etr_params2_old[:, :, 11]
+etr_params2[:, :, 7] = etr_params2_old[:, :, 5]
+etr_params2[:, :, 8] = etr_params2_old[:, :, 7]
+etr_params2[:, :, 9] = etr_params2_old[:, :, 8]
+etr_params2[:, :, 10] = etr_params2_old[:, :, 9]
+etr_params2[:, :, 11] = etr_params2_old[:, :, 10]
+mtry_params2 = mtry_params2_old.copy()
+mtry_params2[:, :, 5] = mtry_params2_old[:, :, 6]
+mtry_params2[:, :, 6] = mtry_params2_old[:, :, 11]
+mtry_params2[:, :, 7] = mtry_params2_old[:, :, 5]
+mtry_params2[:, :, 8] = mtry_params2_old[:, :, 7]
+mtry_params2[:, :, 9] = mtry_params2_old[:, :, 8]
+mtry_params2[:, :, 10] = mtry_params2_old[:, :, 9]
+mtry_params2[:, :, 11] = mtry_params2_old[:, :, 10]
 
 p3 = Specifications()
 p3.e = np.array([0.5, 0.45, 0.3])
@@ -269,7 +321,7 @@ p3.S = 3
 p3.J = 1
 p3.tax_func_type = 'DEP'
 p3.analytical_mtrs = False
-etr_params3 = np.reshape(np.array([
+etr_params3_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8,
      -0.14, 0.8, -0.15, 0.15, 0.16, -0.15,
      0.83],
@@ -277,7 +329,7 @@ etr_params3 = np.reshape(np.array([
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83],
     [0.011, 0.001, 0.003, 0.06, 0.8, -0.14,
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p3.S, 12))
-mtrx_params3 = np.reshape(np.array([
+mtrx_params3_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.68,
      -0.17, 0.8, -0.42, 0.18, 0.43, -0.42,
      0.96],
@@ -287,6 +339,22 @@ mtrx_params3 = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.56,
      -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
      0.65]]), (1, p3.S, 12))
+etr_params3 = etr_params3_old.copy()
+etr_params3[:, :, 5] = etr_params3_old[:, :, 6]
+etr_params3[:, :, 6] = etr_params3_old[:, :, 11]
+etr_params3[:, :, 7] = etr_params3_old[:, :, 5]
+etr_params3[:, :, 8] = etr_params3_old[:, :, 7]
+etr_params3[:, :, 9] = etr_params3_old[:, :, 8]
+etr_params3[:, :, 10] = etr_params3_old[:, :, 9]
+etr_params3[:, :, 11] = etr_params3_old[:, :, 10]
+mtrx_params3 = mtrx_params3_old.copy()
+mtrx_params3[:, :, 5] = mtrx_params3_old[:, :, 6]
+mtrx_params3[:, :, 6] = mtrx_params3_old[:, :, 11]
+mtrx_params3[:, :, 7] = mtrx_params3_old[:, :, 5]
+mtrx_params3[:, :, 8] = mtrx_params3_old[:, :, 7]
+mtrx_params3[:, :, 9] = mtrx_params3_old[:, :, 8]
+mtrx_params3[:, :, 10] = mtrx_params3_old[:, :, 9]
+mtrx_params3[:, :, 11] = mtrx_params3_old[:, :, 10]
 
 p4 = Specifications()
 p4.e = np.array([0.5, 0.45, 0.3])
@@ -315,7 +383,7 @@ p5.S = 3
 p5.J = 1
 p5.tax_func_type = 'DEP_totalinc'
 p5.analytical_mtrs = True
-etr_params5 = np.reshape(np.array([
+etr_params5_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8,
      -0.14, 0.8, -0.15, 0.15, 0.16, -0.15,
      0.83],
@@ -323,7 +391,7 @@ etr_params5 = np.reshape(np.array([
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83],
     [0.011, 0.001, 0.003, 0.06, 0.8, -0.14,
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p5.S, 12))
-mtrx_params5 = np.reshape(np.array([
+mtrx_params5_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.68,
      -0.17, 0.8, -0.42, 0.18, 0.43, -0.42,
      0.96],
@@ -333,6 +401,20 @@ mtrx_params5 = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.56,
      -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
      0.65]]), (1, p5.S, 12))
+etr_params5 = np.zeros((1, p3.S, 6))
+etr_params5[:, :, 0] = etr_params5_old[:, :, 0]
+etr_params5[:, :, 1] = etr_params5_old[:, :, 1]
+etr_params5[:, :, 2] = etr_params5_old[:, :, 4]
+etr_params5[:, :, 3] = etr_params5_old[:, :, 5]
+etr_params5[:, :, 4] = etr_params5_old[:, :, 8]
+etr_params5[:, :, 5] = etr_params5_old[:, :, 10]
+mtrx_params5 = np.zeros((1, p3.S, 6))
+mtrx_params5[:, :, 0] = mtrx_params5_old[:, :, 0]
+mtrx_params5[:, :, 1] = mtrx_params5_old[:, :, 1]
+mtrx_params5[:, :, 2] = mtrx_params5_old[:, :, 4]
+mtrx_params5[:, :, 3] = mtrx_params5_old[:, :, 5]
+mtrx_params5[:, :, 4] = mtrx_params5_old[:, :, 8]
+mtrx_params5[:, :, 5] = mtrx_params5_old[:, :, 10]
 
 p6 = Specifications()
 p6.e = np.array([0.5, 0.45, 0.3])
@@ -340,7 +422,7 @@ p6.S = 3
 p6.J = 1
 p6.tax_func_type = 'DEP_totalinc'
 p6.analytical_mtrs = False
-etr_params6 = np.reshape(np.array([
+etr_params6_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8,
      -0.14, 0.8, -0.15, 0.15, 0.16, -0.15,
      0.83],
@@ -348,7 +430,7 @@ etr_params6 = np.reshape(np.array([
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83],
     [0.011, 0.001, 0.003, 0.06, 0.8, -0.14,
      0.8, -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p6.S, 12))
-mtrx_params6 = np.reshape(np.array([
+mtrx_params6_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.68,
      -0.17, 0.8, -0.42, 0.18, 0.43, -0.42,
      0.96],
@@ -358,6 +440,20 @@ mtrx_params6 = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.56,
      -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
      0.65]]), (1, p6.S, 12))
+etr_params6 = np.zeros((1, p3.S, 6))
+etr_params6[:, :, 0] = etr_params6_old[:, :, 0]
+etr_params6[:, :, 1] = etr_params6_old[:, :, 1]
+etr_params6[:, :, 2] = etr_params6_old[:, :, 4]
+etr_params6[:, :, 3] = etr_params6_old[:, :, 5]
+etr_params6[:, :, 4] = etr_params6_old[:, :, 8]
+etr_params6[:, :, 5] = etr_params6_old[:, :, 10]
+mtrx_params6 = np.zeros((1, p3.S, 6))
+mtrx_params6[:, :, 0] = mtrx_params6_old[:, :, 0]
+mtrx_params6[:, :, 1] = mtrx_params6_old[:, :, 1]
+mtrx_params6[:, :, 2] = mtrx_params6_old[:, :, 4]
+mtrx_params6[:, :, 3] = mtrx_params6_old[:, :, 5]
+mtrx_params6[:, :, 4] = mtrx_params6_old[:, :, 8]
+mtrx_params6[:, :, 5] = mtrx_params6_old[:, :, 10]
 
 
 @pytest.mark.parametrize('etr_params,mtr_params,params,mtr_capital,expected',
@@ -446,13 +542,21 @@ BQ1 = np.array([0.3])
 bq1 = BQ1 / p1.lambdas[0]
 tr1 = np.array([0.12])
 theta1 = np.array([0.225])
-etr_params1 = np.reshape(np.array([
+etr_params1_old = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83],
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83],
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83]]), (1, p1.S, 12))
+etr_params1 = etr_params1_old.copy()
+etr_params1[:, :, 5] = etr_params1_old[:, :, 6]
+etr_params1[:, :, 6] = etr_params1_old[:, :, 11]
+etr_params1[:, :, 7] = etr_params1_old[:, :, 5]
+etr_params1[:, :, 8] = etr_params1_old[:, :, 7]
+etr_params1[:, :, 9] = etr_params1_old[:, :, 8]
+etr_params1[:, :, 10] = etr_params1_old[:, :, 9]
+etr_params1[:, :, 11] = etr_params1_old[:, :, 10]
 j1 = 0
 shift1 = True
 method1 = 'SS'
@@ -481,9 +585,17 @@ bq3 = np.tile(np.reshape(BQ3 / p3.lambdas[0], (p3.T, 1)), (1, p3.S))
 tr3 = np.tile(np.reshape(np.array([0.12, 0.1, 0.11]), (p3.T, 1)),
               (1, p3.S))
 theta3 = theta1
-etr_params3 = np.tile(np.reshape(np.array(
+etr_params3_old = np.tile(np.reshape(np.array(
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
      -0.15, 0.83]), (1, 1, 12)), (p3.T, p3.S, 1))
+etr_params3 = etr_params3_old.copy()
+etr_params3[:, :, 5] = etr_params3_old[:, :, 6]
+etr_params3[:, :, 6] = etr_params3_old[:, :, 11]
+etr_params3[:, :, 7] = etr_params3_old[:, :, 5]
+etr_params3[:, :, 8] = etr_params3_old[:, :, 7]
+etr_params3[:, :, 9] = etr_params3_old[:, :, 8]
+etr_params3[:, :, 10] = etr_params3_old[:, :, 9]
+etr_params3[:, :, 11] = etr_params3_old[:, :, 10]
 j3 = 0
 shift3 = True
 method3 = 'TPI'
@@ -516,15 +628,24 @@ bq5 = BQ5 / p5.lambdas.reshape(1, 1, p5.J)
 tr5 = np.tile(np.reshape(np.array([0.12, 0.1, 0.11]), (p5.T, 1, 1)),
               (1, p5.S, p5.J))
 theta5 = np.array([0.225, 0.3])
-etr_params = np.tile(np.reshape(np.array([
+etr_params_old = np.tile(np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83],
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83],
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
      0.16, -0.15, 0.83]]), (1, p5.S, 12)), (p5.T, 1, 1))
+etr_params = etr_params_old.copy()
+etr_params[:, :, 5] = etr_params_old[:, :, 6]
+etr_params[:, :, 6] = etr_params_old[:, :, 11]
+etr_params[:, :, 7] = etr_params_old[:, :, 5]
+etr_params[:, :, 8] = etr_params_old[:, :, 7]
+etr_params[:, :, 9] = etr_params_old[:, :, 8]
+etr_params[:, :, 10] = etr_params_old[:, :, 9]
+etr_params[:, :, 11] = etr_params_old[:, :, 10]
 etr_params5 = np.tile(np.reshape(etr_params, (p5.T, p5.S, 1, 12)),
                       (1, 1, p5.J, 1))
+
 j5 = None
 shift5 = False
 method5 = 'TPI'
