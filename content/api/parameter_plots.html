@@ -448,6 +448,73 @@
 <div class="section" id="module-ogusa.parameter_plots">
 <span id="ogusa-parameter-plots"></span><h2>ogusa.parameter_plots<a class="headerlink" href="#module-ogusa.parameter_plots" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
+<dt id="ogusa.parameter_plots.gen_3Dscatters_hist">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">gen_3Dscatters_hist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">output_dir</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#gen_3Dscatters_hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.gen_3Dscatters_hist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create 3-D scatterplots and corresponding 3D histogram of ETR, MTRx,
+and MTRy as functions of labor income and capital income with
+truncated data in the income dimension</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>Pandas DataFrame</em>) – 11 variables with N observations of tax
+rates</p></li>
+<li><p><strong>s</strong> (<em>int</em>) – age of individual, &gt;= 21</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – year of analysis, &gt;= 2016</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output directory for saving plot files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_2D_taxfunc">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_2D_taxfunc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">year</span></em>, <em class="sig-param"><span class="n">start_year</span></em>, <em class="sig-param"><span class="n">tax_param_list</span></em>, <em class="sig-param"><span class="n">age</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tax_func_type</span><span class="o">=</span><span class="default_value">['DEP']</span></em>, <em class="sig-param"><span class="n">rate_type</span><span class="o">=</span><span class="default_value">'etr'</span></em>, <em class="sig-param"><span class="n">over_labinc</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">other_inc_val</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">max_inc_amt</span><span class="o">=</span><span class="default_value">1000000</span></em>, <em class="sig-param"><span class="n">data_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">['1st Functions']</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_2D_taxfunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_2D_taxfunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots OG-USA tax functions in two dimensions.
+The tax rates are plotted over capital or labor income, as
+entered by the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>year</strong> (<em>int</em>) – year of policy tax functions represent</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – first year tax functions estimated for in
+tax_param_list elements</p></li>
+<li><p><strong>tax_param_list</strong> (<em>list</em>) – list of arrays containing tax function
+parameters</p></li>
+<li><p><strong>age</strong> (<em>int</em>) – age for tax functions to plot, use None if tax
+function parameters were not age specific</p></li>
+<li><p><strong>tax_func_type</strong> (<em>list</em>) – list of strings in [“DEP”, “DEP_totalinc”,
+“GS”, “linear”] and specifies functional form of tax functions
+in tax_param_list</p></li>
+<li><p><strong>rate_type</strong> (<em>str</em>) – string that is in [“etr”, “mtrx”, “mtry”] and
+determines the type of tax rate that is plotted</p></li>
+<li><p><strong>over_labinc</strong> (<em>bool</em>) – indicates that x-axis of the plot is over
+labor income, if False then plot is over capital income</p></li>
+<li><p><strong>other_inc_val</strong> (<em>scalar</em>) – dollar value at which to hold constant
+the amount of income that is not represented on the x-axis</p></li>
+<li><p><strong>max_inc_amt</strong> (<em>scalar</em>) – largest income amount to represent on the
+x-axis of the plot</p></li>
+<li><p><strong>data_list</strong> (<em>list</em>) – list of DataFrames with data to scatter plot
+with tax functions, needs to be of format output from
+ogusa.get_micro_data.get_data</p></li>
+<li><p><strong>labels</strong> (<em>list</em>) – list of labels for tax function parameters</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – title for the plot</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – path to which to save plot, if None then figure
+returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of tax functions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ogusa.parameter_plots.plot_ability_profiles">
 <code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_ability_profiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_ability_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_ability_profiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a plot of earnings ability profiles.</p>
@@ -460,6 +527,26 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>plot of earnings ability profiles</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_chi_n">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_chi_n</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_chi_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_chi_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plot of showing the values of the chi_n parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-USA Specifications class</em>) – parameters object</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of chi_n parameters</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>fig (Matplotlib plot object)</p>
@@ -490,6 +577,71 @@ levels</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="ogusa.parameter_plots.plot_fert_rates">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_fert_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fert_func</span></em>, <em class="sig-param"><span class="n">age_midp</span></em>, <em class="sig-param"><span class="n">totpers</span></em>, <em class="sig-param"><span class="n">min_yr</span></em>, <em class="sig-param"><span class="n">max_yr</span></em>, <em class="sig-param"><span class="n">fert_data</span></em>, <em class="sig-param"><span class="n">fert_rates</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_fert_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_fert_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot fertility rates from the data along with smoothed function to
+use for model fertility rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fert_func</strong> (<em>Scipy interpolation object</em>) – interpolated fertility
+rates</p></li>
+<li><p><strong>age_midp</strong> (<em>NumPy array</em>) – midpoint of age for each age group in
+data</p></li>
+<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
+<li><p><strong>min_yr</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_yr</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4</p></li>
+<li><p><strong>fert_data</strong> (<em>NumPy array</em>) – fertility rates by age group from data</p></li>
+<li><p><strong>fert_rates</strong> (<em>NumPy array</em>) – fitted fertility rates for each of
+totpers</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+is returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of fertility rates</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_imm_fixed">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_imm_fixed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">age_per_EpS</span></em>, <em class="sig-param"><span class="n">imm_rates_orig</span></em>, <em class="sig-param"><span class="n">imm_rates_adj</span></em>, <em class="sig-param"><span class="n">E</span></em>, <em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_imm_fixed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_imm_fixed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the immigration rates implied by the data on population,
+mortality, and fertility versus the adjusted immigration rates
+needed to achieve a stationary distribution of the population in a
+reasonable number of model periods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>age_per_EpS</strong> (<em>array_like</em>) – list of ages over which to plot
+population distribution</p></li>
+<li><p><strong>imm_rates_orig</strong> (<em>Numpy array</em>) – immigration rates by age</p></li>
+<li><p><strong>imm_rates_adj</strong> (<em>Numpy array</em>) – adjusted immigration rates by age</p></li>
+<li><p><strong>E</strong> (<em>int</em>) – age at which household becomes economically active</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+is returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>plot of immigration rates found</dt><dd><p>from residuals and the adjusted rates to hit SS sooner</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ogusa.parameter_plots.plot_imm_rates">
 <code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_imm_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_imm_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_imm_rates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a plot of immigration rates from OG-USA parameterization.</p>
@@ -507,6 +659,29 @@ levels</p></li>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_income_data">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_income_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ages</span></em>, <em class="sig-param"><span class="n">abil_midp</span></em>, <em class="sig-param"><span class="n">abil_pcts</span></em>, <em class="sig-param"><span class="n">emat</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filesuffix</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_income_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_income_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function graphs ability matrix in 3D, 2D, log, and nolog</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ages</strong> (<em>Numpy array</em>) – </p></li>
+<li><p><strong>abil_midp</strong> (<em>Numpy array</em>) – midpoints of income percentile bins in
+each ability group</p></li>
+<li><p><strong>abil_pcts</strong> (<em>Numpy array</em>) – percent of population in each lifetime
+income group, length J</p></li>
+<li><p><strong>emat</strong> (<em>Numpy array</em>) – effective labor units by age and lifetime
+income group, size SxJ</p></li>
+<li><p><strong>filesuffix</strong> (<em>str</em>) – suffix to be added to plot files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -533,6 +708,72 @@ levels</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="ogusa.parameter_plots.plot_mort_rates_data">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_mort_rates_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">totpers</span></em>, <em class="sig-param"><span class="n">min_yr</span></em>, <em class="sig-param"><span class="n">max_yr</span></em>, <em class="sig-param"><span class="n">age_year_all</span></em>, <em class="sig-param"><span class="n">mort_rates_all</span></em>, <em class="sig-param"><span class="n">infmort_rate</span></em>, <em class="sig-param"><span class="n">mort_rates</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_mort_rates_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_mort_rates_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots mortality rates from the model and data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
+<li><p><strong>min_yr</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_yr</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4</p></li>
+<li><p><strong>age_year_all</strong> (<em>array_like</em>) – ages in mortality rate data</p></li>
+<li><p><strong>mort_rates_all</strong> (<em>array_like</em>) – mortality rates by age from data,
+average across males and females</p></li>
+<li><p><strong>infmort_rate</strong> (<em>scalar</em>) – infant mortality rate</p></li>
+<li><p><strong>mort_rates</strong> (<em>array_like</em>) – fitted mortality rates for each of
+totpers</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+is returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of mortality rates</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_omega_fixed">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_omega_fixed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">age_per_EpS</span></em>, <em class="sig-param"><span class="n">omega_SS_orig</span></em>, <em class="sig-param"><span class="n">omega_SSfx</span></em>, <em class="sig-param"><span class="n">E</span></em>, <em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_omega_fixed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_omega_fixed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the steady-state population distribution implied by the data
+on fertility and mortality rates versus the the steady-state
+population distribution after adjusting immigration rates so that
+the stationary distribution is achieved a reasonable number of
+model periods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>age_per_EpS</strong> (<em>array_like</em>) – list of ages over which to plot
+population distribution</p></li>
+<li><p><strong>omega_SS_orig</strong> (<em>Numpy array</em>) – population distribution in SS
+without adjustment to immigration rates</p></li>
+<li><p><strong>omega_SSfx</strong> (<em>Numpy array</em>) – population distribution in SS
+after adjustment to immigration rates</p></li>
+<li><p><strong>E</strong> (<em>int</em>) – age at which household becomes economically active</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+is returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>plot of SS population distribution</dt><dd><p>before and after adjustment to immigration rates</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ogusa.parameter_plots.plot_pop_growth">
 <code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_pop_growth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">start_year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">num_years_to_plot</span><span class="o">=</span><span class="default_value">150</span></em>, <em class="sig-param"><span class="n">include_title</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_pop_growth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_pop_growth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a plot of population growth rates by year.</p>
@@ -551,6 +792,92 @@ levels</p></li>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.plot_population_path">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">plot_population_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">age_per_EpS</span></em>, <em class="sig-param"><span class="n">pop_2013_pct</span></em>, <em class="sig-param"><span class="n">omega_path_lev</span></em>, <em class="sig-param"><span class="n">omega_SSfx</span></em>, <em class="sig-param"><span class="n">curr_year</span></em>, <em class="sig-param"><span class="n">E</span></em>, <em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#plot_population_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.plot_population_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the distribution of the population over age for various years.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>age_per_EpS</strong> (<em>array_like</em>) – list of ages over which to plot
+population distribution</p></li>
+<li><p><strong>pop_2013_pct</strong> (<em>array_like</em>) – population distribution in 2013</p></li>
+<li><p><strong>omega_path_lev</strong> (<em>Numpy array</em>) – number of households by age
+over the transition path</p></li>
+<li><p><strong>omega_SSfx</strong> (<em>Numpy array</em>) – number of households by age
+in the SS</p></li>
+<li><p><strong>curr_year</strong> (<em>int</em>) – current year in the model</p></li>
+<li><p><strong>E</strong> (<em>int</em>) – age at which household becomes economically active</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+is returned</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>plot of population distribution</dt><dd><p>at points along the time path</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.txfunc_graph">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">txfunc_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">txrates</span></em>, <em class="sig-param"><span class="n">rate_type</span></em>, <em class="sig-param"><span class="n">tax_func_type</span></em>, <em class="sig-param"><span class="n">get_tax_rates</span></em>, <em class="sig-param"><span class="n">params_to_plot</span></em>, <em class="sig-param"><span class="n">output_dir</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#txfunc_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.txfunc_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates a 3D plot of the fitted tax function against
+the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>int</em>) – age of individual, &gt;= 21</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – year of analysis, &gt;= 2016</p></li>
+<li><p><strong>df</strong> (<em>Pandas DataFrame</em>) – 11 variables with N observations of tax
+rates</p></li>
+<li><p><strong>X</strong> (<em>Pandas DataSeries</em>) – labor income</p></li>
+<li><p><strong>Y</strong> (<em>Pandas DataSeries</em>) – capital income</p></li>
+<li><p><strong>Y</strong> – tax rates from the data</p></li>
+<li><p><strong>rate_type</strong> (<em>str</em>) – type of tax rate: mtrx, mtry, etr</p></li>
+<li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
+<li><p><strong>get_tax_rates</strong> (<em>function</em>) – function to generate tax rates given
+parameters</p></li>
+<li><p><strong>params_to_plot</strong> (<em>Numpy Array</em>) – tax function parameters</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output directory for saving plot files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ogusa.parameter_plots.txfunc_sse_plot">
+<code class="sig-prename descclassname">ogusa.parameter_plots.</code><code class="sig-name descname">txfunc_sse_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">age_vec</span></em>, <em class="sig-param"><span class="n">sse_mat</span></em>, <em class="sig-param"><span class="n">start_year</span></em>, <em class="sig-param"><span class="n">varstr</span></em>, <em class="sig-param"><span class="n">output_dir</span></em>, <em class="sig-param"><span class="n">round</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameter_plots.html#txfunc_sse_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameter_plots.txfunc_sse_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot sum of squared errors of tax functions over age for each year
+of budget window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>age_vec</strong> (<em>numpy array</em>) – vector of ages, length S</p></li>
+<li><p><strong>sse_mat</strong> (<em>Numpy array</em>) – SSE for each estimated tax function,
+size is SxBW</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – first year of budget window</p></li>
+<li><p><strong>varstr</strong> (<em>str</em>) – name of tax function being evaluated</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to save graph to</p></li>
+<li><p><strong>round</strong> (<em>int</em>) – which round of sweeping for outliers (0, 1, or 2)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

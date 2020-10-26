@@ -526,7 +526,7 @@ with Dask</p></li>
 
 <dl class="py function">
 <dt id="ogusa.txfunc.get_tax_rates">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">get_tax_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">wgts</span></em>, <em class="sig-param"><span class="n">tax_func_type</span></em>, <em class="sig-param"><span class="n">rate_type</span></em>, <em class="sig-param"><span class="n">for_estimation</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#get_tax_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.get_tax_rates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">get_tax_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">wgts</span></em>, <em class="sig-param"><span class="n">tax_func_type</span></em>, <em class="sig-param"><span class="n">rate_type</span></em>, <em class="sig-param"><span class="n">analytical_mtrs</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mtr_capital</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">for_estimation</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#get_tax_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.get_tax_rates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates tax rates given income data and the parameters of the tax
 functions.</p>
 <dl class="field-list simple">
@@ -539,6 +539,9 @@ tax_func_type</p></li>
 <li><p><strong>wgts</strong> (<em>array_like</em>) – weights for data observations</p></li>
 <li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
 <li><p><strong>rate_type</strong> (<em>str</em>) – type of tax rate: mtrx, mtry, etr</p></li>
+<li><p><strong>analytical_mtrs</strong> (<em>bool</em>) – whether to compute marginal tax rates
+from the total tax function (for DEP functions only)</p></li>
+<li><p><strong>mtr_capital</strong> (<em>bool</em>) – whether analytical mtr on capital income</p></li>
 <li><p><strong>for_estimation</strong> (<em>bool</em>) – whether the results are used in
 estimation, if True, then tax rates are computed as
 deviations from the mean</p></li>

@@ -319,11 +319,13 @@
                 
   <h1>Source code for ogusa.parameter_plots</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
-<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">GROUP_LABELS</span><span class="p">,</span> <span class="n">DEFAULT_START_YEAR</span>
-<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">GROUP_LABELS</span>
+<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">txfunc</span>
+<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">TC_LAST_YEAR</span>
 <span class="n">CUR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">style_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;OGUSAplots.mplstyle&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">style_file</span><span class="p">)</span>
@@ -549,7 +551,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">plot_chi_n</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_chi_n"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.plot_chi_n">[docs]</a><span class="k">def</span> <span class="nf">plot_chi_n</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Create a plot of showing the values of the chi_n parameters.</span>
 
@@ -572,10 +574,10 @@
         <span class="k">return</span> <span class="n">fig</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;chi_n_values&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">plot_fert_rates</span><span class="p">(</span><span class="n">fert_func</span><span class="p">,</span> <span class="n">age_midp</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span>
+<div class="viewcode-block" id="plot_fert_rates"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.plot_fert_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_fert_rates</span><span class="p">(</span><span class="n">fert_func</span><span class="p">,</span> <span class="n">age_midp</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span>
                     <span class="n">fert_data</span><span class="p">,</span> <span class="n">fert_rates</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Plot fertility rates from the data along with smoothed function to</span>
@@ -593,9 +595,11 @@
 <span class="sd">        fert_data (NumPy array): fertility rates by age group from data</span>
 <span class="sd">        fert_rates (NumPy array): fitted fertility rates for each of</span>
 <span class="sd">            totpers</span>
+<span class="sd">        output_dir (str): path to save figure to, if None then figure</span>
+<span class="sd">            is returned</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        None</span>
+<span class="sd">        fig (Matplotlib plot object): plot of fertility rates</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="c1"># Generate finer age vector and fertility rate vector for</span>
@@ -629,10 +633,10 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">fig</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
 
 
-<span class="k">def</span> <span class="nf">plot_mort_rates_data</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">age_year_all</span><span class="p">,</span>
+<div class="viewcode-block" id="plot_mort_rates_data"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.plot_mort_rates_data">[docs]</a><span class="k">def</span> <span class="nf">plot_mort_rates_data</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">min_yr</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span> <span class="n">age_year_all</span><span class="p">,</span>
                          <span class="n">mort_rates_all</span><span class="p">,</span> <span class="n">infmort_rate</span><span class="p">,</span>
                          <span class="n">mort_rates</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -649,9 +653,11 @@
 <span class="sd">        infmort_rate (scalar): infant mortality rate</span>
 <span class="sd">        mort_rates (array_like): fitted mortality rates for each of</span>
 <span class="sd">            totpers</span>
+<span class="sd">        output_dir (str): path to save figure to, if None then figure</span>
+<span class="sd">            is returned</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        None</span>
+<span class="sd">        fig (Matplotlib plot object): plot of mortality rates</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">age_mid_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">max_yr</span><span class="p">)</span> <span class="o">/</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">max_yr</span><span class="p">,</span>
@@ -685,10 +691,10 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">fig</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
 
 
-<span class="k">def</span> <span class="nf">plot_omega_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SS_orig</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
+<div class="viewcode-block" id="plot_omega_fixed"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.plot_omega_fixed">[docs]</a><span class="k">def</span> <span class="nf">plot_omega_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SS_orig</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
                      <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Plot the steady-state population distribution implied by the data</span>
@@ -698,9 +704,20 @@
 <span class="sd">    model periods.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">        age_per_EpS (array_like): list of ages over which to plot</span>
+<span class="sd">            population distribution</span>
+<span class="sd">        omega_SS_orig (Numpy array): population distribution in SS</span>
+<span class="sd">            without adjustment to immigration rates</span>
+<span class="sd">        omega_SSfx (Numpy array): population distribution in SS</span>
+<span class="sd">            after adjustment to immigration rates</span>
+<span class="sd">        E (int): age at which household becomes economically active</span>
+<span class="sd">        S (int): number of years which household is economically active</span>
+<span class="sd">        output_dir (str): path to save figure to, if None then figure</span>
+<span class="sd">            is returned</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        None</span>
+<span class="sd">        fig (Matplotlib plot object): plot of SS population distribution</span>
+<span class="sd">            before and after adjustment to immigration rates</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
@@ -717,10 +734,10 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">fig</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
 
 
-<span class="k">def</span> <span class="nf">plot_imm_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_orig</span><span class="p">,</span> <span class="n">imm_rates_adj</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
+<div class="viewcode-block" id="plot_imm_fixed"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.plot_imm_fixed">[docs]</a><span class="k">def</span> <span class="nf">plot_imm_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_orig</span><span class="p">,</span> <span class="n">imm_rates_adj</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
                    <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Plot the immigration rates implied by the data on population,</span>
@@ -729,8 +746,18 @@
 <span class="sd">    reasonable number of model periods.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">        age_per_EpS (array_like): list of ages over which to plot</span>
+<span class="sd">            population distribution</span>
+<span class="sd">        imm_rates_orig (Numpy array): immigration rates by age</span>
+<span class="sd">        imm_rates_adj (Numpy array): adjusted immigration rates by age</span>
+<span class="sd">        E (int): age at which household becomes economically active</span>
+<span class="sd">        S (int): number of years which household is economically active</span>
+<span class="sd">        output_dir (str): path to save figure to, if None then figure</span>
+<span class="sd">            is returned</span>
 
 <span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of immigration rates found</span>
+<span class="sd">            from residuals and the adjusted rates to hit SS sooner</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
@@ -747,17 +774,31 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">fig</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
 
 
-<span class="k">def</span> <span class="nf">plot_population_path</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">pop_2013_pct</span><span class="p">,</span> <span class="n">omega_path_lev</span><span class="p">,</span>
+<div class="viewcode-block" id="plot_population_path"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.plot_population_path">[docs]</a><span class="k">def</span> <span class="nf">plot_population_path</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">pop_2013_pct</span><span class="p">,</span> <span class="n">omega_path_lev</span><span class="p">,</span>
                          <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">curr_year</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Plot the distribution of the population over age for various years.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">        age_per_EpS (array_like): list of ages over which to plot</span>
+<span class="sd">            population distribution</span>
+<span class="sd">        pop_2013_pct (array_like): population distribution in 2013</span>
+<span class="sd">        omega_path_lev (Numpy array): number of households by age</span>
+<span class="sd">            over the transition path</span>
+<span class="sd">        omega_SSfx (Numpy array): number of households by age</span>
+<span class="sd">            in the SS</span>
+<span class="sd">        curr_year (int): current year in the model</span>
+<span class="sd">        E (int): age at which household becomes economically active</span>
+<span class="sd">        S (int): number of years which household is economically active</span>
+<span class="sd">        output_dir (str): path to save figure to, if None then figure</span>
+<span class="sd">            is returned</span>
 
 <span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of population distribution</span>
+<span class="sd">            at points along the time path</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
@@ -782,10 +823,10 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">fig</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
 
 
-<span class="k">def</span> <span class="nf">gen_3Dscatters_hist</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+<div class="viewcode-block" id="gen_3Dscatters_hist"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.gen_3Dscatters_hist">[docs]</a><span class="k">def</span> <span class="nf">gen_3Dscatters_hist</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Create 3-D scatterplots and corresponding 3D histogram of ETR, MTRx,</span>
 <span class="sd">    and MTRy as functions of labor income and capital income with</span>
@@ -885,10 +926,10 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="c1"># Garbage collection</span>
-    <span class="k">del</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_trnc</span><span class="p">,</span> <span class="n">inc_lab</span><span class="p">,</span> <span class="n">inc_cap</span><span class="p">,</span> <span class="n">etr_data</span><span class="p">,</span> <span class="n">mtrx_data</span><span class="p">,</span> <span class="n">mtry_data</span>
+    <span class="k">del</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_trnc</span><span class="p">,</span> <span class="n">inc_lab</span><span class="p">,</span> <span class="n">inc_cap</span><span class="p">,</span> <span class="n">etr_data</span><span class="p">,</span> <span class="n">mtrx_data</span><span class="p">,</span> <span class="n">mtry_data</span></div>
 
 
-<span class="k">def</span> <span class="nf">txfunc_graph</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">txrates</span><span class="p">,</span> <span class="n">rate_type</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span>
+<div class="viewcode-block" id="txfunc_graph"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.txfunc_graph">[docs]</a><span class="k">def</span> <span class="nf">txfunc_graph</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">txrates</span><span class="p">,</span> <span class="n">rate_type</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span>
                  <span class="n">get_tax_rates</span><span class="p">,</span> <span class="n">params_to_plot</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This function creates a 3D plot of the fitted tax function against</span>
@@ -935,9 +976,9 @@
     <span class="n">X_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">gridpts</span><span class="p">))</span>
     <span class="n">Y_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="n">gridpts</span><span class="p">))</span>
     <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">X_vec</span><span class="p">,</span> <span class="n">Y_vec</span><span class="p">)</span>
-    <span class="n">txrate_grid</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span><span class="n">params_to_plot</span><span class="p">,</span> <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
-                                <span class="n">tax_func_type</span><span class="p">,</span> <span class="n">rate_type</span><span class="p">,</span>
-                                <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">txrate_grid</span> <span class="o">=</span> <span class="n">txfunc</span><span class="o">.</span><span class="n">get_tax_rates</span><span class="p">(</span>
+        <span class="n">params_to_plot</span><span class="p">,</span> <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span> <span class="n">rate_type</span><span class="p">,</span>
+        <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="n">txrate_grid</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap1</span><span class="p">,</span>
                     <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="n">tx_label</span> <span class="o">+</span> <span class="s1">&#39;_age_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_Year_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span>
@@ -975,7 +1016,7 @@
     <span class="n">Y_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Y_gph</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
                                <span class="n">gridpts</span><span class="p">))</span>
     <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">X_vec</span><span class="p">,</span> <span class="n">Y_vec</span><span class="p">)</span>
-    <span class="n">txrate_grid</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span>
+    <span class="n">txrate_grid</span> <span class="o">=</span> <span class="n">txfunc</span><span class="o">.</span><span class="n">get_tax_rates</span><span class="p">(</span>
         <span class="n">params_to_plot</span><span class="p">,</span> <span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span>
         <span class="n">rate_type</span><span class="p">,</span> <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X_grid</span><span class="p">,</span> <span class="n">Y_grid</span><span class="p">,</span> <span class="n">txrate_grid</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap1</span><span class="p">,</span>
@@ -984,10 +1025,10 @@
                 <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_vsPred.png&#39;</span><span class="p">)</span>
     <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
-<span class="k">def</span> <span class="nf">txfunc_sse_plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">sse_mat</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">varstr</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span>
+<div class="viewcode-block" id="txfunc_sse_plot"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.txfunc_sse_plot">[docs]</a><span class="k">def</span> <span class="nf">txfunc_sse_plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">sse_mat</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">varstr</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span>
                     <span class="nb">round</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Plot sum of squared errors of tax functions over age for each year</span>
@@ -1019,19 +1060,11 @@
     <span class="n">graphname</span> <span class="o">=</span> <span class="s2">&quot;SSE_&quot;</span> <span class="o">+</span> <span class="n">varstr</span> <span class="o">+</span> <span class="s2">&quot;_Round&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">)</span>
     <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">graphname</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
-<span class="k">def</span> <span class="nf">plot_income_data</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">abil_midp</span><span class="p">,</span> <span class="n">abil_pcts</span><span class="p">,</span> <span class="n">emat</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="plot_income_data"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.plot_income_data">[docs]</a><span class="k">def</span> <span class="nf">plot_income_data</span><span class="p">(</span><span class="n">ages</span><span class="p">,</span> <span class="n">abil_midp</span><span class="p">,</span> <span class="n">abil_pcts</span><span class="p">,</span> <span class="n">emat</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">filesuffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Plot income profiles from models estimated from data.</span>
-
-<span class="sd">    Args:</span>
-
-<span class="sd">    Returns:</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This function graphs ability matrix in 3D, 2D, log, and nolog</span>
 
@@ -1152,7 +1185,137 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;age-$s$&#39;</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;log ability $log(e_{j,s})$&#39;</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">ax</span>
+            <span class="k">return</span> <span class="n">ax</span></div>
+
+
+<div class="viewcode-block" id="plot_2D_taxfunc"><a class="viewcode-back" href="../../content/api/parameter_plots.html#ogusa.parameter_plots.plot_2D_taxfunc">[docs]</a><span class="k">def</span> <span class="nf">plot_2D_taxfunc</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">tax_param_list</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">tax_func_type</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DEP&#39;</span><span class="p">],</span> <span class="n">rate_type</span><span class="o">=</span><span class="s1">&#39;etr&#39;</span><span class="p">,</span>
+                    <span class="n">over_labinc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">other_inc_val</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                    <span class="n">max_inc_amt</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">data_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1st Functions&#39;</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function plots OG-USA tax functions in two dimensions.</span>
+<span class="sd">    The tax rates are plotted over capital or labor income, as</span>
+<span class="sd">    entered by the user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        year (int): year of policy tax functions represent</span>
+<span class="sd">        start_year (int): first year tax functions estimated for in</span>
+<span class="sd">            tax_param_list elements</span>
+<span class="sd">        tax_param_list (list): list of arrays containing tax function</span>
+<span class="sd">            parameters</span>
+<span class="sd">        age (int): age for tax functions to plot, use None if tax</span>
+<span class="sd">            function parameters were not age specific</span>
+<span class="sd">        tax_func_type (list): list of strings in [&quot;DEP&quot;, &quot;DEP_totalinc&quot;,</span>
+<span class="sd">            &quot;GS&quot;, &quot;linear&quot;] and specifies functional form of tax functions</span>
+<span class="sd">            in tax_param_list</span>
+<span class="sd">        rate_type (str): string that is in [&quot;etr&quot;, &quot;mtrx&quot;, &quot;mtry&quot;] and</span>
+<span class="sd">            determines the type of tax rate that is plotted</span>
+<span class="sd">        over_labinc (bool): indicates that x-axis of the plot is over</span>
+<span class="sd">            labor income, if False then plot is over capital income</span>
+<span class="sd">        other_inc_val (scalar): dollar value at which to hold constant</span>
+<span class="sd">            the amount of income that is not represented on the x-axis</span>
+<span class="sd">        max_inc_amt (scalar): largest income amount to represent on the</span>
+<span class="sd">            x-axis of the plot</span>
+<span class="sd">        data_list (list): list of DataFrames with data to scatter plot</span>
+<span class="sd">            with tax functions, needs to be of format output from</span>
+<span class="sd">            ogusa.get_micro_data.get_data</span>
+<span class="sd">        labels (list): list of labels for tax function parameters</span>
+<span class="sd">        title (str): title for the plot</span>
+<span class="sd">        path (str): path to which to save plot, if None then figure</span>
+<span class="sd">            returned</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fig (Matplotlib plot object): plot of tax functions</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Check that inputs are valid</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">start_year</span> <span class="o">&lt;=</span> <span class="n">TC_LAST_YEAR</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">year</span> <span class="o">&lt;=</span> <span class="n">TC_LAST_YEAR</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">year</span> <span class="o">&gt;=</span> <span class="n">start_year</span><span class="p">)</span>
+    <span class="c1"># if list of tax function types less than list of params, assume</span>
+    <span class="c1"># all the same functional form</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tax_func_type</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tax_param_list</span><span class="p">):</span>
+        <span class="n">tax_func_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">tax_func_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tax_param_list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tax_func_type</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;DEP&#39;</span><span class="p">,</span> <span class="s1">&#39;DEP_totalinc&#39;</span><span class="p">,</span> <span class="s1">&#39;GS&#39;</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">rate_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;etr&#39;</span><span class="p">,</span> <span class="s1">&#39;mtrx&#39;</span><span class="p">,</span> <span class="s1">&#39;mtry&#39;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tax_param_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+
+    <span class="c1"># Set age and year to look at</span>
+    <span class="k">if</span> <span class="n">age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">age</span> <span class="o">-</span> <span class="mi">21</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># if not age-specific, all ages have the same values</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">year</span> <span class="o">-</span> <span class="n">start_year</span>
+
+    <span class="c1"># create rate_key to correspond to keys in tax func dicts</span>
+    <span class="n">rate_key</span> <span class="o">=</span> <span class="s1">&#39;tfunc_&#39;</span> <span class="o">+</span> <span class="n">rate_type</span> <span class="o">+</span> <span class="s1">&#39;_params_S&#39;</span>
+
+    <span class="c1"># Set income range to plot over (min income value hard coded to 5)</span>
+    <span class="n">inc_sup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">max_inc_amt</span><span class="p">),</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="c1"># Set income value for other income</span>
+    <span class="n">inc_fix</span> <span class="o">=</span> <span class="n">other_inc_val</span>
+
+    <span class="k">if</span> <span class="n">over_labinc</span><span class="p">:</span>
+        <span class="n">key1</span> <span class="o">=</span> <span class="s1">&#39;total_labinc&#39;</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">inc_sup</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">inc_fix</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">key1</span> <span class="o">=</span> <span class="s1">&#39;total_capinc&#39;</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">inc_fix</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">inc_sup</span>
+
+    <span class="c1"># get tax rates for each point in the income support and plot</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tax_params</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tax_param_list</span><span class="p">):</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">txfunc</span><span class="o">.</span><span class="n">get_tax_rates</span><span class="p">(</span>
+            <span class="n">tax_params</span><span class="p">[</span><span class="n">rate_key</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:],</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">rate_type</span><span class="p">,</span> <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">inc_sup</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="c1"># plot raw data (if passed)</span>
+    <span class="k">if</span> <span class="n">data_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># rate_type_dict = {&#39;etr&#39;: &#39;etr&#39;, &#39;mtrx&#39;: &#39;mtr_labinc&#39;,</span>
+        <span class="c1">#                   &#39;mtry&#39;: &#39;mtr_capinc&#39;}</span>
+        <span class="c1"># censor data to range of the plot</span>
+        <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_list</span><span class="p">):</span>
+            <span class="n">data_to_plot</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data_to_plot</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                    <span class="n">data_to_plot</span><span class="p">[</span><span class="n">data_to_plot</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">age</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                    <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># other censoring </span>
+            <span class="n">data_to_plot</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                <span class="n">data_to_plot</span><span class="p">[</span><span class="n">data_to_plot</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_inc_amt</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># other censoring used in txfunc.py</span>
+            <span class="n">data_to_plot</span> <span class="o">=</span> <span class="n">txfunc</span><span class="o">.</span><span class="n">tax_data_sample</span><span class="p">(</span><span class="n">data_to_plot</span><span class="p">)</span>
+            <span class="c1"># set number of bins to 100 or bins of $1000 dollars</span>
+            <span class="n">n_bins</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="n">max_inc_amt</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+            <span class="c1"># need to compute weighted averages by group...</span>
+            <span class="n">wm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">data_to_plot</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">])</span>
+            <span class="n">data_to_plot</span><span class="p">[</span><span class="s1">&#39;inc_bin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data_to_plot</span><span class="p">[</span><span class="n">key1</span><span class="p">],</span> <span class="n">n_bins</span><span class="p">)</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data_to_plot</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;inc_bin&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+                <span class="n">rate</span><span class="o">=</span><span class="p">(</span><span class="n">rate_type</span><span class="p">,</span> <span class="n">wm</span><span class="p">),</span> <span class="n">income</span><span class="o">=</span><span class="p">(</span><span class="n">key1</span><span class="p">,</span> <span class="n">wm</span><span class="p">)))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;income&#39;</span><span class="p">],</span> <span class="n">groups</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="c1"># add legend, labels, etc to plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center right&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">over_labinc</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Labor income&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Capital income&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">rate_type</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
