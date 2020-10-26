@@ -1,9 +1,11 @@
 import numpy as np
+import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import matplotlib
-from ogusa.constants import GROUP_LABELS, DEFAULT_START_YEAR
-from ogusa import utils
+from ogusa.constants import GROUP_LABELS
+from ogusa import utils, txfunc
+from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -273,9 +275,11 @@ def plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
         fert_data (NumPy array): fertility rates by age group from data
         fert_rates (NumPy array): fitted fertility rates for each of
             totpers
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
-        None
+        fig (Matplotlib plot object): plot of fertility rates
 
     '''
     # Generate finer age vector and fertility rate vector for
@@ -329,9 +333,11 @@ def plot_mort_rates_data(totpers, min_yr, max_yr, age_year_all,
         infmort_rate (scalar): infant mortality rate
         mort_rates (array_like): fitted mortality rates for each of
             totpers
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
-        None
+        fig (Matplotlib plot object): plot of mortality rates
 
     '''
     age_mid_new = (np.linspace(np.float(max_yr) / totpers, max_yr,
@@ -378,9 +384,20 @@ def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S,
     model periods.
 
     Args:
+        age_per_EpS (array_like): list of ages over which to plot
+            population distribution
+        omega_SS_orig (Numpy array): population distribution in SS
+            without adjustment to immigration rates
+        omega_SSfx (Numpy array): population distribution in SS
+            after adjustment to immigration rates
+        E (int): age at which household becomes economically active
+        S (int): number of years which household is economically active
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
-        None
+        fig (Matplotlib plot object): plot of SS population distribution
+            before and after adjustment to immigration rates
 
     '''
     fig, ax = plt.subplots()
@@ -409,8 +426,18 @@ def plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E, S,
     reasonable number of model periods.
 
     Args:
+        age_per_EpS (array_like): list of ages over which to plot
+            population distribution
+        imm_rates_orig (Numpy array): immigration rates by age
+        imm_rates_adj (Numpy array): adjusted immigration rates by age
+        E (int): age at which household becomes economically active
+        S (int): number of years which household is economically active
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
+        fig (Matplotlib plot object): plot of immigration rates found
+            from residuals and the adjusted rates to hit SS sooner
 
     '''
     fig, ax = plt.subplots()
@@ -436,8 +463,22 @@ def plot_population_path(age_per_EpS, pop_2013_pct, omega_path_lev,
     Plot the distribution of the population over age for various years.
 
     Args:
+        age_per_EpS (array_like): list of ages over which to plot
+            population distribution
+        pop_2013_pct (array_like): population distribution in 2013
+        omega_path_lev (Numpy array): number of households by age
+            over the transition path
+        omega_SSfx (Numpy array): number of households by age
+            in the SS
+        curr_year (int): current year in the model
+        E (int): age at which household becomes economically active
+        S (int): number of years which household is economically active
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
+        fig (Matplotlib plot object): plot of population distribution
+            at points along the time path
 
     '''
     fig, ax = plt.subplots()
@@ -615,9 +656,9 @@ def txfunc_graph(s, t, df, X, Y, txrates, rate_type, tax_func_type,
     X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
     Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
     X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-    txrate_grid = get_tax_rates(params_to_plot, X_grid, Y_grid, None,
-                                tax_func_type, rate_type,
-                                for_estimation=False)
+    txrate_grid = txfunc.get_tax_rates(
+        params_to_plot, X_grid, Y_grid, None, tax_func_type, rate_type,
+        for_estimation=False)
     ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                     linewidth=0)
     filename = (tx_label + '_age_' + str(s) + '_Year_' + str(t) +
@@ -655,7 +696,7 @@ def txfunc_graph(s, t, df, X, Y, txrates, rate_type, tax_func_type,
     Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
                                gridpts))
     X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-    txrate_grid = get_tax_rates(
+    txrate_grid = txfunc.get_tax_rates(
         params_to_plot, X_grid, Y_grid, None, tax_func_type,
         rate_type, for_estimation=False)
     ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
@@ -704,14 +745,6 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir,
 
 def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
                      filesuffix=""):
-    '''
-    Plot income profiles from models estimated from data.
-
-    Args:
-
-    Returns:
-
-    '''
     '''
     This function graphs ability matrix in 3D, 2D, log, and nolog
 
@@ -833,3 +866,133 @@ def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
             ax.set_ylabel(r'log ability $log(e_{j,s})$')
 
             return ax
+
+
+def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
+                    tax_func_type=['DEP'], rate_type='etr',
+                    over_labinc=True, other_inc_val=1000,
+                    max_inc_amt=1000000, data_list=None,
+                    labels=['1st Functions'], title=None, path=None):
+    '''
+    This function plots OG-USA tax functions in two dimensions.
+    The tax rates are plotted over capital or labor income, as
+    entered by the user.
+
+    Args:
+        year (int): year of policy tax functions represent
+        start_year (int): first year tax functions estimated for in
+            tax_param_list elements
+        tax_param_list (list): list of arrays containing tax function
+            parameters
+        age (int): age for tax functions to plot, use None if tax
+            function parameters were not age specific
+        tax_func_type (list): list of strings in ["DEP", "DEP_totalinc",
+            "GS", "linear"] and specifies functional form of tax functions
+            in tax_param_list
+        rate_type (str): string that is in ["etr", "mtrx", "mtry"] and
+            determines the type of tax rate that is plotted
+        over_labinc (bool): indicates that x-axis of the plot is over
+            labor income, if False then plot is over capital income
+        other_inc_val (scalar): dollar value at which to hold constant
+            the amount of income that is not represented on the x-axis
+        max_inc_amt (scalar): largest income amount to represent on the
+            x-axis of the plot
+        data_list (list): list of DataFrames with data to scatter plot
+            with tax functions, needs to be of format output from
+            ogusa.get_micro_data.get_data
+        labels (list): list of labels for tax function parameters
+        title (str): title for the plot
+        path (str): path to which to save plot, if None then figure
+            returned
+
+    Returns:
+        fig (Matplotlib plot object): plot of tax functions
+
+    '''
+    # Check that inputs are valid
+    assert isinstance(start_year, int)
+    assert isinstance(year, int)
+    assert (start_year <= TC_LAST_YEAR)
+    assert (year <= TC_LAST_YEAR)
+    assert (year >= start_year)
+    # if list of tax function types less than list of params, assume
+    # all the same functional form
+    if len(tax_func_type) < len(tax_param_list):
+        tax_func_type = [tax_func_type[0]] * len(tax_param_list)
+    for i, v in enumerate(tax_func_type):
+        assert (v in ['DEP', 'DEP_totalinc', 'GS', 'linear'])
+    assert (rate_type in ['etr', 'mtrx', 'mtry'])
+    assert (len(tax_param_list) == len(labels))
+
+    # Set age and year to look at
+    if age is not None:
+        assert isinstance(age, int)
+        s = age - 21
+    else:
+        s = 0  # if not age-specific, all ages have the same values
+    t = year - start_year
+
+    # create rate_key to correspond to keys in tax func dicts
+    rate_key = 'tfunc_' + rate_type + '_params_S'
+
+    # Set income range to plot over (min income value hard coded to 5)
+    inc_sup = np.exp(np.linspace(np.log(5), np.log(max_inc_amt), 100))
+    # Set income value for other income
+    inc_fix = other_inc_val
+
+    if over_labinc:
+        key1 = 'total_labinc'
+        X = inc_sup
+        Y = inc_fix
+    else:
+        key1 = 'total_capinc'
+        X = inc_fix
+        Y = inc_sup
+
+    # get tax rates for each point in the income support and plot
+    fig, ax = plt.subplots()
+    for i, tax_params in enumerate(tax_param_list):
+        rates = txfunc.get_tax_rates(
+            tax_params[rate_key][s, t, :], X, Y, None, tax_func_type[i],
+            rate_type, for_estimation=False)
+        plt.plot(inc_sup, rates, label=labels[i])
+
+    # plot raw data (if passed)
+    if data_list is not None:
+        # rate_type_dict = {'etr': 'etr', 'mtrx': 'mtr_labinc',
+        #                   'mtry': 'mtr_capinc'}
+        # censor data to range of the plot
+        for d, data in enumerate(data_list):
+            data_to_plot = data[str(year)].copy()
+            if age is not None:
+                data_to_plot.drop(
+                    data_to_plot[data_to_plot['age'] != age].index,
+                    inplace=True)
+            # other censoring 
+            data_to_plot.drop(
+                data_to_plot[data_to_plot[key1] > max_inc_amt].index,
+                inplace=True)
+            # other censoring used in txfunc.py
+            data_to_plot = txfunc.tax_data_sample(data_to_plot)
+            # set number of bins to 100 or bins of $1000 dollars
+            n_bins = min(100, np.floor_divide(max_inc_amt, 1000))
+            # need to compute weighted averages by group...
+            wm = lambda x: np.average(
+                x, weights=data_to_plot.loc[x.index, "weight"])
+            data_to_plot['inc_bin'] = pd.cut(data_to_plot[key1], n_bins)
+            groups = pd.DataFrame(data_to_plot.groupby(["inc_bin"]).agg(
+                rate=(rate_type, wm), income=(key1, wm)))
+            plt.scatter(groups['income'], groups['rate'], alpha=0.1)
+    # add legend, labels, etc to plot
+    plt.legend(loc='center right')
+    if title:
+        plt.title(title)
+    if over_labinc:
+        plt.xlabel(r'Labor income')
+    else:
+        plt.xlabel(r'Capital income')
+    plt.ylabel(str.upper(rate_type))
+    if path is None:
+        return fig
+    else:
+        plt.savefig(path)
