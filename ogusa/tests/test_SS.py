@@ -7,6 +7,7 @@ from distributed import Client, LocalCluster
 import pytest
 import numpy as np
 import os
+import pickle
 from ogusa import SS, utils, aggregates, household, execute, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -61,12 +62,36 @@ p1.baseline = False
 p1.baseline = True
 p1.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
     income_tax_params
-p1.etr_params = np.transpose(etr_params.reshape(
+etr_params_old = np.transpose(etr_params.reshape(
     p1.S, 1, etr_params.shape[-1]), (1, 0, 2))
-p1.mtrx_params = np.transpose(mtrx_params.reshape(
+mtrx_params_old = np.transpose(mtrx_params.reshape(
     p1.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-p1.mtry_params = np.transpose(mtry_params.reshape(
+mtry_params_old = np.transpose(mtry_params.reshape(
     p1.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p1.etr_params = etr_params_old.copy()
+p1.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+p1.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+p1.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+p1.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+p1.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+p1.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+p1.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+p1.mtrx_params = mtrx_params_old.copy()
+p1.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+p1.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+p1.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+p1.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+p1.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+p1.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+p1.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+p1.mtry_params = mtry_params_old.copy()
+p1.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+p1.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+p1.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+p1.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+p1.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+p1.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+p1.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 p1.maxiter, p1.mindist_SS = iterative_params
 p1.chi_b, p1.chi_n = chi_params
 small_open, firm_r, hh_r = small_open_params
@@ -119,12 +144,36 @@ p2.start_year = 2019
 p2.baseline = False
 p2.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
     income_tax_params
-p2.etr_params = np.transpose(etr_params.reshape(
+etr_params_old = np.transpose(etr_params.reshape(
     p2.S, 1, etr_params.shape[-1]), (1, 0, 2))
-p2.mtrx_params = np.transpose(mtrx_params.reshape(
+mtrx_params_old = np.transpose(mtrx_params.reshape(
     p2.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-p2.mtry_params = np.transpose(mtry_params.reshape(
+mtry_params_old = np.transpose(mtry_params.reshape(
     p2.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p2.etr_params = etr_params_old.copy()
+p2.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+p2.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+p2.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+p2.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+p2.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+p2.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+p2.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+p2.mtrx_params = mtrx_params_old.copy()
+p2.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+p2.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+p2.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+p2.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+p2.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+p2.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+p2.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+p2.mtry_params = mtry_params_old.copy()
+p2.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+p2.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+p2.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+p2.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+p2.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+p2.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+p2.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 p2.maxiter, p2.mindist_SS = iterative_params
 p2.chi_b, p2.chi_n = chi_params
 small_open, firm_r, hh_r = small_open_params
@@ -180,12 +229,36 @@ p3.baseline = False
 p3.baseline_spending = True
 p3.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
     income_tax_params
-p3.etr_params = np.transpose(etr_params.reshape(
+etr_params_old = np.transpose(etr_params.reshape(
     p3.S, 1, etr_params.shape[-1]), (1, 0, 2))
-p3.mtrx_params = np.transpose(mtrx_params.reshape(
+mtrx_params_old = np.transpose(mtrx_params.reshape(
     p3.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-p3.mtry_params = np.transpose(mtry_params.reshape(
+mtry_params_old = np.transpose(mtry_params.reshape(
     p3.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p3.etr_params = etr_params_old.copy()
+p3.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+p3.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+p3.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+p3.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+p3.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+p3.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+p3.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+p3.mtrx_params = mtrx_params_old.copy()
+p3.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+p3.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+p3.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+p3.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+p3.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+p3.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+p3.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+p3.mtry_params = mtry_params_old.copy()
+p3.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+p3.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+p3.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+p3.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+p3.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+p3.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+p3.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 p3.maxiter, p3.mindist_SS = iterative_params
 p3.chi_b, p3.chi_n = chi_params
 small_open, firm_r, hh_r = small_open_params
@@ -237,12 +310,36 @@ p4.tax_func_type = 'DEP'
 p4.baseline = True
 p4.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
     income_tax_params
-p4.etr_params = np.transpose(etr_params.reshape(
+etr_params_old = np.transpose(etr_params.reshape(
     p4.S, 1, etr_params.shape[-1]), (1, 0, 2))
-p4.mtrx_params = np.transpose(mtrx_params.reshape(
+mtrx_params_old = np.transpose(mtrx_params.reshape(
     p4.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-p4.mtry_params = np.transpose(mtry_params.reshape(
+mtry_params_old = np.transpose(mtry_params.reshape(
     p4.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p4.etr_params = etr_params_old.copy()
+p4.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+p4.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+p4.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+p4.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+p4.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+p4.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+p4.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+p4.mtrx_params = mtrx_params_old.copy()
+p4.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+p4.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+p4.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+p4.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+p4.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+p4.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+p4.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+p4.mtry_params = mtry_params_old.copy()
+p4.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+p4.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+p4.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+p4.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+p4.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+p4.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+p4.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 p4.maxiter, p4.mindist_SS = iterative_params
 p4.chi_b, p4.chi_n = chi_params
 p4.num_workers = 1
@@ -289,12 +386,36 @@ p5.tax_func_type = 'DEP'
 p5.baseline = True
 p5.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
     income_tax_params
-p5.etr_params = np.transpose(etr_params.reshape(
+etr_params_old = np.transpose(etr_params.reshape(
     p5.S, 1, etr_params.shape[-1]), (1, 0, 2))
-p5.mtrx_params = np.transpose(mtrx_params.reshape(
+mtrx_params_old = np.transpose(mtrx_params.reshape(
     p5.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-p5.mtry_params = np.transpose(mtry_params.reshape(
+mtry_params_old = np.transpose(mtry_params.reshape(
     p5.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p5.etr_params = etr_params_old.copy()
+p5.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+p5.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+p5.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+p5.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+p5.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+p5.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+p5.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+p5.mtrx_params = mtrx_params_old.copy()
+p5.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+p5.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+p5.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+p5.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+p5.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+p5.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+p5.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+p5.mtry_params = mtry_params_old.copy()
+p5.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+p5.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+p5.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+p5.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+p5.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+p5.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+p5.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 p5.maxiter, p5.mindist_SS = iterative_params
 p5.chi_b, p5.chi_n = chi_params
 p5.num_workers = 1
@@ -339,12 +460,36 @@ p6.baseline = False
 p6.baseline = True
 p6.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
     income_tax_params
-p6.etr_params = np.transpose(etr_params.reshape(
+etr_params_old = np.transpose(etr_params.reshape(
     p6.S, 1, etr_params.shape[-1]), (1, 0, 2))
-p6.mtrx_params = np.transpose(mtrx_params.reshape(
+mtrx_params_old = np.transpose(mtrx_params.reshape(
     p6.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-p6.mtry_params = np.transpose(mtry_params.reshape(
+mtry_params_old = np.transpose(mtry_params.reshape(
     p6.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p6.etr_params = etr_params_old.copy()
+p6.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+p6.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+p6.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+p6.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+p6.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+p6.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+p6.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+p6.mtrx_params = mtrx_params_old.copy()
+p6.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+p6.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+p6.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+p6.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+p6.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+p6.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+p6.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+p6.mtry_params = mtry_params_old.copy()
+p6.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+p6.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+p6.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+p6.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+p6.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+p6.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+p6.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 p6.maxiter, p6.mindist_SS = iterative_params
 p6.chi_b, p6.chi_n = chi_params
 small_open, firm_r, hh_r = small_open_params
@@ -412,6 +557,33 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
+    etr_params_old = p.etr_params.copy()
+    p.etr_params = etr_params_old.copy()
+    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+    mtrx_params_old = p.mtrx_params.copy()
+    p.mtrx_params = mtrx_params_old.copy()
+    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+    mtry_params_old = p.mtry_params.copy()
+    p.mtry_params = mtry_params_old.copy()
+    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
     if p.zeta_K[-1] == 1.0:
@@ -455,6 +627,33 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
+    etr_params_old = p.etr_params.copy()
+    p.etr_params = etr_params_old.copy()
+    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+    mtrx_params_old = p.mtrx_params.copy()
+    p.mtrx_params = mtrx_params_old.copy()
+    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+    mtry_params_old = p.mtry_params.copy()
+    p.mtry_params = mtry_params_old.copy()
+    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
     if p.zeta_K[-1] == 1.0:
@@ -507,6 +706,33 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
+    etr_params_old = p.etr_params.copy()
+    p.etr_params = etr_params_old.copy()
+    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+    mtrx_params_old = p.mtrx_params.copy()
+    p.mtrx_params = mtrx_params_old.copy()
+    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+    mtry_params_old = p.mtry_params.copy()
+    p.mtry_params = mtry_params_old.copy()
+    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
     bssmat = np.ones((p.S, p.J)) * 0.07
     nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
     if p.zeta_K[-1] == 1.0:
@@ -525,6 +751,8 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     for i, v in enumerate(expected_tuple):
+        print('Max diff = ', np.absolute(test_tuple[i]- v).max())
+        print('Checking item = ', i)
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
@@ -545,6 +773,33 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
+    etr_params_old = p.etr_params.copy()
+    p.etr_params = etr_params_old.copy()
+    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+    mtrx_params_old = p.mtrx_params.copy()
+    p.mtrx_params = mtrx_params_old.copy()
+    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+    mtry_params_old = p.mtry_params.copy()
+    p.mtry_params = mtry_params_old.copy()
+    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
     bssmat = np.ones((p.S, p.J)) * 0.07
     nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
     if p.zeta_K[-1] == 1.0:
@@ -587,12 +842,36 @@ def test_euler_equation_solver(dask_client):
     p.p_wealth = np.ones(p.T + p.S) * p_wealth
     p.m_wealth = np.ones(p.T + p.S) * m_wealth
     p.retire = (np.ones(p.T + p.S) * retire).astype(int)
-    p.etr_params = np.transpose(etr_params.reshape(
+    etr_params_old = np.transpose(etr_params.reshape(
         p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-    p.mtrx_params = np.transpose(mtrx_params.reshape(
+    mtrx_params_old = np.transpose(mtrx_params.reshape(
         p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-    p.mtry_params = np.transpose(mtry_params.reshape(
+    mtry_params_old = np.transpose(mtry_params.reshape(
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+    p.etr_params = etr_params_old.copy()
+    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+    p.mtrx_params = mtrx_params_old.copy()
+    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+    p.mtry_params = mtry_params_old.copy()
+    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
     p.tax_func_type = 'DEP'
     p.lambdas = lambdas.reshape(p.J, 1)
     b_splus1 = np.array(guesses[:p.S]).reshape(p.S, 1) + 0.005
@@ -715,10 +994,50 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
                                               'TxFuncEst_baseline.pkl')
         tax_func_path = os.path.join(CUR_PATH,
                                      'TxFuncEst_policy.pkl')
-        execute.runner(constants.BASELINE_DIR, constants.BASELINE_DIR,
-                       time_path=False, baseline=True,
-                       og_spec=param_updates, run_micro=False,
-                       tax_func_path=tax_func_path_baseline)
+        p_base = Specifications(
+            run_micro=False, tax_func_path=tax_func_path_baseline,
+            output_base=constants.BASELINE_DIR,
+            baseline_dir=constants.BASELINE_DIR,
+            time_path=False, baseline=True,
+            client=dask_client, num_workers=NUM_WORKERS)
+        p_base.update_specifications(param_updates)
+        p_base.get_tax_function_parameters(
+            None, run_micro=False, tax_func_path=tax_func_path_baseline)
+        etr_params_old = p_base.etr_params
+        mtrx_params_old = p_base.mtrx_params
+        mtry_params_old = p_base.mtry_params
+        p_base.etr_params = etr_params_old.copy()
+        p_base.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+        p_base.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+        p_base.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+        p_base.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+        p_base.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+        p_base.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+        p_base.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+        p_base.mtrx_params = mtrx_params_old.copy()
+        p_base.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+        p_base.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+        p_base.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+        p_base.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+        p_base.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+        p_base.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+        p_base.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+        p_base.mtry_params = mtry_params_old.copy()
+        p_base.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+        p_base.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+        p_base.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+        p_base.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+        p_base.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+        p_base.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+        p_base.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
+        base_ss_outputs = SS.run_SS(p_base, dask_client)
+        utils.mkdirs(os.path.join(
+            constants.BASELINE_DIR, "SS"))
+        ss_dir = os.path.join(
+            constants.BASELINE_DIR, "SS", "SS_vars.pkl")
+        with open(ss_dir, "wb") as f:
+            pickle.dump(base_ss_outputs, f)
+
     else:
         tax_func_path = os.path.join(CUR_PATH,
                                      'TxFuncEst_baseline.pkl')
@@ -727,7 +1046,35 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(None, run_micro=False,
                                   tax_func_path=tax_func_path)
-    test_dict = SS.run_SS(p, None)
+    etr_params_old = p.etr_params
+    mtrx_params_old = p.mtrx_params
+    mtry_params_old = p.mtry_params
+    p.etr_params = etr_params_old.copy()
+    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+    p.mtrx_params = mtrx_params_old.copy()
+    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+    p.mtry_params = mtry_params_old.copy()
+    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
+
+    test_dict = SS.run_SS(p, client=None)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
