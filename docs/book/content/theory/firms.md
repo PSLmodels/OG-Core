@@ -45,5 +45,4 @@ The production side of the `OG-USA` model is populated by a unit measure of iden
   ```
 
   Note that the presence of the public capital good creates economic rents.  However, given perfect competition, any economic profits will be competed away.  We therefore assume that these rents are captured by the owners of capital, as can be seen through the second term inside the square brackets in Equation {eq}`EqFirmFOC_K`.
- 
-  We discuss how to calibrate the values of $\tau^{corp}$ and $\tau^\delta$ from the `Tax-Calculator` microsimulation model in Chapter {ref}`Chap_BTax`.
+
