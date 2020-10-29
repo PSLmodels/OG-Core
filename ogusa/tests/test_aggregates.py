@@ -337,6 +337,17 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
     """
     Test aggregate revenue function.
     """
+    print('ETR shape = ', etr_params.shape)
+    etr_params_old = etr_params
+    p.etr_params = etr_params_old.copy()
+    p.etr_params[..., 5] = etr_params_old[..., 6]
+    p.etr_params[..., 6] = etr_params_old[..., 11]
+    p.etr_params[..., 7] = etr_params_old[..., 5]
+    p.etr_params[..., 8] = etr_params_old[..., 7]
+    p.etr_params[..., 9] = etr_params_old[..., 8]
+    p.etr_params[..., 10] = etr_params_old[..., 9]
+    p.etr_params[..., 11] = etr_params_old[..., 10]
+    etr_params = p.etr_params
     revenue, _, agg_pension_outlays, _, _, _, _, _, _ = aggr.revenue(
         r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
     expected += agg_pension_outlays
