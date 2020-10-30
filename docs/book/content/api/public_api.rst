@@ -1,6 +1,5 @@
-OG-USA API
+API
 =========================
-
 The source code for OG-USA is located in the
 OG-USA/ogusa directory tree.
 
