@@ -3,7 +3,7 @@
 
 The previous chapters derive all the equations necessary to solve for the steady-state and nonsteady-state equilibria of this model. However, because labor productivity is growing at rate $g_y$ as can be seen in the firms' production function {eq}`EqFirmsCESprodfun` and the population is growing at rate $\tilde{g}_{n,t}$ as defined in {eq}`EqPopGrowthTil`, the model is not stationary. Different endogenous variables of the model are growing at different rates. We have already specified three potential budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` using some combination of government spending $G_t$ and transfers $TR_t$ that stationarize the debt-to-GDP ratio.
 
-{numref}`TabStnrzStatVars` lists the definitions of stationary versions of these endogenous variables. Variables with a ``$\:\,\hat{}\,\:$'' signify stationary variables. The first column of variables are growing at the productivity growth rate $g_y$. These variables are most closely associated with individual variables. The second column of variables are growing at the population growth rate $\tilde{g}_{n,t}$. These variables are most closely associated with population values. The third column of variables are growing at both the productivity growth rate $g_y$ and the population growth rate $\tilde{g}_{n,t}$. These variables are most closely associated with aggregate variables. The last column shows that the interest rate $r_t$ and household labor supply $n_{j,s,t}$ are already stationary.
+{numref}`TabStnrzStatVars` lists the definitions of stationary versions of these endogenous variables. Variables with a ``$\:\,\hat{}\,\:$'' signify stationary variables. The first column of variables are growing at the productivity growth rate $g_y$. These variables are most closely associated with individual variables. The second column of variables are growing at the population growth rate $\tilde{g}_{n,t}$. These variables are most closely associated with population values. The third column of variables are growing at both the productivity growth rate $g_y$ and the population growth rate $\tilde{g}_{n,t}$. These variables are most closely associated with aggregate variables. The last column shows that the interest rate $r_t$, and household labor supply $n_{j,s,t}$.
 
 
 ```{list-table} **Stationary variable definitions.** Note: The interest rate $r_t$ in firm first order condition is already stationary because $Y_t$ and $K_t$ grow at the same rate. Household labor supply $n_{j,s,t}\in[0,\tilde{l}]$ is stationary.
@@ -37,6 +37,10 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}$
   -
+* - $\hat{ubi}_{j,s,t}$\equiv\frac{ubi_{j,s,t}}{e^{g_y t}}
+  -
+  - $\hat{UBI}_t\equiv\frac{UBI_t}{e^{g_y t}\tilde{N}_t}$
+  -
 ```
 
 The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab` and {eq}`EqMarkClrCap`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` to solve for the equilibria in the steady-state and transition path equilibrium definitions.
@@ -49,8 +53,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzHHBCstat
-    \hat{c}_{j,s,t} + e^{g_y}\hat{b}_{j,s+1,t+1} &= (1 + r_{t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} - \hat{T}_{s,t}  \\
-    &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
+    \hat{c}_{j,s,t} + e^{g_y}\hat{b}_{j,s+1,t+1} &= (1 + r_{t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{s,t}  \\
+    &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad \hat{b}_{j,E+1,t}=0\quad\forall j,t
   ```
 
   Because total bequests $BQ_t$ and total government transfers $TR_t$ grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population $\tilde{N}_t$. This stationarizes total bequests $\hat{BQ}_t$, total transfers $\hat{TR}_t$, and the respective population level in the denominator $\hat{\omega}_{s,t}$.
@@ -67,8 +71,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzHHeul_b
-      (\hat{c}_{j,s,t})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(\hat{c}_{j,s+1,t+1})^{-\sigma}\biggr] \\
-      \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+    (\hat{c}_{j,s,t})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(\hat{c}_{j,s+1,t+1})^{-\sigma}\biggr] \\
+    \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
   ```{math}
@@ -103,8 +107,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqFirmFOC_K
-      r_t &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_t}{\hat{K}_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t \\
-      &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t
+    r_t &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_t}{\hat{K}_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t \\
+    &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t
  ```
 
 (SecStnrzGovt)=
@@ -114,8 +118,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzLiabETR
-      \hat{T}_{s,t} &= \tau^{etr}_{s,t}(\hat{x}_{j,s,t}, \hat{y}_{j,s,t})\left(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\right) \qquad\qquad\qquad\quad\:\:\forall t \quad\text{and}\quad E+1\leq s\leq E+S \\
-      &= \tau^{etr}_{s,t}(\hat{w}_t e_{j,s}n_{j,s,t}, r_t\hat{b}_{j,s,t})\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_t\hat{b}_{j,s,t}\right) \quad\forall t \quad\text{and}\quad E+1\leq s\leq E+S
+    \hat{T}_{s,t} &= \tau^{etr}_{s,t}(\hat{x}_{j,s,t}, \hat{y}_{j,s,t})\left(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\right) \qquad\qquad\qquad\quad\:\:\forall t \quad\text{and}\quad E+1\leq s\leq E+S \\
+    &= \tau^{etr}_{s,t}(\hat{w}_t e_{j,s}n_{j,s,t}, r_t\hat{b}_{j,s,t})\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_t\hat{b}_{j,s,t}\right) \quad\forall t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   We can stationarize the simple expressions for total government spending on public goods $G_t$ in {eq}`EqUnbalGBC_Gt` and on household transfers $TR_t$ in {eq}`EqUnbalGBCtfer` by dividing both sides by $e^{g_y t}\tilde{N}_t$,
@@ -141,46 +145,59 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzGovBC
-    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_t)\hat{D}_t + \hat{G}_t + \hat{TR}_t \quad\forall t
+    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_t)\hat{D}_t + \hat{G}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
+  ```
+
+  Stationary aggregate universal basic income expenditure $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$.
+
+  ```{math}
+  :label: EqStnrzGBC_UBI
+    \hat{UBI}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t
   ```
 
   The three potential budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` are the last government equations to stationarize. In each of the cases, we simply divide both sides by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzClosureRule_Gt
-        &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
-        &\text{where}\quad g_{g,t} =
-          \begin{cases}
-            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\:\text{if}\quad t < T_{G1} \\
-            \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{t})\hat{D}_{t} - \hat{TR}_{t} + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-            \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{t})\hat{D}_{t} - \hat{TR}_{t} + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\qquad\text{if}\quad t \geq T_{G2}
-          \end{cases} \\
-        &\quad\text{and}\quad g_{tr,t} = 1 \quad\forall t
+  \begin{split}
+    &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
+    &\text{where}\quad g_{g,t} =
+    \begin{cases}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\:\:\,\text{if}\quad t < T_{G1} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{t})\hat{D}_{t} - \hat{TR}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{t})\hat{D}_{t} - \hat{TR}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+    \end{cases} \\
+    &\text{and}\quad g_{tr,t} = 1 \quad\forall t
+  \end{split}
   ```
   or
 
   ```{math}
   :label: EqStnrzClosureRule_TRt
-        &\hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: \hat{Y}_t \\
-        &\text{where}\quad g_{tr,t} =
-          \begin{cases}
-            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t < T_{G1} \\
-            \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{t})\hat{D}_{t} - \hat{G}_{t} + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-            \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{t})\hat{D}_{t} - \hat{G}_{t} + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\qquad\text{if}\quad t \geq T_{G2}
-          \end{cases} \\
-      &\quad\text{and}\quad g_{g,t} = 1 \quad\forall t
+  \begin{split}
+    &\hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: \hat{Y}_t \\
+    &\text{where}\quad g_{tr,t} =
+    \begin{cases}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\,\text{if}\quad t < T_{G1} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{t})\hat{D}_{t} - \hat{G}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{t})\hat{D}_{t} - \hat{G}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+    \end{cases} \\
+    &\text{and}\quad g_{g,t} = 1 \quad\forall t]
+  \end{split}
   ```
   or
 
   ```{math}
   :label: EqStnrzClosureRule_TRGt
-        &\hat{G}_t + \hat{TR}_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t \quad\Rightarrow\quad \hat{G}_t = g_{trg,t}\:\alpha_g\:\hat{Y}_t \quad\text{and}\quad \hat{TR}_t = g_{trg,t}\:\alpha_{tr}\:\hat{Y}_t \\
-        &\text{where}\quad g_{trg,t} =
-          \begin{cases}
-            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\:\,\text{if}\quad t < T_{G1} \\
-            \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{t})\hat{D}_{t} + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-            \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{t})\hat{D}_{t} + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\:\:\:\:\,\text{if}\quad t \geq T_{G2}
-          \end{cases}
+  \begin{split}
+    &\hat{G}_t + \hat{TR}_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t \quad\Rightarrow\quad \hat{G}_t = g_{trg,t}\:\alpha_g\:\hat{Y}_t \quad\text{and}\quad \hat{TR}_t = g_{trg,t}\:\alpha_{tr}\:\hat{Y}_t \\
+    &\text{where}\quad g_{trg,t} =
+    \begin{cases}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\text{if}\quad t < T_{G1} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{t})\hat{D}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{t})\hat{D}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+    \end{cases}
+  \end{split}
   ```
 
 (SecStnrzMC)=
