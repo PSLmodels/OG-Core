@@ -30,4 +30,3 @@ dependencies:
   - cs-kit
   - xlrd
   - cs2tc
-  - pickle5
