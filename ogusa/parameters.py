@@ -122,6 +122,10 @@ class Specifications(paramtools.Parameters):
         # will be updated when function tax function parameters
         self.frac_tax_payroll = np.zeros(self.T + self.S)
 
+        # Create time series of stationarized UBI transfers
+        (self.ubi_dol_array, self.UBI_dol_vec, self.ubi_dol_SS,
+            self.UBI_dol_SS) = self.get_ubi_dol_objs()
+
         # Extend parameters that may vary over the time path
         tp_param_list = [
             'alpha_G', 'alpha_T', 'Z', 'world_int_rate_annual',
@@ -512,6 +516,58 @@ class Specifications(paramtools.Parameters):
             run_micro = False
 
         return dict_params, run_micro
+
+    def get_ubi_dol_objs(self):
+        '''
+        Generate time series of SxJ UBI matrix over necessary time periods
+
+        Args:
+            self: OG-USA parameters class object
+
+        Returns:
+            ubi_dol_array (array): S x J x (T+S) array time series of UBI
+                transfers in dollars for each type-j age-s household in every
+                period t
+            UBI_dol_vec (vector): (T+S) vector time series of aggregate UBI
+                expenditure in dollars
+        '''
+        # Get matrices of number of children under 18, number of adults 18-65,
+        # and number of seniors > 65 from OG-USA-Calibration package
+        ubi_num_child_mat = 1.1 * np.ones((self.S, self.J))
+        ubi_num_adult_mat = 0.85 * np.ones((self.S, self.J))
+        ubi_num_senior_mat = 0.15 * np.ones((self.S, self.J))
+
+        ubi_dol_array = np.zeros((self.S, self.J, self.omega.shape[0]))
+        UBI_dol_vec = np.zeros(self.omega.shape[0])
+
+        # Calculate the UBI transfers to each household type in the first
+        # period t=0
+        ubi_dol_mat_init = \
+            np.minimum(
+                (self.ubi_child * ubi_num_child_mat +
+                 self.ubi_adult * ubi_num_adult_mat +
+                 self.ubi_senior * ubi_num_senior_mat), self.ubi_max)
+
+        lambdas_mat = np.tile(self.lambdas.reshape((1, self.J)), (self.S, 1))
+        for t in range(self.omega.shape[0]):
+            if self.ubi_growthadj or self.g_y_annual < 0:
+                # If ubi_growthadj=True or if g_y_annual<0, then uib_arr is
+                # just a copy of the initial UBI mattrix for T periods.
+                ubi_dol_mat = ubi_dol_mat_init
+            else:
+                # If ubi_growthadj=False, and g_y_annual>=0, then must divide
+                # by e^{g_y t} every period, then set the steady-state matrix
+                # to 0
+                if t <= self.T:
+                    ubi_dol_mat = ubi_dol_mat_init / np.exp(self.g_y * t)
+            ubi_dol_array[:, :, t] = ubi_dol_mat
+            omega_mat = np.tile(self.omegas[t, :].reshape((self.S, 1)),
+                                (1, self.J))
+            UBI_dol_vec[t] = (lambdas_mat * omega_mat * ubi_dol_mat).sum()
+        ubi_dol_SS_mat = ubi_dol_array[:, :, self.T + 1]
+        UBI_dol_SS = UBI_dol_vec[self.T + 1]
+
+        return ubi_dol_array, UBI_dol_vec, ubi_dol_SS_mat, UBI_dol_SS
 
     def update_specifications(self, revision, raise_errors=True):
         '''
