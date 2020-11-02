@@ -13,7 +13,7 @@ from tempfile import NamedTemporaryFile
 from io import BytesIO, StringIO
 import numpy as np
 import pandas as pd
-import pickle
+import pickle5 as pickle
 from pkg_resources import resource_stream, Requirement
 
 EPSILON = 1e-10  # tolerance or comparison functions
