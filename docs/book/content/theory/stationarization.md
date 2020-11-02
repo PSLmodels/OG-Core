@@ -37,7 +37,7 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}$
   -
-* - $\hat{ubi}_{j,s,t}$\equiv\frac{ubi_{j,s,t}}{e^{g_y t}}$
+* - $\hat{ubi}_{j,s,t}\equiv\frac{ubi_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{UBI}_t\equiv\frac{UBI_t}{e^{g_y t}\tilde{N}_t}$
   -
