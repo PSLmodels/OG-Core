@@ -2860,5 +2860,59 @@
                 "max": 0.001
             }
         }
+    },
+    "initial_guess_r_SS": {
+        "title": "Initial guess of r for the SS solution",
+        "description": "Initial guess of r for the SS solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0648
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.01,
+                "max": 0.15
+            }
+        }
+    },
+    "initial_guess_TR_SS": {
+        "title": "Initial guess of TR for the SS solution",
+        "description": "Initial guess of TR for the SS solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.057
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.2
+            }
+        }
+    },
+    "initial_guess_factor_SS": {
+        "title": "Initial guess of factor for the SS solution",
+        "description": "Initial guess of factor for the SS solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 139355.154
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1.0,
+                "max": 500000
+            }
+        }
     }
 }

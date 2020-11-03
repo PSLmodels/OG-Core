@@ -2,6 +2,7 @@ from ogusa import txfunc
 import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
+import pandas as pd
 import numpy as np
 import os
 from ogusa import utils
@@ -46,7 +47,7 @@ def test_wsumsq(tax_func_type, expected):
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
     if tax_func_type == 'DEP':
         params = A, B, C, D, max_x, max_y, share
-        args = ((min_x, min_y, shift), X, Y, txrates, wgts,
+        args = ((min_x, min_y, shift_x, shift_y, shift), X, Y, txrates, wgts,
                 tax_func_type, rate_type)
     elif tax_func_type == 'GS':
         params = phi0, phi1, phi2
@@ -155,14 +156,25 @@ def test_txfunc_est():
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, graph)
-    expected_tuple = ((np.array([
-        6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
-        2.32797367e-01, -3.69059719e-02, 1.00000000e-04, -1.01967001e-01,
-        3.96030053e-02, 1.02987671e-01, -1.30433574e-01, 1.00000000e+00]),
-                        19527.16203007729, 3798))
+    expected_tuple = ((np.array(
+        [6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
+         2.32797367e-01, 1.00000000e-04, 1.00000000e+00,
+         -3.69059719e-02, -1.01967001e-01, 3.96030053e-02,
+         1.02987671e-01, -1.30433574e-01]), 19527.16203007729, 3798))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
+
+
+def test_tax_data_sample():
+    '''
+    Test of txfunc.tax_data_sample() function
+    '''
+    data = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'micro_data_dict_for_tests.pkl'))
+    df = txfunc.tax_data_sample(data['2030'])
+    assert isinstance(df, pd.DataFrame)
 
 
 @pytest.mark.full_run
@@ -217,6 +229,45 @@ def test_tax_func_loop():
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_outputs.pkl'))
+    (TotPop_yr, PopPct_age, AvgInc, AvgETR, AvgMTRx, AvgMTRy,
+     frac_tax_payroll, etrparam_arr, etr_wsumsq_arr, etr_obs_arr,
+     mtrxparam_arr, mtrx_wsumsq_arr, mtrx_obs_arr,
+     mtryparam_arr, mtry_wsumsq_arr, mtry_obs_arr) = expected_tuple
+    etr_old = etrparam_arr
+    etr_new = etr_old.copy()
+    etr_new[..., 5] = etr_old[..., 6]
+    etr_new[..., 6] = etr_old[..., 11]
+    etr_new[..., 7] = etr_old[..., 5]
+    etr_new[..., 8] = etr_old[..., 7]
+    etr_new[..., 9] = etr_old[..., 8]
+    etr_new[..., 10] = etr_old[..., 9]
+    etr_new[..., 11] = etr_old[..., 10]
+    mtrx_old = mtrxparam_arr
+    mtrx_new = mtrx_old.copy()
+    mtrx_new[..., 5] = mtrx_old[..., 6]
+    mtrx_new[..., 6] = mtrx_old[..., 11]
+    mtrx_new[..., 7] = mtrx_old[..., 5]
+    mtrx_new[..., 8] = mtrx_old[..., 7]
+    mtrx_new[..., 9] = mtrx_old[..., 8]
+    mtrx_new[..., 10] = mtrx_old[..., 9]
+    mtrx_new[..., 11] = mtrx_old[..., 10]
+    mtry_old = mtryparam_arr
+    mtry_new = mtry_old.copy()
+    mtry_new[..., 5] = mtry_old[..., 6]
+    mtry_new[..., 6] = mtry_old[..., 11]
+    mtry_new[..., 7] = mtry_old[..., 5]
+    mtry_new[..., 8] = mtry_old[..., 7]
+    mtry_new[..., 9] = mtry_old[..., 8]
+    mtry_new[..., 10] = mtry_old[..., 9]
+    mtry_new[..., 11] = mtry_old[..., 10]
+    etrparam_arr = etr_new
+    mtrxparam_arr = mtrx_new
+    mtryparam_arr = mtry_new
+    expected_tuple = (
+        TotPop_yr, PopPct_age, AvgInc, AvgETR, AvgMTRx, AvgMTRy,
+        frac_tax_payroll, etrparam_arr, etr_wsumsq_arr, etr_obs_arr,
+        mtrxparam_arr, mtrx_wsumsq_arr, mtrx_obs_arr,
+        mtryparam_arr, mtry_wsumsq_arr, mtry_obs_arr)
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
@@ -234,30 +285,52 @@ share = 0.7
 phi0 = 0.6
 phi1 = 0.5
 phi2 = 0.6
+shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+avg_rate = 0.17
 
 
 @pytest.mark.parametrize(
-    'tax_func_type,rate_type,params,for_estimation,expected',
+    'tax_func_type,rate_type,params,analytical_mtrs,mtr_capital,' +
+    'for_estimation,expected',
     [('DEP', 'etr', np.array([A, B, C, D, max_x, max_y, share, min_x,
-                              min_y, shift]), True,
+                              min_y, shift_x, shift_y, shift]), False,
+      False, True,
       np.array([0.1894527, 0.216354953, 0.107391574, 0.087371974])),
      ('DEP', 'etr', np.array([A, B, C, D, max_x, max_y, share, min_x,
-                              min_y, shift]), False,
+                              min_y, shift_x, shift_y, shift]), False,
+      False, False,
       np.array([0.669061481, 0.678657921, 0.190301075, 0.103958946])),
-     ('GS', 'etr', np.array([phi0, phi1, phi2]), False,
+     ('GS', 'etr', np.array([phi0, phi1, phi2]), False, False, False,
       np.array([0.58216409, 0.5876492, 0.441995766, 0.290991255])),
-     ('GS', 'mtrx', np.array([phi0, phi1, phi2]), False,
+     ('GS', 'mtrx', np.array([phi0, phi1, phi2]), False, False, False,
       np.array([0.596924843, 0.598227987, 0.518917438, 0.37824137])),
-     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift]),
-      True, np.array([0.110821747, 0.134980034, 0.085945843,
-                      0.085573318])),
-     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift]),
-      False, np.array([0.628917903, 0.632722363, 0.15723913,
-                       0.089863997]))],
+     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift_x, shift]),
+      False, False, True, np.array(
+          [0.110821747, 0.134980034, 0.085945843, 0.085573318])),
+     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift_x, shift]),
+      False, False, False, np.array(
+          [0.628917903, 0.632722363, 0.15723913, 0.089863997])),
+     ('linear', 'etr', np.array([avg_rate]), False, False, False,
+      np.array([0.17])),
+     ('DEP', 'mtr', np.array([A, B, C, D, max_x, max_y, share, min_x,
+                              min_y, shift_x, shift_y, shift]), True,
+      False, False,
+      np.array([0.7427211, 0.72450578, 0.30152417, 0.10923907])),
+     ('DEP', 'mtr', np.array([A, B, C, D, max_x, max_y, share, min_x,
+                              min_y, shift_x, shift_y, shift]), True,
+      True, False,
+      np.array([0.67250144, 0.68049134, 0.22151424, 0.25869779])),
+     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift_x, shift]),
+      True, False, False, np.array(
+          [0.64187414, 0.63823569, 0.27160586, 0.09619512]))],
     ids=['DEP for estimation', 'DEP not for estimation', 'GS, etr',
          'GS, mtr', 'DEP_totalinc for estimation',
-         'DEP_totalinc not for estimation'])
-def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
+         'DEP_totalinc not for estimation', 'linear',
+         'DEP, analytical MTRs', 'DEP analytical capital MTRs',
+         'DEP_totalinc, analytical MTRs'])
+def test_get_tax_rates(tax_func_type, rate_type, params,
+                       analytical_mtrs, mtr_capital, for_estimation,
                        expected):
     '''
     Teset of txfunc.get_tax_rates() function.  There are 6 cases to
@@ -272,9 +345,10 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
     X = np.array([32.0, 44.0, 1.6, 0.4])
     Y = np.array([32.0, 55.0, 0.9, 0.03])
-    test_txrates = txfunc.get_tax_rates(params, X, Y, wgts,
-                                        tax_func_type, rate_type,
-                                        for_estimation)
+    print('Params = ', params)
+    test_txrates = txfunc.get_tax_rates(
+        params, X, Y, wgts, tax_func_type, rate_type, analytical_mtrs,
+        mtr_capital, for_estimation)
 
     assert np.allclose(test_txrates, expected)
 
@@ -305,8 +379,41 @@ def test_tax_func_estimate(dask_client):
                      'tax_func_estimate_outputs.pkl'))
     del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
     del test_dict['tfunc_time'], test_dict['taxcalc_version']
+
+    etr_old = expected_dict['tfunc_etr_params_S']
+    etr_new = etr_old.copy()
+    etr_new[:, :, 5] = etr_old[:, :, 6]
+    etr_new[:, :, 6] = etr_old[:, :, 11]
+    etr_new[:, :, 7] = etr_old[:, :, 5]
+    etr_new[:, :, 8] = etr_old[:, :, 7]
+    etr_new[:, :, 9] = etr_old[:, :, 8]
+    etr_new[:, :, 10] = etr_old[:, :, 9]
+    etr_new[:, :, 11] = etr_old[:, :, 10]
+    mtrx_old = expected_dict['tfunc_mtrx_params_S']
+    mtrx_new = mtrx_old.copy()
+    mtrx_new[:, :, 5] = mtrx_old[:, :, 6]
+    mtrx_new[:, :, 6] = mtrx_old[:, :, 11]
+    mtrx_new[:, :, 7] = mtrx_old[:, :, 5]
+    mtrx_new[:, :, 8] = mtrx_old[:, :, 7]
+    mtrx_new[:, :, 9] = mtrx_old[:, :, 8]
+    mtrx_new[:, :, 10] = mtrx_old[:, :, 9]
+    mtrx_new[:, :, 11] = mtrx_old[:, :, 10]
+    mtry_old = expected_dict['tfunc_mtry_params_S']
+    mtry_new = mtry_old.copy()
+    mtry_new[:, :, 5] = mtry_old[:, :, 6]
+    mtry_new[:, :, 6] = mtry_old[:, :, 11]
+    mtry_new[:, :, 7] = mtry_old[:, :, 5]
+    mtry_new[:, :, 8] = mtry_old[:, :, 7]
+    mtry_new[:, :, 9] = mtry_old[:, :, 8]
+    mtry_new[:, :, 10] = mtry_old[:, :, 9]
+    mtry_new[:, :, 11] = mtry_old[:, :, 10]
+    expected_dict['tfunc_etr_params_S'] = etr_new
+    expected_dict['tfunc_mtrx_params_S'] = mtrx_new
+    expected_dict['tfunc_mtry_params_S'] = mtry_new
+
     for k, v in expected_dict.items():
         if isinstance(v, str):  # for testing tax_func_type object
             assert test_dict[k] == v
         else:  # for testing all other objects
+            print('Max diff for ', k, ' = ', np.absolute(test_dict[k] - v).max())
             assert np.all(np.isclose(test_dict[k], v))
