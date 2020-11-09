@@ -6,7 +6,7 @@
 
 In this chapter, we define the stationary steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_Demog` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-USA` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter {ref}`Chap_Demog`, and the potential for unbounded growth in government debt as described in Chapter {ref}`Chap_UnbalGBC`.
 
-We implemented an automatic government budget closure rule using government spending $G_t$ as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in {eq}`EqUnbalGBCclosure`. And we showed in Chapter {ref}`Chap_Stnrz` how to stationarize all the other characterizing equations.
+We implemented an automatic government budget closure rule using government spending $G_t$ as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in {eq}`EqUnbalGBCclosure_Gt`. And we showed in Chapter {ref}`Chap_Stnrz` how to stationarize all the other characterizing equations.
 
 (SecEqlbSSdef)=
 ### Stationary Steady-State Equilibrium Definition
