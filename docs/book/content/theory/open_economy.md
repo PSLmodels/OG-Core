@@ -6,10 +6,11 @@
 In the small open economy version of `OG-USA`, the county faces an exogenous world interest rate, $r^{*}_{t}$ that determines the amount of savings and investment.  If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate.  Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$.  Then foreign capital is given by:
 
 ```{math}
-  K^{f}_{t} = K^{demand}_{t} - B_{t} - D_{t},
+  K^{f}_{t} = K^{demand}_{t} - K^{d}_{t}\\
+  K^{f}_{t} = K^{demand}_{t} - (B_{t} - D^{d}_{t}),
 ```
 
-where $B_{t}$ is aggregate household savings and $D_{t}$ is government borrowing.  Capital demand is determined from the firm's first order condition for its choice of capital.
+where $B_{t}$ is aggregate domestic household savings and $D^{d}_{t}$ is government debt holdings of domestic households.  Capital demand is determined from the firm's first order condition for its choice of capital.
 
 (SecPartialOpen)=
 ## Partially Open Economy
