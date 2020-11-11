@@ -3,22 +3,21 @@
 
 (SecSmallOpen)=
 ## Small Open Economy
-In the small open economy version of `OG-USA`, the county faces an exogenous world interest rate, $r^{*}_{t}$ that determines the amount of savings and investment.  If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate.  Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$.  Then foreign capital is given by:
+In the small open economy version of `OG-USA`, the economy faces an exogenous world interest rate on capital, $r^{*}_{t}$ that determines the amount of household savings and investment and determines the interest rate paid by the government $r_{gov,t}$. If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate. Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$.  Then foreign capital is given by:
 
 ```{math}
   K^{f}_{t} = K^{demand}_{t} - K^{d}_{t}\\
-  K^{f}_{t} = K^{demand}_{t} - (B_{t} - D^{d}_{t}),
+  K^{f}_{t} = K^{demand}_{t} - \bigl(B_{t} - D^{d}_{t}\bigr),
 ```
 
-where $B_{t}$ is aggregate domestic household savings and $D^{d}_{t}$ is government debt holdings of domestic households.  Capital demand is determined from the firm's first order condition for its choice of capital.
+where $B_{t}$ is aggregate domestic household savings and $D^{d}_{t}$ is government debt holdings of domestic households. Capital demand is determined from the firm's first order condition for its choice of capital.
 
 (SecPartialOpen)=
 ## Partially Open Economy
 
 In the partially open economy version of `OG-USA`, the openness of the economy is modeled through two parameters that capture the extent of foreign lending to the domestic government and the amount of foreign lending of private capital to firms.
 
-
-The parameter $\zeta_{D}\in[0, 1]$ gives the share of new debt issues that are purchased by foreigners.  The law of motion for foreign-held debt is therefore given by:
+The parameter $\zeta_{D}\in[0,1]$ gives the share of new debt issues that are purchased by foreigners.  The law of motion for foreign-held debt is therefore given by:
 
 ```{math}
   D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t})
@@ -30,8 +29,7 @@ Domestic debt holdings as then the remaining debt holdings needed to meet govern
   D^{d}_{t} = D_{t} - D^{f}_{t}
 ```
 
-
-The parameter $\zeta_{K}\in[0,1]$ helps to determine the share of domestic capital held by foreigners.  In particular, $\zeta_{D}$ is the share of foreign capital held by foreigners in the small open economy specification:
+The parameter $\zeta_{K}\in[0,1]$ helps to determine the share of domestic capital held by foreigners. In particular, $\zeta_{K}$ is the share of foreign capital held by foreigners in the small open economy specification:
 
 ```{math}
   K^{f}_{t} = \zeta_{K}K^{open}_{t}
