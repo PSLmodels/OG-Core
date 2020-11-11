@@ -31,7 +31,7 @@ Domestic debt holdings as then the remaining debt holdings needed to meet govern
 ```
 
 
-The parameters $\zeta_{K}$ helps to determine the share of domestic capital held by foreigners.  In particular, $\zeta_{D}$ is the share of foreign capital held by foreigners in the small open economy specification:
+The parameter $\zeta_{K}\in[0,1]$ helps to determine the share of domestic capital held by foreigners.  In particular, $\zeta_{D}$ is the share of foreign capital held by foreigners in the small open economy specification:
 
 ```{math}
   K^{f}_{t} = \zeta_{K}K^{open}_{t}
