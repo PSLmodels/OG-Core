@@ -18,7 +18,7 @@ where $B_{t}$ is aggregate domestic household savings and $D^{d}_{t}$ is governm
 In the partially open economy version of `OG-USA`, the openness of the economy is modeled through two parameters that capture the extent of foreign lending to the domestic government and the amount of foreign lending of private capital to firms.
 
 
-The parameter $\zeta_{D}$ gives the share of new debt issues that are purchased by foreigners.  The law of motion for foreign-held debt is therefore given by:
+The parameter $\zeta_{D}\in[0, 1]$ gives the share of new debt issues that are purchased by foreigners.  The law of motion for foreign-held debt is therefore given by:
 
 ```{math}
   D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t})
@@ -44,7 +44,7 @@ $K^{open}_{t}$ is the amount of capital that would need to flow into the country
 ```
 
 where, $K^{demand, open}_{t}$ is total capital demand by domestic firms at $r^
-{*}_{t}$, $B_{t}$ are total asset holdings of domestic households, and $D^{d}_{t}$ are holdings of government debt by domestic households.  Total asset holdings from households result from solving the household problem at the endogenous home country interest rate.  Note that there is a disconnect between the interest rates that determine firm capital demand and domestic household savings and the interest rate used to determine $K^{demand, open}_{t}$.  This assumption is useful in that it nests the small open economy case into the partial open economy model.  However, it does leave out the realistic responses of foreign capital supply to differentials in the home country interest rate and the world interest rate.
+{*}_{t}$, $B_{t}$ are total asset holdings of domestic households, and $D^{d}_{t}$ are holdings of government debt by domestic households.  Total asset holdings from households result from solving the household problem at the endogenous home country interest rate.  Note that there is a disconnect between the interest rates that determine firm capital demand and domestic household savings and the interest rate used to determine $K^{demand, open}_{t}$.  This assumption is useful in that it nests the small open economy case into the partial open economy model ($\zeta_{K}=1$ being the small open economy case).  However, it does leave out the realistic responses of foreign capital supply to differentials in the home country interest rate and the world interest rate.
 
 Given the two equations above, we can find the total supply of capital as:
 
