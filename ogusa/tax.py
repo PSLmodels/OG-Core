@@ -204,7 +204,7 @@ def get_biz_tax(w, Y, L, K, p, method):
     return business_revenue
 
 
-def net_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
+def net_taxes(r, w, b, n, bq, factor, tr, theta, ubi, t, j, shift, method,
               e, etr_params, p):
     '''
     Calculate net taxes paid for each household.
@@ -220,6 +220,7 @@ def net_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
         tr (Numpy array): government transfers to the household
         theta (Numpy array): social security replacement rate value for
             lifetime income group j
+        ubi (array): household universal basic income transfer
         t (int): time period
         j (int): index of lifetime income group
         shift (bool): whether computing for periods 0--s or 1--(s+1),
@@ -239,7 +240,7 @@ def net_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
     T_BQ = bequest_tax_liab(r, b, bq, t, j, method, p)
     T_W = wealth_tax_liab(r, b, t, j, method, p)
 
-    net_tax = T_I - pension + T_BQ + T_W - tr
+    net_tax = T_I - pension + T_BQ + T_W - tr - ubi
 
     return net_tax
 
