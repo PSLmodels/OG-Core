@@ -27,11 +27,11 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHBC
-    c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
+    c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{hh,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
   ```
 
-  where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_t$ is the interest rate (return on savings), $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the wage, and $n_{j,s,t}$ is labor supply.
+  where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{hh,t}$ is the interest rate (return) on household savings, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the wage, and $n_{j,s,t}$ is labor supply. Equation {eq}`EqUnbalGBC_rate_hh` of Section {ref}`SecRateWedge` of Chapter {ref}`Chap_UnbalGBC` derives why this household interest rate $r_{hh,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$.
 
   The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. Chapter {ref}`Chap_Beq} details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
 
@@ -39,7 +39,7 @@ In this section, we describe what is arguably the most important economic agent 
 
   The term $ubi_{j,s,t}$ the time series of a matrix of universal basic income (UBI) transfers by lifetime income group $j$ and age group $s$ in each period $t$. There is a specification where the time series of this matrix is stationary (growth adjusted) and a specification in which it's stationary value is going to zero in the limit (non-growth-adjusted). Chapter {ref}`Chap_UBI` in the Calibration section of this documentation describes the exact way in which this matrix is calibrated from the values of five parameters, household composition data, and OG-USA's demographics. Similar to the transfers term $TR_{t}$, the UBI transfers will not be distortionary.
 
-  The term $T_{s,t}$ is the total tax liability of the household. In contrast to government transfers $tr_{j,s,t}$, tax liability can be a function of labor income $(x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t})$ and capital income $(y_{j,s,t}\equiv r_t b_{j,s,t})$. The tax liability can, therefore, be a distortionary influence on household decisions. It becomes valuable to represent total tax liability as an effective tax rate $\tau^{etr}$ multiplied by total income,
+  The term $T_{s,t}$ is the total tax liability of the household. In contrast to government transfers $tr_{j,s,t}$, tax liability can be a function of labor income $(x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t})$ and capital income $(y_{j,s,t}\equiv r_{hh,t} b_{j,s,t})$. The tax liability can, therefore, be a distortionary influence on household decisions. It becomes valuable to represent total tax liability as an effective tax rate $\tau^{etr}$ multiplied by total income,
 
   ```{math}
   :label: EqTaxCalcLiabETR
@@ -53,13 +53,12 @@ In this section, we describe what is arguably the most important economic agent 
 (SecHHellipUtil)=
 ## Elliptical Disutility of Labor Supply
 
-  In `OG-USA`, the period utility function of each household is a function of consumption $c_{j,s,t}$, savings $b_{j,s+1,t+1}$, and labor supply $n_{j,s,t}$.\footnote{Savings enters the period utility function to provide a ``warm glow'' bequest motive.} We detail this utility function, its justification, and functional form in Section {ref}`SecHHeulers`. With endogenous labor supply $n_{j,s,t}$, we must specify how labor enters an agent's utility function and what are the constraints. Assume that each household is endowed with a measure of time $\tilde{l}$ each period that it can choose to spend as either labor $n_{j,s,t}\in[0,\tilde{l}]$ or leisure $l_{j,s,t}\in[0,\tilde{l}]$.
+  In `OG-USA`, the period utility function of each household is a function of consumption $c_{j,s,t}$, savings $b_{j,s+1,t+1}$, and labor supply $n_{j,s,t}$.[^sav_util_note] We detail this utility function, its justification, and functional form in Section {ref}`SecHHeulers`. With endogenous labor supply $n_{j,s,t}$, we must specify how labor enters an agent's utility function and what are the constraints. Assume that each household is endowed with a measure of time $\tilde{l}$ each period that it can choose to spend as either labor $n_{j,s,t}\in[0,\tilde{l}]$ or leisure $l_{j,s,t}\in[0,\tilde{l}]$.
 
   ```{math}
   :label: EqLabConstr
   n_{j,s,t} + l_{j,s,t} = \tilde{l} \quad\forall s, t
   ```
-
 
   The functional form for the utility of leisure or the disutility of labor supply has important implications for the computational tractability of the model. One difference of the household's labor supply decision $n_{j,s,t}$ from the consumption decision $c_{j,s,t}$ is that the consumption decision only has a lower bound $c_{j,s,t}\geq 0$ whereas the labor supply decision has both upper and lower bounds $n_{j,s,t}\in[0,\tilde{l}]$. {cite}`EvansPhillips:2017` show that many of the traditional functional forms for the disutility of labor---Cobb-Douglas, constant Frisch elasticty, constant relative risk aversion (CRRA)---do not have Inada conditions on both the upper and lower bounds of labor supply. To solve these in a heterogeneous agent model would require occasionally binding constraints, which is a notoriously difficult computational problem.
 
@@ -113,7 +112,7 @@ In this section, we describe what is arguably the most important economic agent 
   &\chi^b_j \rho_s \frac{(b_{j,s+1,t+1})^{1-\sigma} - 1}{1-\sigma} \quad\forall j,t \quad\text{and}\quad E+1 \leq s \leq E+S
   ```
 
-  The period utility function {eq}`EqHHPerUtil` is linearly separable in $c_{j,s,t}$, $n_{j,s,t}$, and $b_{j,s+1,t+1}$. The first term is a constant relative risk aversion (CRRA) utility of consumption. The second term is the elliptical disutility of labor described in Section {ref}`SecHHellipUtil`. The constant $\chi^n_s$ adjusts the disutility of labor supply relative to consumption and can vary by age $s$, which is helpful for calibrating the model to match labor market moments. See Chapter {ref}`Chap_Calibr` for a discussion of the calibration.
+  The period utility function {eq}`EqHHPerUtil` is linearly separable in $c_{j,s,t}$, $n_{j,s,t}$, and $b_{j,s+1,t+1}$. The first term is a constant relative risk aversion (CRRA) utility of consumption. The second term is the elliptical disutility of labor described in Section {ref}`SecHHellipUtil`. The constant $\chi^n_s$ adjusts the disutility of labor supply relative to consumption and can vary by age $s$, which is helpful for calibrating the model to match labor market moments. See the chapters in the Calibration section of this documentation for a discussion of the calibration.
 
   It is necessary to multiply the disutility of labor in {eq}`EqHHPerUtil` by $e^{g_y(1-\sigma)}$ because labor supply $n_{j,s,t}$ is stationary, but both consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ are growing at the rate of technological progress (see Chapter {ref}`Chap_Stnrz`). The $e^{g_y(1-\sigma)}$ term keeps the relative utility values of consumption, labor supply, and savings in the same units.
 
@@ -128,7 +127,7 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHBC2
-    &\quad\text{s.t.}\quad c_{j,s,t} + b_{j,s+1,t+1} = (1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t} \\
+    &\quad\text{s.t.}\quad c_{j,s,t} + b_{j,s+1,t+1} = (1 + r_{hh,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t} \\
     &\qquad\text{and}\quad c_{j,s,t}\geq 0,\: n_{j,s,t} \in[0,\tilde{l}],\:\text{and}\: b_{j,1,t}=0 \quad\forall j, t, \:\text{and}\: E+1\leq s\leq E+S \nonumber
   ```
 
@@ -144,33 +143,31 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHeul_b
-  &(c_{j,s,t})^{-\sigma} = \chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma} \\
-  &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+    &(c_{j,s,t})^{-\sigma} = \chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{hh,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma} \\
+    &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
-   ```{math}
-   :label: EqHHeul_bS
+  ```{math}
+  :label: EqHHeul_bS
     (c_{j,E+S,t})^{-\sigma} = \chi^b_j(b_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
-
-
 
   The distortion of taxation on household decisions can be seen in Euler equations {eq}`EqHHeul_n` and {eq}`EqHHeul_b` in the terms that have a marginal tax rate $(1-\tau^{mtr})$. This comes from the expression for total tax liabilities as a function of the effective tax rate and total income as expressed in Equation {eq}`EqTaxCalcLiabETR`. Using the chain rule, we can break up the derivatives of total tax liability with respect to $n_{j,s,t}$ and $b_{j,s,t}$, respectively, into simpler functions of marginal tax rates. We discuss this in more detail in Chapter {ref}`Chap_TaxCalc`.
 
   ```{math}
-   :label: EqMTRx_derive
+  :label: EqMTRx_derive
     \frac{\partial T_{s,t}}{\partial n_{j,s,t}}  = \frac{\partial T_{s,t}}{\partial w_t e_{j,s}n_{j,s,t}}\frac{\partial w_{t}e_{j,s}n_{j,s,t}}{\partial n_{j,s,t}} = \frac{\partial T_{s,t}}{\partial w_{t}e_{j,s}n_{j,s,t}}w_t e_{j,s} = \tau^{mtrx}_{s,t}w_t e_{j,s}
   ```
 
   ```{math}
-   :label: EqMTRy_derive
-    \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{t}b_{j,s,t}}\frac{\partial r_t b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}}r_{t} = \tau^{mtry}_{s,t}r_t
+  :label: EqMTRy_derive
+    \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}}\frac{\partial r_{hh,t} b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{hh,t} b_{j,s,t}}r_{hh,t} = \tau^{mtry}_{s,t}r_{hh,t}
   ```
 
 (SecHHexp)=
 ## Expectations
 
-  To conclude the household's problem, we must make an assumption about how the age-$s$ household can forecast the time path of interest rates, wages, and total bequests $\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}$ over his remaining lifetime. As we will show in Chapter {ref}`Chap_Eqm`, the equilibrium interest rate $r_t$, wage $w_t$, and total bequests $BQ_t$ will be functions of the state vector $\boldsymbol{\Gamma}_t$, which turns out to be the entire distribution of savings at in period $t$.
+  To conclude the household's problem, we must make an assumption about how the age-$s$ household can forecast the time path of interest rates paid by firms (marginal product of capital), wages, and total bequests $\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}$ over his remaining lifetime. As we will show in Chapter {ref}`Chap_Eqm`, the equilibrium interest rate paid by firms (marginal product of capital) $r_t$, wage $w_t$, and total bequests $BQ_t$ will be functions of the state vector $\boldsymbol{\Gamma}_t$, which turns out to be the entire distribution of savings in period $t$.
 
   Define $\boldsymbol{\Gamma}_t$ as the distribution of household savings across households at time $t$.
 
@@ -188,10 +185,16 @@ In this section, we describe what is arguably the most important economic agent 
 
   where the $e$ superscript signifies that $\boldsymbol{\Gamma}^e_{t+u}$ is the expected distribution of wealth at time $t+u$ based on general beliefs $\Omega(\cdot)$ that are not constrained to be correct. [^nssequilibrium_note]
 
-[^frisch_note]: {cite}`Peterman:2016` shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor---such as `OG-USA`---a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates---which include both extensive and intensive margin agents---are observed.
 
-[^mort_rates_note]: See Section {ref}`SecDemogMort` of Chapter {ref}`Chap_Demog` for a detailed discussion of mortality rates in `OG-USA`.
+(SecHHfootnotes)=
+## Footnotes
 
-[^constraint_note]: It is important to note that savings also has an implicit upper bound $b_{j,s,t}\leq k$ above which consumption would be negative in current period. However, this upper bound on savings in taken care of by the Inada condition on consumption.
+  [^sav_util_note]: Savings enters the period utility function to provide a "warm glow" bequest motive.
 
-[^nssequilibrium_note]: In Chapter {ref}`Chap_Eqm` we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Section {ref}`SecEqlbSSdef`.
+  [^frisch_note]: {cite}`Peterman:2016` shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor---such as `OG-USA`---a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates---which include both extensive and intensive margin agents---are observed.
+
+  [^mort_rates_note]: See Section {ref}`SecDemogMort` of Chapter {ref}`Chap_Demog` for a detailed discussion of mortality rates in `OG-USA`.
+
+  [^constraint_note]: It is important to note that savings also has an implicit upper bound $b_{j,s,t}\leq k$ above which consumption would be negative in current period. However, this upper bound on savings in taken care of by the Inada condition on consumption.
+
+  [^nssequilibrium_note]: In Chapter {ref}`Chap_Eqm` we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Section {ref}`SecEqlbSSdef`.

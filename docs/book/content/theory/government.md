@@ -12,7 +12,7 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
 
   ```{math}
   :label: EqHHBC
-    c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
+    c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{hh,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
   ```
 
@@ -23,24 +23,26 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
     PR_t = (1 - \tau^{corp})\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t
   ```
 
-  We define total government revenue from taxes as the following.
+  We define total government revenue from taxes as the following,
 
   ```{math}
   :label: EqUnbalGBCgovRev
     Rev_t = \underbrace{\tau^{corp}\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}\delta^\tau K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
 
+  where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{hh,t} b_{j,s,t}$.
+
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest of the debt, government spending on public goods $G_t$, and total transfer payments to households $TR_t$ every period $t$.
+  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest of the debt, government spending on public goods $G_t$, and total transfer payments to households $TR_t$ every period $t$,
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
-    D_{t+1} + Rev_t = (1 + r_t)D_t + G_t + TR_t + UBI_t  \quad\forall t
+    D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + TR_t + UBI_t  \quad\forall t
   ```
 
-  where $UBI_t$ is the total UBI transfer outlays across households in time $t$.
+  where $r_{gov,t}$ is the interest rate paid by the government and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
 
   ```{math}
   :label: EqUnbalGBC_UBI
@@ -70,19 +72,19 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
 (SecRateWedge)=
 ## Interest Rate on Government Debt
 
-  Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt.  Doing so helps to add realism by including a risk premium.  `OG-USA` allows users to set an exogenous wedge between these two rates.  The interest rate on government debt,
+  Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt.  Doing so helps to add realism by including a risk premium. `OG-USA` allows users to set an exogenous wedge between these two rates.  The interest rate on government debt,
 
   ```{math}
     :label: EqUnbalGBC_rate_wedge
     r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d}
   ```
 
-  The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premia.
+  where $r_t$ is the marginal product of capital faced by firms. The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premia.
 
-  In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$), then we need to be careful to specify how the household chooses government debt and private capital in its portfolio of asset holdings.  We make the assumption that under the exogenous interest rate wedge, the household is indifferent between holding its assets as debt and private capital.  This amounts to an assumption that these two assets are perfect substitutes given the exogenous wedge in interest rates.  Given the indifference between government debt and private capital at these two interest rates, we assume that the household holds debt and capital in the same ratio that debt and capital are demanded by the government and private firms, respectively. The interest rate on the household portfolio of asset is thus given by:
+  In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$), then we need to be careful to specify how the household chooses government debt and private capital in its portfolio of asset holdings.  We make the assumption that under the exogenous interest rate wedge, the household is indifferent between holding its assets as debt and private capital. This amounts to an assumption that these two assets are perfect substitutes given the exogenous wedge in interest rates.  Given the indifference between government debt and private capital at these two interest rates, we assume that the household holds debt and capital in the same ratio that debt and capital are demanded by the government and private firms, respectively. The interest rate on the household portfolio of asset is thus given by:
 
   ```{math}
-    :label: EqUnbalGBC_rate_wedge
+    :label: EqUnbalGBC_rate_hh
     r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}
   ```
 
@@ -111,9 +113,9 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
     &G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
     &\text{where}\quad g_{g,t} =
       \begin{cases}
-        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -132,9 +134,9 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
     &TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \\
     &\text{where}\quad g_{tr,t} =
       \begin{cases}
-        1 \qquad\qquad\qquad\qquad\qquad\qquad\quad\:\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - G_{t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - G_{t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\,\text{if}\quad t < T_{G1} \\
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -163,9 +165,9 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
     &G_t + TR_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)Y_t \quad\Rightarrow\quad G_t = g_{trg,t}\:\alpha_g\: Y_t \quad\text{and}\quad TR_t = g_{trg,t}\:\alpha_{tr}\:Y_t \\
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
-      1 \qquad\qquad\qquad\qquad\qquad\qquad\:\:\text{if}\quad t < T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t < T_{G1} \\
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```
