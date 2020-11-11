@@ -3,7 +3,7 @@
 
 (SecSmallOpen)=
 ## Small Open Economy
-In the small open economy version of `OG-USA`, the county faces an exogenous world interest rate, $r^{*}_{t}$ that determines the amount of savings and investment.  If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate.  Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$.  Then foreign capital is given by:
+In the small open economy version of `OG-USA`, the economy faces an exogenous world interest rate on capital $r^{*}_{t}$ that determines the amount of household savings and investment and determines the interest rate paid by the government $r_{gov,t}$.  If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate.  Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$.  Then foreign capital is given by:
 
 ```{math}
   K^{f}_{t} = K^{demand}_{t} - B_{t} - D_{t},
@@ -30,7 +30,7 @@ Domestic debt holdings as then the remaining debt holdings needed to meet govern
 ```
 
 
-The parameters $\zeta_{K}$ helps to determine the share of domestic capital held by foreigners.  In particular, $\zeta_{D}$ is the share of foreign capital held by foreigners in the small open economy specification:
+The parameters $\zeta_{K}$ helps to determine the share of domestic capital held by foreigners.  In particular, $\zeta_{K}$ is the share of foreign capital held by foreigners in the small open economy specification:
 
 ```{math}
   K^{f}_{t} = \zeta_{K}K^{open}_{t}
