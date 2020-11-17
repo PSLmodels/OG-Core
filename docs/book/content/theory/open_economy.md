@@ -3,11 +3,13 @@
 
 (SecSmallOpen)=
 ## Small Open Economy
-In the small open economy version of `OG-USA`, the economy faces an exogenous world interest rate on capital $r^{*}_{t}$ that determines the amount of household savings and investment and determines the interest rate paid by the government $r_{gov,t}$. If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate. Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$. Then foreign capital is given by:
+In the small open economy version of `OG-USA`, the economy faces an exogenous world interest rate on capital $r^{*}_{t}$ that determines the amount of household savings and investment and determines the interest rate paid by the government $r_{gov,t}$. If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate. Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$. Then foreign capital is given by
 
 ```{math}
-  K^{f}_{t} = K^{demand}_{t} - K^{d}_{t}\\
-  K^{f}_{t} = K^{demand}_{t} - \bigl(B_{t} - D^{d}_{t}\bigr),
+  \begin{split}
+    K^{f}_{t} &= K^{demand}_{t} - K^{d}_{t} \\
+    &= K^{demand}_{t} - \bigl(B_{t} - D^{d}_{t}\bigr),
+  \end{split}
 ```
 
 where $B_{t}$ is aggregate domestic household savings and $D^{d}_{t}$ is government debt holdings of domestic households. Capital demand is determined from the firm's first order condition for its choice of capital.
