@@ -237,20 +237,21 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
 ### Alternative Functional Forms
 
-In addition to the default option using tax functions of the form developed by {cite}`DeBackerEtAl:2017`, `OG-USA` also allows users to specify alternative tax functions.  Three alternatives are offered:
+  In addition to the default option using tax functions of the form developed by {cite}`DeBackerEtAl:2017`, `OG-USA` also allows users to specify alternative tax functions.  Three alternatives are offered:
 
-1. Functions as in {cite}`DeBackerEtAl:2017`, but where $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are functions of total income (i.e., $x+y$) and not labor and capital income separately.  Users can select this option by setting the parameter `tax_func_type="DEP_totalinc"`.
-2. Functions of the form of {cite}`GouveiaStrauss:1994`: 
+  1. Functions as in {cite}`DeBackerEtAl:2017`, but where $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are functions of total income (i.e., $x+y$) and not labor and capital income separately.  Users can select this option by setting the parameter `tax_func_type="DEP_totalinc"`.
   
-  ```{math}
-  \tau = \phi_{0}(1 - (x+y)^{(\phi_{1}-1)}((x+y)^{-\phi1} + \phi_{2})^{(-1 - \phi_{1})/\phi_{1}})
-  ```
-   
-   * Users can select this option by setting the parameter `tax_func_type="GS"`.  The three parameters of this function ($phi_{0}, \phi_{1}, \phi_{2}$) are estimated using the weighted sum of squares estimated described in Equation {eq}`EqTaxCalcThetaWSSQ`.
+  2. Functions of the form of {cite}`GouveiaStrauss:1994`: 
+    
+     ```{math}
+       \tau = \phi_{0}(1 - (x+y)^{(\phi_{1}-1)}((x+y)^{-\phi1} + \phi_{2})^{(-1 - \phi_{1})/\phi_{1}})
+     ```
+    
+      Users can select this option by setting the parameter `tax_func_type="GS"`.  The three parameters of this function ($phi_{0}, \phi_{1}, \phi_{2}$) are estimated using the weighted sum of squares estimated described in Equation {eq}`EqTaxCalcThetaWSSQ`.
 
-3. Linear tax functions (i.e., $\tau =$ a constant).  Users can select this option by setting the parameter `tax_func_type="linear"`.  The constant rate is found by taking the weighted average of the appropriate tax rate (effective tax rate, marginal tax rate on labor income, marginal tax rate on labor income) for each age and year, where the values are weighted by sampling weights and income.
+  1. Linear tax functions (i.e., $\tau =$ a constant).  Users can select this option by setting the parameter `tax_func_type="linear"`.  The constant rate is found by taking the weighted average of the appropriate tax rate (effective tax rate, marginal tax rate on labor income, marginal tax rate on labor income) for each age and year, where the values are weighted by sampling weights and income.
 
-Among all of these tax functional forms, users can set the `age_specific` parameter to `False` if they wish to have one function for all ages `s`.  In addition, the functions based on {cite}`DeBackerEtAl:2017` (`tax_func_type="DEP"` or `tax_func_type="DEP_totinc"`), one can set `analytical_mtrs=True` if they wish to have the $\tau^{mtrx}_{s,t}$ and $\tau^{mtry}_{s,t}$ derived from the $\tau^{etr}_{s,t}$ functions.  This provides theoretical consistency, but reduced fit of the functions (see {cite}`DeBackerEtAl:2017` for more details).
+  Among all of these tax functional forms, users can set the `age_specific` parameter to `False` if they wish to have one function for all ages `s`.  In addition, the functions based on {cite}`DeBackerEtAl:2017` (`tax_func_type="DEP"` or `tax_func_type="DEP_totinc"`), one can set `analytical_mtrs=True` if they wish to have the $\tau^{mtrx}_{s,t}$ and $\tau^{mtry}_{s,t}$ derived from the $\tau^{etr}_{s,t}$ functions.  This provides theoretical consistency, but reduced fit of the functions (see {cite}`DeBackerEtAl:2017` for more details).
 
 (SecTaxCalcFactor)=
 ## Factor Transforming Income Units
