@@ -403,7 +403,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
 
     # solve resource constraint
     # net foreign borrowing
-    K_f_ss = 0 ## temporarily - will come back to open economy case
+    K_f_ss = 0  ## temporarily - will come back to open economy case
     I_d_ss = Iss
     print('Foreign debt holdings = ', D_f_ss)
     print('Foreign capital holdings = ', K_f_ss)
@@ -434,12 +434,14 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
           np.absolute(euler_savings).max())
 
     # Return dictionary of SS results
-    output = {'Kss': Kss, 'V_f_ss': V_f_ss, 'V_d_ss': V_d_ss,
+    output = {'Kss': Kss, 'K_tau_ss': K_tau_ss, 'Vss': Vss,
+              'V_f_ss': V_f_ss, 'V_d_ss': V_d_ss,
               'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
               'Iss_total': Iss_total, 'nssmat': nssmat,
               'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
               'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss,
-              'r_gov_ss': r_gov_ss, 'r_hh_ss': r_hh_ss, 'theta': theta,
+              'r_gov_ss': r_gov_ss, 'r_hh_ss': r_hh_ss, 'zss': zss,
+              'theta': theta,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'yss_before_tax_mat': yss_before_tax_mat,
