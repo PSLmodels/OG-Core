@@ -78,6 +78,11 @@ def get_initial_SS_values(p):
     # placeholder for first-period wealth
     B0 = aggr.get_B(initial_b, p, 'SS', True)
 
+    # Get initial value of the capital stock and initial value of the
+    # depreciable basis for the capital stock
+    K0 = ss_baseline_vars['Kss']
+    K_tau0 = ss_baseline_vars['K_tau_ss']
+
     b_sinit = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                        list(initial_b[:-1]))
     b_splus1init = initial_b
@@ -91,7 +96,7 @@ def get_initial_SS_values(p):
     else:
         D0_baseline = None
 
-    initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
+    initial_values = (B0, K0, K_tau0, b_sinit, b_splus1init, factor, initial_b,
                       initial_n)
     baseline_values = (TRbaseline, Gbaseline, D0_baseline)
 
@@ -262,7 +267,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
 
     '''
     # unpack variables and parameters pass to function
-    (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) =\
+    (B0, K0, K_tau0, b_sinit, b_splus1init, factor, initial_b, initial_n) =\
         initial_values
     guesses_b, guesses_n = guesses
     r, w, r_hh, BQ, TR, theta = outer_loop_vars
@@ -397,8 +402,8 @@ def run_TPI(p, client=None):
     '''
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
-    (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) =\
-        initial_values
+    (B0, K0, K_tau0, b_sinit, b_splus1init, factor, initial_b,
+     initial_n) = initial_values
     (TRbaseline, Gbaseline, D0_baseline) = baseline_values
 
     print('Government spending breakpoints are tG1: ', p.tG1,
@@ -420,17 +425,27 @@ def run_TPI(p, client=None):
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
     B_init[1:p.T] = aggr.get_B(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
     B_init[0] = B0
-    K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
-    K = K_init
-    K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
-    K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
+    V_init = B_init * ss_vars['Vss'] / ss_vars['Bss']
+    V = V_init
+    V_d = V_init * ss_vars['V_d_ss'] / ss_vars['Vss']
+    V_f = V_init * ss_vars['V_f_ss'] / ss_vars['Vss']
+    # compute z
+    z = np.ones(p.T + p.S) * ss_vars['zss']
+    K = np.ones(p.T + p.S) * ss_vars['Kss']
+    K_tau = np.ones(p.T + p.S) * ss_vars['K_tau_ss']
+    K[:p.T], K_tau[:p.T] = firm.get_K_demand(
+        K0, V[:p.T], K_tau0, z[:p.T], p, 'TPI')
+    X = firm.get_X(z, K_tau)
     L = L_init
     B = B_init
     Y = np.zeros_like(K)
     Y[:p.T] = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
     Y[p.T:] = ss_vars['Yss']
     r = np.zeros_like(Y)
-    r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
+    r[:p.T] = firm.get_r(
+            Y[:p.T], K[:p.T], K[1:p.T+1], V[:p.T], V[1:p.T+1], X[:p.T],
+            X[1:p.T+1], p, 'TPI')
+    # r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
     r[p.T:] = ss_vars['rss']
     # For case where economy is small open econ
     r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
@@ -561,20 +576,39 @@ def run_TPI(p, client=None):
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
-        K_demand_open = firm.get_K(
-            L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
-        K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
-            B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
+
+        z[:p.T] = firm.get_NPV_depr(r[:p.T], p, 'TPI')
+        V_d[:p.T] = B[:p.T] - D_d[:p.T]
+        if np.any(V_d < 0):
+            print('V_d has negative elements. Setting them ' +
+                  'positive to prevent NAN.')
+            V_d = np.fmax(V_d, 0.05 * B)
+        V_f[:p.T] = p.zeta_K[:p.T] * V_d[:p.T]  # So that foreign equity holdings are some fraction of domestic holdings...
+        # this deviates from CBO method, but theirs doesn't work with dyn firms
+        # could also try to build in realistic repsonse to world and domestic rates - which CBO doesn't have
+        V[:p.T] = V_d[:p.T] + V_f[:p.T]
+        X = firm.get_X(z, K_tau)
+        K, K_tau = firm.get_K_demand(K0, V, K_tau0, z, p, 'TPI')
+
+        # K_demand_open = firm.get_K(
+        #     L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
+        # K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
+        #     B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
         Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
         rnew = r.copy()
-        rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
+        # rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
+        rnew[:p.T] = firm.get_r(
+            Y[:p.T], K[:p.T], K[1:p.T+1], V[:p.T], V[1:p.T+1], X[:p.T],
+            X[1:p.T+1], p, 'TPI')
         # For case where economy is small open econ
         r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
         r_hh_new = aggr.get_r_hh(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
                                  Dnew[:p.T])
         # compute w
-        wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
+        # wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
+        wnew = w
+        wnew[:p.T] = firm.MPL(Ynew[:p.T], L[:p.T], p, 'TPI')
 
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
@@ -594,7 +628,8 @@ def run_TPI(p, client=None):
             agg_pension_outlays[:p.T], p, 'TPI')
 
         # update vars for next iteration
-        w[:p.T] = wnew[:p.T]
+        # w[:p.T] = wnew[:p.T]
+        w[:p.T] = utils.convex_combo(wnew[:p.T], w[:p.T], p.nu)
         r[:p.T] = utils.convex_combo(rnew[:p.T], r[:p.T], p.nu)
         BQ[:p.T] = utils.convex_combo(BQnew[:p.T], BQ[:p.T], p.nu)
         D[:p.T] = Dnew[:p.T]
