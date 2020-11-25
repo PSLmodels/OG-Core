@@ -577,7 +577,7 @@ def run_TPI(p, client=None):
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
 
-        z[:p.T] = firm.get_NPV_depr(r[:p.T], p, 'TPI')
+        z[:p.T] = firm.get_NPV_depr(r, p, 'TPI')[:p.T]
         V_d[:p.T] = B[:p.T] - D_d[:p.T]
         if np.any(V_d < 0):
             print('V_d has negative elements. Setting them ' +
@@ -588,7 +588,7 @@ def run_TPI(p, client=None):
         # could also try to build in realistic repsonse to world and domestic rates - which CBO doesn't have
         V[:p.T] = V_d[:p.T] + V_f[:p.T]
         X = firm.get_X(z, K_tau)
-        K, K_tau = firm.get_K_demand(K0, V, K_tau0, z, p, 'TPI')
+        K[:p.T], K_tau[:p.T] = firm.get_K_demand(K0, V, K_tau0, z, p, 'TPI')
 
         # K_demand_open = firm.get_K(
         #     L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
@@ -608,7 +608,7 @@ def run_TPI(p, client=None):
         # compute w
         # wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
         wnew = w
-        wnew[:p.T] = firm.MPL(Ynew[:p.T], L[:p.T], p, 'TPI')
+        wnew[:p.T] = firm.get_MPL(Ynew[:p.T], L[:p.T], p, 'TPI')
 
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
