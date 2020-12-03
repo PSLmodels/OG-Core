@@ -461,9 +461,9 @@ def get_K_demand(K0, V, K_tau0, z, p, method):
             Kp1_args = (K[t], V[t+1], K_tau[t], z[t+1], p, t)
             results = opt.root(FOC_I, K[t], args=Kp1_args)
             K[t + 1] = results.x
-            print('K = ', K[t+1], K[t])
+            # print('K = ', K[t+1], K[t])
             I = aggr.get_I(K[t+1], K[t], p.g_n[t+1], p.g_y, p.delta)
-            print('I = ', I)
+            # print('I = ', I)
             K_tau[t + 1] = get_K_tau_p1(K_tau[t], I, p.delta_tau[t],
                                         p.g_n[t+1], p.g_y)
 
