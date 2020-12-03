@@ -1,6 +1,8 @@
 (Chap_SmOpEcn)=
 # Open Economy Options
 
+`OG-USA` offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by (Kotlikoff cites) and others. However, one of the findings of (Kotlikoff) is that a full multi-country model is closely approximated by the types of specifications we use in `OG-USA`. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discussed some of these specifications in the previous chapter {ref}`Chap_MarkClr`. But the open economy assumptions only refer to how foreign capital can flow into the private capital market $K_t$ and into the government bond market $D_t$.
+
 (SecSmallOpen)=
 ## Small Open Economy
 In the small open economy version of `OG-USA`, the economy faces an exogenous world interest rate on capital $r^{*}_{t}$ that determines the amount of household savings and investment and determines the interest rate paid by the government $r_{gov,t}$. If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate. Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$. Then foreign capital is given by
@@ -135,5 +137,9 @@ In the partially open economy, the ratio of private capital to debt held by dome
 ```{math}
   \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}
 ```
+
+
+(SecOpen_footnotes)=
+## Footnotes
 
 [^assumption_note]: One reason for this assumption is that it simplifies our solution since we do not need to know the domestic versus foreign holdings of capital before solving the households' problems.

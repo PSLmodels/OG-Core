@@ -8,6 +8,20 @@ In this chapter, we define the stationary steady-state equilibrium of the `OG-US
 
 We implemented an automatic government budget closure rule using government spending $G_t$ as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in {eq}`EqUnbalGBCclosure_Gt`. And we showed in Chapter {ref}`Chap_Stnrz` how to stationarize all the other characterizing equations.
 
+We first give a general definition of the steady-state (long-run) equilibrium of the model. We then detail the computational algorithm for solving for the equilibrium in each distinct case of the model. There are three distinct cases or parameterization permutations of the model that have to do with the following specification choices.
+
+* Baseline or reform
+* Balanced budget or allow for government deficits/surplusses
+* Small open economy or partially/closed economy
+* Fixed baseline spending level or not
+
+In all of the specifications of `OG-USA`, we use a two-stage fixed point algorithm to solve for the equilibrium solution. The solution is mathematically characterized by $2JS$ equations and $2JS$ unknowns. The most straightforward and simple way to solve these equations would be a multidimensional root finder. However, because each of the equations is highly nonlinear and depends on all of the $2JS$ variables (low sparsity) and because the dimensionality $2JS$ is high, standard root finding methods are not tractable.
+
+Our approach is to choose the minimum number of macroeconomic variables in an outer loop in order to be able to solve the household's $2JS$ Euler equations in terms of only the $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ variables directly, holding all other variables constant. The household system of Euler equations has a provable root solution and is orders of magnitude more tractable (less nonlinear) to solve holding these outer loop variables constant.
+
+The steady-state solution method for each of the cases above is associated with a solution method that has a subset of the following outer-loop variables $\{\bar{r}, \overline{TR}, \overline{BQ}, \bar{Y}, factor\}$.
+
+
 (SecEqlbSSdef)=
 ### Stationary Steady-State Equilibrium Definition
 
@@ -22,16 +36,51 @@ We define a stationary steady-state equilibrium as the following.
 A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defined as constant allocations of stationary household labor supply $n_{j,s,t}=\bar{n}_{j,s}$ and savings $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ for all $j$, $t$, and $E+1\leq s\leq E+S$, and constant prices $\hat{w}_t=\bar{w}$ and $r_t=\bar{r}$ for all $t$ such that the following conditions hold:
 1. The population has reached its stationary steady-state distribution $\hat{\omega}_{s,t} = \bar{\omega}_s$ for all $s$ and $t$ as characterized in Section {ref}`SecDemogPopSSTP`,
 2. households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS`,
-3. firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqFirmFOC_K`,
+3. firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
 4. Government activity behaves according to {eq}`EqStnrzGovBC` and {eq}`EqStnrzClosureRule_Gt`, and
 5. markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrzMarkClrCap`, and {eq}`EqStnrzMarkClrBQ`.
 
 ```
 
+
+(SecEqlbSSsoln)=
+### Steady-state solution method: default specification
+
+The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surplusses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending is not held constant until the closure rule (`baseline_spending = False`).
+
+The computational algorithm for solving for the steady-state follows the steps below.
+
+1. Use the techniques from Section {ref}`SecDemogPopSSTP` to solve for the steady-state population distribution vector $\boldsymbol{\bar{\omega}}$ and steady-state growth rate $\bar{g}_n$ of the exogenous population process.
+
+2. Choose an initial guess for the values of the steady-state interest rate (marginal product of capital) $\bar{r}^i$, total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
+
+    1. Given guess $\bar{r}^i$:
+
+        1. Use firm's two first order conditions {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K` to solve for the steady-state capital-labor ratio $\frac{\bar{K}}{\bar{L}}$ and the steady-state wage $\bar{w}$.
+
+        2. Solve for the exogenous government interest rate $\bar{r}_{gov}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
+
+    2. Given guess $\overline{TR}^{\,i}$:
+
+        1. Solve for $\bar{Y}$ from long-run aggregate transfers assumption as a percent of GDP {eq}`EqStnrzTfer`.
+
+        2. Solve for total private capital $\bar{K}$ given GDP $\bar{Y}$ and the marginal product of capital guess $\bar{r}^i$ using firms first order condition for capital demand {eq}`EqStnrzFOC_K`.
+
+        3. Solve for steady-state government debt $\bar{D}$ using the long-run debt-to-GDP ralationship to $\bar{Y}$ {eq}`EqUnbalGBC_DY`.
+
+        4. Solve for foreign holdings of government debt $\bar{D}^f$ as a fixed fraction of government debt using the steady-state version of the exogenous foreign government debt rule {eq}`EqMarkClr_zetaD` $\bar{D}^f = \zeta_D \bar{D}$.
+
+        5. Use government debt market clearing {eq}`EqMarkClr_DtDdDf` to solve for domestic holdings of government bonds $\bar{D}^d$.
+
+
+
+
 (SecEqlbSSsoln)=
 ### Stationary Steady-state Solution Method
 
-This section describes the solution method for the stationary steady-state equilibrium described in Definition {ref}`DefSSEql`. The steady-state is characterized by $2JS$ equations and $2JS$ unknowns. However, because some of the other equations cannot be solved for analytically and substituted into the Euler equations, we use a fixed point algorithm to solve for the steady-state. We begin by making a guess at steady-state interest rate $\bar{r}$, total bequests $\overline{BQ}$, total household transfers $\overline{TR}$, and income multiplier $factor$. We define the four steady-state variables $\bar{r}$, $\overline{BQ}$, $\overline{TR}$, and $factor$ as "outer loop" variables. The outer loop variables are the smallest set of macroeconomic variables necessary to solve each household’s lifetime problem independently. Our solution method for the steady-state iterates on the four outer loop variables, solving a smaller "inner loop" problem at each iteration, until we find the unique fixed point.
+This section describes the solution method for the stationary steady-state equilibrium described in Definition {ref}`DefSSEql`. The steady-state is characterized by $2JS$ equations and $2JS$ unknowns. However, because some of the other equations cannot be solved for analytically and substituted into the Euler equations, we use a two-stage fixed point algorithm to solve for the steady-state.
+
+We begin by making a guess at steady-state interest rate $\bar{r}$, total bequests $\overline{BQ}$, total household transfers $\overline{TR}$, and income multiplier $factor$. We define the four steady-state variables $\bar{r}$, $\overline{BQ}$, $\overline{TR}$, and $factor$ as "outer loop" variables. The outer loop variables are the smallest set of macroeconomic variables necessary to solve each household’s lifetime problem independently. Our solution method for the steady-state iterates on the four outer loop variables, solving a smaller "inner loop" problem at each iteration, until we find the unique fixed point.
 
 For each iteration over these outer-loop variables, we solve the household problem given the values of these macroeconomic variables. We call this solution the "inner loop" of the steady-state solution method.  In the inner loop, we solve for the steady-state household decisions $\bar{b}_{j,s}$ and labor supply $\bar{n}_{j,s}$ for all $j$ and $E+1\leq s\leq E+S$, and then use the household decisions to compute updated values for macroeconomics variables. Because the lifetime optimization problem of each household of type $j$ is a highly nonlinear system of $2S$ equations and $2S$ unknowns, we solve for the $2S$ household's decisions simultaneously for a given type $j$ household.  We then use the solutions for type-$j$ households as the initial guesses a the solutions for type-$j+1$ households.
 
@@ -44,7 +93,11 @@ We outline this algorithm in the following steps.
 
 2. Choose an initial guess for the values of the steady-state interest rate $\bar{r}^i$, total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
 
-3. Use $\bar{r}^i$ together with the firm's first order condition for its choice of capital, Equation {eq}`EqFirmFOC_K`, to solve for the capital labor ratio, $\frac{\overline{K}}{\overline{L}}$.  Then use $\frac{\bar{K}}{\bar{L}}$ in the firm's first order condition for its choice of labor to find the implied wage rate $\bar{w}^i$.
+  1. Given guess $\bar{r}^i$:
+
+    1. Use firm's two first order conditions {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K` to solve for the steady-state capital-labor ratio $\frac{\bar{K}}{\bar{L}}$ and the steady-state wage $\bar{w}$.
+
+    2. Solve for the exogenous government interest rate $\bar{r}_{gov}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
 
 4. Given guesses for $\bar{r}^i$, $\bar{w}^i$, $\overline{BQ}^{\,i}$, $\overline{TR}^{\,i}$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
@@ -118,9 +171,9 @@ then update the guesses for the outer loop variables as a convex combination gov
 	3. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
 	4. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
-(SecSSeqlbResults)=
-## Baseline Steady-state Results
 
+(SecSSeqlbResults)=
+### Steady-state results: default specification
 
   In this section, we use the baseline calibration described in Chapter {ref}`Chap_Calibr`, which includes the baseline tax law from `Tax-Calculator`, to show some steady-state results from `OG-USA`. Figures {numref}`FigSSeqlbHHcons`, {numref}`FigSSeqlbHHlab`, and {numref}`FigSSeqlbHHsave` show the household steady-state variables by age $s$ and lifetime income group $j$.
 

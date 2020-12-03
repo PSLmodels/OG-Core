@@ -70,9 +70,9 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
   Government spending on goods and services is comprised on spending on public infrastructure, $I_{g,t}$ and non-capital expenditures, $G_{g,t}$ such that $G_{t} = I_{g,t} + G_{g,t}$.  We assume that infrastructure spending is a fraction fo total government spending, $I_{g,t} = \alpha_{i,t} * G_{g,t}$.  The stock of public capital (i.e., infrastructure) evolves according to the law of motion, $K_{g,t+1} = (1 - \delta^{g}) K_{g,t} + I_{g,t}$.  The stock of public capital complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
 
 (SecRateWedge)=
-## Interest Rate on Government Debt
+## Interest Rate on Government Debt and Household Savings
 
-  Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt.  Doing so helps to add realism by including a risk premium. `OG-USA` allows users to set an exogenous wedge between these two rates.  The interest rate on government debt,
+  Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt. Doing so helps to add realism by including a risk premium. `OG-USA` allows users to set an exogenous wedge between these two rates. The interest rate on government debt,
 
   ```{math}
     :label: EqUnbalGBC_rate_wedge
@@ -81,12 +81,14 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
 
   where $r_t$ is the marginal product of capital faced by firms. The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premia.
 
-  In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$), then we need to be careful to specify how the household chooses government debt and private capital in its portfolio of asset holdings.  We make the assumption that under the exogenous interest rate wedge, the household is indifferent between holding its assets as debt and private capital. This amounts to an assumption that these two assets are perfect substitutes given the exogenous wedge in interest rates.  Given the indifference between government debt and private capital at these two interest rates, we assume that the household holds debt and capital in the same ratio that debt and capital are demanded by the government and private firms, respectively. The interest rate on the household portfolio of asset is thus given by:
+  In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$), then we need to be careful to specify how the household chooses government debt and private capital in its portfolio of asset holdings. We make the assumption that under the exogenous interest rate wedge, the household is indifferent between holding its assets as debt and private capital. This amounts to an assumption that these two assets are perfect substitutes given the exogenous wedge in interest rates. Given the indifference between government debt and private capital at these two interest rates, we assume that the household holds debt and capital in the same ratio that debt and capital are demanded by the government and private firms, respectively. The interest rate on the household portfolio of asset is thus given by:
 
   ```{math}
     :label: EqUnbalGBC_rate_hh
     r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}
   ```
+
+  It is technically more correct to assume that the domestic households return to savings $r_{hh,t}$ is a function of the amount of domestic household savings allocated to private capital $K^d_t$ and the amount allocated to government debt $D^d_t$. However, this would require us to add another state variable to the model, which would exponentially increase the difficulty and computation time of the equilibrium solution method. The characterization of the household savings rate of return in {eq}`EqUnbalGBC_rate_hh` as a function of total government debt $D_t$ and total private captial $K_t$ is a simplifying assumption.
 
 
 (SecUnbalGBCcloseRule)=
@@ -96,11 +98,22 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
 
   A virtue of dynamic general equilibrium models is that the model must be stationary in order to solve it. That is, no variables can be indefinitely growing as time moves forward. The labor augmenting productivity growth $g_y$ from Chapter {ref}`Chap_Firms` and the potential population growth $\tilde{g}_{n,t}$ from Chapter {ref}`Chap_Demog` render the model nonstationary. But we show how to stationarize the model against those two sources of growth in Chapter {ref}`Chap_Stnrz`. However, even after stationarizing the effects of productivity and population growth, the model could be rendered nonstationary and, therefore, not solvable if government debt were becoming too positive or too negative too quickly.
 
+  For the model to be stationary, the debt-to-GDP ratio must be stable in the long run. Because the debt-to-GDP ratio is a quotient of two macroeconomic variables, the non-stationary and stationary versions of this ratio are equivalent. Let $T$ be some time period in the future. The stationarizing assumption is the following,
+
+  ```{math}
+  :label: EqUnbalGBC_DY
+    \frac{D_t}{Y_t} = \alpha_D \quad\text{for}\quad t\geq T
+  ```
+
+  where $\alpha_D$ is a scalar long-run value of the debt-to-GDP ratio. This long-run stability condition on the debt-to-GDP ratio clearly applies to the steady-state as well as any point in the time path for $t>T$.
+
+
   The `OG-USA` model offers three different options for budget closure rules. Each rule uses some combination of changes in government spending on public goods $G_t$ and government transfers to households $TR_t$ to stabilize the debt-to-GDP ratio in the long-run.
 
   1. Change only government spending on public goods $G_t$.
   2. Change only government transfers to households $TR_t$.
   3. Change both government spending $G_t$ and transfers $TR_t$ by the same percentage.
+
 
 (SecUnbalGBC_chgGt)=
 ### Change government spending only
