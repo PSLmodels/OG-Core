@@ -58,7 +58,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
     D_t = D^d_t + D^f_t \quad\forall t
   ```
 
-  We discuss the meaning of different permutations of the $\zeta_D$ parameter corner solutions $\zeta_D=0$ and $\zeta_D=1$ in Chapter {ref}`Chap_SmOpEcn`. If $\zeta_D=0$, we are assuming a closed economy government bond market in which all new government debt is held by domestic households and in which all government debt in the long-run (steady-state) is held by domestic households $\bar{D}^f=0.
+  We discuss the meaning of different permutations of the $\zeta_D$ parameter corner solutions $\zeta_D=0$ and $\zeta_D=1$ in Chapter {ref}`Chap_SmOpEcn`. If $\zeta_D=0$, we are assuming a closed economy government bond market in which all new government debt is held by domestic households and in which all government debt in the long-run (steady-state) is held by domestic households $\bar{D}^f=0$.
 
 
   (SecMarkClrMktClr_K)=
