@@ -28,7 +28,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   We can express total tax liability $T_{s,t}$ from the household budget constraint {eq}`EqHHBC` as an effective tax rate multiplied by total income.
 
   ```{math}
-  :label: EqTaxCalcLiabETR
+  :label: EqTaxCalcLiabETR2
     T_{s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right)
   ```
 

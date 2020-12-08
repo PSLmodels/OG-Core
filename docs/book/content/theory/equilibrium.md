@@ -72,6 +72,37 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         5. Use $\bar{D}^f$ and $\bar{D}$ in the government debt market clearing equation {eq}`EqStnrz_DtDdDf` to solve for domestic holdings of government bonds $\bar{D}^d$.
 
+        6. Given $\bar{r}^i$, $\bar{r}_{gov}$, $\bar{K}$, and $\bar{D}$, solve for $\bar{r}_{hh}$ using {eq}`EqStnrz_rate_hh`.
+
+        7. Use $factor^i$ to solve for the tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ defined in {eq}`EqTaxCalcLiabETR2`, {eq}`EqTaxCalcMTRx`, and {eq}`EqTaxCalcMTRy`, respectively of Chapter {ref}`Chap_TaxCalc` using the factor to transform model units to dollars in the tax functions as described in Section {ref}`SecTaxCalcFactor`.
+
+    3. Given values $\bar{r}_{hh}$, $\bar{w}$ $\overline{BQ}^i$, $\overline{TR}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
+
+        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-USA` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` simultaneously for each $j$.
+
+        ```{math}
+        :label: EqSS_HHBC
+          \bar{c}_{j,s} &= (1 + \bar{r}_{hh})\bar{b}_{j,s} + \bar{w}e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1} + \zeta_{j,s}\frac{\overline{BQ}^i}{\lambda_j\bar{\omega}_{s}} + \eta_{j,s}\frac{\overline{TR}^i}{\lambda_j\bar{\omega}_{s}} + \hat{ubi}_{j,s} - \bar{T}_{s}  \\
+          &\qquad\qquad\forall j\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \bar{b}_{j,E+1}=0
+        ```
+
+        ```{math}
+        :label: EqSS_HHeul_n
+          \bar{w} e_{j,s}\bigl(1 - \tau^{mtrx}_{s}\bigr)(\bar{c}_{j,s})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
+          \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S \\
+        ```
+
+        ```{math}
+        :label: EqSS_HHeul_b
+          (\bar{c}_{j,s})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\bar{b}_{j,s+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + \bar{r}_{hh}\bigl[1 - \tau^{mtry}_{s+1}\bigr]\Bigr)(\bar{c}_{j,s+1})^{-\sigma}\biggr] \\
+          \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+        ```
+
+        ```{math}
+        :label: EqSS_HHeul_bS
+          (\bar{c}_{j,E+S})^{-\sigma} = e^{-\sigma g_y}\chi^b_j(\bar{b}_{j,E+S+1})^{-\sigma} \quad\forall j
+        ```
+
 
 ### Stationary Steady-state Solution Method
 
