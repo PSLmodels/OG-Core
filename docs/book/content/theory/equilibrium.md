@@ -37,8 +37,8 @@ A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defi
 1. The population has reached its stationary steady-state distribution $\hat{\omega}_{s,t} = \bar{\omega}_s$ for all $s$ and $t$ as characterized in Section {ref}`SecDemogPopSSTP`,
 2. households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS`,
 3. firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
-4. Government activity behaves according to {eq}`EqStnrzGovBC` and {eq}`EqStnrzClosureRule_Gt`, and
-5. markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrzMarkClrCap`, and {eq}`EqStnrzMarkClrBQ`.
+4. Government activity behaves according to {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrzGovBC`, {eq}`EqStnrz_rate_hh`, and {eq}`EqStnrzClosureRule_Gt`, and
+5. markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrz_DtDdDf`, {eq}`EqStnrz_KtKdKf`, and {eq}`EqStnrzMarkClrBQ`.
 
 ```
 
@@ -66,11 +66,11 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         2. Solve for total private capital $\bar{K}$ given GDP $\bar{Y}$ and the marginal product of capital guess $\bar{r}^i$ using firms first order condition for capital demand {eq}`EqStnrzFOC_K`.
 
-        3. Solve for steady-state government debt $\bar{D}$ using the long-run debt-to-GDP ralationship to $\bar{Y}$ {eq}`EqUnbalGBC_DY`.
+        3. Solve for steady-state government debt $\bar{D}$ using the long-run debt-to-GDP ralationship to $\bar{Y}$ {eq}`EqStnrz_DY`.
 
-        4. Solve for foreign holdings of government debt $\bar{D}^f$ as a fixed fraction of government debt using the steady-state version of the exogenous foreign government debt rule {eq}`EqMarkClr_zetaD` $\bar{D}^f = \zeta_D \bar{D}$.
+        4. Solve for foreign holdings of government debt $\bar{D}^f$ as a fixed fraction of government debt using the steady-state version of the exogenous foreign government debt rule {eq}`EqStnrz_zetaD` $\bar{D}^f = \zeta_D \bar{D}$.
 
-        5. Use government debt market clearing {eq}`EqMarkClr_DtDdDf` to solve for domestic holdings of government bonds $\bar{D}^d$.
+        5. Use $\bar{D}^f$ and $\bar{D}$ in the government debt market clearing equation {eq}`EqStnrz_DtDdDf` to solve for domestic holdings of government bonds $\bar{D}^d$.
 
 
 ### Stationary Steady-state Solution Method
