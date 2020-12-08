@@ -1,7 +1,7 @@
 (Chap_Eqm)=
 # Equilibrium
 
-(Chap_SSeqlb)=
+(SecSSeqlb)=
 ## Steady-State Equilibirum
 
 In this chapter, we define the stationary steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_Demog` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-USA` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter {ref}`Chap_Demog`, and the potential for unbounded growth in government debt as described in Chapter {ref}`Chap_UnbalGBC`.
@@ -73,9 +73,6 @@ The computational algorithm for solving for the steady-state follows the steps b
         5. Use government debt market clearing {eq}`EqMarkClr_DtDdDf` to solve for domestic holdings of government bonds $\bar{D}^d$.
 
 
-
-
-(SecEqlbSSsoln)=
 ### Stationary Steady-state Solution Method
 
 This section describes the solution method for the stationary steady-state equilibrium described in Definition {ref}`DefSSEql`. The steady-state is characterized by $2JS$ equations and $2JS$ unknowns. However, because some of the other equations cannot be solved for analytically and substituted into the Euler equations, we use a two-stage fixed point algorithm to solve for the steady-state.

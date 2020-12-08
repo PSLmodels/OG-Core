@@ -1,7 +1,7 @@
 (Chap_SmOpEcn)=
 # Open Economy Options
 
-`OG-USA` offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by (Kotlikoff cites) and others. However, one of the findings of (Kotlikoff) is that a full multi-country model is closely approximated by the types of large parial open economy specifications we use in `OG-USA`. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discussed some of these specifications in the previous chapter {ref}`Chap_MarkClr`. But the open economy assumptions only refer to how foreign capital can flow into the private capital market $K_t$ and into the government bond market $D_t$. The labor market and goods market are closed.
+`OG-USA` offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by (Kotlikoff cites) and others. However, one of the findings of (Kotlikoff) is that a full multi-country model is closely approximated by the types of large partial open economy specifications we use in `OG-USA`. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discussed some of these specifications in the previous chapter {ref}`Chap_MarkClr`. But the open economy assumptions only refer to how foreign capital can flow into the private capital market $K_t$ and into the government bond market $D_t$. The labor market and goods market are closed.
 
 (SecSmallOpen)=
 ## Small Open Economy
@@ -31,7 +31,17 @@ Note that in our partially open economy specification, the world interest rate $
 (SecClosed)=
 ## Closed Economy
 
-The closed economy specification in `OG-USA` is parameterized by $\zeta_D,\zeta_K=0$ and is characterized as no foreign inflows of private capital.
+The closed economy specification in `OG-USA` is parameterized by $\zeta_D=0$ and $\zeta_K=0$ and is characterized as no foreign inflows of private capital. The government debt market clearing condition and the private capital market clearing condition are the following.
+
+:label: EqClosed_D
+  D_t = D^d_t \quad\forall t
+```
+
+:label: EqClosed_K
+  K_t = K^d_t \quad\forall t
+```
+
+In the closed economy setting, the world interest rate $r^*_t$ is not relevant.
 
 
 (SecOpenStationary)=
@@ -40,7 +50,7 @@ The closed economy specification in `OG-USA` is parameterized by $\zeta_D,\zeta_
 (SecForeignDebt)=
 #### Foreign debt purchases
 
-The amount of government debt is growing by the rate of productivity growth and the rate of population growth.  Thus, stationarized government debt is given by:
+The amount of government debt is growing by the rate of productivity growth and the rate of population growth. Thus, stationarized government debt is given by:
 
 ```{math}
   \hat{D}_{t} = \frac{D_{t}}{e^{g_{y}t}N_{t}}

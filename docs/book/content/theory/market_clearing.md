@@ -95,12 +95,12 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 
   The fourth and final market that must clear is the goods market. It is redundant by Walras' Law and is not needed for computing the equilibrium solution. But it is an equation that must be satisfied and is a good check of the solution accuracy after the solution is obtained.
 
-  In the partially open economy, some of the output is paid to the foreign owners of capital $r_t K^f_t$ and to foreign holders of government debt $r_{gov,t}D^f_t$. In addition, foreign lending to the home country’s government relaxes the resource constraint. The goods market clearing condition or resource constraint is given by the following.
+  In the partially open economy, some of the output is paid to the foreign owners of capital $r_t K^f_t$ and to foreign holders of government debt $r_{gov,t}D^f_t$. In addition, foreign lending to the home country’s government relaxes the resource constraint. The goods market clearing condition or resource constraint is given by the following.[^RCrates_note]
 
   ```{math}
   :label: EqMarkClrGoods
     \begin{split}
-      Y_t &= C_t + \bigl(K^d_{t+1} - K^d_t\bigr) + \delta K_t + G_t + r_t K^f_t - \bigl(D^f_{t+1} - D^f_t\bigr) + r_{gov,t}D^f_t \quad\forall t \\
+      Y_t &= C_t + \bigl(K^d_{t+1} - K^d_t\bigr) + \delta K_t + G_t + r_{hh,t} K^f_t - \bigl(D^f_{t+1} - D^f_t\bigr) + r_{hh,t}D^f_t \quad\forall t \\
       &\quad\text{where}\quad C_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{j,s,t}
     \end{split}
   ```
@@ -124,4 +124,5 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 (SecMarkClr_footnotes)=
 ## Footnotes
 
-[^indif_KD_note]: By assuming that households are indifferent between the savings allocation to private capital $K^d_t$ and government bonds $D^d_t$, we avoid the need for another state variable in the solution method. In our approach the allocation between the two types of capital is simply a residual of the exogenous proportion $\zeta_K$ of total private captial $K_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaK` and {eq}`EqMarkClr_KtKdKf` and a residual of the exogenous proportion $\zeta_D$ of total government bonds $D_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaD` and {eq}`EqMarkClr_DtDdDf`
+[^indif_KD_note]: By assuming that households are indifferent between the savings allocation to private capital $K^d_t$ and government bonds $D^d_t$, we avoid the need for another state variable in the solution method. In our approach the allocation between the two types of capital is simply a residual of the exogenous proportion $\zeta_K$ of total private captial $K_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaK` and {eq}`EqMarkClr_KtKdKf` and a residual of the exogenous proportion $\zeta_D$ of total government bonds $D_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaD` and {eq}`EqMarkClr_DtDdDf`.
+[^RCrates_note]: Because we treat household return $r_{hh,t}$ as an average between the return on private capital $r_t$ and the return on government bonds $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_hh`, and because this return is actually given to households in the budget constraint {eq}`EqHHBC2`, it is required for market clearing that the return paid to foreign suppliers of private capital $K^f_t$ and foreign holders of government bonds $D^f_t$ be paid that same average return $r_{hh,t}$.

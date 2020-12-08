@@ -39,9 +39,13 @@ The production side of the `OG-USA` model is populated by a unit measure of iden
   Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_t$ and setting it equal to zero and taking the derivative of the profit function with respect to capital $K_t$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
 
   ```{math}
+  :label: EqFirmFOC_L
+    w_t = e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t
+  ```
+
+  ```{math}
   :label: EqFirmFOC_K
-    w_t &= e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t \label{EqFirmFOC_L} \\
-    r_t &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\varepsilon}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t
+    r_t = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\varepsilon}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t
   ```
 
   Note that the presence of the public capital good creates economic rents.  However, given perfect competition, any economic profits will be competed away.  We therefore assume that these rents are captured by the owners of capital, as can be seen through the second term inside the square brackets in Equation {eq}`EqFirmFOC_K`.
