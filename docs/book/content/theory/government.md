@@ -85,7 +85,7 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
 
   ```{math}
     :label: EqUnbalGBC_rate_hh
-    r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}
+    r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} \quad\forall t
   ```
 
   It is technically more correct to assume that the domestic households return to savings $r_{hh,t}$ is a function of the amount of domestic household savings allocated to private capital $K^d_t$ and the amount allocated to government debt $D^d_t$. However, this would require us to add another state variable to the model, which would exponentially increase the difficulty and computation time of the equilibrium solution method. The characterization of the household savings rate of return in {eq}`EqUnbalGBC_rate_hh` as a function of total government debt $D_t$ and total private captial $K_t$ is a simplifying assumption.

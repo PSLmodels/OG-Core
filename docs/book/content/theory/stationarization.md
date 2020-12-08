@@ -149,7 +149,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzGovBC
-    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_t)\hat{D}_t + \hat{G}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
+    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
   ```
 
   Stationary aggregate universal basic income expenditure $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$.
@@ -157,6 +157,20 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrzGBC_UBI
     \hat{UBI}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t
+  ```
+
+  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The expression for the return to household savings $r_{hh,t}$ in {eq}`EqUnbalGBC_rate_hh` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
+
+  ```{math}
+    :label: EqStnrz_rate_hh
+    r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} = \frac{r_{gov,t}\hat{D}_{t} + r_{t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t
+  ```
+
+  The long-run debt-to-GDP ratio condition is also the same in both the nonstationary version in {eq}`EqUnbalGBC_DY` as well as the stationary version below because the endogenous side is a ratio of macroeconomic variables that are growing at the same rate.
+
+  ```{math}
+  :label: EqStnrz_DY
+    \frac{D_t}{Y_t} = \frac{\hat{D}_t}{\hat{Y}_t} = \alpha_D \quad\text{for}\quad t\geq T
   ```
 
   The three potential budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` are the last government equations to stationarize. In each of the cases, we simply divide both sides by $e^{g_y t}\tilde{N}_t$.
@@ -214,24 +228,62 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \hat{L}_t = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \hat{\omega}_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t
   ```
 
-  The capital market clearing equation {eq}`EqMarkClrCap` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the right-hand-side has population levels from the previous period $\omega_{s,t-1}$, we have to multiply and divide both terms inside the parentheses by $\tilde{N}_{t-1}$ which leaves us with the term in front of $\frac{1}{1+\tilde{g}_{n,t}}$.
+  Total savings by domestic households $B_t$ from {eq}`EqMarkClr_Bt` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$. The $\omega_{s,t-1}$ terms on the right-hand_side require multiplying and dividing by $\tilde{N}_{t-1}$, which leads to the division of $1 + \tilde{g}_{n,t}$.
 
   ```{math}
-  :label: EqStnrzMarkClrCap
-    \hat{K}_t + \hat{D}_t = \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,t-1}\lambda_j \hat{b}_{j,s,t} + i_s\hat{\omega}_{s,t-1}\lambda_j \hat{b}_{j,s,t}\Bigr) \quad \forall t
+  :label: EqStnrz_Bt
+    \hat{B}_t \equiv \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,t-1}\lambda_j b_{j,s,t} + i_s\hat{\omega}_{s,t-1}\lambda_j \hat{b}_{j,s,t}\Bigr) \quad \forall t
   ```
 
-  We stationarize the goods market clearing {eq}`EqMarkClrGoods` condition by dividing both sides by $e^{g_y t}\tilde{N}_t$. On the right-hand-side, we must multiply and divide the $K_{t+1}$ term by $e^{g_y(t+1)}\tilde{N}_{t+1}$ leaving the coefficient $e^{g_y}(1+\tilde{g}_{n,t+1})$. And the term that subtracts the sum of imports of next period's immigrant savings we must multiply and divide by $e^{g_(t+1)}$, which leaves the term $e^{g_y}$.
+  And the total domestic savings constraint {eq}`EqMarkClr_DomCapCnstr` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$.
+
+  ```{math}
+  :label: EqStnrz_DomCapCnstr
+    \hat{K}^d_t + \hat{D}^d_t = \hat{B}_t \quad \forall t
+  ```
+
+  The stationarized law of motion for foreign holdings of overnment debt {eq}`EqMarkClr_zetaD` and the government debt market clearing condition {eq}`EqMarkClr_DtDdDf`, respectively, are solved for by dividing both sides by $e^{g_y t}\tilde{N}_t$.
+
+  ```{math}
+  :label: EqStnrz_zetaD
+    e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^{f}_{t+1} = \hat{D}^{f}_{t} + \zeta_{D}\Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}_{t+1} - \hat{D}_{t}\Bigr) \quad\forall t
+  ```
+
+  ```{math}
+  :label: EqStnrz_DtDdDf
+    \hat{D}_t = \hat{D}^d_t + \hat{D}^f_t \quad\forall t
+  ```
+
+  The private capital market clearing equation {eq}`EqMarkClr_KtKdKf` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$, as is the expression for excess demand at the world interest rate {eq}`EqMarkClr_ExDemK` and the exogenous expression for foreign private capital flows {eq}`EqMarkClr_zetaK`.
+
+  ```{math}
+  :label: EqStnrz_KtKdKf
+    \hat{K}_t = \hat{K}^d_t + \hat{K}^f_t \quad\forall t
+  ```
+
+  ```{math}
+  :label: EqStnrz_ExDemK
+    \hat{ED}^{K,r^*}_t \equiv \hat{K}^{r^*}_t - \hat{K}^d_t \quad\forall t
+  ```
+
+  ```{math}
+  :label: EqStnrz_zetaK
+    \hat{K}^{f}_t = \zeta_{K}\hat{ED}^{K,r^*}_t \quad\forall t
+  ```
+
+  We stationarize the goods market clearing {eq}`EqMarkClrGoods` condition by dividing both sides by $e^{g_y t}\tilde{N}_t$. On the right-hand-side, we must multiply and divide the $K^d_{t+1}$ term and the $D^f_{t+1}$ term, respectively, by $e^{g_y(t+1)}\tilde{N}_{t+1}$ leaving the coefficient $e^{g_y}(1+\tilde{g}_{n,t+1})$.
 
   ```{math}
   :label: EqStnrzMarkClrGoods
-      \hat{Y}_t &= \hat{C}_t + e^{g_y}(1 + \tilde{g}_{n,t+1})\hat{K}_{t+1} - e^{g_y}\biggl(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}i_s\hat{\omega}_{s,t}\lambda_j \hat{b}_{j,s,t+1}\biggr) - (1-\delta)\hat{K}_t + \hat{G}_t \quad\forall t \\
+    \begin{split}
+      \hat{Y}_t &= \hat{C}_t + \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} - \hat{K}^d_t\Bigr) + \delta\hat{K}_t + \hat{G}_t + r_{hh,t}\hat{K}^f_t - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) + r_{hh,t}\hat{D}^f_t \quad\forall t \\
       &\quad\text{where}\quad \hat{C}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j\hat{c}_{j,s,t}
+    \end{split}
   ```
 
   We stationarize the law of motion for total bequests $BQ_t$ in {eq}`EqMarkClrBQ` by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the population levels in the summation are from period $t-1$, we must multiply and divide the summed term by $\tilde{N}_{t-1}$ leaving the term in the denominator of $1+\tilde{g}_{n,t}$.
 
   ```{math}
   :label: EqStnrzMarkClrBQ
-    \hat{BQ}_{t} = \left(\frac{1+r_{t}}{1 + \tilde{g}_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\hat{\omega}_{s-1,t-1}\hat{b}_{j,s,t}\right) \quad\forall t
+    \hat{BQ}_{t} = \left(\frac{1+r_{hh,t}}{1 + \tilde{g}_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\hat{\omega}_{s-1,t-1}\hat{b}_{j,s,t}\right) \quad\forall t
   ```
