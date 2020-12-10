@@ -115,6 +115,24 @@ The usual definition of equilibrium would be allocations and prices such that ho
     &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t
   ```
 
+  In our solution method, we use an equivalent version of {eq}`EqStnrzFOC_K` where the rental rate on private capital $r_t$ is a function of the capital-labor ratio $\hat{K}_t/\hat{L}_t$ rather than the capital-output ratio.
+
+  ```{math}
+  :label: EqStnrzFOC_K2
+    \begin{split}
+      r_t &= (1 - \tau^{corp})Z_t\gamma^\frac{1}{\varepsilon}\Biggl[\gamma^\frac{1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}\left(\frac{\hat{K}_t}{\hat{L}_t}\right)^\frac{1-\varepsilon}{\varepsilon}\Biggr]^\frac{1}{\varepsilon-1} - \delta + \tau^{corp}\delta^\tau \quad\forall t \\
+      &\Rightarrow\quad \frac{\hat{K}_t}{\hat{L}_t} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r_t + \delta - \tau^{corp}\delta^\tau}{(1-\tau^{corp})Z_t\gamma^\frac{1}{\varepsilon}}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
+    \end{split}
+  ```
+
+  In the solution method, we also use a combination of the two firm first order conditions {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K` to write $\hat{w}_t$ as a function of $r_t$.
+
+  ```{math}
+  :label: EqStnrz_w_of_r
+    \hat{w}_t = (1 - \gamma)^\frac{1}{\varepsilon}Z\left[\gamma^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r_t + \delta - \tau^{corp}\delta^\tau}{(1-\tau^{corp})Z\gamma^\frac{1}{\varepsilon}}\right]^{\varepsilon - 1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon - 1} \quad\forall t
+  ```
+
+
 (SecStnrzGovt)=
 ## Stationarized Government Equations
 
