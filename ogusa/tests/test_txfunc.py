@@ -194,9 +194,6 @@ def test_tax_func_loop():
     won't be available there.
 
     '''
-    # input_tuple = utils.safe_read_pickle(
-    #     os.path.join(CUR_PATH, 'test_io_data',
-    #                  'tax_func_loop_inputs_large.pkl'))
     input_tuple = decompress_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_inputs_large.pbz2'))
