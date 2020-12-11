@@ -1,10 +1,11 @@
 from ogusa import txfunc
-import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
 import pandas as pd
 import numpy as np
 import os
+import pickle
+import bz2
 from ogusa import utils
 NUM_WORKERS = 2
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -19,6 +20,12 @@ def dask_client():
     client.close()
     cluster.close()
 
+
+# function to decompress pickle file
+def decompress_pickle(file):
+    data = bz2.BZ2File(file, 'rb')
+    data = pickle.load(data)
+    return data
 
 @pytest.mark.parametrize('tax_func_type,expected',
                          [('DEP', 0.032749763), ('GS', 0.007952744)],
@@ -187,9 +194,12 @@ def test_tax_func_loop():
     won't be available there.
 
     '''
-    input_tuple = utils.safe_read_pickle(
+    # input_tuple = utils.safe_read_pickle(
+    #     os.path.join(CUR_PATH, 'test_io_data',
+    #                  'tax_func_loop_inputs_large.pkl'))
+    input_tuple = decompress_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
-                     'tax_func_loop_inputs_large.pkl'))
+                     'tax_func_loop_inputs_large.pbz2'))
     (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
      desc_data, graph_data, graph_est, output_dir, numparams,
      tpers) = input_tuple
