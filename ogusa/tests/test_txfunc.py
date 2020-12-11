@@ -184,7 +184,6 @@ def test_tax_data_sample():
     assert isinstance(df, pd.DataFrame)
 
 
-@pytest.mark.full_run
 def test_tax_func_loop():
     '''
     Test txfunc.tax_func_loop() function.  The test is that given
