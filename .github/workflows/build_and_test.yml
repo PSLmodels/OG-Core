@@ -27,8 +27,19 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install -e .
-          pip install codecov
-
+          pip install pytest-cov
+          pip install pytest-pycodestyle
       - name: Test
         shell: bash -l {0}
-        run: pytest -s -v -m 'not full_run and not regression' 
+        working-directory: ./
+        run: |
+          pytest -m 'not full_run and not regression' --pycodestyle --cov=./ --cov-report=xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          verbose: true
+
