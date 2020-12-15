@@ -60,7 +60,6 @@ def test_gini_table():
     assert isinstance(df, pd.DataFrame)
 
 
-@pytest.mark.full_run
 def test_wealth_moments_table():
     '''
     Need SCF data which is too large to check into repo so this will
