@@ -48,7 +48,9 @@ def get_I(b_splus1, K_p1, K, p, method):
     Calculate aggregate investment.
 
     .. math::
-        I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \ (1+ g_{n,t+1})) - (1 - \delta)K_{t}
+        I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}
+        \sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \
+        (1+ g_{n,t+1})) - (1 - \delta)K_{t}
 
     Args:
         b_splus1 (Numpy array): savings of households
@@ -158,7 +160,8 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     computes aggregate bequests within each lifetime income group.
 
     .. math::
-        BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}\lambda_{j}b_{j,s+1,1}
+        BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}
+        \lambda_{j}b_{j,s+1,1}
 
     Args:
         r (array_like): the real interest rate
@@ -219,7 +222,8 @@ def get_C(c, p, method):
     Calculation of aggregate consumption.
 
     .. math::
-        C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}c_{j,s,t}
+        C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}
+        \lambda_{j}c_{j,s,t}
 
     Args:
         c (Numpy array): consumption of households
@@ -246,8 +250,12 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
     r'''
     Calculate aggregate tax revenue.
 
-    .. math::   
-        R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}(T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} + \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) - \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}
+    .. math::
+        R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
+        (T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}
+        w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +
+        \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) -
+        \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}
 
     Args:
         r (array_like): the real interest rate
@@ -357,7 +365,11 @@ def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
     Compute the error in the resource constraint.
 
     .. math::
-        \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}
+        \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}
+        (1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +
+        \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} -
+        (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +
+        r_{hh,t}\hat{D}^{f}_{t}
 
     Args:
         Y (array_like): aggregate output

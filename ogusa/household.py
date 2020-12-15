@@ -50,7 +50,10 @@ def marg_ut_labor(n, chi_n, p):
     Compute the marginal disutility of labor.
 
     .. math::
-        MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1-\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}
+        MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)
+        \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}
+        \Biggl[1-\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon
+        \Biggr]^{\frac{1-\upsilon}{\upsilon}}
 
     Args:
         n (array_like): household labor supply
@@ -204,7 +207,9 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     Calculate household consumption.
 
     .. math::
-        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}
+        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t}
+        + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} -
+        e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}
 
     Args:
         r (array_like): the real interest rate
@@ -235,7 +240,11 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     lifetime income group at a time.
 
     .. math::
-        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]
+        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}
+        \biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} +
+        \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}
+        \bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)
+        (c_{j,s+1,t+1})^{-\sigma}\biggr]
 
     Args:
         r (array_like): the real interest rate
@@ -246,7 +255,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
         factor (scalar): scaling factor converting model units to dollars
-        tr (Numpy array): government tranfers to household
+        tr (Numpy array): government transfers to household
         theta (Numpy array): social security replacement rate for each
             lifetime income group
         e (Numpy array): effective labor units
@@ -315,7 +324,12 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
     one lifetime income group at a time.
 
     .. math::
-        w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}
+        w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)
+        (c_{j,s,t})^{-\sigma} = \chi^n_{s}
+        \biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}
+        {\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 -
+        \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]
+        ^{\frac{1-\upsilon}{\upsilon}}
 
     Args:
         r (array_like): the real interest rate
@@ -325,7 +339,7 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
         factor (scalar): scaling factor converting model units to dollars
-        tr (Numpy array): government tranfers to household
+        tr (Numpy array): government transfers to household
         theta (Numpy array): social security replacement rate for each
             lifetime income group
         chi_n (Numpy array): utility weight on the disutility of labor
@@ -348,7 +362,7 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
     '''
     if method == 'SS':
         tau_payroll = p.tau_payroll[-1]
-    elif method == 'TPI_scalar':  # for 1st donut ring onlye
+    elif method == 'TPI_scalar':  # for 1st donut ring only
         tau_payroll = p.tau_payroll[0]
     else:
         length = r.shape[0]
@@ -362,9 +376,8 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
     taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
                           False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
-    deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
-                                              False, e, etr_params,
-                                              mtrx_params, p))
+    deriv = (1 - tau_payroll - tax.MTR_income(
+        r, w, b, n, factor, False, e, etr_params, mtrx_params, p))
     FOC_error = (marg_ut_cons(cons, p.sigma) * (1 / (1 + tau_c)) * w *
                  deriv * e - marg_ut_labor(n, chi_n, p))
 
@@ -373,7 +386,7 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
 
 def get_y(r_hh, w, b_s, n, p):
     '''
-    Compute houshold income before taxes.
+    Compute household income before taxes.
 
     ..math::
         y_{j,s,t} = r_{hh,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}
@@ -419,7 +432,7 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
               'constraints.')
         flag2 = True
     if (nssmat > ltilde).any():
-        print('\tWARNING: Labor suppy violates the ltilde constraint.')
+        print('\tWARNING: Labor supply violates the ltilde constraint.')
         flag2 = True
     if flag2 is False:
         print('\tThere were no violations of the constraints on labor',

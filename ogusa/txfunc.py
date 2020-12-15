@@ -1,7 +1,7 @@
 '''
 ------------------------------------------------------------------------
-This script reads in data generated from the OSPC Tax Calculator and
-the 2009 IRS PUF. It then estimates tax functions tau_{s,t}(x,y), where
+This script reads in data generated from the Tax Calculator model.
+It then estimates tax functions tau_{s,t}(x,y), where
 tau_{s,t} is the effective tax rate, marginal tax rate on labor income,
 or the marginal tax rate on capital income, for a given age (s) in a
 particular year (t). x is total labor income, and y is total capital
@@ -78,9 +78,10 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                 (phi0 * (income - ((income ** -phi1) + phi2) **
                          (-1 / phi1))) / income)
         else:  # marginal tax rate function
-            txrates = (phi0 * (1 - (income ** (-phi1 - 1) *
-                                  ((income ** -phi1) + phi2)
-                                  ** ((-1 - phi1) / phi1))))
+            txrates = (
+                phi0 * (1 - (income ** (-phi1 - 1) *
+                        ((income ** -phi1) + phi2) ** ((-1 - phi1) /
+                                                       phi1))))
     elif tax_func_type == 'DEP':
         (A, B, C, D, max_x, max_y, share, min_x, min_y, shift_x,
          shift_y, shift) = (
@@ -232,7 +233,7 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
         graph (bool): whether to output graphs
 
     Returns:
-        sse_big_mat (Numpy array): indicators of weither tax function
+        sse_big_mat (Numpy array): indicators of whether tax function
             is outlier, size is SxBW
 
     '''
@@ -279,7 +280,7 @@ def replace_outliers(param_arr, sse_big_mat):
     Args:
         param_arr (Numpy array): estimated tax function parameters,
             size is SxBWx#tax params
-        sse_big_mat (Numpy array): indicators of weither tax function
+        sse_big_mat (Numpy array): indicators of whether tax function
             is outlier, size is SxBW
 
     Returns:
@@ -374,7 +375,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
             * params (Numpy array): vector of estimated parameters
             * wsse (scalar): weighted sum of squared deviations from
                 minimization
-            * obs (int): number of obervations in the data, > 600
+            * obs (int): number of observations in the data, > 600
 
     '''
     X = df['total_labinc']

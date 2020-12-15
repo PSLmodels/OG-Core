@@ -26,9 +26,14 @@ def D_G_path(r_gov, dg_fixed_values, p):
         &G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
         &\text{where}\quad g_{g,t} =
           \begin{cases}
-            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
-            \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-            \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}
+            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,
+            \text{if}\quad t < T_{G1} \\
+            \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right]
+            - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t}
+            \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+            \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} +
+            Rev_{t}}{\alpha_g Y_t}
+            \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}
           \end{cases} \\
         &\quad\text{and}\quad g_{tr,t} = 1 \quad\forall t
       \end{split}
@@ -148,7 +153,8 @@ def get_D_ss(r_gov, Y, p):
             \bar{D_f} = \zeta_{D}\bar{D} \\
             \text{new borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
             \bar{debt service} = \bar{r}_{gov}\bar{D} \\
-            \text{new foreign borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
+            \text{new foreign borrowing} =
+            (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
         \end{split}
 
     Args:
@@ -186,7 +192,8 @@ def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
     Calculate the steady-state values of government spending.
 
     .. math::
-            \bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}
+            \bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) -
+            \bar{TR} - \bar{r}_{gov}\bar{D}
 
     Args:
         Y (scalar): aggregate output
