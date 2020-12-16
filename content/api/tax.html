@@ -538,7 +538,8 @@ capital income or labor income</p></li>
 <code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">MTR_wealth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">h_wealth</span></em>, <em class="sig-param"><span class="n">m_wealth</span></em>, <em class="sig-param"><span class="n">p_wealth</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#MTR_wealth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.MTR_wealth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the marginal tax rate on wealth from the wealth tax.</p>
 <div class="math notranslate nohighlight">
-\[\frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} = \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}\]</div>
+\[\frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =
+\frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -588,7 +589,8 @@ capital income or labor income</p></li>
 <code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">get_biz_tax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#get_biz_tax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.get_biz_tax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds total business income tax revenue.</p>
 <div class="math notranslate nohighlight">
-\[R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) - \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}\]</div>
+\[R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) -
+\tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

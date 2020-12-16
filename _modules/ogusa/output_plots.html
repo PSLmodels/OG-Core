@@ -426,7 +426,8 @@
 <div class="viewcode-block" id="plot_aggregates"><a class="viewcode-back" href="../../content/api/output_plots.html#ogusa.output_plots.plot_aggregates">[docs]</a><span class="k">def</span> <span class="nf">plot_aggregates</span><span class="p">(</span><span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">],</span>
                     <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;pct_diff&#39;</span><span class="p">,</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-                    <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">vertical_line_years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
+                    <span class="n">vertical_line_years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Create a plot of macro aggregates.</span>
@@ -1105,10 +1106,11 @@
 
 
 <span class="k">def</span> <span class="nf">inequality_plot</span><span class="p">(</span>
-    <span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">var</span><span class="o">=</span><span class="s1">&#39;c_path&#39;</span><span class="p">,</span> <span class="n">ineq_measure</span><span class="o">=</span><span class="s1">&#39;gini&#39;</span><span class="p">,</span> <span class="n">pctiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">,</span>
-    <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
-    <span class="n">vertical_line_years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">base_tpi</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">var</span><span class="o">=</span><span class="s1">&#39;c_path&#39;</span><span class="p">,</span> <span class="n">ineq_measure</span><span class="o">=</span><span class="s1">&#39;gini&#39;</span><span class="p">,</span> <span class="n">pctiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">,</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+        <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">vertical_line_years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Plot measures of inequality over the time path.</span>
 

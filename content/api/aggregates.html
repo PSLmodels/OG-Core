@@ -486,7 +486,8 @@ period amount of savings.  If True, then need to use
 <dd><p>Calculation of aggregate bequests.  If <cite>use_zeta</cite> is False, then
 computes aggregate bequests within each lifetime income group.</p>
 <div class="math notranslate nohighlight">
-\[BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}\lambda_{j}b_{j,s+1,1}\]</div>
+\[BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}
+\lambda_{j}b_{j,s+1,1}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -519,7 +520,8 @@ period amount of savings.  If True, then need to use
 <code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_C</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_C"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_C" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculation of aggregate consumption.</p>
 <div class="math notranslate nohighlight">
-\[C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}c_{j,s,t}\]</div>
+\[C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}
+\lambda_{j}c_{j,s,t}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -543,7 +545,9 @@ period amount of savings.  If True, then need to use
 <code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_I</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">K_p1</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_I"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_I" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate aggregate investment.</p>
 <div class="math notranslate nohighlight">
-\[I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \ (1+ g_{n,t+1})) - (1 - \delta)K_{t}\]</div>
+\[I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}
+\sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \
+(1+ g_{n,t+1})) - (1 - \delta)K_{t}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -571,9 +575,10 @@ period amount of savings.  If True, then need to use
 capital held by domestic and foreign investors separately.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
-    \hat{K}_{t} = \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\
-    \hat{K}^{d}_{t} = \hat{B}_{t} + \hat{D}^{d}_{t}\\
-    \hat{K}^{f}_{t} = \zeta_{D}(\hat{K}^{open)_{t} - K^{d}_{t})\\
+    \hat{K}_{t} &amp;= \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\
+    \hat{K}^{d}_{t} &amp;= \hat{B}_{t} + \hat{D}^{d}_{t}\\
+    \hat{K}^{f}_{t} &amp;= \zeta_{D}\left(\hat{K}^{open}_{t} -
+        K^{d}_{t}\right)
 \end{split}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -661,7 +666,11 @@ a mix of government debt and private equity.</p>
 <code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">resource_constraint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">C</span></em>, <em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">K_f</span></em>, <em class="sig-param"><span class="n">new_borrowing_f</span></em>, <em class="sig-param"><span class="n">debt_service_f</span></em>, <em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#resource_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.resource_constraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the error in the resource constraint.</p>
 <div class="math notranslate nohighlight">
-\[\hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}\]</div>
+\[\hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}
+(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +
+\hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} -
+(\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +
+r_{hh,t}\hat{D}^{f}_{t}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -692,7 +701,11 @@ debt owned by foreigners</p></li>
 <code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">revenue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#revenue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.revenue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate aggregate tax revenue.</p>
 <div class="math notranslate nohighlight">
-\[R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}(T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} + \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) - \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}\]</div>
+\[R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
+(T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}
+w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +
+\tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) -
+\tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

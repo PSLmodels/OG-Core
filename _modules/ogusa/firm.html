@@ -427,7 +427,10 @@
 <span class="sd">    aggregate labor, and CES production function parameters.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} + (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}{\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}</span>
+<span class="sd">        Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}</span>
+<span class="sd">        K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} +</span>
+<span class="sd">        (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}</span>
+<span class="sd">        {\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        K (array_like): aggregate capital</span>
@@ -465,7 +468,9 @@
 <span class="sd">    demand.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        r_{t} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau</span>
+<span class="sd">        r_{t} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}</span>
+<span class="sd">        \left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -</span>
+<span class="sd">        \delta + \tau^{corp}\delta^\tau</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
@@ -499,7 +504,8 @@
 <span class="sd">    parameters using the firm&#39;s first order condition for labor demand.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        w_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon}</span>
+<span class="sd">        w_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)</span>
+<span class="sd">        \frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
@@ -528,7 +534,10 @@
 <span class="sd">    rate r and parameters.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}</span>
+<span class="sd">        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}</span>
+<span class="sd">        {\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})</span>
+<span class="sd">        \gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -</span>
+<span class="sd">        \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -572,7 +581,12 @@
 <span class="sd">    interest rate.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon-1}</span>
+<span class="sd">        w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}</span>
+<span class="sd">        {\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}</span>
+<span class="sd">        {\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})</span>
+<span class="sd">        \gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -</span>
+<span class="sd">        \gamma^\frac{1}{\varepsilon}}\right) +</span>
+<span class="sd">        (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon-1}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>

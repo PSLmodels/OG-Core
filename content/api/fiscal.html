@@ -457,9 +457,14 @@ functions require time-path calculation.</p>
   &amp;G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
   &amp;\text{where}\quad g_{g,t} =
     \begin{cases}
-      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t &lt; T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,
+      \text{if}\quad t &lt; T_{G1} \\
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right]
+      - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t}
+      \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} +
+      Rev_{t}}{\alpha_g Y_t}
+      \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
   &amp;\quad\text{and}\quad g_{tr,t} = 1 \quad\forall t
 \end{split}\end{split}\]</div>
@@ -510,12 +515,13 @@ baseline_spending=True</p></li>
 <dd><p>Calculate the steady-state values of government spending and debt</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
-    \bar{D} = \alpha_D \bar{Y}\\
-    \bar{D_d} = \bar{D} - \bar{D}^{f}\\
-    \bar{D_f} = \zeta_{D}\bar{D} \\
-    \text{new borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
-    \bar{debt service} = \bar{r}_{gov}\bar{D} \\
-    \text{new foreign borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
+    \bar{D} &amp;= \alpha_D \bar{Y}\\
+    \bar{D_d} &amp;= \bar{D} - \bar{D}^{f}\\
+    \bar{D_f} &amp;= \zeta_{D}\bar{D} \\
+    \text{new borrowing} &amp;= (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
+    \bar{debt service} &amp;= \bar{r}_{gov}\bar{D} \\
+    \text{new foreign borrowing} &amp;=
+    (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
 \end{split}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -550,7 +556,8 @@ baseline_spending=True</p></li>
 <code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_G_ss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">total_tax_revenue</span></em>, <em class="sig-param"><span class="n">agg_pension_outlays</span></em>, <em class="sig-param"><span class="n">TR</span></em>, <em class="sig-param"><span class="n">new_borrowing</span></em>, <em class="sig-param"><span class="n">debt_service</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_G_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the steady-state values of government spending.</p>
 <div class="math notranslate nohighlight">
-\[\bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}\]</div>
+\[\bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) -
+\bar{TR} - \bar{r}_{gov}\bar{D}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -577,19 +584,13 @@ baseline_spending=True</p></li>
 <code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_TR</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">TR</span></em>, <em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">total_tax_revenue</span></em>, <em class="sig-param"><span class="n">agg_pension_outlays</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_TR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to compute aggregate transfers.  Note that this excludes
 transfer spending through the public pension system.</p>
-<dl>
-<dt>..math::</dt><dd><p>[
-TR^{‘}_{t}=
-begin{cases}</p>
-<blockquote>
-<div><p>Revenue,&amp; text{if balanced budget} \
-TR^{baseline}, &amp; text{if baseline spending}\
-alpha_{T,t}Y_{t},   &amp; text{otherwise}</p>
-</div></blockquote>
-<p>end{cases}
-]</p>
-</dd>
-</dl>
+<div class="math notranslate nohighlight">
+\[\begin{split}TR^{'}_{t}=
+\begin{cases}
+    Revenue,&amp; \text{if balanced budget} \\
+    TR^{baseline}, &amp; \text{if baseline spending}\\
+    \alpha_{T,t}Y_{t},   &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -617,10 +618,8 @@ outlays</p></li>
 <dt id="ogusa.fiscal.get_debt_service_f">
 <code class="sig-prename descclassname">ogusa.fiscal.</code><code class="sig-name descname">get_debt_service_f</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_hh</span></em>, <em class="sig-param"><span class="n">D_f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/fiscal.html#get_debt_service_f"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.fiscal.get_debt_service_f" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to compute foreign debt service payments.</p>
-<dl class="simple">
-<dt>..math::</dt><dd><p>text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}</p>
-</dd>
-</dl>
+<div class="math notranslate nohighlight">
+\[\text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}\]</div>
 <p>Args:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>

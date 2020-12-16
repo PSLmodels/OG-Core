@@ -478,7 +478,10 @@ method (str): adjusts calculation dimensions based on ‘SS’ or</p>
 <dd><p>This function solves for the capital-labor ratio given the interest
 rate r and parameters.</p>
 <div class="math notranslate nohighlight">
-\[\frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}\]</div>
+\[\frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
+{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})
+\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -
+\gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -529,7 +532,10 @@ options.</p>
 <dd><p>Generates aggregate output (GDP) from aggregate capital stock,
 aggregate labor, and CES production function parameters.</p>
 <div class="math notranslate nohighlight">
-\[Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} + (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}{\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}\]</div>
+\[Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}
+K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} +
+(1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}
+{\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -556,7 +562,9 @@ aggregate labor, and CES production function parameters.</p>
 parameters using the firm’s first order condition for capital
 demand.</p>
 <div class="math notranslate nohighlight">
-\[r_{t} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau\]</div>
+\[r_{t} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}
+\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -
+\delta + \tau^{corp}\delta^\tau\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -582,7 +590,8 @@ demand.</p>
 <dd><p>This function computes the wage as a function of Y, L, and
 parameters using the firm’s first order condition for labor demand.</p>
 <div class="math notranslate nohighlight">
-\[w_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon}\]</div>
+\[w_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)
+\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -608,7 +617,12 @@ parameters using the firm’s first order condition for labor demand.</p>
 <dd><p>Solve for steady-state wage w or time path of wages w_t given
 interest rate.</p>
 <div class="math notranslate nohighlight">
-\[w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon-1}\]</div>
+\[w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}
+{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
+{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})
+\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -
+\gamma^\frac{1}{\varepsilon}}\right) +
+(1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon-1}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

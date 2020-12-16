@@ -460,7 +460,12 @@
 state.  This function is usually looped through over J, so it does
 one lifetime income group at a time.</p>
 <div class="math notranslate nohighlight">
-\[w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}\]</div>
+\[w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)
+(c_{j,s,t})^{-\sigma} = \chi^n_{s}
+\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}
+{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 -
+\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]
+^{\frac{1-\upsilon}{\upsilon}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -471,7 +476,7 @@ one lifetime income group at a time.</p>
 <li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
 <li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
-<li><p><strong>tr</strong> (<em>Numpy array</em>) – government tranfers to household</p></li>
+<li><p><strong>tr</strong> (<em>Numpy array</em>) – government transfers to household</p></li>
 <li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate for each
 lifetime income group</p></li>
 <li><p><strong>chi_n</strong> (<em>Numpy array</em>) – utility weight on the disutility of labor
@@ -505,7 +510,11 @@ on labor income functions</p></li>
 This function is usually looped through over J, so it does one
 lifetime income group at a time.</p>
 <div class="math notranslate nohighlight">
-\[c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]\]</div>
+\[c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}
+\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} +
+\beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}
+\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)
+(c_{j,s+1,t+1})^{-\sigma}\biggr]\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -517,7 +526,7 @@ lifetime income group at a time.</p>
 <li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
 <li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
-<li><p><strong>tr</strong> (<em>Numpy array</em>) – government tranfers to household</p></li>
+<li><p><strong>tr</strong> (<em>Numpy array</em>) – government transfers to household</p></li>
 <li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate for each
 lifetime income group</p></li>
 <li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
@@ -620,7 +629,9 @@ the transition path. Does this for each period t separately.</p>
 <code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_cons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">net_tax</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">tau_c</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_cons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_cons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate household consumption.</p>
 <div class="math notranslate nohighlight">
-\[c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
+\[c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t}
++ bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} -
+e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -673,7 +684,7 @@ the transition path. Does this for each period t separately.</p>
 <dl class="py function">
 <dt id="ogusa.household.get_y">
 <code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_y</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_hh</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b_s</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_y" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute houshold income before taxes.</p>
+<dd><p>Compute household income before taxes.</p>
 <dl class="simple">
 <dt>..math::</dt><dd><p>y_{j,s,t} = r_{hh,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}</p>
 </dd>
@@ -718,7 +729,10 @@ the transition path. Does this for each period t separately.</p>
 <code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">marg_ut_labor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">chi_n</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#marg_ut_labor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.marg_ut_labor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the marginal disutility of labor.</p>
 <div class="math notranslate nohighlight">
-\[MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1-\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}\]</div>
+\[MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)
+\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}
+\Biggl[1-\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon
+\Biggr]^{\frac{1-\upsilon}{\upsilon}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

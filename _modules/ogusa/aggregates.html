@@ -457,7 +457,9 @@
 <span class="sd">    Calculate aggregate investment.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \ (1+ g_{n,t+1})) - (1 - \delta)K_{t}</span>
+<span class="sd">        I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}</span>
+<span class="sd">        \sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \</span>
+<span class="sd">        (1+ g_{n,t+1})) - (1 - \delta)K_{t}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        b_splus1 (Numpy array): savings of households</span>
@@ -479,15 +481,6 @@
                                 <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">))</span>
         <span class="n">aggI</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">K_p1</span> <span class="o">-</span> <span class="n">part2</span><span class="p">)</span> <span class="o">-</span>
                 <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;BI_SS&#39;</span><span class="p">:</span>
-        <span class="n">delta</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">omega_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="n">imm_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">])</span>
-        <span class="n">part2</span> <span class="o">=</span> <span class="p">(((</span><span class="n">b_splus1</span> <span class="o">*</span>
-                   <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="n">omega_extended</span> <span class="o">*</span> <span class="n">imm_extended</span><span class="p">)</span> <span class="o">*</span>
-                                <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">))</span>
-        <span class="n">aggI</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">K_p1</span> <span class="o">-</span> <span class="n">part2</span><span class="p">)</span> <span class="o">-</span>
-                <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
         <span class="n">omega_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
                                 <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -567,7 +560,8 @@
 <span class="sd">    computes aggregate bequests within each lifetime income group.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}\lambda_{j}b_{j,s+1,1}</span>
+<span class="sd">        BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}</span>
+<span class="sd">        \lambda_{j}b_{j,s+1,1}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -628,7 +622,8 @@
 <span class="sd">    Calculation of aggregate consumption.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}c_{j,s,t}</span>
+<span class="sd">        C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}</span>
+<span class="sd">        \lambda_{j}c_{j,s,t}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        c (Numpy array): consumption of households</span>
@@ -655,8 +650,12 @@
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculate aggregate tax revenue.</span>
 
-<span class="sd">    .. math::   </span>
-<span class="sd">        R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}(T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} + \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) - \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}</span>
+<span class="sd">        (T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}</span>
+<span class="sd">        w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +</span>
+<span class="sd">        \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) -</span>
+<span class="sd">        \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -766,7 +765,11 @@
 <span class="sd">    Compute the error in the resource constraint.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}</span>
+<span class="sd">        \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}</span>
+<span class="sd">        (1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +</span>
+<span class="sd">        \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} -</span>
+<span class="sd">        (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +</span>
+<span class="sd">        r_{hh,t}\hat{D}^{f}_{t}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
@@ -798,9 +801,10 @@
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \begin{split}</span>
-<span class="sd">            \hat{K}_{t} = \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\</span>
-<span class="sd">            \hat{K}^{d}_{t} = \hat{B}_{t} + \hat{D}^{d}_{t}\\</span>
-<span class="sd">            \hat{K}^{f}_{t} = \zeta_{D}(\hat{K}^{open)_{t} - K^{d}_{t})\\</span>
+<span class="sd">            \hat{K}_{t} &amp;= \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\</span>
+<span class="sd">            \hat{K}^{d}_{t} &amp;= \hat{B}_{t} + \hat{D}^{d}_{t}\\</span>
+<span class="sd">            \hat{K}^{f}_{t} &amp;= \zeta_{D}\left(\hat{K}^{open}_{t} -</span>
+<span class="sd">                K^{d}_{t}\right)</span>
 <span class="sd">        \end{split}</span>
 
 <span class="sd">    Args:</span>

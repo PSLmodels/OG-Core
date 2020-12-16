@@ -504,7 +504,8 @@
 <span class="sd">    Calculates the marginal tax rate on wealth from the wealth tax.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} = \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}</span>
+<span class="sd">        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =</span>
+<span class="sd">        \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        b (Numpy array): savings</span>
@@ -592,7 +593,8 @@
 <span class="sd">    Finds total business income tax revenue.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) - \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}</span>
+<span class="sd">        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) -</span>
+<span class="sd">        \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}</span>
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): real interest rate</span>
 <span class="sd">        Y (array_like): aggregate output</span>

@@ -409,8 +409,8 @@
   <h1>Source code for ogusa.txfunc</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">This script reads in data generated from the OSPC Tax Calculator and</span>
-<span class="sd">the 2009 IRS PUF. It then estimates tax functions tau_{s,t}(x,y), where</span>
+<span class="sd">This script reads in data generated from the Tax Calculator model.</span>
+<span class="sd">It then estimates tax functions tau_{s,t}(x,y), where</span>
 <span class="sd">tau_{s,t} is the effective tax rate, marginal tax rate on labor income,</span>
 <span class="sd">or the marginal tax rate on capital income, for a given age (s) in a</span>
 <span class="sd">particular year (t). x is total labor income, and y is total capital</span>
@@ -487,9 +487,10 @@
                 <span class="p">(</span><span class="n">phi0</span> <span class="o">*</span> <span class="p">(</span><span class="n">income</span> <span class="o">-</span> <span class="p">((</span><span class="n">income</span> <span class="o">**</span> <span class="o">-</span><span class="n">phi1</span><span class="p">)</span> <span class="o">+</span> <span class="n">phi2</span><span class="p">)</span> <span class="o">**</span>
                          <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">phi1</span><span class="p">)))</span> <span class="o">/</span> <span class="n">income</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># marginal tax rate function</span>
-            <span class="n">txrates</span> <span class="o">=</span> <span class="p">(</span><span class="n">phi0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">income</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">phi1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
-                                  <span class="p">((</span><span class="n">income</span> <span class="o">**</span> <span class="o">-</span><span class="n">phi1</span><span class="p">)</span> <span class="o">+</span> <span class="n">phi2</span><span class="p">)</span>
-                                  <span class="o">**</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi1</span><span class="p">)</span> <span class="o">/</span> <span class="n">phi1</span><span class="p">))))</span>
+            <span class="n">txrates</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">phi0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">income</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">phi1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
+                        <span class="p">((</span><span class="n">income</span> <span class="o">**</span> <span class="o">-</span><span class="n">phi1</span><span class="p">)</span> <span class="o">+</span> <span class="n">phi2</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi1</span><span class="p">)</span> <span class="o">/</span>
+                                                       <span class="n">phi1</span><span class="p">))))</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s1">&#39;DEP&#39;</span><span class="p">:</span>
         <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">,</span> <span class="n">share</span><span class="p">,</span> <span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">shift_x</span><span class="p">,</span>
          <span class="n">shift_y</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
@@ -641,7 +642,7 @@
 <span class="sd">        graph (bool): whether to output graphs</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        sse_big_mat (Numpy array): indicators of weither tax function</span>
+<span class="sd">        sse_big_mat (Numpy array): indicators of whether tax function</span>
 <span class="sd">            is outlier, size is SxBW</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -688,7 +689,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        param_arr (Numpy array): estimated tax function parameters,</span>
 <span class="sd">            size is SxBWx#tax params</span>
-<span class="sd">        sse_big_mat (Numpy array): indicators of weither tax function</span>
+<span class="sd">        sse_big_mat (Numpy array): indicators of whether tax function</span>
 <span class="sd">            is outlier, size is SxBW</span>
 
 <span class="sd">    Returns:</span>
@@ -783,7 +784,7 @@
 <span class="sd">            * params (Numpy array): vector of estimated parameters</span>
 <span class="sd">            * wsse (scalar): weighted sum of squared deviations from</span>
 <span class="sd">                minimization</span>
-<span class="sd">            * obs (int): number of obervations in the data, &gt; 600</span>
+<span class="sd">            * obs (int): number of observations in the data, &gt; 600</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_labinc&#39;</span><span class="p">]</span>

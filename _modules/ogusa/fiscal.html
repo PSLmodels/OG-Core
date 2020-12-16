@@ -435,9 +435,14 @@
 <span class="sd">        &amp;G_t = g_{g,t}\:\alpha_{g}\: Y_t \\</span>
 <span class="sd">        &amp;\text{where}\quad g_{g,t} =</span>
 <span class="sd">          \begin{cases}</span>
-<span class="sd">            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t &lt; T_{G1} \\</span>
-<span class="sd">            \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\</span>
-<span class="sd">            \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}</span>
+<span class="sd">            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,</span>
+<span class="sd">            \text{if}\quad t &lt; T_{G1} \\</span>
+<span class="sd">            \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right]</span>
+<span class="sd">            - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t}</span>
+<span class="sd">            \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\</span>
+<span class="sd">            \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} +</span>
+<span class="sd">            Rev_{t}}{\alpha_g Y_t}</span>
+<span class="sd">            \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}</span>
 <span class="sd">          \end{cases} \\</span>
 <span class="sd">        &amp;\quad\text{and}\quad g_{tr,t} = 1 \quad\forall t</span>
 <span class="sd">      \end{split}</span>
@@ -552,12 +557,13 @@
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \begin{split}</span>
-<span class="sd">            \bar{D} = \alpha_D \bar{Y}\\</span>
-<span class="sd">            \bar{D_d} = \bar{D} - \bar{D}^{f}\\</span>
-<span class="sd">            \bar{D_f} = \zeta_{D}\bar{D} \\</span>
-<span class="sd">            \text{new borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\</span>
-<span class="sd">            \bar{debt service} = \bar{r}_{gov}\bar{D} \\</span>
-<span class="sd">            \text{new foreign borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\</span>
+<span class="sd">            \bar{D} &amp;= \alpha_D \bar{Y}\\</span>
+<span class="sd">            \bar{D_d} &amp;= \bar{D} - \bar{D}^{f}\\</span>
+<span class="sd">            \bar{D_f} &amp;= \zeta_{D}\bar{D} \\</span>
+<span class="sd">            \text{new borrowing} &amp;= (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\</span>
+<span class="sd">            \bar{debt service} &amp;= \bar{r}_{gov}\bar{D} \\</span>
+<span class="sd">            \text{new foreign borrowing} &amp;=</span>
+<span class="sd">            (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\</span>
 <span class="sd">        \end{split}</span>
 
 <span class="sd">    Args:</span>
@@ -595,7 +601,8 @@
 <span class="sd">    Calculate the steady-state values of government spending.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">            \bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}</span>
+<span class="sd">            \bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) -</span>
+<span class="sd">            \bar{TR} - \bar{r}_{gov}\bar{D}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        Y (scalar): aggregate output</span>
@@ -623,7 +630,7 @@
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Function to compute foreign debt service payments.</span>
 
-<span class="sd">    ..math::</span>
+<span class="sd">    .. math::</span>
 <span class="sd">        \text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}</span>
 
 <span class="sd">    Args:</span>
@@ -642,15 +649,13 @@
 <span class="sd">    Function to compute aggregate transfers.  Note that this excludes</span>
 <span class="sd">    transfer spending through the public pension system.</span>
 
-<span class="sd">    ..math::</span>
-<span class="sd">        \[</span>
+<span class="sd">    .. math::</span>
 <span class="sd">        TR^{&#39;}_{t}=</span>
 <span class="sd">        \begin{cases}</span>
 <span class="sd">            Revenue,&amp; \text{if balanced budget} \\</span>
 <span class="sd">            TR^{baseline}, &amp; \text{if baseline spending}\\</span>
 <span class="sd">            \alpha_{T,t}Y_{t},   &amp; \text{otherwise}</span>
 <span class="sd">        \end{cases}</span>
-<span class="sd">        \]</span>
 
 
 <span class="sd">    Args:</span>

@@ -613,7 +613,6 @@
                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;eta&#39;</span><span class="p">,</span>  <span class="n">eta_to_set</span><span class="p">)</span>
 
-
         <span class="c1"># make sure zeta matrix sums to one (e.g., default off due to rounding)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
@@ -856,7 +855,6 @@
 <span class="sd">        Args:</span>
 <span class="sd">            tax_func_path (str): path to pickle with tax function</span>
 <span class="sd">                parameter estimates</span>
-
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict_params (dict): dictionary containing arrays of tax</span>

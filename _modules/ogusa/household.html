@@ -459,7 +459,10 @@
 <span class="sd">    Compute the marginal disutility of labor.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1-\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}</span>
+<span class="sd">        MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)</span>
+<span class="sd">        \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}</span>
+<span class="sd">        \Biggl[1-\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon</span>
+<span class="sd">        \Biggr]^{\frac{1-\upsilon}{\upsilon}}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        n (array_like): household labor supply</span>
@@ -613,7 +616,9 @@
 <span class="sd">    Calculate household consumption.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}</span>
+<span class="sd">        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t}</span>
+<span class="sd">        + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} -</span>
+<span class="sd">        e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -644,7 +649,11 @@
 <span class="sd">    lifetime income group at a time.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma}\biggr]</span>
+<span class="sd">        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}</span>
+<span class="sd">        \biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} +</span>
+<span class="sd">        \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}</span>
+<span class="sd">        \bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)</span>
+<span class="sd">        (c_{j,s+1,t+1})^{-\sigma}\biggr]</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -655,7 +664,7 @@
 <span class="sd">        n (Numpy array): household labor supply</span>
 <span class="sd">        bq (Numpy array): household bequests received</span>
 <span class="sd">        factor (scalar): scaling factor converting model units to dollars</span>
-<span class="sd">        tr (Numpy array): government tranfers to household</span>
+<span class="sd">        tr (Numpy array): government transfers to household</span>
 <span class="sd">        theta (Numpy array): social security replacement rate for each</span>
 <span class="sd">            lifetime income group</span>
 <span class="sd">        e (Numpy array): effective labor units</span>
@@ -724,7 +733,12 @@
 <span class="sd">    one lifetime income group at a time.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}}</span>
+<span class="sd">        w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)</span>
+<span class="sd">        (c_{j,s,t})^{-\sigma} = \chi^n_{s}</span>
+<span class="sd">        \biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}</span>
+<span class="sd">        {\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 -</span>
+<span class="sd">        \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]</span>
+<span class="sd">        ^{\frac{1-\upsilon}{\upsilon}}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -734,7 +748,7 @@
 <span class="sd">        n (Numpy array): household labor supply</span>
 <span class="sd">        bq (Numpy array): household bequests received</span>
 <span class="sd">        factor (scalar): scaling factor converting model units to dollars</span>
-<span class="sd">        tr (Numpy array): government tranfers to household</span>
+<span class="sd">        tr (Numpy array): government transfers to household</span>
 <span class="sd">        theta (Numpy array): social security replacement rate for each</span>
 <span class="sd">            lifetime income group</span>
 <span class="sd">        chi_n (Numpy array): utility weight on the disutility of labor</span>
@@ -757,7 +771,7 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>  <span class="c1"># for 1st donut ring onlye</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>  <span class="c1"># for 1st donut ring only</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -771,9 +785,8 @@
     <span class="n">taxes</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">net_taxes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span>
                           <span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_payroll</span> <span class="o">-</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span>
-                                              <span class="kc">False</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span>
-                                              <span class="n">mtrx_params</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_payroll</span> <span class="o">-</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_income</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtrx_params</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
     <span class="n">FOC_error</span> <span class="o">=</span> <span class="p">(</span><span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">))</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span>
                  <span class="n">deriv</span> <span class="o">*</span> <span class="n">e</span> <span class="o">-</span> <span class="n">marg_ut_labor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">chi_n</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
 
@@ -782,7 +795,7 @@
 
 <div class="viewcode-block" id="get_y"><a class="viewcode-back" href="../../content/api/household.html#ogusa.household.get_y">[docs]</a><span class="k">def</span> <span class="nf">get_y</span><span class="p">(</span><span class="n">r_hh</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b_s</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Compute houshold income before taxes.</span>
+<span class="sd">    Compute household income before taxes.</span>
 
 <span class="sd">    ..math::</span>
 <span class="sd">        y_{j,s,t} = r_{hh,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}</span>
@@ -828,7 +841,7 @@
               <span class="s1">&#39;constraints.&#39;</span><span class="p">)</span>
         <span class="n">flag2</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">nssmat</span> <span class="o">&gt;</span> <span class="n">ltilde</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Labor suppy violates the ltilde constraint.&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Labor supply violates the ltilde constraint.&#39;</span><span class="p">)</span>
         <span class="n">flag2</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">flag2</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">There were no violations of the constraints on labor&#39;</span><span class="p">,</span>
