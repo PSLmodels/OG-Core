@@ -95,7 +95,8 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
     Calculates the marginal tax rate on wealth from the wealth tax.
 
     .. math::
-        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} = \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}
+        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =
+        \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}
 
     Args:
         b (Numpy array): savings
@@ -183,7 +184,8 @@ def get_biz_tax(w, Y, L, K, p, method):
     Finds total business income tax revenue.
 
     .. math::
-        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) - \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}
+        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) -
+        \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}
     Args:
         r (array_like): real interest rate
         Y (array_like): aggregate output

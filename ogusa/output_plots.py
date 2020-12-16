@@ -17,7 +17,8 @@ plt.style.use(style_file)
 def plot_aggregates(base_tpi, base_params, reform_tpi=None,
                     reform_params=None, var_list=['Y', 'C', 'K', 'L'],
                     plot_type='pct_diff', num_years_to_plot=50,
-                    start_year=DEFAULT_START_YEAR, vertical_line_years=None,
+                    start_year=DEFAULT_START_YEAR,
+                    vertical_line_years=None,
                     plot_title=None, path=None):
     '''
     Create a plot of macro aggregates.
@@ -696,10 +697,11 @@ def plot_all(base_output_path, reform_output_path, save_path):
 
 
 def inequality_plot(
-    base_tpi, base_params, reform_tpi=None, reform_params=None,
-    var='c_path', ineq_measure='gini', pctiles=None, plot_type='levels',
-    num_years_to_plot=50, start_year=DEFAULT_START_YEAR,
-    vertical_line_years=None, plot_title=None, path=None):
+        base_tpi, base_params, reform_tpi=None, reform_params=None,
+        var='c_path', ineq_measure='gini', pctiles=None,
+        plot_type='levels', num_years_to_plot=50,
+        start_year=DEFAULT_START_YEAR, vertical_line_years=None,
+        plot_title=None, path=None):
     '''
     Plot measures of inequality over the time path.
 

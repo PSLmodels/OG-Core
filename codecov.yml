@@ -1,4 +1,28 @@
+codecov:
+  require_ci_to_pass: yes
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+
 ignore:
+  - "setup.py"
+  - "./ogusa/_version.py"
   - "./cs-config/**/*"  # ignore folders and all its contents
-  - "./ogusa/tests/**/*"  # ignore folders and all its contents
+  - "./ogusa/tests/"  # ignore folders and all its contents
+  - "./regression/**/*"  # ignore folders and all its contents
   
