@@ -401,9 +401,10 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
 
     .. math::
         \begin{split}
-            \hat{K}_{t} = \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\
-            \hat{K}^{d}_{t} = \hat{B}_{t} + \hat{D}^{d}_{t}\\
-            \hat{K}^{f}_{t} = \zeta_{D}(\hat{K}^{open)_{t} - K^{d}_{t})\\
+            \hat{K}_{t} &= \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\
+            \hat{K}^{d}_{t} &= \hat{B}_{t} + \hat{D}^{d}_{t}\\
+            \hat{K}^{f}_{t} &= \zeta_{D}\left(\hat{K}^{open}_{t} -
+                K^{d}_{t}\right)
         \end{split}
 
     Args:

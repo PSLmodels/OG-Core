@@ -148,12 +148,12 @@ def get_D_ss(r_gov, Y, p):
 
     .. math::
         \begin{split}
-            \bar{D} = \alpha_D \bar{Y}\\
-            \bar{D_d} = \bar{D} - \bar{D}^{f}\\
-            \bar{D_f} = \zeta_{D}\bar{D} \\
-            \text{new borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
-            \bar{debt service} = \bar{r}_{gov}\bar{D} \\
-            \text{new foreign borrowing} =
+            \bar{D} &= \alpha_D \bar{Y}\\
+            \bar{D_d} &= \bar{D} - \bar{D}^{f}\\
+            \bar{D_f} &= \zeta_{D}\bar{D} \\
+            \text{new borrowing} &= (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
+            \bar{debt service} &= \bar{r}_{gov}\bar{D} \\
+            \text{new foreign borrowing} &=
             (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
         \end{split}
 
@@ -221,7 +221,7 @@ def get_debt_service_f(r_hh, D_f):
     r'''
     Function to compute foreign debt service payments.
 
-    ..math::
+    .. math::
         \text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}
 
     Args:
@@ -240,15 +240,13 @@ def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, p, method):
     Function to compute aggregate transfers.  Note that this excludes
     transfer spending through the public pension system.
 
-    ..math::
-        \[
+    .. math::
         TR^{'}_{t}=
         \begin{cases}
             Revenue,& \text{if balanced budget} \\
             TR^{baseline}, & \text{if baseline spending}\\
             \alpha_{T,t}Y_{t},   & \text{otherwise}
         \end{cases}
-        \]
 
 
     Args:
