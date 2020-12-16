@@ -1,7 +1,7 @@
 import taxcalc
 
 
-SHOW_RUNTIME = False  # Flag to display RuntimeWarings when run model
+SHOW_RUNTIME = False  # Flag to display RuntimeWarnings when run model
 
 REFORM_DIR = "OUTPUT_REFORM"
 BASELINE_DIR = "OUTPUT_BASELINE"
@@ -104,8 +104,8 @@ ToGDP_LABELS = {'D': 'Debt-to-GDP ($D_{t}/Y_t$)',
 GROUP_LABELS = {7: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
                 4: '80-90%', 5: '90-99%', 6: 'Top 1%'},
                 9: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
-                     4: '80-90%', 5: '90-99%', 6: '99-99.5%',
-                     7: 'Top 99.5-99.9%', 8: 'Top 0.1%'},
+                    4: '80-90%', 5: '90-99%', 6: '99-99.5%',
+                    7: 'Top 99.5-99.9%', 8: 'Top 0.1%'},
                 10: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
                      4: '80-90%', 5: '90-99%', 6: '99-99.5%',
                      7: 'Top 99.5-99.9%', 8: '99.9-99.99%',
