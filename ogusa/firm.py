@@ -21,7 +21,10 @@ def get_Y(K, L, p, method):
     aggregate labor, and CES production function parameters.
 
     .. math::
-        Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} + (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}{\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}
+        Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}
+        K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} +
+        (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}
+        {\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}
 
     Args:
         K (array_like): aggregate capital
@@ -87,7 +90,9 @@ def get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method):
     demand.
 
     .. math::
-        r_{t} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
+        r_{t} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}
+        \left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -
+        \delta + \tau^{corp}\delta^\tau
 
     Args:
         Y (array_like): aggregate output
@@ -131,7 +136,8 @@ def get_w(Y, L, p, method):
     parameters using the firm's first order condition for labor demand.
 
     .. math::
-        w_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon}
+        w_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)
+        \frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon}
 
     Args:
         Y (array_like): aggregate output
@@ -155,7 +161,10 @@ def get_KLratio_from_r(r, p, method):
     rate r and parameters.
 
     .. math::
-        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}
+        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
+        {\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})
+        \gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -
+        \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}
 
     Args:
         r (array_like): the real interest rate
@@ -199,7 +208,12 @@ def get_w_from_r(r, p, method):
     interest rate.
 
     .. math::
-        w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon-1}
+        w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}
+        {\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
+        {\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})
+        \gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -
+        \gamma^\frac{1}{\varepsilon}}\right) +
+        (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon-1}
 
     Args:
         r (array_like): the real interest rate

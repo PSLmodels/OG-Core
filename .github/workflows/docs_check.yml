@@ -22,6 +22,7 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install jupyter-book
+          pip install sphinxcontrib-bibtex==1.0.0
           pip install -e .
           cd docs
           jb build ./book

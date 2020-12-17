@@ -968,7 +968,7 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
                 data_to_plot.drop(
                     data_to_plot[data_to_plot['age'] != age].index,
                     inplace=True)
-            # other censoring 
+            # other censoring
             data_to_plot.drop(
                 data_to_plot[data_to_plot[key1] > max_inc_amt].index,
                 inplace=True)

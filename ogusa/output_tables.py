@@ -404,13 +404,13 @@ def tp_output_dump_table(base_params, base_tpi, reform_params=None,
 
 
 def dynamic_revenue_decomposition(
-    base_params, base_tpi, base_ss, reform_params, reform_tpi,
-    reform_ss, num_years=10, include_SS=True, include_overall=True,
-    start_year=DEFAULT_START_YEAR, table_format=None, path=None):
+        base_params, base_tpi, base_ss, reform_params, reform_tpi,
+        reform_ss, num_years=10, include_SS=True, include_overall=True,
+        start_year=DEFAULT_START_YEAR, table_format=None, path=None):
     '''
     This function decomposes the source of changes in tax revenues to
     determine the percentage change in individual and payroll tax
-    receipt that can be attributed to maroeconomic feedback effects.
+    receipt that can be attributed to macroeconomic feedback effects.
 
     Args:
         base_params (OG-USA Specifications class): baseline parameters
@@ -435,7 +435,7 @@ def dynamic_revenue_decomposition(
         table (various): table in DataFrame or string format or `None`
             if saved to disk
 
-    .. note:: The decomoposition is the following:
+    .. note:: The decomposition is the following:
         1. Simulate the baseline and reform in OG-USA. Save the
            resulting series of tax revenues. Call these series for the
            baseline and reform A and D, respectively.
@@ -444,7 +444,7 @@ def dynamic_revenue_decomposition(
            variables (`tr`, `bq`, `r`, `w`), but with the tax function
            parameter estimates from the reform policy.  Call this
            series B.
-        3. Create a fouth revenue series that is computed using the
+        3. Create a fourth revenue series that is computed using the
            reform behavior (i.e., `bmat_s` and `n_mat`) and tax
            functions estimated on the reform tax policy, but
            the macro variables (`tr`, `bq`, `r`, `w`) from the baseline.
@@ -508,15 +508,12 @@ def dynamic_revenue_decomposition(
     reform_tax_yr = (series_D * pop_weights).sum(1).sum(1)
     series_B_tax_yr = (series_B * pop_weights).sum(1).sum(1)
     series_C_tax_yr = (series_C * pop_weights).sum(1).sum(1)
-    total_diff = reform_tax_yr - base_tax_yr
     pct_diff_tax1 = ((
         (series_B_tax_yr - base_tax_yr) / base_tax_yr) * 100)
     pct_diff_tax2 = ((
         (series_C_tax_yr - series_B_tax_yr) / series_B_tax_yr) * 100)
     pct_diff_tax3 = ((
         (reform_tax_yr - series_C_tax_yr) / series_C_tax_yr) * 100)
-    total_diff_overall = total_diff[
-        start_index:start_index + num_years].mean()
     pct_diff_tax1_overall = pct_diff_tax1[
         start_index:start_index + num_years].mean()
     pct_diff_tax2_overall = pct_diff_tax2[

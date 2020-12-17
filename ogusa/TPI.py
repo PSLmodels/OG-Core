@@ -380,9 +380,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         n_vec = solutions[p.S:]
         n_mat[t + ind, ind] = n_vec
 
-    print('Type ', j, ' max euler error = ', np.absolute(euler_errors).max())
-    # print('Type ', j, ' max euler error labor = ', np.absolute(euler_errors[:p.S]).max())
-    # print('Type ', j, ' max euler error savings = ', np.absolute(euler_errors[p.S:]).max())
+    print('Type ', j, ' max euler error = ',
+          np.absolute(euler_errors).max())
 
     return euler_errors, b_mat, n_mat
 
@@ -774,19 +773,19 @@ def run_TPI(p, client=None):
               ' to satisfy budget')
 
     if (((TPIiter >= p.maxiter) or
-         (np.absolute(TPIdist) > p.mindist_TPI)) and
-        ENFORCE_SOLUTION_CHECKS):
+            (np.absolute(TPIdist) > p.mindist_TPI)) and
+            ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError('Transition path equlibrium not found' +
                            ' (TPIdist)')
 
     if ((np.any(np.absolute(RC_error) >= p.mindist_TPI * 10)) and
-        ENFORCE_SOLUTION_CHECKS):
+            ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError('Transition path equlibrium not found ' +
                            '(RC_error)')
 
     if ((np.any(np.absolute(eul_savings) >= p.mindist_TPI) or
-         (np.any(np.absolute(eul_laborleisure) > p.mindist_TPI))) and
-        ENFORCE_SOLUTION_CHECKS):
+            (np.any(np.absolute(eul_laborleisure) > p.mindist_TPI))) and
+            ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError('Transition path equlibrium not found ' +
                            '(eulers)')
 

@@ -55,12 +55,18 @@ def test_ineq_table():
     assert isinstance(df, pd.DataFrame)
 
 
-def test_gini_table():
-    df = output_tables.gini_table(base_ss, base_params)
+@pytest.mark.parametrize(
+    'base_ss,base_params,reform_ss,reform_params',
+    [(base_ss, base_params, None, None),
+     (base_ss, base_params, reform_ss, reform_params)],
+    ids=['Baseline only', 'Base and reform'])
+def test_gini_table(base_ss, base_params, reform_ss, reform_params):
+    df = output_tables.gini_table(
+        base_ss, base_params, reform_ss=reform_ss,
+        reform_params=reform_params)
     assert isinstance(df, pd.DataFrame)
 
 
-@pytest.mark.full_run
 def test_wealth_moments_table():
     '''
     Need SCF data which is too large to check into repo so this will

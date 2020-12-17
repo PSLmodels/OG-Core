@@ -204,7 +204,6 @@ class Specifications(paramtools.Parameters):
                          (self.S, 1, 1))), axis=0)
         setattr(self, 'eta',  eta_to_set)
 
-
         # make sure zeta matrix sums to one (e.g., default off due to rounding)
         self.zeta = self.zeta / self.zeta.sum()
 
@@ -453,7 +452,6 @@ class Specifications(paramtools.Parameters):
         Args:
             tax_func_path (str): path to pickle with tax function
                 parameter estimates
-
 
         Returns:
             dict_params (dict): dictionary containing arrays of tax
