@@ -306,21 +306,24 @@ def test_plot_income_data_save_fig(tmpdir):
 
 
 @pytest.mark.parametrize(
-    'tax_funcs,age,tax_func_type,over_labinc,data,title',
-    [(base_taxfunctions, 43, 'DEP', True, None, None),
-     (base_taxfunctions, 43, 'DEP', False, None, 'Test title'),
-     (GS_nonage_spec_taxfunctions, None, 'GS', True, None, None),
-     (base_taxfunctions, 43, 'DEP', True, [micro_data], None)],
+    'tax_funcs,age,tax_func_type,rate_type,over_labinc,data,title',
+    [(base_taxfunctions, 43, 'DEP', 'etr', True, None, None),
+     (base_taxfunctions, 43, 'DEP', 'etr', False, None, 'Test title'),
+     (GS_nonage_spec_taxfunctions, None, 'GS', 'etr', True, None, None),
+     (base_taxfunctions, 43, 'DEP', 'etr', True, [micro_data], None),
+     (base_taxfunctions, 43, 'DEP', 'mtry', True, [micro_data], None),
+     (base_taxfunctions, 43, 'DEP', 'mtrx', True, [micro_data], None)],
     ids=['over_labinc=True', 'over_labinc=False', 'Non age-specific',
-         'with data'])
-def test_plot_2D_taxfunc(tax_funcs, age, tax_func_type, over_labinc,
-                         data, title):
+         'with data', 'MTR capital income', 'MTR labor income'])
+def test_plot_2D_taxfunc(tax_funcs, age, tax_func_type, rate_type,
+                         over_labinc, data, title):
     '''
     Test of plot_2D_taxfunc
     '''
     fig = parameter_plots.plot_2D_taxfunc(
         2030, 2021, [tax_funcs], age=age, tax_func_type=[tax_func_type],
-        over_labinc=over_labinc, data_list=data, title=title)
+        rate_type=rate_type, over_labinc=over_labinc, data_list=data,
+        title=title)
 
     assert fig
 
