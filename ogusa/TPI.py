@@ -599,6 +599,7 @@ def run_TPI(p, client=None):
         rnew[:p.T] = firm.get_r(
             Y[:p.T], K[:p.T], K[1:p.T+1], V[:p.T], V[1:p.T+1], X[:p.T],
             X[1:p.T+1], p, 'TPI')
+        print('VARS ALONG THE WAY: ', r[:5], K[:5], Y[:5], V[:5], X[:5])
         # For case where economy is small open econ
         r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
