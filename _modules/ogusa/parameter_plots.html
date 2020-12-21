@@ -40,7 +40,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
@@ -414,7 +413,7 @@
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">GROUP_LABELS</span>
 <span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">txfunc</span>
-<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">TC_LAST_YEAR</span>
+<span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">TC_LAST_YEAR</span><span class="p">,</span> <span class="n">VAR_LABELS</span>
 <span class="n">CUR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">style_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;OGUSAplots.mplstyle&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">style_file</span><span class="p">)</span>
@@ -1368,8 +1367,8 @@
 
     <span class="c1"># plot raw data (if passed)</span>
     <span class="k">if</span> <span class="n">data_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># rate_type_dict = {&#39;etr&#39;: &#39;etr&#39;, &#39;mtrx&#39;: &#39;mtr_labinc&#39;,</span>
-        <span class="c1">#                   &#39;mtry&#39;: &#39;mtr_capinc&#39;}</span>
+        <span class="n">rate_type_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;etr&#39;</span><span class="p">:</span> <span class="s1">&#39;etr&#39;</span><span class="p">,</span> <span class="s1">&#39;mtrx&#39;</span><span class="p">:</span> <span class="s1">&#39;mtr_labinc&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;mtry&#39;</span><span class="p">:</span> <span class="s1">&#39;mtr_capinc&#39;</span><span class="p">}</span>
         <span class="c1"># censor data to range of the plot</span>
         <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_list</span><span class="p">):</span>
             <span class="n">data_to_plot</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -1389,8 +1388,10 @@
             <span class="n">wm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span>
                 <span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">data_to_plot</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">])</span>
             <span class="n">data_to_plot</span><span class="p">[</span><span class="s1">&#39;inc_bin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data_to_plot</span><span class="p">[</span><span class="n">key1</span><span class="p">],</span> <span class="n">n_bins</span><span class="p">)</span>
-            <span class="n">groups</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data_to_plot</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;inc_bin&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
-                <span class="n">rate</span><span class="o">=</span><span class="p">(</span><span class="n">rate_type</span><span class="p">,</span> <span class="n">wm</span><span class="p">),</span> <span class="n">income</span><span class="o">=</span><span class="p">(</span><span class="n">key1</span><span class="p">,</span> <span class="n">wm</span><span class="p">)))</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="n">data_to_plot</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;inc_bin&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+                    <span class="n">rate</span><span class="o">=</span><span class="p">(</span><span class="n">rate_type_dict</span><span class="p">[</span><span class="n">rate_type</span><span class="p">],</span> <span class="n">wm</span><span class="p">),</span>
+                    <span class="n">income</span><span class="o">=</span><span class="p">(</span><span class="n">key1</span><span class="p">,</span> <span class="n">wm</span><span class="p">)))</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;income&#39;</span><span class="p">],</span> <span class="n">groups</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
     <span class="c1"># add legend, labels, etc to plot</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center right&#39;</span><span class="p">)</span>
@@ -1400,7 +1401,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Labor income&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Capital income&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">rate_type</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">rate_type</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig</span>
     <span class="k">else</span><span class="p">:</span>
