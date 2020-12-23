@@ -334,6 +334,7 @@ def ability_bar(base_tpi, base_params, reform_tpi,
     ax.bar(ind, var_to_plot * 100, width, bottom=0)
     ax.set_xticks(ind + width / 4)
     ax.set_xticklabels(list(GROUP_LABELS[base_params.J].values()))
+    plt.xticks(rotation=45)
     plt.ylabel(r'Percentage Change in ' + VAR_LABELS[var])
     if plot_title:
         plt.title(plot_title, fontsize=15)
@@ -379,6 +380,7 @@ def ability_bar_ss(base_ss, base_params, reform_ss, reform_params,
     ax.bar(ind, var_to_plot * 100, width, bottom=0)
     ax.set_xticks(ind + width / 4)
     ax.set_xticklabels(list(GROUP_LABELS[base_params.J].values()))
+    plt.xticks(rotation=45)
     plt.ylabel(r'Percentage Change in ' + VAR_LABELS[var])
     if plot_title:
         plt.title(plot_title, fontsize=15)
