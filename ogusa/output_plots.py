@@ -4,8 +4,8 @@ import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
-from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS,
-                             DEFAULT_START_YEAR)
+from ogusa.constants import (GROUP_LABELS, VAR_LABELS, ToGDP_LABELS,
+                             CBO_UNITS, DEFAULT_START_YEAR)
 import ogusa.utils as utils
 from ogusa.utils import Inequality
 
@@ -129,6 +129,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
     plt.ylabel(ylabel)
     if plot_title:
         plt.title(plot_title, fontsize=15)
+    ax1.set_yticks(ax1.get_yticks().tolist())
     vals = ax1.get_yticks()
     if plot_type == 'pct_diff':
         ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
@@ -273,6 +274,7 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     plt.ylabel(ylabel)
     if plot_title:
         plt.title(plot_title, fontsize=15)
+    ax1.set_yticks(ax1.get_yticks().tolist())
     vals = ax1.get_yticks()
     if plot_type == 'levels':
         ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
@@ -331,8 +333,8 @@ def ability_bar(base_tpi, base_params, reform_tpi,
     var_to_plot = (reform_val - base_val) / base_val
     ax.bar(ind, var_to_plot * 100, width, bottom=0)
     ax.set_xticks(ind + width / 4)
-    ax.set_xticklabels(('0-25%', '25-50%', '50-70%', '70-80%', '80-90%',
-                        '90-99%', 'Top 1%'))
+    ax.set_xticklabels(list(GROUP_LABELS[base_params.J].values()))
+    plt.xticks(rotation=45)
     plt.ylabel(r'Percentage Change in ' + VAR_LABELS[var])
     if plot_title:
         plt.title(plot_title, fontsize=15)
@@ -377,8 +379,8 @@ def ability_bar_ss(base_ss, base_params, reform_ss, reform_params,
     var_to_plot = (reform_val - base_val) / base_val
     ax.bar(ind, var_to_plot * 100, width, bottom=0)
     ax.set_xticks(ind + width / 4)
-    ax.set_xticklabels(('0-25%', '25-50%', '50-70%', '70-80%', '80-90%',
-                        '90-99%', 'Top 1%'))
+    ax.set_xticklabels(list(GROUP_LABELS[base_params.J].values()))
+    plt.xticks(rotation=45)
     plt.ylabel(r'Percentage Change in ' + VAR_LABELS[var])
     if plot_title:
         plt.title(plot_title, fontsize=15)
