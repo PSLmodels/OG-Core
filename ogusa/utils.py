@@ -546,6 +546,25 @@ class Inequality():
 
         return pct_ratio
 
+    def pct(self, pct):
+        '''
+        Returns value at given percentile
+
+        Args:
+            pct1 (scalar): percentile to compute the value at,
+                in (0, 1).
+
+        Returns:
+            value (scalar): value of variable at pct
+
+        '''
+        assert pct > 0
+        assert pct < 1
+        loc_pct = np.argmin(np.abs(self.cum_weights - pct))
+        value = self.sort_dist[loc_pct]
+
+        return value
+
     def top_share(self, pctile):
         '''
         Compute the top X% share

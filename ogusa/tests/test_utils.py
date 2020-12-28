@@ -268,6 +268,12 @@ def test_ratio_pct1_pct2():
     assert np.allclose(ratio, 9)
 
 
+def test_pct():
+    ineq = Inequality(dist, pop_weights, ability_weights, S, J)
+    pct_value = ineq.pct(0.90)
+    assert np.allclose(pct_value, 9.0)
+
+
 def test_top_share():
     '''
     Test of top share calculation
