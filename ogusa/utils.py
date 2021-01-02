@@ -656,8 +656,8 @@ def read_cbo_forecast():
     df.rename(
         columns={'Unnamed: 1': 'variable', 'Actual, \n2018': 2018},
         inplace=True)
-    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', 'Unnamed: 3',
-                     '2020–\n2024', '2020–\n2029'], inplace=True)
+    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', '2020–\n2024',
+                     '2020–\n2029'], inplace=True)
     df1 = df[~((pd.isnull(df.variable)) | (df.variable == 'Other'))]
 
     CBO_10yr_budget_URL = (
@@ -668,8 +668,7 @@ def read_cbo_forecast():
                        skiprows=8, nrows=22)
     df.rename(columns={'Unnamed: 1': 'variable',
                        'Actual, \n2018': 2018}, inplace=True)
-    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', 'Unnamed: 3',
-                     'Unnamed: 4', '2020–\n2024', '2020–\n2029'],
+    df.drop(columns=['Unnamed: 0', '2020–\n2024', '2020–\n2029'],
             inplace=True)
     df2 = df[~pd.isnull(df.variable)]
 
