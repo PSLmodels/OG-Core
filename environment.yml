@@ -30,5 +30,5 @@ dependencies:
 - pip:
   - jupyter-book>=0.8.0
   - cs-kit
-  - xlrd==1.2.0
+  - xlrd
   - cs2tc
