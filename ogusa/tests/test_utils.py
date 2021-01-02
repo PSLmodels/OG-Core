@@ -363,7 +363,7 @@ def test_safe_read_pickle(filename):
     assert True
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def picklefile1():
     x = {'a': 1}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
@@ -375,7 +375,7 @@ def picklefile1():
     os.remove(pfile.name)
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def picklefile2():
     y = {'a': 1, 'b': 2}
 
@@ -388,7 +388,7 @@ def picklefile2():
     os.remove(pfile.name)
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def picklefile3():
     x = {'a': np.array([100., 200., 300.]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
@@ -400,7 +400,7 @@ def picklefile3():
     os.remove(pfile.name)
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def picklefile4():
     x = {'a': np.array([100., 200., 300.1]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
