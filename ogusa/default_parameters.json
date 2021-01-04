@@ -2643,7 +2643,14 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+            "when": {
+                "param": "baseline_spending",
+                "is": true,
+                "then": {"choice": {"choices": [false]}},
+                "otherwise": {"choice": {"choices": [true, false]}}
+            }
+        }
     },
     "baseline_spending": {
         "title": "Flag to keep level of government spending and transfers constant between baseline and reform runs",
