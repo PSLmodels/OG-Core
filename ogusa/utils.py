@@ -546,6 +546,25 @@ class Inequality():
 
         return pct_ratio
 
+    def pct(self, pct):
+        '''
+        Returns value at given percentile
+
+        Args:
+            pct1 (scalar): percentile to compute the value at,
+                in (0, 1).
+
+        Returns:
+            value (scalar): value of variable at pct
+
+        '''
+        assert pct > 0
+        assert pct < 1
+        loc_pct = np.argmin(np.abs(self.cum_weights - pct))
+        value = self.sort_dist[loc_pct]
+
+        return value
+
     def top_share(self, pctile):
         '''
         Compute the top X% share
@@ -637,8 +656,8 @@ def read_cbo_forecast():
     df.rename(
         columns={'Unnamed: 1': 'variable', 'Actual, \n2018': 2018},
         inplace=True)
-    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', 'Unnamed: 3',
-                     '2020–\n2024', '2020–\n2029'], inplace=True)
+    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', '2020–\n2024',
+                     '2020–\n2029'], inplace=True)
     df1 = df[~((pd.isnull(df.variable)) | (df.variable == 'Other'))]
 
     CBO_10yr_budget_URL = (
@@ -649,8 +668,7 @@ def read_cbo_forecast():
                        skiprows=8, nrows=22)
     df.rename(columns={'Unnamed: 1': 'variable',
                        'Actual, \n2018': 2018}, inplace=True)
-    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', 'Unnamed: 3',
-                     'Unnamed: 4', '2020–\n2024', '2020–\n2029'],
+    df.drop(columns=['Unnamed: 0', '2020–\n2024', '2020–\n2029'],
             inplace=True)
     df2 = df[~pd.isnull(df.variable)]
 
