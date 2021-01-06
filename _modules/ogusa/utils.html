@@ -954,6 +954,25 @@
 
         <span class="k">return</span> <span class="n">pct_ratio</span></div>
 
+<div class="viewcode-block" id="Inequality.pct"><a class="viewcode-back" href="../../content/api/utils.html#ogusa.utils.Inequality.pct">[docs]</a>    <span class="k">def</span> <span class="nf">pct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns value at given percentile</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pct1 (scalar): percentile to compute the value at,</span>
+<span class="sd">                in (0, 1).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            value (scalar): value of variable at pct</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="n">pct</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">pct</span> <span class="o">&lt;</span> <span class="mi">1</span>
+        <span class="n">loc_pct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cum_weights</span> <span class="o">-</span> <span class="n">pct</span><span class="p">))</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span><span class="p">[</span><span class="n">loc_pct</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">value</span></div>
+
 <div class="viewcode-block" id="Inequality.top_share"><a class="viewcode-back" href="../../content/api/utils.html#ogusa.utils.Inequality.top_share">[docs]</a>    <span class="k">def</span> <span class="nf">top_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pctile</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Compute the top X% share</span>
@@ -1045,8 +1064,8 @@
     <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
         <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">:</span> <span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="s1">&#39;Actual, </span><span class="se">\n</span><span class="s1">2018&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">},</span>
         <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 3&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2024&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2029&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2024&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2029&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">df1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span> <span class="o">==</span> <span class="s1">&#39;Other&#39;</span><span class="p">))]</span>
 
     <span class="n">CBO_10yr_budget_URL</span> <span class="o">=</span> <span class="p">(</span>
@@ -1057,8 +1076,7 @@
                        <span class="n">skiprows</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">:</span> <span class="s1">&#39;variable&#39;</span><span class="p">,</span>
                        <span class="s1">&#39;Actual, </span><span class="se">\n</span><span class="s1">2018&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 3&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;Unnamed: 4&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2024&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2029&#39;</span><span class="p">],</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2024&#39;</span><span class="p">,</span> <span class="s1">&#39;2020–</span><span class="se">\n</span><span class="s1">2029&#39;</span><span class="p">],</span>
             <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">df2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span><span class="p">)]</span>
 
