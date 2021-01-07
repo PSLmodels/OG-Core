@@ -140,10 +140,22 @@ def test_replace_outliers():
     assert np.allclose(act, exp)
 
 
+expected_tuple_DEP = ((np.array(
+    [6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
+        2.32797367e-01, 1.00000000e-04, 1.00000000e+00,
+        -3.69059719e-02, -1.01967001e-01, 3.96030053e-02,
+        1.02987671e-01, -1.30433574e-01]), 19527.16203007729, 3798))
+expected_tuple_linear = (0.15381972028750876, 0.0, 3798)
+
+
 @pytest.mark.full_run  # only marking as full run because platform
 # affects results from scipy.opt that is called in this test - so it'll
 # pass if run on Mac with MKL, but not necessarily on other platforms
-def test_txfunc_est():
+@pytest.mark.parametrize('tax_func_type,numparams,expected_tuple',
+                         [('DEP', 12, expected_tuple_DEP),
+                          ('linear', 1, expected_tuple_linear)],
+                         ids=['DEP', 'linear'])
+def test_txfunc_est(tax_func_type, numparams, expected_tuple):
     '''
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -159,15 +171,9 @@ def test_txfunc_est():
         'Total capital income': 'total_capinc', 'ETR': 'etr',
         'expanded_income': 'market_income',
         'Weights': 'weight'}, inplace=True)
-    tax_func_type = 'DEP'
-    numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, graph)
-    expected_tuple = ((np.array(
-        [6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
-         2.32797367e-01, 1.00000000e-04, 1.00000000e+00,
-         -3.69059719e-02, -1.01967001e-01, 3.96030053e-02,
-         1.02987671e-01, -1.30433574e-01]), 19527.16203007729, 3798))
+    print('test_tuple = ', test_tuple)
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
