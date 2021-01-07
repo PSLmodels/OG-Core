@@ -163,17 +163,43 @@ expected_tuple_linear_mtry = (0.15604427, 0.0, 3798)
 @pytest.mark.parametrize('rate_type,tax_func_type,numparams,expected_tuple',
                          [('etr', 'DEP', 12, expected_tuple_DEP),
                           ('etr', 'DEP_totalinc', 6,
-                           expected_tuple_DEP_totalinc),
-                          ('etr', 'linear', 1, expected_tuple_linear),
+                           expected_tuple_DEP_totalinc)],
+                         ids=['DEP', 'DEP_totalinc'])
+def test_txfunc_est(rate_type, tax_func_type, numparams,
+                    expected_tuple):
+    '''
+    Test txfunc.txfunc_est() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
+    (df, s, t, _, output_dir, graph) = input_tuple
+    # Put old df variables into new df var names
+    df.rename(columns={
+        'MTR labor income': 'mtr_labinc',
+        'MTR capital income': 'mtr_capinc',
+        'Total labor income': 'total_labinc',
+        'Total capital income': 'total_capinc', 'ETR': 'etr',
+        'expanded_income': 'market_income',
+        'Weights': 'weight'}, inplace=True)
+    test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
+                                   numparams, output_dir, True)
+
+    for i, v in enumerate(expected_tuple):
+        assert(np.allclose(test_tuple[i], v))
+
+
+@pytest.mark.parametrize('rate_type,tax_func_type,numparams,expected_tuple',
+                         [('etr', 'linear', 1, expected_tuple_linear),
                           ('etr', 'GS', 3, expected_tuple_GS),
                           ('mtrx', 'linear', 1,
                            expected_tuple_linear_mtrx),
                           ('mtry', 'linear', 1,
                            expected_tuple_linear_mtry)],
-                         ids=['DEP', 'DEP_totalinc', 'linear', 'GS',
-                              'linear, mtrx', 'linear, mtry'])
-def test_txfunc_est(rate_type, tax_func_type, numparams,
-                    expected_tuple):
+                         ids=['linear', 'GS', 'linear, mtrx',
+                              'linear, mtry'])
+def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams,
+                          expected_tuple):
     '''
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
