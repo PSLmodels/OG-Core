@@ -153,26 +153,34 @@ expected_tuple_linear = (0.15381972028750876, 0.0, 3798)
 expected_tuple_GS = (
     np.array([1.29769078e-01, 4.36131826e+00, 4.44887761e-07]),
     20323.465971499016, 3798)
+expected_tuple_linear_mtrx = (0.2677667, 0.0, 3798)
+expected_tuple_linear_mtry = (0.15604427, 0.0, 3798)
 
 
 @pytest.mark.full_run  # only marking as full run because platform
 # affects results from scipy.opt that is called in this test - so it'll
 # pass if run on Mac with MKL, but not necessarily on other platforms
-@pytest.mark.parametrize('tax_func_type,numparams,expected_tuple',
-                         [('DEP', 12, expected_tuple_DEP),
-                          ('DEP_totalinc', 6,
+@pytest.mark.parametrize('rate_type,tax_func_type,numparams,expected_tuple',
+                         [('etr', 'DEP', 12, expected_tuple_DEP),
+                          ('etr', 'DEP_totalinc', 6,
                            expected_tuple_DEP_totalinc),
-                          ('linear', 1, expected_tuple_linear),
-                          ('GS', 3, expected_tuple_GS)],
-                         ids=['DEP', 'DEP_totalinc', 'linear', 'GS'])
-def test_txfunc_est(tax_func_type, numparams, expected_tuple):
+                          ('etr', 'linear', 1, expected_tuple_linear),
+                          ('etr', 'GS', 3, expected_tuple_GS),
+                          ('mtrx', 'linear', 1,
+                           expected_tuple_linear_mtrx),
+                          ('mtry', 'linear', 1,
+                           expected_tuple_linear_mtry)],
+                         ids=['DEP', 'DEP_totalinc', 'linear', 'GS',
+                              'linear, mtrx', 'linear, mtry'])
+def test_txfunc_est(rate_type, tax_func_type, numparams,
+                    expected_tuple):
     '''
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
     '''
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
-    (df, s, t, rate_type, output_dir, graph) = input_tuple
+    (df, s, t, _, output_dir, graph) = input_tuple
     # Put old df variables into new df var names
     df.rename(columns={
         'MTR labor income': 'mtr_labinc',
@@ -183,7 +191,6 @@ def test_txfunc_est(tax_func_type, numparams, expected_tuple):
         'Weights': 'weight'}, inplace=True)
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, True)
-    print('test_tuple = ', test_tuple)
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
