@@ -175,7 +175,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                 txrates = tau_income + shift_income + shift
     elif tax_func_type == 'linear':
         rate = np.squeeze(params[..., 0])
-        txrates = rate
+        txrates = rate * np.ones_like(income)
 
     return txrates
 
