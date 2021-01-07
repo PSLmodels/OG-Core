@@ -520,7 +520,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         params = np.zeros(numparams)
         wsse = 0.0
         obs = df.shape[0]
-        params = (
+        params[0] = (
             (txrates * wgts * income).sum() / (income * wgts).sum())
         params_to_plot = params
     else:
