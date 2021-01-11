@@ -156,8 +156,8 @@ def run_model(meta_param_dict, adjustment):
         utils.mkdirs(_dir)
 
     # Dask parmeters
-    client = Client()
-    num_workers = 5
+    client = None#Client()
+    num_workers = 1#5
     # TODO: Swap to these parameters when able to specify tax function
     # and model workers separately
     # num_workers_txf = 5
@@ -173,8 +173,9 @@ def run_model(meta_param_dict, adjustment):
     constant_param_set = {
         'frisch', 'beta_annual', 'sigma', 'g_y_annual', 'gamma',
         'epsilon', 'Z', 'delta_annual', 'small_open', 'world_int_rate',
-        'initial_foreign_debt_ratio', 'zeta_D', 'zeta_K', 'tG1', 'tG2',
-        'rho_G', 'debt_ratio_ss', 'budget_balance'}
+        'initial_debt_ratio', 'initial_foreign_debt_ratio', 'zeta_D',
+        'zeta_K', 'tG1', 'tG2', 'rho_G', 'debt_ratio_ss',
+        'budget_balance'}
     filtered_ogusa_params = OrderedDict()
     for k, v in adjustment['OG-USA Parameters'].items():
         if k in constant_param_set:
@@ -187,7 +188,7 @@ def run_model(meta_param_dict, adjustment):
         OGDIR = os.path.dirname(OGPATH)
         tax_func_path = None#os.path.join(OGDIR, 'data', 'tax_functions',
                         #             cached_pickle)
-        run_micro_baseline = False
+        run_micro_baseline = True
     else:
         tax_func_path = None
         run_micro_baseline = True
@@ -241,7 +242,7 @@ def run_model(meta_param_dict, adjustment):
 
     # Shut down client and make sure all of its references are
     # cleaned up.
-    client.close()
+    # client.close()
     del client
 
     return comp_dict
