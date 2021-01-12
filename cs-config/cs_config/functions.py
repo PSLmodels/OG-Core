@@ -196,12 +196,6 @@ def run_model(meta_param_dict, adjustment):
         **{'start_year': start_year,
            'tax_func_type': 'DEP',
            'age_specific': False}, **filtered_ogusa_params}
-    print('BASE SPEC = ', base_spec)
-    print('FILTERED PARAMS = ', filtered_ogusa_params)
-    print('ADJUSTMENT = ', adjustment['OG-USA Parameters'])
-    reform_spec = base_spec
-    reform_spec.update(adjustment["OG-USA Parameters"])
-    print('REFORM SPEC = ', reform_spec)
     base_params = Specifications(
         run_micro=False, output_base=base_dir, baseline_dir=base_dir,
         test=False, time_path=False, baseline=True, iit_reform={},
