@@ -156,8 +156,8 @@ def run_model(meta_param_dict, adjustment):
         utils.mkdirs(_dir)
 
     # Dask parmeters
-    client = None#Client()
-    num_workers = 1#5
+    client = Client()
+    num_workers = 5
     # TODO: Swap to these parameters when able to specify tax function
     # and model workers separately
     # num_workers_txf = 5
@@ -196,6 +196,12 @@ def run_model(meta_param_dict, adjustment):
         **{'start_year': start_year,
            'tax_func_type': 'DEP',
            'age_specific': False}, **filtered_ogusa_params}
+    print('BASE SPEC = ', base_spec)
+    print('FILTERED PARAMS = ', filtered_ogusa_params)
+    print('ADJUSTMENT = ', adjustment['OG-USA Parameters'])
+    reform_spec = base_spec
+    reform_spec.update(adjustment["OG-USA Parameters"])
+    print('REFORM SPEC = ', reform_spec)
     base_params = Specifications(
         run_micro=False, output_base=base_dir, baseline_dir=base_dir,
         test=False, time_path=False, baseline=True, iit_reform={},
@@ -242,7 +248,7 @@ def run_model(meta_param_dict, adjustment):
 
     # Shut down client and make sure all of its references are
     # cleaned up.
-    # client.close()
+    client.close()
     del client
 
     return comp_dict
