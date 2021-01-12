@@ -1,4 +1,5 @@
 # imports
+from re import VERBOSE
 import numpy as np
 import scipy.optimize as opt
 from dask import delayed, compute
@@ -22,6 +23,11 @@ MINIMIZER_TOL = 1e-13
 Set flag for enforcement of solution check
 '''
 ENFORCE_SOLUTION_CHECKS = True
+
+'''
+Set flag for verbosity
+'''
+VERBOSE = True
 
 '''
 ------------------------------------------------------------------------
@@ -306,7 +312,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
                 nu_ss /= 2.0
                 print('New value of nu:', nu_ss)
         iteration += 1
-        print('Iteration: %02d' % iteration, ' Distance: ', dist)
+        if VERBOSE:
+            print('Iteration: %02d' % iteration, ' Distance: ', dist)
 
     # Generate the SS values of variables, including euler errors
     bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
@@ -377,13 +384,14 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
 
     # solve resource constraint
     # net foreign borrowing
-    print('Foreign debt holdings = ', D_f_ss)
-    print('Foreign capital holdings = ', K_f_ss)
     debt_service_f = fiscal.get_debt_service_f(r_hh_ss, D_f_ss)
     RC = aggr.resource_constraint(
         Yss, Css, Gss, I_d_ss, K_f_ss, new_borrowing_f, debt_service_f,
         r_hh_ss, p)
-    print('resource constraint: ', RC)
+    if VERBOSE:
+        print('Foreign debt holdings = ', D_f_ss)
+        print('Foreign capital holdings = ', K_f_ss)
+        print('resource constraint: ', RC)
 
     if Gss < 0:
         print('Steady state government spending is negative to satisfy'
@@ -400,10 +408,11 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
 
     euler_savings = euler_errors[:p.S, :]
     euler_labor_leisure = euler_errors[p.S:, :]
-    print('Maximum error in labor FOC = ',
-          np.absolute(euler_labor_leisure).max())
-    print('Maximum error in savings FOC = ',
-          np.absolute(euler_savings).max())
+    if VERBOSE:
+        print('Maximum error in labor FOC = ',
+            np.absolute(euler_labor_leisure).max())
+        print('Maximum error in savings FOC = ',
+            np.absolute(euler_savings).max())
 
     # Return dictionary of SS results
     output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
@@ -411,6 +420,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
               'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
               'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss,
+              'total_taxes_ss': taxss,
               'r_gov_ss': r_gov_ss, 'r_hh_ss': r_hh_ss, 'theta': theta,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
@@ -502,7 +512,8 @@ def SS_fsolve(guesses, *args):
     if p.baseline:
         error3 = new_TR - TR
         error4 = new_factor / 1000000 - factor / 1000000
-        print('GE loop errors = ', error1, error2, error3, error4)
+        if VERBOSE:
+            print('GE loop errors = ', error1, error2, error3, error4)
         # Check and punish violations of the factor
         if factor <= 0:
             error4 = 1e9
@@ -513,7 +524,8 @@ def SS_fsolve(guesses, *args):
         else:
             error3 = new_TR - TR
         errors = [error1] + list(error2) + [error3]
-        print('GE loop errors = ', error1, error2, error3)
+        if VERBOSE:
+            print('GE loop errors = ', error1, error2, error3)
     # Check and punish violations of the bounds on the interest rate
     if r + p.delta <= 0:
         errors[0] = 1e9

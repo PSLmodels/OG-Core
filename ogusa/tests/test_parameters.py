@@ -200,3 +200,13 @@ def test_revision_warnings_errors():
     bad_ew = revision_warnings_errors(user_mods)
     assert len(bad_ew['errors']) > 0
     assert len(bad_ew['warnings']) == 0
+
+
+def test_conditional_validator():
+    specs = Specifications()
+    new_specs = {
+        'budget_balance': True,
+        'baseline_spending': True
+    }
+    specs.update_specifications(new_specs, raise_errors=False)
+    assert len(specs.errors) > 0

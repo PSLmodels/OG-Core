@@ -140,17 +140,41 @@ def test_replace_outliers():
     assert np.allclose(act, exp)
 
 
+expected_tuple_DEP = ((np.array(
+    [6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
+        2.32797367e-01, 1.00000000e-04, 1.00000000e+00,
+        -3.69059719e-02, -1.01967001e-01, 3.96030053e-02,
+        1.02987671e-01, -1.30433574e-01]), 19527.16203007729, 3798))
+expected_tuple_DEP_totalinc = (
+    np.array([6.73787858e-10, 5.41788589e-02, 1.55761571e-01,
+              -1.01967001e-01, 1.04544287e-01, -1.30433574e-01]),
+    20322.76956242071, 3798)
+expected_tuple_linear = (0.15381972028750876, 0.0, 3798)
+expected_tuple_GS = (
+    np.array([1.29769078e-01, 4.36131826e+00, 4.44887761e-07]),
+    20323.465971499016, 3798)
+expected_tuple_linear_mtrx = (0.2677667, 0.0, 3798)
+expected_tuple_linear_mtry = (0.15604427, 0.0, 3798)
+
+
 @pytest.mark.full_run  # only marking as full run because platform
 # affects results from scipy.opt that is called in this test - so it'll
 # pass if run on Mac with MKL, but not necessarily on other platforms
-def test_txfunc_est():
+@pytest.mark.parametrize('rate_type,tax_func_type,numparams,expected_tuple',
+                         [('etr', 'DEP', 12, expected_tuple_DEP),
+                          ('etr', 'DEP_totalinc', 6,
+                           expected_tuple_DEP_totalinc)],
+                         ids=['DEP', 'DEP_totalinc'])
+def test_txfunc_est(rate_type, tax_func_type, numparams,
+                    expected_tuple, tmpdir):
     '''
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
     '''
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
-    (df, s, t, rate_type, output_dir, graph) = input_tuple
+    (df, s, t, _, output_dir, graph) = input_tuple
+    output_dir = tmpdir
     # Put old df variables into new df var names
     df.rename(columns={
         'MTR labor income': 'mtr_labinc',
@@ -159,18 +183,62 @@ def test_txfunc_est():
         'Total capital income': 'total_capinc', 'ETR': 'etr',
         'expanded_income': 'market_income',
         'Weights': 'weight'}, inplace=True)
-    tax_func_type = 'DEP'
-    numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
-                                   numparams, output_dir, graph)
-    expected_tuple = ((np.array(
-        [6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
-         2.32797367e-01, 1.00000000e-04, 1.00000000e+00,
-         -3.69059719e-02, -1.01967001e-01, 3.96030053e-02,
-         1.02987671e-01, -1.30433574e-01]), 19527.16203007729, 3798))
+                                   numparams, output_dir, True)
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
+
+
+@pytest.mark.parametrize('rate_type,tax_func_type,numparams,expected_tuple',
+                         [('etr', 'linear', 1, expected_tuple_linear),
+                          ('etr', 'GS', 3, expected_tuple_GS),
+                          ('mtrx', 'linear', 1,
+                           expected_tuple_linear_mtrx),
+                          ('mtry', 'linear', 1,
+                           expected_tuple_linear_mtry)],
+                         ids=['linear', 'GS', 'linear, mtrx',
+                              'linear, mtry'])
+def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams,
+                          expected_tuple, tmpdir):
+    '''
+    Test txfunc.txfunc_est() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
+    (df, s, t, _, output_dir, graph) = input_tuple
+    output_dir = tmpdir
+    # Put old df variables into new df var names
+    df.rename(columns={
+        'MTR labor income': 'mtr_labinc',
+        'MTR capital income': 'mtr_capinc',
+        'Total labor income': 'total_labinc',
+        'Total capital income': 'total_capinc', 'ETR': 'etr',
+        'expanded_income': 'market_income',
+        'Weights': 'weight'}, inplace=True)
+    test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
+                                   numparams, output_dir, True)
+
+    for i, v in enumerate(expected_tuple):
+        assert(np.allclose(test_tuple[i], v))
+
+
+def test_txfunc_est_exception():
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
+    (df, s, t, rate_type, output_dir, graph) = input_tuple
+    df.rename(columns={
+        'MTR labor income': 'mtr_labinc',
+        'MTR capital income': 'mtr_capinc',
+        'Total labor income': 'total_labinc',
+        'Total capital income': 'total_capinc', 'ETR': 'etr',
+        'expanded_income': 'market_income',
+        'Weights': 'weight'}, inplace=True)
+    with pytest.raises(RuntimeError) as excinfo:
+        txfunc.txfunc_est(
+            df, s, t, 'etr', 'NotAType', 12, output_dir, graph)
+        assert 'Choice of tax function is not in the set' in str(excinfo.value)
 
 
 def test_tax_data_sample():

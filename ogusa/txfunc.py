@@ -175,7 +175,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                 txrates = tau_income + shift_income + shift
     elif tax_func_type == 'linear':
         rate = np.squeeze(params[..., 0])
-        txrates = rate
+        txrates = rate * np.ones_like(income)
 
     return txrates
 
@@ -520,9 +520,9 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         params = np.zeros(numparams)
         wsse = 0.0
         obs = df.shape[0]
-        params[10] = (
+        params[0] = (
             (txrates * wgts * income).sum() / (income * wgts).sum())
-        params_to_plot = params[1:11]
+        params_to_plot = params
     else:
         raise RuntimeError("Choice of tax function is not in the set of"
                            + " possible tax functions.  Please select"
