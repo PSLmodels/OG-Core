@@ -406,6 +406,7 @@ def tp_output_dump_table(base_params, base_tpi, reform_params=None,
 def dynamic_revenue_decomposition(
         base_params, base_tpi, base_ss, reform_params, reform_tpi,
         reform_ss, num_years=10, include_SS=True, include_overall=True,
+        include_business_tax=True, full_break_out=False,
         start_year=DEFAULT_START_YEAR, table_format=None, path=None):
     '''
     This function decomposes the source of changes in tax revenues to
@@ -426,6 +427,10 @@ def dynamic_revenue_decomposition(
             in the table
         include_overall (bool): whether to include results over the
             entire budget window as a column in the table
+        include_business_tax (bool): whether to include business tax
+            revenue changes in result
+        full_break_out (bool): whether to break out behavioral and macro
+            effects
         start_year (integer): year to start table
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
@@ -482,68 +487,212 @@ def dynamic_revenue_decomposition(
             reform_params.etr_params.reshape(
                 T, S, 1, reform_params.etr_params.shape[2]),
             (1, 1, J, 1))
-    series_A = tax.income_tax_liab(
+    tax_rev_dict = {'indiv': {}, 'biz': {}, 'total': {}}
+    indiv_liab = {}
+    # Baseline IIT + payroll tax liability
+    indiv_liab['A'] = tax.income_tax_liab(
         base_tpi['r_hh'][:T], base_tpi['w'][:T], base_tpi['bmat_s'],
         base_tpi['n_mat'][:T, :, :], base_ss['factor_ss'], 0, None,
         'TPI', base_params.e, base_etr_params_4D, base_params)
-    series_B = tax.income_tax_liab(
+    # IIT + payroll tax liability using baseline behavior and macros
+    # with the reform tax functions (this is the OG-USA static estimate)
+    indiv_liab['B'] = tax.income_tax_liab(
         base_tpi['r_hh'][:T], base_tpi['w'][:T], base_tpi['bmat_s'],
         base_tpi['n_mat'][:T, :, :], base_ss['factor_ss'], 0, None,
         'TPI', base_params.e, reform_etr_params_4D, base_params)
-    series_C = tax.income_tax_liab(
+    # IIT + payroll tax liability using reform behavior and baseline
+    # macros
+    indiv_liab['C'] = tax.income_tax_liab(
         base_tpi['r_hh'][:T], base_tpi['w'][:T],
         reform_tpi['bmat_s'], reform_tpi['n_mat'][:T, :, :],
         base_ss['factor_ss'], 0, None, 'TPI', reform_params.e,
         reform_etr_params_4D, reform_params)
-    series_D = tax.income_tax_liab(
+    # IIT + payroll tax liability from the reform simulation
+    indiv_liab['D'] = tax.income_tax_liab(
         reform_tpi['r_hh'][:T], reform_tpi['w'][:T],
         reform_tpi['bmat_s'], reform_tpi['n_mat'][:T, :, :],
         base_ss['factor_ss'], 0, None, 'TPI', reform_params.e,
         reform_etr_params_4D, reform_params)
+    # Business tax revenue from the baseline simulation
+    tax_rev_dict['biz']['A'] = tax.get_biz_tax(
+        base_tpi['w'][:T], base_tpi['Y'][:T], base_tpi['L'][:T],
+        base_tpi['K'][:T], base_params, 'TPI')
+    # Business tax revenue found using baseline behavior and macros with
+    # the reform tax rates
+    tax_rev_dict['biz']['B'] = tax.get_biz_tax(
+        base_tpi['w'][:T], base_tpi['Y'][:T], base_tpi['L'][:T],
+        base_tpi['K'][:T], reform_params, 'TPI')
+    # Business tax revenue found using the reform behavior and baseline
+    # macros with the reform tax rates
+    tax_rev_dict['biz']['C'] = tax.get_biz_tax(
+        base_tpi['w'][:T], reform_tpi['Y'][:T], reform_tpi['L'][:T],
+        reform_tpi['K'][:T], reform_params, 'TPI')
+    # Business tax revenue from the reform
+    tax_rev_dict['biz']['D'] = tax.get_biz_tax(
+        reform_tpi['w'][:T], reform_tpi['Y'][:T], reform_tpi['L'][:T],
+        reform_tpi['K'][:T], reform_params, 'TPI')
     pop_weights = (
             np.squeeze(base_params.lambdas) *
             np.tile(np.reshape(base_params.omega[:T, :], (T, S, 1)),
                     (1, 1, J)))
-    base_tax_yr = (series_A * pop_weights).sum(1).sum(1)
-    reform_tax_yr = (series_D * pop_weights).sum(1).sum(1)
-    series_B_tax_yr = (series_B * pop_weights).sum(1).sum(1)
-    series_C_tax_yr = (series_C * pop_weights).sum(1).sum(1)
-    pct_diff_tax1 = ((
-        (series_B_tax_yr - base_tax_yr) / base_tax_yr) * 100)
-    pct_diff_tax2 = ((
-        (series_C_tax_yr - series_B_tax_yr) / series_B_tax_yr) * 100)
-    pct_diff_tax3 = ((
-        (reform_tax_yr - series_C_tax_yr) / series_C_tax_yr) * 100)
-    pct_diff_tax1_overall = pct_diff_tax1[
-        start_index:start_index + num_years].mean()
-    pct_diff_tax2_overall = pct_diff_tax2[
-        start_index:start_index + num_years].mean()
-    pct_diff_tax3_overall = pct_diff_tax3[
-        start_index:start_index + num_years].mean()
-    pct_diff_tax1_SS = pct_diff_tax1[-1]
-    pct_diff_tax2_SS = pct_diff_tax2[-1]
-    pct_diff_tax3_SS = pct_diff_tax3[-1]
-    if include_overall:
-        tax1_for_table = np.append(
-            pct_diff_tax1[start_index:start_index + num_years],
-            pct_diff_tax1_overall)
-        tax2_for_table = np.append(
-            pct_diff_tax2[start_index:start_index + num_years],
-            pct_diff_tax2_overall)
-        tax3_for_table = np.append(
-            pct_diff_tax3[start_index:start_index + num_years],
-            pct_diff_tax3_overall)
-    if include_SS:
-        tax1_for_table = np.append(
-            tax1_for_table, pct_diff_tax1_SS)
-        tax2_for_table = np.append(
-            tax2_for_table, pct_diff_tax2_SS)
-        tax3_for_table = np.append(
-            tax3_for_table, pct_diff_tax3_SS)
-    table_dict = {'Year': year_list,
-                  'Pct Change due to tax rates': tax1_for_table,
-                  'Pct Change due to behavior': tax2_for_table,
-                  'Pct Change due to macro': tax3_for_table}
+    for k in indiv_liab.keys():
+        tax_rev_dict['indiv'][k] = (
+            (indiv_liab[k] * pop_weights).sum(1).sum(1))
+        tax_rev_dict['total'][k] = (
+            tax_rev_dict['indiv'][k] + tax_rev_dict['biz'][k])
+    results_for_table = {'indiv': {}, 'biz': {}, 'total': {}}
+    for type in ['indiv', 'biz', 'total']:
+        # Rate change effect
+        pct_change1 = (
+            ((tax_rev_dict[type]['B'] - tax_rev_dict[type]['A']) /
+             tax_rev_dict[type]['A']) * 100)
+        # Behavior effect
+        pct_change2 = (
+            ((tax_rev_dict[type]['C'] - tax_rev_dict[type]['B']) /
+             tax_rev_dict[type]['B']) * 100)
+        # Macro effect
+        pct_change3 = (
+            ((tax_rev_dict[type]['D'] - tax_rev_dict[type]['C']) /
+             tax_rev_dict[type]['C']) * 100)
+        # Dynamic effect (behavior + macro)
+        pct_change4 = (
+            ((tax_rev_dict[type]['D'] - tax_rev_dict[type]['B']) /
+             tax_rev_dict[type]['B']) * 100)
+        # Total change in tax revenue (rates + behavior + macro)
+        pct_change5 = (
+            ((tax_rev_dict[type]['D'] - tax_rev_dict[type]['A']) /
+             tax_rev_dict[type]['A']) * 100)
+        pct_change_overall1 = (
+            ((tax_rev_dict[type]['B'][start_index:start_index + num_years].sum() -
+              tax_rev_dict[type]['A'][start_index:start_index + num_years].sum()) /
+             tax_rev_dict[type]['A'][start_index:start_index + num_years].sum()) *
+             100)
+        pct_change_overall2 = (
+            ((tax_rev_dict[type]['C'][start_index:start_index + num_years].sum() -
+              tax_rev_dict[type]['B'][start_index:start_index + num_years].sum()) /
+             tax_rev_dict[type]['B'][start_index:start_index + num_years].sum()) *
+             100)
+        pct_change_overall3 = (
+            ((tax_rev_dict[type]['D'][start_index:start_index + num_years].sum() -
+              tax_rev_dict[type]['C'][start_index:start_index + num_years].sum()) /
+             tax_rev_dict[type]['C'][start_index:start_index + num_years].sum()) *
+             100)
+        pct_change_overall4 = (
+            ((tax_rev_dict[type]['D'][start_index:start_index + num_years].sum() -
+              tax_rev_dict[type]['B'][start_index:start_index + num_years].sum()) /
+             tax_rev_dict[type]['B'][start_index:start_index + num_years].sum()) *
+             100)
+        pct_change_overall5 = (
+            ((tax_rev_dict[type]['D'][start_index:start_index + num_years].sum() -
+              tax_rev_dict[type]['A'][start_index:start_index + num_years].sum()) /
+             tax_rev_dict[type]['A'][start_index:start_index + num_years].sum()) *
+             100)
+        if include_overall:
+            results_for_table[type][1] = np.append(
+                pct_change1[start_index:start_index + num_years],
+                pct_change_overall1)
+            results_for_table[type][2] = np.append(
+                pct_change2[start_index:start_index + num_years],
+                pct_change_overall2)
+            results_for_table[type][3] = np.append(
+                pct_change3[start_index:start_index + num_years],
+                pct_change_overall3)
+            results_for_table[type][4] = np.append(
+                pct_change4[start_index:start_index + num_years],
+                pct_change_overall4)
+            results_for_table[type][5] = np.append(
+                pct_change5[start_index:start_index + num_years],
+                pct_change_overall5)
+        if include_SS:
+            results_for_table[type][1] = np.append(
+                results_for_table[type][1], pct_change1[-1])
+            results_for_table[type][2] = np.append(
+                results_for_table[type][2], pct_change2[-1])
+            results_for_table[type][3] = np.append(
+                results_for_table[type][3], pct_change3[-1])
+            results_for_table[type][4] = np.append(
+                results_for_table[type][4], pct_change4[-1])
+            results_for_table[type][5] = np.append(
+                results_for_table[type][5], pct_change5[-1])
+    if full_break_out:
+        if include_business_tax:
+            table_dict = {
+                'Year': year_list,
+                # 'IIT and Payroll Taxes:':
+                # np.ones(results_for_table['indiv'][1].shape[0]) * np.nan,
+                'IIT: Pct Change due to tax rates':
+                results_for_table['indiv'][1],
+                'IIT: Pct Change due to behavior':
+                results_for_table['indiv'][2],
+                'IIT: Pct Change due to macro':
+                results_for_table['indiv'][3],
+                'IIT: Overall Pct Change in taxes':
+                results_for_table['indiv'][5],
+                # 'Business Taxes:':
+                # np.ones(results_for_table['biz'][1].shape[0]) * np.nan,
+                'CIT: Pct Change due to tax rates':
+                results_for_table['biz'][1],
+                'CIT: Pct Change due to behavior':
+                results_for_table['biz'][2],
+                'CIT: Pct Change due to macro':
+                results_for_table['biz'][3],
+                'CIT: Overall Pct Change in taxes':
+                results_for_table['biz'][5],
+                # 'All Taxes:':
+                # np.ones(results_for_table['total'][1].shape[0]) * np.nan,
+                'All: Pct Change due to tax rates':
+                results_for_table['total'][1],
+                'All: Pct Change due to behavior':
+                results_for_table['total'][2],
+                'All: Pct Change due to macro':
+                results_for_table['total'][3],
+                'All: Overall Pct Change in taxes':
+                results_for_table['total'][5]}
+        else:
+            table_dict = {
+                'Year': year_list,
+                'Pct Change due to tax rates':
+                results_for_table['indiv'][1],
+                'Pct Change due to behavior':
+                results_for_table['indiv'][2],
+                'Pct Change due to macro':
+                results_for_table['indiv'][3],
+                'Overall Pct Change in taxes':
+                results_for_table['indiv'][5]}
+    else:
+        if include_business_tax:
+            table_dict = {
+                'Year': year_list,
+                # 'IIT and Payroll Taxes:':
+                # np.ones(results_for_table['indiv'][1].shape[0]) * np.nan,
+                'IIT: Pct Change due to tax rates':
+                results_for_table['indiv'][1],
+                'IIT: Pct Change due to dynamics':
+                results_for_table['indiv'][4],
+                'IIT: Overall Pct Change in taxes':
+                results_for_table['indiv'][5],
+                # 'Business Taxes:':
+                # np.ones(results_for_table['biz'][1].shape[0]) * np.nan,
+                'CIT: Pct Change due to tax rates':
+                results_for_table['biz'][1],
+                'CIT: Pct Change due to dynamics':
+                results_for_table['biz'][4],
+                'CIT: Overall Pct Change in taxes':
+                results_for_table['biz'][5],
+                # 'All Taxes:':
+                # np.ones(results_for_table['total'][1].shape[0]) * np.nan,
+                'All: Pct Change due to tax rates':
+                results_for_table['total'][1],
+                'All: Pct Change due to dynamics':
+                results_for_table['total'][4],
+                'All: Overall Pct Change in taxes':
+                results_for_table['total'][5]}
+        else:
+            table_dict = {
+                'Year': year_list,
+                'Pct Change due to tax rates': results_for_table['indiv'][1],
+                'Pct Change due to dynamics': results_for_table['indiv'][4],
+                'Overall Pct Change in taxes': results_for_table['indiv'][5]}
     # Make df with dict so can use pandas functions
     table_df = pd.DataFrame.from_dict(table_dict, orient='columns'
                                       ).set_index('Year').transpose()
