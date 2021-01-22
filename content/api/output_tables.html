@@ -445,10 +445,10 @@
 <span id="ogusa-output-tables"></span><h2>ogusa.output_tables<a class="headerlink" href="#module-ogusa.output_tables" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="ogusa.output_tables.dynamic_revenue_decomposition">
-<code class="sig-prename descclassname">ogusa.output_tables.</code><code class="sig-name descname">dynamic_revenue_decomposition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_params</span></em>, <em class="sig-param"><span class="n">base_tpi</span></em>, <em class="sig-param"><span class="n">base_ss</span></em>, <em class="sig-param"><span class="n">reform_params</span></em>, <em class="sig-param"><span class="n">reform_tpi</span></em>, <em class="sig-param"><span class="n">reform_ss</span></em>, <em class="sig-param"><span class="n">num_years</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">include_SS</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_overall</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">start_year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">table_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/output_tables.html#dynamic_revenue_decomposition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.output_tables.dynamic_revenue_decomposition" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ogusa.output_tables.</code><code class="sig-name descname">dynamic_revenue_decomposition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_params</span></em>, <em class="sig-param"><span class="n">base_tpi</span></em>, <em class="sig-param"><span class="n">base_ss</span></em>, <em class="sig-param"><span class="n">reform_params</span></em>, <em class="sig-param"><span class="n">reform_tpi</span></em>, <em class="sig-param"><span class="n">reform_ss</span></em>, <em class="sig-param"><span class="n">num_years</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">include_SS</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_overall</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_business_tax</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">full_break_out</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">start_year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">table_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/output_tables.html#dynamic_revenue_decomposition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.output_tables.dynamic_revenue_decomposition" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function decomposes the source of changes in tax revenues to
-determine the percentage change in individual and payroll tax
-receipt that can be attributed to macroeconomic feedback effects.</p>
+determine the percentage change in tax revenues that can be
+attributed to macroeconomic feedback effects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -465,6 +465,10 @@ object</p></li>
 in the table</p></li>
 <li><p><strong>include_overall</strong> (<em>bool</em>) – whether to include results over the
 entire budget window as a column in the table</p></li>
+<li><p><strong>include_business_tax</strong> (<em>bool</em>) – whether to include business tax
+revenue changes in result</p></li>
+<li><p><strong>full_break_out</strong> (<em>bool</em>) – whether to break out behavioral and macro
+effects</p></li>
 <li><p><strong>start_year</strong> (<em>integer</em>) – year to start table</p></li>
 <li><p><strong>table_format</strong> (<em>string</em>) – format to return table in: ‘csv’, ‘tex’,
 ‘excel’, ‘json’, if None, a DataFrame is returned</p></li>
@@ -507,12 +511,12 @@ Call this series C.</p></li>
 this the “static” change from the macro model.  Calculate the
 percentage difference between C and B – call this the
 behavioral effects.  Calculate the percentage difference
-between D and C – call this the macroeconomic effect.</p></li>
+between D and C – call this the macroeconomic effect.  The
+full dynamic effect is difference between C and A.</p></li>
 </ol>
 <p>One can apply the percentage difference from the macro feedback
-effect to the microsimulation model (“static”) revenue estimate
-from the policy change to produce an estimate of the revenue
-including macro feedback.</p>
+effect to (“static”) revenue estimates from the policy change
+to produce an estimate of the revenue including macro feedback.</p>
 </div>
 </dd></dl>
 
