@@ -82,9 +82,15 @@ def test_tp_output_dump_table():
         reform_tpi=reform_tpi)
     assert isinstance(df, pd.DataFrame)
 
-
-def test_dynamic_revenue_decomposition():
+@pytest.mark.parametrize(
+    'include_business_tax,full_break_out',
+    [(True, True), (True, False), (False, False), (False, True)],
+    ids=['Biz Tax and break out', 'Biz tax, no break out',
+         'No biz tax or break out', 'No biz tax, break out'])
+def test_dynamic_revenue_decomposition(include_business_tax,
+                                       full_break_out):
     df = output_tables.dynamic_revenue_decomposition(
             base_params, base_tpi, base_ss, reform_params, reform_tpi,
-            reform_ss)
+            reform_ss, include_business_tax=include_business_tax,
+            full_break_out=full_break_out)
     assert isinstance(df, pd.DataFrame)
