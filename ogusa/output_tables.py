@@ -410,8 +410,8 @@ def dynamic_revenue_decomposition(
         start_year=DEFAULT_START_YEAR, table_format=None, path=None):
     '''
     This function decomposes the source of changes in tax revenues to
-    determine the percentage change in individual and payroll tax
-    receipt that can be attributed to macroeconomic feedback effects.
+    determine the percentage change in tax revenues that can be
+    attributed to macroeconomic feedback effects.
 
     Args:
         base_params (OG-USA Specifications class): baseline parameters
@@ -458,12 +458,12 @@ def dynamic_revenue_decomposition(
            this the "static" change from the macro model.  Calculate the
            percentage difference between C and B -- call this the
            behavioral effects.  Calculate the percentage difference
-           between D and C -- call this the macroeconomic effect.
+           between D and C -- call this the macroeconomic effect.  The
+           full dynamic effect is difference between C and A.
 
         One can apply the percentage difference from the macro feedback
-        effect to the microsimulation model ("static") revenue estimate
-        from the policy change to produce an estimate of the revenue
-        including macro feedback.
+        effect to ("static") revenue estimates from the policy change
+        to produce an estimate of the revenue including macro feedback.
 
     '''
     assert isinstance(start_year, (int, np.integer))
@@ -618,8 +618,7 @@ def dynamic_revenue_decomposition(
         if include_business_tax:
             table_dict = {
                 'Year': year_list,
-                # 'IIT and Payroll Taxes:':
-                # np.ones(results_for_table['indiv'][1].shape[0]) * np.nan,
+                # IIT and Payroll Taxes
                 'IIT: Pct Change due to tax rates':
                 results_for_table['indiv'][1],
                 'IIT: Pct Change due to behavior':
@@ -628,8 +627,7 @@ def dynamic_revenue_decomposition(
                 results_for_table['indiv'][3],
                 'IIT: Overall Pct Change in taxes':
                 results_for_table['indiv'][5],
-                # 'Business Taxes:':
-                # np.ones(results_for_table['biz'][1].shape[0]) * np.nan,
+                # Business Taxes
                 'CIT: Pct Change due to tax rates':
                 results_for_table['biz'][1],
                 'CIT: Pct Change due to behavior':
@@ -638,8 +636,7 @@ def dynamic_revenue_decomposition(
                 results_for_table['biz'][3],
                 'CIT: Overall Pct Change in taxes':
                 results_for_table['biz'][5],
-                # 'All Taxes:':
-                # np.ones(results_for_table['total'][1].shape[0]) * np.nan,
+                # All Taxes
                 'All: Pct Change due to tax rates':
                 results_for_table['total'][1],
                 'All: Pct Change due to behavior':
