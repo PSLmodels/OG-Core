@@ -696,6 +696,8 @@ def read_cbo_forecast():
     # merge with long term data
     df_cbo = df_lt.merge(df_st, how='outer', on='year',
                          suffixes=('_lt', '_st'))
+    # replace * with 0
+    df_cbo.replace(to_replace='*', value=0.0, inplace=True)
 
     return df_cbo
 
