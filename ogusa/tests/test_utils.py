@@ -505,7 +505,7 @@ def test_read_cbo_forecast():
     test_df = utils.read_cbo_forecast()
 
     assert np.allclose(
-        test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20330)
+        test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20344)
 
 
 def test_print_progress():
