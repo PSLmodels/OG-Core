@@ -63,7 +63,6 @@ def get_initial_SS_values(p):
         TRbaseline = tpi_baseline_vars['TR']
         Gbaseline = tpi_baseline_vars['G']
 
-
     if p.baseline:
         ss_vars = ss_baseline_vars
     else:
