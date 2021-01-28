@@ -50,7 +50,9 @@ def get_initial_SS_values(p):
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars['factor_ss']
-    initial_b = ss_baseline_vars['bssmat_splus1']
+    B0 = aggr.get_B(ss_baseline_vars['bssmat_splus1'], p, 'SS', True)
+    initial_b = (ss_baseline_vars['bssmat_splus1'] *
+                 (ss_baseline_vars['Bss'] / B0))
     initial_n = ss_baseline_vars['nssmat']
     TRbaseline = None
     Gbaseline = None
@@ -60,6 +62,7 @@ def get_initial_SS_values(p):
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         TRbaseline = tpi_baseline_vars['TR']
         Gbaseline = tpi_baseline_vars['G']
+
 
     if p.baseline:
         ss_vars = ss_baseline_vars
