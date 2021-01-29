@@ -339,7 +339,7 @@ def wealth_moments_table(base_ss, base_params, table_format=None,
     # get moments from Survey of Consumer Finances data
     scf = wealth.get_wealth_data()
     table_dict['Data'] = wealth.compute_wealth_moments(
-        scf, base_params.lambdas)
+        scf, np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]))
     # Make df with dict so can use pandas functions
     table_df = pd.DataFrame.from_dict(table_dict)
     table = save_return_table(table_df, table_format, path,
