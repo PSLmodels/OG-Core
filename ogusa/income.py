@@ -211,10 +211,11 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
         # assumption is that profile shape of these top 3 groups are
         # same as the top 1% estimated in tax data, just scaled up by
         # ratio determined from P&S 2018 estimates (Table 0, ex cap gains)
-        emat_new[:, 6] = emat_orig[:, -1] * 0.458759521
-        emat_new[:, 7] = emat_orig[:, -1] * 0.847252448
-        emat_new[:, 8] = emat_orig[:, -1] * 2.713698465
-        emat_new[:, 9] = emat_orig[:, -1] * 18.74863983
+        emat_new[:, 5] = emat_orig[:, -2] * 2.0
+        emat_new[:, 6] = emat_orig[:, -1] * 0.458759521 * 3.0
+        emat_new[:, 7] = emat_orig[:, -1] * 0.847252448 * 6.0
+        emat_new[:, 8] = emat_orig[:, -1] * 2.713698465 * 8.0
+        emat_new[:, 9] = emat_orig[:, -1] * 18.74863983 * 10.0
         emat_new_scaled = emat_new / (emat_new * age_wgts.reshape(80, 1)
                                       * abil_wgts.reshape(1, 10)).sum()
     elif (S == 80 and np.array_equal(
