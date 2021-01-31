@@ -62,6 +62,9 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'ETR': 'Effective Tax Rates',
               'MTRx': 'Marginal Tax Rates on Labor Income',
               'MTRy': 'Marginal Tax Rates on Capital Income',
+              'etr': 'Effective Tax Rates',
+              'mtrx': 'Marginal Tax Rates on Labor Income',
+              'mtry': 'Marginal Tax Rates on Capital Income',
               'Yss': 'GDP ($\\bar{Y}$)',
               'Css': 'Consumption ($\\bar{C}$)',
               'Lss': 'Labor ($\\bar{L}$)',
@@ -102,13 +105,13 @@ ToGDP_LABELS = {'D': 'Debt-to-GDP ($D_{t}/Y_t$)',
                 'total_tax_revenue': 'Tax Revenue-to-GDP ($REV_{t}/Y_t$)'}
 
 GROUP_LABELS = {7: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
-                4: '80-90%', 5: '90-99%', 6: 'Top 1%'},
+                    4: '80-90%', 5: '90-99%', 6: 'Top 1%'},
                 9: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
                     4: '80-90%', 5: '90-99%', 6: '99-99.5%',
-                    7: 'Top 99.5-99.9%', 8: 'Top 0.1%'},
+                    7: '99.5-99.9%', 8: 'Top 0.1%'},
                 10: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
                      4: '80-90%', 5: '90-99%', 6: '99-99.5%',
-                     7: 'Top 99.5-99.9%', 8: '99.9-99.99%',
+                     7: '99.5-99.9%', 8: '99.9-99.99%',
                      9: 'Top 0.01%'}}
 
 CBO_UNITS = {

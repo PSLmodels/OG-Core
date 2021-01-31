@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
 from ogusa import utils, txfunc
-from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR
+from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR, VAR_LABELS
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -959,8 +959,8 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
 
     # plot raw data (if passed)
     if data_list is not None:
-        # rate_type_dict = {'etr': 'etr', 'mtrx': 'mtr_labinc',
-        #                   'mtry': 'mtr_capinc'}
+        rate_type_dict = {'etr': 'etr', 'mtrx': 'mtr_labinc',
+                          'mtry': 'mtr_capinc'}
         # censor data to range of the plot
         for d, data in enumerate(data_list):
             data_to_plot = data[str(year)].copy()
@@ -980,8 +980,10 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
             wm = lambda x: np.average(
                 x, weights=data_to_plot.loc[x.index, "weight"])
             data_to_plot['inc_bin'] = pd.cut(data_to_plot[key1], n_bins)
-            groups = pd.DataFrame(data_to_plot.groupby(["inc_bin"]).agg(
-                rate=(rate_type, wm), income=(key1, wm)))
+            groups = pd.DataFrame(
+                data_to_plot.groupby(["inc_bin"]).agg(
+                    rate=(rate_type_dict[rate_type], wm),
+                    income=(key1, wm)))
             plt.scatter(groups['income'], groups['rate'], alpha=0.1)
     # add legend, labels, etc to plot
     plt.legend(loc='center right')
@@ -991,7 +993,7 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
         plt.xlabel(r'Labor income')
     else:
         plt.xlabel(r'Capital income')
-    plt.ylabel(str.upper(rate_type))
+    plt.ylabel(VAR_LABELS[rate_type])
     if path is None:
         return fig
     else:

@@ -268,6 +268,12 @@ def test_ratio_pct1_pct2():
     assert np.allclose(ratio, 9)
 
 
+def test_pct():
+    ineq = Inequality(dist, pop_weights, ability_weights, S, J)
+    pct_value = ineq.pct(0.90)
+    assert np.allclose(pct_value, 9.0)
+
+
 def test_top_share():
     '''
     Test of top share calculation
@@ -357,7 +363,7 @@ def test_safe_read_pickle(filename):
     assert True
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def picklefile1():
     x = {'a': 1}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
@@ -369,7 +375,7 @@ def picklefile1():
     os.remove(pfile.name)
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def picklefile2():
     y = {'a': 1, 'b': 2}
 
@@ -382,7 +388,7 @@ def picklefile2():
     os.remove(pfile.name)
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def picklefile3():
     x = {'a': np.array([100., 200., 300.]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
@@ -394,7 +400,7 @@ def picklefile3():
     os.remove(pfile.name)
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def picklefile4():
     x = {'a': np.array([100., 200., 300.1]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
@@ -499,7 +505,7 @@ def test_read_cbo_forecast():
     test_df = utils.read_cbo_forecast()
 
     assert np.allclose(
-        test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20330)
+        test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20344)
 
 
 def test_print_progress():
