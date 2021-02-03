@@ -396,9 +396,15 @@ We outline the stationary non-steady state solution algorithm in the following s
 	2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
 	3. Make sure that all the $(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance.
 
-(SecNSSeqlbResults)=
-### Baseline Nonsteady-state Results
 
+(SecNSSeqlbResults)=
+### Baseline Non-steady-state Results
+
+[TODO: Add baseline non-steady-state results here.]
+
+
+(SecEqlbFootnotes)=
+## Footnotes
 
 [^step3_note]: The updated wage rate, $w^{i'}$, is found by using the updated interest rate, $r^{i'}$ as detailed in Step 3.
 
