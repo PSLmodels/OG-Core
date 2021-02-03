@@ -1,13 +1,15 @@
 (Chap_UBI)=
 # Universal Basic Income (UBI)
 
-We have included the modeling of a universal basic income (UBI) policy directly in the theory and code for OG-USA. We calculate the time series of a UBI matrix $ubi_{j,s,t}$ representing the UBI transfer to every household with head of household age $s$, lifetime income group $j$, in period $t$. We calculate the time series of this matrix from five parameters and some household composition data that we impose upon the existing demographics of OG-USA.
+[TODO: This section is far along but needs to be updated.]
+
+We have included the modeling of a universal basic income (UBI) policy directly in the theory and code for `OG-USA`. We calculate the time series of a UBI matrix $ubi_{j,s,t}$ representing the UBI transfer to every household with head of household age $s$, lifetime income group $j$, in period $t$. We calculate the time series of this matrix from five parameters and some household composition data that we impose upon the existing demographics of `OG-USA`.
 
 
 (SecUBIcalc)=
 ## Calculating UBI
 
-  We calculate the time series of UBI household transfer in model units $ubi_{j,s,t)}$ and the time series of total UBI expenditures in model units $UBI_t$ from five parameters described in the OG-USA API (`ubi_growthadj`, `ubi_child`, `ubi_adult`, `ubi_senior`, and `ubi_max`) interfaced with the OG-USA demographic dynamics over lifetime income groups $j$ and ages $s$, and multiplied by household composition matrices from the [OG-USA-calibration](https://github.com/PSLmodels/OG-USA-Calibration) repository.
+  We calculate the time series of UBI household transfer in model units $ubi_{j,s,t)}$ and the time series of total UBI expenditures in model units $UBI_t$ from five parameters described in the `OG-USA` API (`ubi_growthadj`, `ubi_child`, `ubi_adult`, `ubi_senior`, and `ubi_max`) interfaced with the `OG-USA` demographic dynamics over lifetime income groups $j$ and ages $s$, and multiplied by household composition matrices from the [OG-USA-calibration](https://github.com/PSLmodels/OG-USA-Calibration) repository.
 
   From the [OG-USA-calibration](https://github.com/PSLmodels/OG-USA-Calibration) repository, we have three $S\times J$ matrices `ubi_num_child_mat`$_{j,s}$, `ubi_num_adult_mat`$_{j,s}$, and `ubi_num_senior_mat`$_{j,s}$ representing the number of children under age 18, the number of adults between ages 18 and 65, and the number of seniors over 65, respectively, by lifetime ability group $j$ and age $s$ of head of household. Because our demographic age data match up well with head-of-household data from other datasets, we do not have to adjust the values in these matrices.[^HOH_age_dist_note]
 
@@ -51,4 +53,7 @@ We have included the modeling of a universal basic income (UBI) policy directly 
   Put description of growth-adjusted specification here.
 
 
-[^HOH_age_dist_note]: DeBacker and Evans compared the OG-USA age demographics $\hat{\omega}_{s,t}$ with the respective age demographics in Tax Policy Center's microsimulation model and in [Tax-Calculator](https://github.com/PSLmodels/Tax-Calculator)'s microsimulation model. The latter two microsimulation models' age demographics are based on head of household tax filer age distributions, whereas OG-USA's demographics are based on the population age distribution.
+(SecUBIfootnotes)=
+## Footnotes
+
+[^HOH_age_dist_note]: DeBacker and Evans compared the `OG-USA` age demographics $\hat{\omega}_{s,t}$ with the respective age demographics in Tax Policy Center's microsimulation model and in [Tax-Calculator](https://github.com/PSLmodels/Tax-Calculator)'s microsimulation model. The latter two microsimulation models' age demographics are based on head of household tax filer age distributions, whereas `OG-USA`'s demographics are based on the population age distribution.
