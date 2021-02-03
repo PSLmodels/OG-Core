@@ -285,10 +285,11 @@ The computational algorithm for solving for the steady-state follows the steps b
   The steady-state computation time does not include any of the exogenous parameter computation processes, the longest of which is the estimation of the baseline tax functions which computation takes 1 hour and 15 minutes.
 
 
-(Chap_NSSeqlb)=
+(SecNSSeqlb)=
 ## Stationary Nonsteady-State Equilibrium
 
-  In this chapter, we define the stationary nonsteady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_Demog` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. We also need the steady-state solution from Chapter {ref}`Chap_SSeqlb` to solve for the nonsteady-state equilibrium transition path. As with the steady-state equilibrium, we must use the stationarized version of the characterizing equations from Chapter {ref}`Chap_Stnrz`.
+  In this section, we define the stationary nonsteady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_House` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model in their non-stationarized form. And chapter {ref}`Chap_Stnrz` derives the stationarized versions of the characterizing equations. We also need the steady-state solution from Section {ref}`SecSSeqlb` to solve for the nonsteady-state equilibrium transition path. As with the steady-state equilibrium, we must use the stationarized version of the characterizing equations from Chapter {ref}`Chap_Stnrz`.
+
 
 (SecEqlbNSSdef)=
 ### Stationary Nonsteady-State Equilibrium Definition
