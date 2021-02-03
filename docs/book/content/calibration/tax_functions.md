@@ -21,8 +21,8 @@ The second difficulty in modeling realistic tax and incentive detail is the need
     x_{j,s,t} \equiv w_{t}e_{j,s}n_{j,s,t} \quad\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
   ```{math}
-  :label: EqTaxCalcLabInc
-    y_{j,s,t} \equiv r_{t}b_{j,s,t} \qquad\:\:\:\,\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
+  :label: EqTaxCalcCapInc
+    y_{j,s,t} \equiv r_{hh,t}b_{j,s,t} \quad\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   We can express total tax liability $T_{s,t}$ from the household budget constraint {eq}`EqHHBC` as an effective tax rate multiplied by total income.
@@ -32,9 +32,9 @@ The second difficulty in modeling realistic tax and incentive detail is the need
     T_{s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right)
   ```
 
-  Rearranging {eq}`EqTaxCalcLiabETR` gives the definition of an effective tax rate ($ETR$) as total tax liability divided by unadjusted gross income, or rather, total tax liability as a percent of unadjusted gross income.
+  Rearranging {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate ($ETR$) as total tax liability divided by unadjusted gross income, or rather, total tax liability as a percent of unadjusted gross income.
 
-  A marginal tax rate ($MTR$) is defined as the change in total tax liability from a small change income. In `OG-USA`, we differentiate between the marginal tax rate on labor income ($MTRx$) and the marginal tax rate on labor income ($MTRy$).
+  A marginal tax rate ($MTR$) is defined as the change in total tax liability from a small change income. In `OG-USA`, we differentiate between the marginal tax rate on labor income ($MTRx$) and the marginal tax rate on capital income ($MTRy$).
 
   ```{math}
   :label: EqTaxCalcMTRx
@@ -42,7 +42,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   ```
   ```{math}
   :label: EqTaxCalcMTRy
-    \tau^{mtry} \equiv \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \tau^{mtry} \equiv \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   As we show in Section {ref}`SecHHeulers`, the derivative of total tax liability with respect to labor supply $\frac{\partial T_{s,t}}{n_{j,s,t}}$ and the derivative of total tax liability next period with respect to savings $\frac{\partial T_{s+1,t+1}}{b_{j,s+1,t+1}}$ show up in the household Euler equations for labor supply {eq}`EqHHeul_n` and savings {eq}`EqHHeul_b`, respectively. It is valuable to be able to express those marginal tax rates, for which we have no data, as marginal tax rates for which we do have data. The following two expressions show how the marginal tax rates of labor supply can be expressed as the marginal tax rate on labor income times the household-specific wage and how the marginal tax rate of savings can be expressed as the marginal tax rate of capital income times the interest rate.
@@ -54,7 +54,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqMTRy_derive
-    \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{t}b_{j,s,t}}\frac{\partial r_t b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}}r_{t} = \tau^{mtry}_{s,t}r_t
+    \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}}\frac{\partial r_{hh,t}b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}}r_{hh,t} = \tau^{mtry}_{s,t}r_{hh,t}
   ```
 
 (SecTaxCalcMicro)=
