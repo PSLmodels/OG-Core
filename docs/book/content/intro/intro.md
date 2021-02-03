@@ -27,4 +27,4 @@ The model is continuously under development. Users will be notified through [clo
 (Sec_CitingOGUSA)=
 ## Citing OG-USA
 
-OG-USA (Version 0.6.3)[Source code], https://github.com/PSLmodels/OG-USA
+`OG-USA` (Version 0.6.3)[Source code], https://github.com/PSLmodels/OG-USA
