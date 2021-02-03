@@ -5,6 +5,7 @@ import pickle
 import numpy as np
 import os
 from ogusa import SS, TPI, utils, firm
+import ogusa.aggregates as aggr
 from ogusa.parameters import Specifications
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -49,6 +50,17 @@ def test_get_initial_SS_values(baseline, param_updates, filename,
 
     (exp_initial_values, exp_ss_vars, exp_theta,
      exp_baseline_values) = expected_tuple
+    (B0, b_sinit, b_splus1init, factor, initial_b,
+     initial_n) = exp_initial_values
+    B0 = aggr.get_B(exp_ss_vars['bssmat_splus1'], p, 'SS', True)
+    initial_b = (exp_ss_vars['bssmat_splus1'] *
+                 (exp_ss_vars['Bss'] / B0))
+    B0 = aggr.get_B(initial_b, p, 'SS', True)
+    b_sinit = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
+                       list(initial_b[:-1]))
+    b_splus1init = initial_b
+    exp_initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
+                          initial_n)
 
     for i, v in enumerate(exp_initial_values):
         assert(np.allclose(test_initial_values[i], v, equal_nan=True))
