@@ -9,7 +9,7 @@ Incorporating realistic tax and incentive detail into a general equilibrium mode
 
 The second difficulty in modeling realistic tax and incentive detail is the need for good microeconomic data on the individuals who make up the economy from which to simulate behavioral responses and corresponding tax liabilities and tax rates.
 
-`OG-USA` follows the method of {cite}`DeBackerEtAl:2017` of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into `OG-USA`.
+`OG-USA` follows the method of {cite}`DeBackerEtAl:2019` of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into `OG-USA`.
 
 (SecTaxCalcRateTheory)=
 ## Effective and Marginal Tax Rates
@@ -94,7 +94,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcFuncs_DEP)=
 ### Default Tax Functional Form
 
-  For the default option, `OG-USA` follows the approach of {cite}`DeBackerEtAl:2017` in using the following functional form to estimate tax functions for each age $s=E+1, E+2, ... E+S$ in each time period $t$. This option can be manually selected by setting the parameter `tax_func_type="DEP"`. Alternative specifications are outlined in Section {ref}`SecTaxCalcFuncs_Alt` below. Equation {eq}`EqTaxCalcTaxFuncForm` is written as a generic tax rate, but we use this same functional form for $ETR$'s, $MTRx$'s, and $MTRy$'s.
+  For the default option, `OG-USA` follows the approach of {cite}`DeBackerEtAl:2019` in using the following functional form to estimate tax functions for each age $s=E+1, E+2, ... E+S$ in each time period $t$. This option can be manually selected by setting the parameter `tax_func_type="DEP"`. Alternative specifications are outlined in Section {ref}`SecTaxCalcFuncs_Alt` below. Equation {eq}`EqTaxCalcTaxFuncForm` is written as a generic tax rate, but we use this same functional form for $ETR$'s, $MTRx$'s, and $MTRy$'s.
   ```{math}
   :label: EqTaxCalcTaxFuncForm
     \tau(x,y) = &\Bigl[\tau(x) + shift_x\Bigr]^\phi\Bigl[\tau(y) + shift_y\Bigr]^{1-\phi} + shift \\
@@ -241,9 +241,9 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcFuncs_Alt)=
 ### Alternative Functional Forms
 
-  In addition to the default option using tax functions of the form developed by {cite}`DeBackerEtAl:2017`, `OG-USA` also allows users to specify alternative tax functions.  Three alternatives are offered:
+  In addition to the default option using tax functions of the form developed by {cite}`DeBackerEtAl:2019`, `OG-USA` also allows users to specify alternative tax functions.  Three alternatives are offered:
 
-  1. Functions as in {cite}`DeBackerEtAl:2017`, but where $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are functions of total income (i.e., $x+y$) and not labor and capital income separately.  Users can select this option by setting the parameter `tax_func_type="DEP_totalinc"`.
+  1. Functions as in {cite}`DeBackerEtAl:2019`, but where $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are functions of total income (i.e., $x+y$) and not labor and capital income separately.  Users can select this option by setting the parameter `tax_func_type="DEP_totalinc"`.
 
   2. Functions of the Gouveia and Strauss form {cite}`GouveiaStrauss:1994`:
 
@@ -255,7 +255,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   1. Linear tax functions (i.e., $\tau =$ a constant).  Users can select this option by setting the parameter `tax_func_type="linear"`.  The constant rate is found by taking the weighted average of the appropriate tax rate (effective tax rate, marginal tax rate on labor income, marginal tax rate on labor income) for each age and year, where the values are weighted by sampling weights and income.
 
-  Among all of these tax functional forms, users can set the `age_specific` parameter to `False` if they wish to have one function for all ages $s$.  In addition, for the functions based on {cite}`DeBackerEtAl:2017` (`tax_func_type="DEP"` or `tax_func_type="DEP_totinc"`), one can set `analytical_mtrs=True` if they wish to have the $\tau^{mtrx}_{s,t}$ and $\tau^{mtry}_{s,t}$ derived from the $\tau^{etr}_{s,t}$ functions.  This provides theoretical consistency, but reduced fit of the functions (see {cite}`DeBackerEtAl:2017` for more details).
+  Among all of these tax functional forms, users can set the `age_specific` parameter to `False` if they wish to have one function for all ages $s$.  In addition, for the functions based on {cite}`DeBackerEtAl:2019` (`tax_func_type="DEP"` or `tax_func_type="DEP_totinc"`), one can set `analytical_mtrs=True` if they wish to have the $\tau^{mtrx}_{s,t}$ and $\tau^{mtry}_{s,t}$ derived from the $\tau^{etr}_{s,t}$ functions.  This provides theoretical consistency, but reduced fit of the functions (see {cite}`DeBackerEtAl:2019` for more details).
 
 (SecTaxCalcFactor)=
 ## Factor Transforming Income Units
