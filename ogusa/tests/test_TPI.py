@@ -342,12 +342,19 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, None)
+    test_path = os.path.join(CUR_PATH, 'test_dyn.pkl')
+    with open(test_path, "wb") as f:
+        pickle.dump(test_dict, f)
     expected_dict = utils.safe_read_pickle(filename)
 
     for k, v in expected_dict.items():
         try:
+            print('Checking: ', k)
+            print('Max diff = ', np.absolute(test_dict[k][:p.T] - v[:p.T]).max())
             assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04, atol=1e-04))
         except ValueError:
+            print('Checking: ', k)
+            print('Max diff = ', np.absolute(test_dict[k][:p.T] - v[:p.T]).max())
             assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :], rtol=1e-04,
                                atol=1e-04))
 

@@ -513,7 +513,7 @@ def run_TPI(p, client=None):
 
         r_hh[:p.T] = aggr.get_r_hh(r[:p.T], r_gov[:p.T], K[:p.T],
                                    D[:p.T])
-
+        print("INTREST RATES = ", r[:5], r_gov[:5], r_hh[:5])
         outer_loop_vars = (r, w, r_hh, BQ, TR, theta)
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
@@ -575,6 +575,7 @@ def run_TPI(p, client=None):
          debt_service, new_borrowing_f) =\
             fiscal.D_G_path(r_gov, dg_fixed_values, p)
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
+        print('Initial B, V, K = ', B[0], V[0], K[0])
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
 
@@ -589,6 +590,7 @@ def run_TPI(p, client=None):
         # could also try to build in realistic repsonse to world and domestic rates - which CBO doesn't have
         V[:p.T] = V_d[:p.T] + V_f[:p.T]
         X = firm.get_X(z, K_tau)
+        K0 = V[0]  # cheat for now with zero adj costs -- otherwise issue because for some guesses of Y, K0 and V[0] not equal and yield negative interest rate
         K[:p.T], K_tau[:p.T] = firm.get_K_demand(K0, V, K_tau0, z, p, 'TPI')
 
         # K_demand_open = firm.get_K(
