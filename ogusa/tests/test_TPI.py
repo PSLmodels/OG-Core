@@ -279,7 +279,8 @@ param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
 filename6 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_small_open_some_periods.pkl')
-param_updates7 = {'delta_tau_annual': [0.0]}
+param_updates7 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+                  'zeta_D': [0.0]}
 filename7 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_delta_tau0.pkl')
