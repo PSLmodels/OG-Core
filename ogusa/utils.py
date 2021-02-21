@@ -664,6 +664,7 @@ def read_cbo_forecast():
     df.rename(columns={'Unnamed: 0': 'variable'}, inplace=True)
     df.drop(columns=['2026.1', '2031.1'],
             inplace=True)
+    df.drop_duplicates(subset='variable', keep='last', inplace=True)
     df2 = df[~pd.isnull(df.variable)]
 
     CBO_10yr_macro_URL = (
@@ -672,8 +673,6 @@ def read_cbo_forecast():
     df = pd.read_excel(CBO_10yr_macro_URL,
                        sheet_name='2. Calendar Year', skiprows=6,
                        nrows=131)
-    print(df.head(n=5))
-    print('COLS = ', df.keys())
     df.rename(columns={'Unnamed: 1': 'variable'}, inplace=True)
     df.drop(columns=[
         'Unnamed: 0', 'Unnamed: 2', 'Units', 'Unnamed: 19',
@@ -690,8 +689,6 @@ def read_cbo_forecast():
     # reshape so each row a year
     df_st = pd.melt(df_st, id_vars='var_name',
                     value_vars=[i for i in range(2017, 2031)])
-    print(df_st)
-    print('COLS = ', df_st.keys())
     df_st = df_st.pivot(index='variable', columns='var_name',
                         values='value').reset_index()
     df_st.rename(columns={'variable': 'year'}, inplace=True)
