@@ -648,36 +648,37 @@ def read_cbo_forecast():
     df_lt['D'] = df_lt['Y'] * df_lt['D/Y']
 
     CBO_10yr_budget_URL = (
-        'https://www.cbo.gov/system/files/2020-09/51118-2020-09-' +
+        'https://www.cbo.gov/system/files/2021-02/51118-2021-02-11-' +
         'budgetprojections.xlsx')
-    df = pd.read_excel(CBO_10yr_budget_URL, sheet_name='Table 1',
+    df = pd.read_excel(CBO_10yr_budget_URL, sheet_name='Table 1-1',
                        skiprows=8, nrows=7)
     df.rename(
-        columns={'Unnamed: 1': 'variable', 'Actual, \n2019': 2019},
+        columns={'Unnamed: 0': 'variable', 'Actual, \n2020': 2020},
         inplace=True)
-    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', '2025.1',
-                     '2030.1'], inplace=True)
+    df.drop(columns=['Unnamed: 15', 'Unnamed: 16',
+                     '2026.1', '2031.1'], inplace=True)
     df1 = df[~((pd.isnull(df.variable)) | (df.variable == 'Other'))]
 
-    CBO_10yr_budget_URL = (
-        'https://www.cbo.gov/system/files/2020-09/51118-2020-09-' +
-        'budgetprojections.xlsx')
-    df = pd.read_excel(CBO_10yr_budget_URL, sheet_name='Table 3',
+    df = pd.read_excel(CBO_10yr_budget_URL, sheet_name='Table 1-3',
                        skiprows=9, nrows=22)
-    df.rename(columns={'Unnamed: 1': 'variable',
-                       'Actual, \n2019': 2019}, inplace=True)
-    df.drop(columns=['Unnamed: 0', '2025.1', '2030.1'],
+    df.rename(columns={'Unnamed: 0': 'variable'}, inplace=True)
+    df.drop(columns=['2026.1', '2031.1'],
             inplace=True)
     df2 = df[~pd.isnull(df.variable)]
 
     CBO_10yr_macro_URL = (
-        'https://www.cbo.gov/system/files/2020-07/51135-2020-07-' +
+        'https://www.cbo.gov/system/files/2021-02/51135-2021-02-' +
         'economicprojections.xlsx')
     df = pd.read_excel(CBO_10yr_macro_URL,
                        sheet_name='2. Calendar Year', skiprows=6,
                        nrows=131)
+    print(df.head(n=5))
+    print('COLS = ', df.keys())
     df.rename(columns={'Unnamed: 1': 'variable'}, inplace=True)
-    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', 'Unit'], inplace=True)
+    df.drop(columns=[
+        'Unnamed: 0', 'Unnamed: 2', 'Units', 'Unnamed: 19',
+        'Unnamed: 20', 'Unnamed: 21', 'Unnamed: 22', 'Unnamed: 23',
+        'Unnamed: 24'], inplace=True)
     # Note that real values come second (after nominal values)
     df.drop_duplicates(subset='variable', keep='last', inplace=True)
     df3 = df[~pd.isnull(df.variable)]
@@ -689,6 +690,8 @@ def read_cbo_forecast():
     # reshape so each row a year
     df_st = pd.melt(df_st, id_vars='var_name',
                     value_vars=[i for i in range(2017, 2031)])
+    print(df_st)
+    print('COLS = ', df_st.keys())
     df_st = df_st.pivot(index='variable', columns='var_name',
                         values='value').reset_index()
     df_st.rename(columns={'variable': 'year'}, inplace=True)
