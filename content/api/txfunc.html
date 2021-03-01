@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -353,21 +351,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +383,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +402,19 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -431,6 +429,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -450,7 +449,7 @@ income.
 ————————————————————————</p>
 <dl class="py function">
 <dt id="ogusa.txfunc.find_outliers">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">find_outliers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sse_mat</span></em>, <em class="sig-param"><span class="n">age_vec</span></em>, <em class="sig-param"><span class="n">se_mult</span></em>, <em class="sig-param"><span class="n">start_year</span></em>, <em class="sig-param"><span class="n">varstr</span></em>, <em class="sig-param"><span class="n">graph</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#find_outliers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.find_outliers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.txfunc.</span></code><code class="sig-name descname"><span class="pre">find_outliers</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sse_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">se_mult</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varstr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#find_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.txfunc.find_outliers" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function takes a matrix of sum of squared errors (SSE) from
 tax function estimations for each age (s) in each year of the budget
 window (t) and marks estimations that have outlier SSE.</p>
@@ -482,7 +481,7 @@ consider estimate an outlier</p></li>
 
 <dl class="py function">
 <dt id="ogusa.txfunc.get_tax_func_estimate">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">get_tax_func_estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">BW</span></em>, <em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">starting_age</span></em>, <em class="sig-param"><span class="n">ending_age</span></em>, <em class="sig-param"><span class="n">baseline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">analytical_mtrs</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tax_func_type</span><span class="o">=</span><span class="default_value">'DEP'</span></em>, <em class="sig-param"><span class="n">age_specific</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">start_year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">reform</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">guid</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">tax_func_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">client</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_workers</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#get_tax_func_estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.get_tax_func_estimate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.txfunc.</span></code><code class="sig-name descname"><span class="pre">get_tax_func_estimate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BW</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ending_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analytical_mtrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DEP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age_specific</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#get_tax_func_estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.txfunc.get_tax_func_estimate" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calls the tax function estimation routine and saves
 the resulting dictionary in pickle files corresponding to the
 baseline or reform policy.</p>
@@ -522,7 +521,7 @@ with Dask</p></li>
 
 <dl class="py function">
 <dt id="ogusa.txfunc.get_tax_rates">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">get_tax_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">wgts</span></em>, <em class="sig-param"><span class="n">tax_func_type</span></em>, <em class="sig-param"><span class="n">rate_type</span></em>, <em class="sig-param"><span class="n">analytical_mtrs</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mtr_capital</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">for_estimation</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#get_tax_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.get_tax_rates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.txfunc.</span></code><code class="sig-name descname"><span class="pre">get_tax_rates</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wgts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analytical_mtrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_capital</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">for_estimation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#get_tax_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.txfunc.get_tax_rates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates tax rates given income data and the parameters of the tax
 functions.</p>
 <dl class="field-list simple">
@@ -554,7 +553,7 @@ deviations from the mean</p></li>
 
 <dl class="py function">
 <dt id="ogusa.txfunc.replace_outliers">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">replace_outliers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">param_arr</span></em>, <em class="sig-param"><span class="n">sse_big_mat</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#replace_outliers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.replace_outliers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.txfunc.</span></code><code class="sig-name descname"><span class="pre">replace_outliers</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sse_big_mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#replace_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.txfunc.replace_outliers" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function replaces outlier estimated tax function parameters
 with linearly interpolated tax function tax function parameters</p>
 <dl class="field-list simple">
@@ -581,7 +580,7 @@ is outlier, size is SxBW</p></li>
 
 <dl class="py function">
 <dt id="ogusa.txfunc.tax_func_estimate">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">tax_func_estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">BW</span></em>, <em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">starting_age</span></em>, <em class="sig-param"><span class="n">ending_age</span></em>, <em class="sig-param"><span class="n">start_year</span><span class="o">=</span><span class="default_value">2021</span></em>, <em class="sig-param"><span class="n">baseline</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">analytical_mtrs</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tax_func_type</span><span class="o">=</span><span class="default_value">'DEP'</span></em>, <em class="sig-param"><span class="n">age_specific</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">reform</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc_data</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">graph_data</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">graph_est</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">client</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_workers</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#tax_func_estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.tax_func_estimate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.txfunc.</span></code><code class="sig-name descname"><span class="pre">tax_func_estimate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BW</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ending_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analytical_mtrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DEP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age_specific</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_est</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#tax_func_estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.txfunc.tax_func_estimate" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function performs analysis on the source data from Tax-
 Calculator and estimates functions for the effective tax rate (ETR),
 marginal tax rate on labor income (MTRx), and marginal tax rate on
@@ -622,7 +621,7 @@ with Dask</p></li>
 
 <dl class="py function">
 <dt id="ogusa.txfunc.tax_func_loop">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">tax_func_loop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">start_year</span></em>, <em class="sig-param"><span class="n">s_min</span></em>, <em class="sig-param"><span class="n">s_max</span></em>, <em class="sig-param"><span class="n">age_specific</span></em>, <em class="sig-param"><span class="n">tax_func_type</span></em>, <em class="sig-param"><span class="n">analytical_mtrs</span></em>, <em class="sig-param"><span class="n">desc_data</span></em>, <em class="sig-param"><span class="n">graph_data</span></em>, <em class="sig-param"><span class="n">graph_est</span></em>, <em class="sig-param"><span class="n">output_dir</span></em>, <em class="sig-param"><span class="n">numparams</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#tax_func_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.tax_func_loop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.txfunc.</span></code><code class="sig-name descname"><span class="pre">tax_func_loop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age_specific</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analytical_mtrs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_est</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numparams</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#tax_func_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.txfunc.tax_func_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimates tax functions for a particular year.  Looped over.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -733,7 +732,7 @@ functions</p>
 
 <dl class="py function">
 <dt id="ogusa.txfunc.txfunc_est">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">txfunc_est</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">rate_type</span></em>, <em class="sig-param"><span class="n">tax_func_type</span></em>, <em class="sig-param"><span class="n">numparams</span></em>, <em class="sig-param"><span class="n">output_dir</span></em>, <em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#txfunc_est"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.txfunc_est" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.txfunc.</span></code><code class="sig-name descname"><span class="pre">txfunc_est</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numparams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#txfunc_est"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.txfunc.txfunc_est" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function uses tax tax rate and income data for individuals of a
 particular age (s) and a particular year (t) to estimate the
 parameters of a Cobb-Douglas aggregation function of two ratios of
@@ -776,7 +775,7 @@ to the data</p></li>
 
 <dl class="py function">
 <dt id="ogusa.txfunc.wsumsq">
-<code class="sig-prename descclassname">ogusa.txfunc.</code><code class="sig-name descname">wsumsq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#wsumsq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.txfunc.wsumsq" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.txfunc.</span></code><code class="sig-name descname"><span class="pre">wsumsq</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/txfunc.html#wsumsq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.txfunc.wsumsq" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function generates the weighted sum of squared deviations of
 predicted values of tax rates (ETR, MTRx, or MTRy) from the tax
 rates from the data for the Cobb-Douglas functional form of the tax
@@ -831,15 +830,15 @@ functions that are not estimated</p></li>
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="tax.html" title="previous page">Tax Functions</a>
     <a class='right-next' id="next-link" href="utils.html" title="next page">Utilities Functions</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

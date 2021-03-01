@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -353,21 +351,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +383,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +402,19 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -438,6 +436,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -452,11 +451,11 @@
 <h2>ogusa.utils<a class="headerlink" href="#ogusa-utils" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="ogusa.utils.Inequality">
-<em class="property">class </em><code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">Inequality</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dist</span></em>, <em class="sig-param"><span class="n">pop_weights</span></em>, <em class="sig-param"><span class="n">ability_weights</span></em>, <em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">J</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.Inequality" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">Inequality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ability_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.Inequality" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class with methods to compute different measures of inequality.</p>
 <dl class="py method">
 <dt id="ogusa.utils.Inequality.gini">
-<code class="sig-name descname">gini</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'overall'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.gini"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.Inequality.gini" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">gini</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'overall'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.gini"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.Inequality.gini" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the Gini coefficient</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -473,7 +472,7 @@
 
 <dl class="py method">
 <dt id="ogusa.utils.Inequality.ratio_pct1_pct2">
-<code class="sig-name descname">ratio_pct1_pct2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pct1</span></em>, <em class="sig-param"><span class="n">pct2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.ratio_pct1_pct2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.Inequality.ratio_pct1_pct2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ratio_pct1_pct2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pct1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.ratio_pct1_pct2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.Inequality.ratio_pct1_pct2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the pct1/pct2 percentile ratio</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -497,7 +496,7 @@ in (0, 1)</p></li>
 
 <dl class="py method">
 <dt id="ogusa.utils.Inequality.var_of_logs">
-<code class="sig-name descname">var_of_logs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.var_of_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.Inequality.var_of_logs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">var_of_logs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.var_of_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.Inequality.var_of_logs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the variance of logs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -518,11 +517,11 @@ in (0, 1)</p></li>
 <h3>Miscellaneous functions used in the OG-USA model.<a class="headerlink" href="#miscellaneous-functions-used-in-the-og-usa-model" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="id0">
-<em class="property">class </em><code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">Inequality</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dist</span></em>, <em class="sig-param"><span class="n">pop_weights</span></em>, <em class="sig-param"><span class="n">ability_weights</span></em>, <em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">J</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">Inequality</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ability_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class with methods to compute different measures of inequality.</p>
 <dl class="py method">
 <dt id="id1">
-<code class="sig-name descname">gini</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'overall'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.gini"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">gini</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'overall'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.gini"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the Gini coefficient</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -539,7 +538,7 @@ in (0, 1)</p></li>
 
 <dl class="py method">
 <dt id="ogusa.utils.Inequality.pct">
-<code class="sig-name descname">pct</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pct</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.pct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.Inequality.pct" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">pct</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pct</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.pct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.Inequality.pct" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns value at given percentile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -557,7 +556,7 @@ in (0, 1).</p>
 
 <dl class="py method">
 <dt id="id2">
-<code class="sig-name descname">ratio_pct1_pct2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pct1</span></em>, <em class="sig-param"><span class="n">pct2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.ratio_pct1_pct2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ratio_pct1_pct2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pct1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.ratio_pct1_pct2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the pct1/pct2 percentile ratio</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -581,7 +580,7 @@ in (0, 1)</p></li>
 
 <dl class="py method">
 <dt id="ogusa.utils.Inequality.top_share">
-<code class="sig-name descname">top_share</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pctile</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.top_share"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.Inequality.top_share" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">top_share</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pctile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.top_share"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.Inequality.top_share" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the top X% share</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -603,7 +602,7 @@ in (0, 1).</p>
 
 <dl class="py method">
 <dt id="id3">
-<code class="sig-name descname">var_of_logs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.var_of_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">var_of_logs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#Inequality.var_of_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the variance of logs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -622,7 +621,7 @@ in (0, 1).</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.comp_array">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">comp_array</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">tol</span></em>, <em class="sig-param"><span class="n">unequal</span></em>, <em class="sig-param"><span class="n">exceptions</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">relative</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#comp_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.comp_array" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">comp_array</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unequal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#comp_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.comp_array" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare two arrays in the L inifinity norm
 Return True if | a - b | &lt; tol, False otherwise
 If not equal, add items to the unequal list
@@ -650,7 +649,7 @@ name: the name of the value being compared</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.comp_scalar">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">comp_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">tol</span></em>, <em class="sig-param"><span class="n">unequal</span></em>, <em class="sig-param"><span class="n">exceptions</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">relative</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#comp_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.comp_scalar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">comp_scalar</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unequal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#comp_scalar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.comp_scalar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare two scalars in the L inifinity norm
 Return True if abs(a - b) &lt; tol, False otherwise
 If not equal, add items to the unequal list</p>
@@ -677,7 +676,7 @@ If not equal, add items to the unequal list</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.convex_combo">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">convex_combo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var1</span></em>, <em class="sig-param"><span class="n">var2</span></em>, <em class="sig-param"><span class="n">nu</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#convex_combo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.convex_combo" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">convex_combo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#convex_combo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.convex_combo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes the convex combination of two variables, where nu is in [0,1].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -699,7 +698,7 @@ var1 and var2</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.dict_compare">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">dict_compare</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name1</span></em>, <em class="sig-param"><span class="n">dict1</span></em>, <em class="sig-param"><span class="n">name2</span></em>, <em class="sig-param"><span class="n">dict2</span></em>, <em class="sig-param"><span class="n">tol</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exceptions</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">relative</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#dict_compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.dict_compare" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">dict_compare</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#dict_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.dict_compare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare two dictionaries. The values of each dict are either
 numpy arrays or else types that are comparable with the <cite>==</cite> operator.
 For arrays, they are considered the same if <cite>|x - y| &lt; tol</cite> in
@@ -729,7 +728,7 @@ the L_inf norm. For scalars, they are considered the same if
 
 <dl class="py function">
 <dt id="ogusa.utils.fetch_files_from_web">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">fetch_files_from_web</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_urls</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#fetch_files_from_web"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.fetch_files_from_web" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">fetch_files_from_web</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#fetch_files_from_web"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.fetch_files_from_web" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches zip files from respective web addresses and saves them as
 temporary files. Prints progress bar as it downloads the files.</p>
 <dl class="field-list simple">
@@ -767,7 +766,7 @@ zipped_file = ZipFile object, opened zipfile</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.get_initial_path">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">get_initial_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">xT</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#get_initial_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.get_initial_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">get_initial_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#get_initial_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.get_initial_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function generates a path from point x1 to point xT such that
 that the path x is a linear or quadratic function of time t.</p>
 <blockquote>
@@ -806,7 +805,7 @@ or “quadratic”</p></li>
 
 <dl class="py function">
 <dt id="ogusa.utils.mkdirs">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">mkdirs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#mkdirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.mkdirs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">mkdirs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#mkdirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.mkdirs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes directories to save output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -820,7 +819,7 @@ or “quadratic”</p></li>
 
 <dl class="py function">
 <dt id="ogusa.utils.not_connected">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">not_connected</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="o">=</span><span class="default_value">'http://www.google.com/'</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#not_connected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.not_connected" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">not_connected</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://www.google.com/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#not_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.not_connected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks for internet connection status of machine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -846,7 +845,7 @@ or “quadratic”</p></li>
 
 <dl class="py function">
 <dt id="ogusa.utils.pct_diff_func">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">pct_diff_func</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simul</span></em>, <em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#pct_diff_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.pct_diff_func" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">pct_diff_func</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simul</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#pct_diff_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.pct_diff_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to calculate the absolute percent difference between data
 moments and model moments.</p>
 <dl class="field-list simple">
@@ -874,7 +873,7 @@ moments and model moments.</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.pickle_file_compare">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">pickle_file_compare</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname1</span></em>, <em class="sig-param"><span class="n">fname2</span></em>, <em class="sig-param"><span class="n">tol</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">exceptions</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">relative</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#pickle_file_compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.pickle_file_compare" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">pickle_file_compare</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#pickle_file_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.pickle_file_compare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read two pickle files and unpickle each. We assume that each
 resulting object is a dictionary. The values of each dict are either
 numpy arrays or else types that are comparable with the == operator.</p>
@@ -899,7 +898,7 @@ numpy arrays or else types that are comparable with the == operator.</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.print_progress">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">print_progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iteration</span></em>, <em class="sig-param"><span class="n">total</span></em>, <em class="sig-param"><span class="n">source_name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">'Progress:'</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'Complete'</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">bar_length</span><span class="o">=</span><span class="default_value">50</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#print_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.print_progress" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">print_progress</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Progress:'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Complete'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#print_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.print_progress" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a progress bar to the terminal when completing small tasks
 of a larger job.</p>
 <dl class="field-list simple">
@@ -929,7 +928,7 @@ bar (string): progress bar</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.rate_conversion">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">rate_conversion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">annual_rate</span></em>, <em class="sig-param"><span class="n">start_age</span></em>, <em class="sig-param"><span class="n">end_age</span></em>, <em class="sig-param"><span class="n">S</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#rate_conversion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.rate_conversion" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">rate_conversion</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annual_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#rate_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.rate_conversion" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function converts annual rates to model period ratesself.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -951,7 +950,7 @@ bar (string): progress bar</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.read_cbo_forecast">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">read_cbo_forecast</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#read_cbo_forecast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.read_cbo_forecast" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">read_cbo_forecast</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#read_cbo_forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.read_cbo_forecast" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function reads the CBO Long-Term Budget Projections document
 from <a class="reference external" href="https://www.cbo.gov/about/products/budget-economic-data#1">https://www.cbo.gov/about/products/budget-economic-data#1</a>
 and then formats the relevant data for use with OG-USA</p>
@@ -959,7 +958,7 @@ and then formats the relevant data for use with OG-USA</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.read_file">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">read_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">fname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#read_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.read_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">read_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#read_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.read_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the contents of ‘path’. If it does not exist, assume the file
 is installed in a .egg file, and adjust accordingly.</p>
 <dl class="field-list simple">
@@ -977,7 +976,7 @@ is installed in a .egg file, and adjust accordingly.</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.safe_read_pickle">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">safe_read_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#safe_read_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.safe_read_pickle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">safe_read_pickle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#safe_read_pickle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.safe_read_pickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function reads a pickle from Python 2 into Python 2 or Python 3</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -994,7 +993,7 @@ is installed in a .egg file, and adjust accordingly.</p>
 
 <dl class="py function">
 <dt id="ogusa.utils.save_return_table">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">save_return_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table_df</span></em>, <em class="sig-param"><span class="n">output_type</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">precision</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#save_return_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.save_return_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">save_return_table</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#save_return_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.save_return_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to save or return a table of data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1018,7 +1017,7 @@ Defaults to 0.</p></li>
 
 <dl class="py function">
 <dt id="ogusa.utils.to_timepath_shape">
-<code class="sig-prename descclassname">ogusa.utils.</code><code class="sig-name descname">to_timepath_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">some_array</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#to_timepath_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.utils.to_timepath_shape" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.utils.</span></code><code class="sig-name descname"><span class="pre">to_timepath_shape</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">some_array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/utils.html#to_timepath_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.utils.to_timepath_shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function takes an vector of length T and tiles it to fill a
 Tx1x1 array for time path computations.</p>
 <dl class="field-list simple">
@@ -1060,15 +1059,15 @@ Tx1x1 array for time path computations.</p>
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="txfunc.html" title="previous page">Tax Function Estimation Functions</a>
     <a class='right-next' id="next-link" href="wealth.html" title="next page">Wealth Functions</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -353,21 +351,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +383,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +402,19 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -431,6 +429,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -445,11 +444,11 @@
 <span id="ogusa-parameters"></span><h2>ogusa.parameters<a class="headerlink" href="#module-ogusa.parameters" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="ogusa.parameters.Specifications">
-<em class="property">class </em><code class="sig-prename descclassname">ogusa.parameters.</code><code class="sig-name descname">Specifications</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_micro</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tax_func_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_base</span><span class="o">=</span><span class="default_value">'OUTPUT_BASELINE'</span></em>, <em class="sig-param"><span class="n">baseline_dir</span><span class="o">=</span><span class="default_value">'OUTPUT_BASELINE'</span></em>, <em class="sig-param"><span class="n">test</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">time_path</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">baseline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">iit_reform</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">guid</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">'cps'</span></em>, <em class="sig-param"><span class="n">client</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_workers</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ogusa.parameters.</span></code><code class="sig-name descname"><span class="pre">Specifications</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_micro</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OUTPUT_BASELINE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OUTPUT_BASELINE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iit_reform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cps'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inherits ParamTools Parameters abstract base class.</p>
 <dl class="py method">
 <dt id="ogusa.parameters.Specifications.compute_default_params">
-<code class="sig-name descname">compute_default_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.compute_default_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.compute_default_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">compute_default_params</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.compute_default_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications.compute_default_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does cheap calculations to return parameter values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -463,7 +462,7 @@
 
 <dl class="py method">
 <dt id="ogusa.parameters.Specifications.get_tax_function_parameters">
-<code class="sig-name descname">get_tax_function_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">run_micro</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tax_func_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.get_tax_function_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.get_tax_function_parameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_tax_function_parameters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_micro</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.get_tax_function_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications.get_tax_function_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads pickle file of tax function parameters or estimates the
 parameters from microsimulation model output.</p>
 <dl class="field-list simple">
@@ -484,7 +483,7 @@ function parameter estimates</p></li>
 
 <dl class="py method">
 <dt id="ogusa.parameters.Specifications.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.initialize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">initialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications.initialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>ParametersBase reads JSON file and sets attributes to self
 Next call self.compute_default_params for further initialization</p>
 <dl class="field-list simple">
@@ -499,7 +498,7 @@ Next call self.compute_default_params for further initialization</p>
 
 <dl class="py method">
 <dt id="ogusa.parameters.Specifications.read_tax_func_estimate">
-<code class="sig-name descname">read_tax_func_estimate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tax_func_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.read_tax_func_estimate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.read_tax_func_estimate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">read_tax_func_estimate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.read_tax_func_estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications.read_tax_func_estimate" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function reads in tax function parameters from pickle
 files.</p>
 <dl class="field-list simple">
@@ -523,7 +522,7 @@ parameter estimates</p>
 
 <dl class="py method">
 <dt id="ogusa.parameters.Specifications.update_specifications">
-<code class="sig-name descname">update_specifications</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">revision</span></em>, <em class="sig-param"><span class="n">raise_errors</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.update_specifications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.parameters.Specifications.update_specifications" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">update_specifications</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">revision</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.update_specifications"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications.update_specifications" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates parameter specification with values in revision
 dictionary.</p>
 <dl class="field-list simple">
@@ -595,15 +594,15 @@ Specifications class is as follows:</p>
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="parameter_tables.html" title="previous page">OG-USA Parameter Table Building Functions</a>
     <a class='right-next' id="next-link" href="tax.html" title="next page">Tax Functions</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

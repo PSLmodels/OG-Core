@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -54,6 +52,8 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Fiscal Functions" href="fiscal.html" />
@@ -353,21 +353,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +385,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +404,19 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -431,6 +431,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -446,7 +447,7 @@
 <hr class="docutils" />
 <dl class="py function">
 <dt id="ogusa.firm.get_K">
-<code class="sig-prename descclassname">ogusa.firm.</code><code class="sig-name descname">get_K</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_K"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.firm.get_K" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.firm.</span></code><code class="sig-name descname"><span class="pre">get_K</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_K"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.firm.get_K" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates vector of aggregate capital. Use with the open economy
 options.</p>
 <div class="math notranslate nohighlight">
@@ -473,7 +474,7 @@ method (str): adjusts calculation dimensions based on ‘SS’ or</p>
 
 <dl class="py function">
 <dt id="ogusa.firm.get_KLratio_from_r">
-<code class="sig-prename descclassname">ogusa.firm.</code><code class="sig-name descname">get_KLratio_from_r</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_KLratio_from_r"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.firm.get_KLratio_from_r" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.firm.</span></code><code class="sig-name descname"><span class="pre">get_KLratio_from_r</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_KLratio_from_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.firm.get_KLratio_from_r" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function solves for the capital-labor ratio given the interest
 rate r and parameters.</p>
 <div class="math notranslate nohighlight">
@@ -501,7 +502,7 @@ rate r and parameters.</p>
 
 <dl class="py function">
 <dt id="ogusa.firm.get_K_from_Y">
-<code class="sig-prename descclassname">ogusa.firm.</code><code class="sig-name descname">get_K_from_Y</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_K_from_Y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.firm.get_K_from_Y" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.firm.</span></code><code class="sig-name descname"><span class="pre">get_K_from_Y</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_K_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.firm.get_K_from_Y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates vector of aggregate capital. Use with the open economy
 options.</p>
 <div class="math notranslate nohighlight">
@@ -527,7 +528,7 @@ options.</p>
 
 <dl class="py function">
 <dt id="ogusa.firm.get_Y">
-<code class="sig-prename descclassname">ogusa.firm.</code><code class="sig-name descname">get_Y</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_Y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.firm.get_Y" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.firm.</span></code><code class="sig-name descname"><span class="pre">get_Y</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.firm.get_Y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates aggregate output (GDP) from aggregate capital stock,
 aggregate labor, and CES production function parameters.</p>
 <div class="math notranslate nohighlight">
@@ -556,7 +557,7 @@ K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} +
 
 <dl class="py function">
 <dt id="ogusa.firm.get_r">
-<code class="sig-prename descclassname">ogusa.firm.</code><code class="sig-name descname">get_r</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_r"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.firm.get_r" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.firm.</span></code><code class="sig-name descname"><span class="pre">get_r</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.firm.get_r" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function computes the interest rate as a function of Y, K, and
 parameters using the firm’s first order condition for capital
 demand.</p>
@@ -585,7 +586,7 @@ demand.</p>
 
 <dl class="py function">
 <dt id="ogusa.firm.get_w">
-<code class="sig-prename descclassname">ogusa.firm.</code><code class="sig-name descname">get_w</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_w"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.firm.get_w" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.firm.</span></code><code class="sig-name descname"><span class="pre">get_w</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_w"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.firm.get_w" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function computes the wage as a function of Y, L, and
 parameters using the firm’s first order condition for labor demand.</p>
 <div class="math notranslate nohighlight">
@@ -612,7 +613,7 @@ parameters using the firm’s first order condition for labor demand.</p>
 
 <dl class="py function">
 <dt id="ogusa.firm.get_w_from_r">
-<code class="sig-prename descclassname">ogusa.firm.</code><code class="sig-name descname">get_w_from_r</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_w_from_r"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.firm.get_w_from_r" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.firm.</span></code><code class="sig-name descname"><span class="pre">get_w_from_r</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/firm.html#get_w_from_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.firm.get_w_from_r" title="Permalink to this definition">¶</a></dt>
 <dd><p>Solve for steady-state wage w or time path of wages w_t given
 interest rate.</p>
 <div class="math notranslate nohighlight">
@@ -665,15 +666,15 @@ interest rate.</p>
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="execute.html" title="previous page">Model Execution Functions</a>
     <a class='right-next' id="next-link" href="fiscal.html" title="next page">Fiscal Functions</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

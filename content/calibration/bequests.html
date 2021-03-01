@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -54,6 +52,8 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Derivations" href="../theory/derivations.html" />
@@ -353,21 +353,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +385,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +404,20 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -427,7 +428,7 @@
   <div class="section" id="bequest-process-calibration">
 <span id="chap-beq"></span><h1>Bequest Process Calibration<a class="headerlink" href="#bequest-process-calibration" title="Permalink to this headline">¶</a></h1>
 <p>This chapter describes how we calibrate the distribution of total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> to each living household of age <span class="math notranslate nohighlight">\(s\)</span> and lifetime income group <span class="math notranslate nohighlight">\(j\)</span>. The matrix that governs this distribution <span class="math notranslate nohighlight">\(\zeta_{j,s}\)</span> is seen in the household budget constraint <span class="xref std std-ref">EqHHBC</span>.</p>
-<p>A large number of papers study the effects of different bequest motives and specifications on the distribution of wealth, though there is no consensus regarding the true bequest transmission process.  See <a class="bibtex reference internal" href="../theory/references.html#denardiyang-2014" id="id1">[DeNardiY14]</a>, <a class="bibtex reference internal" href="../theory/references.html#denardi-2004" id="id2">[DeNardi04]</a>, <a class="bibtex reference internal" href="../theory/references.html#nishiyama-2002" id="id3">[Nis02]</a>, <a class="bibtex reference internal" href="../theory/references.html#laitner-2001" id="id4">[Lai01]</a>, <a class="bibtex reference internal" href="../theory/references.html#gokhaleetal-2000" id="id5">[GKSW00]</a>, <a class="bibtex reference internal" href="../theory/references.html#galescholz-1994" id="id6">[GS94a]</a>, <a class="bibtex reference internal" href="../theory/references.html#hurd-1989" id="id7">[Hur89]</a>, <a class="bibtex reference internal" href="../theory/references.html#ventiwise-1988" id="id8">[VW88]</a>, <a class="bibtex reference internal" href="../theory/references.html#kotlikoffsummers-1981" id="id9">[KS81]</a>, and <a class="bibtex reference internal" href="../theory/references.html#wolff-2015" id="id10">[Wol15]</a>.</p>
+<p>A large number of papers study the effects of different bequest motives and specifications on the distribution of wealth, though there is no consensus regarding the true bequest transmission process.  See <a href="#id1"><span class="problematic" id="id2">:cite:`DeNardiYang:2014`</span></a>, <a href="#id3"><span class="problematic" id="id4">:cite:`DeNardi:2004`</span></a>, <a href="#id5"><span class="problematic" id="id6">:cite:`Nishiyama:2002`</span></a>, <a href="#id7"><span class="problematic" id="id8">:cite:`Laitner:2001`</span></a>, <a href="#id9"><span class="problematic" id="id10">:cite:`GokhaleEtAl:2000`</span></a>, <a href="#id11"><span class="problematic" id="id12">:cite:`GaleScholz:1994`</span></a>, <a href="#id13"><span class="problematic" id="id14">:cite:`Hurd:1989`</span></a>, <a href="#id15"><span class="problematic" id="id16">:cite:`VentiWise:1988`</span></a>, <a href="#id17"><span class="problematic" id="id18">:cite:`KotlikoffSummers:1981`</span></a>, and <a href="#id19"><span class="problematic" id="id20">:cite:`Wolff:2015`</span></a>.</p>
 </div>
 
     <script type="text/x-thebe-config">
@@ -452,15 +453,15 @@
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="tax_functions.html" title="previous page">Tax Functions</a>
     <a class='right-next' id="next-link" href="../theory/derivations.html" title="next page">Derivations</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

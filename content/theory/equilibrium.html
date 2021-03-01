@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -54,6 +52,8 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Open Economy Options" href="open_economy.html" />
@@ -353,21 +353,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +385,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +404,19 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -470,6 +470,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -696,7 +697,7 @@ then update the guesses for the outer loop variables as a convex combination gov
 </div>
 <div class="section" id="stationary-nonsteady-state-solution-method">
 <span id="seceqlbnsssoln"></span><h3>Stationary Nonsteady-state Solution Method<a class="headerlink" href="#stationary-nonsteady-state-solution-method" title="Permalink to this headline">¶</a></h3>
-<p>This section describes the solution method for the stationary nonsteady-state equilibrium described in Definition <span class="xref std std-ref">DefNSSEql</span>. We use the time path iteration (TPI) method. This method was originally outlined in a series of papers between 1981 and 1985 <a class="footnote-reference brackets" href="#citation-note" id="id3">3</a> and in the seminal book <a class="bibtex reference internal" href="references.html#auerbachkotlikoff-1987" id="id4">[AK87]</a> [Chapter 4] for the perfect foresight case and in <a class="bibtex reference internal" href="references.html#nishiyamasmetters-2007" id="id5">[NS07]</a> Appendix II and <a class="bibtex reference internal" href="references.html#evansphillips-2014" id="id6">[EP14]</a>[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see <a class="bibtex reference internal" href="references.html#stokeylucas1989" id="id7">[SLucasJrP89]</a> [Chapter 17]).</p>
+<p>This section describes the solution method for the stationary nonsteady-state equilibrium described in Definition <span class="xref std std-ref">DefNSSEql</span>. We use the time path iteration (TPI) method. This method was originally outlined in a series of papers between 1981 and 1985 <a class="footnote-reference brackets" href="#citation-note" id="id3">3</a> and in the seminal book <a href="#id4"><span class="problematic" id="id5">:cite:`AuerbachKotlikoff:1987`</span></a> [Chapter 4] for the perfect foresight case and in <a href="#id6"><span class="problematic" id="id7">:cite:`NishiyamaSmetters:2007`</span></a> Appendix II and <a href="#id8"><span class="problematic" id="id9">:cite:`EvansPhillips:2014`</span></a>[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see <a href="#id10"><span class="problematic" id="id11">:cite:`StokeyLucas1989`</span></a> [Chapter 17]).</p>
 <p>The key assumption is that the economy will reach the steady-state equilibrium <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\Gamma}}\)</span> described in Definition <span class="xref std std-ref">DefSSEql</span> in a finite number of periods <span class="math notranslate nohighlight">\(T&lt;\infty\)</span> regardless of the initial state <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span>. The first step in solving for the nonsteady-state equilibrium transition path is to solve for the steady-state using the method described in Section <a class="reference internal" href="#seceqlbsssoln"><span class="std std-ref">Stationary Steady-state Solution Method</span></a>. After solving for the steady-state, one must then find a fixed point over the entire path of endogenous objects.  We do this by first making an initial guess at these objects in a the general equilibrium ``outer loop’’ step, analogous to the outer loop described in the steady-state solution method. The time path iteration method then uses functional iteration to converge on a fixed point for the path of these objects.  The paths of aggregate variables that must be guessed in this outer loop are <span class="math notranslate nohighlight">\(\{\boldsymbol{r}^i,\boldsymbol{\hat{w}}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}\)</span>, where <span class="math notranslate nohighlight">\(\boldsymbol{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{\hat{BQ}}^i = \left\{\hat{BQ}_1^i,\hat{BQ}_2^i,...\hat{BQ}_T^i\right\}\)</span>, and <span class="math notranslate nohighlight">\(\boldsymbol{\hat{TR}}^i = \left\{\hat{TR}_1^i,\hat{TR}_2^i,...\hat{TR}_T^i\right\}\)</span>. The only requirement on these transition paths is that the initial total bequests <span class="math notranslate nohighlight">\(\hat{BQ}_1^i\)</span> conform to the initial state of the economy <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span>, and that the economy has reached the steady-state by period <span class="math notranslate nohighlight">\(t=T\)</span> <span class="math notranslate nohighlight">\(\{r_T^i, \hat{BQ}_T^i, \hat{TR}_T^i\} = \{\bar{r}, \bar{w}, \overline{BQ}, \overline{TR}\}\)</span>.</p>
 <p>The “inner loop” of the nonsteady-state transition path solution method is to solve for the full set of lifetime savings decisions <span class="math notranslate nohighlight">\(\bar{b}_{j,s+1,t+1}\)</span> and labor supply decisions <span class="math notranslate nohighlight">\(\bar{n}_{j,s,t}\)</span> for every household alive between periods <span class="math notranslate nohighlight">\(t=1\)</span> and <span class="math notranslate nohighlight">\(t=T\)</span>.  To solve for the <span class="math notranslate nohighlight">\(2JS\)</span> equations and unknowns for each household’s lifetime decisions we use a multivariate root finder.</p>
 <p>We outline the stationary non-steady state solution algorithm in the following steps.</p>
@@ -777,7 +778,7 @@ $<span class="math notranslate nohighlight">\(
 </div>
 <div class="section" id="baseline-nonsteady-state-results">
 <span id="secnsseqlbresults"></span><h3>Baseline Nonsteady-state Results<a class="headerlink" href="#baseline-nonsteady-state-results" title="Permalink to this headline">¶</a></h3>
-<hr class="docutils" />
+<hr class="footnotes docutils" />
 <dl class="footnote brackets">
 <dt class="label" id="step3-note"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>The updated wage rate, <span class="math notranslate nohighlight">\(w^{i'}\)</span>, is found by using the updated interest rate, <span class="math notranslate nohighlight">\(r^{i'}\)</span> as detailed in Step 3.</p>
@@ -786,7 +787,7 @@ $<span class="math notranslate nohighlight">\(
 <dd><p>In our code, there is also an option to use a Newton based root-finding algorithm to updated the outer-loop variables.  Such an algorithm is generally faster, but less robust than the functional iteration method outlined here.</p>
 </dd>
 <dt class="label" id="citation-note"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>See <a class="bibtex reference internal" href="references.html#auerbachetal-1981" id="id8">[AKS81]</a><a class="bibtex reference internal" href="references.html#auerbachetal-1983" id="id9">[AKS83]</a>, <a class="bibtex reference internal" href="references.html#auerbachkotlikoff-1983a" id="id10">[AK83c]</a><a class="bibtex reference internal" href="references.html#auerbachkotlikoff-1983b" id="id11">[AK83b]</a><a class="bibtex reference internal" href="references.html#auerbachkotlikoff-1983c" id="id12">[AK83a]</a>, and <a class="bibtex reference internal" href="references.html#auerbachkotlikoff-1985" id="id13">[AK85]</a>.</p>
+<dd><p>See <a href="#id12"><span class="problematic" id="id13">:cite:`AuerbachEtAl:1981,AuerbachEtAl:1983`</span></a>, <a href="#id14"><span class="problematic" id="id15">:cite:`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`</span></a>, and <a href="#id16"><span class="problematic" id="id17">:cite:`AuerbachKotlikoff:1985`</span></a>.</p>
 </dd>
 </dl>
 </div>
@@ -815,15 +816,15 @@ $<span class="math notranslate nohighlight">\(
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="stationarization.html" title="previous page">Stationarization</a>
     <a class='right-next' id="next-link" href="open_economy.html" title="next page">Open Economy Options</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

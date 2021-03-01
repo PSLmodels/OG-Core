@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -54,6 +52,8 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Tax Function Estimation Functions" href="txfunc.html" />
@@ -353,21 +353,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +385,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +404,19 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -438,6 +438,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -454,7 +455,7 @@
 <h3>Functions for taxes in the steady state and along the transition path.<a class="headerlink" href="#functions-for-taxes-in-the-steady-state-and-along-the-transition-path" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
 <dt id="ogusa.tax.ETR_income">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">ETR_income</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#ETR_income"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.ETR_income" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">ETR_income</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#ETR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.ETR_income" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates effective personal income tax rate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -481,7 +482,7 @@ dollars</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.ETR_wealth">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">ETR_wealth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">h_wealth</span></em>, <em class="sig-param"><span class="n">m_wealth</span></em>, <em class="sig-param"><span class="n">p_wealth</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#ETR_wealth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.ETR_wealth" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">ETR_wealth</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#ETR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.ETR_wealth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the effective tax rate on wealth.</p>
 <div class="math notranslate nohighlight">
 \[T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\]</div>
@@ -505,7 +506,7 @@ dollars</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.MTR_income">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">MTR_income</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">mtr_capital</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">mtr_params</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#MTR_income"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.MTR_income" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">MTR_income</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_capital</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#MTR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.MTR_income" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates the marginal tax rate on labor income for households.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -534,7 +535,7 @@ capital income or labor income</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.MTR_wealth">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">MTR_wealth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">h_wealth</span></em>, <em class="sig-param"><span class="n">m_wealth</span></em>, <em class="sig-param"><span class="n">p_wealth</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#MTR_wealth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.MTR_wealth" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">MTR_wealth</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#MTR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.MTR_wealth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the marginal tax rate on wealth from the wealth tax.</p>
 <div class="math notranslate nohighlight">
 \[\frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =
@@ -559,7 +560,7 @@ capital income or labor income</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.bequest_tax_liab">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">bequest_tax_liab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#bequest_tax_liab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.bequest_tax_liab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">bequest_tax_liab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#bequest_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.bequest_tax_liab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate liability due from taxes on bequests for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -585,7 +586,7 @@ capital income or labor income</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.get_biz_tax">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">get_biz_tax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#get_biz_tax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.get_biz_tax" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">get_biz_tax</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#get_biz_tax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.get_biz_tax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds total business income tax revenue.</p>
 <div class="math notranslate nohighlight">
 \[R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) -
@@ -610,7 +611,7 @@ capital income or labor income</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.income_tax_liab">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">income_tax_liab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#income_tax_liab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.income_tax_liab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">income_tax_liab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#income_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.income_tax_liab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate income and payroll tax liability for each household</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -645,7 +646,7 @@ dollars</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.net_taxes">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">net_taxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">tr</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#net_taxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.net_taxes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">net_taxes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#net_taxes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.net_taxes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate net taxes paid for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -682,7 +683,7 @@ lifetime income group j</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.pension_amount">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">pension_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#pension_amount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.pension_amount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">pension_amount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#pension_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.pension_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate public pension benefit amounts for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -712,7 +713,7 @@ lifetime income group j</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.replacement_rate_vals">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">replacement_rate_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nssmat</span></em>, <em class="sig-param"><span class="n">wss</span></em>, <em class="sig-param"><span class="n">factor_ss</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#replacement_rate_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.replacement_rate_vals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">replacement_rate_vals</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#replacement_rate_vals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.replacement_rate_vals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates replacement rate values for the social security system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -740,7 +741,7 @@ dollars</p></li>
 
 <dl class="py function">
 <dt id="ogusa.tax.wealth_tax_liab">
-<code class="sig-prename descclassname">ogusa.tax.</code><code class="sig-name descname">wealth_tax_liab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#wealth_tax_liab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.tax.wealth_tax_liab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.tax.</span></code><code class="sig-name descname"><span class="pre">wealth_tax_liab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/tax.html#wealth_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.tax.wealth_tax_liab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate wealth tax liability for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -789,15 +790,15 @@ dollars</p></li>
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="parameters.html" title="previous page">OG-USA Parameters</a>
     <a class='right-next' id="next-link" href="txfunc.html" title="next page">Tax Function Estimation Functions</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -54,6 +52,8 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Income Processes Functions" href="income.html" />
@@ -353,21 +353,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +385,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +404,19 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -438,6 +438,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -454,7 +455,7 @@
 <h3>Household functions.<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
 <dt id="ogusa.household.FOC_labor">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">FOC_labor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">tr</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">chi_n</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">tau_c</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">mtrx_params</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#FOC_labor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.FOC_labor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">FOC_labor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtrx_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#FOC_labor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.FOC_labor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes errors for the FOC for labor supply in the steady
 state.  This function is usually looped through over J, so it does
 one lifetime income group at a time.</p>
@@ -504,7 +505,7 @@ on labor income functions</p></li>
 
 <dl class="py function">
 <dt id="ogusa.household.FOC_savings">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">FOC_savings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">tr</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">rho</span></em>, <em class="sig-param"><span class="n">tau_c</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">mtry_params</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#FOC_savings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.FOC_savings" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">FOC_savings</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtry_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#FOC_savings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.FOC_savings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes Euler errors for the FOC for savings in the steady state.
 This function is usually looped through over J, so it does one
 lifetime income group at a time.</p>
@@ -553,7 +554,7 @@ on capital income functions</p></li>
 
 <dl class="py function">
 <dt id="ogusa.household.constraint_checker_SS">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">constraint_checker_SS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bssmat</span></em>, <em class="sig-param"><span class="n">nssmat</span></em>, <em class="sig-param"><span class="n">cssmat</span></em>, <em class="sig-param"><span class="n">ltilde</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#constraint_checker_SS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.constraint_checker_SS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">constraint_checker_SS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltilde</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#constraint_checker_SS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.constraint_checker_SS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks constraints on consumption, savings, and labor supply in the
 steady state.</p>
 <dl class="field-list simple">
@@ -576,7 +577,7 @@ steady state.</p>
 
 <dl class="py function">
 <dt id="ogusa.household.constraint_checker_TPI">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">constraint_checker_TPI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_dist</span></em>, <em class="sig-param"><span class="n">n_dist</span></em>, <em class="sig-param"><span class="n">c_dist</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">ltilde</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#constraint_checker_TPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.constraint_checker_TPI" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">constraint_checker_TPI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltilde</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#constraint_checker_TPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.constraint_checker_TPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks constraints on consumption, savings, and labor supply along
 the transition path. Does this for each period t separately.</p>
 <dl class="field-list simple">
@@ -600,7 +601,7 @@ the transition path. Does this for each period t separately.</p>
 
 <dl class="py function">
 <dt id="ogusa.household.get_bq">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_bq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">BQ</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_bq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_bq" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">get_bq</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_bq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.get_bq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate bequests to each household.</p>
 <div class="math notranslate nohighlight">
 \[bq_{j,s,t} = zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
@@ -625,7 +626,7 @@ the transition path. Does this for each period t separately.</p>
 
 <dl class="py function">
 <dt id="ogusa.household.get_cons">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_cons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">net_tax</span></em>, <em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">tau_c</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_cons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_cons" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">get_cons</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_tax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.get_cons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate household consumption.</p>
 <div class="math notranslate nohighlight">
 \[c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t}
@@ -657,7 +658,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt id="ogusa.household.get_tr">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_tr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">TR</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_tr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_tr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">get_tr</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_tr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.get_tr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate transfers to each household.</p>
 <div class="math notranslate nohighlight">
 \[tr_{j,s,t} = zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
@@ -682,7 +683,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt id="ogusa.household.get_y">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">get_y</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_hh</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b_s</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.get_y" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">get_y</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_hh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#get_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.get_y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute household income before taxes.</p>
 <dl class="simple">
 <dt>..math::</dt><dd><p>y_{j,s,t} = r_{hh,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}</p>
@@ -703,7 +704,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt id="ogusa.household.marg_ut_cons">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">marg_ut_cons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#marg_ut_cons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.marg_ut_cons" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">marg_ut_cons</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#marg_ut_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.marg_ut_cons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the marginal utility of consumption.</p>
 <div class="math notranslate nohighlight">
 \[MU_{c} = c^{-\sigma}\]</div>
@@ -725,7 +726,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt id="ogusa.household.marg_ut_labor">
-<code class="sig-prename descclassname">ogusa.household.</code><code class="sig-name descname">marg_ut_labor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">chi_n</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#marg_ut_labor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.household.marg_ut_labor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.household.</span></code><code class="sig-name descname"><span class="pre">marg_ut_labor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/household.html#marg_ut_labor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.household.marg_ut_labor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the marginal disutility of labor.</p>
 <div class="math notranslate nohighlight">
 \[MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)
@@ -775,15 +776,15 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="get_micro_data.html" title="previous page">Functions to Get Micro-data from Tax-Calculator</a>
     <a class='right-next' id="next-link" href="income.html" title="next page">Income Processes Functions</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -54,6 +52,8 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Tax Functions" href="tax_functions.html" />
@@ -353,21 +353,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -388,7 +388,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -407,13 +407,13 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -432,11 +432,11 @@
     </div>
 </div>
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -466,6 +466,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -480,7 +481,7 @@
 <div class="math notranslate nohighlight" id="equation-eqtaxcalclabinc">
 <span class="eqno">(66)<a class="headerlink" href="#equation-eqtaxcalclabinc" title="Permalink to this equation">¶</a></span>\[  \text{labor income:}\quad x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S\]</div>
 <p>In this specification, <span class="math notranslate nohighlight">\(w_t\)</span> is an equilibrium wage representing a portion of labor income that is common to all workers. Individual quantity of labor supply is <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>, and <span class="math notranslate nohighlight">\(e_{j,s}\)</span> represents a labor productivity factor that augments or diminishes the productivity of a worker’s labor supply relative to average productivity.</p>
-<p>We calibrate deterministic ability paths such that each lifetime income group has a different life-cycle profile of earnings. The distribution on income and wealth are often focal components of macroeconomic models. As such, we use a calibration of deterministic lifetime ability paths from <a class="bibtex reference internal" href="../theory/references.html#debackeretal-2017b" id="id1">[DEM+7b]</a> that can represent U.S. earners in the top 1% of the distribution of lifetime income. <a class="bibtex reference internal" href="../theory/references.html#pikettysaez-2003" id="id2">[PS03]</a> show that income and wealth attributable to these households has shown the greatest growth in recent decades. The data come from the U.S. Internal Revenue Services’s (IRS) Statistics of Income program (SOI) Continuous Work History Sample (CWHS). <a class="bibtex reference internal" href="../theory/references.html#debackeretal-2017b" id="id3">[DEM+7b]</a> match the SOI data with Social Security Administration (SSA) data on age and Current Population Survey (CPS) data on hours in order to generate a non-top-coded measure of hourly wage.</p>
+<p>We calibrate deterministic ability paths such that each lifetime income group has a different life-cycle profile of earnings. The distribution on income and wealth are often focal components of macroeconomic models. As such, we use a calibration of deterministic lifetime ability paths from <a href="#id1"><span class="problematic" id="id2">:cite:`DeBackerEtAl:2017b`</span></a> that can represent U.S. earners in the top 1% of the distribution of lifetime income. <a href="#id3"><span class="problematic" id="id4">:cite:`PikettySaez:2003`</span></a> show that income and wealth attributable to these households has shown the greatest growth in recent decades. The data come from the U.S. Internal Revenue Services’s (IRS) Statistics of Income program (SOI) Continuous Work History Sample (CWHS). <a href="#id5"><span class="problematic" id="id6">:cite:`DeBackerEtAl:2017b`</span></a> match the SOI data with Social Security Administration (SSA) data on age and Current Population Survey (CPS) data on hours in order to generate a non-top-coded measure of hourly wage.</p>
 <div class="figure align-default" id="figlogabil">
 <a class="reference internal image-reference" href="../../_images/ability_log_2D.png"><img alt="../../_images/ability_log_2D.png" src="../../_images/ability_log_2D.png" style="height: 500px;" /></a>
 <p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">Exogenous life cycle income ability paths <span class="math notranslate nohighlight">\(\log(e_{j,s})\)</span> with <span class="math notranslate nohighlight">\(S=80\)</span> and <span class="math notranslate nohighlight">\(J=7\)</span></span><a class="headerlink" href="#figlogabil" title="Permalink to this image">¶</a></p>
@@ -503,12 +504,12 @@ glue("earnings_profiles", fig, display=False)
 Exogenous life cycle income ability paths $\log(e_{j,s})$ with $S=80$ and $J=7$
 ```
 -->
-<p>Figure <a class="reference internal" href="#figlogabil"><span class="std std-numref">Fig. 12</span></a> shows a calibration for <span class="math notranslate nohighlight">\(J=7\)</span> deterministic lifetime ability paths <span class="math notranslate nohighlight">\(e_{j,s}\)</span> corresponding to labor income percentiles <span class="math notranslate nohighlight">\(\boldsymbol{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]\)</span>. Because there are few individuals above age 80 in the data, <a class="bibtex reference internal" href="../theory/references.html#debackeretal-2017b" id="id4">[DEM+7b]</a> extrapolate these estimates for model ages 80-100 using an arctan function.</p>
-<p>We calibrate the model such that each lifetime income group has a different life-cycle profile of earnings. Since the distribution on income and wealth are key aspects of our model, we calibrate these processes so that we can represent earners in the top 1 percent of the distribution of lifetime income. It is income and wealth attributable to these households that has shown the greatest growth in recent decades (see, for example, <a class="bibtex reference internal" href="../theory/references.html#pikettysaez-2003" id="id5">[PS03]</a>). In order to have observations on the earnings of those at very top of the distribution that are not subject to top-coding we use data from the Internal Revenue Services’s (IRS) Statistics of Income program (SOI).</p>
+<p>Figure <a class="reference internal" href="#figlogabil"><span class="std std-numref">Fig. 12</span></a> shows a calibration for <span class="math notranslate nohighlight">\(J=7\)</span> deterministic lifetime ability paths <span class="math notranslate nohighlight">\(e_{j,s}\)</span> corresponding to labor income percentiles <span class="math notranslate nohighlight">\(\boldsymbol{\lambda}=[0.25, 0.25, 0.20, 0.10, 0.10, 0.09, 0.01]\)</span>. Because there are few individuals above age 80 in the data, <a href="#id7"><span class="problematic" id="id8">:cite:`DeBackerEtAl:2017b`</span></a> extrapolate these estimates for model ages 80-100 using an arctan function.</p>
+<p>We calibrate the model such that each lifetime income group has a different life-cycle profile of earnings. Since the distribution on income and wealth are key aspects of our model, we calibrate these processes so that we can represent earners in the top 1 percent of the distribution of lifetime income. It is income and wealth attributable to these households that has shown the greatest growth in recent decades (see, for example, <a href="#id9"><span class="problematic" id="id10">:cite:`PikettySaez:2003`</span></a>). In order to have observations on the earnings of those at very top of the distribution that are not subject to top-coding we use data from the Internal Revenue Services’s (IRS) Statistics of Income program (SOI).</p>
 <div class="section" id="continuous-work-history-sample">
 <span id="seclfearncwhs"></span><h2>Continuous Work History Sample<a class="headerlink" href="#continuous-work-history-sample" title="Permalink to this headline">¶</a></h2>
-<p>The SOI data we draw from are the Continuous Work History Sample (CWHS).  From this CWHS, we use a panel that is a 1-in-5000 random sample of tax filers from 1991 to 2009.  For each filer-year observation we are able to observe detailed information reported on Form 1040 and the associated forms and schedules.  We are also able to merge these tax data with Social Security Administration (SSA) records to get information on the age and gender of the primary and secondary filers.  Our model variable of effective labor units maps into wage rates, because the market wage rate in the model, <span class="math notranslate nohighlight">\(w_{t}\)</span>, is constant across households.  Earnings per hour thus depend upon effective labor units and equal <span class="math notranslate nohighlight">\(e_{j,s,t}\times w_{t}\)</span> for household in lifetime income group <span class="math notranslate nohighlight">\(j\)</span>, with age <span class="math notranslate nohighlight">\(s\)</span>, in year <span class="math notranslate nohighlight">\(t\)</span>.  Income tax data, however, do not contain information on hourly earnings or hours works.  Rather, we only observe total earned income (wage and salaries plus self-employment income) over the tax year.  In order to find hourly earnings for tax filers, we use an imputation procedure.  This is described in detail in <a class="bibtex reference internal" href="../theory/references.html#debackerramnath-2017" id="id6">[DR17]</a>.  The methodology applies an imputation for hours worked for a filing unit based on a model of hours worked for a filing unit estimated from the Current Population Survey (CPS) for the years 1992-2010.<a class="footnote-reference brackets" href="#retroquest-note" id="id7">1</a> We then use the imputed hours to calculate hourly earnings rates for tax filing units in the CWHS.</p>
-<p>We exclude from our sample filer-year observations with earned income (wages and salaries plus business income) of less than $1,250. We further exclude those with positive annual wages, but with hourly wages below $5.00 (in 2005 $). We also drop one observation where the hourly wage rate exceeds $25,000.<a class="footnote-reference brackets" href="#threshold-note" id="id8">2</a> Economic life in the model runs from age 21 to 100. Our data have few observations on filers with ages exceeding 80 years old. Our sample is therefore restricted to those from ages 21 to 80. After these restrictions, our final sample size is 333,381 filer-year observations.</p>
+<p>The SOI data we draw from are the Continuous Work History Sample (CWHS).  From this CWHS, we use a panel that is a 1-in-5000 random sample of tax filers from 1991 to 2009.  For each filer-year observation we are able to observe detailed information reported on Form 1040 and the associated forms and schedules.  We are also able to merge these tax data with Social Security Administration (SSA) records to get information on the age and gender of the primary and secondary filers.  Our model variable of effective labor units maps into wage rates, because the market wage rate in the model, <span class="math notranslate nohighlight">\(w_{t}\)</span>, is constant across households.  Earnings per hour thus depend upon effective labor units and equal <span class="math notranslate nohighlight">\(e_{j,s,t}\times w_{t}\)</span> for household in lifetime income group <span class="math notranslate nohighlight">\(j\)</span>, with age <span class="math notranslate nohighlight">\(s\)</span>, in year <span class="math notranslate nohighlight">\(t\)</span>.  Income tax data, however, do not contain information on hourly earnings or hours works.  Rather, we only observe total earned income (wage and salaries plus self-employment income) over the tax year.  In order to find hourly earnings for tax filers, we use an imputation procedure.  This is described in detail in <a href="#id11"><span class="problematic" id="id12">:cite:`DeBackerRamnath:2017`</span></a>.  The methodology applies an imputation for hours worked for a filing unit based on a model of hours worked for a filing unit estimated from the Current Population Survey (CPS) for the years 1992-2010.<a class="footnote-reference brackets" href="#retroquest-note" id="id13">1</a> We then use the imputed hours to calculate hourly earnings rates for tax filing units in the CWHS.</p>
+<p>We exclude from our sample filer-year observations with earned income (wages and salaries plus business income) of less than $1,250. We further exclude those with positive annual wages, but with hourly wages below $5.00 (in 2005 $). We also drop one observation where the hourly wage rate exceeds $25,000.<a class="footnote-reference brackets" href="#threshold-note" id="id14">2</a> Economic life in the model runs from age 21 to 100. Our data have few observations on filers with ages exceeding 80 years old. Our sample is therefore restricted to those from ages 21 to 80. After these restrictions, our final sample size is 333,381 filer-year observations.</p>
 </div>
 <div class="section" id="lifetime-income">
 <span id="seclfearnlifinc"></span><h2>Lifetime Income<a class="headerlink" href="#lifetime-income" title="Permalink to this headline">¶</a></h2>
@@ -962,7 +963,7 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
 <div class="section" id="income-at-the-very-top">
 <h2>Income at the very top<a class="headerlink" href="#income-at-the-very-top" title="Permalink to this headline">¶</a></h2>
 <p>In addition to lifecycle profiles of the seven percentile groups above, <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> has calibrations of income at the very top.  This includes breaking out percentiles at fine as the top 0.01% of earners.  The two alternative <span class="math notranslate nohighlight">\(\lambda\)</span> vectors are <span class="math notranslate nohighlight">\(\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.001]\)</span> and <span class="math notranslate nohighlight">\(\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.0009, 0.0001]\)</span>.</p>
-<p>Because we do not have panel data that allow us to observe such top percentile groups, we make the following assumptions in calibrating income at the very top.  First, we assume the shape of the lifecycle profile of these top earners is the same as the top 1% overall.  Second, we 2018 estimates from the methodology of <a class="bibtex reference internal" href="../theory/references.html#pikettysaez-2003" id="id9">[PS03]</a> to provide factors to scale earnings process we estimate for groups inside the top 1%.<a class="footnote-reference brackets" href="#ps-note" id="id10">3</a></p>
+<p>Because we do not have panel data that allow us to observe such top percentile groups, we make the following assumptions in calibrating income at the very top.  First, we assume the shape of the lifecycle profile of these top earners is the same as the top 1% overall.  Second, we 2018 estimates from the methodology of <a href="#id15"><span class="problematic" id="id16">:cite:`PikettySaez:2003`</span></a> to provide factors to scale earnings process we estimate for groups inside the top 1%.<a class="footnote-reference brackets" href="#ps-note" id="id17">3</a></p>
 <table class="table" id="tab-top-incomes">
 <caption><span class="caption-number">Table 7 </span><span class="caption-text"><strong>Incomes at the very top</strong> Source: Piketty and Saez (2003) 2018 estimates.</span><a class="headerlink" href="#tab-top-incomes" title="Permalink to this table">¶</a></caption>
 <colgroup>
@@ -1003,15 +1004,15 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
 </tr>
 </tbody>
 </table>
-<hr class="docutils" />
+<hr class="footnotes docutils" />
 <dl class="footnote brackets">
-<dt class="label" id="retroquest-note"><span class="brackets"><a class="fn-backref" href="#id7">1</a></span></dt>
+<dt class="label" id="retroquest-note"><span class="brackets"><a class="fn-backref" href="#id13">1</a></span></dt>
 <dd><p>The CPS survey asks retrospective questions about income in the last year and average hours worked per week (and weeks worked) in the last year).  Therefore, these CPS surveys line up with tax years 1991-2009.</p>
 </dd>
-<dt class="label" id="threshold-note"><span class="brackets"><a class="fn-backref" href="#id8">2</a></span></dt>
+<dt class="label" id="threshold-note"><span class="brackets"><a class="fn-backref" href="#id14">2</a></span></dt>
 <dd><p>This threshold is equivalent to $50 million of wage income in one year at full time (40 hours per week) of work.</p>
 </dd>
-<dt class="label" id="ps-note"><span class="brackets"><a class="fn-backref" href="#id10">3</a></span></dt>
+<dt class="label" id="ps-note"><span class="brackets"><a class="fn-backref" href="#id17">3</a></span></dt>
 <dd><p>These data are available from the website of Emmanuel Saez: <a class="reference external" href="https://eml.berkeley.edu/~saez/">https://eml.berkeley.edu/~saez/</a>.  We use numbers from Table0, Panel B, “Income excluding realized capital gains.”</p>
 </dd>
 </dl>
@@ -1040,15 +1041,15 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="demographics.html" title="previous page">Demographics</a>
     <a class='right-next' id="next-link" href="tax_functions.html" title="next page">Tax Functions</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">

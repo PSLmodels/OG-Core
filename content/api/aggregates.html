@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -44,9 +44,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script src="../../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -54,6 +52,8 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Demographics Functions" href="demographics.html" />
@@ -353,21 +353,21 @@
           
 <main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
     
-    <div class="row topbar fixed-top container-xl">
-    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
-    </div>
-    <div class="col pl-2 topbar-main">
-        
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-arrow-left"></i>
-            <i class="fas fa-arrow-up"></i>
-        </button>
-        
-        
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
             class="fas fa-download"></i></button>
@@ -385,7 +385,7 @@
     </div>
 </div>
 
-        <!-- Source interaction buttons -->
+            <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
     <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
@@ -404,19 +404,19 @@
 </div>
 
 
-        <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                title="Fullscreen mode"><i
-                    class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
-        <!-- Launch buttons -->
+            <!-- Launch buttons -->
 
-    </div>
+        </div>
 
-    <!-- Table of contents -->
-    <div class="d-none d-md-block col-md-2 bd-toc show">
-        
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -438,6 +438,7 @@
 
         </nav>
         
+        </div>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -454,7 +455,7 @@
 <h3>Functions to compute economic aggregates.<a class="headerlink" href="#functions-to-compute-economic-aggregates" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
 <dt id="ogusa.aggregates.get_B">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_B</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">preTP</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_B"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_B" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_B</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preTP</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_B"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.get_B" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate aggregate savings</p>
 <div class="math notranslate nohighlight">
 \[B_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}b_{j,s,t}\]</div>
@@ -481,7 +482,7 @@ period amount of savings.  If True, then need to use
 
 <dl class="py function">
 <dt id="ogusa.aggregates.get_BQ">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_BQ</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">preTP</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_BQ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_BQ" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_BQ</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preTP</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_BQ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.get_BQ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculation of aggregate bequests.  If <cite>use_zeta</cite> is False, then
 computes aggregate bequests within each lifetime income group.</p>
 <div class="math notranslate nohighlight">
@@ -516,7 +517,7 @@ period amount of savings.  If True, then need to use
 
 <dl class="py function">
 <dt id="ogusa.aggregates.get_C">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_C</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_C"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_C" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_C</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_C"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.get_C" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculation of aggregate consumption.</p>
 <div class="math notranslate nohighlight">
 \[C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}
@@ -541,7 +542,7 @@ period amount of savings.  If True, then need to use
 
 <dl class="py function">
 <dt id="ogusa.aggregates.get_I">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_I</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_splus1</span></em>, <em class="sig-param"><span class="n">K_p1</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_I"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_I" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_I</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_p1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_I"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.get_I" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate aggregate investment.</p>
 <div class="math notranslate nohighlight">
 \[I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}
@@ -569,7 +570,7 @@ period amount of savings.  If True, then need to use
 
 <dl class="py function">
 <dt id="ogusa.aggregates.get_K_splits">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_K_splits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">B</span></em>, <em class="sig-param"><span class="n">K_demand_open</span></em>, <em class="sig-param"><span class="n">D_d</span></em>, <em class="sig-param"><span class="n">zeta_K</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_K_splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_K_splits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_K_splits</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_demand_open</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zeta_K</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_K_splits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.get_K_splits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns total domestic capital as well as amounts of domestic
 capital held by domestic and foreign investors separately.</p>
 <div class="math notranslate nohighlight">
@@ -609,7 +610,7 @@ by foreign investors</p></li>
 
 <dl class="py function">
 <dt id="ogusa.aggregates.get_L">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_L</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_L"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_L" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_L</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.get_L" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate aggregate labor supply.</p>
 <div class="math notranslate nohighlight">
 \[L_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}n_{j,s,t}\]</div>
@@ -633,7 +634,7 @@ by foreign investors</p></li>
 
 <dl class="py function">
 <dt id="ogusa.aggregates.get_r_hh">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">get_r_hh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">r_gov</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">D</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_r_hh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.get_r_hh" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_r_hh</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#get_r_hh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.get_r_hh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the interest rate on the household’s portfolio of assets,
 a mix of government debt and private equity.</p>
 <div class="math notranslate nohighlight">
@@ -662,7 +663,7 @@ a mix of government debt and private equity.</p>
 
 <dl class="py function">
 <dt id="ogusa.aggregates.resource_constraint">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">resource_constraint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">C</span></em>, <em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">K_f</span></em>, <em class="sig-param"><span class="n">new_borrowing_f</span></em>, <em class="sig-param"><span class="n">debt_service_f</span></em>, <em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#resource_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.resource_constraint" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">resource_constraint</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#resource_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.resource_constraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the error in the resource constraint.</p>
 <div class="math notranslate nohighlight">
 \[\hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}
@@ -697,7 +698,7 @@ debt owned by foreigners</p></li>
 
 <dl class="py function">
 <dt id="ogusa.aggregates.revenue">
-<code class="sig-prename descclassname">ogusa.aggregates.</code><code class="sig-name descname">revenue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">w</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">bq</span></em>, <em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">L</span></em>, <em class="sig-param"><span class="n">K</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">etr_params</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">method</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#revenue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ogusa.aggregates.revenue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.aggregates.</span></code><code class="sig-name descname"><span class="pre">revenue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/aggregates.html#revenue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.aggregates.revenue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate aggregate tax revenue.</p>
 <div class="math notranslate nohighlight">
 \[R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
@@ -781,15 +782,15 @@ iit_tax_revenue (array_like): aggregate income tax revenue</p>
 
               </div>
               
-        </div>
-    </div>
-    
-    
-    <div class='prev-next-bottom'>
         
+        <div class='prev-next-bottom'>
+            
     <a class='left-prev' id="prev-link" href="public_api.html" title="previous page">API</a>
     <a class='right-next' id="next-link" href="demographics.html" title="next page">Demographics Functions</a>
 
+        </div>
+        
+        </div>
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">
