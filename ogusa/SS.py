@@ -44,7 +44,6 @@ def euler_equation_solver(guesses, *args):
     Args:
         guesses (Numpy array): initial guesses for b and n, lenth 2S
         args (tuple): tuple of arguments (r, w, bq, TR, factor, j, p)
-        r (scalar):
         w (scalar): real wage rate
         bq (Numpy array): bequest amounts by age, length S
         tr (scalar): government transfer amount by age, length S
@@ -55,7 +54,7 @@ def euler_equation_solver(guesses, *args):
         errros (Numpy array): errors from FOCs, length 2S
 
     '''
-    (r, w, bq, tr, ubi, factor, j, p) = args
+    (r, w, bq, tr, factor, j, p) = args
 
     b_guess = np.array(guesses[:p.S])
     n_guess = np.array(guesses[p.S:])
@@ -65,13 +64,13 @@ def euler_equation_solver(guesses, *args):
     theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, bq,
-                                   factor, tr, theta, ubi, p.e[:, j], p.rho,
+                                   factor, tr, theta, p.e[:, j], p.rho,
                                    p.tau_c[-1, :, j],
                                    p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], None, j, p,
                                    'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, bq,
-                                 factor, tr, theta, ubi, p.chi_n, p.e[:, j],
+                                 factor, tr, theta, p.chi_n, p.e[:, j],
                                  p.tau_c[-1, :, j],
                                  p.etr_params[-1, :, :],
                                  p.mtrx_params[-1, :, :], None, j, p,
@@ -106,7 +105,7 @@ def euler_equation_solver(guesses, *args):
 
 def inner_loop(outer_loop_vars, p, client):
     '''
-    This function solves for the inner loop of the SS. That is, given
+    This function solves for the inner loop of the SS.  That is, given
     the guesses of the outer loop variables (r, w, TR, factor) this
     function solves the households' problems in the SS.
 
@@ -164,12 +163,11 @@ def inner_loop(outer_loop_vars, p, client):
     r_hh = aggr.get_r_hh(r, r_gov, K, D)
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
-    ubi = p.ubi_dol_SS / factor
 
     lazy_values = []
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
-        euler_params = (r_hh, w, bq[:, j], tr[:, j], ubi[:, j], factor, j, p)
+        euler_params = (r_hh, w, bq[:, j], tr[:, j], factor, j, p)
         lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
                                                guesses * .9,
                                                args=euler_params,
