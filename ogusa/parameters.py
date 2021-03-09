@@ -564,7 +564,7 @@ class Specifications(paramtools.Parameters):
                 else:  # periods where t > T
                     ubi_dol_mat = ubi_dol_mat_init / np.exp(self.T)
             ubi_dol_array[:, :, t] = ubi_dol_mat
-            omega_mat = np.tile(self.omegas[t, :].reshape((self.S, 1)),
+            omega_mat = np.tile(self.omega[t, :].reshape((self.S, 1)),
                                 (1, self.J))
             UBI_dol_vec[t] = (lambdas_mat * omega_mat * ubi_dol_mat).sum()
         ubi_dol_SS_mat = ubi_dol_array[:, :, self.T + 1]
