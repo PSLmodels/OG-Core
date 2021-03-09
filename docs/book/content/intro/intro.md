@@ -7,7 +7,7 @@
 * `OG-USA` API
 * `OG-USA` Theory
 * Calibration
-* Appenix
+* Appendix
 * References
 * Citations of `OG-USA`
 
