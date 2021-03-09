@@ -55,10 +55,6 @@ If you have already completed the {ref}`Sec_SetupPython` and {ref}`Sec_SetupGit`
     ```
       OG-USA$ conda activate ogusa-dev
     ```
-    If you are working on Windows, use the following from the command line:
-    ```
-      OG-USA$ activate ogusa-dev
-    ```
 
 If you have made it this far, you've successfully made a remote copy (a
 fork) of the central `OG-USA` repo. That remote repo is hosted on GitHub.com at [https://github.com/PSLmodels/OG-USA](https://github.com/PSLmodels/OG-USA). You have also created a local repo (a [clone](https://help.github.com/articles/github-glossary/#clone)) that lives
