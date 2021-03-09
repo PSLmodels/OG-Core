@@ -76,7 +76,7 @@ the contribution process.
 (Sec_GitHubIssue)=
 ### Submitting a GitHub Issue
 
-GitHub "issues" are an excellent way to ask questions, include code examples, and tag specific GitHub users. [TODO: Add more on GitHub issues]
+GitHub "issues" are an excellent way to ask questions, include code examples, and tag specific GitHub users.
 
 
 (Sec_GitHubPR)=
