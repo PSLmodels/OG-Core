@@ -796,7 +796,14 @@
                 "value": false
             }
         ],
-        "validators": {"choice": {"choices": [true, false]}}
+        "validators": {
+            "when": {
+                "param": "g_y_annual",
+                "is": {"less_than": 0},
+                "then": {"choice": {"choices": [true]}},
+                "otherwise": {"choice": {"choices": [true, false]}}
+            }
+        }
     },
     "ubi_child": {
         "title": "Dollar amount of universal basic income (UBI) per child under 18 per year",
