@@ -122,10 +122,6 @@ class Specifications(paramtools.Parameters):
         # will be updated when function tax function parameters
         self.frac_tax_payroll = np.zeros(self.T + self.S)
 
-        # Create time series of stationarized UBI transfers
-        (self.ubi_dol_array, self.UBI_dol_vec, self.ubi_dol_SS,
-            self.UBI_dol_SS) = self.get_ubi_dol_objs()
-
         # Extend parameters that may vary over the time path
         tp_param_list = [
             'alpha_G', 'alpha_T', 'Z', 'world_int_rate_annual',
@@ -276,6 +272,10 @@ class Specifications(paramtools.Parameters):
         self.e = income.get_e_interp(
             self.S, self.omega_SS, self.omega_SS_80, self.lambdas,
             plot=False)
+
+        # Create time series of stationarized UBI transfers
+        (self.ubi_dol_array, self.UBI_dol_vec, self.ubi_dol_SS,
+            self.UBI_dol_SS) = self.get_ubi_dol_objs()
 
     def get_tax_function_parameters(self, client, run_micro=False,
                                     tax_func_path=None):
@@ -550,14 +550,6 @@ class Specifications(paramtools.Parameters):
         # Calculate steady-state and transition path of stationary individual
         # household UBI payments and stationary aggregate UBI outlays
         lambdas_mat = np.tile(self.lambdas.reshape((1, self.J)), (self.S, 1))
-        # if self.ubi_growthadj or g_y_annual == 0:
-        #     ubi_dol_SS_mat = ubi_dol_mat_init
-        #     ubi_dol_array = np.tile(ubi_dol_mat_init.reshape((self.S, self.J,
-        #                                                       1)), (1, 1, TpS))
-        #     UBI_dol_SS = (ubi_dol_SS_mat * lambdas_mat * self.omega_SS).sum()
-        # else:  # assumes g_y_annual > 0
-        #     ubi_dol_SS_mat = np.zeros(self.S, self.J)
-
         for t in range(TpS):
             if self.ubi_growthadj or self.g_y_annual == 0:
                 # If ubi_growthadj=True or if g_y_annual<0, then uib_arr is
