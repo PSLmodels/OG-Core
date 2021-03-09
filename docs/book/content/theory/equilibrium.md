@@ -46,7 +46,7 @@ A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defi
 (SecEqlbSSsoln)=
 ### Steady-state solution method: default specification
 
-The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surplusses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending is not held constant until the closure rule (`baseline_spending = False`).
+The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surplusses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending $G$ and transfers $TR$ are not held at baseline levels (`baseline_spending = False`).
 
 The computational algorithm for solving for the steady-state follows the steps below. We use a notational convention of a subscript $a$ or a subscript $b$ in steps (2) and (3) to differentiate between the same inner-loop variables computed two different ways at two different stages of the algorithm ($\bar{w}_a$, $\bar{w}_b$, $\bar{r}_{gov,a}$, $\bar{r}_{gov,b}$, $\bar{r}_{hh,a}$, $\bar{r}_{hh,b}$, $\bar{Y}_a$, $\bar{Y}_b$, $\bar{K}_a$, $\bar{K}_b$).
 
