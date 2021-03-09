@@ -1,7 +1,7 @@
 (Chap_MarkClr)=
 # Market Clearing
 
-Four markets must clear in `OG-USA`---the labor market, the private capital market, the government bonds market, and the goods market. By Walras' Law, we only need to use three of those market clearing conditions because the fourth one is redundant. In the model, we choose to use the labor, private capital, and government bonds market clearing conditions and to ignore the goods market clearing condition. But we present all four market clearing conditions here. Further, the redundant goods market clearing condition---sometimes referred to as the resource constraint---makes for a nice check on the solution method to see if everything worked.
+Four markets must clear in `OG-USA`---the labor market, the private capital market, the government bond market, and the goods market. By Walras' Law, we only need to use three of those market clearing conditions because the fourth one is redundant. In the model, we choose to use the labor, private capital, and government bond market clearing conditions and to ignore the goods market clearing condition. But we present all four market clearing conditions here. Further, the redundant goods market clearing condition---sometimes referred to as the resource constraint---makes for a nice check on the solution method to see if everything worked.
 
 We also characterize here the law of motion for total bequests $BQ_t$. Although it is not technically a market clearing condition, one could think of the bequests law of motion as the bequests market clearing condition.
 
