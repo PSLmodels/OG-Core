@@ -28,6 +28,6 @@ dependencies:
 - requests
 - xlwt
 - pip:
-  - jupyter-book==0.9.1
+  - jupyter-book>=0.9.1
   - cs-kit
   - cs2tc
