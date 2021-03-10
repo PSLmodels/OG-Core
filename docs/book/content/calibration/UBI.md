@@ -9,19 +9,20 @@ We have included the modeling of a universal basic income (UBI) policy directly 
 (SecUBIcalc)=
 ## Calculating UBI
 
-  We calculate the time series of UBI household transfers in model units $ubi_{j,s,t)}$ and the time series of total UBI expenditures in model units $UBI_t$ from five parameters described in the `OG-USA` API (`ubi_growthadj`, `ubi_child`, `ubi_adult`, `ubi_senior`, and `ubi_max`) interfaced with the `OG-USA` demographic dynamics over lifetime income groups $j$ and ages $s$, and multiplied by household composition matrices from the [OG-USA-calibration](https://github.com/PSLmodels/OG-USA-Calibration) repository.
+  We calculate the time series of UBI household transfers in model units $ubi_{j,s,t)}$ and the time series of total UBI expenditures in model units $UBI_t$ from five parameters described in the `OG-USA` API (`ubi_growthadj`, `ubi_nom_017`, `ubi_nom_1820`, `ubi_nom_2164`, `ubi_nom_65p`, and `ubi_nom_max`) interfaced with the `OG-USA` demographic dynamics over lifetime income groups $j$ and ages $s$, and multiplied by household composition matrices from the [OG-USA-calibration](https://github.com/PSLmodels/OG-USA-Calibration) repository.
 
-  From the [OG-USA-calibration](https://github.com/PSLmodels/OG-USA-Calibration) repository, we have three $S\times J$ matrices `ubi_num_child_mat`$_{j,s}$, `ubi_num_adult_mat`$_{j,s}$, and `ubi_num_senior_mat`$_{j,s}$ representing the number of children under age 18, the number of adults between ages 18 and 65, and the number of seniors over 65, respectively, by lifetime ability group $j$ and age $s$ of head of household. Because our demographic age data match up well with head-of-household data from other datasets, we do not have to adjust the values in these matrices.[^HOH_age_dist_note]
+  From the [OG-USA-calibration](https://github.com/PSLmodels/OG-USA-Calibration) repository, we have four $S\times J$ matrices `ubi_num_017_mat`$_{j,s}$, `ubi_num_1820_mat`$_{j,s}$, `ubi_num_2164_mat`$_{j,s}$, and `ubi_num_65p_mat`$_{j,s}$ representing the number of children under age 0-17, number of adults ages 18-20, the number of adults between ages 21 and 64, and the number of seniors age 65 and over, respectively, by lifetime ability group $j$ and age $s$ of head of household. Because our demographic age data match up well with head-of-household data from other datasets, we do not have to adjust the values in these matrices.[^HOH_age_dist_note]
 
-  Now we can solve for the dollar-valued (as opposed to model-unit-valued) UBI transfer to each household in the first period $ubi^{\$}_{j,s,t=0}$ in the following way. Let the parameter `ubi_child` be the dollar value of the UBI transfer to each household per dependent child under 18. Let `ubi_adult` and `ubi_senior` be the dollar value of UBI transfer to each household per adult between ages 18 and 65 and per senior over 65, respectively. And let `ubi_max` be the maximum UBI benefit per household.
+  Now we can solve for the dollar-valued (as opposed to model-unit-valued) UBI transfer to each household in the first period $ubi^{\$}_{j,s,t=0}$ in the following way. Let the parameter `ubi_nom_017` be the dollar value of the UBI transfer to each household per dependent child age 17 and under. Let the parameter `ubi_nom_1820` be the dollar value of the UBI transfer to each household per dependent child between the ages of 18 and 20. Let `ubi_nom_2164` and `ubi_nom_65p` be the dollar value of UBI transfer to each household per adult between ages 21 and 64 and per senior 65 and over, respectively. And let `ubi_nom_max` be the maximum UBI benefit per household.
 
   ```{math}
   :label: EqUBIubi_dol_jst0
     \begin{split}
-      ubi^{\$}_{j,s,t=0} = \min\Bigl(&\texttt{ubi_max}, \\
-      &\texttt{ubi_child} * \texttt{ubi_num_child_mat}_{j,s} + \\
-      &\texttt{ubi_adult} * \texttt{ubi_num_adult_mat}_{j,s} + \\
-      &\texttt{ubi_senior} * \texttt{ubi_num_senior_mat}_{j,s}\Bigr) \quad\forall j,s
+      ubi^{\$}_{j,s,t=0} = \min\Bigl(&\texttt{ubi_nom_max}, \\
+      &\texttt{ubi_nom_017} * \texttt{ubi_num_017_mat}_{j,s} + \\
+      &\texttt{ubi_nom_1820} * \texttt{ubi_num_1820_mat}_{j,s} + \\
+      &\texttt{ubi_nom_2164} * \texttt{ubi_num_2164_mat}_{j,s} + \\
+      &\texttt{ubi_nom_65p} * \texttt{ubi_num_65p_mat}_{j,s}\Bigr) \quad\forall j,s
     \end{split}
   ```
 
