@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -246,6 +246,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../theory/stationarization.html">
    Stationarization
   </a>
@@ -253,11 +258,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../theory/equilibrium.html">
    Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/open_economy.html">
-   Open Economy Options
   </a>
  </li>
 </ul>
@@ -295,6 +295,16 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../calibration/bequests.html">
    Bequest Process Calibration
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/UBI.html">
+   Universal Basic Income (UBI)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/matching_lwi.html">
+   Matching Labor, Wealth, and Income Moments
   </a>
  </li>
 </ul>
@@ -415,10 +425,16 @@
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
         <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
+            <i class="fas fa-list"></i>
+            Contents
         </div>
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#core-maintainers">
+   Core Maintainers
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#disclaimer">
    Disclaimer
@@ -444,18 +460,28 @@
               <div>
                 
   <div class="section" id="og-usa">
-<h1>OG-USA<a class="headerlink" href="#og-usa" title="Permalink to this headline">¶</a></h1>
-<p>OG-USA is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal tax policy. The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Documentation of the model theory–its output, and solution method–is available <a class="reference external" href="https://github.com/PSLmodels/OG-USA/blob/master/docs/OGUSAdoc.pdf">here</a> and is regularly updated.  Documentation for the Python API for OG-USA is available <a class="reference external" href="https://og-usa.readthedocs.io/en/latest/index.html">here</a>.</p>
+<span id="chap-intro"></span><h1>OG-USA<a class="headerlink" href="#og-usa" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal fiscal policy. The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. This documentation contains the following major sections, which are regularly updated.</p>
+<ul class="simple">
+<li><p>Contributing to <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> API</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> Theory</p></li>
+<li><p>Calibration</p></li>
+<li><p>Appendix</p></li>
+<li><p>References</p></li>
+<li><p>Citations of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code></p></li>
+</ul>
+<div class="section" id="core-maintainers">
+<span id="sec-coremaintainers"></span><h2>Core Maintainers<a class="headerlink" href="#core-maintainers" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.jasondebacker.com/">Jason DeBacker</a> (GitHub handle <a class="reference external" href="https://github.com/jdebacker">&#64;jdebacker</a>) and <a class="reference external" href="https://sites.google.com/site/rickecon/">Richard W. Evans</a> (GitHub handle <a class="reference external" href="https://github.com/rickecon">&#64;rickecon</a>) are the core maintainers of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>. If you have questions about or contributions to the model or repository, please submit a GitHub “Issue” described in the <a class="reference internal" href="../contributing/contributor_guide.html#sec-githubissue"><span class="std std-ref">Submitting a GitHub Issue</span></a> subsection or “Pull Request” as described in the <a class="reference internal" href="../contributing/contributor_guide.html#sec-githubpr"><span class="std std-ref">Submitting a GitHub Pull Request</span></a> subsection of the <a class="reference internal" href="../contributing/contributor_guide.html#sec-workflow"><span class="std std-ref">Workflow</span></a> section of the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> <a class="reference internal" href="../contributing/contributor_guide.html#chap-contribguide"><span class="std std-ref">Contributor Guide</span></a>.</p>
+</div>
 <div class="section" id="disclaimer">
-<h2>Disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this headline">¶</a></h2>
-<p>The model is currently under development. Users should be forewarned that the
-model components could change significantly. Therefore, there is NO GUARANTEE
-OF ACCURACY. THE CODE SHOULD NOT CURRENTLY BE USED FOR PUBLICATIONS, JOURNAL
-ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations are unreliable until we finish the code re-architecture and have checked the results against other existing implementations of the tax code. The package will have released versions, which will be checked against existing code prior to release. Stay tuned for an upcoming release!</p>
+<span id="sec-disclaimer"></span><h2>Disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this headline">¶</a></h2>
+<p>The model is continuously under development. Users will be notified through <a class="reference external" href="https://github.com/PSLmodels/OG-USA/pulls?q=is%3Apr+is%3Aclosed">closed PR threads</a> and through the <a class="reference external" href="https://github.com/PSLmodels/OG-USA/releases">release notes</a> what changes have been implemented. The package will have released versions, which will be checked against existing code prior to release. Stay tuned for an upcoming release!</p>
 </div>
 <div class="section" id="citing-og-usa">
-<h2>Citing OG-USA<a class="headerlink" href="#citing-og-usa" title="Permalink to this headline">¶</a></h2>
-<p>OG-USA (Version 0.6.3)[Source code], <a class="reference external" href="https://github.com/PSLmodels/OG-USA">https://github.com/PSLmodels/OG-USA</a></p>
+<span id="sec-citingogusa"></span><h2>Citing OG-USA<a class="headerlink" href="#citing-og-usa" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> (Version 0.6.3)[Source code], <a class="reference external" href="https://github.com/PSLmodels/OG-USA">https://github.com/PSLmodels/OG-USA</a></p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -510,7 +536,7 @@ ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations 
         
           By Jason DeBacker and Richard W. Evans<br/>
         
-            &copy; Copyright 2020.<br/>
+            &copy; Copyright 2021.<br/>
       </p>
     </div>
   </footer>

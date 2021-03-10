@@ -9,7 +9,7 @@ Incorporating realistic tax and incentive detail into a general equilibrium mode
 
 The second difficulty in modeling realistic tax and incentive detail is the need for good microeconomic data on the individuals who make up the economy from which to simulate behavioral responses and corresponding tax liabilities and tax rates.
 
-`OG-USA` follows the method of {cite}`DeBackerEtAl:2017` of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into `OG-USA`.
+`OG-USA` follows the method of {cite}`DeBackerEtAl:2019` of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into `OG-USA`.
 
 (SecTaxCalcRateTheory)=
 ## Effective and Marginal Tax Rates
@@ -21,20 +21,20 @@ The second difficulty in modeling realistic tax and incentive detail is the need
     x_{j,s,t} \equiv w_{t}e_{j,s}n_{j,s,t} \quad\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
   ```{math}
-  :label: EqTaxCalcLabInc
-    y_{j,s,t} \equiv r_{t}b_{j,s,t} \qquad\:\:\:\,\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
+  :label: EqTaxCalcCapInc
+    y_{j,s,t} \equiv r_{hh,t}b_{j,s,t} \quad\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   We can express total tax liability $T_{s,t}$ from the household budget constraint {eq}`EqHHBC` as an effective tax rate multiplied by total income.
 
   ```{math}
-  :label: EqTaxCalcLiabETR
+  :label: EqTaxCalcLiabETR2
     T_{s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right)
   ```
 
-  Rearranging {eq}`EqTaxCalcLiabETR` gives the definition of an effective tax rate ($ETR$) as total tax liability divided by unadjusted gross income, or rather, total tax liability as a percent of unadjusted gross income.
+  Rearranging {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate ($ETR$) as total tax liability divided by unadjusted gross income, or rather, total tax liability as a percent of unadjusted gross income.
 
-  A marginal tax rate ($MTR$) is defined as the change in total tax liability from a small change income. In `OG-USA`, we differentiate between the marginal tax rate on labor income ($MTRx$) and the marginal tax rate on labor income ($MTRy$).
+  A marginal tax rate ($MTR$) is defined as the change in total tax liability from a small change income. In `OG-USA`, we differentiate between the marginal tax rate on labor income ($MTRx$) and the marginal tax rate on capital income ($MTRy$).
 
   ```{math}
   :label: EqTaxCalcMTRx
@@ -42,7 +42,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   ```
   ```{math}
   :label: EqTaxCalcMTRy
-    \tau^{mtry} \equiv \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \tau^{mtry} \equiv \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   As we show in Section {ref}`SecHHeulers`, the derivative of total tax liability with respect to labor supply $\frac{\partial T_{s,t}}{n_{j,s,t}}$ and the derivative of total tax liability next period with respect to savings $\frac{\partial T_{s+1,t+1}}{b_{j,s+1,t+1}}$ show up in the household Euler equations for labor supply {eq}`EqHHeul_n` and savings {eq}`EqHHeul_b`, respectively. It is valuable to be able to express those marginal tax rates, for which we have no data, as marginal tax rates for which we do have data. The following two expressions show how the marginal tax rates of labor supply can be expressed as the marginal tax rate on labor income times the household-specific wage and how the marginal tax rate of savings can be expressed as the marginal tax rate of capital income times the interest rate.
@@ -54,7 +54,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqMTRy_derive
-    \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{t}b_{j,s,t}}\frac{\partial r_t b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_t b_{j,s,t}}r_{t} = \tau^{mtry}_{s,t}r_t
+    \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}}\frac{\partial r_{hh,t}b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}}r_{hh,t} = \tau^{mtry}_{s,t}r_{hh,t}
   ```
 
 (SecTaxCalcMicro)=
@@ -94,7 +94,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcFuncs_DEP)=
 ### Default Tax Functional Form
 
-  For the default option, `OG-USA` follows the approach of {cite}`DeBackerEtAl:2017` in using the following functional form to estimate tax functions for each age $s=E+1, E+2, ... E+S$ in each time period $t$. This option can be manually selected by setting the parameter `tax_func_type="DEP"`. Alternative specifications are outlined in Section {ref}`SecTaxCalcFuncs_Alt` below. Equation {eq}`EqTaxCalcTaxFuncForm` is written as a generic tax rate, but we use this same functional form for $ETR$'s, $MTRx$'s, and $MTRy$'s.
+  For the default option, `OG-USA` follows the approach of {cite}`DeBackerEtAl:2019` in using the following functional form to estimate tax functions for each age $s=E+1, E+2, ... E+S$ in each time period $t$. This option can be manually selected by setting the parameter `tax_func_type="DEP"`. Alternative specifications are outlined in Section {ref}`SecTaxCalcFuncs_Alt` below. Equation {eq}`EqTaxCalcTaxFuncForm` is written as a generic tax rate, but we use this same functional form for $ETR$'s, $MTRx$'s, and $MTRy$'s.
   ```{math}
   :label: EqTaxCalcTaxFuncForm
     \tau(x,y) = &\Bigl[\tau(x) + shift_x\Bigr]^\phi\Bigl[\tau(y) + shift_y\Bigr]^{1-\phi} + shift \\
@@ -241,9 +241,9 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcFuncs_Alt)=
 ### Alternative Functional Forms
 
-  In addition to the default option using tax functions of the form developed by {cite}`DeBackerEtAl:2017`, `OG-USA` also allows users to specify alternative tax functions.  Three alternatives are offered:
+  In addition to the default option using tax functions of the form developed by {cite}`DeBackerEtAl:2019`, `OG-USA` also allows users to specify alternative tax functions.  Three alternatives are offered:
 
-  1. Functions as in {cite}`DeBackerEtAl:2017`, but where $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are functions of total income (i.e., $x+y$) and not labor and capital income separately.  Users can select this option by setting the parameter `tax_func_type="DEP_totalinc"`.
+  1. Functions as in {cite}`DeBackerEtAl:2019`, but where $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are functions of total income (i.e., $x+y$) and not labor and capital income separately.  Users can select this option by setting the parameter `tax_func_type="DEP_totalinc"`.
 
   2. Functions of the Gouveia and Strauss form {cite}`GouveiaStrauss:1994`:
 
@@ -255,7 +255,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   1. Linear tax functions (i.e., $\tau =$ a constant).  Users can select this option by setting the parameter `tax_func_type="linear"`.  The constant rate is found by taking the weighted average of the appropriate tax rate (effective tax rate, marginal tax rate on labor income, marginal tax rate on labor income) for each age and year, where the values are weighted by sampling weights and income.
 
-  Among all of these tax functional forms, users can set the `age_specific` parameter to `False` if they wish to have one function for all ages $s$.  In addition, for the functions based on {cite}`DeBackerEtAl:2017` (`tax_func_type="DEP"` or `tax_func_type="DEP_totinc"`), one can set `analytical_mtrs=True` if they wish to have the $\tau^{mtrx}_{s,t}$ and $\tau^{mtry}_{s,t}$ derived from the $\tau^{etr}_{s,t}$ functions.  This provides theoretical consistency, but reduced fit of the functions (see {cite}`DeBackerEtAl:2017` for more details).
+  Among all of these tax functional forms, users can set the `age_specific` parameter to `False` if they wish to have one function for all ages $s$.  In addition, for the functions based on {cite}`DeBackerEtAl:2019` (`tax_func_type="DEP"` or `tax_func_type="DEP_totinc"`), one can set `analytical_mtrs=True` if they wish to have the $\tau^{mtrx}_{s,t}$ and $\tau^{mtry}_{s,t}$ derived from the $\tau^{etr}_{s,t}$ functions.  This provides theoretical consistency, but reduced fit of the functions (see {cite}`DeBackerEtAl:2019` for more details).
 
 (SecTaxCalcFactor)=
 ## Factor Transforming Income Units
@@ -266,7 +266,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqTaxCalcFactor
-    factor\Biggl[\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\bar{\omega}_s\left(\bar{w}e_{j,s}\bar{n}_{j,s} + \bar{r}\bar{b}_{j,s}\right)\Biggr] = \text{Avg. household income in data}
+    factor\Biggl[\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\bar{\omega}_s\left(\bar{w}e_{j,s}\bar{n}_{j,s} + \bar{r}_{hh}\bar{b}_{j,s}\right)\Biggr] = \text{Avg. household income in data}
   ```
 
   We do not know the steady-state wage, interest rate, household labor supply, and savings *ex ante*. So the income $factor$ is an endogenous variable in the steady-state equilibrium computational solution. We hold the factor constant throughout the nonsteady-state equilibrium solution.

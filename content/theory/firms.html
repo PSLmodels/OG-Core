@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -249,6 +249,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="stationarization.html">
    Stationarization
   </a>
@@ -256,11 +261,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="equilibrium.html">
    Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="open_economy.html">
-   Open Economy Options
   </a>
  </li>
 </ul>
@@ -298,6 +298,16 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../calibration/bequests.html">
    Bequest Process Calibration
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/UBI.html">
+   Universal Basic Income (UBI)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/matching_lwi.html">
+   Matching Labor, Wealth, and Income Moments
   </a>
  </li>
 </ul>
@@ -418,7 +428,8 @@
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
         <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
+            <i class="fas fa-list"></i>
+            Contents
         </div>
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
@@ -462,14 +473,15 @@
 <p>The profit function of the representative firm is the following.</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmsprofit">
 <span class="eqno">(18)<a class="headerlink" href="#equation-eqfirmsprofit" title="Permalink to this equation">¶</a></span>\[  PR_t = (1 - \tau^{corp})\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t\]</div>
-<p>Gross income for the firms is given by the production function <span class="math notranslate nohighlight">\(F(K,L)\)</span> because we have normalized the price of the consumption good to 1. Labor costs to the firm are <span class="math notranslate nohighlight">\(w_t L_t\)</span>, and capital costs are <span class="math notranslate nohighlight">\((r_t +\delta)K_t\)</span>. The per-period economic depreciation rate is given by <span class="math notranslate nohighlight">\(\delta\)</span>.</p>
-<p>Taxes enter the firm’s profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(21)</a> in two places. The first is the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span>, which is a flat tax on corporate income. As is the case in the U.S., corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms’ capital demand decision.</p>
-<p>The next place where tax policy enters the profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(21)</a> is through a refund of a percent of depreciation costs <span class="math notranslate nohighlight">\(\delta^\tau\)</span> refunded at the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span>. When <span class="math notranslate nohighlight">\(\delta^\tau=0\)</span>, no depreciation expense is deducted from the firm’s tax liability. When <span class="math notranslate nohighlight">\(\delta^\tau=\delta\)</span>, all economic depreciation is deducted from corporate income.</p>
-<p>Taking the derivative of the profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(21)</a> with respect to labor <span class="math notranslate nohighlight">\(L_t\)</span> and setting it equal to zero and taking the derivative of the profit function with respect to capital <span class="math notranslate nohighlight">\(K_t\)</span> and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.</p>
+<p>Gross income for the firms is given by the production function <span class="math notranslate nohighlight">\(F(K,L)\)</span> because we have normalized the price of the consumption good to 1. Labor costs to the firm are <span class="math notranslate nohighlight">\(w_t L_t\)</span>, and capital costs are <span class="math notranslate nohighlight">\((r_t +\delta)K_t\)</span>. The per-period interest rate (rental rate) of capital for firms is <span class="math notranslate nohighlight">\(r_t\)</span>. The per-period economic depreciation rate is given by <span class="math notranslate nohighlight">\(\delta\)</span>.</p>
+<p>Taxes enter the firm’s profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(22)</a> in two places. The first is the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span>, which is a flat tax on corporate income. As is the case in the U.S., corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms’ capital demand decision.</p>
+<p>The next place where tax policy enters the profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(22)</a> is through a refund of a percent of depreciation costs <span class="math notranslate nohighlight">\(\delta^\tau\)</span> refunded at the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span>. When <span class="math notranslate nohighlight">\(\delta^\tau=0\)</span>, no depreciation expense is deducted from the firm’s tax liability. When <span class="math notranslate nohighlight">\(\delta^\tau=\delta\)</span>, all economic depreciation is deducted from corporate income.</p>
+<p>Taking the derivative of the profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(22)</a> with respect to labor <span class="math notranslate nohighlight">\(L_t\)</span> and setting it equal to zero and taking the derivative of the profit function with respect to capital <span class="math notranslate nohighlight">\(K_t\)</span> and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.</p>
+<div class="math notranslate nohighlight" id="equation-eqfirmfoc-l">
+<span class="eqno">(19)<a class="headerlink" href="#equation-eqfirmfoc-l" title="Permalink to this equation">¶</a></span>\[  w_t = e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t\]</div>
 <div class="math notranslate nohighlight" id="equation-eqfirmfoc-k">
-<span class="eqno">(19)<a class="headerlink" href="#equation-eqfirmfoc-k" title="Permalink to this equation">¶</a></span>\[\begin{split}  w_t &amp;= e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t \label{EqFirmFOC_L} \\
-  r_t &amp;= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\varepsilon}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t\end{split}\]</div>
-<p>Note that the presence of the public capital good creates economic rents.  However, given perfect competition, any economic profits will be competed away.  We therefore assume that these rents are captured by the owners of capital, as can be seen through the second term inside the square brackets in Equation <a class="reference internal" href="stationarization.html#equation-eqfirmfoc-k">(43)</a>.</p>
+<span class="eqno">(20)<a class="headerlink" href="#equation-eqfirmfoc-k" title="Permalink to this equation">¶</a></span>\[  r_t = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\varepsilon}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t\]</div>
+<p>Note that the presence of the public capital good creates economic rents.  However, given perfect competition, any economic profits will be competed away.  We therefore assume that these rents are captured by the owners of capital, as can be seen through the second term inside the square brackets in Equation <a class="reference internal" href="#equation-eqfirmfoc-k">(20)</a>.</p>
 </div>
 </div>
 
@@ -511,7 +523,7 @@
         
           By Jason DeBacker and Richard W. Evans<br/>
         
-            &copy; Copyright 2020.<br/>
+            &copy; Copyright 2021.<br/>
       </p>
     </div>
   </footer>

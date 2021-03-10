@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -247,6 +247,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../theory/stationarization.html">
    Stationarization
   </a>
@@ -254,11 +259,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../theory/equilibrium.html">
    Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/open_economy.html">
-   Open Economy Options
   </a>
  </li>
 </ul>
@@ -296,6 +296,16 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../calibration/bequests.html">
    Bequest Process Calibration
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/UBI.html">
+   Universal Basic Income (UBI)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/matching_lwi.html">
+   Matching Labor, Wealth, and Income Moments
   </a>
  </li>
 </ul>
@@ -416,7 +426,8 @@
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
         <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
+            <i class="fas fa-list"></i>
+            Contents
         </div>
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
@@ -434,10 +445,27 @@
   <a class="reference internal nav-link" href="#workflow">
    Workflow
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#submitting-a-github-issue">
+     Submitting a GitHub Issue
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#submitting-a-github-pull-request">
+     Submitting a GitHub Pull Request
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#simple-usage">
    Simple Usage
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#footnotes">
+   Footnotes
   </a>
  </li>
 </ul>
@@ -453,53 +481,29 @@
               <div>
                 
   <div class="section" id="contributor-guide">
-<h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Permalink to this headline">¶</a></h1>
-<p>The purpose of this guide is to provide the necessary background
-such that you can make improvements to the OG-USA and share them with
-others working on the model.</p>
-<p>OG-USA code is tracked by using the version control software
-<a class="reference external" href="https://help.github.com/articles/github-glossary/#git"><code class="docutils literal notranslate"><span class="pre">Git</span></code></a>.  Following the next steps will get you up and running and
-contributing to the model even if you’ve never used Git or other
-version control software.</p>
-<p>If you have already completed the Setup Python and Setup Git sections,
-please skip to <a class="reference external" href="#workflow_link">Workflow</a>.</p>
+<span id="chap-contribguide"></span><h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Permalink to this headline">¶</a></h1>
+<p>The purpose of this guide is to provide the necessary background such that you can make improvements to the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> and share them with others working on the model.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> code is tracked by using <a class="reference external" href="https://help.github.com/articles/github-glossary/#git"><code class="docutils literal notranslate"><span class="pre">Git</span></code></a> version control software along with the <a class="reference external" href="https://github.com/">GitHub.com</a> web platform for <code class="docutils literal notranslate"><span class="pre">Git</span></code> workflow and collaboration. Following the next steps will get you up and running and contributing to the model even if you’ve never used <code class="docutils literal notranslate"><span class="pre">Git</span></code> or other version control software.</p>
+<p>If you have already completed the <a class="reference internal" href="#sec-setuppython"><span class="std std-ref">Setup Python</span></a> and <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> sections, you can skip to the <a class="reference internal" href="#sec-workflow"><span class="std std-ref">Workflow</span></a> section.</p>
 <div class="section" id="setup-python">
-<h2>Setup Python<a class="headerlink" href="#setup-python" title="Permalink to this headline">¶</a></h2>
-<p>OG-USA is written in the Python programming language.
-Download and install the free Anaconda distribution of Python 3.6 from
-<a class="reference external" href="https://www.anaconda.com/download/">Anaconda</a>.  You must do this even if you already have
-Python installed on your computer because the Anaconda distribution
-contains additional Python packages that are used by OG-USA (many of
-which are not included in other Python installations).  You can install
-the Anaconda distribution without having administrative privileges on your
-computer and the Anaconda distribution will not interfere with any Python
-installation that came as part of your computer’s operating system.</p>
+<span id="sec-setuppython"></span><h2>Setup Python<a class="headerlink" href="#setup-python" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> is written in the Python programming language. Download and install the free and most recent Anaconda distribution of Python and associated libraries from <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda.com</a>.<a class="footnote-reference brackets" href="#recent-python" id="id1">1</a> You should do this even if you already have Python installed on your computer because the Anaconda distribution contains additional Python packages that are used by <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> (many of which are not included in other Python installations). You can install the Anaconda distribution without having administrative privileges on your computer and the Anaconda distribution will not interfere with any Python installation that came as part of your computer’s operating system.</p>
 </div>
 <div class="section" id="setup-git">
-<h2>Setup Git<a class="headerlink" href="#setup-git" title="Permalink to this headline">¶</a></h2>
+<span id="sec-setupgit"></span><h2>Setup Git<a class="headerlink" href="#setup-git" title="Permalink to this headline">¶</a></h2>
 <ol>
 <li><p>Create a <a class="reference external" href="https://github.com/">GitHub</a> user account.</p></li>
-<li><p>Install Git on your local machine by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/set-up-git/">Git
-setup</a>.</p></li>
-<li><p>Tell Git to remember your GitHub password by following steps 1-4 on
-<a class="reference external" href="https://help.github.com/articles/caching-your-github-password-in-git/">password setup</a>.</p></li>
-<li><p>Sign in to GitHub and create your own <a class="reference external" href="https://help.github.com/articles/github-glossary/#remote">remote</a> <a class="reference external" href="https://help.github.com/articles/github-glossary/#repository">repository</a>
-(repo) of OG-USA by clicking <a class="reference external" href="https://help.github.com/articles/github-glossary/#fork">Fork</a> in the upper
-right corner of the <a class="reference external" href="https://github.com/PSLmodels/OG-USA">OG-USA GitHub page</a>. Select your
-username when asked “Where should we fork this repository?”</p></li>
-<li><p>From your command line, navigate to the directory on your computer
-where you would like your local repo to live.</p></li>
-<li><p>Create a local repo by entering at the command line the text after
-the $.<a class="footnote-reference brackets" href="#commandline-note" id="id1">1</a>  This step creates a directory called OG-USA in
-the directory that you specified in the prior step:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="p">[</span><span class="n">github</span><span class="o">-</span><span class="n">username</span><span class="p">]</span><span class="o">/</span><span class="n">OG</span><span class="o">-</span><span class="n">USA</span><span class="o">.</span><span class="n">git</span>
+<li><p>Install Git on your local machine by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/set-up-git/">Git setup</a>.</p></li>
+<li><p>Tell Git to remember your GitHub password by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/caching-your-github-password-in-git/">password setup</a>.</p></li>
+<li><p>Sign in to GitHub and create your own <a class="reference external" href="https://help.github.com/articles/github-glossary/#remote">remote</a> <a class="reference external" href="https://help.github.com/articles/github-glossary/#repository">repository</a> (repo) of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> by clicking <a class="reference external" href="https://help.github.com/articles/github-glossary/#fork">Fork</a> in the upper right corner of the <a class="reference external" href="https://github.com/PSLmodels/OG-USA">OG-USA GitHub page</a>. Select your username when asked “Where should we fork this repository?”</p></li>
+<li><p>From your command line, navigate to the directory on your computer where you would like your local repo to live.</p></li>
+<li><p>Create a local repo by entering at the command line the text after the $.<a class="footnote-reference brackets" href="#commandline-note" id="id2">2</a> This step creates a directory called <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> in the directory that you specified in the prior step:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="p">[</span><span class="n">github</span><span class="o">-</span><span class="n">username</span><span class="p">]</span><span class="o">/</span><span class="n">OG</span><span class="o">-</span><span class="n">USA</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 </li>
-<li><p>From your command line or terminal, navigate to your local
-OG-USA directory.</p></li>
-<li><p>Make it easier to <a class="reference external" href="https://help.github.com/articles/github-glossary/#pull">push</a> your local work to others and <a class="reference external" href="https://help.github.com/articles/github-glossary/#pull">pull</a>
-others’ work to your local machine by entering at the command line::</p>
+<li><p>From your command line or terminal, navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> directory.</p></li>
+<li><p>Make it easier to <a class="reference external" href="https://help.github.com/articles/github-glossary/#pull">push</a> your local work to others and <a class="reference external" href="https://help.github.com/articles/github-glossary/#pull">pull</a> others’ work to your local machine by entering at the command line:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  $ cd OG-USA
   OG-USA$ git remote add upstream https://github.com/open-source-economics/OG-USA.git
 </pre></div>
@@ -513,20 +517,15 @@ execute the source code:</p>
 </li>
 <li><p>The prior command will create a conda environment called <code class="docutils literal notranslate"><span class="pre">ogusa-dev</span></code>.
 Activate this environment as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  OG-USA$ source activate ogusa-dev
-</pre></div>
-</div>
-<p>If you are working on Windows, use the following from the command line::</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  OG-USAr$ activate ogusa-dev
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  OG-USA$ conda activate ogusa-dev
 </pre></div>
 </div>
 </li>
 </ol>
-<p>If you’ve made it this far, you’ve successfully made a remote copy (a
-fork) of the central OG-USA repo. That remote repo is hosted on
-<a class="reference external" href="http://GitHub.com">GitHub.com</a>. You’ve also created a local repo (a <a class="reference external" href="https://help.github.com/articles/github-glossary/#clone">clone</a>) that lives
+<p>If you have made it this far, you’ve successfully made a remote copy (a
+fork) of the central <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> repo. That remote repo is hosted on <a class="reference external" href="http://GitHub.com">GitHub.com</a> at <a class="reference external" href="https://github.com/PSLmodels/OG-USA">https://github.com/PSLmodels/OG-USA</a>. You have also created a local repo (a <a class="reference external" href="https://help.github.com/articles/github-glossary/#clone">clone</a>) that lives
 on your machine and only you can see; you will make your changes to
-the OG-USA model by editing the files in the OG-USA
+the OG-USA model by editing the files in the <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>
 directory on your machine and then submitting those changes to your
 local repo. As a new contributor, you will push your changes from your
 local repo to your remote repo when you’re ready to share that work
@@ -536,9 +535,15 @@ section introduces some standard Git practices and guides you through
 the contribution process.</p>
 </div>
 <div class="section" id="workflow">
-<h2><a class="reference external" href="#workflow_link">Workflow</a><a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<span id="sec-workflow"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="submitting-a-github-issue">
+<span id="sec-githubissue"></span><h3>Submitting a GitHub Issue<a class="headerlink" href="#submitting-a-github-issue" title="Permalink to this headline">¶</a></h3>
+<p>GitHub “issues” are an excellent way to ask questions, include code examples, and tag specific GitHub users.</p>
+</div>
+<div class="section" id="submitting-a-github-pull-request">
+<span id="sec-githubpr"></span><h3>Submitting a GitHub Pull Request<a class="headerlink" href="#submitting-a-github-pull-request" title="Permalink to this headline">¶</a></h3>
 <p>The following text describes a typical workflow for changing
-OG-USA.  Different workflows may be necessary in some
+<code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>.  Different workflows may be necessary in some
 situations, in which case other contributors are here to help.</p>
 <ol>
 <li><p>Before you edit the OG-USA source code on your machine,
@@ -585,65 +590,43 @@ the OG-USA/ogusa directory:</p>
 information provided by the error message. If this isn’t possible
 or doesn’t work, we are here to help.</p>
 </li>
-<li><p>Now you’re ready to <a class="reference external" href="https://help.github.com/articles/github-glossary/#commit">commit</a> your changes to your local repo using
-the code below. The first line of code tells Git to track a
-file. Use “git status” to find all the files you’ve edited, and
-“git add” each of the files that you’d like Git to track. As a
-rule, do not add large files. If you’d like to add a file that is
-larger than 25 MB, please contact the other contributors and ask how to
-proceed. The second line of code commits your changes to your local
-repo and allows you to create a commit message; this should be a
-short description of your changes.</p>
-<p><em>Tip</em>: Committing often is a good idea as Git keeps a record of
-your changes. This means that you can always revert to a previous
-version of your work if you need to.  Do this to commit:</p>
+<li><p>Now you’re ready to <a class="reference external" href="https://help.github.com/articles/github-glossary/#commit">commit</a> your changes to your local repo using the code below. The first line of code tells <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track a file. Use “git status” to find all the files you’ve edited, and “git add” each of the files that you’d like <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track. As a rule, do not add large files. If you’d like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message; this should be a short description of your changes.</p>
+<p><em>Tip</em>: Committing often is a good idea as <code class="docutils literal notranslate"><span class="pre">Git</span></code> keeps a record of your changes. This means that you can always revert to a previous version of your work if you need to. Do this to commit:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-USA$ git add [filename]
  OG-USA$ git commit -m &quot;[description-of-your-commit]&quot;
 </pre></div>
 </div>
 </li>
-<li><p>Periodically, make sure that the branch you created in step 2
-is in sync with the changes other contributors are making to
-the central master branch by fetching upstream and merging
-upstream/master into your branch::</p>
+<li><p>Periodically, make sure that the branch you created in step 2 is in sync with the changes other contributors are making to the central master branch by fetching upstream and merging upstream/master into your branch:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  OG-USA$ git fetch upstream
   OG-USA$ git merge upstream/master
 </pre></div>
 </div>
-<p>You may need to resolve conflicts that arise when another
-contributor changed the same section of code that you are
-changing. Feel free to ask other contributors for guidance
-if this happens to you. If you do need to fix a merge
-conflict, re-run the test suite afterwards (step 4.)</p>
+<p>You may need to resolve conflicts that arise when another contributor changed the same section of code that you are changing. Feel free to ask other contributors for guidance if this happens to you. If you do need to fix a merge conflict, re-run the test suite afterwards (step 4.)</p>
 </li>
-<li><p>When you are ready for other team members to review your code, make
-your final commit and push your local branch to your remote repo:</p>
+<li><p>When you are ready for other team members to review your code, make your final commit and push your local branch to your remote repo:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-USA$ git push origin [new-branch-name]
 </pre></div>
 </div>
 </li>
 <li><p>From the <a class="reference external" href="http://GitHub.com">GitHub.com</a> user interface, <a class="reference external" href="https://help.github.com/articles/creating-a-pull-request/#creating-the-pull-request">open a pull request</a>.</p></li>
-<li><p>When you open a GitHub pull request, a code coverage report will be
-automatically generated.  If your branch adds new code that is not
-tested, the code coverage percent will decline and the number of
-untested statements (“misses” in the report) will increase.  If
-this happens, you need to add to your branch one or more tests of
-your newly added code.  Add tests so that the number of untested
-statements is the same as it is on the master branch.</p></li>
+<li><p>When you open a GitHub pull request, a code coverage report will be automatically generated. If your branch adds new code that is not tested, the code coverage percent will decline and the number of untested statements (“misses” in the report) will increase. If this happens, you need to add to your branch one or more tests of your newly added code. Add tests so that the number of untested statements is the same as it is on the master branch.</p></li>
 </ol>
 </div>
+</div>
 <div class="section" id="simple-usage">
-<h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Permalink to this headline">¶</a></h2>
-<p>Examples coming soon…</p>
+<span id="sec-simpleusage"></span><h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Permalink to this headline">¶</a></h2>
+<p>[TODO: Include simple usage examples.]</p>
+</div>
+<div class="section" id="footnotes">
+<span id="sec-contribfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
 <hr class="footnotes docutils" />
 <dl class="footnote brackets">
-<dt class="label" id="commandline-note"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>The dollar sign is the end of the command prompt on a Mac.  If
-you’re on Windows, this is usually the right angle bracket (&gt;).
-No matter the symbol, you don’t need to type it (or anything to
-its left, which shows the current working directory) at the
-command line before you enter a command; the prompt symbol and
-preceding characters should already be there.</p>
+<dt class="label" id="recent-python"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>The most recent version of Python from Anaconda is Python 3.8. <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> is currently tested to run on Python 3.7 through 3.9.</p>
+</dd>
+<dt class="label" id="commandline-note"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>The dollar sign is the end of the command prompt on a Mac. If you are using the Windows operating system, this is usually the right angle bracket (&gt;). No matter the symbol, you don’t need to type it (or anything to its left, which shows the current working directory) at the command line before you enter a command; the prompt symbol and preceding characters should already be there.</p>
 </dd>
 </dl>
 </div>
@@ -687,7 +670,7 @@ preceding characters should already be there.</p>
         
           By Jason DeBacker and Richard W. Evans<br/>
         
-            &copy; Copyright 2020.<br/>
+            &copy; Copyright 2021.<br/>
       </p>
     </div>
   </footer>

@@ -26,7 +26,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.37f24b989f4638ff9c27c22dc7559d4f.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -56,8 +56,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Exogenous Parameters" href="../calibration/exogenous_parameters.html" />
-    <link rel="prev" title="Equilibrium" href="equilibrium.html" />
+    <link rel="next" title="Stationarization" href="stationarization.html" />
+    <link rel="prev" title="Market Clearing" href="market_clearing.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -248,6 +248,11 @@
    Market Clearing
   </a>
  </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Open Economy Options
+  </a>
+ </li>
  <li class="toctree-l1">
   <a class="reference internal" href="stationarization.html">
    Stationarization
@@ -256,11 +261,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="equilibrium.html">
    Equilibrium
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Open Economy Options
   </a>
  </li>
 </ul>
@@ -298,6 +298,16 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../calibration/bequests.html">
    Bequest Process Calibration
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/UBI.html">
+   Universal Basic Income (UBI)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../calibration/matching_lwi.html">
+   Matching Labor, Wealth, and Income Moments
   </a>
  </li>
 </ul>
@@ -418,7 +428,8 @@
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
         <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
+            <i class="fas fa-list"></i>
+            Contents
         </div>
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
@@ -431,30 +442,11 @@
   <a class="reference internal nav-link" href="#partially-open-economy">
    Partially Open Economy
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#stationarization">
-     Stationarization
-    </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#foreign-debt-purchases">
-       Foreign debt purchases
-      </a>
-     </li>
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#foreign-capital-purchases">
-       Foreign capital purchases
-      </a>
-     </li>
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#resource-constraint">
-       Resource Constraint
-      </a>
-     </li>
-    </ul>
-   </li>
-  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#closed-economy">
+   Closed Economy
+  </a>
  </li>
 </ul>
 
@@ -470,89 +462,29 @@
                 
   <div class="section" id="open-economy-options">
 <span id="chap-smopecn"></span><h1>Open Economy Options<a class="headerlink" href="#open-economy-options" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by (Kotlikoff cites) and others. However, one of the findings of (Kotlikoff) is that a full multi-country model is closely approximated by the types of large partial open economy specifications we use in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discussed some of these specifications in the previous chapter <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a>. But the open economy assumptions only refer to how foreign capital can flow into the private capital market <span class="math notranslate nohighlight">\(K_t\)</span> and into the government bond market <span class="math notranslate nohighlight">\(D_t\)</span>. The labor market and goods market are closed.</p>
 <div class="section" id="small-open-economy">
 <span id="secsmallopen"></span><h2>Small Open Economy<a class="headerlink" href="#small-open-economy" title="Permalink to this headline">¶</a></h2>
-<p>In the small open economy version of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, the economy faces an exogenous world interest rate on capital, <span class="math notranslate nohighlight">\(r^{*}_{t}\)</span> that determines the amount of household savings and investment and determines the interest rate paid by the government <span class="math notranslate nohighlight">\(r_{gov,t}\)</span>. If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate. Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., <span class="math notranslate nohighlight">\(K_{t}= K^{d}_{t}+K^{f}_{t}\)</span>.  Then foreign capital is given by:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}  K^{f}_{t} = K^{demand}_{t} - K^{d}_{t}\\
-  K^{f}_{t} = K^{demand}_{t} - \bigl(B_{t} - D^{d}_{t}\bigr),\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(B_{t}\)</span> is aggregate domestic household savings and <span class="math notranslate nohighlight">\(D^{d}_{t}\)</span> is government debt holdings of domestic households. Capital demand is determined from the firm’s first order condition for its choice of capital.</p>
+<p>In the small open economy version of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, the economy faces an exogenous world interest rate on capital <span class="math notranslate nohighlight">\(r^{*}_{t}\)</span>. The parameterization for this setting is <span class="math notranslate nohighlight">\(\zeta_K=1\)</span>. This implies that foreign capital flows into (out of) the country to take up all the excess demand (excess supply) and that households face the world interest rate <span class="math notranslate nohighlight">\(r^{*}_{t}\)</span> on their private savings and that firms pay the world interest rate to rent capital. The world interest rate then determines the interest rate paid by the government <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> through equation <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(28)</a>. In this case, the rate of return on capital inside the country is exogenously fixed at <span class="math notranslate nohighlight">\(r^{*}_{t}\)</span> <a class="reference internal" href="#equation-eqsmopen-rstar-r">(45)</a>, and foreign private capital inflows <span class="math notranslate nohighlight">\(K^f_t\)</span> are just the difference between total private capital demand <span class="math notranslate nohighlight">\(K_t\)</span> by firms at the world interest rate and total domestic private capital supply by domestic households <span class="math notranslate nohighlight">\(K^d_t\)</span> at the world interest rate.</p>
+<div class="math notranslate nohighlight" id="equation-eqsmopen-rstar-r">
+<span class="eqno">(45)<a class="headerlink" href="#equation-eqsmopen-rstar-r" title="Permalink to this equation">¶</a></span>\[  r_t = r^*_t \quad\forall t\]</div>
+<div class="math notranslate nohighlight" id="equation-eqsmopen-kft">
+<span class="eqno">(46)<a class="headerlink" href="#equation-eqsmopen-kft" title="Permalink to this equation">¶</a></span>\[  K^{f}_{t} = K_{t} - K^{d}_{t} \quad\forall t\]</div>
 </div>
 <div class="section" id="partially-open-economy">
 <span id="secpartialopen"></span><h2>Partially Open Economy<a class="headerlink" href="#partially-open-economy" title="Permalink to this headline">¶</a></h2>
-<p>In the partially open economy version of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code>, the openness of the economy is modeled through two parameters that capture the extent of foreign lending to the domestic government and the amount of foreign lending of private capital to firms.</p>
-<p>The parameter <span class="math notranslate nohighlight">\(\zeta_{D}\in[0,1]\)</span> gives the share of new debt issues that are purchased by foreigners.  The law of motion for foreign-held debt is therefore given by:</p>
-<div class="math notranslate nohighlight">
-\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t})\]</div>
-<p>Domestic debt holdings as then the remaining debt holdings needed to meet government demand for debt:</p>
-<div class="math notranslate nohighlight">
-\[  D^{d}_{t} = D_{t} - D^{f}_{t}\]</div>
-<p>The parameter <span class="math notranslate nohighlight">\(\zeta_{K}\in[0,1]\)</span> helps to determine the share of domestic capital held by foreigners. In particular, <span class="math notranslate nohighlight">\(\zeta_{K}\)</span> is the share of foreign capital held by foreigners in the small open economy specification:</p>
-<div class="math notranslate nohighlight">
-\[  K^{f}_{t} = \zeta_{K}K^{open}_{t}\]</div>
-<p><span class="math notranslate nohighlight">\(K^{open}_{t}\)</span> is the amount of capital that would need to flow into the country to meet firm demand for capital at the exogenous world interest rate from the small open economy specification, net of what domestic households can supply:</p>
-<div class="math notranslate nohighlight">
-\[  K^{open}_{t} = K^{demand, open}_{t} - (B_{t} - D^{d}_{t})\]</div>
-<p>where, <span class="math notranslate nohighlight">\(K^{demand, open}_{t}\)</span> is total capital demand by domestic firms at <span class="math notranslate nohighlight">\(r^
-{*}_{t}\)</span>, <span class="math notranslate nohighlight">\(B_{t}\)</span> are total asset holdings of domestic households, and <span class="math notranslate nohighlight">\(D^{d}_{t}\)</span> are holdings of government debt by domestic households.  Total asset holdings from households result from solving the household problem at the endogenous home country interest rate.  Note that there is a disconnect between the interest rates that determine firm capital demand and domestic household savings and the interest rate used to determine <span class="math notranslate nohighlight">\(K^{demand, open}_{t}\)</span>.  This assumption is useful in that it nests the small open economy case into the partial open economy model (<span class="math notranslate nohighlight">\(\zeta_{K}=1\)</span> being the small open economy case).  However, it does leave out the realistic responses of foreign capital supply to differentials in the home country interest rate and the world interest rate.</p>
-<p>Given the two equations above, we can find the total supply of capital as:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}  K^{supply}_{t} &amp; = K^{d}_{t} + K^{f}_{t} \\
-   &amp; = B_{t} - D^{d}_{t} + \zeta_{K}K^{open}_{t} \\\end{split}\]</div>
-<div class="section" id="stationarization">
-<span id="secopenstationary"></span><h3>Stationarization<a class="headerlink" href="#stationarization" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="foreign-debt-purchases">
-<span id="secforeigndebt"></span><h4>Foreign debt purchases<a class="headerlink" href="#foreign-debt-purchases" title="Permalink to this headline">¶</a></h4>
-<p>The amount of government debt is growing by the rate of productivity growth and the rate of population growth.  Thus, stationarized government debt is given by:</p>
-<div class="math notranslate nohighlight">
-\[  \hat{D}_{t} = \frac{D_{t}}{e^{g_{y}t}N_{t}}\]</div>
-<p>The stationarized form of the foreign and domestic capital holdings thus become:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}    \hat{D}^{f}_{t+1} &amp; = \frac{D^{f}_{t+1}}{e^{g_{y}t+1}N_{t+1}} = \frac{D^{f}_{t}}{e^{g_{y}t+1}N_{t+1}} + \zeta_{D}(\frac{D_{t+1}}{e^{g_{y}t+1}N_{t+1}} - \frac{D_{t}}{e^{g_{y}t+1}N_{t+1}}) \\
-    &amp; = \frac{\hat{D}^{f}_{t}N_{t}}{e^{g_{y}}N_{t+1}} + \zeta_{D}(\hat{D}_{t+1} - \frac{\hat{D}_{t}N_{t}}{e^{g_{y}}N_{t+1}}) = \frac{\hat{D}^{f}_{t}}{e^{g_{y}}g_{n,t+1}} + \zeta_{D}(\hat{D}_{t+1} - \frac{\hat{D}_{t}}{e^{g_{y}}g_{n,t+1}})\end{split}\]</div>
-<p>and</p>
-<div class="math notranslate nohighlight">
-\[  \hat{D}^{d}_{t} = \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}} = \frac{D_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{f}_{t}}{e^{g_{y}t}N_{t}} = \hat{D}_{t} - \hat{D}^{f}_{t}\]</div>
-<p>Note that in the steady-state, we still have <span class="math notranslate nohighlight">\(\hat{D}^{f} = \zeta_{D}\hat{D}\)</span></p>
+<p>The partially open economy is the default specification of <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> in which <span class="math notranslate nohighlight">\(0&lt;\zeta_K,\zeta_D&lt;1\)</span>. In this case, foreign flows of private capital <span class="math notranslate nohighlight">\(K^f_t\)</span> and foreign holdings of government bonds <span class="math notranslate nohighlight">\(D^f_t\)</span> partially supply the respective domestic demands for these two types of capital. The equations for this partially open specification are described in Sections <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-g"><span class="std std-ref">Government bond market clearing</span></a> and <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-k"><span class="std std-ref">Private capital market clearing</span></a> of Chapter <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a>.</p>
+<p>The partially open economy specification can also be referred to as a large open economy because changes in underlying policy or parameter assumptions will influence the equilibrium interest rate on private capital <span class="math notranslate nohighlight">\(r_t\)</span>, while the world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span> remains fixed. The degree to which the domestic rental rate on private capital <span class="math notranslate nohighlight">\(r_t\)</span> responds to policy parameter changes depends on the degree to which the economy is open. In the most open case, the small open economy specification described in Section <a class="reference internal" href="#secsmallopen"><span class="std std-ref">Small Open Economy</span></a> with <span class="math notranslate nohighlight">\(\zeta_K=1\)</span>, foreign flows of private capital <span class="math notranslate nohighlight">\(K^f_t\)</span> are the most flexible and the domestic interest rate is exogenously fixed at the world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span>. As <span class="math notranslate nohighlight">\(\zeta_K\)</span> goes to 0, foreign private capital flows <span class="math notranslate nohighlight">\(K^f_t\)</span> become less flexible and the domestic interest rate <span class="math notranslate nohighlight">\(r_t\)</span> has to adjust more to make domestic private capital demand <span class="math notranslate nohighlight">\(K_t\)</span> equal total private capital supply <span class="math notranslate nohighlight">\(K^d_t + K^f_t\)</span>.</p>
+<p>Note that in our partially open economy specification, the world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span> is necessary for determining equilibrium because the foreign supply of private capital <span class="math notranslate nohighlight">\(K^f_t\)</span> depends on a concept of excess demand that is based on domestic demand at the world interest rate <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-exdemk">(41)</a>. It is also worth noting that our partially open economy specification is not a multi-country model in which the rest of the world or multiple other countries are explicitly modeled. In our specification, the rest of the world is simply modeled as the relationship between the domestic rental rate on private capital <span class="math notranslate nohighlight">\(r_t\)</span> and the world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span> as influenced by the supply of foreign private capital <span class="math notranslate nohighlight">\(\zeta_K\)</span> and by foreign purchases of new issues of government bonds <span class="math notranslate nohighlight">\(\zeta_D\)</span>.</p>
 </div>
-<div class="section" id="foreign-capital-purchases">
-<span id="secsforeigncapital"></span><h4>Foreign capital purchases<a class="headerlink" href="#foreign-capital-purchases" title="Permalink to this headline">¶</a></h4>
-<p>In the equation for foreign capital purchases, all quantities are growing at the rate of technological change and population growth.  Thus, to stationarize this equation, we find:</p>
-<div class="math notranslate nohighlight">
-\[  \hat{K}^{f}_{t} = \frac{K^{f}_{t}}{e^{g_{y}t}N_{t}}= \zeta_{K}\frac{K^{open}_{t}}{e^{g_{y}t}N_{t}} = \zeta_{K}\hat{K}^{open}_{t}\]</div>
-<p>and</p>
-<div class="math notranslate nohighlight">
-\[  \hat{K}^{open}_{t} = \frac{K^{open}_{t}}{e^{g_{y}t}N_{t}}= \frac{K^{demand, open}_{t}}{e^{g_{y}t}N_{t}} - \left(\frac{B_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}}\right) = \hat{K}^{demand, open}_{t} - (\hat{B}_{t}-\hat{D}_{t})\]</div>
-<p>and</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}  \hat{K}^{supply}_{t} &amp;= \frac{K^{supply}_{t}}{e^{g_{y}t}N_{t}} = \frac{K^{d}_{t}}{e^{g_{y}t}N_{t}} + \frac{K^{f}_{t}}{e^{g_{y}t}N_{t}} = \hat{K}^{d}_{t} + \hat{K}^{f}_{t} \\
-   &amp; = \frac{B_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}} + \zeta_{K}\frac{K^{open}_{t}}{e^{g_{y}t}N_{t}} = \hat{B}_{t} - \hat{D}^{d}_{t} + \zeta_{K}\hat{K}^{open}_{t} \\\end{split}\]</div>
-</div>
-<div class="section" id="resource-constraint">
-<span id="secopenrc"></span><h4>Resource Constraint<a class="headerlink" href="#resource-constraint" title="Permalink to this headline">¶</a></h4>
-<p>As a result of the foreign ownership of capital, the resource constraint is modified.  In a closed economy, the resource constraint is given by:</p>
-<div class="math notranslate nohighlight">
-\[  Y_{t} = C_{t} + I_{t} + G_{t}\]</div>
-<p>In the partially open economy, some of the output is paid to the foreign owners of capital.  This amount is given by <span class="math notranslate nohighlight">\(r_{t}K^{f}_{t}\)</span>.  In addition, foreign lending to the home country’s government relaxes the resource constraint.  In the case , the resource constraint is given by:</p>
-<div class="math notranslate nohighlight">
-\[  Y_{t} = C_{t} + (K^{d}_{t+1} - K^{d}_{t}) + \delta K_{t} +  G_{t} + r_{t}K^{f}_{t} - (D^{f}_{t+1}-D^{f}_{t}) + rD^{f}_{t}\]</div>
-<p>The stationarized version of this becomes:</p>
-<div class="math notranslate nohighlight">
-\[  \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{t}\hat{D}^{f}_{t}\]</div>
-<p>Note that with a wedge between the interest rate on government debt and private capital as outlined in Chapter <a class="reference internal" href="government.html#secratewedge"><span class="std std-ref">Interest Rate on Government Debt</span></a> we need to be careful about the interest rates paid and the amount of capital and debt held.  In the case of the partially open economy with an interest rate wedge, we assume that domestic and foreign investors earn a rate of return on their portfolio of:</p>
-<div class="math notranslate nohighlight">
-\[  r_{hh,t} = \frac{r_{t}K_{t} + r_{gov,t}D_{t}}{K_{t} + D_{t}}\]</div>
-<p>In the partially open economy, the ratio of private capital to debt held by domestic households might differ from the ratio held by foreign households, but we assume they still earn the same rate of return on their portfolio. <a class="footnote-reference brackets" href="#assumption-note" id="id1">1</a>  With this assumption, we modify the resource constraint to be a function of this portfolio interest rate:</p>
-<div class="math notranslate nohighlight">
-\[  \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}\]</div>
-<hr class="footnotes docutils" />
-<dl class="footnote brackets">
-<dt class="label" id="assumption-note"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>One reason for this assumption is that it simplifies our solution since we do not need to know the domestic versus foreign holdings of capital before solving the households’ problems.</p>
-</dd>
-</dl>
-</div>
-</div>
+<div class="section" id="closed-economy">
+<span id="secclosed"></span><h2>Closed Economy<a class="headerlink" href="#closed-economy" title="Permalink to this headline">¶</a></h2>
+<p>The closed economy specification in <code class="docutils literal notranslate"><span class="pre">OG-USA</span></code> is parameterized by <span class="math notranslate nohighlight">\(\zeta_D=0\)</span> and <span class="math notranslate nohighlight">\(\zeta_K=0\)</span> and is characterized as no foreign inflows of private capital. The government debt market clearing condition and the private capital market clearing condition are the following.</p>
+<div class="math notranslate nohighlight" id="equation-eqclosed-d">
+<span class="eqno">(47)<a class="headerlink" href="#equation-eqclosed-d" title="Permalink to this equation">¶</a></span>\[  D_t = D^d_t \quad\forall t\]</div>
+<div class="math notranslate nohighlight" id="equation-eqclosed-k">
+<span class="eqno">(48)<a class="headerlink" href="#equation-eqclosed-k" title="Permalink to this equation">¶</a></span>\[  K_t = K^d_t \quad\forall t\]</div>
+<p>In the closed economy setting, the world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span> is not relevant.</p>
 </div>
 </div>
 
@@ -581,8 +513,8 @@
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="equilibrium.html" title="previous page">Equilibrium</a>
-    <a class='right-next' id="next-link" href="../calibration/exogenous_parameters.html" title="next page">Exogenous Parameters</a>
+    <a class='left-prev' id="prev-link" href="market_clearing.html" title="previous page">Market Clearing</a>
+    <a class='right-next' id="next-link" href="stationarization.html" title="next page">Stationarization</a>
 
         </div>
         
@@ -594,7 +526,7 @@
         
           By Jason DeBacker and Richard W. Evans<br/>
         
-            &copy; Copyright 2020.<br/>
+            &copy; Copyright 2021.<br/>
       </p>
     </div>
   </footer>
