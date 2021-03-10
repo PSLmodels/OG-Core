@@ -1,137 +1,46 @@
 (Chap_SmOpEcn)=
 # Open Economy Options
 
+`OG-USA` offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by (Kotlikoff cites) and others. However, one of the findings of (Kotlikoff) is that a full multi-country model is closely approximated by the types of large partial open economy specifications we use in `OG-USA`. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discussed some of these specifications in the previous chapter {ref}`Chap_MarkClr`. But the open economy assumptions only refer to how foreign capital can flow into the private capital market $K_t$ and into the government bond market $D_t$. The labor market and goods market are closed.
+
 (SecSmallOpen)=
 ## Small Open Economy
-In the small open economy version of `OG-USA`, the economy faces an exogenous world interest rate on capital, $r^{*}_{t}$ that determines the amount of household savings and investment and determines the interest rate paid by the government $r_{gov,t}$. If the supply of savings from households does not meet the demand for private capital and private borrowing, foreign capital will flow in to make excess demand zero at the world interest rate. Let the total capital stock be given by the quantity of domestically supplied capital and foreign supplied capital, i.e., $K_{t}= K^{d}_{t}+K^{f}_{t}$.  Then foreign capital is given by:
+In the small open economy version of `OG-USA`, the economy faces an exogenous world interest rate on capital $r^{*}_{t}$. The parameterization for this setting is $\zeta_K=1$. This implies that foreign capital flows into (out of) the country to take up all the excess demand (excess supply) and that households face the world interest rate $r^{*}_{t}$ on their private savings and that firms pay the world interest rate to rent capital. The world interest rate then determines the interest rate paid by the government $r_{gov,t}$ through equation {eq}`EqUnbalGBC_rate_wedge`. In this case, the rate of return on capital inside the country is exogenously fixed at $r^{*}_{t}$ {eq}`EqSmOpen_rstar_r`, and foreign private capital inflows $K^f_t$ are just the difference between total private capital demand $K_t$ by firms at the world interest rate and total domestic private capital supply by domestic households $K^d_t$ at the world interest rate.
 
 ```{math}
-  K^{f}_{t} = K^{demand}_{t} - K^{d}_{t}\\
-  K^{f}_{t} = K^{demand}_{t} - \bigl(B_{t} - D^{d}_{t}\bigr),
+:label: EqSmOpen_rstar_r
+  r_t = r^*_t \quad\forall t
 ```
 
-where $B_{t}$ is aggregate domestic household savings and $D^{d}_{t}$ is government debt holdings of domestic households. Capital demand is determined from the firm's first order condition for its choice of capital.
+```{math}
+:label: EqSmOpen_Kft
+  K^{f}_{t} = K_{t} - K^{d}_{t} \quad\forall t
+```
+
 
 (SecPartialOpen)=
 ## Partially Open Economy
 
-In the partially open economy version of `OG-USA`, the openness of the economy is modeled through two parameters that capture the extent of foreign lending to the domestic government and the amount of foreign lending of private capital to firms.
+The partially open economy is the default specification of `OG-USA` in which $0<\zeta_K,\zeta_D<1$. In this case, foreign flows of private capital $K^f_t$ and foreign holdings of government bonds $D^f_t$ partially supply the respective domestic demands for these two types of capital. The equations for this partially open specification are described in Sections {ref}`SecMarkClrMktClr_G` and {ref}`SecMarkClrMktClr_K` of Chapter {ref}`Chap_MarkClr`.
 
-The parameter $\zeta_{D}\in[0,1]$ gives the share of new debt issues that are purchased by foreigners.  The law of motion for foreign-held debt is therefore given by:
+The partially open economy specification can also be referred to as a large open economy because changes in underlying policy or parameter assumptions will influence the equilibrium interest rate on private capital $r_t$, while the world interest rate $r^*_t$ remains fixed. The degree to which the domestic rental rate on private capital $r_t$ responds to policy parameter changes depends on the degree to which the economy is open. In the most open case, the small open economy specification described in Section {ref}`SecSmallOpen` with $\zeta_K=1$, foreign flows of private capital $K^f_t$ are the most flexible and the domestic interest rate is exogenously fixed at the world interest rate $r^*_t$. As $\zeta_K$ goes to 0, foreign private capital flows $K^f_t$ become less flexible and the domestic interest rate $r_t$ has to adjust more to make domestic private capital demand $K_t$ equal total private capital supply $K^d_t + K^f_t$.
 
-```{math}
-  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t})
-```
+Note that in our partially open economy specification, the world interest rate $r^*_t$ is necessary for determining equilibrium because the foreign supply of private capital $K^f_t$ depends on a concept of excess demand that is based on domestic demand at the world interest rate {eq}`EqMarkClr_ExDemK`. It is also worth noting that our partially open economy specification is not a multi-country model in which the rest of the world or multiple other countries are explicitly modeled. In our specification, the rest of the world is simply modeled as the relationship between the domestic rental rate on private capital $r_t$ and the world interest rate $r^*_t$ as influenced by the supply of foreign private capital $\zeta_K$ and by foreign purchases of new issues of government bonds $\zeta_D$.
 
-Domestic debt holdings as then the remaining debt holdings needed to meet government demand for debt:
 
-```{math}
-  D^{d}_{t} = D_{t} - D^{f}_{t}
-```
+(SecClosed)=
+## Closed Economy
 
-The parameter $\zeta_{K}\in[0,1]$ helps to determine the share of domestic capital held by foreigners. In particular, $\zeta_{K}$ is the share of foreign capital held by foreigners in the small open economy specification:
+The closed economy specification in `OG-USA` is parameterized by $\zeta_D=0$ and $\zeta_K=0$ and is characterized as no foreign inflows of private capital. The government debt market clearing condition and the private capital market clearing condition are the following.
 
 ```{math}
-  K^{f}_{t} = \zeta_{K}K^{open}_{t}
+:label: EqClosed_D
+  D_t = D^d_t \quad\forall t
 ```
-
-$K^{open}_{t}$ is the amount of capital that would need to flow into the country to meet firm demand for capital at the exogenous world interest rate from the small open economy specification, net of what domestic households can supply:
 
 ```{math}
-  K^{open}_{t} = K^{demand, open}_{t} - (B_{t} - D^{d}_{t})
+:label: EqClosed_K
+  K_t = K^d_t \quad\forall t
 ```
 
-where, $K^{demand, open}_{t}$ is total capital demand by domestic firms at $r^
-{*}_{t}$, $B_{t}$ are total asset holdings of domestic households, and $D^{d}_{t}$ are holdings of government debt by domestic households.  Total asset holdings from households result from solving the household problem at the endogenous home country interest rate.  Note that there is a disconnect between the interest rates that determine firm capital demand and domestic household savings and the interest rate used to determine $K^{demand, open}_{t}$.  This assumption is useful in that it nests the small open economy case into the partial open economy model ($\zeta_{K}=1$ being the small open economy case).  However, it does leave out the realistic responses of foreign capital supply to differentials in the home country interest rate and the world interest rate.
-
-Given the two equations above, we can find the total supply of capital as:
-
-```{math}
-  K^{supply}_{t} & = K^{d}_{t} + K^{f}_{t} \\
-   & = B_{t} - D^{d}_{t} + \zeta_{K}K^{open}_{t} \\
-```
-
-(SecOpenStationary)=
-### Stationarization
-
-(SecForeignDebt)=
-#### Foreign debt purchases
-
-The amount of government debt is growing by the rate of productivity growth and the rate of population growth.  Thus, stationarized government debt is given by:
-
-```{math}
-  \hat{D}_{t} = \frac{D_{t}}{e^{g_{y}t}N_{t}}
-```
-
-The stationarized form of the foreign and domestic capital holdings thus become:
-
-```{math}
-    \hat{D}^{f}_{t+1} & = \frac{D^{f}_{t+1}}{e^{g_{y}t+1}N_{t+1}} = \frac{D^{f}_{t}}{e^{g_{y}t+1}N_{t+1}} + \zeta_{D}(\frac{D_{t+1}}{e^{g_{y}t+1}N_{t+1}} - \frac{D_{t}}{e^{g_{y}t+1}N_{t+1}}) \\
-    & = \frac{\hat{D}^{f}_{t}N_{t}}{e^{g_{y}}N_{t+1}} + \zeta_{D}(\hat{D}_{t+1} - \frac{\hat{D}_{t}N_{t}}{e^{g_{y}}N_{t+1}}) = \frac{\hat{D}^{f}_{t}}{e^{g_{y}}g_{n,t+1}} + \zeta_{D}(\hat{D}_{t+1} - \frac{\hat{D}_{t}}{e^{g_{y}}g_{n,t+1}})
-```
-
-and
-
-```{math}
-  \hat{D}^{d}_{t} = \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}} = \frac{D_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{f}_{t}}{e^{g_{y}t}N_{t}} = \hat{D}_{t} - \hat{D}^{f}_{t}
-```
-
-
-Note that in the steady-state, we still have $\hat{D}^{f} = \zeta_{D}\hat{D}$
-
-(SecSForeignCapital)=
-#### Foreign capital purchases
-
-In the equation for foreign capital purchases, all quantities are growing at the rate of technological change and population growth.  Thus, to stationarize this equation, we find:
-
-```{math}
-  \hat{K}^{f}_{t} = \frac{K^{f}_{t}}{e^{g_{y}t}N_{t}}= \zeta_{K}\frac{K^{open}_{t}}{e^{g_{y}t}N_{t}} = \zeta_{K}\hat{K}^{open}_{t}
-```
-
-and
-
-```{math}
-  \hat{K}^{open}_{t} = \frac{K^{open}_{t}}{e^{g_{y}t}N_{t}}= \frac{K^{demand, open}_{t}}{e^{g_{y}t}N_{t}} - \left(\frac{B_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}}\right) = \hat{K}^{demand, open}_{t} - (\hat{B}_{t}-\hat{D}_{t})
-```
-
-and
-
-```{math}
-  \hat{K}^{supply}_{t} &= \frac{K^{supply}_{t}}{e^{g_{y}t}N_{t}} = \frac{K^{d}_{t}}{e^{g_{y}t}N_{t}} + \frac{K^{f}_{t}}{e^{g_{y}t}N_{t}} = \hat{K}^{d}_{t} + \hat{K}^{f}_{t} \\
-   & = \frac{B_{t}}{e^{g_{y}t}N_{t}} - \frac{D^{d}_{t}}{e^{g_{y}t}N_{t}} + \zeta_{K}\frac{K^{open}_{t}}{e^{g_{y}t}N_{t}} = \hat{B}_{t} - \hat{D}^{d}_{t} + \zeta_{K}\hat{K}^{open}_{t} \\
-```
-
-(SecOpenRC)=
-#### Resource Constraint
-
-As a result of the foreign ownership of capital, the resource constraint is modified.  In a closed economy, the resource constraint is given by:
-
-```{math}
-  Y_{t} = C_{t} + I_{t} + G_{t}
-```
-
-In the partially open economy, some of the output is paid to the foreign owners of capital.  This amount is given by $r_{t}K^{f}_{t}$.  In addition, foreign lending to the home country's government relaxes the resource constraint.  In the case , the resource constraint is given by:
-
-```{math}
-  Y_{t} = C_{t} + (K^{d}_{t+1} - K^{d}_{t}) + \delta K_{t} +  G_{t} + r_{t}K^{f}_{t} - (D^{f}_{t+1}-D^{f}_{t}) + rD^{f}_{t}
-```
-
-The stationarized version of this becomes:
-
-```{math}
-  \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{t}\hat{D}^{f}_{t}
-```
-
-Note that with a wedge between the interest rate on government debt and private capital as outlined in Chapter {ref}`SecRateWedge` we need to be careful about the interest rates paid and the amount of capital and debt held.  In the case of the partially open economy with an interest rate wedge, we assume that domestic and foreign investors earn a rate of return on their portfolio of:
-
-```{math}
-  r_{hh,t} = \frac{r_{t}K_{t} + r_{gov,t}D_{t}}{K_{t} + D_{t}}
-```
-
-In the partially open economy, the ratio of private capital to debt held by domestic households might differ from the ratio held by foreign households, but we assume they still earn the same rate of return on their portfolio. [^assumption_note]  With this assumption, we modify the resource constraint to be a function of this portfolio interest rate:
-
-```{math}
-  \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}
-```
-
-[^assumption_note]: One reason for this assumption is that it simplifies our solution since we do not need to know the domestic versus foreign holdings of capital before solving the households' problems.
+In the closed economy setting, the world interest rate $r^*_t$ is not relevant.
