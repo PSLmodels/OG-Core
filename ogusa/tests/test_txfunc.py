@@ -157,7 +157,7 @@ expected_tuple_linear_mtrx = (0.2677667, 0.0, 3798)
 expected_tuple_linear_mtry = (0.15604427, 0.0, 3798)
 
 
-@pytest.mark.full_run  # only marking as full run because platform
+@pytest.mark.local  # only marking as local because platform
 # affects results from scipy.opt that is called in this test - so it'll
 # pass if run on Mac with MKL, but not necessarily on other platforms
 @pytest.mark.parametrize('rate_type,tax_func_type,numparams,expected_tuple',
@@ -252,8 +252,8 @@ def test_tax_data_sample():
     assert isinstance(df, pd.DataFrame)
 
 
-@pytest.mark.full_run
-# mark as full run since results work on Mac, but differ on other
+@pytest.mark.local
+# mark as local run since results work on Mac, but differ on other
 # platforms
 def test_tax_func_loop():
     '''
@@ -430,7 +430,7 @@ def test_get_tax_rates(tax_func_type, rate_type, params,
     assert np.allclose(test_txrates, expected)
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 def test_tax_func_estimate(dask_client):
     '''
     Test txfunc.tax_func_loop() function.  The test is that given

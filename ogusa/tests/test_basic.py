@@ -22,7 +22,7 @@ def dask_client():
     cluster.close()
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 @pytest.mark.parametrize('time_path', [False, True], ids=['SS', 'TPI'])
 def test_run_small(time_path, dask_client):
     from ogusa.execute import runner
@@ -38,7 +38,7 @@ def test_run_small(time_path, dask_client):
            client=dask_client, num_workers=NUM_WORKERS)
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 def test_constant_demographics_TPI(dask_client):
     '''
     This tests solves the model under the assumption of constant
@@ -81,7 +81,7 @@ def test_constant_demographics_TPI(dask_client):
                        ss_outputs['bssmat_splus1']))
 
 
-@pytest.mark.full_run
+@pytest.mark.full_local
 def test_constant_demographics_TPI_small_open():
     '''
     This tests solves the model under the assumption of constant

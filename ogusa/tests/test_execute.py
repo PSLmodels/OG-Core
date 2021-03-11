@@ -30,7 +30,7 @@ def dask_client():
     cluster.close()
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 def test_runner_baseline(dask_client):
     runner(output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
            test=True, time_path=True, baseline=True,
@@ -39,7 +39,7 @@ def test_runner_baseline(dask_client):
            num_workers=NUM_WORKERS)
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 def test_runner_reform(dask_client):
     runner(output_base=REFORM_DIR, baseline_dir=BASELINE_DIR,
            test=True, time_path=False, baseline=False,
