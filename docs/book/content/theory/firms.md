@@ -30,19 +30,22 @@ The production side of the `OG-USA` model is populated by a unit measure of iden
     PR_t = (1 - \tau^{corp})\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t
   ```
 
-  Gross income for the firms is given by the production function $F(K,L)$ because we have normalized the price of the consumption good to 1. Labor costs to the firm are $w_t L_t$, and capital costs are $(r_t +\delta)K_t$. The per-period economic depreciation rate is given by $\delta$.
+  Gross income for the firms is given by the production function $F(K,L)$ because we have normalized the price of the consumption good to 1. Labor costs to the firm are $w_t L_t$, and capital costs are $(r_t +\delta)K_t$. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate is given by $\delta$.
 
   Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}$, which is a flat tax on corporate income. As is the case in the U.S., corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
 
   The next place where tax policy enters the profit function {eq}`EqFirmsProfit` is through a refund of a percent of depreciation costs $\delta^\tau$ refunded at the corporate income tax rate $\tau^{corp}$. When $\delta^\tau=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau=\delta$, all economic depreciation is deducted from corporate income.
 
   Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_t$ and setting it equal to zero and taking the derivative of the profit function with respect to capital $K_t$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
-  
+
+  ```{math}
+  :label: EqFirmFOC_L
+    w_t = e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t
+  ```
+
   ```{math}
   :label: EqFirmFOC_K
-    w_t &= e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t \label{EqFirmFOC_L} \\
-    r_t &= (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\varepsilon}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t
+    r_t = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\varepsilon}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t
   ```
 
   Note that the presence of the public capital good creates economic rents.  However, given perfect competition, any economic profits will be competed away.  We therefore assume that these rents are captured by the owners of capital, as can be seen through the second term inside the square brackets in Equation {eq}`EqFirmFOC_K`.
-
