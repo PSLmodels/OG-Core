@@ -175,7 +175,7 @@ def test_twist_doughnut(file_inputs, file_outputs):
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 def test_inner_loop(dask_client):
     # Test TPI.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -285,7 +285,7 @@ filename7 = os.path.join(
     'run_TPI_outputs_baseline_delta_tau0.pkl')
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates2, filename2),
                           (True, param_updates1, filename1),
@@ -429,7 +429,7 @@ filename7 = filename = os.path.join(
     'run_TPI_outputs_baseline_delta_tau0_2.pkl')
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates5, filename5),
                           (True, param_updates6, filename6),

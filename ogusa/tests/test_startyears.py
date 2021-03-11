@@ -18,7 +18,7 @@ def dask_client():
     cluster.close()
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 @pytest.mark.parametrize(
         'year', [2014, 2017, 2026], ids=['2014', '2017', '2026'])
 def test_diff_start_year(year, dask_client):
