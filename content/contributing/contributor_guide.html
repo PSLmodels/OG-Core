@@ -583,12 +583,10 @@ a different branch for that project:</p>
 introduce bugs or degrade the accuracy of the OG-USA. To do
 this, run the following command from the command line from inside
 the OG-USA/ogusa directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-USA/ogusa$ py.test
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-USA/ogusa$  pytest -m &quot;not needs_puf and not regression&quot;
 </pre></div>
 </div>
-<p>If the tests do not pass, try to fix the issue by using the
-information provided by the error message. If this isn’t possible
-or doesn’t work, we are here to help.</p>
+<p>Note that running this full suite of tests may take close to 24 hours (depending on your hardware).  To run the small set of tests that run on each pull request (and take about 40 minutes), use  <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">-m</span> <span class="pre">&quot;not</span> <span class="pre">needs_puf</span> <span class="pre">and</span> <span class="pre">not</span> <span class="pre">local</span> <span class="pre">and</span> <span class="pre">not</span> <span class="pre">regression&quot;</span></code>.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn’t possible or doesn’t work, the core maintainers are here to help via a <a class="reference external" href="https://github.com/PSLmodels/OG-USA/issues">GitHub Issue</a>.</p>
 </li>
 <li><p>Now you’re ready to <a class="reference external" href="https://help.github.com/articles/github-glossary/#commit">commit</a> your changes to your local repo using the code below. The first line of code tells <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track a file. Use “git status” to find all the files you’ve edited, and “git add” each of the files that you’d like <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track. As a rule, do not add large files. If you’d like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message; this should be a short description of your changes.</p>
 <p><em>Tip</em>: Committing often is a good idea as <code class="docutils literal notranslate"><span class="pre">Git</span></code> keeps a record of your changes. This means that you can always revert to a previous version of your work if you need to. Do this to commit:</p>
