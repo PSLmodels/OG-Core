@@ -81,7 +81,7 @@ def test_constant_demographics_TPI(dask_client):
                        ss_outputs['bssmat_splus1']))
 
 
-@pytest.mark.full_local
+@pytest.mark.local
 def test_constant_demographics_TPI_small_open():
     '''
     This tests solves the model under the assumption of constant
