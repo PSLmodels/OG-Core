@@ -8,7 +8,7 @@ import pytest
 import numpy as np
 import os
 import pickle
-from ogusa import SS, utils, aggregates, household, execute, constants
+from ogusa import SS, utils, aggregates, household, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
@@ -618,7 +618,7 @@ filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
                           (True, param_updates6, filename6)],
                          ids=['Baseline, small open, budget balance',
                               'Baseline, delta_tau = 0'])
-@pytest.mark.full_run
+@pytest.mark.local
 def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -764,7 +764,7 @@ filename6 = 'inner_loop_outputs_baseline_delta_tau0.pkl'
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(False, param_updates6, filename6)],
                          ids=['Baseline, delta_tau = 0'])
-@pytest.mark.full_run
+@pytest.mark.local
 def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -985,7 +985,7 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
                               'Reform, small open use zeta',
                               'Baseline, delta_tau=0'
                               ])
-@pytest.mark.full_run
+@pytest.mark.local
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.

@@ -89,7 +89,7 @@ def run_micro_macro(iit_reform, og_spec, guid, client):
     return ans
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 def test_run_micro_macro(dask_client):
 
     iit_reform = {
@@ -101,7 +101,6 @@ def test_run_micro_macro(dask_client):
         "II_rt6": {2018: 0.315},
         "II_rt7": {2018: 0.3564}
     }
-        
     run_micro_macro(iit_reform=iit_reform, og_spec={
         'frisch': 0.44, 'g_y_annual': 0.021}, guid='abc',
                     client=dask_client)
