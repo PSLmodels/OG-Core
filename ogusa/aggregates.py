@@ -307,11 +307,14 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             np.squeeze(p.lambdas) *
             np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
                     (1, 1, p.J)))
+        pop_weights_ubi = (
+            np.tile(p.lambdas.reshape((1, p.J, 1)), (p.S, 1, p.T)) *
+            np.tile(p.omega[:p.T, :].T.reshape((p.S, 1, p.T)), (1, p.J, 1)))
         iit_payroll_tax_revenue = (
             inc_pay_tax_liab * pop_weights).sum(1).sum(1)
         agg_pension_outlays = (
             pension_benefits * pop_weights).sum(1).sum(1)
-        UBI_outlays = (?)
+        UBI_outlays = (ubi[:, :, :p.T] * pop_weights_ubi).sum(0).sum(0)
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum(1).sum(1)
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
