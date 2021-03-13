@@ -47,6 +47,7 @@ def euler_equation_solver(guesses, *args):
         w (scalar): real wage rate
         bq (Numpy array): bequest amounts by age, length S
         tr (scalar): government transfer amount by age, length S
+        ubi (vector): universal basic income (UBI) payment, length S
         factor (scalar): scaling factor converting model units to dollars
         p (OG-USA Specifications object): model parameters
 
@@ -54,7 +55,7 @@ def euler_equation_solver(guesses, *args):
         errros (Numpy array): errors from FOCs, length 2S
 
     '''
-    (r, w, bq, tr, factor, j, p) = args
+    (r, w, bq, tr, ubi, factor, j, p) = args
 
     b_guess = np.array(guesses[:p.S])
     n_guess = np.array(guesses[p.S:])
@@ -64,7 +65,7 @@ def euler_equation_solver(guesses, *args):
     theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, bq,
-                                   factor, tr, theta, p.e[:, j], p.rho,
+                                   factor, tr, ubi, theta, p.e[:, j], p.rho,
                                    p.tau_c[-1, :, j],
                                    p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], None, j, p,
@@ -163,11 +164,12 @@ def inner_loop(outer_loop_vars, p, client):
     r_hh = aggr.get_r_hh(r, r_gov, K, D)
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
+    ubi = p.ubi_nom_SS / factor
 
     lazy_values = []
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
-        euler_params = (r_hh, w, bq[:, j], tr[:, j], factor, j, p)
+        euler_params = (r_hh, w, bq[:, j], tr[:, j], ubi[:, j], factor, j, p)
         lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
                                                guesses * .9,
                                                args=euler_params,
@@ -218,14 +220,14 @@ def inner_loop(outer_loop_vars, p, client):
         np.reshape(p.etr_params[-1, :, :],
                    (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
     taxss = tax.net_taxes(
-        new_r_hh, new_w, b_s, nssmat, new_bq, factor, tr, theta, None,
+        new_r_hh, new_w, b_s, nssmat, new_bq, factor, tr, ubi, theta, None,
         None, False, 'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(
         new_r_hh, new_w, b_s, bssmat, nssmat, new_bq, taxss, p.e,
         p.tau_c[-1, :, :], p)
-    total_tax_revenue, _, agg_pension_outlays, _, _, _, _, _, _ =\
+    total_tax_revenue, _, agg_pension_outlays, UBI_outlays, _, _, _, _, _, _ =\
         aggr.revenue(new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, Y, L,
-                     K, factor, theta, etr_params_3D, p, 'SS')
+                     K, factor, ubi, theta, etr_params_3D, p, 'SS')
     G = fiscal.get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
                         new_borrowing, debt_service, p)
     new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue,

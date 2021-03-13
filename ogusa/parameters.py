@@ -517,7 +517,9 @@ class Specifications(paramtools.Parameters):
 
     def get_ubi_nom_objs(self):
         '''
-        Generate time series of SxJ UBI matrix over necessary time periods
+        Generate time series of nominal SxJ UBI household matrix and aggregate
+        UBI expenditure over necessary time periods. Also generate steady-state
+        versions
 
         Args:
             self: OG-USA parameters class object
@@ -527,6 +529,10 @@ class Specifications(paramtools.Parameters):
                 transfers in dollars for each type-j age-s household in every
                 period t
             UBI_nom_vec (vector): (T+S) vector time series of aggregate UBI
+                expenditure in dollars
+            ubi_nom_SS (array): S x J matrix of UBI steady-state (long-run)
+                transfers in dollars for each type-j age-s household
+            UBI_nom_SS (scalar): value of UBI steady-state (long-run) total
                 expenditure in dollars
         '''
         TpS = self.omega.shape[0]
@@ -561,7 +567,7 @@ class Specifications(paramtools.Parameters):
             else:
                 # If ubi_growthadj=False, and g_y_annual>=0, then must divide
                 # by e^{g_y t} every period, then set the steady-state matrix
-                # to 0
+                # to its value close to zero at t=T
                 if t <= self.T:
                     ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * t)
                 else:  # periods where t > T
@@ -570,10 +576,10 @@ class Specifications(paramtools.Parameters):
             omega_mat = np.tile(self.omega[t, :].reshape((self.S, 1)),
                                 (1, self.J))
             UBI_nom_vec[t] = (lambdas_mat * omega_mat * ubi_nom_mat).sum()
-        ubi_nom_SS_mat = ubi_nom_array[:, :, self.T + 1]
+        ubi_nom_SS = ubi_nom_array[:, :, self.T + 1]
         UBI_nom_SS = UBI_nom_vec[self.T + 1]
 
-        return ubi_nom_array, UBI_nom_vec, ubi_nom_SS_mat, UBI_nom_SS
+        return ubi_nom_array, UBI_nom_vec, ubi_nom_SS, UBI_nom_SS
 
     def update_specifications(self, revision, raise_errors=True):
         '''

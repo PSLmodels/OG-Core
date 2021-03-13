@@ -236,7 +236,7 @@ def get_C(c, p, method):
     return aggC
 
 
-def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
+def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             p, method):
     r'''
     Calculate aggregate tax revenue.
@@ -260,6 +260,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
         K (array_like): aggregate capital
         factor (scalar): scaling factor converting model units to
             dollars
+        ubi (array_like): universal basic income household distributions
         theta (Numpy array): social security replacement rate for each
             lifetime income group
         etr_params (Numpy array): paramters of the effective tax rate
@@ -274,6 +275,8 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
             payroll tax revenue
         agg_pension_outlays (array_like): aggregate outlays for gov't
             pensions
+        UBI_outlays (array_like): aggregate universal basic income (UBI)
+            outlays
         bequest_tax_revenue (array_like): aggregate bequest tax revenue
         wealth_tax_revenue (array_like): aggregate wealth tax revenue
         cons_tax_revenue (array_like): aggregate consumption tax revenue
@@ -293,6 +296,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
         pop_weights = np.transpose(p.omega_SS * p.lambdas)
         iit_payroll_tax_revenue = (inc_pay_tax_liab * pop_weights).sum()
         agg_pension_outlays = (pension_benefits * pop_weights).sum()
+        UBI_outlays = (ubi * pop_weights).sum()
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum()
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum()
         cons_tax_revenue = (p.tau_c[-1, :, :] * c * pop_weights).sum()
@@ -307,6 +311,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
             inc_pay_tax_liab * pop_weights).sum(1).sum(1)
         agg_pension_outlays = (
             pension_benefits * pop_weights).sum(1).sum(1)
+        UBI_outlays = (?)
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum(1).sum(1)
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
@@ -321,7 +326,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
         bequest_tax_revenue + cons_tax_revenue + business_tax_revenue)
 
     return (total_tax_revenue, iit_payroll_tax_revenue,
-            agg_pension_outlays, bequest_tax_revenue,
+            agg_pension_outlays, UBI_outlays, bequest_tax_revenue,
             wealth_tax_revenue, cons_tax_revenue, business_tax_revenue,
             payroll_tax_revenue, iit_revenue)
 
