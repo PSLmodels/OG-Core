@@ -229,9 +229,9 @@ def inner_loop(outer_loop_vars, p, client):
         aggr.revenue(new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, Y, L,
                      K, factor, ubi, theta, etr_params_3D, p, 'SS')
     G = fiscal.get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
-                        new_borrowing, debt_service, p)
-    new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue,
-                           agg_pension_outlays, p, 'SS')
+                        UBI_outlays, new_borrowing, debt_service, p)
+    new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays,
+                           UBI_outlays, p, 'SS')
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
         new_w, new_TR, Y, new_factor, new_BQ, average_income_model

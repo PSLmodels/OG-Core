@@ -23,6 +23,7 @@ def D_G_path(r_gov, dg_fixed_values, p):
 
     .. math::
         \begin{split}
+            &e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t \\
             &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
             &\text{where}\quad g_{g,t} =
             \begin{cases}
@@ -30,15 +31,16 @@ def D_G_path(r_gov, dg_fixed_values, p):
             \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
             \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
             \end{cases} \\
-            &\text{and}\quad g_{tr,t} = 1 \quad\forall t
+            &\text{and}\quad g_{tr,t} = 1 \quad\forall t \\
+            &e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^{f}_{t+1} = \hat{D}^{f}_{t} + \zeta_{D}\Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}_{t+1} - \hat{D}_{t}\Bigr) \quad\forall t
         \end{split}
 
     Args:
         r_gov (Numpy array): interest rate on government debt over the
             time path
         dg_fixed_values (tuple): (Y, total_tax_revenue,
-            agg_pension_outlays, TR, D0, G0) values of variables that
-            are taken as given in the government budget constraint
+            agg_pension_outlays, UBI_outlays,TR, D0, G0) values of variables
+            that are taken as given in the government budget constraint
         Gbaseline (Numpy array): government spending over the time path
             in the baseline equilibrium, used only if
             baseline_spending=True
@@ -148,9 +150,9 @@ def get_D_ss(r_gov, Y, p):
             \bar{D} &= \alpha_D \bar{Y}\\
             \bar{D_d} &= \bar{D} - \bar{D}^{f}\\
             \bar{D_f} &= \zeta_{D}\bar{D} \\
-            \text{new borrowing} &= (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
-            \bar{debt service} &= \bar{r}_{gov}\bar{D} \\
-            \text{new foreign borrowing} &=
+            \overline{\text{new borrowing}} &= (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
+            \overline{\text{debt service}} &= \bar{r}_{gov}\bar{D} \\
+            \overline{\text{new foreign borrowing}} &=
             (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
         \end{split}
 
@@ -183,20 +185,21 @@ def get_D_ss(r_gov, Y, p):
     return D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f
 
 
-def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
+def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR, UBI_outlays,
              new_borrowing, debt_service, p):
     r'''
     Calculate the steady-state values of government spending.
 
     .. math::
-            \bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) -
-            \bar{TR} - \bar{r}_{gov}\bar{D}
+            \bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr] -
+            \bar{TR} - \overline{UBI}
 
     Args:
         Y (scalar): aggregate output
         total_tax_revenue (scalar): steady-state tax revenue
         agg_pension_outlays (scalar): steady-state pension outlays
         TR (scalar): steady-state transfer spending
+        UBI_outlays (scalar): steady-state total UBI outlays
         new_borrowing (scalar): steady-state amount of new borowing
         debt_service (scalar): steady-state debt service costs
         p (OG-USA Specifications object): model parameters
@@ -209,7 +212,7 @@ def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
         G = p.alpha_G[-1] * Y
     else:
         G = (total_tax_revenue + new_borrowing -
-             (agg_pension_outlays + TR + debt_service))
+             (agg_pension_outlays + TR + debt_service + UBI_outlays))
 
     return G
 
@@ -232,7 +235,8 @@ def get_debt_service_f(r_hh, D_f):
     return debt_service_f
 
 
-def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, p, method):
+def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays, p,
+           method):
     r'''
     Function to compute aggregate transfers.  Note that this excludes
     transfer spending through the public pension system.
@@ -262,7 +266,7 @@ def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, p, method):
 
     '''
     if p.budget_balance:
-        new_TR = total_tax_revenue - agg_pension_outlays - G
+        new_TR = total_tax_revenue - agg_pension_outlays - G - UBI_outlays
     elif p.baseline_spending:
         new_TR = TR
     else:
