@@ -341,6 +341,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     factor_ss = factor
     bqssmat = household.get_bq(BQss, None, p, 'SS')
     trssmat = household.get_tr(TR_ss, None, p, 'SS')
+    ubissmat = p.ubi_nom_SS / factor_ss
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
     # Compute effective and marginal tax rates for all agents
@@ -360,8 +361,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
                             etr_params_3D, p)
 
     taxss = tax.net_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
-                          factor_ss, trssmat, theta, None, None, False,
-                          'SS', p.e, etr_params_3D, p)
+                          factor_ss, trssmat, ubissmat, theta, None, None,
+                          False, 'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(r_hh_ss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
                                 p.e, p.tau_c[-1, :, :], p)
@@ -370,13 +371,13 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     Css = aggr.get_C(cssmat, p, 'SS')
 
     (total_tax_revenue, iit_payroll_tax_revenue, agg_pension_outlays,
-     bequest_tax_revenue, wealth_tax_revenue, cons_tax_revenue,
+     UBI_outlays, bequest_tax_revenue, wealth_tax_revenue, cons_tax_revenue,
      business_tax_revenue, payroll_tax_revenue, iit_revenue
      ) = aggr.revenue(
          r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss, Lss, Kss,
-         factor, theta, etr_params_3D, p, 'SS')
+         factor, ubissmat, theta, etr_params_3D, p, 'SS')
     Gss = fiscal.get_G_ss(
-        Yss, total_tax_revenue, agg_pension_outlays, TR_ss,
+        Yss, total_tax_revenue, agg_pension_outlays, TR_ss, UBI_outlays,
         new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
@@ -420,7 +421,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
               'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
               'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss,
-              'total_taxes_ss': taxss,
+              'total_taxes_ss': taxss, 'ubissmat': ubissmat,
               'r_gov_ss': r_gov_ss, 'r_hh_ss': r_hh_ss, 'theta': theta,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
@@ -432,6 +433,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'iit_revenue': iit_revenue,
               'payroll_tax_revenue': payroll_tax_revenue,
               'agg_pension_outlays': agg_pension_outlays,
+              'UBI_outlays': UBI_outlays,
               'bequest_tax_revenue': bequest_tax_revenue,
               'wealth_tax_revenue': wealth_tax_revenue,
               'cons_tax_revenue': cons_tax_revenue,
