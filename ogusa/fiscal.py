@@ -249,7 +249,6 @@ def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays, p,
             \alpha_{T,t}Y_{t},   & \text{otherwise}
         \end{cases}
 
-
     Args:
         Y (array_like): aggregate output
         TR (array_like): aggregate government transfers
@@ -258,6 +257,7 @@ def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays, p,
             government pension benefits
         agg_pension_outlays (array_like): total government pension
             outlays
+        UBI_outlays (array_like): total universal basic income (UBI) outlays
         p (OG-USA Specifications object): model parameters
         method (str): whether doing SS or TP calculation
 
