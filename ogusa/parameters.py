@@ -525,7 +525,7 @@ class Specifications(paramtools.Parameters):
             self: OG-USA parameters class object
 
         Returns:
-            ubi_nom_array (array): S x J x (T+S) array time series of UBI
+            ubi_nom_array (array): T+S x S x J array time series of UBI
                 transfers in dollars for each type-j age-s household in every
                 period t
             UBI_nom_vec (vector): (T+S) vector time series of aggregate UBI
@@ -544,7 +544,7 @@ class Specifications(paramtools.Parameters):
         ubi_num_2164_mat = 0.85 * np.ones((self.S, self.J))
         ubi_num_65p_mat = 0.15 * np.ones((self.S, self.J))
 
-        ubi_nom_array = np.zeros((self.S, self.J, TpS))
+        ubi_nom_array = np.zeros((TpS, self.S, self.J))
         UBI_nom_vec = np.zeros(TpS)
 
         # Calculate the UBI transfers to each household type in the first
@@ -572,11 +572,11 @@ class Specifications(paramtools.Parameters):
                     ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * t)
                 else:  # periods where t > T
                     ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * self.T)
-            ubi_nom_array[:, :, t] = ubi_nom_mat
+            ubi_nom_array[t, :, :] = ubi_nom_mat
             omega_mat = np.tile(self.omega[t, :].reshape((self.S, 1)),
                                 (1, self.J))
             UBI_nom_vec[t] = (lambdas_mat * omega_mat * ubi_nom_mat).sum()
-        ubi_nom_SS = ubi_nom_array[:, :, self.T + 1]
+        ubi_nom_SS = ubi_nom_array[self.T + 1, :, :]
         UBI_nom_SS = UBI_nom_vec[self.T + 1]
 
         return ubi_nom_array, UBI_nom_vec, ubi_nom_SS, UBI_nom_SS
