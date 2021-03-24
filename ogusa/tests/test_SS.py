@@ -878,7 +878,9 @@ def test_euler_equation_solver(dask_client):
     BQ = aggregates.get_BQ(r, b_splus1, j, p, 'SS', False)
     bq = household.get_bq(BQ, j, p, 'SS')
     tr = household.get_tr(TR, j, p, 'SS')
-    args = (r, w, bq, tr, factor, j, p)
+    ubi = p.ubi_nom_SS / factor
+    ubi_j = ubi[:, j]
+    args = (r, w, bq, tr, ubi_j, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
 
     expected_list = np.array([

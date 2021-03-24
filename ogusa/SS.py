@@ -66,14 +66,12 @@ def euler_equation_solver(guesses, *args):
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, bq,
                                    factor, tr, ubi, theta, p.e[:, j], p.rho,
-                                   p.tau_c[-1, :, j],
-                                   p.etr_params[-1, :, :],
+                                   p.tau_c[-1, :, j], p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], None, j, p,
                                    'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, bq,
-                                 factor, tr, theta, p.chi_n, p.e[:, j],
-                                 p.tau_c[-1, :, j],
-                                 p.etr_params[-1, :, :],
+                                 factor, tr, ubi, theta, p.chi_n, p.e[:, j],
+                                 p.tau_c[-1, :, j], p.etr_params[-1, :, :],
                                  p.mtrx_params[-1, :, :], None, j, p,
                                  'SS')
 
@@ -92,7 +90,7 @@ def euler_equation_solver(guesses, *args):
     error1[mask3] = 1e14
     error1[mask5] = 1e14
     error2[mask4] = 1e14
-    taxes = tax.net_taxes(r, w, b_s, n_guess, bq, factor, tr, theta,
+    taxes = tax.net_taxes(r, w, b_s, n_guess, bq, factor, tr, ubi, theta,
                           None, j, False, 'SS', p.e[:, j],
                           p.etr_params[-1, :, :], p)
     cons = household.get_cons(r, w, b_s, b_splus1, n_guess, bq, taxes,
