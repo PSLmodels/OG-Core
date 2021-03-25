@@ -402,6 +402,10 @@ def run_TPI(p, client=None):
         initial_values
     (TRbaseline, Gbaseline, D0_baseline) = baseline_values
 
+    # Create time path of UBI household benefits and aggregate UBI outlays
+    ubi = p.ubi_nom_array / factor
+    UBI = p.UBI_nom_vec / factor
+
     print('Government spending breakpoints are tG1: ', p.tG1,
           '; and tG2:', p.tG2)
 
