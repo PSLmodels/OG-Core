@@ -15,6 +15,7 @@ kernelspec:
 (Chap_Exog)=
 # Exogenous Parameters
 
+  [TODO: This chapter needs heavy updating. Would be nice to do something similar to API chapter. But it is also nice to have references and descriptions as in the table below.]
 
   In this chapter, list the exogenous inputs to the model, options, and where the values come from (weak calibration vs. strong calibration). Point to the respective chapters for some of the inputs. Mention the code in [`default_parameters.json`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/default_parameters.json) and [`parameters.py`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/parameters.py).
 

@@ -35,9 +35,9 @@
   - file: content/theory/firms
   - file: content/theory/government
   - file: content/theory/market_clearing
+  - file: content/theory/open_economy
   - file: content/theory/stationarization
   - file: content/theory/equilibrium
-  - file: content/theory/open_economy
 
 - part: Calibration
   chapters:
@@ -47,6 +47,8 @@
   - file: content/calibration/earnings
   - file: content/calibration/tax_functions
   - file: content/calibration/bequests
+  - file: content/calibration/UBI
+  - file: content/calibration/matching_lwi
 
 
 - part: Appendix

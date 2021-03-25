@@ -1,9 +1,9 @@
 from cs_kit import CoreTestFunctions
-from cs_config import functions, helpers
+from cs_config import functions
 import pytest
 
 
-@pytest.mark.full_run
+@pytest.mark.local
 class TestFunctions1(CoreTestFunctions):
     get_version = functions.get_version
     get_inputs = functions.get_inputs
