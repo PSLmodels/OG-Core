@@ -2,6 +2,7 @@ import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
 import pickle
+import cloudpickle
 import numpy as np
 import os
 from ogusa import SS, TPI, utils, firm
@@ -342,9 +343,16 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, None)
-    test_path = os.path.join(CUR_PATH, 'test_dyn.pkl')
+    test_path = os.path.join(CUR_PATH, 'test_dyn_TPI.pkl')
     with open(test_path, "wb") as f:
         pickle.dump(test_dict, f)
+    ss_dir = os.path.join(CUR_PATH, "test_dyn_SS.pkl")
+    with open(ss_dir, "wb") as f:
+        pickle.dump(ss_outputs, f)
+    # Save pickle with parameter values for the run
+    param_dir = os.path.join(CUR_PATH, "test_dyn_params.pkl")
+    with open(param_dir, "wb") as f:
+        cloudpickle.dump((p), f)
     expected_dict = utils.safe_read_pickle(filename)
 
     for k, v in expected_dict.items():
