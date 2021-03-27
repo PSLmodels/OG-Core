@@ -297,3 +297,24 @@ def get_r_gov(r, p):
     r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift, 0.00)
 
     return r_gov
+
+
+def get_I_g(G, p, method):
+    '''
+    Find investment in public capital
+    '''
+    if method = 'TPI':
+        I_g = p.alpha_I * G
+    else:  # SS
+        I_g = p.delta_g *
+
+    return I_g
+
+
+def get_K_g_p1(K_g, I_g, p):
+    '''
+    Law of motion for the government capital stock
+    '''
+    K_g_p1 = (1 - p.delta_g) * K_g + I_g
+
+    return K_g_p1
