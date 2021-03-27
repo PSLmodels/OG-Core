@@ -12,7 +12,7 @@ path
 '''
 
 
-def get_Y(K, L, p, method):
+def get_Y(K, K_g, L, p, method):
     r'''
     Generates aggregate output (GDP) from aggregate capital stock,
     aggregate labor, and CES production function parameters.
@@ -40,19 +40,22 @@ def get_Y(K, L, p, method):
         Z = p.Z[:p.T]
     if p.epsilon == 1:
         # Unit elasticity, Cobb-Douglas
-        Y = Z * (K ** p.gamma) * (L ** (1 - p.gamma))
+        Y = (Z * (K ** p.gamma) * (K_g ** p.gamma_g) *
+             (L ** (1 - p.gamma - p.gamma_g)))
     else:
         # General case
         Y = (Z * (((p.gamma ** (1 / p.epsilon)) *
                    (K ** ((p.epsilon - 1) / p.epsilon))) +
-                  (((1 - p.gamma) ** (1 / p.epsilon)) *
+                  ((p.gamma_g ** (1 / p.epsilon)) *
+                   (K_g ** ((p.epsilon - 1) / p.epsilon))) +
+                  (((1 - p.gamma - p.gamma_g) ** (1 / p.epsilon)) *
                    (L ** ((p.epsilon - 1) / p.epsilon)))) **
              (p.epsilon / (p.epsilon - 1)))
 
     return Y
 
 
-def get_r(Y, K, p, method):
+def get_r(Y, K, K_g, p, method):
     r'''
     This function computes the interest rate as a function of Y, K, and
     parameters using the firm's first order condition for capital
@@ -83,7 +86,8 @@ def get_r(Y, K, p, method):
         delta_tau = p.delta_tau[:p.T]
         tau_b = p.tau_b[:p.T]
     r = ((1 - tau_b) * (Z ** ((p.epsilon - 1) / p.epsilon)) *
-         (((p.gamma * Y) / K) ** (1 / p.epsilon)) -
+         ((((p.gamma * Y) / K) ** (1 / p.epsilon)) +
+         ((((p.gamma * Y) / K_g) ** (1 / p.epsilon)) * (K_g / K))) -
          p.delta + tau_b * delta_tau)
 
     return r
@@ -114,7 +118,7 @@ def get_w(Y, L, p, method):
     else:
         Z = p.Z[:p.T]
     w = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
-         ((((1 - p.gamma) * Y) / L) ** (1 / p.epsilon)))
+         ((((1 - p.gamma - p.gamma_g) * Y) / L) ** (1 / p.epsilon)))
 
     return w
 
