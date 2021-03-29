@@ -9,6 +9,7 @@ functions require time-path calculation.
 
 # Packages
 import numpy as np
+from ogusa.aggregates import get_I
 
 '''
 ------------------------------------------------------------------------
@@ -208,11 +209,12 @@ def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
         G (tuple): steady-state government spending
 
     '''
+    I_g = get_I_g(Y, p.alpha_I[-1])
     if p.budget_balance:
         G = p.alpha_G[-1] * Y
     else:
         G = (total_tax_revenue + new_borrowing -
-             (agg_pension_outlays + TR + debt_service))
+             (agg_pension_outlays + TR + debt_service + I_g))
 
     return G
 
