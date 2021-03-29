@@ -537,7 +537,7 @@
         "value": [
             {
                 "value": [
-                    0.10
+                    0.01
                 ]
             }
         ],
@@ -2860,6 +2860,24 @@
             "range": {
                 "min": 0.01,
                 "max": 0.15
+            }
+        }
+    },
+    "initial_guess_w_SS": {
+        "title": "Initial guess of w for the SS solution",
+        "description": "Initial guess of w for the SS solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1.1
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.01,
+                "max": 5.15
             }
         }
     },
