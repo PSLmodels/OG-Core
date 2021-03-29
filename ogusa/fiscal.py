@@ -299,22 +299,22 @@ def get_r_gov(r, p):
     return r_gov
 
 
-def get_I_g(G, p, method):
+def get_I_g(Y, alpha_I):
     '''
     Find investment in public capital
     '''
-    if method = 'TPI':
-        I_g = p.alpha_I * G
-    else:  # SS
-        I_g = p.delta_g *
+    I_g = alpha_I * Y
 
     return I_g
 
 
-def get_K_g_p1(K_g, I_g, p):
+def get_K_g_p1(K_g, I_g, p, method):
     '''
     Law of motion for the government capital stock
     '''
-    K_g_p1 = (1 - p.delta_g) * K_g + I_g
+    if method == 'TPI':
+        K_g_p1 = (1 - p.delta_g) * K_g + I_g
+    else:  # SS
+        K_g_p1 = I_g / p.delta_g
 
     return K_g_p1

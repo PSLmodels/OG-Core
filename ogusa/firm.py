@@ -261,3 +261,29 @@ def get_K_from_Y(Y, r, p, method):
     K = Y / YKratio
 
     return K
+
+
+def get_L_from_Y(w, Y, p):
+    '''
+    Find L from Y and w
+    '''
+    L = (
+         ((1 - p.gamma - p.gamma_g) * Y) /
+         ((w / p.Z ** ((p.epsilon - 1) / p.epsilon)) ** p.epsilon))
+
+    return L
+
+
+def get_K_from_Y_and_L(w, Y, L, K_g, p):
+    '''
+    Find L from Y and w
+    '''
+    K = (
+         (((Y / p.Z) ** ((p.epsilon - 1) / p.epsilon) -
+          (1 - p.gamma - p.gamma_g) *
+          L ** ((p.epsilon - 1) / p.epsilon) -
+          (p.gamma_g ** (1 / p.epsilon)) *
+          (K_g ** ((p.epsilon - 1) / p.epsilon))) /
+          (p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (p.epsilon - 1)))
+
+    return K
