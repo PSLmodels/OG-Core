@@ -263,27 +263,80 @@ def get_K_from_Y(Y, r, p, method):
     return K
 
 
-def get_L_from_Y(w, Y, p):
+def get_L_from_Y(w, Y, p, method):
     '''
     Find L from Y and w
     '''
-    L = (
-         ((1 - p.gamma - p.gamma_g) * Y) /
-         ((w / p.Z ** ((p.epsilon - 1) / p.epsilon)) ** p.epsilon))
+    if method == 'TPI':
+        L = (
+            ((1 - p.gamma - p.gamma_g) * Y) /
+            ((w / p.Z ** ((p.epsilon - 1) / p.epsilon)) ** p.epsilon))
+    else:
+        L = (
+            ((1 - p.gamma - p.gamma_g) * Y) /
+            ((w / p.Z[-1] ** ((p.epsilon - 1) / p.epsilon)) ** p.epsilon))
 
     return L
 
 
-def get_K_from_Y_and_L(w, Y, L, K_g, p):
+def get_K_from_Y_and_L(w, Y, L, K_g, p, method):
     '''
     Find L from Y and w
     '''
-    K = (
-         (((Y / p.Z) ** ((p.epsilon - 1) / p.epsilon) -
-          (1 - p.gamma - p.gamma_g) *
-          L ** ((p.epsilon - 1) / p.epsilon) -
-          (p.gamma_g ** (1 / p.epsilon)) *
-          (K_g ** ((p.epsilon - 1) / p.epsilon))) /
-          (p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (p.epsilon - 1)))
+    if method == 'TPI':
+        K = (
+            (((Y / p.Z) ** ((p.epsilon - 1) / p.epsilon) -
+             (1 - p.gamma - p.gamma_g) *
+             L ** ((p.epsilon - 1) / p.epsilon) -
+             (p.gamma_g ** (1 / p.epsilon)) *
+             (K_g ** ((p.epsilon - 1) / p.epsilon))) /
+             (p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (p.epsilon - 1)))
+    else:
+        K = (
+            (((Y / p.Z[-1]) ** ((p.epsilon - 1) / p.epsilon) -
+             (1 - p.gamma - p.gamma_g) *
+             L ** ((p.epsilon - 1) / p.epsilon) -
+             (p.gamma_g ** (1 / p.epsilon)) *
+             (K_g ** ((p.epsilon - 1) / p.epsilon))) /
+             (p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (p.epsilon - 1)))
+
+    return K
+
+def get_K_new(r, K_g, L, p, method):
+    '''
+    Get K from r, K_g, L
+
+    For determining capital demand for open economy case.
+    '''
+    if method == 'SS':
+        Z = p.Z[-1]
+        delta_tau = p.delta_tau[-1]
+        tau_b = p.tau_b[-1]
+    else:
+        length = r.shape[0]
+        Z = p.Z[:length]
+        delta_tau = p.delta_tau[:length]
+        tau_b = p.tau_b[:length]
+    if p.epsilon == 1:
+        # Cobb-Douglas case
+        bracket = (((1 - tau_b) * p.gamma * Z) /
+                   (r + p.delta - tau_b * delta_tau))
+        K = (
+             (bracket * (K_g ** p.gamma_g) *
+              (L ** (1 - p.gamma - p.gamma_g))) ** (1 / (1 - p.gamma)))
+    else:
+        # General CES case
+        bracket = ((r + p.delta - (delta_tau * tau_b)) /
+                   ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
+        denom = (
+            (p.gamma_g ** (1 / p.epsilon)) *
+            (K_g ** ((p.epsilon - 1) / p.epsilon)) +
+            ((1 - p.gamma - p.gamma_g) ** (1 / p.epsilon)) *
+            (L ** ((p.epsilon - 1) / p.epsilon)))
+        K = \
+            ((((1 - p.gamma) ** (1 / p.epsilon)) /
+              ((bracket ** (p.epsilon - 1)) -
+               ((p.gamma ** (1 / p.epsilon) / denom)))) ** (p.epsilon /
+             (p.epsilon - 1)))
 
     return K

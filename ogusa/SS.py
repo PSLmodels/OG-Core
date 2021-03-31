@@ -152,10 +152,10 @@ def inner_loop(outer_loop_vars, p, client):
         K = 1.0  # placeholder
     else:
         bssmat, nssmat, r, w, BQ, Y, TR, factor = outer_loop_vars
-        L = firm.get_L_from_Y(w, Y, p)
+        L = firm.get_L_from_Y(w, Y, p, 'SS')
         I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
         K_g = fiscal.get_K_g_p1(0, I_g, p, 'SS')
-        K = firm.get_K_from_Y_and_L(w, Y, L, K_g, p)
+        K = firm.get_K_from_Y_and_L(w, Y, L, K_g, p, 'SS')
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
@@ -193,13 +193,14 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
-    K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
+    # K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
+    K_demand_open = firm.get_K_new(p.world_int_rate[-1], K_g, L, p, 'SS')
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
     Y = firm.get_Y(K, K_g, L, p, 'SS')
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
-        new_r = firm.get_r(Y, K, p, 'SS')
+        new_r = firm.get_r(Y, K, K_g, p, 'SS')
     new_w = firm.get_w(Y, L, p, 'SS')
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
@@ -521,7 +522,7 @@ def SS_fsolve(guesses, *args):
 
     # Create list of errors in general equilibrium variables
     error1 = new_r - r
-    error1 = new_w - w
+    error2 = new_w - w
     error3 = new_BQ - BQ
     if p.baseline:
         error4 = new_TR - TR
