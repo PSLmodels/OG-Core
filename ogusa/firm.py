@@ -302,6 +302,7 @@ def get_K_from_Y_and_L(w, Y, L, K_g, p, method):
 
     return K
 
+
 def get_K_new(r, K_g, L, p, method):
     '''
     Get K from r, K_g, L
