@@ -11,7 +11,10 @@ new_param_values = {
     'S': 40,
     'J': 2,
     'eta': (np.ones((40, 2)) / (40 * 2)),
-    'lambdas': [0.6, 0.4]
+    'lambdas': [0.6, 0.4],
+    'omega': np.ones((160, 40)) / 40,
+    'omega_SS': np.ones(40) / 40,
+    'e': np.ones((40, 2))
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -43,6 +46,9 @@ new_param_values = {
     'J': 2,
     'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
+    'omega': np.ones((160, 40)) / 40,
+    'omega_SS': np.ones(40) / 40,
+    'imm_rates': np.zeros((160, 40))
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -96,6 +102,9 @@ new_param_values = {
     'J': 2,
     'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
+    'omega': np.ones((160, 40)) / 40,
+    'omega_SS': np.ones(40) / 40,
+    'imm_rates': np.zeros((160, 40))
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -137,6 +146,10 @@ new_param_values = {
     'J': 2,
     'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
+    'omega': np.ones((160, 40)) / 40,
+    'omega_SS': np.ones(40) / 40,
+    'imm_rates': np.zeros((160, 40)),
+    'rho': np.zeros(40)
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -199,6 +212,9 @@ new_param_values = {
     'J': 2,
     'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
+    'omega': np.ones((160, 40)) / 40,
+    'omega_SS': np.ones(40) / 40,
+    'imm_rates': np.zeros((160, 40))
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -239,7 +255,10 @@ new_param_values = {
     'cit_rate': [0.2],
     'delta_tau_annual': [float(1 - ((1 - 0.0975) **
                                     (20 / (p.ending_age -
-                                           p.starting_age))))]
+                                           p.starting_age))))],
+    'omega': np.ones((30, 20)) / 20,
+    'omega_SS': np.ones(20) / 20,
+    'imm_rates': np.zeros((30, 20))
 }
 p.update_specifications(new_param_values)
 # make up some consumption values for testing
@@ -288,7 +307,10 @@ new_param_values3 = {
     'replacement_rate_adjust': [1.5, 1.5, 1.5, 1.6, 1.0],
     'delta_tau_annual': [float(1 - ((1 - 0.0975) **
                                     (20 / (p3.ending_age -
-                                           p3.starting_age))))]
+                                           p3.starting_age))))],
+    'omega': np.ones((30, 20)) / 20,
+    'omega_SS': np.ones(20) / 20,
+    'imm_rates': np.zeros((30, 20))
 }
 p3.update_specifications(new_param_values3)
 p3.e = p.e
