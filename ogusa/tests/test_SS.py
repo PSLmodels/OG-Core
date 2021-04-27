@@ -10,6 +10,7 @@ import os
 import pickle
 from ogusa import SS, utils, aggregates, household, constants
 from ogusa.parameters import Specifications
+from ogusa.utils import safe_read_pickle
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
@@ -555,8 +556,43 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     p = Specifications(baseline=baseline, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
+    p.BW = 10
     p.output_base = CUR_PATH
-    p.get_tax_function_parameters(None, run_micro=False)
+    if p.baseline:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            p.output_base, 'TxFuncEst_baseline.pkl'))
+    else:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            p.output_base, 'TxFuncEst_policy.pkl'))
+    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+    p.mean_income_data = dict_params['tfunc_avginc'][0]
+    p.etr_params = np.empty((p.T, p.S, num_etr_params))
+    p.etr_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtrx_params = np.empty((p.T, p.S, num_mtrx_params))
+    p.mtrx_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtrx_params = np.tile(np.transpose(
+        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
+    p.mtry_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtry_params = np.tile(np.transpose(
+        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    # p.get_tax_function_parameters(None, run_micro=False)
     etr_params_old = p.etr_params.copy()
     p.etr_params = etr_params_old.copy()
     p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
