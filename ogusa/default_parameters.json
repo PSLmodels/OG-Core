@@ -2868,6 +2868,78 @@
             }
         }
     },
+    "nu": {
+        "title": "Parameter for convergence rate of functional iteration",
+        "description": "Parameter for convergence rate of functional iteration.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.4
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.01,
+                "max": 0.5
+            }
+        }
+    },
+    "maxiter": {
+        "title": "Max iterations for time path iteration",
+        "description": "Max iterations for time path iteration.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "int",
+        "value": [
+            {
+                "value": 250
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 2,
+                "max": 500
+            }
+        }
+    },
+    "mindist_SS": {
+        "title": "Tolerance for convergence of steady state solution",
+        "description": "Tolerance for convergence of steady state solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1e-09
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 0.001
+            }
+        }
+    },
+    "mindist_TPI": {
+        "title": "Tolerance for convergence of time path solution",
+        "description": "Tolerance for convergence of time path solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1e-05
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 0.001
+            }
+        }
+    },
     "initial_guess_r_SS": {
         "title": "Initial guess of r for the SS solution",
         "description": "Initial guess of r for the SS solution.",
