@@ -387,6 +387,7 @@ class Specifications(paramtools.Parameters):
     #         np.transpose(
     #             dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :],
     #             axes=[1, 0, 2])
+    #TODO: keep something like this to extend tax function params through time
     #     self.etr_params[self.BW:, :, :] =\
     #         np.tile(np.transpose(
     #             dict_params['tfunc_etr_params_S'][:self.S, -1, :].reshape(

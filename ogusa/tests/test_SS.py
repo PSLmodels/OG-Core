@@ -542,14 +542,17 @@ filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates1, filename1),
+#                           (True, param_updates2, filename2),
+#                           (False, param_updates3, filename3),
+#                           (True, param_updates4, filename4)],
+#                          ids=['Baseline', 'Baseline, budget balance',
+#                               'Reform, baseline spending=True',
+#                               'Baseline, small open'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates1, filename1),
-                          (True, param_updates2, filename2),
-                          (False, param_updates3, filename3),
-                          (True, param_updates4, filename4)],
-                         ids=['Baseline', 'Baseline, budget balance',
-                              'Reform, baseline spending=True',
-                              'Baseline, small open'])
+                         [(True, param_updates1, filename1)],
+                         ids=['Baseline'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -592,6 +595,9 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     p.mtry_params = np.tile(np.transpose(
         dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
             p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    import cloudpickle
+    with open('new_param_object.pkl', "wb") as f:
+        cloudpickle.dump((p), f)
     # p.get_tax_function_parameters(None, run_micro=False)
     etr_params_old = p.etr_params.copy()
     p.etr_params = etr_params_old.copy()
