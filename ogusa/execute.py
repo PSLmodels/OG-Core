@@ -11,8 +11,7 @@ from ogusa.parameters import Specifications
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
-           baseline=True, iit_reform={}, og_spec={}, guid='',
-           run_micro=True, tax_func_path=None, data=None, client=None,
+           baseline=True, og_spec={}, guid='', client=None,
            num_workers=1):
     '''
     This function runs the OG-USA model, solving for the steady-state
@@ -23,16 +22,11 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         baseline_dir (str): path where baseline model results are saved
         test (bool): whether to run model in test mode (which has
             a smaller state space and higher tolerances for solution)
-        time_path (bool): whether to solve for the time path equlibrium
+        time_path (bool): whether to solve for the time path equilibrium
         baseline (bool): whether the model run is the baseline run
-        iit_reform (dict): Tax-Calculator policy dictionary
         og_spec (dict): dictionary with updates to default
             parameters in OG-USA
         guid (str): id for OG-USA run
-        run_micro (bool): whether to estimate tax functions from micro
-            data or load saved parameters from pickle file
-        data (str or Pandas DataFrame): path to or data to use in
-            Tax-Calculator
         client (Dask client object): client
         num_workers (int): number of workers to use for parallelization
             with Dask
@@ -59,16 +53,13 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     # Get parameter class
     # Note - set run_micro false when initially load class
     # Update later with call to spec.get_tax_function_parameters()
-    spec = Specifications(run_micro=False, tax_func_path=tax_func_path,
-                          output_base=output_base,
+    spec = Specifications(output_base=output_base,
                           baseline_dir=baseline_dir, test=test,
                           time_path=time_path, baseline=baseline,
-                          iit_reform=iit_reform, guid=guid, data=data,
-                          client=client, num_workers=num_workers)
+                          guid=guid, client=client,
+                          num_workers=num_workers)
 
     spec.update_specifications(og_spec)
-    print('path for tax functions: ', tax_func_path)
-    spec.get_tax_function_parameters(client, run_micro, tax_func_path)
 
     '''
     ------------------------------------------------------------------------

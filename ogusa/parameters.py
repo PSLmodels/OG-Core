@@ -19,10 +19,9 @@ class Specifications(paramtools.Parameters):
     array_first = True
 
     def __init__(self,
-                 run_micro=False, tax_func_path=None,
+                 run_micro=False,
                  output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
-                 test=False, time_path=True, baseline=False,
-                 iit_reform={}, guid='', data='cps',
+                 test=False, time_path=True, baseline=False, guid='',
                  client=None, num_workers=1):
         super().__init__()
 
@@ -31,9 +30,7 @@ class Specifications(paramtools.Parameters):
         self.test = test
         self.time_path = time_path
         self.baseline = baseline
-        self.iit_reform = iit_reform
         self.guid = guid
-        self.data = data
         self.num_workers = num_workers
 
         # put OG-USA version in parameters to save for reference
@@ -41,12 +38,6 @@ class Specifications(paramtools.Parameters):
 
         # does cheap calculations to find parameter values
         self.initialize()
-
-        # does more costly tax function estimation
-        if run_micro:
-            self.get_tax_function_parameters(
-                self, client, run_micro=True,
-                tax_func_path=tax_func_path)
 
         self.parameter_warnings = ''
         self.parameter_errors = ''
@@ -222,14 +213,12 @@ class Specifications(paramtools.Parameters):
         # Calculations for business income taxes
         # at some point, we will want to make Cost of Capital Calculator
         # a dependency to compute tau_b
-        c_corp_share_of_assets = 0.55
         # this adjustment factor has as the numerator CIT receipts/GDP
-        # from US data and as the demoninator CIT receipts/GDP from the
+        # and as the demoninator CIT receipts/GDP from the
         # model with baseline parameterization and no adjustment to the
         # CIT_rate
-        adjustment_factor_for_cit_receipts = 0.017 / 0.055
-        self.tau_b = (self.cit_rate * c_corp_share_of_assets *
-                      adjustment_factor_for_cit_receipts)
+        self.tau_b = (self.cit_rate * self.c_corp_share_of_assets *
+                      self.adjustment_factor_for_cit_receipts)
         self.delta_tau = (
             -1 * rate_conversion(-1 * self.delta_tau_annual,
                                  self.starting_age, self.ending_age,
