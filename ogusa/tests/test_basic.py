@@ -34,7 +34,6 @@ def test_run_small(time_path, dask_client):
     og_spec = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=True,
            time_path=time_path, baseline=True, og_spec=og_spec,
-           run_micro=False, tax_func_path=TAX_FUNC_PATH,
            client=dask_client, num_workers=NUM_WORKERS)
 
 
@@ -52,7 +51,7 @@ def test_constant_demographics_TPI(dask_client):
     # Create output directory structure
     spec = Specifications(run_micro=False, output_base=OUTPUT_DIR,
                           baseline_dir=OUTPUT_DIR, test=False,
-                          time_path=True, baseline=True, iit_reform={},
+                          time_path=True, baseline=True,
                           guid='', client=dask_client,
                           num_workers=NUM_WORKERS)
     og_spec = {'constant_demographics': True, 'budget_balance': True,
@@ -66,8 +65,11 @@ def test_constant_demographics_TPI(dask_client):
                'eta': (spec.omega_SS.reshape(spec.S, 1) *
                        spec.lambdas.reshape(1, spec.J))}
     spec.update_specifications(og_spec)
-    spec.get_tax_function_parameters(None, False,
-                                     tax_func_path=TAX_FUNC_PATH)
+    spec.BW = 10
+    spec.output_base = CUR_PATH
+    spec.etr_params = np.zeros((spec.T, spec.S, spec.etr_params.shape[2]))
+    spec.mtrx_params = np.zeros((spec.T, spec.S, spec.mtrx_params.shape[2]))
+    spec.mtry_params = np.zeros((spec.T, spec.S, spec.mtry_params.shape[2]))
     # Run SS
     ss_outputs = SS.run_SS(spec, None)
     # save SS results
@@ -91,7 +93,7 @@ def test_constant_demographics_TPI_small_open():
     # Create output directory structure
     spec = Specifications(run_micro=False, output_base=OUTPUT_DIR,
                           baseline_dir=OUTPUT_DIR, test=False,
-                          time_path=True, baseline=True, iit_reform={},
+                          time_path=True, baseline=True,
                           guid='')
     og_spec = {'constant_demographics': True, 'budget_balance': True,
                'zero_taxes': True, 'maxiter': 2,
@@ -104,8 +106,9 @@ def test_constant_demographics_TPI_small_open():
                'eta': (spec.omega_SS.reshape(spec.S, 1) *
                        spec.lambdas.reshape(1, spec.J))}
     spec.update_specifications(og_spec)
-    spec.get_tax_function_parameters(None, False,
-                                     tax_func_path=TAX_FUNC_PATH)
+    spec.etr_params = np.zeros((spec.T, spec.S, spec.etr_params.shape[2]))
+    spec.mtrx_params = np.zeros((spec.T, spec.S, spec.mtrx_params.shape[2]))
+    spec.mtry_params = np.zeros((spec.T, spec.S, spec.mtry_params.shape[2]))
     # Run SS
     ss_outputs = SS.run_SS(spec, None)
     # save SS results
