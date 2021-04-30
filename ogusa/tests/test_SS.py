@@ -14,7 +14,6 @@ from ogusa.utils import safe_read_pickle
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
-
 @pytest.fixture(scope="module")
 def dask_client():
     cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
@@ -528,31 +527,39 @@ def test_SS_fsolve(guesses, args, expected):
                        atol=1e-6))
 
 
-param_updates1 = {'start_year': 2020}
+# need to update parameter values that had corresponded to a different
+# start year than those in the default_parameters.json file
+g_n_ss = 0.0012907765315350872
+imm_rates = np.load(os.path.join(CUR_PATH, 'old_imm_rates.npy'))
+e = np.load(os.path.join(CUR_PATH, 'old_e.npy'))
+omega_SS = np.load(os.path.join(CUR_PATH, 'old_omega_SS.npy'))
+param_updates1 = {'start_year': 2020, 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename1 = 'SS_solver_outputs_baseline.pkl'
 param_updates2 = {'start_year': 2020, 'budget_balance': True,
-                  'alpha_G': [0.0]}
+                  'alpha_G': [0.0], 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
-param_updates3 = {'baseline_spending': True}
+param_updates3 = {'baseline_spending': True, 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
-param_updates4 = {'start_year': 2020, 'zeta_K': [1.0]}
+param_updates4 = {'start_year': 2020, 'zeta_K': [1.0],
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 
 
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates1, filename1),
-#                           (True, param_updates2, filename2),
-#                           (False, param_updates3, filename3),
-#                           (True, param_updates4, filename4)],
-#                          ids=['Baseline', 'Baseline, budget balance',
-#                               'Reform, baseline spending=True',
-#                               'Baseline, small open'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates1, filename1)],
-                         ids=['Baseline'])
+                         [(True, param_updates1, filename1),
+                          (True, param_updates2, filename2),
+                          (False, param_updates3, filename3),
+                          (True, param_updates4, filename4)],
+                         ids=['Baseline', 'Baseline, budget balance',
+                              'Reform, baseline spending=True',
+                              'Baseline, small open'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -584,7 +591,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         np.transpose(
             dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
             axes=[1, 0, 2])
-    p.mtrx_params = np.tile(np.transpose(
+    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
         dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
             p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
     p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
@@ -592,13 +599,9 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         np.transpose(
             dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
             axes=[1, 0, 2])
-    p.mtry_params = np.tile(np.transpose(
+    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
         dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
             p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    import cloudpickle
-    with open('new_param_object.pkl', "wb") as f:
-        cloudpickle.dump((p), f)
-    # p.get_tax_function_parameters(None, run_micro=False)
     etr_params_old = p.etr_params.copy()
     p.etr_params = etr_params_old.copy()
     p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
@@ -648,10 +651,13 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
 
 
 param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
-                  'budget_balance': True, 'alpha_G': [0.0]}
+                  'budget_balance': True, 'alpha_G': [0.0],
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0]}
+                  'zeta_D': [0.0], 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 
 
@@ -667,8 +673,42 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     p = Specifications(baseline=baseline, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
+    p.BW = 10
     p.output_base = CUR_PATH
-    p.get_tax_function_parameters(None, run_micro=False)
+    if p.baseline:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            p.output_base, 'TxFuncEst_baseline.pkl'))
+    else:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            p.output_base, 'TxFuncEst_policy.pkl'))
+    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+    p.mean_income_data = dict_params['tfunc_avginc'][0]
+    p.etr_params = np.empty((p.T, p.S, num_etr_params))
+    p.etr_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtrx_params = np.empty((p.T, p.S, num_mtrx_params))
+    p.mtrx_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
+    p.mtry_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
     etr_params_old = p.etr_params.copy()
     p.etr_params = etr_params_old.copy()
     p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
@@ -717,16 +757,23 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
 
 
-param_updates1 = {'start_year': 2020, 'zeta_K': [1.0]}
+param_updates1 = {'start_year': 2020, 'zeta_K': [1.0],
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename1 = 'inner_loop_outputs_baseline_small_open.pkl'
 param_updates2 = {'start_year': 2020, 'budget_balance': True,
-                  'alpha_G': [0.0]}
+                  'alpha_G': [0.0], 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename2 = 'inner_loop_outputs_baseline_balance_budget.pkl'
-param_updates3 = {'start_year': 2020}
+param_updates3 = {'start_year': 2020, 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename3 = 'inner_loop_outputs_baseline.pkl'
-param_updates4 = {'start_year': 2020}
+param_updates4 = {'start_year': 2020, 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename4 = 'inner_loop_outputs_reform.pkl'
-param_updates5 = {'start_year': 2020, 'baseline_spending': True}
+param_updates5 = {'start_year': 2020, 'baseline_spending': True,
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
 
 
@@ -747,7 +794,42 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
-    p.get_tax_function_parameters(None, run_micro=False)
+    p.BW = 10
+    if p.baseline:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            p.output_base, 'TxFuncEst_baseline.pkl'))
+    else:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            p.output_base, 'TxFuncEst_policy.pkl'))
+    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+    p.mean_income_data = dict_params['tfunc_avginc'][0]
+    p.etr_params = np.empty((p.T, p.S, num_etr_params))
+    p.etr_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtrx_params = np.empty((p.T, p.S, num_mtrx_params))
+    p.mtrx_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
+    p.mtry_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    # p.get_tax_function_parameters(None, run_micro=False)
     etr_params_old = p.etr_params.copy()
     p.etr_params = etr_params_old.copy()
     p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
@@ -799,7 +881,8 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
 
 
 param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0]}
+                  'zeta_D': [0.0], 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename6 = 'inner_loop_outputs_baseline_delta_tau0.pkl'
 
 
@@ -814,7 +897,42 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
-    p.get_tax_function_parameters(None, run_micro=False)
+    p.BW = 10
+    if p.baseline:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            p.output_base, 'TxFuncEst_baseline.pkl'))
+    else:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            p.output_base, 'TxFuncEst_policy.pkl'))
+    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+    p.mean_income_data = dict_params['tfunc_avginc'][0]
+    p.etr_params = np.empty((p.T, p.S, num_etr_params))
+    p.etr_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtrx_params = np.empty((p.T, p.S, num_mtrx_params))
+    p.mtrx_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
+    p.mtry_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    # p.get_tax_function_parameters(None, run_micro=False)
     etr_params_old = p.etr_params.copy()
     p.etr_params = etr_params_old.copy()
     p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
@@ -975,29 +1093,47 @@ def test_euler_equation_solver(dask_client):
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-param_updates1 = {'start_year': 2020}
+param_updates1 = {'start_year': 2020, 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename1 = 'run_SS_baseline_outputs.pkl'
-param_updates2 = {'start_year': 2020, 'use_zeta': True}
+param_updates2 = {'start_year': 2020, 'use_zeta': True,
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
-param_updates3 = {'start_year': 2020, 'zeta_K': [1.0]}
+param_updates3 = {'start_year': 2020, 'zeta_K': [1.0],
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename3 = 'run_SS_baseline_small_open.pkl'
-param_updates4 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True}
+param_updates4 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True,
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
-param_updates5 = {'start_year': 2020}
+param_updates5 = {'start_year': 2020, 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename5 = 'run_SS_reform.pkl'
-param_updates6 = {'start_year': 2020, 'use_zeta': True}
+param_updates6 = {'start_year': 2020, 'use_zeta': True,
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename6 = 'run_SS_reform_use_zeta.pkl'
-param_updates7 = {'start_year': 2020, 'zeta_K': [1.0]}
+param_updates7 = {'start_year': 2020, 'zeta_K': [1.0],
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename7 = 'run_SS_reform_small_open.pkl'
-param_updates8 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True}
+param_updates8 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True,
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
-param_updates9 = {'start_year': 2020, 'baseline_spending': True}
+param_updates9 = {'start_year': 2020, 'baseline_spending': True,
+                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
+                  'imm_rates': imm_rates, 'e': e}
 filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'start_year': 2020, 'baseline_spending': True,
-                   'use_zeta': True}
+                   'use_zeta': True, 'omega_SS': omega_SS,
+                   'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                   'zeta_D': [0.0]}
+                   'zeta_D': [0.0], 'omega_SS': omega_SS,
+                   'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 
 
@@ -1027,24 +1163,53 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
                               'Reform, small open use zeta',
                               'Baseline, delta_tau=0'
                               ])
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates1, filename1)],
+#                          ids=['Baseline'])
 @pytest.mark.local
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     if baseline is False:
-        tax_func_path_baseline = os.path.join(CUR_PATH,
-                                              'TxFuncEst_baseline.pkl')
-        tax_func_path = os.path.join(CUR_PATH,
-                                     'TxFuncEst_policy.pkl')
         p_base = Specifications(
-            run_micro=False, tax_func_path=tax_func_path_baseline,
             output_base=constants.BASELINE_DIR,
             baseline_dir=constants.BASELINE_DIR,
             time_path=False, baseline=True,
             client=dask_client, num_workers=NUM_WORKERS)
         p_base.update_specifications(param_updates)
-        p_base.get_tax_function_parameters(
-            None, run_micro=False, tax_func_path=tax_func_path_baseline)
+        p_base.BW = 10
+        dict_params = utils.safe_read_pickle(os.path.join(
+            CUR_PATH, 'TxFuncEst_baseline.pkl'))
+        num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+        num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+        num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+        p_base.mean_income_data = dict_params['tfunc_avginc'][0]
+        p_base.etr_params = np.empty((p_base.T, p_base.S, num_etr_params))
+        p_base.etr_params[:p_base.BW, :, :] =\
+            np.transpose(
+                dict_params['tfunc_etr_params_S'][:p_base.S, :p_base.BW, :],
+                axes=[1, 0, 2])
+        p_base.etr_params[p_base.BW:, :, :] = np.tile(np.transpose(
+            dict_params['tfunc_etr_params_S'][:p_base.S, -1, :].reshape(
+                p_base.S, 1, num_etr_params), axes=[1, 0, 2]), (p_base.T - p_base.BW, 1, 1))
+        p_base.mtrx_params = np.empty((p_base.T, p_base.S, num_mtrx_params))
+        p_base.mtrx_params[:p_base.BW, :, :] =\
+            np.transpose(
+                dict_params['tfunc_mtrx_params_S'][:p_base.S, :p_base.BW, :],
+                axes=[1, 0, 2])
+        p_base.mtrx_params[p_base.BW:, :, :] = np.tile(np.transpose(
+            dict_params['tfunc_mtrx_params_S'][:p_base.S, -1, :].reshape(
+                p_base.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p_base.T - p_base.BW, 1, 1))
+        p_base.mtry_params = np.empty((p_base.T, p_base.S, num_mtry_params))
+        p_base.mtry_params[:p_base.BW, :, :] =\
+            np.transpose(
+                dict_params['tfunc_mtry_params_S'][:p_base.S, :p_base.BW, :],
+                axes=[1, 0, 2])
+        p_base.mtry_params[p_base.BW:, :, :] = np.tile(np.transpose(
+            dict_params['tfunc_mtry_params_S'][:p_base.S, -1, :].reshape(
+                p_base.S, 1, num_mtry_params), axes=[1, 0, 2]), (p_base.T - p_base.BW, 1, 1))
+        # p_base.get_tax_function_parameters(
+        #     None, run_micro=False, tax_func_path=tax_func_path_baseline)
         etr_params_old = p_base.etr_params
         mtrx_params_old = p_base.mtrx_params
         mtry_params_old = p_base.mtry_params
@@ -1080,14 +1245,49 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
         with open(ss_dir, "wb") as f:
             pickle.dump(base_ss_outputs, f)
 
+    # else:
+    #     dict_params = utils.safe_read_pickle(os.path.join(
+    #         CUR_PATH, 'TxFuncEst_baseline.pkl'))
+    if baseline:
+        dict_params = utils.safe_read_pickle(os.path.join(
+            CUR_PATH, 'TxFuncEst_baseline.pkl'))
     else:
-        tax_func_path = os.path.join(CUR_PATH,
-                                     'TxFuncEst_baseline.pkl')
+        dict_params = utils.safe_read_pickle(os.path.join(
+            CUR_PATH, 'TxFuncEst_policy.pkl'))
     p = Specifications(baseline=baseline, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
-    p.get_tax_function_parameters(None, run_micro=False,
-                                  tax_func_path=tax_func_path)
+    p.BW = 10
+    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+    p.mean_income_data = dict_params['tfunc_avginc'][0]
+    p.etr_params = np.empty((p.T, p.S, num_etr_params))
+    p.etr_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtrx_params = np.empty((p.T, p.S, num_mtrx_params))
+    p.mtrx_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
+    p.mtry_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+    # p.get_tax_function_parameters(None, run_micro=False,
+    #                               tax_func_path=tax_func_path)
     etr_params_old = p.etr_params
     mtrx_params_old = p.mtrx_params
     mtry_params_old = p.mtry_params
