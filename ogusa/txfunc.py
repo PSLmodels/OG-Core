@@ -16,7 +16,6 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
-from ogusa import get_micro_data
 import ogusa.parameter_plots as pp
 from ogusa.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
 import warnings
