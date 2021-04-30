@@ -27,7 +27,6 @@ def test_frisch(frisch, dask_client):
     og_spec = {'frisch': frisch, 'debt_ratio_ss': 1.0}
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
-           run_micro=False, tax_func_path=TAX_FUNC_PATH,
            client=dask_client, num_workers=NUM_WORKERS)
 
 
@@ -39,7 +38,6 @@ def test_gy(g_y_annual, dask_client):
                'g_y_annual': g_y_annual}
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
-           run_micro=False, tax_func_path=TAX_FUNC_PATH,
            client=dask_client, num_workers=NUM_WORKERS)
 
 
@@ -52,5 +50,4 @@ def test_sigma(sigma, dask_client):
                'sigma': sigma}
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
-           run_micro=False, tax_func_path=TAX_FUNC_PATH,
            client=dask_client, num_workers=NUM_WORKERS)
