@@ -10,7 +10,7 @@ from ogusa import SS, TPI, utils
 from ogusa.parameters import Specifications
 
 
-def runner(output_base, baseline_dir, test=False, time_path=True,
+def runner(output_base, baseline_dir, time_path=True,
            baseline=True, og_spec={}, guid='', client=None,
            num_workers=1):
     '''
@@ -20,8 +20,6 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     Args:
         output_base (str): path to save output to
         baseline_dir (str): path where baseline model results are saved
-        test (bool): whether to run model in test mode (which has
-            a smaller state space and higher tolerances for solution)
         time_path (bool): whether to solve for the time path equilibrium
         baseline (bool): whether the model run is the baseline run
         og_spec (dict): dictionary with updates to default
@@ -54,7 +52,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     # Note - set run_micro false when initially load class
     # Update later with call to spec.get_tax_function_parameters()
     spec = Specifications(output_base=output_base,
-                          baseline_dir=baseline_dir, test=test,
+                          baseline_dir=baseline_dir,
                           time_path=time_path, baseline=baseline,
                           guid=guid, client=client,
                           num_workers=num_workers)
