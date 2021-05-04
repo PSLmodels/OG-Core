@@ -229,7 +229,7 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
+def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
     '''
     Given path of economic aggregates and factor prices, solves
     household problem.  This has been termed the inner-loop (in
@@ -251,6 +251,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         initial_values (tuple): initial period variable values,
             (b_sinit, b_splus1init, factor, initial_b, initial_n,
             D0_baseline)
+        ubi (array_like): ?
+        UBI (array_like): ?
         j (int): index of ability type
         ind (Numpy array): integers from 0 to S-1
         p (OG-USA Specifications object): model parameters
@@ -419,7 +421,7 @@ def run_TPI(p, client=None):
     n_mat = guesses_n
     ind = np.arange(p.S)
 
-    # Get path for aggregate savings and labor supply`
+    # Get path for aggregate savings and labor supply
     L_init = np.ones((p.T + p.S,)) * ss_vars['Lss']
     B_init = np.ones((p.T + p.S,)) * ss_vars['Bss']
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
@@ -511,7 +513,7 @@ def run_TPI(p, client=None):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
-                                    initial_values, j, ind, p))
+                                    initial_values, ubi, UBI, j, ind, p))
         if client:
             futures = client.compute(lazy_values,
                                      num_workers=p.num_workers)
