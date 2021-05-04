@@ -155,13 +155,13 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, ubi, j, initial_b,
     return [np.squeeze(error1)] + [np.squeeze(error2)]
 
 
-def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
+def twist_doughnut(guesses, r, w, bq, tr, theta, factor, ubi, j, s, t,
                    tau_c, etr_params, mtrx_params, mtry_params,
                    initial_b, p):
     '''
-    Solves the upper triangle of time path iterations.  These are the
-    agents who are alive at time T=0 so that we do not solve for their
-    full lifetime (so of their life was before the model begins).
+    Solves the upper triangle of time path iterations. These are the agents who
+    are alive at time T=0 so that we do not solve for their full lifetime (so
+    of their life was before the model begins).
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2s
@@ -171,6 +171,7 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
         tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
+        ubi (array): length remaining periods of life UBI payout to household
         j (int): index of ability type
         s (int): years of life remaining
         t (int): model period
@@ -208,12 +209,12 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
     rho_s = p.rho[-length:]
 
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, bq,
-                                   factor, tr, theta, e_s, rho_s,
+                                   factor, tr, ubi, theta, e_s, rho_s,
                                    tau_c, etr_params, mtry_params, t,
                                    j, p, 'TPI')
 
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, bq,
-                                 factor, tr, theta, chi_n_s, e_s,
+                                 factor, tr, ubi, theta, chi_n_s, e_s,
                                  tau_c, etr_params, mtrx_params, t, j,
                                  p, 'TPI')
 
@@ -230,7 +231,7 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
+def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     '''
     Given path of economic aggregates and factor prices, solves
     household problem.  This has been termed the inner-loop (in
@@ -254,8 +255,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
             D0_baseline)
         ubi (array_like): T+S x S x J array time series of UBI transfers in
             model units for each type-j age-s household in every period t
-        UBI (array_like): T+S vector time series of aggregate UBI expenditure
-            in model units
         j (int): index of ability type
         ind (Numpy array): integers from 0 to S-1
         p (OG-USA Specifications object): model parameters
@@ -303,6 +302,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
         bq_to_use = np.diag(bq[:p.S, :, j], p.S - (s + 2))
         tr_to_use = np.diag(tr[:p.S, :, j], p.S - (s + 2))
         tau_c_to_use = np.diag(p.tau_c[:p.S, :, j], p.S - (s + 2))
+        ubi_to_use = np.diag(ubi[:p.S, :, j], p.S - (s + 2))
 
         length_diag =\
             np.diag(p.etr_params[:p.S, :, 0], p.S-(s + 2)).shape[0]
@@ -321,11 +321,10 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
                                list(b_guesses_to_use) +
                                list(n_guesses_to_use),
                                args=(r_hh, w, bq_to_use, tr_to_use,
-                                     theta_to_use, factor, j, s, 0,
-                                     tau_c_to_use,
-                                     etr_params_to_use,
-                                     mtrx_params_to_use,
-                                     mtry_params_to_use, initial_b, p),
+                                     theta_to_use, factor, ubi_to_use, j, s, 0,
+                                     tau_c_to_use, etr_params_to_use,
+                                     mtrx_params_to_use, mtry_params_to_use,
+                                     initial_b, p),
                                xtol=MINIMIZER_TOL)
 
         b_vec = solutions[:int(len(solutions) / 2)]
@@ -341,6 +340,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
         bq_to_use = np.diag(bq[t:t + p.S, :, j])
         tr_to_use = np.diag(tr[t:t + p.S, :, j])
         tau_c_to_use = np.diag(p.tau_c[t:t + p.S, :, j])
+        ubi_to_use = np.diag(ubi[t:t + p.S, :, j])
 
         # initialize array of diagonal elements
         etr_params_TP = np.zeros((p.T + p.S, p.S,  p.etr_params.shape[2]))
@@ -369,9 +369,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
         [solutions, infodict, ier, message] =\
             opt.fsolve(twist_doughnut, list(b_guesses_to_use) +
                        list(n_guesses_to_use),
-                       args=(r_hh, w, bq_to_use, tr_to_use,
-                             theta_to_use, factor,
-                             j, None, t, tau_c_to_use,
+                       args=(r_hh, w, bq_to_use, tr_to_use, theta_to_use,
+                             factor, ubi_to_use, j, None, t, tau_c_to_use,
                              etr_params_to_use, mtrx_params_to_use,
                              mtry_params_to_use, initial_b, p),
                        xtol=MINIMIZER_TOL, full_output=True)
@@ -516,7 +515,7 @@ def run_TPI(p, client=None):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
-                                    initial_values, ubi, UBI, j, ind, p))
+                                    initial_values, ubi, j, ind, p))
         if client:
             futures = client.compute(lazy_values,
                                      num_workers=p.num_workers)

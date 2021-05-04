@@ -378,8 +378,9 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, chi_n, e,
     taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t, j,
                           False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
-    deriv = (1 - tau_payroll - tax.MTR_income(
-        r, w, b, n, factor, False, e, etr_params, mtrx_params, p))
+    deriv = (1 - tau_payroll -
+             tax.MTR_income(r, w, b, n, factor, False, e, etr_params,
+                            mtrx_params, p))
     FOC_error = (marg_ut_cons(cons, p.sigma) * (1 / (1 + tau_c)) * w *
                  deriv * e - marg_ut_labor(n, chi_n, p))
 
