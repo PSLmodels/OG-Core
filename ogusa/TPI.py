@@ -541,8 +541,8 @@ def run_TPI(p, client=None):
         trmat = household.get_tr(TR, None, p, 'TPI')
         tax_mat = tax.net_taxes(
             r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-            bqmat[:p.T, :, :], factor, trmat[:p.T, :, :], theta, 0,
-            None, False, 'TPI', p.e, etr_params_4D, p)
+            bqmat[:p.T, :, :], factor, trmat[:p.T, :, :], ubi[:p.T, :, :],
+            theta, 0, None, False, 'TPI', p.e, etr_params_4D, p)
         r_hh_path = utils.to_timepath_shape(r_hh)
         wpath = utils.to_timepath_shape(w)
         c_mat = household.get_cons(r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
@@ -554,13 +554,13 @@ def run_TPI(p, client=None):
             bmat_s[:p.T, :, :], n_mat[:p.T, :, :], p)
 
         (total_tax_rev, iit_payroll_tax_revenue,
-         agg_pension_outlays, bequest_tax_revenue, wealth_tax_revenue,
-         cons_tax_revenue, business_tax_revenue, payroll_tax_revenue,
-         iit_revenue) = aggr.revenue(
+         agg_pension_outlays, UBI_outlays, bequest_tax_revenue,
+         wealth_tax_revenue, cons_tax_revenue, business_tax_revenue,
+         payroll_tax_revenue, iit_revenue) = aggr.revenue(
                 r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
-                L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-                p, 'TPI')
+                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T], L[:p.T],
+                K[:p.T], factor, ubi[:p.T, :, :], theta, etr_params_4D, p,
+                'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         dg_fixed_values = (Y, total_tax_revenue, agg_pension_outlays,
                            TR, Gbaseline, D0_baseline)
