@@ -100,13 +100,12 @@ def get_initial_SS_values(p):
     return initial_values, ss_vars, theta, baseline_values
 
 
-def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
-                      initial_b, p):
+def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, ubi, j, initial_b,
+                      p):
     '''
-    Solves the first entries of the upper triangle of the twist
-    doughnut.  This is separate from the main TPI function because the
-    values of b and n are scalars, so it is easier to just have a
-    separate function for these cases.
+    Solves the first entries of the upper triangle of the twist doughnut. This
+    is separate from the main TPI function because the values of b and n are
+    scalars, so it is easier to just have a separate function for these cases.
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2
@@ -116,9 +115,10 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
         tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
+        ubi (scalar): individual UBI credit to household s=E+S of type j in
+            period 0
         j (int): index of ability type
-        initial_b (Numpy array): savings of agents alive at T=0,
-            size = SxJ
+        initial_b (Numpy array): SxJ matrix, savings of agents alive at T=0
         p (OG-USA Specifications object): model parameters
 
     Returns:
@@ -134,7 +134,7 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
     error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s,
                                    np.array([b_splus1]), np.array([n]),
                                    np.array([bq]), factor,
-                                   np.array([tr]), theta[j],
+                                   np.array([tr]), np.array([ubi]), theta[j],
                                    p.e[-1, j], p.rho[-1],
                                    np.array([p.tau_c[0, -1, j]]),
                                    p.etr_params[0, -1, :],
@@ -143,9 +143,10 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
 
     error2 = household.FOC_labor(
         np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]),
-        np.array([bq]), factor, np.array([tr]), theta[j], p.chi_n[-1],
-        p.e[-1, j], np.array([p.tau_c[0, -1, j]]), p.etr_params[0, -1, :],
-        p.mtrx_params[0, -1, :], None, j, p, 'TPI_scalar')
+        np.array([bq]), factor, np.array([tr]), np.array([ubi]), theta[j],
+        p.chi_n[-1], p.e[-1, j], np.array([p.tau_c[0, -1, j]]),
+        p.etr_params[0, -1, :], p.mtrx_params[0, -1, :], None, j, p,
+        'TPI_scalar')
 
     if n <= 0 or n >= 1:
         error2 += 1e12
@@ -251,8 +252,10 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
         initial_values (tuple): initial period variable values,
             (b_sinit, b_splus1init, factor, initial_b, initial_n,
             D0_baseline)
-        ubi (array_like): ?
-        UBI (array_like): ?
+        ubi (array_like): T+S x S x J array time series of UBI transfers in
+            model units for each type-j age-s household in every period t
+        UBI (array_like): T+S vector time series of aggregate UBI expenditure
+            in model units
         j (int): index of ability type
         ind (Numpy array): integers from 0 to S-1
         p (OG-USA Specifications object): model parameters
@@ -289,7 +292,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, UBI, j, ind, p):
                             args=(r_hh[0], w[0], bq[0, -1, j],
                                   tr[0, -1, j],
                                   theta * p.replacement_rate_adjust[0],
-                                  factor, j, initial_b, p),
+                                  factor, ubi[0, -1, j], j, initial_b, p),
                             xtol=MINIMIZER_TOL))
 
     for s in range(p.S - 2):  # Upper triangle
