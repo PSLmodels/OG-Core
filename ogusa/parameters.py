@@ -125,7 +125,6 @@ class Specifications(paramtools.Parameters):
                 this_attr[-1]))
             setattr(self, item, this_attr)
         # Deal with tax parameters that maybe age and time specific
-        print('ETR param size before change = ', self.etr_params.shape)
         tax_params_to_TP = [
             'tau_c', 'etr_params', 'mtrx_params', 'mtry_params']
         for item in tax_params_to_TP:
@@ -152,7 +151,6 @@ class Specifications(paramtools.Parameters):
                 print('please give a ' + item +
                       ' that is a single element or 3-D array')
                 assert False
-        print('ETR param size = ', self.etr_params.shape)
 
         # Try to deal with size of eta.  It may vary by S, J, T, but
         # want to allow user to enter one that varies by only S, S and J,
