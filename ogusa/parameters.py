@@ -21,13 +21,12 @@ class Specifications(paramtools.Parameters):
     def __init__(self,
                  run_micro=False,
                  output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
-                 test=False, time_path=True, baseline=False, guid='',
+                 time_path=True, baseline=False, guid='',
                  client=None, num_workers=1):
         super().__init__()
 
         self.output_base = output_base
         self.baseline_dir = baseline_dir
-        self.test = test
         self.time_path = time_path
         self.baseline = baseline
         self.guid = guid
@@ -56,17 +55,6 @@ class Specifications(paramtools.Parameters):
 
         '''
 
-        if self.test:
-            # Make smaller statespace for testing
-            self.S = int(40)
-            self.lambdas = np.array([0.6, 0.4]).reshape(2, 1)
-            self.J = self.lambdas.shape[0]
-            self.eta = np.ones((self.S, self.J)) / (self.S * self.J)
-            self.maxiter = 35
-            self.mindist_SS = 1e-6
-            self.mindist_TPI = 1e-3
-            self.nu = .4
-
         self.compute_default_params()
 
     def compute_default_params(self):
@@ -90,9 +78,9 @@ class Specifications(paramtools.Parameters):
         # get parameters of elliptical utility function
         self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
             self.frisch, self.ltilde)
-        # determine length of budget window from start year and last
-        # year in TC
-        self.BW = int(TC_LAST_YEAR - self.start_year + 1)
+        # determine length of budget window from individual income tax
+        # parameters passed in
+        self.BW = self.etr_params.shape[0]
         # Find number of economically active periods of life
         self.E = int(
             self.starting_age * (self.S / (self.ending_age -
@@ -128,7 +116,7 @@ class Specifications(paramtools.Parameters):
             # the next if statement is a quick fix to avoid having to
             # update all these time varying parameters if change T or S
             # ideally, the default json values are read in again and the
-            # extension done is here done again with those defaults and
+            # extension done is done again here with those defaults and
             # the new T and S values...
             if this_attr.size > self.T + self.S:
                 this_attr = this_attr[:self.T + self.S]
@@ -136,24 +124,35 @@ class Specifications(paramtools.Parameters):
                 this_attr, np.ones((self.T + self.S - this_attr.size)) *
                 this_attr[-1]))
             setattr(self, item, this_attr)
-        # Try to deal with size of tau_c, but don't worry too much at
-        # this point, will change when we determine how calibrate and if
-        # add multiple consumption goods.
-        tau_c_to_set = getattr(self, 'tau_c')
-        if tau_c_to_set.size == 1:
-            setattr(self, 'tau_c', np.ones((self.T + self.S, self.S,
-                                            self.J)) * tau_c_to_set)
-        elif tau_c_to_set.ndim == 3:
-            if tau_c_to_set.shape[0] > self.T + self.S:
-                tau_c_to_set = tau_c_to_set[:self.T + self.S, :, :]
-            if tau_c_to_set.shape[1] > self.S:
-                tau_c_to_set = tau_c_to_set[:, :self.S, :]
-            if tau_c_to_set.shape[2] > self.J:
-                tau_c_to_set = tau_c_to_set[:, :, :self.J]
-            setattr(self, 'tau_c',  tau_c_to_set)
-        else:
-            print('please give a tau_c that is a single element or 3-D array')
-            assert False
+        # Deal with tax parameters that maybe age and time specific
+        print('ETR param size before change = ', self.etr_params.shape)
+        tax_params_to_TP = [
+            'tau_c', 'etr_params', 'mtrx_params', 'mtry_params']
+        for item in tax_params_to_TP:
+            tax_to_set = getattr(self, item)
+            if tax_to_set.size == 1:
+                setattr(self, item, np.ones((self.T + self.S, self.S,
+                                             self.J)) * tax_to_set)
+            elif tax_to_set.ndim == 3:
+                if tax_to_set.shape[0] > self.T + self.S:
+                    tax_to_set = tax_to_set[:self.T + self.S, :, :]
+                if tax_to_set.shape[0] < self.T + self.S:
+                    tax_to_set = np.append(
+                        tax_to_set[:, :, :], np.tile(
+                            tax_to_set[-1, :, :],
+                            (self.T + self.S - tax_to_set.shape[0], 1, 1)),
+                        axis=0)
+                if tax_to_set.shape[1] > self.S:
+                    tax_to_set = tax_to_set[:, :self.S, :]
+                if item == 'tau_c':
+                    if tax_to_set.shape[2] > self.J:
+                        tax_to_set = tax_to_set[:, :, :self.J]
+                setattr(self, item,  tax_to_set)
+            else:
+                print('please give a ' + item +
+                      ' that is a single element or 3-D array')
+                assert False
+        print('ETR param size = ', self.etr_params.shape)
 
         # Try to deal with size of eta.  It may vary by S, J, T, but
         # want to allow user to enter one that varies by only S, S and J,
@@ -187,6 +186,7 @@ class Specifications(paramtools.Parameters):
                      np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
                              (self.S, 1, 1))), axis=0)
             else:
+                print('Eta dimensions are: ', self.eta.shape)
                 print('please give an eta that is either SxJ or TxS')
                 assert False
         # this is the case where vary by S, J, T
@@ -239,19 +239,16 @@ class Specifications(paramtools.Parameters):
             self.omega_S_preTP = self.omega_SS
 
         # Interpolate chi_n and create omega_SS_80 if necessary
-        if self.S == 80:
-            self.chi_n = self.chi_n_80
-        elif self.S < 80:
+        elif self.S < 80 and len(self.chi_n) == 80:
             self.age_midp_80 = np.linspace(20.5, 99.5, 80)
             self.chi_n_interp = si.interp1d(self.age_midp_80,
-                                            np.squeeze(self.chi_n_80),
+                                            np.squeeze(self.chi_n),
                                             kind='cubic')
             self.newstep = 80.0 / self.S
             self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
                                           100 - 0.5 * self.newstep,
                                           self.S)
             self.chi_n = self.chi_n_interp(self.age_midp_S)
-
 
     def update_specifications(self, revision, raise_errors=True):
         '''
