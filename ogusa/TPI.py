@@ -563,7 +563,7 @@ def run_TPI(p, client=None):
                 'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         dg_fixed_values = (Y, total_tax_revenue, agg_pension_outlays,
-                           TR, Gbaseline, D0_baseline)
+                           UBI_outlays, TR, Gbaseline, D0_baseline)
         (Dnew, G[:p.T], D_d[:p.T], D_f[:p.T], new_borrowing,
          debt_service, new_borrowing_f) =\
             fiscal.D_G_path(r_gov, dg_fixed_values, p)
@@ -591,16 +591,17 @@ def run_TPI(p, client=None):
                             'TPI', False)
         bqmat_new = household.get_bq(BQnew, None, p, 'TPI')
         (total_tax_rev, iit_payroll_tax_revenue,
-         agg_pension_outlays, bequest_tax_revenue, wealth_tax_revenue,
-         cons_tax_revenue, business_tax_revenue, payroll_tax_revenue,
-         iit_revenue) = aggr.revenue(
+         agg_pension_outlays, UBI_outlays, bequest_tax_revenue,
+         wealth_tax_revenue, cons_tax_revenue, business_tax_revenue,
+         payroll_tax_revenue, iit_revenue) = aggr.revenue(
                 r_hh_new[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
-                L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
+                L[:p.T], K[:p.T], factor, ubi[:p.T, :, :], theta,
+                etr_params_4D, p, 'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
             Ynew[:p.T], TR[:p.T], G[:p.T], total_tax_revenue[:p.T],
-            agg_pension_outlays[:p.T], p, 'TPI')
+            agg_pension_outlays[:p.T], UBI_outlays[:p.T], p, 'TPI')
 
         # update vars for next iteration
         w[:p.T] = wnew[:p.T]
@@ -734,7 +735,7 @@ def run_TPI(p, client=None):
               'new_borrowing_f': new_borrowing_f,
               'debt_service_f': debt_service_f,
               'etr_path': etr_path, 'mtrx_path': mtrx_path,
-              'mtry_path': mtry_path}
+              'mtry_path': mtry_path, 'ubi_path': ubi, 'UBI_path': UBI}
 
     tpi_dir = os.path.join(p.output_base, "TPI")
     utils.mkdirs(tpi_dir)
