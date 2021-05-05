@@ -37,8 +37,8 @@ param_updates3 = {'start_year': 2020, 'baseline_spending': True}
                               'Reform, baseline_spending'])
 def test_get_initial_SS_values(baseline, param_updates, filename,
                                dask_client):
-    p = Specifications(baseline=baseline, test=False,
-                       client=dask_client, num_workers=NUM_WORKERS)
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
     p.output_base = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
@@ -209,6 +209,18 @@ def test_inner_loop(dask_client):
     p.etr_params = np.transpose(etr_params, (1, 0, 2))[:p.T, :, :]
     p.mtrx_params = np.transpose(mtrx_params, (1, 0, 2))[:p.T, :, :]
     p.mtry_params = np.transpose(mtry_params, (1, 0, 2))[:p.T, :, :]
+    p.etr_params = np.append(
+        p.etr_params[:, :, :], np.tile(
+            p.etr_params[-1, :, :], (p.T + p.S - p.etr_params.shape[0], 1, 1)),
+        axis=0)
+    p.mtrx_params = np.append(
+        p.mtrx_params[:, :, :], np.tile(
+            p.mtrx_params[-1, :, :], (p.T + p.S - p.mtrx_params.shape[0], 1, 1)),
+        axis=0)
+    p.mtry_params = np.append(
+        p.mtry_params[:, :, :], np.tile(
+            p.mtry_params[-1, :, :], (p.T + p.S - p.mtry_params.shape[0], 1, 1)),
+        axis=0)
     etr_params_old = p.etr_params
     mtrx_params_old = p.mtrx_params
     mtry_params_old = p.mtry_params
@@ -260,10 +272,22 @@ def test_inner_loop(dask_client):
         assert(np.allclose(test_tuple[i], v))
 
 
+g_n_ss = 0.0012907765315350872
+imm_rates = np.load(os.path.join(CUR_PATH, 'old_imm_rates.npy'))
+e = np.load(os.path.join(CUR_PATH, 'old_e.npy'))
+omega_SS = np.load(os.path.join(CUR_PATH, 'old_omega_SS.npy'))
+omega_S_preTP = np.load(os.path.join(CUR_PATH, 'old_omega_S_preTP.npy'))
+omega = np.load(os.path.join(CUR_PATH, 'old_omega.npy'))
+g_n = np.load(os.path.join(CUR_PATH, 'old_g_n.npy'))
+rho = np.load(os.path.join(CUR_PATH, 'old_rho.npy'))
 param_updates1 = {}
 filename1 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline.pkl')
-param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0],
+                  'zeta_D': [0.0], 'omega_SS': omega_SS,
+                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e,
+                  'omega': omega, 'omega_S_preTP': omega_S_preTP,
+                  'g_n': g_n, 'rho': rho}
 filename2 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_balanced_budget.pkl')
 param_updates3 = {}
@@ -286,19 +310,22 @@ filename7 = os.path.join(
 
 
 @pytest.mark.local
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates2, filename2),
+#                           (True, param_updates1, filename1),
+#                           (False, param_updates3, filename3),
+#                           (False, param_updates4, filename4),
+#                           (True, param_updates5, filename5),
+#                           (True, param_updates6, filename6),
+#                           (True, param_updates7, filename7)],
+#                          ids=['Baseline, balanced budget', 'Baseline',
+#                               'Reform', 'Reform, baseline spending',
+#                               'Baseline, small open',
+#                               'Baseline, small open some periods',
+#                               'Baseline, delta_tau = 0'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates2, filename2),
-                          (True, param_updates1, filename1),
-                          (False, param_updates3, filename3),
-                          (False, param_updates4, filename4),
-                          (True, param_updates5, filename5),
-                          (True, param_updates6, filename6),
-                          (True, param_updates7, filename7)],
-                         ids=['Baseline, balanced budget', 'Baseline',
-                              'Reform', 'Reform, baseline spending',
-                              'Baseline, small open',
-                              'Baseline, small open some periods',
-                              'Baseline, delta_tau = 0'])
+                         [(True, param_updates2, filename2)],
+                         ids=['Baseline, balanced budget'])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
                           dask_client):
     '''
@@ -314,11 +341,11 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
                        output_base=output_base, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
-    p.get_tax_function_parameters(
-        None, run_micro=False,
-        tax_func_path=os.path.join(CUR_PATH, '..', 'data',
-                                   'tax_functions',
-                                   'TxFuncEst_baseline_CPS.pkl'))
+    import cloudpickle
+    param_dir = "new_params_tpi.pkl"
+    with open(param_dir, "wb") as f:
+        cloudpickle.dump((p), f)
+    assert False
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False

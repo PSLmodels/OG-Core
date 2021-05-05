@@ -206,10 +206,6 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
     e_s = p.e[-length:, j]
     rho_s = p.rho[-length:]
 
-    # print('ETR params shape = ', etr_params.shape)
-    # print('income shape = ', b_splus1.shape)
-    # print('t, length, j = ', t, length, j)
-
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, bq,
                                    factor, tr, theta, e_s, rho_s,
                                    tau_c, etr_params, mtry_params, t,
@@ -308,8 +304,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
         mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
         mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
-        print('ETR params to use shape = ', etr_params_to_use.shape,
-        b_guesses_to_use.shape, n_guesses_to_use.shape, w.shape, r_hh.shape, tau_c_to_use.shape)
         for i in range(p.etr_params.shape[2]):
             etr_params_to_use[:, i] =\
                 np.diag(p.etr_params[:p.S, :, i], p.S - (s + 2))
@@ -317,7 +311,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
                 np.diag(p.mtrx_params[:p.S, :, i], p.S - (s + 2))
             mtry_params_to_use[:, i] =\
                 np.diag(p.mtry_params[:p.S, :, i], p.S - (s + 2))
-        print('ETR params to use shape 2 = ', etr_params_to_use.shape)
         solutions = opt.fsolve(twist_doughnut,
                                list(b_guesses_to_use) +
                                list(n_guesses_to_use),
