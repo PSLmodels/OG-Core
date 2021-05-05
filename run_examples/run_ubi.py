@@ -124,7 +124,7 @@ def main():
     print("total time was ", (time.time() - run_start_time))
     print('Percentage changes in aggregates:', ans)
     # save percentage change output to csv file
-    ans.to_csv('ogusa_example_output.csv')
+    ans.to_csv('ogusa_ubi_output.csv')
     client.close()
 
 
