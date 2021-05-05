@@ -1,5 +1,5 @@
 '''
-Example script for setting policy and running OG-USA.
+Example script for setting policy and running OG-USA with UBI.
 '''
 
 # import modules
@@ -71,14 +71,14 @@ def main():
         CUR_DIR, '..', 'ogusa', 'data', 'tax_functions',
         'TxFuncEst_baseline_CPS.pkl')  # use cached baseline estimates
     kwargs = {'output_base': base_dir, 'baseline_dir': base_dir,
-              'test': False, 'time_path': False, 'baseline': True,
+              'test': False, 'time_path': True, 'baseline': True,
               'og_spec': og_spec_base, 'guid': '_ubi',
               'run_micro': False, 'tax_func_path': tax_func_path,
               'data': 'cps', 'client': client, 'num_workers': num_workers}
 
-    start_time = time.time()
-    runner(**kwargs)
-    print('run time = ', time.time()-start_time)
+    # start_time = time.time()
+    # runner(**kwargs)
+    # print('run time = ', time.time()-start_time)
 
     '''
     ------------------------------------------------------------------------
@@ -92,39 +92,39 @@ def main():
                    'ubi_nom_017': ubi_nom_017, 'ubi_nom_1820': ubi_nom_1820,
                    'ubi_nom_2164': ubi_nom_2164, 'ubi_nom_65p': ubi_nom_65p}
     kwargs = {'output_base': reform_dir, 'baseline_dir': base_dir,
-              'test': False, 'time_path': False, 'baseline': False,
+              'test': False, 'time_path': True, 'baseline': False,
               'og_spec': og_spec_ref, 'guid': '_ubi', 'run_micro': False,
               'tax_func_path': tax_func_path, 'data': 'cps',
               'client': client, 'num_workers': num_workers}
 
-    start_time = time.time()
-    runner(**kwargs)
-    print('run time = ', time.time()-start_time)
+    # start_time = time.time()
+    # runner(**kwargs)
+    # print('run time = ', time.time()-start_time)
 
-    # # return ans - the percentage changes in macro aggregates and prices
-    # # due to policy changes from the baseline to the reform
-    # base_tpi = safe_read_pickle(
-    #     os.path.join(base_dir, 'TPI', 'TPI_vars.pkl'))
-    # base_params = safe_read_pickle(
-    #     os.path.join(base_dir, 'model_params.pkl'))
-    # reform_tpi = safe_read_pickle(
-    #     os.path.join(reform_dir, 'TPI', 'TPI_vars.pkl'))
-    # reform_params = safe_read_pickle(
-    #     os.path.join(reform_dir, 'model_params.pkl'))
-    # ans = ot.macro_table(
-    #     base_tpi, base_params, reform_tpi=reform_tpi,
-    #     reform_params=reform_params,
-    #     var_list=['Y', 'C', 'K', 'L', 'r', 'w'], output_type='pct_diff',
-    #     num_years=10, start_year=og_spec['start_year'])
+    # return ans - the percentage changes in macro aggregates and prices
+    # due to policy changes from the baseline to the reform
+    base_tpi = safe_read_pickle(
+        os.path.join(base_dir, 'TPI', 'TPI_vars.pkl'))
+    base_params = safe_read_pickle(
+        os.path.join(base_dir, 'model_params.pkl'))
+    reform_tpi = safe_read_pickle(
+        os.path.join(reform_dir, 'TPI', 'TPI_vars.pkl'))
+    reform_params = safe_read_pickle(
+        os.path.join(reform_dir, 'model_params.pkl'))
+    ans = ot.macro_table(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        var_list=['Y', 'C', 'K', 'L', 'r', 'w'], output_type='pct_diff',
+        num_years=10, start_year=og_spec_ref['start_year'])
 
-    # # create plots of output
-    # op.plot_all(base_dir, reform_dir,
-    #             os.path.join(CUR_DIR, 'run_example_plots'))
+    # create plots of output
+    op.plot_all(base_dir, reform_dir,
+                os.path.join(CUR_DIR, 'run_ubi_plots'))
 
     print("total time was ", (time.time() - run_start_time))
-    # print('Percentage changes in aggregates:', ans)
+    print('Percentage changes in aggregates:', ans)
     # save percentage change output to csv file
-    # ans.to_csv('ogusa_example_output.csv')
+    ans.to_csv('ogusa_example_output.csv')
     client.close()
 
 
