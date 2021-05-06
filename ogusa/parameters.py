@@ -99,7 +99,11 @@ class Specifications(paramtools.Parameters):
 
         # set fraction of income taxes from payroll to zero initially
         # will be updated when function tax function parameters
-        self.frac_tax_payroll = np.zeros(self.T + self.S)
+        print('T = ', self.T, ', S = ', self.S)
+        self.frac_tax_payroll = np.append(
+                self.frac_tax_payroll,
+                np.ones(self.T + self.S - self.BW)
+                * self.frac_tax_payroll[-1])
 
         # Extend parameters that may vary over the time path
         tp_param_list = [
