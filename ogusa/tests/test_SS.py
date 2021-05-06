@@ -829,7 +829,6 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
         dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
             p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    # p.get_tax_function_parameters(None, run_micro=False)
     etr_params_old = p.etr_params.copy()
     p.etr_params = etr_params_old.copy()
     p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
