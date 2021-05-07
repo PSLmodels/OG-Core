@@ -52,7 +52,7 @@ def test_constant_demographics_TPI(dask_client):
     '''
     # Create output directory structure
     spec = Specifications(run_micro=False, output_base=OUTPUT_DIR,
-                          baseline_dir=OUTPUT_DIR, test=False,
+                          baseline_dir=OUTPUT_DIR,
                           time_path=True, baseline=True,
                           guid='', client=dask_client,
                           num_workers=NUM_WORKERS)
@@ -69,9 +69,9 @@ def test_constant_demographics_TPI(dask_client):
     spec.update_specifications(og_spec)
     spec.BW = 10
     spec.output_base = CUR_PATH
-    spec.etr_params = np.zeros((spec.T, spec.S, spec.etr_params.shape[2]))
-    spec.mtrx_params = np.zeros((spec.T, spec.S, spec.mtrx_params.shape[2]))
-    spec.mtry_params = np.zeros((spec.T, spec.S, spec.mtry_params.shape[2]))
+    spec.etr_params = np.zeros((spec.T + spec.S, spec.S, spec.etr_params.shape[2]))
+    spec.mtrx_params = np.zeros((spec.T + spec.S, spec.S, spec.mtrx_params.shape[2]))
+    spec.mtry_params = np.zeros((spec.T + spec.S, spec.S, spec.mtry_params.shape[2]))
     # Run SS
     ss_outputs = SS.run_SS(spec, None)
     # save SS results
@@ -94,7 +94,7 @@ def test_constant_demographics_TPI_small_open():
     '''
     # Create output directory structure
     spec = Specifications(run_micro=False, output_base=OUTPUT_DIR,
-                          baseline_dir=OUTPUT_DIR, test=False,
+                          baseline_dir=OUTPUT_DIR,
                           time_path=True, baseline=True,
                           guid='')
     og_spec = {'constant_demographics': True, 'budget_balance': True,
@@ -108,9 +108,9 @@ def test_constant_demographics_TPI_small_open():
                'eta': (spec.omega_SS.reshape(spec.S, 1) *
                        spec.lambdas.reshape(1, spec.J))}
     spec.update_specifications(og_spec)
-    spec.etr_params = np.zeros((spec.T, spec.S, spec.etr_params.shape[2]))
-    spec.mtrx_params = np.zeros((spec.T, spec.S, spec.mtrx_params.shape[2]))
-    spec.mtry_params = np.zeros((spec.T, spec.S, spec.mtry_params.shape[2]))
+    spec.etr_params = np.zeros((spec.T + spec.S, spec.S, spec.etr_params.shape[2]))
+    spec.mtrx_params = np.zeros((spec.T + spec.S, spec.S, spec.mtrx_params.shape[2]))
+    spec.mtry_params = np.zeros((spec.T + spec.S, spec.S, spec.mtry_params.shape[2]))
     # Run SS
     ss_outputs = SS.run_SS(spec, None)
     # save SS results
