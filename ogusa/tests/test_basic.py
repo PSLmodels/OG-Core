@@ -1,6 +1,7 @@
 import multiprocessing
 from distributed import Client, LocalCluster
 import os
+import json
 import pytest
 import pickle
 import numpy as np
@@ -10,6 +11,7 @@ NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 TAX_FUNC_PATH = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
 OUTPUT_DIR = os.path.join(CUR_PATH, "OUTPUT")
+TEST_PARAM_DICT = json.load(open(os.path.join(CUR_PATH, 'testing_params.json')))
 
 
 @pytest.fixture(scope="module")
@@ -31,8 +33,8 @@ def test_run_small(time_path, dask_client):
     TPI.ENFORCE_SOLUTION_CHECKS = False
     SS.MINIMIZER_TOL = 1e-6
     TPI.MINIMIZER_TOL = 1e-6
-    og_spec = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
-    runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=True,
+    og_spec = TEST_PARAM_DICT
+    runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR,
            time_path=time_path, baseline=True, og_spec=og_spec,
            client=dask_client, num_workers=NUM_WORKERS)
 
