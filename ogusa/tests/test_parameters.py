@@ -30,11 +30,6 @@ def test_create_specs_object():
     assert specs
 
 
-def test_create_specs_object_test():
-    specs = Specifications(test=True)
-    assert specs
-
-
 def test_compute_default_params():
     specs = Specifications()
     specs.alpha_G = np.ones((10, 1))
