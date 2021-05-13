@@ -387,29 +387,16 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
                                atol=1e-04))
 
 
-param_updates1 = {'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e,
-                  'omega': omega, 'omega_S_preTP': omega_S_preTP,
-                  'g_n': g_n, 'rho': rho}
+param_updates1 = {}
 filename1 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_2.pkl')
-param_updates2 = {'budget_balance': True, 'alpha_G': [0.0],
-                  'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e,
-                  'omega': omega, 'omega_S_preTP': omega_S_preTP,
-                  'g_n': g_n, 'rho': rho}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_balanced_budget_2.pkl')
-param_updates3 = {'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e,
-                  'omega': omega, 'omega_S_preTP': omega_S_preTP,
-                  'g_n': g_n, 'rho': rho}
+param_updates3 = {}
 filename3 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_2.pkl')
-param_updates4 = {'baseline_spending': True, 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e,
-                  'omega': omega, 'omega_S_preTP': omega_S_preTP,
-                  'g_n': g_n, 'rho': rho}
+param_updates4 = {'baseline_spending': True}
 filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_baseline_spend_2.pkl')
 
@@ -432,15 +419,42 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     else:
         output_base = os.path.join(CUR_PATH, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
-                       output_base=output_base, test=True,
+                       output_base=output_base,
                        client=dask_client, num_workers=NUM_WORKERS)
-    p.update_specifications(param_updates)
+    TEST_PARAM_DICT.update(param_updates)
+    p.update_specifications(TEST_PARAM_DICT)
     p.maxiter = 2  # this test runs through just two iterations
-    p.get_tax_function_parameters(
-        None, run_micro=False,
-        tax_func_path=os.path.join(
-            CUR_PATH, '..', 'data', 'tax_functions',
-            'TxFuncEst_baseline_CPS.pkl'))
+    p.BW = 10
+    dict_params = utils.safe_read_pickle(os.path.join(
+        CUR_PATH, 'TxFuncEst_baseline.pkl'))
+    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+    p.mean_income_data = dict_params['tfunc_avginc'][0]
+    p.etr_params = np.empty((p.T + p.S, p.S, num_etr_params))
+    p.etr_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T + p.S - p.BW, 1, 1))
+    p.mtrx_params = np.empty((p.T + p.S, p.S, num_mtrx_params))
+    p.mtrx_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T + p.S - p.BW, 1, 1))
+    p.mtry_params = np.empty((p.T + p.S, p.S, num_mtry_params))
+    p.mtry_params[:p.BW, :, :] =\
+        np.transpose(
+            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
+            axes=[1, 0, 2])
+    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
+        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
+            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T + p.S - p.BW, 1, 1))
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
@@ -510,7 +524,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
                        client=dask_client, num_workers=NUM_WORKERS)
     TEST_PARAM_DICT.update(param_updates)
     p.update_specifications(TEST_PARAM_DICT)
-    p.maxiter = 2  # t`his test runs through just two iterations
+    p.maxiter = 2  # this test runs through just two iterations
     p.BW = 10
     dict_params = utils.safe_read_pickle(os.path.join(
         CUR_PATH, 'TxFuncEst_baseline.pkl'))
@@ -525,7 +539,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
             axes=[1, 0, 2])
     p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
         dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T + p.S - p.BW, 1, 1))
     p.mtrx_params = np.empty((p.T + p.S, p.S, num_mtrx_params))
     p.mtrx_params[:p.BW, :, :] =\
         np.transpose(
@@ -533,7 +547,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
             axes=[1, 0, 2])
     p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
         dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T + p.S - p.BW, 1, 1))
     p.mtry_params = np.empty((p.T + p.S, p.S, num_mtry_params))
     p.mtry_params[:p.BW, :, :] =\
         np.transpose(
@@ -541,7 +555,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
             axes=[1, 0, 2])
     p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
         dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
+            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T + p.S - p.BW, 1, 1))
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
@@ -560,21 +574,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
 
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, None)
-    expected_dict = utils.safe_read_pickle(filename)
 
-    if p.baseline:
-        utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
-        ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
-        with open(ss_dir, "wb") as f:
-            pickle.dump(ss_outputs, f)
-    else:
-        utils.mkdirs(os.path.join(p.output_base, "SS"))
-        ss_dir = os.path.join(p.output_base, "SS", "SS_vars.pkl")
-        with open(ss_dir, "wb") as f:
-            pickle.dump(ss_outputs, f)
-
-    TPI.ENFORCE_SOLUTION_CHECKS = False
-    test_dict = TPI.run_TPI(p, None)
     expected_dict = utils.safe_read_pickle(filename)
 
     for k, v in expected_dict.items():
