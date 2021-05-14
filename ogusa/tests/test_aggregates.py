@@ -257,6 +257,7 @@ bq = BQ / p.lambdas.reshape(1, 1, p.J)
 Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T)
 L = 0.416 + (0.423 - 0.416) * random_state.rand(p.T).reshape(p.T)
 K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T)
+ubi = np.zeros((p.T, p.S, p.J))
 factor = 140000.0
 # update parameters instance with new values for test
 p.e = (0.263 + (2.024 - 0.263) *
@@ -312,18 +313,18 @@ expected3 = np.array(
              0.55579704, 0.49693837, 0.56426605, 0.51268459,
              0.52148645])
 test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :],
-              c[0, :, :], Y[0], L[0], K[0], factor, theta,
+              c[0, :, :], Y[0], L[0], K[0], factor, ubi[0, :, :], theta,
               etr_params[-1, :, :, :], p, 'SS', expected1),
-             (r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
+             (r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params, p,
               'TPI', expected2),
-             (r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p3,
+             (r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params, p3,
               'TPI', expected3)]
 
 
 @pytest.mark.parametrize(
-    'r,w,b,n,bq,c,Y,L,K,factor,theta,etr_params,p,method,expected',
+    'r,w,b,n,bq,c,Y,L,K,factor,ubi,theta,etr_params,p,method,expected',
     test_data, ids=['SS', 'TPI', 'TPI, replace rate adjust'])
-def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
+def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
                  p, method, expected):
     """
     Test aggregate revenue function.
@@ -339,8 +340,8 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
     p.etr_params[..., 10] = etr_params_old[..., 9]
     p.etr_params[..., 11] = etr_params_old[..., 10]
     etr_params = p.etr_params
-    revenue, _, agg_pension_outlays, _, _, _, _, _, _ = aggr.revenue(
-        r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
+    revenue, _, agg_pension_outlays, _, _, _, _, _, _, _ = aggr.revenue(
+        r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params, p, method)
     expected += agg_pension_outlays
 
     assert(np.allclose(revenue, expected))
