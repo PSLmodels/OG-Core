@@ -75,9 +75,9 @@ def main():
               'run_micro': False, 'tax_func_path': tax_func_path,
               'data': 'cps', 'client': client, 'num_workers': num_workers}
 
-    # start_time = time.time()
-    # runner(**kwargs)
-    # print('run time = ', time.time()-start_time)
+    start_time = time.time()
+    runner(**kwargs)
+    print('run time = ', time.time()-start_time)
 
     '''
     ---------------------------------------------------------------------------
@@ -96,9 +96,9 @@ def main():
               'tax_func_path': tax_func_path, 'data': 'cps',
               'client': client, 'num_workers': num_workers}
 
-    # start_time = time.time()
-    # runner(**kwargs)
-    # print('run time = ', time.time()-start_time)
+    start_time = time.time()
+    runner(**kwargs)
+    print('run time = ', time.time()-start_time)
 
     # return ans - the percentage changes in macro aggregates and prices
     # due to policy changes from the baseline to the reform
