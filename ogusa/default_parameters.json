@@ -824,31 +824,12 @@
             }
         }
     },
-    "ubi_nom_1820": {
-        "title": "Dollar (nominal) amount of universal basic income (UBI) per dependent age 18 through 20",
-        "description": "Dollar (nominal) amount of universal basic income (UBI) per dependent age 18 through 20.",
+    "ubi_nom_1864": {
+        "title": "Dollar (nominal) amount of universal basic income (UBI) per adult age 18 through 64",
+        "description": "Dollar (nominal) amount of universal basic income (UBI) per adult age 18 to 64.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
-        "notes": "The universal basic income (UBI) per dependent age 18 through 20 can range from $0 per year to $7,200 per year (max $600 per month).",
-        "type": "float",
-        "value": [
-            {
-                "value": 0.0
-            }
-        ],
-        "validators": {
-            "range": {
-                "min": 0.0,
-                "max": 7200.0
-            }
-        }
-    },
-    "ubi_nom_2164": {
-        "title": "Dollar (nominal) amount of universal basic income (UBI) per adult age 21 through 64",
-        "description": "Dollar (nominal) amount of universal basic income (UBI) per adult age 21 to 64.",
-        "section_1": "Fiscal Policy Parameters",
-        "section_2": "Spending",
-        "notes": "The universal basic income (UBI) per adult age 21 through 64 can range from $0 per year to $18,000 per year ($1,500 per month).",
+        "notes": "The universal basic income (UBI) per adult age 18 through 64 can range from $0 per year to $18,000 per year ($1,500 per month).",
         "type": "float",
         "value": [
             {

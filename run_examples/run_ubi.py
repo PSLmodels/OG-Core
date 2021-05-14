@@ -51,8 +51,7 @@ def main():
     alpha_G[6:] = 0.05
     # Set UBI parameters
     ubi_nom_017 = 1000
-    ubi_nom_1820 = 500
-    ubi_nom_2164 = 1500
+    ubi_nom_1864 = 1500
     ubi_nom_65p = 500
     # Set start year for baseline and reform.
     START_YEAR = 2021
@@ -63,9 +62,9 @@ def main():
                     'alpha_T': alpha_T.tolist(), 'alpha_G': alpha_G.tolist()}
 
     '''
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     Run baseline policy first
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     '''
     tax_func_path = os.path.join(
         CUR_DIR, '..', 'ogusa', 'data', 'tax_functions',
@@ -81,16 +80,16 @@ def main():
     # print('run time = ', time.time()-start_time)
 
     '''
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     Run reform policy
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     '''
     # update the effective corporate income tax rate
     og_spec_ref = {'frisch': 0.41, 'start_year': START_YEAR,
                    'cit_rate': [0.35], 'debt_ratio_ss': 1.0,
                    'alpha_T': alpha_T.tolist(), 'alpha_G': alpha_G.tolist(),
-                   'ubi_nom_017': ubi_nom_017, 'ubi_nom_1820': ubi_nom_1820,
-                   'ubi_nom_2164': ubi_nom_2164, 'ubi_nom_65p': ubi_nom_65p}
+                   'ubi_nom_017': ubi_nom_017,
+                   'ubi_nom_1864': ubi_nom_1864, 'ubi_nom_65p': ubi_nom_65p}
     kwargs = {'output_base': reform_dir, 'baseline_dir': base_dir,
               'test': False, 'time_path': True, 'baseline': False,
               'og_spec': og_spec_ref, 'guid': '_ubi', 'run_micro': False,

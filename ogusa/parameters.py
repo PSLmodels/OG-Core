@@ -540,8 +540,7 @@ class Specifications(paramtools.Parameters):
         # number of adults 21-64, and number of seniors >= 65 from
         # OG-USA-Calibration package
         ubi_num_017_mat = 1.1 * np.ones((self.S, self.J))
-        ubi_num_1820_mat = 0.05 * np.ones((self.S, self.J))
-        ubi_num_2164_mat = 0.85 * np.ones((self.S, self.J))
+        ubi_num_1864_mat = 0.85 * np.ones((self.S, self.J))
         ubi_num_65p_mat = 0.15 * np.ones((self.S, self.J))
 
         ubi_nom_array = np.zeros((TpS, self.S, self.J))
@@ -552,8 +551,7 @@ class Specifications(paramtools.Parameters):
         ubi_nom_mat_init = \
             np.minimum(
                 (self.ubi_nom_017 * ubi_num_017_mat +
-                 self.ubi_nom_1820 * ubi_num_1820_mat +
-                 self.ubi_nom_2164 * ubi_num_2164_mat +
+                 self.ubi_nom_1864 * ubi_num_1864_mat +
                  self.ubi_nom_65p * ubi_num_65p_mat), self.ubi_nom_max)
 
         # Calculate steady-state and transition path of stationary individual
