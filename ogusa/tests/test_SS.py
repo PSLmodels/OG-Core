@@ -935,6 +935,121 @@ def test_euler_equation_solver(dask_client):
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
+@pytest.mark.local
+def test_euler_equation_solver_ubi(dask_client):
+    # Test SS.inner_loop function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
+    (guesses, params) = input_tuple
+    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
+    (r, w, TR, factor, j, p.J, p.S, beta, p.sigma, p.ltilde, p.g_y,
+     p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
+     p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
+     p.chi_n, tau_bq, p.rho, lambdas, p.omega_SS, p.e,
+     p.analytical_mtrs, etr_params, mtrx_params, mtry_params) = params
+    new_param_values_ubi = {
+        'ubi_nom_017': 1000,
+        'ubi_nom_1864': 1500,
+        'ubi_nom_65p': 500
+    }
+    p.update_specifications(new_param_values_ubi)
+    p.beta = np.ones(p.J) * beta
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
+    etr_params_old = np.transpose(etr_params.reshape(
+        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
+    mtrx_params_old = np.transpose(mtrx_params.reshape(
+        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
+    mtry_params_old = np.transpose(mtry_params.reshape(
+        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+    p.etr_params = etr_params_old.copy()
+    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
+    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
+    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
+    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
+    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
+    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
+    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
+    p.mtrx_params = mtrx_params_old.copy()
+    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
+    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
+    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
+    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
+    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
+    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
+    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
+    p.mtry_params = mtry_params_old.copy()
+    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
+    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
+    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
+    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
+    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
+    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
+    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
+    p.tax_func_type = 'DEP'
+    p.lambdas = lambdas.reshape(p.J, 1)
+    b_splus1 = np.array(guesses[:p.S]).reshape(p.S, 1) + 0.005
+    BQ = aggregates.get_BQ(r, b_splus1, j, p, 'SS', False)
+    bq = household.get_bq(BQ, j, p, 'SS')
+    tr = household.get_tr(TR, j, p, 'SS')
+    ubi = p.ubi_nom_SS / factor
+    ubi_j = ubi[:, j]
+    args = (r, w, bq, tr, ubi_j, factor, j, p)
+    test_list = SS.euler_equation_solver(guesses, *args)
+    print(test_list)
+
+    expected_list = np.array(
+        [-3.62727034e+00, -6.30067792e+00, -6.76591917e+00, -6.97729562e+00,
+        -7.05775818e+00, -6.57302733e+00, -7.11551733e+00, -7.30568665e+00,
+        -7.45807170e+00, -7.89983331e+00, -8.11465357e+00, -8.28228912e+00,
+        -8.79252955e+00, -8.86993205e+00, -9.31298650e+00, -9.80834449e+00,
+        -9.97331249e+00, -1.08350076e+01, -1.13199546e+01, -1.22890826e+01,
+        -1.31550350e+01, -1.42753612e+01, -1.55720997e+01, -1.73811536e+01,
+        -1.88856072e+01, -2.09570593e+01, -2.30559416e+01, -2.52127029e+01,
+        -2.76119352e+01, -3.03141009e+01, -3.30900094e+01, -3.62799787e+01,
+        -3.91169586e+01, -4.24246334e+01, -4.55740402e+01, -4.92914632e+01,
+        -5.30682846e+01, -5.70043740e+01, -6.06075886e+01, -6.45250906e+01,
+        -6.86128251e+01, -7.35896402e+01, -7.92634513e+01, -8.34732298e+01,
+        -9.29802307e+01, -1.01179782e+02, -1.10437876e+02, -1.20569520e+02,
+        -1.31569967e+02, -1.43633392e+02, -1.57534048e+02, -1.73244603e+02,
+        -1.90066719e+02, -2.07980855e+02, -2.27589037e+02, -2.50241661e+02,
+        -2.76314746e+02, -3.04930977e+02, -3.36196962e+02, -3.70907923e+02,
+        -4.10966632e+02, -4.56684009e+02, -5.06945204e+02, -5.61838630e+02,
+        -6.22617792e+02, -6.90840486e+02, -7.67825695e+02, -8.54436786e+02,
+        -9.51106344e+02, -1.05780303e+03, -1.17435471e+03, -1.30045059e+03,
+        -1.43571218e+03, -1.57971600e+03, -1.73204260e+03, -1.88430520e+03,
+        -2.03403675e+03, -2.17861983e+03, -2.31532880e+03, -8.00654718e+03,
+        1.40827754e-01, -1.12040331e-01, 6.22191633e-01, 4.46926057e-01,
+        7.79335754e-01, 6.79349265e-01, 4.99790369e-01, 4.54356691e-01,
+        5.31090034e-01, 4.75077775e-01, 6.02331461e-01, 5.81805416e-01,
+        5.15186374e-01, 6.01772894e-01, 5.75493667e-01, 5.41690391e-01,
+        6.71006373e-01, 5.91772661e-01, 7.37109977e-01, 7.10413693e-01,
+        6.01368522e-01, 7.23247595e-01, 7.53521118e-01, 5.49919288e-01,
+        8.92654258e-01, 7.50890961e-01, 7.55668812e-01, 1.22885899e+00,
+        1.04916976e+00, 7.78721950e-01, 1.05045599e+00, 7.30218538e-01,
+        8.97114127e-01, 9.43831188e-01, 8.53409205e-01, 1.67676933e+00,
+        3.86239824e-01, 6.44175887e-01, 1.68229301e+00, 1.33938050e+00,
+        5.77517949e-01, 1.58976339e+00, 1.29187705e+00, 1.20607979e+00,
+        -1.87038425e-01, -1.02053675e+00, -6.30639098e-01, -6.01309918e-01,
+        -1.44641772e+00, -6.63860492e-01, -1.49186238e+00, -1.29366069e+00,
+        -1.63966909e+00, -1.54323377e+00, -1.24917858e+00, -1.44960198e+00,
+        -1.24927223e+00, -1.38014158e+00, -1.53354886e+00, -1.78787783e+00,
+        -1.62059819e+00, -1.92558885e+00, -2.04081249e+00, -2.15833459e+00,
+        -2.27541068e+00, -2.37954568e+00, -2.59335006e+00, -2.70212798e+00,
+        -3.09026049e+00, -3.19599689e+00, -3.47690658e+00, -3.50826047e+00,
+        -4.24338419e+00, -4.54084494e+00, -4.74782246e+00, -4.87589933e+00,
+        -5.18519617e+00, -5.41230492e+00, -5.55706228e+00, -5.72727049e+00])
+
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+
+
 param_updates1 = {'start_year': 2020}
 filename1 = 'run_SS_baseline_outputs.pkl'
 param_updates2 = {'start_year': 2020, 'use_zeta': True}
