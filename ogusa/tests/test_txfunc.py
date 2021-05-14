@@ -303,50 +303,14 @@ def test_tax_func_loop():
         tax_func_type, analytical_mtrs, desc_data, graph_data,
         graph_est, output_dir, numparams)
     age_specific = False
+
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_outputs.pkl'))
-    (TotPop_yr, PopPct_age, AvgInc, AvgETR, AvgMTRx, AvgMTRy,
-     frac_tax_payroll, etrparam_arr, etr_wsumsq_arr, etr_obs_arr,
-     mtrxparam_arr, mtrx_wsumsq_arr, mtrx_obs_arr,
-     mtryparam_arr, mtry_wsumsq_arr, mtry_obs_arr) = expected_tuple
-    etr_old = etrparam_arr
-    etr_new = etr_old.copy()
-    etr_new[..., 5] = etr_old[..., 6]
-    etr_new[..., 6] = etr_old[..., 11]
-    etr_new[..., 7] = etr_old[..., 5]
-    etr_new[..., 8] = etr_old[..., 7]
-    etr_new[..., 9] = etr_old[..., 8]
-    etr_new[..., 10] = etr_old[..., 9]
-    etr_new[..., 11] = etr_old[..., 10]
-    mtrx_old = mtrxparam_arr
-    mtrx_new = mtrx_old.copy()
-    mtrx_new[..., 5] = mtrx_old[..., 6]
-    mtrx_new[..., 6] = mtrx_old[..., 11]
-    mtrx_new[..., 7] = mtrx_old[..., 5]
-    mtrx_new[..., 8] = mtrx_old[..., 7]
-    mtrx_new[..., 9] = mtrx_old[..., 8]
-    mtrx_new[..., 10] = mtrx_old[..., 9]
-    mtrx_new[..., 11] = mtrx_old[..., 10]
-    mtry_old = mtryparam_arr
-    mtry_new = mtry_old.copy()
-    mtry_new[..., 5] = mtry_old[..., 6]
-    mtry_new[..., 6] = mtry_old[..., 11]
-    mtry_new[..., 7] = mtry_old[..., 5]
-    mtry_new[..., 8] = mtry_old[..., 7]
-    mtry_new[..., 9] = mtry_old[..., 8]
-    mtry_new[..., 10] = mtry_old[..., 9]
-    mtry_new[..., 11] = mtry_old[..., 10]
-    etrparam_arr = etr_new
-    mtrxparam_arr = mtrx_new
-    mtryparam_arr = mtry_new
-    expected_tuple = (
-        TotPop_yr, PopPct_age, AvgInc, AvgETR, AvgMTRx, AvgMTRy,
-        frac_tax_payroll, etrparam_arr, etr_wsumsq_arr, etr_obs_arr,
-        mtrxparam_arr, mtrx_wsumsq_arr, mtrx_obs_arr,
-        mtryparam_arr, mtry_wsumsq_arr, mtry_obs_arr)
+
     for i, v in enumerate(expected_tuple):
-        assert(np.allclose(test_tuple[i], v))
+        print("diff = ", np.absolute(test_tuple[i] - v).max())
+        assert(np.allclose(test_tuple[i], v, atol=1e-06))
 
 
 A = 0.02
