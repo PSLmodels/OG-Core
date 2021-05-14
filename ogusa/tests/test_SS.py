@@ -1328,10 +1328,10 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 
 
-    import cloudpickle
-    param_dir = os.path.join(CUR_PATH, "new_run_SS_delta_tau0_params.pkl")
-    with open(param_dir, "wb") as f:
-        cloudpickle.dump((p), f)
+    # import cloudpickle
+    # param_dir = os.path.join(CUR_PATH, "new_run_SS_delta_tau0_params.pkl")
+    # with open(param_dir, "wb") as f:
+    #     cloudpickle.dump((p), f)
 
     test_dict = SS.run_SS(p, client=None)
     expected_dict = utils.safe_read_pickle(
