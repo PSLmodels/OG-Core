@@ -739,7 +739,6 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
     p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 
-
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
     if p.zeta_K[-1] == 1.0:
@@ -878,9 +877,9 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     for i, v in enumerate(expected_tuple):
-        print('Max diff = ', np.absolute(test_tuple[i]- v).max())
+        print('Max diff = ', np.absolute(test_tuple[i] - v).max())
         print('Checking item = ', i)
-        assert(np.allclose(test_tuple[i], v, atol=1e-05))
+        assert(np.allclose(test_tuple[i], v, atol=4e-05))
 
 
 param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
