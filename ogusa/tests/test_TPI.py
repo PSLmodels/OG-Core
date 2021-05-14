@@ -401,12 +401,17 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_baseline_spend_2.pkl')
 
 
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates2, filename2),
+#                           (True, param_updates1, filename1),
+#                           (False, param_updates3, filename3)],
+#                          ids=['Baseline, balanced budget', 'Baseline',
+#                               'Reform'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates2, filename2),
-                          (True, param_updates1, filename1),
-                          (False, param_updates3, filename3)],
-                         ids=['Baseline, balanced budget', 'Baseline',
-                              'Reform'])
+                         [
+                          (True, param_updates1, filename1)],
+                         ids=['Baseline',
+                              ])
 def test_run_TPI(baseline, param_updates, filename, tmp_path,
                  dask_client):
     '''
@@ -455,6 +460,12 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
         dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
             p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T + p.S - p.BW, 1, 1))
+
+    import cloudpickle
+    param_dir = os.path.join(CUR_PATH, "new_tpi_run_baseline_params.pkl")
+    with open(param_dir, "wb") as f:
+        cloudpickle.dump((p), f)
+
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False

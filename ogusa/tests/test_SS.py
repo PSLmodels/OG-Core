@@ -1096,6 +1096,7 @@ def test_euler_equation_solver(dask_client):
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
+imm_rates_deltatau0 = np.load(os.path.join(CUR_PATH, 'old_imm_rates_deltatau0.npy'))
 param_updates1 = {'start_year': 2020, 'omega_SS': omega_SS,
                   'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
 filename1 = 'run_SS_baseline_outputs.pkl'
@@ -1136,7 +1137,7 @@ param_updates10 = {'start_year': 2020, 'baseline_spending': True,
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
                    'zeta_D': [0.0], 'omega_SS': omega_SS,
-                   'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+                   'g_n_ss': g_n_ss, 'imm_rates': imm_rates_deltatau0, 'e': e}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 
 
@@ -1177,6 +1178,7 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
+    SS.ENFORCE_SOLUTION_CHECKS = False
     if baseline is False:
         p_base = Specifications(
             output_base=constants.BASELINE_DIR,
