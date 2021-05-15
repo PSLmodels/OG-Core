@@ -510,6 +510,11 @@ def test_get_biz_tax():
     assert np.allclose(biz_tax, np.array([0.0102, 0.11356, 0.0102]))
 
 
+'''
+-------------------------------------------------------------------------------
+Test baseline tax.py net_taxes() function
+-------------------------------------------------------------------------------
+'''
 # Set parameter class for each case
 p = Specifications()
 p.tax_func_type = 'DEP'
@@ -661,6 +666,11 @@ p8 = copy.deepcopy(p6)
 p8.replacement_rate_adjust = [1.5, 0.6, 1.0]
 
 factor = 105000
+ubi1 = np.zeros((p1.T, p1.S, p1.J))
+ubi2 = np.zeros((p2.T, p2.S, p2.J))
+ubi3 = np.zeros((p3.T, p3.S, p3.J))
+ubi4 = np.zeros((p4.T, p4.S, p4.J))
+ubi5 = np.zeros((p5.T, p5.S, p5.J))
 expected1 = np.array([0.47374766, -0.09027663, 0.03871394])
 expected2 = np.array([0.20374766, -0.09027663, 0.03871394])
 expected3 = np.array([[0.473747659, -0.090276635, 0.038713941],
@@ -708,28 +718,28 @@ expected8 = np.array([[[0.16311573 - 0.023076923,  0.1583638 - 0.05],
                        [0.34545346 - 0.061538462, 0.39350691 - 0.12857143],
                        [0.15958077 - 0.061538462, -0.0482051 - 0.12857143]]])
 
-test_data = [(r1, w1, b1, n1, bq1, factor, tr1, theta1, None, j1, shift1,
-              method1, p1.e[:, j1], etr_params1[-1, :, :],
-              p1, expected1),
-             (r2, w2, b2, n2, bq2, factor, tr2, theta2, None, j2, shift2,
-              method2, p2.e[:, j2], etr_params2, p2, expected2),
-             (r3, w3, b3[:, :, j3], n3[:, :, j3], bq3, factor, tr3,
+test_data = [(r1, w1, b1, n1, bq1, factor, tr1, ubi1[0, :, :], theta1, None,
+              j1, shift1, method1, p1.e[:, j1], etr_params1[-1, :, :], p1,
+              expected1),
+             (r2, w2, b2, n2, bq2, factor, tr2, ubi2[0, :, :], theta2, None,
+              j2, shift2, method2, p2.e[:, j2], etr_params2, p2, expected2),
+             (r3, w3, b3[:, :, j3], n3[:, :, j3], bq3, factor, tr3, ubi3,
               theta3, 0, j3, shift3, method3, p3.e[:, j3], etr_params3, p3,
               expected3),
-             (r4, w4, b4[:, :, j4], n4[:, :, j4], bq4, factor, tr4,
-              theta4, 0, j4, shift4, method4, p4.e[:, j4],
-              etr_params4, p4, expected4),
-             (r5, w5, b5, n5, bq5, factor, tr5, theta5, 0, j5, shift5,
+             (r4, w4, b4[:, :, j4], n4[:, :, j4], bq4, factor, tr4, ubi4,
+              theta4, 0, j4, shift4, method4, p4.e[:, j4], etr_params4, p4,
+              expected4),
+             (r5, w5, b5, n5, bq5, factor, tr5, ubi5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p5, expected5),
-             (r5, w5, b5, n5, bq5, factor, tr5, theta5, 0, j5, shift5,
+             (r5, w5, b5, n5, bq5, factor, tr5, ubi5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p6, expected6),
-             (r5, w5, b5, n5, bq5, factor, tr5, theta5, 0, j5, shift5,
+             (r5, w5, b5, n5, bq5, factor, tr5, ubi5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p7, expected7),
-             (r5, w5, b5, n5, bq5, factor, tr5, theta5, 0, j5, shift5,
+             (r5, w5, b5, n5, bq5, factor, tr5, ubi5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p8, expected8)]
 
 
-@pytest.mark.parametrize('r,w,b,n,bq,factor,tr,theta,t,j,shift,method,'
+@pytest.mark.parametrize('r,w,b,n,bq,factor,tr,ubi,theta,t,j,shift,method,'
                          + 'e,etr_params,p,expected',
                          test_data, ids=['SS', 'TPI Scalar',
                                          'TPI shift = True',
@@ -737,10 +747,10 @@ test_data = [(r1, w1, b1, n1, bq1, factor, tr1, theta1, None, j1, shift1,
                                          'TPI 3D,vary tau_bq',
                                          'TPI 3D,vary retire',
                                          'TPI 3D,vary replacement rate'])
-def test_net_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift,
+def test_net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t, j, shift,
                    method, e, etr_params, p, expected):
     # Test function that computes total net taxes for the household
     # method = ss
-    net_taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, theta, t,
+    net_taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t,
                               j, shift, method, e, etr_params, p)
     assert np.allclose(net_taxes, expected)
