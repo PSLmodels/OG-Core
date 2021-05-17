@@ -754,3 +754,130 @@ def test_net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t, j, shift,
     net_taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t,
                               j, shift, method, e, etr_params, p)
     assert np.allclose(net_taxes, expected)
+
+
+'''
+-------------------------------------------------------------------------------
+Local UBI > 0 test of net_taxes() function
+-------------------------------------------------------------------------------
+'''
+# Set parameter class for each case
+p_u = Specifications()
+new_param_values_ubi = {
+    'T': 3,
+    'S': 3,
+    'J': 2,
+    'lambdas': [0.65, 0.35],
+    'eta': (np.ones((3, 2)) / (3 * 2)),
+    'ubi_nom_017': 1000,
+    'ubi_nom_1864': 1500,
+    'ubi_nom_65p': 500
+}
+p_u.update_specifications(new_param_values_ubi)
+p_u.tax_func_type = 'DEP'
+p_u.e = np.array([[0.3, 0.2], [0.5, 0.4], [0.45, 0.3]])
+p_u.h_wealth = np.ones(p_u.T + p_u.S) * 1
+p_u.p_wealth = np.ones(p_u.T + p_u.S) * 2
+p_u.m_wealth = np.ones(p_u.T + p_u.S) * 3
+p_u.tau_payroll = np.ones(p_u.T + p_u.S) * 0.15
+p_u.tau_bq = np.ones(p_u.T + p_u.S) * 0.1
+p_u.retire = (np.ones(p_u.T + p_u.S) * 2).astype(int)
+
+factor = 105000
+ubi_u = p_u.ubi_nom_array / factor
+
+# set variables and other parameters for each case
+r1 = 0.04
+w1 = 1.2
+b1 = np.array([0.4, 0.3, 0.5])
+n1 = np.array([0.8, 0.4, 0.7])
+BQ1 = np.array([0.3])
+bq1 = BQ1 / p_u.lambdas[0]
+tr1 = np.array([0.12])
+theta1 = np.array([0.225])
+etr_params1_old = np.reshape(np.array([
+    [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+     0.16, -0.15, 0.83],
+    [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+     0.16, -0.15, 0.83],
+    [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+     0.16, -0.15, 0.83]]), (1, p_u.S, 12))
+etr_params1 = etr_params1_old.copy()
+etr_params1[:, :, 5] = etr_params1_old[:, :, 6]
+etr_params1[:, :, 6] = etr_params1_old[:, :, 11]
+etr_params1[:, :, 7] = etr_params1_old[:, :, 5]
+etr_params1[:, :, 8] = etr_params1_old[:, :, 7]
+etr_params1[:, :, 9] = etr_params1_old[:, :, 8]
+etr_params1[:, :, 10] = etr_params1_old[:, :, 9]
+etr_params1[:, :, 11] = etr_params1_old[:, :, 10]
+j1 = 0
+shift1 = True
+method1 = 'SS'
+
+r2 = r1
+w2 = w1
+b2 = b1
+n2 = n1
+BQ2 = BQ1
+bq2 = bq1
+tr2 = tr1
+theta2 = theta1
+etr_params2 = etr_params1
+j2 = 0
+shift2 = True
+method2 = 'TPI_scalar'
+
+r3 = np.array([0.04, 0.045, 0.04])
+w3 = np.array([1.2, 1.3, 1.1])
+b3 = np.tile(np.reshape(np.array([0.4, 0.3, 0.5]), (1, p_u.S, 1)),
+             (p_u.T, 1, p_u.J))
+n3 = np.tile(np.reshape(np.array([0.8, 0.4, 0.7]), (1, p_u.S, 1)),
+             (p_u.T, 1, p_u.J))
+BQ3 = np.array([0.3, 0.4, 0.45])
+bq3 = np.tile(np.reshape(BQ3 / p_u.lambdas[0], (p_u.T, 1)), (1, p_u.S))
+tr3 = np.tile(np.reshape(np.array([0.12, 0.1, 0.11]), (p_u.T, 1)),
+              (1, p_u.S))
+theta3 = theta1
+etr_params3_old = np.tile(np.reshape(np.array(
+    [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
+     -0.15, 0.83]), (1, 1, 12)), (p_u.T, p_u.S, 1))
+etr_params3 = etr_params3_old.copy()
+etr_params3[:, :, 5] = etr_params3_old[:, :, 6]
+etr_params3[:, :, 6] = etr_params3_old[:, :, 11]
+etr_params3[:, :, 7] = etr_params3_old[:, :, 5]
+etr_params3[:, :, 8] = etr_params3_old[:, :, 7]
+etr_params3[:, :, 9] = etr_params3_old[:, :, 8]
+etr_params3[:, :, 10] = etr_params3_old[:, :, 9]
+etr_params3[:, :, 11] = etr_params3_old[:, :, 10]
+j3 = 0
+shift3 = True
+method3 = 'TPI'
+
+expected1 = np.array([0.28384671, -0.07461627, 0.15144631])
+expected2 = np.array([0.01384671, -0.07461627, 0.15144631])
+expected3 = np.array([[0.30869878, -0.0497642, 0.17629838],
+                      [0.39311429, 0.00794409, 0.24575229],
+                      [0.35257605, 0.02042006, 0.23553789]])
+
+test_data = [(r1, w1, b1, n1, bq1, factor, tr1, ubi_u[0, :, j1], theta1, None,
+              j1, shift1, method1, p_u.e[:, j1], etr_params1[-1, :, :], p_u,
+              expected1),
+             (r2, w2, b2, n2, bq2, factor, tr2, ubi_u[0, :, j2], theta2, None,
+              j2, shift2, method2, p_u.e[:, j2], etr_params2, p_u, expected2),
+             (r3, w3, b3[:, :, j3], n3[:, :, j3], bq3, factor, tr3,
+              ubi_u[:p_u.T, :, j3], theta3, 0, j3, shift3, method3, p_u.e[:, j3],
+              etr_params3, p_u, expected3)]
+
+@pytest.mark.local
+@pytest.mark.parametrize('r,w,b,n,bq,factor,tr,ubi,theta,t,j,shift,method,'
+                         + 'e,etr_params,p,expected',
+                         test_data, ids=['SS UBI>0', 'TPI scalar UBI>0',
+                                         'TPI UBI>0'])
+def test_net_taxes_ubi(r, w, b, n, bq, factor, tr, ubi, theta, t, j, shift,
+                       method, e, etr_params, p, expected):
+    # Test function that computes total net taxes for the household
+    # method = ss
+    net_taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t,
+                              j, shift, method, e, etr_params, p)
+    print('Net_taxes:', net_taxes)
+    assert np.allclose(net_taxes, expected)
