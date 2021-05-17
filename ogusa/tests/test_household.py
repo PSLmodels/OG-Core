@@ -308,6 +308,11 @@ def test_get_cons(model_args, expected):
     assert np.allclose(test_value, expected)
 
 
+'''
+-------------------------------------------------------------------------------
+Test baseline test_FOC_savings() function
+-------------------------------------------------------------------------------
+'''
 # Define variables for test of SS version
 p1 = Specifications()
 p1.e = np.array([1.0, 0.9, 1.4]).reshape(3, 1)
@@ -356,13 +361,14 @@ tau_c = np.array([0.09, 0.08, 0.05])
 bq = 0.1
 factor = 120000
 tr = 0.22
+ubi_ss = np.zeros(p1.S)
 theta = np.array([0.1])
 method = 'SS'
 j = None
-test_vars_ss = (r, w, b, b_splus1, n, bq, factor, tr, theta, tau_c,
+test_vars_ss = (r, w, b, b_splus1, n, bq, factor, tr, ubi_ss, theta, tau_c,
                 etr_params[-1, :, :], mtry_params[-1, :, :], None, j,
                 method)
-test_vars_ss0 = (r, w, b, b_splus1, n, bq, factor, tr, theta, tau_c,
+test_vars_ss0 = (r, w, b, b_splus1, n, bq, factor, tr, ubi_ss, theta, tau_c,
                  etr_params[-1, :, :], mtry_params[-1, :, :], None, 0,
                  method)
 expected_ss = np.array([10.86024358, -0.979114982, -140.5190831])
@@ -396,7 +402,7 @@ for i in range(etr_params.shape[2]):
     etr_params_tpi[:, i] = np.diag(np.transpose(etr_params[:, :p1.S, i]))
     mtry_params_tpi[:, i] = np.diag(np.transpose(mtry_params[:, :p1.S, i]))
 test_vars_tpi = (r_vec, w_vec, np.diag(b_path), np.diag(b_splus1_path),
-                 np.diag(n_path), bq_vec, factor, tr_vec, theta,
+                 np.diag(n_path), bq_vec, factor, tr_vec, ubi_ss, theta,
                  tau_c_tpi, etr_params_tpi, mtry_params_tpi, 0, j,
                  method_tpi)
 expected_tpi = np.array([328.1253524, 3.057420747, -139.8514249])
@@ -428,21 +434,25 @@ test_data = [
                               'TPI - wealth tax', 'SS - j =0'])
 def test_FOC_savings(model_vars, params, expected):
     # Test FOC condition for household's choice of savings
-    (r, w, b, b_splus1, n, BQ, factor, tr, theta, tau_c, etr_params,
+    (r, w, b, b_splus1, n, BQ, factor, tr, ubi, theta, tau_c, etr_params,
      mtry_params, t, j, method) = model_vars
     if j is not None:
         test_value = household.FOC_savings(
-            r, w, b, b_splus1, n, BQ, factor, tr, theta,
-            params.e[:, j], params.rho, tau_c, etr_params,
-            mtry_params, t, j, params, method)
+            r, w, b, b_splus1, n, BQ, factor, tr, ubi, theta, params.e[:, j],
+            params.rho, tau_c, etr_params, mtry_params, t, j, params, method)
     else:
         test_value = household.FOC_savings(
-            r, w, b, b_splus1, n, BQ, factor, tr, theta,
-            np.squeeze(params.e), params.rho,
-            tau_c, etr_params, mtry_params, t, j, params, method)
+            r, w, b, b_splus1, n, BQ, factor, tr, ubi, theta,
+            np.squeeze(params.e), params.rho, tau_c, etr_params, mtry_params,
+            t, j, params, method)
     assert np.allclose(test_value, expected)
 
 
+'''
+-------------------------------------------------------------------------------
+Test baseline test_FOC_labor() function
+-------------------------------------------------------------------------------
+'''
 # Define variables for test of SS version
 p1 = Specifications()
 p1.rho = np.array([0.1, 0.2, 1.0])
@@ -494,8 +504,9 @@ bq = 0.1
 tau_c = np.array([0.09, 0.08, 0.05])
 factor = 120000
 tr = 0.22
+ubi_ss = np.zeros(p1.S)
 test_params_ss = p1
-test_vars_ss = (r, w, b, b_splus1, n, bq, factor, tr, theta, tau_c,
+test_vars_ss = (r, w, b, b_splus1, n, bq, factor, tr, ubi_ss, theta, tau_c,
                 etr_params[-1, :, :], mtrx_params[-1, :, :], None, j,
                 method)
 expected_ss = np.array([5.004572473, 0.160123869, -0.139397744])
@@ -527,7 +538,7 @@ mtrx_params_tpi = np.empty((p1.S, mtrx_params.shape[2]))
 etr_params_tpi = etr_params
 mtrx_params_tpi = mtrx_params
 test_vars_tpi = (r_vec, w_vec, b_path, b_splus1_path, n_path, bq_vec,
-                 factor, tr_vec, theta, tau_c_tpi, etr_params_tpi,
+                 factor, tr_vec, ubi_ss, theta, tau_c_tpi, etr_params_tpi,
                  mtrx_params_tpi, 0, j, method_tpi)
 expected_tpi = np.array([[72.47245852, 0.021159855, 0.448785988],
                          [52.98670445, 2.020513233, -0.319957296],
@@ -556,10 +567,10 @@ test_data = [(test_vars_ss, test_params_ss, expected_ss),
                          ids=['SS', 'TPI', 'vary tau_payroll'])
 def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply
-    (r, w, b, b_splus1, n, bq, factor, tr, theta, tau_c,
+    (r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, tau_c,
      etr_params, mtrx_params, t, j, method) = model_vars
     test_value = household.FOC_labor(
-        r, w, b, b_splus1, n, bq, factor, tr, theta, params.chi_n,
+        r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, params.chi_n,
         params.e[:, j], tau_c, etr_params, mtrx_params, t, j, params,
         method)
 

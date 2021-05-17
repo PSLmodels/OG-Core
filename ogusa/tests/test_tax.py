@@ -750,7 +750,6 @@ test_data = [(r1, w1, b1, n1, bq1, factor, tr1, ubi1[0, :, :], theta1, None,
 def test_net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t, j, shift,
                    method, e, etr_params, p, expected):
     # Test function that computes total net taxes for the household
-    # method = ss
     net_taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t,
                               j, shift, method, e, etr_params, p)
     assert np.allclose(net_taxes, expected)
@@ -876,8 +875,6 @@ test_data = [(r1, w1, b1, n1, bq1, factor, tr1, ubi_u[0, :, j1], theta1, None,
 def test_net_taxes_ubi(r, w, b, n, bq, factor, tr, ubi, theta, t, j, shift,
                        method, e, etr_params, p, expected):
     # Test function that computes total net taxes for the household
-    # method = ss
     net_taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t,
                               j, shift, method, e, etr_params, p)
-    print('Net_taxes:', net_taxes)
     assert np.allclose(net_taxes, expected)
