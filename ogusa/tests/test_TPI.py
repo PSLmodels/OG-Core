@@ -167,8 +167,9 @@ def test_twist_doughnut(file_inputs, file_outputs):
     ensure that output returned matches what it has been before.
     '''
     input_tuple = utils.safe_read_pickle(file_inputs)
-    (guesses, r, w, bq, tr, theta, factor, ubi, j, s, t, tau_c, etr_params,
+    (guesses, r, w, bq, tr, theta, factor, j, s, t, tau_c, etr_params,
      mtrx_params, mtry_params, initial_b, p) = input_tuple
+    ubi = np.zeros(int(len(guesses) / 2))
     input_tuple = (guesses, r, w, bq, tr, theta, factor, ubi, j, s, t, tau_c,
                    etr_params, mtrx_params, mtry_params, initial_b, p)
     test_list = TPI.twist_doughnut(*input_tuple)
