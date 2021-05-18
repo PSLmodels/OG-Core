@@ -250,9 +250,10 @@ def test_inner_loop(dask_client):
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
     outer_loop_vars_in = (r, w, r, BQ, TR, theta)
 
+    ubi = np.zeros((p.T + p.S, p.S, p.J))
     guesses = (guesses[0], guesses[1])
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars_in,
-                                initial_values_in, j, ind, p)
+                                initial_values_in, ubi, j, ind, p)
 
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
