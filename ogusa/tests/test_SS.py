@@ -935,7 +935,6 @@ def test_euler_equation_solver(dask_client):
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-@pytest.mark.local
 def test_euler_equation_solver_ubi(dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
