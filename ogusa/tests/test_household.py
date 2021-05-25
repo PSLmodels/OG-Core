@@ -310,7 +310,7 @@ def test_get_cons(model_args, expected):
 
 '''
 -------------------------------------------------------------------------------
-Test baseline test_FOC_savings() function
+test_FOC_savings() function
 -------------------------------------------------------------------------------
 '''
 # Define variables for test of SS version
@@ -450,7 +450,7 @@ def test_FOC_savings(model_vars, params, expected):
 
 '''
 -------------------------------------------------------------------------------
-Test baseline test_FOC_labor() function
+test_FOC_labor() function
 -------------------------------------------------------------------------------
 '''
 # Define variables for test of SS version
