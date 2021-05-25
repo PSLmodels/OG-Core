@@ -137,8 +137,9 @@ def test_firstdoughnutring(dask_client):
     p.num_workers = 1
     bq = BQ / p.lambdas[j]
     tr = TR
+    ubi = 0.0
     test_list = TPI.firstdoughnutring(guesses, r, w, bq, tr, theta,
-                                      factor, j, initial_b, p)
+                                      factor, ubi, j, initial_b, p)
 
     expected_list = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
@@ -168,7 +169,8 @@ def test_twist_doughnut(file_inputs, file_outputs):
     input_tuple = utils.safe_read_pickle(file_inputs)
     (guesses, r, w, bq, tr, theta, factor, j, s, t, tau_c, etr_params,
      mtrx_params, mtry_params, initial_b, p) = input_tuple
-    input_tuple = (guesses, r, w, bq, tr, theta, factor, j, s, t, tau_c,
+    ubi = np.zeros(int(len(guesses) / 2))
+    input_tuple = (guesses, r, w, bq, tr, theta, factor, ubi, j, s, t, tau_c,
                    etr_params, mtrx_params, mtry_params, initial_b, p)
     test_list = TPI.twist_doughnut(*input_tuple)
     expected_list = utils.safe_read_pickle(file_outputs)
@@ -248,9 +250,10 @@ def test_inner_loop(dask_client):
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
     outer_loop_vars_in = (r, w, r, BQ, TR, theta)
 
+    ubi = np.zeros((p.T + p.S, p.S, p.J))
     guesses = (guesses[0], guesses[1])
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars_in,
-                                initial_values_in, j, ind, p)
+                                initial_values_in, ubi, j, ind, p)
 
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',

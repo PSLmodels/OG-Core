@@ -273,6 +273,10 @@ class Specifications(paramtools.Parameters):
             self.S, self.omega_SS, self.omega_SS_80, self.lambdas,
             plot=False)
 
+        # Create time series of stationarized UBI transfers
+        (self.ubi_nom_array, self.UBI_nom_vec, self.ubi_nom_SS,
+            self.UBI_nom_SS) = self.get_ubi_nom_objs()
+
     def get_tax_function_parameters(self, client, run_micro=False,
                                     tax_func_path=None):
         '''
@@ -510,6 +514,70 @@ class Specifications(paramtools.Parameters):
             run_micro = False
 
         return dict_params, run_micro
+
+    def get_ubi_nom_objs(self):
+        '''
+        Generate time series of nominal SxJ UBI household matrix and aggregate
+        UBI expenditure over necessary time periods. Also generate steady-state
+        versions
+
+        Args:
+            self: OG-USA parameters class object
+
+        Returns:
+            ubi_nom_array (array): T+S x S x J array time series of UBI
+                transfers in dollars for each type-j age-s household in every
+                period t
+            UBI_nom_vec (vector): (T+S) vector time series of aggregate UBI
+                expenditure in dollars
+            ubi_nom_SS (array): S x J matrix of UBI steady-state (long-run)
+                transfers in dollars for each type-j age-s household
+            UBI_nom_SS (scalar): value of UBI steady-state (long-run) total
+                expenditure in dollars
+        '''
+        TpS = self.omega.shape[0]
+        # Get matrices of number of children 0-17, number of dependents 18-20,
+        # number of adults 21-64, and number of seniors >= 65 from
+        # OG-USA-Calibration package
+        ubi_num_017_mat = 1.1 * np.ones((self.S, self.J))
+        ubi_num_1864_mat = 0.85 * np.ones((self.S, self.J))
+        ubi_num_65p_mat = 0.15 * np.ones((self.S, self.J))
+
+        ubi_nom_array = np.zeros((TpS, self.S, self.J))
+        UBI_nom_vec = np.zeros(TpS)
+
+        # Calculate the UBI transfers to each household type in the first
+        # period t=0
+        ubi_nom_mat_init = \
+            np.minimum(
+                (self.ubi_nom_017 * ubi_num_017_mat +
+                 self.ubi_nom_1864 * ubi_num_1864_mat +
+                 self.ubi_nom_65p * ubi_num_65p_mat), self.ubi_nom_max)
+
+        # Calculate steady-state and transition path of stationary individual
+        # household UBI payments and stationary aggregate UBI outlays
+        lambdas_mat = np.tile(self.lambdas.reshape((1, self.J)), (self.S, 1))
+        for t in range(TpS):
+            if self.ubi_growthadj or self.g_y_annual == 0:
+                # If ubi_growthadj=True or if g_y_annual<0, then uib_arr is
+                # just a copy of the initial UBI mattrix for T periods.
+                ubi_nom_mat = ubi_nom_mat_init
+            else:
+                # If ubi_growthadj=False, and g_y_annual>=0, then must divide
+                # by e^{g_y t} every period, then set the steady-state matrix
+                # to its value close to zero at t=T
+                if t <= self.T:
+                    ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * t)
+                else:  # periods where t > T
+                    ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * self.T)
+            ubi_nom_array[t, :, :] = ubi_nom_mat
+            omega_mat = np.tile(self.omega[t, :].reshape((self.S, 1)),
+                                (1, self.J))
+            UBI_nom_vec[t] = (lambdas_mat * omega_mat * ubi_nom_mat).sum()
+        ubi_nom_SS = ubi_nom_array[self.T + 1, :, :]
+        UBI_nom_SS = UBI_nom_vec[self.T + 1]
+
+        return ubi_nom_array, UBI_nom_vec, ubi_nom_SS, UBI_nom_SS
 
     def update_specifications(self, revision, raise_errors=True):
         '''
