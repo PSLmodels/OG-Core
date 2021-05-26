@@ -1,8 +1,14 @@
 (Chap_Eqm)=
 # Equilibrium
 
+The equilibrium for the `OG-USA` model is broadly characterized as the solution to the model for all possible periods from the current period $t=1$ to infinity $t=\infty$. However, the solution algorithm for the equilibrium makes it useful to divide the equilibrium definition into two sub-definitions.
+
+The first equilibrium definition we charactersize is the {ref}`SecSSeqlb`. This is really a long-run equilibrium concept. It is where the economy settles down after a large number of periods into the future. The distributions in the economy (e.g., population, wealth, labor supply) have settled down and remain constant from some future period $t=\bar{T}$ for the rest of time $t=\infty$.
+
+The second equilibrium definition we characterize is the {ref}`SecNSSeqlb`. This equilibrium concept is "non-steady-state" because it characterizes equilibrium in all time periods from the current period $t=1$ to the period in which the economy has reached the steady-state $t=\bar{T}$. It is "non-steady-state" because the distributions in the economy (e.g., population, wealth, labor supply) are changing across time periods.
+
 (SecSSeqlb)=
-## Steady-State Equilibirum
+## Stationary Steady-State Equilibirum
 
 In this section, we define the stationary steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_House` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-USA` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter {ref}`Chap_Demog`, and the potential for unbounded growth in government debt as described in Chapter {ref}`Chap_UnbalGBC`.
 
@@ -286,19 +292,19 @@ The computational algorithm for solving for the steady-state follows the steps b
 
 
 (SecNSSeqlb)=
-## Stationary Nonsteady-State Equilibrium
+## Stationary Non-steady-State Equilibrium
 
-  In this section, we define the stationary nonsteady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_House` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model in their non-stationarized form. And chapter {ref}`Chap_Stnrz` derives the stationarized versions of the characterizing equations. We also need the steady-state solution from Section {ref}`SecSSeqlb` to solve for the nonsteady-state equilibrium transition path.
+  In this section, we define the stationary non-steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_House` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model in their non-stationarized form. And chapter {ref}`Chap_Stnrz` derives the stationarized versions of the characterizing equations. The steady-state equilibrium definition in Section {ref}`SecEqlbSSdef` defines the long-run equilibrium where the economy settles down after many periods. The non-steady-state equilibrium in this section describes the equilibrium in all periods from the current period to the steady-state. We will need the steady-state solution from Section {ref}`SecSSeqlb` to solve for the non-steady-state equilibrium transition path.
 
 
 (SecEqlbNSSdef)=
-### Stationary Nonsteady-State Equilibrium Definition
+### Stationary Non-steady-State Equilibrium Definition
 
-  We define a stationary nonsteady-state equilibrium as the following.
+  We define a stationary non-steady-state equilibrium as the following.
 
   ```{admonition} **Definition: Stationary Non-steady-state functional equilibrium**
   :class: note
-  A non autarkic nonsteady-state functional equilibrium in the `OG-USA` model is defined as stationary allocation functions of the state $\bigl\{n_{j,s,t} = \phi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ and $\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ for all $j$ and $t$ and stationary price functions $\hat{w}(\boldsymbol{\hat{\Gamma}}_t)$ and $r(\boldsymbol{\hat{\Gamma}}_t)$ for all $t$ such that:
+  A non-autarkic non-steady-state functional equilibrium in the `OG-USA` model is defined as stationary allocation functions of the state $\bigl\{n_{j,s,t} = \phi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ and $\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ for all $j$ and $t$ and stationary price functions $\hat{w}(\boldsymbol{\hat{\Gamma}}_t)$ and $r(\boldsymbol{\hat{\Gamma}}_t)$ for all $t$ such that:
 
   1. Households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings as characterized in {eq}`EqBeliefs`, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
 
@@ -319,21 +325,31 @@ The computational algorithm for solving for the steady-state follows the steps b
 
 [TODO: Need to update and finish this section.]
 
-The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surplusses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending is not held constant until the closure rule (`baseline_spending = False`).
+This section describes the computational algorithm for the solution method for the stationary non-steady-state equilibrium described in the {ref}`SecEqlbSSdef`. The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surplusses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending $G_t$ and transfers $TR_t$ are not held constant until the closure rule (`baseline_spending = False`).
 
-This section describes the computational algorithm for the solution method for the stationary nonsteady-state equilibrium described in the {ref}`SecEqlbSSdef`. We use the time path iteration (TPI) method. This method was originally outlined in a series of papers between 1981 and 1985 [^citation_note] and in the seminal book {cite}`AuerbachKotlikoff:1987` [Chapter 4] for the perfect foresight case and in {cite}`NishiyamaSmetters:2007` Appendix II and {cite}`EvansPhillips:2014`[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see {cite}`StokeyLucas1989` [Chapter 17]).
+The computational algorithm for the -steady-state solution follows similar steps to the steady-state solution described in Section {ref}`SecEqlbSSsoln`. There is an outer-loop of guessed values of macroeconomic variables $\{r_t, BQ_t, TR_t\}$, but in this case, we guess the entire transition path of those variables. Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.
 
-The key assumption is that the economy will reach the steady-state equilibrium $\boldsymbol{\bar{\Gamma}}$ described in {ref}`SecEqlbSSdef` in a finite number of periods $T<\infty$ regardless of the initial state $\boldsymbol{\hat{\Gamma}}_1$. The first step in solving for the nonsteady-state equilibrium transition path is to solve for the steady-state using the method described in Section {ref}`SecEqlbSSsoln`. After solving for the steady-state, one must then find a fixed point over the entire path of endogenous objects.
+We call this solution algorithm the time path iteration (TPI) method or transition path iteration. This method was originally outlined in a series of papers between 1981 and 1985 [^citation_note] and in the seminal book {cite}`AuerbachKotlikoff:1987` [Chapter 4] for the perfect foresight case and in {cite}`NishiyamaSmetters:2007` Appendix II and {cite}`EvansPhillips:2014`[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see {cite}`StokeyLucas1989` [Chapter 17]).
 
-The computational algorithm for solving for the non-steady-state equilibrium transition path is analogous to the {ref}`SecEqlbSSsoln`, which follows the two-stage "outer-loop", "inner-loop" fixed point approach. The main difference is that we are guessing full transition paths for the "outer-loop" macroeconomic variables, minus the $factor$ variable which is constant and fully determined in the steady-state. Then the "inner-loop" solutions for all the households are their solutions across the entire transition path (many generations of households), rather than just the one steady-state generation. The non-steady-state solution algorithm follows the steps below. We again use a notational convention of a subscript $a$ or a subscript $b$ in steps (?) and (?) to differentiate between the same inner-loop variables computed two different ways at two different stages of the algorithm ($\hat{w}_{t,a}$, $\hat{w}_{t,b}$, $r_{gov,t,a}$, $r_{gov,t,b}$, $r_{hh,t,a}$, $r_{hh,t,b}$, $\hat{Y}_{t,a}$, $\hat{Y}_{t,b}$, $\hat{K}_{t,a}$, $\hat{K}_{t,b}$).
+The key assumption is that the economy will reach the steady-state equilibrium $\boldsymbol{\bar{\Gamma}}$ described in {ref}`SecEqlbSSdef` in a finite number of periods $T<\infty$ regardless of the initial state $\boldsymbol{\hat{\Gamma}}_1$. The first step in solving for the non-steady-state equilibrium transition path is to solve for the steady-state using the method described in Section {ref}`SecEqlbSSsoln`. After solving for the steady-state, one must then find a fixed point over the entire time path or transition path of endogenous objects that satisfies the characterizing equilibrium equations in every period.
 
-We outline the stationary non-steady state solution algorithm in the following steps.
+The non-steady-state solution algorithm follows the steps below. We again use a notational convention of a subscript $a$ or a subscript $b$ in steps (?) and (?) to differentiate between the same inner-loop variables computed two different ways at two different stages of the algorithm ($\hat{w}_{t,a}$, $\hat{w}_{t,b}$, $r_{gov,t,a}$, $r_{gov,t,b}$, $r_{hh,t,a}$, $r_{hh,t,b}$, $\hat{Y}_{t,a}$, $\hat{Y}_{t,b}$, $\hat{K}_{t,a}$, $\hat{K}_{t,b}$).
+
+We outline the stationary non-steady state (transition path) solution algorithm in the following steps.
 
 1. Use the techniques from Section {ref}`SecDemogPopSSTP` to solve for the transition path of the stationarized population distribution matrix $\{\hat{\omega}_{s,t}\}_{s,t=E+1,1}^{E+S,T}$ and population growth rate vector $\{\tilde{g}_{n,t}\}_{t=1}^T$ of the exogenous population process.
 
 2. Compute the steady-state solution $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ corresponding to {ref}`SecEqlbSSdef` with the {ref}`SecEqlbSSsoln`.
 
-3. Given initial state of the economy $\boldsymbol{\hat{\Gamma}}_1$ and steady-state solutions $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$, guess transition paths of outer loop macroeconomic variables $\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$ such that $\hat{BQ}_1^i$ is consistent with $\boldsymbol{\hat{\Gamma}}_1$ and $\{r_t^i, \hat{BQ}_t^i, \hat{TR}_t^i\} = \{\bar{r}, \overline{BQ}, \overline{TR}\}$ for all $t\geq T$.
+3. Given initial state of the economy $\boldsymbol{\hat{\Gamma}}_1$ and steady-state solutions $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$, guess transition paths of outer-loop macroeconomic variables $\{r^i,\hat{BQ}^i,\hat{TR}^i\}$ such that $\hat{BQ}_1^i$ is consistent with $\boldsymbol{\hat{\Gamma}}_1$ and $\{r_t^i, \hat{BQ}_t^i, \hat{TR}_t^i\} = \{\bar{r}, \overline{BQ}, \overline{TR}\}$ for all $t\geq T$.
+
+    1. If the economy is assumed to reach the steady state by period $T$, then we must be able to solve for every cohort's decisions in period $T$ including the decisions of agents in their first period of economically relevant life $s=E+S$. This means we need to guess time paths for the outer-loop variables that extend to period $t=T+S$. However, the values of the time path of outer-loop variables for every period $t\geq T$ are simply equal to the steady-state values.
+
+    2. Given guess of time path for $r^i=\{r_1^i,r_2^i,...r_T^i\}
+
+        1. Solve for the transition path of $r_{gov,t}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
+
+        2. Solve for the transition path of $r_{hh,t}$ using equation {eq}`EqStnrz_rate_hh`.
 
 3. Given initial condition $\boldsymbol{\hat{\Gamma}}_1$, guesses for the aggregate time paths $\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$, we solve for the inner loop lifetime decisions of every household that will be alive across the time path $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$ and $1\leq t\leq T$.
 

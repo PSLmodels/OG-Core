@@ -69,7 +69,9 @@ def test_D_G_path(baseline_spending, Y, TR, Revenue, Gbaseline,
     Gbaseline[0] = 0.05
     net_revenue = Revenue
     pension_amount = np.zeros_like(net_revenue)
-    dg_fixed_values = (Y, Revenue, pension_amount, TR, Gbaseline, D0_baseline)
+    UBI_outlays = np.zeros_like(net_revenue)
+    dg_fixed_values = (Y, Revenue, pension_amount, UBI_outlays, TR, Gbaseline,
+                       D0_baseline)
     test_tuple = fiscal.D_G_path(r_gov, dg_fixed_values, p)
     for i, v in enumerate(test_tuple):
         assert np.allclose(v[:p.T], expected_tuple[i][:p.T])
@@ -122,12 +124,13 @@ def test_get_G_ss(budget_balance, expected_G):
     net_revenue = 2.3
     pension_amount = 0.0
     TR = 1.6
+    UBI = 0.0
     new_borrowing = 0.072076633
     debt_service = 0.042345192
     p = Specifications()
     p.budget_balance = budget_balance
     test_G = fiscal.get_G_ss(
-        Y, net_revenue, pension_amount, TR, new_borrowing,
+        Y, net_revenue, pension_amount, TR, UBI, new_borrowing,
         debt_service, p)
 
     assert np.allclose(test_G, expected_G)
@@ -167,6 +170,7 @@ def test_get_TR(baseline, budget_balance, baseline_spending, method,
     TR = 1.5
     G = 0.0
     agg_pension_outlays = 0.0
+    UBI_outlays = 0.0
     total_tax_revenue = 1.9
     p = Specifications(baseline=baseline)
     p.budget_balance = budget_balance
@@ -176,7 +180,7 @@ def test_get_TR(baseline, budget_balance, baseline_spending, method,
         TR = np.ones(p.T * p.S) * TR
         total_tax_revenue = np.ones(p.T * p.S) * total_tax_revenue
     test_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue,
-                            agg_pension_outlays, p, method)
+                            agg_pension_outlays, UBI_outlays, p, method)
 
     assert np.allclose(test_TR, expected_TR)
 

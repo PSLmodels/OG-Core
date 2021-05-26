@@ -1040,6 +1040,103 @@
             }
         }
     },
+    "ubi_growthadj": {
+        "title": "Boolean indicator variable for whether or not to growth adjust universal basic income transfer",
+        "description": "Boolean indicator variable for whether or not to growth adjust universal basic income transfer.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "When this Boolean = True, the ubi_{j,s,t} matrix is stationary because it is multiplied by e^{g_y t} in the nonstationary household budget constraint. When this Boolean = False, the ubi_{j,s,t} is not multiplied by e^{g_y t} and the steady-state value is a matrix of zeros.",
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {
+            "when": {
+                "param": "g_y_annual",
+                "is": {"less_than": 0},
+                "then": {"choice": {"choices": [true]}},
+                "otherwise": {"choice": {"choices": [true, false]}}
+            }
+        }
+    },
+    "ubi_nom_017": {
+        "title": "Dollar (nominal) amount of universal basic income (UBI) per child age 0 through 17",
+        "description": "Dollar (nominal) amount of universal basic income (UBI) per child age 0 through 17.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "The universal basic income (UBI) per child ages 0 through 17 can range from $0 per year to $7,200 per year (max $600 per month).",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 7200.0
+            }
+        }
+    },
+    "ubi_nom_1864": {
+        "title": "Dollar (nominal) amount of universal basic income (UBI) per adult age 18 through 64",
+        "description": "Dollar (nominal) amount of universal basic income (UBI) per adult age 18 to 64.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "The universal basic income (UBI) per adult age 18 through 64 can range from $0 per year to $18,000 per year ($1,500 per month).",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 18000.0
+            }
+        }
+    },
+    "ubi_nom_65p": {
+        "title": "Dollar (nominal) amount of universal basic income (UBI) per adult age 65 and over",
+        "description": "Dollar (nominal) amount of universal basic income (UBI) per adult age 65 and over.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "The universal basic income (UBI) per adult age 65 and over can range from $0 per year to $12,000 per year ($1,000 per month).",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 12000.0
+            }
+        }
+    },
+    "ubi_nom_max": {
+        "title": "Maximum dollar (nominal) amount of universal basic income (UBI) per household when all UBI allowances are added up",
+        "description": "Maximum dollar (nominal) amount of universal basic income (UBI) per household when all UBI allowances are added up.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "The maximum dollar (nominal) amount of universal basic income (UBI) per household can range from $0 per year to $40,000 per year ($3,333 per month).",
+        "type": "float",
+        "value": [
+            {
+                "value": 40000.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 40000.0
+            }
+        }
+    },
     "eta": {
         "title": "Government transfer allocation",
         "description": "Matrix that allocated government transfers across households.",

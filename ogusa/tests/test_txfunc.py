@@ -394,67 +394,37 @@ def test_get_tax_rates(tax_func_type, rate_type, params,
     assert np.allclose(test_txrates, expected)
 
 
-# @pytest.mark.local
-# def test_tax_func_estimate(dask_client):
-#     '''
-#     Test txfunc.tax_func_loop() function.  The test is that given
-#     inputs from previous run, the outputs are unchanged.
-#     '''
-#     input_tuple = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data',
-#                      'tax_func_estimate_inputs.pkl'))
-#     (BW, S, starting_age, ending_age, beg_yr, baseline,
-#      analytical_mtrs, age_specific, reform, data, client,
-#      num_workers) = input_tuple
-#     tax_func_type = 'DEP'
-#     age_specific = False
-#     BW = 1
-#     test_dict = txfunc.tax_func_estimate(
-#         BW, S, starting_age, ending_age, start_year=beg_yr,
-#         baseline=baseline, analytical_mtrs=analytical_mtrs,
-#         tax_func_type=tax_func_type, age_specific=age_specific,
-#         reform=reform, data=data, client=dask_client,
-#         num_workers=NUM_WORKERS)
-#     expected_dict = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data',
-#                      'tax_func_estimate_outputs.pkl'))
-#     del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
-#     del test_dict['tfunc_time'], test_dict['taxcalc_version']
+@pytest.mark.local
+def test_tax_func_estimate(dask_client):
+    '''
+    Test txfunc.tax_func_loop() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_inputs.pkl'))
+    (BW, S, starting_age, ending_age, beg_yr, baseline,
+     analytical_mtrs, age_specific, reform, data, client,
+     num_workers) = input_tuple
+    tax_func_type = 'DEP'
+    age_specific = False
+    BW = 1
+    test_dict = txfunc.tax_func_estimate(
+        BW, S, starting_age, ending_age, start_year=beg_yr,
+        baseline=baseline, analytical_mtrs=analytical_mtrs,
+        tax_func_type=tax_func_type, age_specific=age_specific,
+        reform=reform, data=data, client=dask_client,
+        num_workers=NUM_WORKERS)
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_outputs.pkl'))
+    del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
+    del test_dict['tfunc_time'], test_dict['taxcalc_version']
 
-#     etr_old = expected_dict['tfunc_etr_params_S']
-#     etr_new = etr_old.copy()
-#     etr_new[:, :, 5] = etr_old[:, :, 6]
-#     etr_new[:, :, 6] = etr_old[:, :, 11]
-#     etr_new[:, :, 7] = etr_old[:, :, 5]
-#     etr_new[:, :, 8] = etr_old[:, :, 7]
-#     etr_new[:, :, 9] = etr_old[:, :, 8]
-#     etr_new[:, :, 10] = etr_old[:, :, 9]
-#     etr_new[:, :, 11] = etr_old[:, :, 10]
-#     mtrx_old = expected_dict['tfunc_mtrx_params_S']
-#     mtrx_new = mtrx_old.copy()
-#     mtrx_new[:, :, 5] = mtrx_old[:, :, 6]
-#     mtrx_new[:, :, 6] = mtrx_old[:, :, 11]
-#     mtrx_new[:, :, 7] = mtrx_old[:, :, 5]
-#     mtrx_new[:, :, 8] = mtrx_old[:, :, 7]
-#     mtrx_new[:, :, 9] = mtrx_old[:, :, 8]
-#     mtrx_new[:, :, 10] = mtrx_old[:, :, 9]
-#     mtrx_new[:, :, 11] = mtrx_old[:, :, 10]
-#     mtry_old = expected_dict['tfunc_mtry_params_S']
-#     mtry_new = mtry_old.copy()
-#     mtry_new[:, :, 5] = mtry_old[:, :, 6]
-#     mtry_new[:, :, 6] = mtry_old[:, :, 11]
-#     mtry_new[:, :, 7] = mtry_old[:, :, 5]
-#     mtry_new[:, :, 8] = mtry_old[:, :, 7]
-#     mtry_new[:, :, 9] = mtry_old[:, :, 8]
-#     mtry_new[:, :, 10] = mtry_old[:, :, 9]
-#     mtry_new[:, :, 11] = mtry_old[:, :, 10]
-#     expected_dict['tfunc_etr_params_S'] = etr_new
-#     expected_dict['tfunc_mtrx_params_S'] = mtrx_new
-#     expected_dict['tfunc_mtry_params_S'] = mtry_new
-
-#     for k, v in expected_dict.items():
-#         if isinstance(v, str):  # for testing tax_func_type object
-#             assert test_dict[k] == v
-#         else:  # for testing all other objects
-#             print('Max diff for ', k, ' = ', np.absolute(test_dict[k] - v).max())
-#             assert np.all(np.isclose(test_dict[k], v))
+    for k, v in expected_dict.items():
+        if isinstance(v, str):  # for testing tax_func_type object
+            assert test_dict[k] == v
+        else:  # for testing all other objects
+            print('Max diff for ', k, ' = ',
+                  np.absolute(test_dict[k] - v).max())
+            assert np.all(np.isclose(test_dict[k], v))

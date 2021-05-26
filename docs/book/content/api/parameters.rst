@@ -15,4 +15,4 @@ ogusa.parameters
 
 .. autoclass:: Specifications
   :members: initialize, compute_default_params, get_tax_function_parameters,
-    read_tax_func_estimate, default_parameters, update_specifications
+    read_tax_func_estimate, get_ubi_nom_objs, default_parameters, update_specifications
