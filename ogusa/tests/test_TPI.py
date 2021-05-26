@@ -485,7 +485,7 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     test_dict = TPI.run_TPI(p, None)
     # if filename == os.path.join(CUR_PATH, 'test_io_data',
     #                      'run_TPI_outputs_baseline_2.pkl'):
-    #     pickle.dump(test_dict, open(filename, 'wb'))
+    # pickle.dump(test_dict, open(filename, 'wb'))
     expected_dict = utils.safe_read_pickle(filename)
 
 

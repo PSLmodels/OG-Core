@@ -648,7 +648,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
 
     for k, v in expected_dict.items():
         print('Testing ', k)
-        assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
+        assert(np.allclose(test_dict[k], v, atol=1e-04, equal_nan=True))
 
 
 param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
