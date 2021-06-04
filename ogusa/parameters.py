@@ -270,7 +270,6 @@ class Specifications(paramtools.Parameters):
                 transfers in dollars for each type-j age-s household in every
                 period t
         '''
-        TpS = self.T + self.S
         # Get matrices of number of children 0-17, number of dependents 18-20,
         # number of adults 21-64, and number of seniors >= 65 from
         # OG-USA-Calibration package
@@ -278,32 +277,31 @@ class Specifications(paramtools.Parameters):
         ubi_num_1864_mat = 0.85 * np.ones((self.S, self.J))
         ubi_num_65p_mat = 0.15 * np.ones((self.S, self.J))
 
-        ubi_nom_array = np.zeros((TpS, self.S, self.J))
-
         # Calculate the UBI transfers to each household type in the first
         # period t=0
-        ubi_nom_mat_init = \
-            np.minimum(
-                (self.ubi_nom_017 * ubi_num_017_mat +
-                 self.ubi_nom_1864 * ubi_num_1864_mat +
-                 self.ubi_nom_65p * ubi_num_65p_mat), self.ubi_nom_max)
+        ubi_nom_init = np.tile(np.reshape(np.minimum(
+            (self.ubi_nom_017 * ubi_num_017_mat +
+             self.ubi_nom_1864 * ubi_num_1864_mat +
+             self.ubi_nom_65p * ubi_num_65p_mat), self.ubi_nom_max),
+            (1, self.S, self.J)), (self.T + self.S, 1, 1))
 
         # Calculate steady-state and transition path of stationary individual
         # household UBI payments and stationary aggregate UBI outlays
-        for t in range(TpS):
-            if self.ubi_growthadj or self.g_y_annual == 0:
-                # If ubi_growthadj=True or if g_y_annual<0, then ubi_arr is
-                # just a copy of the initial UBI matrix for T periods.
-                ubi_nom_mat = ubi_nom_mat_init
-            else:
-                # If ubi_growthadj=False, and g_y_annual>=0, then must divide
-                # by e^{g_y t} every period, then set the steady-state matrix
-                # to its value close to zero at t=T
-                if t <= self.T:
-                    ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * t)
-                else:  # periods where t > T
-                    ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * self.T)
-            ubi_nom_array[t, :, :] = ubi_nom_mat
+        if self.ubi_growthadj or self.g_y_annual == 0:
+            # If ubi_growthadj=True or if g_y_annual<0, then ubi_arr is
+            # just a copy of the initial UBI matrix for T periods.
+            ubi_nom_array = ubi_nom_init
+        else:
+            # If ubi_growthadj=False, and g_y_annual>=0, then must divide
+            # by e^{g_y t} every period, then set the steady-state matrix
+            # to its value close to zero at t=T
+            ubi_nom_array = np.zeros_like(ubi_nom_init)
+            discount_factor = np.exp(
+                self.g_y * np.linspace(0, self.T, self.T + 1))
+            ubi_nom_array[:self.T + 1, :, :] = (
+                ubi_nom_init[:self.T + 1, :, :] /
+                discount_factor.reshape(discount_factor.shape[0], 1, 1))
+            ubi_nom_array[self.T + 1:, :, :] = ubi_nom_array[self.T, :, :]
 
         return ubi_nom_array
 
