@@ -37,10 +37,40 @@ def test_compute_default_params():
     assert specs.alpha_G[10] == 1
 
 
-def test_get_ubi_nom_objs():
+param_updates1 = {
+    'T': 4, 'S': 3, 'J': 1, 'ubi_nom_017': 1000,
+    'eta': np.ones((4, 3, 1)) / 12, 'ubi_nom_1864': 1200,
+    'ubi_nom_65p': 400, 'ubi_growthadj': True}
+expected1 = np.ones((7, 3, 1)) * 2180
+param_updates2 = {
+    'T': 4, 'S': 3, 'J': 1, 'ubi_nom_017': 1000,
+    'eta': np.ones((4, 3, 1)) / 12, 'ubi_nom_1864': 1200,
+    'ubi_nom_max': 2000, 'ubi_nom_65p': 400, 'ubi_growthadj': True}
+expected2 = np.ones((7, 3, 1)) * 2000
+param_updates3 = {
+    'T': 4, 'S': 3, 'J': 1, 'ubi_nom_017': 1000,
+    'eta': np.ones((4, 3, 1)) / 12, 'ubi_nom_1864': 1200,
+    'ubi_nom_65p': 400, 'ubi_growthadj': False,
+    'g_y_annual': 0.03}
+expected3 = np.array([
+    [[2180], [2180.], [2180.]],
+    [[656.9250257], [656.9250257], [656.9250257]],
+    [[197.9589401], [197.9589401], [197.9589401]],
+    [[59.65329442], [59.65329442], [59.65329442]],
+    [[17.97602843], [17.97602843], [17.97602843]],
+    [[17.97602843], [17.97602843], [17.97602843]],
+    [[17.97602843], [17.97602843], [17.97602843]]])
+
+
+@pytest.mark.parametrize(
+    'param_updates, expected',
+    [(param_updates1, expected1), (param_updates2, expected2),
+     (param_updates3, expected3)],
+    ids=['UBI growth adj', 'UBI hit max', 'UBI no growth adj'])
+def test_get_ubi_nom_objs(param_updates, expected):
     spec = Specifications()
-    spec.update_specifications({'T': 4, 'S': 2, 'J': 1})
-    assert spec.ubi_nom_array == 1
+    spec.update_specifications(param_updates)
+    assert np.allclose(spec.ubi_nom_array, expected)
 
 
 def test_update_specifications_with_dict():
