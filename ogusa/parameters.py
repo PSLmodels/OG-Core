@@ -242,20 +242,19 @@ class Specifications(paramtools.Parameters):
             self.omega_S_preTP = self.omega_SS
 
         # Interpolate chi_n and create omega_SS_80 if necessary
-        elif self.S < 80 and len(self.chi_n) == 80:
-            self.age_midp_80 = np.linspace(20.5, 99.5, 80)
-            self.chi_n_interp = si.interp1d(self.age_midp_80,
-                                            np.squeeze(self.chi_n),
-                                            kind='cubic')
-            self.newstep = 80.0 / self.S
-            self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
-                                          100 - 0.5 * self.newstep,
-                                          self.S)
-            self.chi_n = self.chi_n_interp(self.age_midp_S)
+        # elif self.S < 80 and len(self.chi_n) == 80:
+        #     self.age_midp_80 = np.linspace(20.5, 99.5, 80)
+        #     self.chi_n_interp = si.interp1d(self.age_midp_80,
+        #                                     np.squeeze(self.chi_n),
+        #                                     kind='cubic')
+        #     self.newstep = 80.0 / self.S
+        #     self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
+        #                                   100 - 0.5 * self.newstep,
+        #                                   self.S)
+        #     self.chi_n = self.chi_n_interp(self.age_midp_S)
 
         # Create time series of stationarized UBI transfers
-        (self.ubi_nom_array, self.UBI_nom_vec, self.ubi_nom_SS,
-            self.UBI_nom_SS) = self.get_ubi_nom_objs()
+        self.ubi_nom_array = self.get_ubi_nom_objs()
 
     def get_ubi_nom_objs(self):
         '''
@@ -264,20 +263,14 @@ class Specifications(paramtools.Parameters):
         versions
 
         Args:
-            self: OG-USA parameters class object
+            self: OG-USA Specifications class object
 
         Returns:
             ubi_nom_array (array): T+S x S x J array time series of UBI
                 transfers in dollars for each type-j age-s household in every
                 period t
-            UBI_nom_vec (vector): (T+S) vector time series of aggregate UBI
-                expenditure in dollars
-            ubi_nom_SS (array): S x J matrix of UBI steady-state (long-run)
-                transfers in dollars for each type-j age-s household
-            UBI_nom_SS (scalar): value of UBI steady-state (long-run) total
-                expenditure in dollars
         '''
-        TpS = self.omega.shape[0]
+        TpS = self.T + self.S
         # Get matrices of number of children 0-17, number of dependents 18-20,
         # number of adults 21-64, and number of seniors >= 65 from
         # OG-USA-Calibration package
@@ -286,7 +279,6 @@ class Specifications(paramtools.Parameters):
         ubi_num_65p_mat = 0.15 * np.ones((self.S, self.J))
 
         ubi_nom_array = np.zeros((TpS, self.S, self.J))
-        UBI_nom_vec = np.zeros(TpS)
 
         # Calculate the UBI transfers to each household type in the first
         # period t=0
@@ -298,11 +290,10 @@ class Specifications(paramtools.Parameters):
 
         # Calculate steady-state and transition path of stationary individual
         # household UBI payments and stationary aggregate UBI outlays
-        lambdas_mat = np.tile(self.lambdas.reshape((1, self.J)), (self.S, 1))
         for t in range(TpS):
             if self.ubi_growthadj or self.g_y_annual == 0:
-                # If ubi_growthadj=True or if g_y_annual<0, then uib_arr is
-                # just a copy of the initial UBI mattrix for T periods.
+                # If ubi_growthadj=True or if g_y_annual<0, then ubi_arr is
+                # just a copy of the initial UBI matrix for T periods.
                 ubi_nom_mat = ubi_nom_mat_init
             else:
                 # If ubi_growthadj=False, and g_y_annual>=0, then must divide
@@ -313,13 +304,8 @@ class Specifications(paramtools.Parameters):
                 else:  # periods where t > T
                     ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * self.T)
             ubi_nom_array[t, :, :] = ubi_nom_mat
-            omega_mat = np.tile(self.omega[t, :].reshape((self.S, 1)),
-                                (1, self.J))
-            UBI_nom_vec[t] = (lambdas_mat * omega_mat * ubi_nom_mat).sum()
-        ubi_nom_SS = ubi_nom_array[self.T + 1, :, :]
-        UBI_nom_SS = UBI_nom_vec[self.T + 1]
 
-        return ubi_nom_array, UBI_nom_vec, ubi_nom_SS, UBI_nom_SS
+        return ubi_nom_array
 
     def update_specifications(self, revision, raise_errors=True):
         '''

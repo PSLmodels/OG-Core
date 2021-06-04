@@ -37,6 +37,12 @@ def test_compute_default_params():
     assert specs.alpha_G[10] == 1
 
 
+def test_get_ubi_nom_objs():
+    spec = Specifications()
+    spec.update_specifications({'T': 4, 'S': 2, 'J': 1})
+    assert spec.ubi_nom_array == 1
+
+
 def test_update_specifications_with_dict():
     spec = Specifications()
     new_spec_dict = {
