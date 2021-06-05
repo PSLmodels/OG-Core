@@ -395,7 +395,7 @@ def run_TPI(p, client=None):
 
     # Create time path of UBI household benefits and aggregate UBI outlays
     ubi = p.ubi_nom_array / factor
-    UBI = aggr.get_L(ubi, p, 'TPI')
+    UBI = aggr.get_L(ubi[:p.T], p, 'TPI')
 
     print('Government spending breakpoints are tG1: ', p.tG1,
           '; and tG2:', p.tG2)
