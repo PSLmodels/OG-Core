@@ -242,16 +242,16 @@ class Specifications(paramtools.Parameters):
             self.omega_S_preTP = self.omega_SS
 
         # Interpolate chi_n and create omega_SS_80 if necessary
-        # elif self.S < 80 and len(self.chi_n) == 80:
-        #     self.age_midp_80 = np.linspace(20.5, 99.5, 80)
-        #     self.chi_n_interp = si.interp1d(self.age_midp_80,
-        #                                     np.squeeze(self.chi_n),
-        #                                     kind='cubic')
-        #     self.newstep = 80.0 / self.S
-        #     self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
-        #                                   100 - 0.5 * self.newstep,
-        #                                   self.S)
-        #     self.chi_n = self.chi_n_interp(self.age_midp_S)
+        if self.S < 80 and len(self.chi_n) == 80:
+            self.age_midp_80 = np.linspace(20.5, 99.5, 80)
+            self.chi_n_interp = si.interp1d(self.age_midp_80,
+                                            np.squeeze(self.chi_n),
+                                            kind='cubic')
+            self.newstep = 80.0 / self.S
+            self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
+                                          100 - 0.5 * self.newstep,
+                                          self.S)
+            self.chi_n = self.chi_n_interp(self.age_midp_S)
 
         # Create time series of stationarized UBI transfers
         self.ubi_nom_array = self.get_ubi_nom_objs()
