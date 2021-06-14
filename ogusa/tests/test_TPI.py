@@ -11,7 +11,8 @@ from ogusa.parameters import Specifications
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
-TEST_PARAM_DICT = json.load(open(os.path.join(CUR_PATH, 'testing_params.json')))
+TEST_PARAM_DICT = json.load(
+    open(os.path.join(CUR_PATH, 'testing_params.json')))
 
 
 @pytest.fixture(scope="module")
@@ -410,10 +411,6 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                           (False, param_updates3, filename3)],
                          ids=['Baseline, balanced budget', 'Baseline',
                               'Reform'])
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [
-#                           (True, param_updates1, filename1)],
-#                          ids=['Baseline'])
 def test_run_TPI(baseline, param_updates, filename, tmp_path,
                  dask_client):
     '''
@@ -490,7 +487,6 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     #                      'run_TPI_outputs_baseline_2.pkl'):
     # pickle.dump(test_dict, open(filename, 'wb'))
     expected_dict = utils.safe_read_pickle(filename)
-
 
     for k, v in expected_dict.items():
         try:
