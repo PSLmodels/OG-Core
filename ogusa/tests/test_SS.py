@@ -1259,34 +1259,27 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates1, filename1),
-#                           (False, param_updates9, filename9),
-#                           (True, param_updates2, filename2),
-#                         #   (False, param_updates10, filename10),
-#                           (True, param_updates3, filename3),
-#                           (True, param_updates4, filename4),
-#                           (False, param_updates5, filename5),
-#                           (False, param_updates6, filename6),
-#                           (False, param_updates7, filename7),
-#                           (False, param_updates8, filename8),
-#                           (False, param_updates11, filename11)
-#                           ],
-#                          ids=['Baseline', 'Reform, baseline spending',
-#                               'Baseline, use zeta',
-#                             #   'Reform, baseline spending, use zeta',
-#                               'Baseline, small open',
-#                               'Baseline, small open use zeta',
-#                               'Reform', 'Reform, use zeta',
-#                               'Reform, small open',
-#                               'Reform, small open use zeta',
-#                               'Baseline, delta_tau=0'
-#                               ])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [
+                         [(True, param_updates1, filename1),
+                          (False, param_updates9, filename9),
+                          (True, param_updates2, filename2),
+                        #   (False, param_updates10, filename10),
+                          (True, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6),
+                          (False, param_updates7, filename7),
+                          (False, param_updates8, filename8),
                           (False, param_updates11, filename11)
                           ],
-                         ids=[
+                         ids=['Baseline', 'Reform, baseline spending',
+                              'Baseline, use zeta',
+                            #   'Reform, baseline spending, use zeta',
+                              'Baseline, small open',
+                              'Baseline, small open use zeta',
+                              'Reform', 'Reform, use zeta',
+                              'Reform, small open',
+                              'Reform, small open use zeta',
                               'Baseline, delta_tau=0'
                               ])
 @pytest.mark.local
@@ -1333,8 +1326,6 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
         p_base.mtry_params[p_base.BW:, :, :] = np.tile(np.transpose(
             dict_params['tfunc_mtry_params_S'][:p_base.S, -1, :].reshape(
                 p_base.S, 1, num_mtry_params), axes=[1, 0, 2]), (p_base.T - p_base.BW, 1, 1))
-        # p_base.get_tax_function_parameters(
-        #     None, run_micro=False, tax_func_path=tax_func_path_baseline)
         etr_params_old = p_base.etr_params
         mtrx_params_old = p_base.mtrx_params
         mtry_params_old = p_base.mtry_params
@@ -1369,10 +1360,6 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
             constants.BASELINE_DIR, "SS", "SS_vars.pkl")
         with open(ss_dir, "wb") as f:
             pickle.dump(base_ss_outputs, f)
-
-    # else:
-    #     dict_params = utils.safe_read_pickle(os.path.join(
-    #         CUR_PATH, 'TxFuncEst_baseline.pkl'))
     if baseline:
         dict_params = utils.safe_read_pickle(os.path.join(
             CUR_PATH, 'TxFuncEst_baseline.pkl'))
@@ -1442,16 +1429,10 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
     p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
 
-
-    # import cloudpickle
-    # param_dir = os.path.join(CUR_PATH, "new_run_SS_delta_tau0_params.pkl")
-    # with open(param_dir, "wb") as f:
-    #     cloudpickle.dump((p), f)
-
     test_dict = SS.run_SS(p, client=None)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
     for k, v in expected_dict.items():
-        print('Checking item = ', k)
+        # print('Checking item = ', k)
         assert(np.allclose(test_dict[k], v, atol=1e-04))
