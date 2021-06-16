@@ -411,6 +411,10 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                           (False, param_updates3, filename3)],
                          ids=['Baseline, balanced budget', 'Baseline',
                               'Reform'])
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [
+#                           (True, param_updates1, filename1)],
+#                          ids=['Baseline'])
 def test_run_TPI(baseline, param_updates, filename, tmp_path,
                  dask_client):
     '''
@@ -425,8 +429,10 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base,
                        client=dask_client, num_workers=NUM_WORKERS)
-    TEST_PARAM_DICT.update(param_updates)
-    p.update_specifications(TEST_PARAM_DICT)
+    test_dict = TEST_PARAM_DICT
+    test_dict.update(param_updates)
+    p.update_specifications(test_dict)
+    test_dict = {}
     p.maxiter = 2  # this test runs through just two iterations
     p.BW = 10
     dict_params = utils.safe_read_pickle(os.path.join(
@@ -460,12 +466,6 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
         dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
             p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T + p.S - p.BW, 1, 1))
 
-    # import cloudpickle
-    # param_dir = os.path.join(CUR_PATH, "new_tpi_run_baseline_params.pkl")
-    # with open(param_dir, "wb") as f:
-    #     cloudpickle.dump((p), f)
-
-
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
     ss_outputs = SS.run_SS(p, None)
@@ -483,11 +483,17 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
 
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, None)
-    # if filename == os.path.join(CUR_PATH, 'test_io_data',
-    #                      'run_TPI_outputs_baseline_2.pkl'):
-    # pickle.dump(test_dict, open(filename, 'wb'))
     expected_dict = utils.safe_read_pickle(filename)
 
+    if p.baseline and not p.budget_balance:
+        print('HIT area to save PARAMS')
+        import cloudpickle
+        # Save pickle with parameter values for the run
+        param_dir = os.path.join(CUR_PATH, "params_test_TPI_w3.pkl")
+        with open(param_dir, "wb") as f:
+            cloudpickle.dump((p), f)
+    print('BASEline = ', p.baseline, p.budget_balance)
+    assert False
     for k, v in expected_dict.items():
         try:
             assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04,
@@ -535,8 +541,9 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base,
                        client=dask_client, num_workers=NUM_WORKERS)
-    TEST_PARAM_DICT.update(param_updates)
-    p.update_specifications(TEST_PARAM_DICT)
+    test_dict = TEST_PARAM_DICT
+    test_dict.update(param_updates)
+    p.update_specifications(test_dict)
     p.maxiter = 2  # this test runs through just two iterations
     p.BW = 10
     dict_params = utils.safe_read_pickle(os.path.join(
