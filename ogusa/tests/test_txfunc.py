@@ -27,6 +27,7 @@ def decompress_pickle(file):
     data = pickle.load(data)
     return data
 
+
 @pytest.mark.parametrize('tax_func_type,expected',
                          [('DEP', 0.032749763), ('GS', 0.007952744)],
                          ids=['DEP', 'GS'])
@@ -394,37 +395,41 @@ def test_get_tax_rates(tax_func_type, rate_type, params,
     assert np.allclose(test_txrates, expected)
 
 
-# @pytest.mark.local
-# def test_tax_func_estimate(dask_client):
-#     '''
-#     Test txfunc.tax_func_loop() function.  The test is that given
-#     inputs from previous run, the outputs are unchanged.
-#     '''
-#     input_tuple = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data',
-#                      'tax_func_estimate_inputs.pkl'))
-#     (BW, S, starting_age, ending_age, beg_yr, baseline,
-#      analytical_mtrs, age_specific, reform, data, client,
-#      num_workers) = input_tuple
-#     tax_func_type = 'DEP'
-#     age_specific = False
-#     BW = 1
-#     test_dict = txfunc.tax_func_estimate(
-#         BW, S, starting_age, ending_age, start_year=beg_yr,
-#         baseline=baseline, analytical_mtrs=analytical_mtrs,
-#         tax_func_type=tax_func_type, age_specific=age_specific,
-#         reform=reform, data=data, client=dask_client,
-#         num_workers=NUM_WORKERS)
-#     expected_dict = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data',
-#                      'tax_func_estimate_outputs.pkl'))
-#     del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
-#     del test_dict['tfunc_time'], test_dict['taxcalc_version']
+@pytest.mark.local
+def test_tax_func_estimate(dask_client):
+    '''
+    Test txfunc.tax_func_loop() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_inputs.pkl'))
+    micro_data = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'micro_data_dict_for_tests.pkl'))
+    (BW, S, starting_age, ending_age, beg_yr, baseline,
+     analytical_mtrs, age_specific, reform, data, client,
+     num_workers) = input_tuple
+    tax_func_type = 'DEP'
+    age_specific = False
+    BW = 1
+    print('Begin and end years = ', beg_yr, BW)
+    print('Micro data keys = ', micro_data.keys())
+    test_dict = txfunc.tax_func_estimate(
+        micro_data, BW, S, starting_age, ending_age, start_year=2030,
+        baseline=baseline, analytical_mtrs=analytical_mtrs,
+        tax_func_type=tax_func_type, age_specific=age_specific,
+        reform=reform, data=data, client=dask_client,
+        num_workers=NUM_WORKERS)
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_outputs.pkl'))
+    del expected_dict['tfunc_time']
 
-#     for k, v in expected_dict.items():
-#         if isinstance(v, str):  # for testing tax_func_type object
-#             assert test_dict[k] == v
-#         else:  # for testing all other objects
-#             print('Max diff for ', k, ' = ',
-#                   np.absolute(test_dict[k] - v).max())
-#             assert np.all(np.isclose(test_dict[k], v))
+    for k, v in expected_dict.items():
+        if isinstance(v, str):  # for testing tax_func_type object
+            assert test_dict[k] == v
+        else:  # for testing all other objects
+            print('Max diff for ', k, ' = ',
+                  np.absolute(test_dict[k] - v).max())
+            assert np.all(np.isclose(test_dict[k], v))
