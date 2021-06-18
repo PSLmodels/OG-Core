@@ -949,7 +949,8 @@ def tax_func_estimate(micro_data, BW, S, starting_age, ending_age,
                       analytical_mtrs=False, tax_func_type='DEP',
                       age_specific=False, reform={}, data=None,
                       desc_data=False, graph_data=False,
-                      graph_est=False, client=None, num_workers=1):
+                      graph_est=False, client=None, num_workers=1,
+                      tax_func_path=None):
     '''
     This function performs analysis on the source data from Tax-
     Calculator and estimates functions for the effective tax rate (ETR),
@@ -957,6 +958,7 @@ def tax_func_estimate(micro_data, BW, S, starting_age, ending_age,
     capital income (MTRy).
 
     Args:
+        micro_data (dict): Dictionary of DataFrames with micro data
         BW (int): number of years in the budget window (the period
             over which tax policy is assumed to vary)
         S (int): number of model periods a model agent is economically
@@ -977,6 +979,8 @@ def tax_func_estimate(micro_data, BW, S, starting_age, ending_age,
         client (Dask client object): client
         num_workers (int): number of workers to use for parallelization
             with Dask
+        tax_func_path (str): path to save pickle with estimated tax
+            function parameters to
 
     Returns:
         dict_param (dict): dictionary with tax function parameters
@@ -1217,53 +1221,8 @@ def tax_func_estimate(micro_data, BW, S, starting_age, ending_age,
          ('tax_func_type', tax_func_type),
          ('start_year', start_year), ('BW', BW)])
 
+    if tax_func_path:
+        with open(tax_func_path, "wb") as f:
+            pickle.dump(dict_params, f)
+
     return dict_params
-
-
-def get_tax_func_estimate(BW, S, starting_age, ending_age,
-                          baseline=False, analytical_mtrs=False,
-                          tax_func_type='DEP', age_specific=False,
-                          start_year=DEFAULT_START_YEAR, reform={},
-                          guid='', tax_func_path=None, data=None,
-                          client=None, num_workers=1):
-    '''
-    This function calls the tax function estimation routine and saves
-    the resulting dictionary in pickle files corresponding to the
-    baseline or reform policy.
-
-    Args:
-        BW (int): number of years in the budget window (the period over
-            which tax policy is assumed to vary)
-        S (int): number of model periods a model agent is economically
-            active for
-        starting_age (int): minimum age to estimate tax functions for
-        ending_age (int): maximum age to estimate tax functions for
-        baseline (bool): whether these are the baseline tax functions
-        analytical_mtrs (bool): whether to use the analytical derivation
-            of the marginal tax rates (and thus only need to estimate
-            the effective tax rate functions)
-        tax_func_type (str): functional form of tax functions
-        age_specific (bool): whether to estimate age specific tax
-            functions
-        start_yr (int): first year of budget window
-        reform (dict): policy reform dictionary for Tax-Calculator
-        guid (str): id for the particular run
-        tax_func_path (str): path to save pickle with estimated tax
-            function parameters to
-        data (str or Pandas DataFrame): path to or data to use in
-            Tax-Calculator
-        client (Dask client object): client
-        num_workers (int): number of workers to use for parallelization
-            with Dask
-
-    Returns:
-        None
-
-    '''
-    dict_params = tax_func_estimate(
-        BW, S, starting_age, ending_age, start_year, baseline,
-        analytical_mtrs, tax_func_type, age_specific, reform, data=data,
-        client=client, num_workers=num_workers)
-
-    with open(tax_func_path, "wb") as f:
-        pickle.dump(dict_params, f)
