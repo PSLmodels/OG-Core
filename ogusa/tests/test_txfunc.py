@@ -1,4 +1,4 @@
-from ogusa import txfunc
+from ogusa import tax, txfunc
 from distributed import Client, LocalCluster
 import pytest
 import pandas as pd
@@ -413,14 +413,13 @@ def test_tax_func_estimate(dask_client):
     tax_func_type = 'DEP'
     age_specific = False
     BW = 1
-    print('Begin and end years = ', beg_yr, BW)
-    print('Micro data keys = ', micro_data.keys())
+    test_path = os.path.join(CUR_PATH, 'test_out.pkl')
     test_dict = txfunc.tax_func_estimate(
         micro_data, BW, S, starting_age, ending_age, start_year=2030,
         baseline=baseline, analytical_mtrs=analytical_mtrs,
         tax_func_type=tax_func_type, age_specific=age_specific,
         reform=reform, data=data, client=dask_client,
-        num_workers=NUM_WORKERS)
+        num_workers=NUM_WORKERS, tax_func_path=test_path)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))
