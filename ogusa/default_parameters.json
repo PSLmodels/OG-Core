@@ -3309,18 +3309,6 @@
             }
         }
     },
-    "taxcalc_version": {
-        "title": "Version of Tax-Calculator that was used to estimate tax function parameters.",
-        "description": "Version of Tax-Calculator that was used to estimate tax function parameters.",
-        "section_1": "Tax Functions",
-        "notes": "",
-        "type": "str",
-        "value": [
-            {
-                "value": "3.0.0"
-            }
-        ]
-    },
     "mean_income_data": {
         "title": "Mean income (in current dollars) from the microdata used for tax function estimation.",
         "description": "Mean income (in current dollars) from the microdata used for tax function estimation.",
