@@ -3,6 +3,7 @@ from distributed import Client, LocalCluster
 import pytest
 from ogusa import SS, TPI
 from ogusa.execute import runner
+from ogusa.parameters import Specifications
 import os
 import json
 
@@ -32,15 +33,16 @@ def dask_client():
 
 @pytest.mark.local
 def test_runner_baseline(dask_client):
-    runner(output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
-           time_path=True, baseline=True,
-           og_spec=TEST_PARAM_DICT, client=dask_client,
-           num_workers=NUM_WORKERS)
+    p = Specifications()
+    p.update_specifications(TEST_PARAM_DICT)
+    p.baseline_dir = p.output_base = BASELINE_DIR
+    runner(p, time_path=True, client=dask_client)
 
 
 @pytest.mark.local
 def test_runner_reform(dask_client):
-    runner(output_base=REFORM_DIR, baseline_dir=BASELINE_DIR,
-           time_path=False, baseline=False,
-           og_spec=TEST_PARAM_DICT, client=dask_client,
-           num_workers=NUM_WORKERS)
+    p = Specifications()
+    p.update_specifications(TEST_PARAM_DICT)
+    p.baseline_dir = BASELINE_DIR
+    p.output_base = REFORM_DIR
+    runner(p, time_path=False, client=dask_client)
