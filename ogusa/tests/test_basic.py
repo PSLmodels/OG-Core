@@ -33,10 +33,11 @@ def test_run_small(time_path, dask_client):
     TPI.ENFORCE_SOLUTION_CHECKS = False
     SS.MINIMIZER_TOL = 1e-6
     TPI.MINIMIZER_TOL = 1e-6
-    og_spec = TEST_PARAM_DICT
-    runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR,
-           time_path=time_path, baseline=True, og_spec=og_spec,
-           client=dask_client, num_workers=NUM_WORKERS)
+    p = Specifications(baseline=True, client=dask_client,
+                       num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
+                       output_base=OUTPUT_DIR)
+    p.update_specifications(TEST_PARAM_DICT)
+    runner(p, time_path=time_path, client=dask_client)
 
 
 @pytest.mark.local
