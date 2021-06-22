@@ -13,6 +13,7 @@ from taxcalc import Calculator
 from ogusa import output_tables as ot
 from ogusa import output_plots as op
 from ogusa.execute import runner
+from ogusa.parameters import Specifications
 from ogusa.constants import REFORM_DIR, BASELINE_DIR
 from ogusa.utils import safe_read_pickle
 
@@ -53,16 +54,18 @@ def main():
     Run baseline policy first
     ------------------------------------------------------------------------
     '''
-    tax_func_path = os.path.join(
-        CUR_DIR, '..', 'ogusa', 'data', 'tax_functions',
-        'TxFuncEst_baseline_CPS.pkl')  # use cached baseline estimates
-    kwargs = {'output_base': base_dir, 'baseline_dir': base_dir,
-              'time_path': True, 'baseline': True,
-              'og_spec': og_spec, 'guid': '_example',
-              'client': client, 'num_workers': num_workers}
+    p = Specifications(
+        baseline=True,
+        client=client,
+        num_workers=num_workers,
+        baseline_dir=base_dir,
+        output_base=base_dir,
+    )
+    # Update parameters for baseline from default json file
+    p.update_specifications(og_spec)
 
     start_time = time.time()
-    runner(**kwargs)
+    runner(p, time_path=True, client=client)
     print('run time = ', time.time()-start_time)
 
     '''
@@ -72,13 +75,18 @@ def main():
     '''
     # update the effective corporate income tax rate
     og_spec = og_spec.update({'cit_rate': [0.35]})
-    kwargs = {'output_base': reform_dir, 'baseline_dir': base_dir,
-              'time_path': True, 'baseline': False,
-              'og_spec': og_spec, 'guid': '_example',
-              'client': client, 'num_workers': num_workers}
+    p2 = Specifications(
+        baseline=False,
+        client=client,
+        num_workers=num_workers,
+        baseline_dir=base_dir,
+        output_base=reform_dir,
+    )
+    # Update parameters for baseline from default json file
+    p2.update_specifications(og_spec)
 
     start_time = time.time()
-    runner(**kwargs)
+    runner(p2, time_path=True, client=client)
     print('run time = ', time.time()-start_time)
 
     # return ans - the percentage changes in macro aggregates and prices

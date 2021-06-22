@@ -481,6 +481,13 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     expected_dict = utils.safe_read_pickle(filename)
 
     for k, v in expected_dict.items():
+        print('Max diff in ', k, ' = ')
+        try:
+            print(np.absolute(test_dict[k][:p.T] - v[:p.T]).max())
+        except ValueError:
+            print(np.absolute(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
+
+    for k, v in expected_dict.items():
         try:
             assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04,
                                atol=1e-04))
