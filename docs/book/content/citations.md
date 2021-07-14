@@ -1,4 +1,4 @@
-# Citations and use cases of OG-USA
+# Citations and use cases of OG-Core
 
 ```{bibliography} ../../../citations.bib
 :all :

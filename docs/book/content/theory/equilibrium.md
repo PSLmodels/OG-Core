@@ -1,7 +1,7 @@
 (Chap_Eqm)=
 # Equilibrium
 
-The equilibrium for the `OG-USA` model is broadly characterized as the solution to the model for all possible periods from the current period $t=1$ to infinity $t=\infty$. However, the solution algorithm for the equilibrium makes it useful to divide the equilibrium definition into two sub-definitions.
+The equilibrium for the `OG-Core` model is broadly characterized as the solution to the model for all possible periods from the current period $t=1$ to infinity $t=\infty$. However, the solution algorithm for the equilibrium makes it useful to divide the equilibrium definition into two sub-definitions.
 
 The first equilibrium definition we charactersize is the {ref}`SecSSeqlb`. This is really a long-run equilibrium concept. It is where the economy settles down after a large number of periods into the future. The distributions in the economy (e.g., population, wealth, labor supply) have settled down and remain constant from some future period $t=\bar{T}$ for the rest of time $t=\infty$.
 
@@ -10,7 +10,7 @@ The second equilibrium definition we characterize is the {ref}`SecNSSeqlb`. This
 (SecSSeqlb)=
 ## Stationary Steady-State Equilibirum
 
-In this section, we define the stationary steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_House` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-USA` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter {ref}`Chap_Demog`, and the potential for unbounded growth in government debt as described in Chapter {ref}`Chap_UnbalGBC`.
+In this section, we define the stationary steady-state equilibrium of the `OG-Core` model. Chapters {ref}`Chap_House` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in `OG-Core` comes from productivity growth $g_y$ in the production function {eq}`EqFirmsCESprodfun`, population growth $\tilde{g}_{n,t}$ as described in Chapter {ref}`Chap_Demog`, and the potential for unbounded growth in government debt as described in Chapter {ref}`Chap_UnbalGBC`.
 
 We implemented an automatic government budget closure rule using government spending $G_t$ as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in {eq}`EqUnbalGBCclosure_Gt`. And we showed in Chapter {ref}`Chap_Stnrz` how to stationarize all the other characterizing equations.
 
@@ -21,7 +21,7 @@ We first give a general definition of the steady-state (long-run) equilibrium of
 * Small open economy or partially/closed economy
 * Fixed baseline spending level or not
 
-In all of the specifications of `OG-USA`, we use a two-stage fixed point algorithm to solve for the equilibrium solution. The solution is mathematically characterized by $2JS$ equations and $2JS$ unknowns. The most straightforward and simple way to solve these equations would be a multidimensional root finder. However, because each of the equations is highly nonlinear and depends on all of the $2JS$ variables (low sparsity) and because the dimensionality $2JS$ is high, standard root finding methods are not tractable.
+In all of the specifications of `OG-Core`, we use a two-stage fixed point algorithm to solve for the equilibrium solution. The solution is mathematically characterized by $2JS$ equations and $2JS$ unknowns. The most straightforward and simple way to solve these equations would be a multidimensional root finder. However, because each of the equations is highly nonlinear and depends on all of the $2JS$ variables (low sparsity) and because the dimensionality $2JS$ is high, standard root finding methods are not tractable.
 
 Our approach is to choose the minimum number of macroeconomic variables in an outer loop in order to be able to solve the household's $2JS$ Euler equations in terms of only the $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ variables directly, holding all other variables constant. The household system of Euler equations has a provable root solution and is orders of magnitude more tractable (less nonlinear) to solve holding these outer loop variables constant.
 
@@ -39,7 +39,7 @@ We define a stationary steady-state equilibrium as the following.
 
 ```{admonition} **Definition: Stationary steady-state equilibrium**
 :class: note
-A non-autarkic stationary steady-state equilibrium in the `OG-USA` model is defined as constant allocations of stationary household labor supply $n_{j,s,t}=\bar{n}_{j,s}$ and savings $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ for all $j$, $t$, and $E+1\leq s\leq E+S$, and constant prices $\hat{w}_t=\bar{w}$ and $r_t=\bar{r}$ for all $t$ such that the following conditions hold:
+A non-autarkic stationary steady-state equilibrium in the `OG-Core` model is defined as constant allocations of stationary household labor supply $n_{j,s,t}=\bar{n}_{j,s}$ and savings $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ for all $j$, $t$, and $E+1\leq s\leq E+S$, and constant prices $\hat{w}_t=\bar{w}$ and $r_t=\bar{r}$ for all $t$ such that the following conditions hold:
 1. The population has reached its stationary steady-state distribution $\hat{\omega}_{s,t} = \bar{\omega}_s$ for all $s$ and $t$ as characterized in Section {ref}`SecDemogPopSSTP`,
 2. households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS`,
 3. firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
@@ -84,7 +84,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
     3. Given values $\bar{r}_{hh,a}$, $\bar{w}_a$ $\overline{BQ}^i$, $\overline{TR}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
-        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-USA` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` simultaneously for each $j$.
+        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` simultaneously for each $j$.
 
         ```{math}
         :label: EqSS_HHBC
@@ -209,13 +209,13 @@ The computational algorithm for solving for the steady-state follows the steps b
              &\qquad(1-\xi_{ss})\left(\bar{r}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)
            ```
 
-        3. Because the outer loop of the steady-state solution only has four variables, there are only four error functions to minimize or set to zero. We use a root-finder and its corresponding Newton method for the updating the guesses of the outer-loop variables because it works well and is faster than the bisection method described in the previous step. The `OG-USA` code has the option to use either the bisection method or the root fining method to updated the outer-loop variables. The root finding algorithm is generally faster but is less robust than the bisection method in the previous step.
+        3. Because the outer loop of the steady-state solution only has four variables, there are only four error functions to minimize or set to zero. We use a root-finder and its corresponding Newton method for the updating the guesses of the outer-loop variables because it works well and is faster than the bisection method described in the previous step. The `OG-Core` code has the option to use either the bisection method or the root fining method to updated the outer-loop variables. The root finding algorithm is generally faster but is less robust than the bisection method in the previous step.
 
 
 (SecSSeqlbResults)=
 ### Steady-state results: default specification
 
-  [TODO: Update the results in this section.] In this section, we use the baseline calibration described in Chapter {ref}`Chap_Calibr`, which includes the baseline tax law from `Tax-Calculator`, to show some steady-state results from `OG-USA`. Figures {numref}`FigSSeqlbHHcons`, {numref}`FigSSeqlbHHlab`, and {numref}`FigSSeqlbHHsave` show the household steady-state variables by age $s$ and lifetime income group $j$.
+  [TODO: Update the results in this section.] In this section, we use the baseline calibration described in Chapter {ref}`Chap_Calibr`, which includes the baseline tax law from `Tax-Calculator`, to show some steady-state results from `OG-Core`. Figures {numref}`FigSSeqlbHHcons`, {numref}`FigSSeqlbHHlab`, and {numref}`FigSSeqlbHHsave` show the household steady-state variables by age $s$ and lifetime income group $j$.
 
   ```{figure} ./images/HHcons_SS.png
   ---
@@ -294,7 +294,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 (SecNSSeqlb)=
 ## Stationary Non-steady-State Equilibrium
 
-  In this section, we define the stationary non-steady-state equilibrium of the `OG-USA` model. Chapters {ref}`Chap_House` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model in their non-stationarized form. And chapter {ref}`Chap_Stnrz` derives the stationarized versions of the characterizing equations. The steady-state equilibrium definition in Section {ref}`SecEqlbSSdef` defines the long-run equilibrium where the economy settles down after many periods. The non-steady-state equilibrium in this section describes the equilibrium in all periods from the current period to the steady-state. We will need the steady-state solution from Section {ref}`SecSSeqlb` to solve for the non-steady-state equilibrium transition path.
+  In this section, we define the stationary non-steady-state equilibrium of the `OG-Core` model. Chapters {ref}`Chap_House` through {ref}`Chap_MarkClr` derive the equations that characterize the equilibrium of the model in their non-stationarized form. And chapter {ref}`Chap_Stnrz` derives the stationarized versions of the characterizing equations. The steady-state equilibrium definition in Section {ref}`SecEqlbSSdef` defines the long-run equilibrium where the economy settles down after many periods. The non-steady-state equilibrium in this section describes the equilibrium in all periods from the current period to the steady-state. We will need the steady-state solution from Section {ref}`SecSSeqlb` to solve for the non-steady-state equilibrium transition path.
 
 
 (SecEqlbNSSdef)=
@@ -304,7 +304,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
   ```{admonition} **Definition: Stationary Non-steady-state functional equilibrium**
   :class: note
-  A non-autarkic non-steady-state functional equilibrium in the `OG-USA` model is defined as stationary allocation functions of the state $\bigl\{n_{j,s,t} = \phi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ and $\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ for all $j$ and $t$ and stationary price functions $\hat{w}(\boldsymbol{\hat{\Gamma}}_t)$ and $r(\boldsymbol{\hat{\Gamma}}_t)$ for all $t$ such that:
+  A non-autarkic non-steady-state functional equilibrium in the `OG-Core` model is defined as stationary allocation functions of the state $\bigl\{n_{j,s,t} = \phi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ and $\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}$ for all $j$ and $t$ and stationary price functions $\hat{w}(\boldsymbol{\hat{\Gamma}}_t)$ and $r(\boldsymbol{\hat{\Gamma}}_t)$ for all $t$ such that:
 
   1. Households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings as characterized in {eq}`EqBeliefs`, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
 

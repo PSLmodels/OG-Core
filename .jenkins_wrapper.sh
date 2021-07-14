@@ -4,7 +4,7 @@ from_config(){
 }
 from_config numpy_version
 from_config install_taxcalc_version
-from_config compare_ogusa_version
+from_config compare_ogcore_version
 from_config compare_taxcalc_version
 
 
@@ -14,18 +14,18 @@ bash miniconda.sh -b -p $WORKSPACE/miniconda
 export PATH="$WORKSPACE/miniconda/bin:$PATH"
 conda config --set always_yes yes --set changeps1 no
 conda update conda -n root
-conda env list | grep ogusa_env && conda env remove -n ogusa_env || echo Didnt have to remove env
+conda env list | grep ogcore_env && conda env remove -n ogcore_env || echo Didnt have to remove env
 conda install nomkl
-conda create --force -n ogusa_env python=2.7 nomkl
+conda create --force -n ogcore_env python=2.7 nomkl
 
-source activate ogusa_env
+source activate ogcore_env
 conda install --force yaml llvmlite enum34 funcsigs singledispatch libgfortran libpng openblas numba pytz pytest six toolz dateutil cycler scipy numpy=$numpy_version pyparsing pandas=0.18.1 matplotlib nomkl
 conda remove mkl mkl-service || echo didnt have to remove mkl mkl-service
 conda install --no-deps -c ospc taxcalc=$install_taxcalc_version --force
-if [ "$ogusainstallmethod" = "conda" ];then
-    conda install -c ospc ogusa=$ogusaversion
+if [ "$ogcoreinstallmethod" = "conda" ];then
+    conda install -c ospc ogcore=$ogcoreversion
 fi
-if [ "$ogusainstallmethod" = "git" ];then
+if [ "$ogcoreinstallmethod" = "git" ];then
     python setup.py install
 fi
 
@@ -40,4 +40,4 @@ stat puf.csv
 head -n 1 puf.csv
 md5sum puf.csv
 
-python run_reforms.py $reform $ogusabranch
+python run_reforms.py $reform $ogcorebranch

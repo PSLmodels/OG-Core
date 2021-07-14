@@ -1,20 +1,20 @@
 (Chap_TaxCalc)=
 # Tax Functions
 
-The government is not an optimizing agent in `OG-USA`. The government levies taxes on households, provides transfers to households, levies taxes on firms, spends resources on public goods, and makes rule-based adjustments to stabilize the economy in the long-run. The government can run budget deficits or surpluses in a given year and must, therefore, be able to accumulate debt or savings.
+The government is not an optimizing agent in `OG-Core`. The government levies taxes on households, provides transfers to households, levies taxes on firms, spends resources on public goods, and makes rule-based adjustments to stabilize the economy in the long-run. The government can run budget deficits or surpluses in a given year and must, therefore, be able to accumulate debt or savings.
 
-The government sector influences households through two terms in the budget constraint {eq}`EqHHBC`---government transfers $TR_{t}$ and through the total tax liability function $T_{s,t}$, which can be decomposed into the effective tax rate times total income {eq}`EqTaxCalcLiabETR`. In this chapter, we detail the household tax component of government activity $T_{s,t}$ in `OG-USA`, along with our method of incorporating detailed microsimulation data into a dynamic general equilibrium model.
+The government sector influences households through two terms in the budget constraint {eq}`EqHHBC`---government transfers $TR_{t}$ and through the total tax liability function $T_{s,t}$, which can be decomposed into the effective tax rate times total income {eq}`EqTaxCalcLiabETR`. In this chapter, we detail the household tax component of government activity $T_{s,t}$ in `OG-Core`, along with our method of incorporating detailed microsimulation data into a dynamic general equilibrium model.
 
 Incorporating realistic tax and incentive detail into a general equilibrium model is notoriously difficult for two reasons. First, it is impossible in a dynamic general equilibrium model to capture all of the dimensions of heterogeneity on which the real-world tax rate depends. For example, a household's tax liability in reality depends on filing status, number of dependents, many types of income, and some characteristics correlated with age. A good heterogeneous agent DGE model tries to capture the most important dimensions of heterogeneity, and necessarily neglects the other dimensions.
 
 The second difficulty in modeling realistic tax and incentive detail is the need for good microeconomic data on the individuals who make up the economy from which to simulate behavioral responses and corresponding tax liabilities and tax rates.
 
-`OG-USA` follows the method of {cite}`DeBackerEtAl:2019` of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into `OG-USA`.
+`OG-Core` follows the method of {cite}`DeBackerEtAl:2019` of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into `OG-Core`.
 
 (SecTaxCalcRateTheory)=
 ## Effective and Marginal Tax Rates
 
-  Before going into more detail regarding how we handle these two difficulties in `OG-USA`, we need to define some functions and make some notation. For notational simplicity, we will use the variable $x$ to summarize labor income, and we will use the variable $y$ to summarize capital income.
+  Before going into more detail regarding how we handle these two difficulties in `OG-Core`, we need to define some functions and make some notation. For notational simplicity, we will use the variable $x$ to summarize labor income, and we will use the variable $y$ to summarize capital income.
 
   ```{math}
   :label: EqTaxCalcLabInc
@@ -34,7 +34,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   Rearranging {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate ($ETR$) as total tax liability divided by unadjusted gross income, or rather, total tax liability as a percent of unadjusted gross income.
 
-  A marginal tax rate ($MTR$) is defined as the change in total tax liability from a small change income. In `OG-USA`, we differentiate between the marginal tax rate on labor income ($MTRx$) and the marginal tax rate on capital income ($MTRy$).
+  A marginal tax rate ($MTR$) is defined as the change in total tax liability from a small change income. In `OG-Core`, we differentiate between the marginal tax rate on labor income ($MTRx$) and the marginal tax rate on capital income ($MTRy$).
 
   ```{math}
   :label: EqTaxCalcMTRx
@@ -60,11 +60,11 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcMicro)=
 ## Microeconomic Data
 
-  For `OG-USA`, we use an open source microsimulation model called `Tax-Calculator` that uses microeconomic data on U.S. households from the Internal Revenue Service (IRS) Statistics of Income (SOI) Public Use File (PUF).[^taxcalc_note]  For users that have not paid for access to the Public Use File (PUF), `Tax-Calculator` has an option to use a CPS matched dataset that is publicly available free of charge that has the same general properties as the PUF.
+  For `OG-Core`, we use an open source microsimulation model called `Tax-Calculator` that uses microeconomic data on U.S. households from the Internal Revenue Service (IRS) Statistics of Income (SOI) Public Use File (PUF).[^taxcalc_note]  For users that have not paid for access to the Public Use File (PUF), `Tax-Calculator` has an option to use a CPS matched dataset that is publicly available free of charge that has the same general properties as the PUF.
 
-  `Tax-Calculator` starts with the underlying population microeconomic data, in which each observation is a filer with a population weight that renders the sample representative. It then processes the relevant income and demographic characteristics in order to calculate the tax liability of each individual, according to all the rich tax law of the United States tax code. `Tax-Calculator` can then calculate effective tax rates for all of these individuals, thereby creating a sample of how ETR's are related to other variables in our `OG-USA` model, such as total income $x + y$, labor income $x$, and capital income $y$. `Tax-Calculator` can also generate marginal tax rates by adding a dollar to each filer's income of a particular type and calculate how the filer's tax liability changes. This is a finite difference calculation of a derivative.
+  `Tax-Calculator` starts with the underlying population microeconomic data, in which each observation is a filer with a population weight that renders the sample representative. It then processes the relevant income and demographic characteristics in order to calculate the tax liability of each individual, according to all the rich tax law of the United States tax code. `Tax-Calculator` can then calculate effective tax rates for all of these individuals, thereby creating a sample of how ETR's are related to other variables in our `OG-Core` model, such as total income $x + y$, labor income $x$, and capital income $y$. `Tax-Calculator` can also generate marginal tax rates by adding a dollar to each filer's income of a particular type and calculate how the filer's tax liability changes. This is a finite difference calculation of a derivative.
 
-  Figure {numref}`FigTaxCalcETRtotinc` shows a scatter plot of $ETR$'s for 43-year-olds in 2017 and unadjusted gross income $x + y$. It is clear that $ETR$ is positively related to income. It is also clear that a significant number of filers have a negative $ETR$. We will discuss in Section {ref}`SecTaxCalcFuncs` the functional form `OG-USA` uses to best capture the main characteristics of these ETR data.
+  Figure {numref}`FigTaxCalcETRtotinc` shows a scatter plot of $ETR$'s for 43-year-olds in 2017 and unadjusted gross income $x + y$. It is clear that $ETR$ is positively related to income. It is also clear that a significant number of filers have a negative $ETR$. We will discuss in Section {ref}`SecTaxCalcFuncs` the functional form `OG-Core` uses to best capture the main characteristics of these ETR data.
 
   ```{figure} ../theory/images/Compare_ETR_functions.png
   ---
@@ -94,7 +94,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcFuncs_DEP)=
 ### Default Tax Functional Form
 
-  For the default option, `OG-USA` follows the approach of {cite}`DeBackerEtAl:2019` in using the following functional form to estimate tax functions for each age $s=E+1, E+2, ... E+S$ in each time period $t$. This option can be manually selected by setting the parameter `tax_func_type="DEP"`. Alternative specifications are outlined in Section {ref}`SecTaxCalcFuncs_Alt` below. Equation {eq}`EqTaxCalcTaxFuncForm` is written as a generic tax rate, but we use this same functional form for $ETR$'s, $MTRx$'s, and $MTRy$'s.
+  For the default option, `OG-Core` follows the approach of {cite}`DeBackerEtAl:2019` in using the following functional form to estimate tax functions for each age $s=E+1, E+2, ... E+S$ in each time period $t$. This option can be manually selected by setting the parameter `tax_func_type="DEP"`. Alternative specifications are outlined in Section {ref}`SecTaxCalcFuncs_Alt` below. Equation {eq}`EqTaxCalcTaxFuncForm` is written as a generic tax rate, but we use this same functional form for $ETR$'s, $MTRx$'s, and $MTRy$'s.
   ```{math}
   :label: EqTaxCalcTaxFuncForm
     \tau(x,y) = &\Bigl[\tau(x) + shift_x\Bigr]^\phi\Bigl[\tau(y) + shift_y\Bigr]^{1-\phi} + shift \\
@@ -233,15 +233,15 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   The underlying data can limit the number of tax functions that can be estimated. For example, we use the age of the primary filer from the PUF-CPS match to be equivalent to the age of the DGE model household. The DGE model we use allows for individuals up to age 100, however the data contain few primary filers with age above age 80. Because we cannot reliably estimate tax functions for $s>80$, we apply the tax function estimates for 80 year-olds to those with model ages 81 to 100. In the case certain ages below age 80 have too few observations to enable precise estimation of the model parameters, we use a linear interpolation method to find the values for those ages $21\leq s <80$ that cannot be precisely estimated. [^interpolation_note]
 
-  In `OG-USA`, we estimate the 12-parameter functional form {eq}`EqTaxCalcTaxFuncForm` using weighted nonlinear least squares to fit an effective tax rate function $(\tau^{etr}_{s,t})$, a marginal tax rate of labor income function $(\tau^{mtrx}_{s,t})$, and a marginal tax rate of capital income function $(\tau^{mtry}_{s,t})$ for each age $E+1\leq s\leq E+S$ and each of the first 10 years from the current period. [^param_note] That means we have to perform 2,400 estimations of 12 parameters each. Figure {numref}`FigTaxCalc3DvsPred` shows the predicted surfaces for $\tau^{etr}_{s=42,t=2017}$, $\tau^{mtrx}_{s=42,t=2017}$, and $\tau^{mtry}_{s=42,t=2017}$ along with the underlying scatter plot data from which those functions were estimated. {numref}`TabTaxCalcEst42` shows the estimated values of those functional forms.
+  In `OG-Core`, we estimate the 12-parameter functional form {eq}`EqTaxCalcTaxFuncForm` using weighted nonlinear least squares to fit an effective tax rate function $(\tau^{etr}_{s,t})$, a marginal tax rate of labor income function $(\tau^{mtrx}_{s,t})$, and a marginal tax rate of capital income function $(\tau^{mtry}_{s,t})$ for each age $E+1\leq s\leq E+S$ and each of the first 10 years from the current period. [^param_note] That means we have to perform 2,400 estimations of 12 parameters each. Figure {numref}`FigTaxCalc3DvsPred` shows the predicted surfaces for $\tau^{etr}_{s=42,t=2017}$, $\tau^{mtrx}_{s=42,t=2017}$, and $\tau^{mtry}_{s=42,t=2017}$ along with the underlying scatter plot data from which those functions were estimated. {numref}`TabTaxCalcEst42` shows the estimated values of those functional forms.
 
-  The full set of estimated values are calculated in the [`OG-USA/ogusa/txfunc.py`](https://github.com/open-source-economics/OG-USA/blob/master/ogusa/txfunc.py) module in the `OG-USA` repository. And the estimated values are stored in the [`TxFuncEst_baseline.pkl`](https://github.com/open-source-economics/OG-USA/blob/master/TxFuncEst_baseline.pkl) file.
+  The full set of estimated values are calculated in the [`OG-Core/ogcore/txfunc.py`](https://github.com/open-source-economics/OG-Core/blob/master/ogcore/txfunc.py) module in the `OG-Core` repository. And the estimated values are stored in the [`TxFuncEst_baseline.pkl`](https://github.com/open-source-economics/OG-Core/blob/master/TxFuncEst_baseline.pkl) file.
 
 
 (SecTaxCalcFuncs_Alt)=
 ### Alternative Functional Forms
 
-  In addition to the default option using tax functions of the form developed by {cite}`DeBackerEtAl:2019`, `OG-USA` also allows users to specify alternative tax functions.  Three alternatives are offered:
+  In addition to the default option using tax functions of the form developed by {cite}`DeBackerEtAl:2019`, `OG-Core` also allows users to specify alternative tax functions.  Three alternatives are offered:
 
   1. Functions as in {cite}`DeBackerEtAl:2019`, but where $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are functions of total income (i.e., $x+y$) and not labor and capital income separately.  Users can select this option by setting the parameter `tax_func_type="DEP_totalinc"`.
 
@@ -260,7 +260,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcFactor)=
 ## Factor Transforming Income Units
 
-  The tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are estimated based on current U.S. tax filer reported incomes in dollars. However, the consumption units of the `OG-USA` model are not in the same units as the real-world U.S. incomes data. For this reason, we have to transform the income by a $factor$ so that it is in the same units as the income data on which the tax functions were estimated.
+  The tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are estimated based on current U.S. tax filer reported incomes in dollars. However, the consumption units of the `OG-Core` model are not in the same units as the real-world U.S. incomes data. For this reason, we have to transform the income by a $factor$ so that it is in the same units as the income data on which the tax functions were estimated.
 
   The tax rate functions are each functions of capital income and labor income $\tau(x,y)$. In order to make the tax functions return accurate tax rates associated with the correct levels of income, we multiply the model income $x^m$ and $y^m$ by a $factor$ so that they are in the same units as the real-world U.S. income data $\tau(factor\times x^m, factor\times y^m)$. We define the $factor$ such that average steady-state household total income in the model times the $factor$ equals the U.S. data average total income.
 
@@ -274,7 +274,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcTfers)=
 ## Household Transfers
 
-  Total transfers to households by the government in a given period $t$ is $TR_t$. The percent of those transfers given to all households of age $s$ and lifetime income group $j$ is $\eta_{j,s}$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. `OG-USA` currently has the transfer distribution function set to distribute transfers uniformly among the population.
+  Total transfers to households by the government in a given period $t$ is $TR_t$. The percent of those transfers given to all households of age $s$ and lifetime income group $j$ is $\eta_{j,s}$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. `OG-Core` currently has the transfer distribution function set to distribute transfers uniformly among the population.
 
   ```{math}
   :label: EqTaxCalcEtajs

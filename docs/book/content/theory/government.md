@@ -2,7 +2,7 @@
 (Chap_UnbalGBC)=
 # Government
 
-In `OG-USA`, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.
+In `OG-Core`, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.
 
 
 (SecUnbalGBCrev)=
@@ -72,7 +72,7 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
 (SecRateWedge)=
 ## Interest Rate on Government Debt and Household Savings
 
-  Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt. Doing so helps to add realism by including a risk premium. `OG-USA` allows users to set an exogenous wedge between these two rates. The interest rate on government debt,
+  Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt. Doing so helps to add realism by including a risk premium. `OG-Core` allows users to set an exogenous wedge between these two rates. The interest rate on government debt,
 
   ```{math}
     :label: EqUnbalGBC_rate_wedge
@@ -108,7 +108,7 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
   where $\alpha_D$ is a scalar long-run value of the debt-to-GDP ratio. This long-run stability condition on the debt-to-GDP ratio clearly applies to the steady-state as well as any point in the time path for $t>T$.
 
 
-  The `OG-USA` model offers three different options for budget closure rules. Each rule uses some combination of changes in government spending on public goods $G_t$ and government transfers to households $TR_t$ to stabilize the debt-to-GDP ratio in the long-run.
+  The `OG-Core` model offers three different options for budget closure rules. Each rule uses some combination of changes in government spending on public goods $G_t$ and government transfers to households $TR_t$ to stabilize the debt-to-GDP ratio in the long-run.
 
   1. Change only government spending on public goods $G_t$.
   2. Change only government transfers to households $TR_t$.
@@ -192,7 +192,7 @@ In `OG-USA`, the government enters by levying taxes on households, providing tra
 (SecUnbalGBCcaveat)=
 ## Some Caveats and Alternatives
 
-`OG-USA` adjusts some combination of government spending $G_t$ and government transfers $TR_t$ as its closure rule instrument because of its simplicity and lack of distortionary effects. Since government spending does not enter into the household's utility function, its level does not affect the solution of the household problem. In contrast, government transfers do appear in the household budget constraint. However, household decisions do not individually affect the amount of transfers, thereby rendering government transfers as exogenous from the household's perspective. As an alternative, one could choose to adjust taxes to close the budget (or a combination of all of the government fiscal policy levers).
+`OG-Core` adjusts some combination of government spending $G_t$ and government transfers $TR_t$ as its closure rule instrument because of its simplicity and lack of distortionary effects. Since government spending does not enter into the household's utility function, its level does not affect the solution of the household problem. In contrast, government transfers do appear in the household budget constraint. However, household decisions do not individually affect the amount of transfers, thereby rendering government transfers as exogenous from the household's perspective. As an alternative, one could choose to adjust taxes to close the budget (or a combination of all of the government fiscal policy levers).
 
 There is no guarantee that any of our stated closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, or {eq}`EqUnbalGBCclosure_TRGt` is sufficient to stabilize the debt-to-GDP ratio in the long run. For large and growing deficits, the convex combination parameter $\rho_d$ might be too gradual, or the budget closure initial period $T_{G1}$ might be too far in the future, or the target debt-to-GDP ratio $\alpha_D$ might be too high. The existence of any of these problems might be manifest in the steady state computation stage. However, it is possible for the steady-state to exist, but for the time path to never reach it. These problems can be avoided by choosing conservative values for $T_{G1}$, $\rho_d$, and $\alpha_D$ that close the budget quickly.
 

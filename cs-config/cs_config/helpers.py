@@ -1,5 +1,5 @@
 """
-Functions used to help OG-USA configure to COMP
+Functions used to help OG-Core configure to COMP
 """
 try:
     import boto3

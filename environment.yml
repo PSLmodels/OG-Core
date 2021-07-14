@@ -1,4 +1,4 @@
-name: ogusa-dev
+name: ogcore-dev
 channels:
 - PSLmodels
 - conda-forge

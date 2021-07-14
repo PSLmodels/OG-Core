@@ -1,2 +1,2 @@
 #!/bin/bash -v
-diff ogusa_example_output.csv expected_ogusa_example_output.csv
+diff ogcore_example_output.csv expected_ogcore_example_output.csv

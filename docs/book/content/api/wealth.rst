@@ -5,10 +5,10 @@ Wealth Functions
 
 **Wealth**
 
-ogusa.wealth
+ogcore.wealth
 ------------------------------------------
 
-.. currentmodule:: ogusa.wealth
+.. currentmodule:: ogcore.wealth
 
-.. automodule:: ogusa.wealth
+.. automodule:: ogcore.wealth
   :members: get_wealth_data, compute_wealth_moments

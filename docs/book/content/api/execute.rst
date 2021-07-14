@@ -5,10 +5,10 @@ Model Execution Functions
 
 **Model Execution**
 
-ogusa.execute
+ogcore.execute
 ------------------------------------------
 
-.. currentmodule:: ogusa.execute
+.. currentmodule:: ogcore.execute
 
-.. automodule:: ogusa.execute
+.. automodule:: ogcore.execute
   :members: runner

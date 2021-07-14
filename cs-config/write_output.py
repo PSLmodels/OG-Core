@@ -1,8 +1,8 @@
 from cs_config import functions
 import cs_storage
 from cs_storage.screenshot import write_template
-from ogusa import utils
-from ogusa.parameters import Specifications
+from ogcore import utils
+from ogcore.parameters import Specifications
 import pickle
 import io
 
@@ -46,16 +46,16 @@ def run_model():
     meta_param_dict = {'year': [{'value': 2020}],
                        'data_source': [{'value': 'CPS'}],
                        'time_path': [{'value': True}]}
-    adjustment_dict = {'OG-USA Parameters': {
+    adjustment_dict = {'OG-Core Parameters': {
                                              'frisch': 0.39,
                                              'initial_debt_ratio': 1.1,
                                              'g_y_annual': 0.029,
                                              'tG1': 22},
                        'Tax-Calculator Parameters': {}}
     comp_dict = functions.run_model(meta_param_dict, adjustment_dict)
-    pickle.dump(comp_dict, open('ogusa_cs_test_dict.pkl', 'wb'))
+    pickle.dump(comp_dict, open('ogcore_cs_test_dict.pkl', 'wb'))
     s = io.StringIO(comp_dict['downloadable'][0]['data'])
-    with open('ogusa_test_output.csv', 'w') as f:
+    with open('ogcore_test_output.csv', 'w') as f:
         for line in s:
             f.write(line)
 

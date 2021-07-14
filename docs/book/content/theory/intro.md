@@ -1,11 +1,11 @@
 (Chap_Intro)=
 # Model Overview
 
-The overlapping generations model is a workhorse of dynamic fiscal analysis. `OG-USA` is dynamic in that households in the model make consumption, savings, and labor supply decisions based on their expectations over their entire lifetime, not just the current period. Because `OG-USA` is a general equilibrium model, behavioral changes by households and firms can cause macroeconomic variables and prices to adjust. This characteristic has recently become a required component of fiscal policy analysis in the United States.[^dynscore_note]
+The overlapping generations model is a workhorse of dynamic fiscal analysis. `OG-Core` is dynamic in that households in the model make consumption, savings, and labor supply decisions based on their expectations over their entire lifetime, not just the current period. Because `OG-Core` is a general equilibrium model, behavioral changes by households and firms can cause macroeconomic variables and prices to adjust. This characteristic has recently become a required component of fiscal policy analysis in the United States.[^dynscore_note]
 
 But the main characteristic that differentiates the overlapping generations model from other dynamic general equilibrium models is its realistic modeling of the finite lifetimes of individuals and the cross-sectional age heterogeneity that exists in the economy. One can make a strong case that age heterogeneity and income heterogeneity are two of the main sources of diversity that explain much of the behavior in which we are interested for policy analysis.
 
-`OG-USA` can be summarized as having the following characteristics.
+`OG-Core` can be summarized as having the following characteristics.
 
 * Households
     * overlapping generations of finitely lived households

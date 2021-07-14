@@ -8,7 +8,7 @@ jupytext:
 kernelspec:
   display_name: Python 3
   language: python
-  name: ogusa-dev
+  name: ogcore-dev
 ---
 
 (glue)=
@@ -17,14 +17,14 @@ kernelspec:
 
   [TODO: This chapter needs heavy updating. Would be nice to do something similar to API chapter. But it is also nice to have references and descriptions as in the table below.]
 
-  In this chapter, list the exogenous inputs to the model, options, and where the values come from (weak calibration vs. strong calibration). Point to the respective chapters for some of the inputs. Mention the code in [`default_parameters.json`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/default_parameters.json) and [`parameters.py`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/parameters.py).
+  In this chapter, list the exogenous inputs to the model, options, and where the values come from (weak calibration vs. strong calibration). Point to the respective chapters for some of the inputs. Mention the code in [`default_parameters.json`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json) and [`parameters.py`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/parameters.py).
 
   <!-- +++
-  ```{code-cell} ogusa-dev
+  ```{code-cell} ogcore-dev
   :tags: [hide-cell]
   from myst_nb import glue
-  import ogusa.parameter_tables as pt
-  from ogusa import Specifications
+  import ogcore.parameter_tables as pt
+  from ogcore import Specifications
   p = Specifications()
   table = pt.param_table(p, table_format=None, path=None)
   glue("param_table", table, display=False)

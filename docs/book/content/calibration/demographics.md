@@ -8,7 +8,7 @@ jupytext:
 kernelspec:
   display_name: Python 3
   language: python
-  name: ogusa-dev
+  name: ogcore-dev
 ---
 
 (glue)=
@@ -16,9 +16,9 @@ kernelspec:
 (Chap_Demog)=
 # Demographics
 
-We start the `OG-USA` section on modeling the household with a description of the demographics of the model. {cite}`Nishiyama:2015` and {cite}`DeBackerEtAl:2019` have recently shown that demographic dynamics are likely the biggest influence on macroeconomic time series, exhibiting more influence than fiscal variables or household preference parameters.
+We start the `OG-Core` section on modeling the household with a description of the demographics of the model. {cite}`Nishiyama:2015` and {cite}`DeBackerEtAl:2019` have recently shown that demographic dynamics are likely the biggest influence on macroeconomic time series, exhibiting more influence than fiscal variables or household preference parameters.
 
-In this chapter, we characterize the equations and parameters that govern the transition dynamics of the population distribution by age. In `OG-USA`, we take the approach of taking mortality rates and fertility rates from outside estimates. But we estimate our immigration rates as residuals using the mortality rates, fertility rates, and at least two consecutive periods of population distribution data. This approach makes sense if one modeling a country in which in one is not confident in the immigration rate data. If the country has good immigration data, then the immigration residual approach we describe below can be skipped.
+In this chapter, we characterize the equations and parameters that govern the transition dynamics of the population distribution by age. In `OG-Core`, we take the approach of taking mortality rates and fertility rates from outside estimates. But we estimate our immigration rates as residuals using the mortality rates, fertility rates, and at least two consecutive periods of population distribution data. This approach makes sense if one modeling a country in which in one is not confident in the immigration rate data. If the country has good immigration data, then the immigration residual approach we describe below can be skipped.
 
 We define $\omega_{s,t}$ as the number of households of age $s$ alive at time $t$. A measure $\omega_{1,t}$ of households is born in each period $t$ and live for up to $E+S$ periods, with $S\geq 4$.[^calibage_note] Households are termed ``youth'', and do not participate in market activity during ages $1\leq s\leq E$. The households enter the workforce and economy in period $E+1$ and remain in the workforce until they unexpectedly die or live until age $s=E+S$. We model the population with households age $s\leq E$ outside of the workforce and economy in order most closely match the empirical population dynamics.
 
@@ -56,7 +56,7 @@ We discuss the approach to estimating fertility rates $f_s$, mortality rates $\r
 (SecDemogFert)=
 ## Fertility rates
 
-  In `OG-USA`, we assume that the fertility rates for each age cohort $f_s$ are constant across time. However, this assumption is conceptually straightforward to relax. Our data for U.S. fertility rates by age come from {cite}`MartinEtAl:2015` National Vital Statistics Report, which is final fertility rate data for 2013. Figure {numref}`FigFertRates` shows the fertility-rate data and the estimated average fertility rates for $E+S=100$.
+  In `OG-Core`, we assume that the fertility rates for each age cohort $f_s$ are constant across time. However, this assumption is conceptually straightforward to relax. Our data for U.S. fertility rates by age come from {cite}`MartinEtAl:2015` National Vital Statistics Report, which is final fertility rate data for 2013. Figure {numref}`FigFertRates` shows the fertility-rate data and the estimated average fertility rates for $E+S=100$.
 
   ```{figure} ../theory/images/fert_rates.png
   ---
@@ -84,11 +84,11 @@ We discuss the approach to estimating fertility rates $f_s$, mortality rates $\r
   ```
 
   <!-- +++
-  ```{code-cell} ogusa-dev
+  ```{code-cell} ogcore-dev
   :tags: [hide-cell]
   from myst_nb import glue
-  import ogusa.parameter_plots as pp
-  from ogusa import Specifications
+  import ogcore.parameter_plots as pp
+  from ogcore import Specifications
   p = Specifications()
   fig = pp.plot_mort_rates(p)
   glue("mort_rates_plot", fig, display=False)
@@ -125,11 +125,11 @@ We discuss the approach to estimating fertility rates $f_s$, mortality rates $\r
   ```
 
   <!-- +++
-  ```{code-cell} ogusa-dev
+  ```{code-cell} ogcore-dev
   :tags: [hide-cell]
   from myst_nb import glue
-  import ogusa.parameter_plots as pp
-  from ogusa import Specifications
+  import ogcore.parameter_plots as pp
+  from ogcore import Specifications
   p = Specifications()
   fig = pp.plot_imm_rates(p)
   glue("imm_rates_plot", fig, display=False)

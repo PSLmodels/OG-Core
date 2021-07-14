@@ -8,7 +8,7 @@ jupytext:
 kernelspec:
   display_name: Python 3
   language: python
-  name: ogusa-dev
+  name: ogcore-dev
 ---
 
 (glue)=
@@ -16,7 +16,7 @@ kernelspec:
 # Households
 
 
-In this section, we describe what is arguably the most important economic agent in the `OG-USA` model: the household. We model households in `OG-USA` rather than individuals, because we want to abstract from the concepts of gender, marital status, and number of children. Furthermore, the household is the usual unit of account in tax data. Because `OG-USA` is primarily a fiscal policy model using U.S. data, it is advantageous to have the most granular unit of account be the household.
+In this section, we describe what is arguably the most important economic agent in the `OG-Core` model: the household. We model households in `OG-Core` rather than individuals, because we want to abstract from the concepts of gender, marital status, and number of children. Furthermore, the household is the usual unit of account in tax data. Because `OG-Core` is primarily a fiscal policy model using U.S. data, it is advantageous to have the most granular unit of account be the household.
 
 (SecHHBC)=
 ## Budget Constraint
@@ -37,7 +37,7 @@ In this section, we describe what is arguably the most important economic agent 
 
   The last three terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with government transfers, universal basic income transfer, and taxes, respectively. $TR_{t}$ is total government transfers to households in period $t$ and $\eta_{j,s,t}$ is the percent of those transfers that go to households of age $s$ and lifetime income group $j$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. This term is divided by the population of type $(j,s)$ households. We assume government transfers to be lump sum, so they do not create any direct distortions to household decisions.
 
-  The term $ubi_{j,s,t}$ the time series of a matrix of universal basic income (UBI) transfers by lifetime income group $j$ and age group $s$ in each period $t$. There is a specification where the time series of this matrix is stationary (growth adjusted) and a specification in which it's stationary value is going to zero in the limit (non-growth-adjusted). Chapter {ref}`Chap_UBI` in the Calibration section of this documentation describes the exact way in which this matrix is calibrated from the values of five parameters, household composition data, and OG-USA's demographics. Similar to the transfers term $TR_{t}$, the UBI transfers will not be distortionary.
+  The term $ubi_{j,s,t}$ the time series of a matrix of universal basic income (UBI) transfers by lifetime income group $j$ and age group $s$ in each period $t$. There is a specification where the time series of this matrix is stationary (growth adjusted) and a specification in which it's stationary value is going to zero in the limit (non-growth-adjusted). Chapter {ref}`Chap_UBI` in the Calibration section of this documentation describes the exact way in which this matrix is calibrated from the values of five parameters, household composition data, and OG-Core's demographics. Similar to the transfers term $TR_{t}$, the UBI transfers will not be distortionary.
 
   The term $T_{s,t}$ is the total tax liability of the household. In contrast to government transfers $tr_{j,s,t}$, tax liability can be a function of labor income $(x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t})$ and capital income $(y_{j,s,t}\equiv r_{hh,t} b_{j,s,t})$. The tax liability can, therefore, be a distortionary influence on household decisions. It becomes valuable to represent total tax liability as an effective tax rate $\tau^{etr}$ multiplied by total income,
 
@@ -53,7 +53,7 @@ In this section, we describe what is arguably the most important economic agent 
 (SecHHellipUtil)=
 ## Elliptical Disutility of Labor Supply
 
-  In `OG-USA`, the period utility function of each household is a function of consumption $c_{j,s,t}$, savings $b_{j,s+1,t+1}$, and labor supply $n_{j,s,t}$.[^sav_util_note] We detail this utility function, its justification, and functional form in Section {ref}`SecHHeulers`. With endogenous labor supply $n_{j,s,t}$, we must specify how labor enters an agent's utility function and what are the constraints. Assume that each household is endowed with a measure of time $\tilde{l}$ each period that it can choose to spend as either labor $n_{j,s,t}\in[0,\tilde{l}]$ or leisure $l_{j,s,t}\in[0,\tilde{l}]$.
+  In `OG-Core`, the period utility function of each household is a function of consumption $c_{j,s,t}$, savings $b_{j,s+1,t+1}$, and labor supply $n_{j,s,t}$.[^sav_util_note] We detail this utility function, its justification, and functional form in Section {ref}`SecHHeulers`. With endogenous labor supply $n_{j,s,t}$, we must specify how labor enters an agent's utility function and what are the constraints. Assume that each household is endowed with a measure of time $\tilde{l}$ each period that it can choose to spend as either labor $n_{j,s,t}\in[0,\tilde{l}]$ or leisure $l_{j,s,t}\in[0,\tilde{l}]$.
 
   ```{math}
   :label: EqLabConstr
@@ -63,11 +63,11 @@ In this section, we describe what is arguably the most important economic agent 
   The functional form for the utility of leisure or the disutility of labor supply has important implications for the computational tractability of the model. One difference of the household's labor supply decision $n_{j,s,t}$ from the consumption decision $c_{j,s,t}$ is that the consumption decision only has a lower bound $c_{j,s,t}\geq 0$ whereas the labor supply decision has both upper and lower bounds $n_{j,s,t}\in[0,\tilde{l}]$. {cite}`EvansPhillips:2017` show that many of the traditional functional forms for the disutility of labor---Cobb-Douglas, constant Frisch elasticty, constant relative risk aversion (CRRA)---do not have Inada conditions on both the upper and lower bounds of labor supply. To solve these in a heterogeneous agent model would require occasionally binding constraints, which is a notoriously difficult computational problem.
 
   +++
-  ```{code-cell} ogusa-dev
+  ```{code-cell} ogcore-dev
   :tags: [hide-cell]
   from myst_nb import glue
-  import ogusa.parameter_plots as pp
-  from ogusa import Specifications
+  import ogcore.parameter_plots as pp
+  from ogcore import Specifications
   p = Specifications()
   p.update_specifications({'frisch': 0.6})
   fig = pp.plot_elliptical_u(p)
@@ -83,7 +83,7 @@ In this section, we describe what is arguably the most important economic agent 
   Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted elliptical utility
   ```
 
-  {cite}`EvansPhillips:2017` propose using an equation for an ellipse to match the disutility of labor supply to whatever traditional functional form one wants. Our preferred specification in `OG-USA` is to fit an elliptical disutility of labor supply function to approximate a linearly separable constant Frisch elasticity (CFE) functional form. Let $v(n)$ be a general disutility of labor function. A CFE disutility of labor function is the following,
+  {cite}`EvansPhillips:2017` propose using an equation for an ellipse to match the disutility of labor supply to whatever traditional functional form one wants. Our preferred specification in `OG-Core` is to fit an elliptical disutility of labor supply function to approximate a linearly separable constant Frisch elasticity (CFE) functional form. Let $v(n)$ be a general disutility of labor function. A CFE disutility of labor function is the following,
 
   ```{math}
   :label: EqCFE
@@ -191,9 +191,9 @@ In this section, we describe what is arguably the most important economic agent 
 
   [^sav_util_note]: Savings enters the period utility function to provide a "warm glow" bequest motive.
 
-  [^frisch_note]: {cite}`Peterman:2016` shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor---such as `OG-USA`---a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates---which include both extensive and intensive margin agents---are observed.
+  [^frisch_note]: {cite}`Peterman:2016` shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor---such as `OG-Core`---a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates---which include both extensive and intensive margin agents---are observed.
 
-  [^mort_rates_note]: See Section {ref}`SecDemogMort` of Chapter {ref}`Chap_Demog` for a detailed discussion of mortality rates in `OG-USA`.
+  [^mort_rates_note]: See Section {ref}`SecDemogMort` of Chapter {ref}`Chap_Demog` for a detailed discussion of mortality rates in `OG-Core`.
 
   [^constraint_note]: It is important to note that savings also has an implicit upper bound $b_{j,s,t}\leq k$ above which consumption would be negative in current period. However, this upper bound on savings in taken care of by the Inada condition on consumption.
 

@@ -1,5 +1,5 @@
 '''
-Example script for setting policy and running OG-USA.
+Example script for setting policy and running OG-Core.
 '''
 
 # import modules
@@ -10,12 +10,12 @@ import numpy as np
 import os
 import taxcalc
 from taxcalc import Calculator
-from ogusa import output_tables as ot
-from ogusa import output_plots as op
-from ogusa.execute import runner
-from ogusa.parameters import Specifications
-from ogusa.constants import REFORM_DIR, BASELINE_DIR
-from ogusa.utils import safe_read_pickle
+from ogcore import output_tables as ot
+from ogcore import output_plots as op
+from ogcore.execute import runner
+from ogcore.parameters import Specifications
+from ogcore.constants import REFORM_DIR, BASELINE_DIR
+from ogcore.utils import safe_read_pickle
 
 
 def main():
@@ -112,7 +112,7 @@ def main():
     print("total time was ", (time.time() - run_start_time))
     print('Percentage changes in aggregates:', ans)
     # save percentage change output to csv file
-    ans.to_csv('ogusa_example_output.csv')
+    ans.to_csv('ogcore_example_output.csv')
     client.close()
 
 

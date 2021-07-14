@@ -8,7 +8,7 @@ jupytext:
 kernelspec:
   display_name: Python 3
   language: python
-  name: ogusa-dev
+  name: ogcore-dev
 ---
 
 (glue)=
@@ -16,9 +16,9 @@ kernelspec:
 (Chap_LfEarn)=
 # Lifetime Earnings Profiles
 
-Among households in `OG-USA`, we model both age heterogeneity and within-age ability heterogeneity. We use this ability or productivity heterogeneity to generate the income heterogeneity that we see in the data.
+Among households in `OG-Core`, we model both age heterogeneity and within-age ability heterogeneity. We use this ability or productivity heterogeneity to generate the income heterogeneity that we see in the data.
 
-Differences among workers' productivity in terms of ability is one of the key dimensions of heterogeneity to model in a micro-founded macroeconomy. In this chapter, we characterize this heterogeneity as deterministic lifetime productivity paths to which new cohorts of agents in the model are randomly assigned. In `OG-USA`, households' labor income comes from the equilibrium wage and the agent's endogenous quantity of labor supply. In this section, we augment the labor income expression with an individual productivity $e_{j,s}$, where $j$ is the index of the ability type or path of the individual and $s$ is the age of the individual with that ability path.
+Differences among workers' productivity in terms of ability is one of the key dimensions of heterogeneity to model in a micro-founded macroeconomy. In this chapter, we characterize this heterogeneity as deterministic lifetime productivity paths to which new cohorts of agents in the model are randomly assigned. In `OG-Core`, households' labor income comes from the equilibrium wage and the agent's endogenous quantity of labor supply. In this section, we augment the labor income expression with an individual productivity $e_{j,s}$, where $j$ is the index of the ability type or path of the individual and $s$ is the age of the individual with that ability path.
 
 ```{math}
 :label: EqTaxCalcLabInc
@@ -38,11 +38,11 @@ Exogenous life cycle income ability paths $\log(e_{j,s})$ with $S=80$ and $J=7$
 ```
 
 <!-- +++
-```{code-cell} ogusa-dev
+```{code-cell} ogcore-dev
 :tags: [hide-cell]
 from myst_nb import glue
-import ogusa.parameter_plots as pp
-from ogusa import Specifications
+import ogcore.parameter_plots as pp
+from ogcore import Specifications
 p = Specifications()
 fig = pp.plot_ability_profiles(p)
 glue("earnings_profiles", fig, display=False)
@@ -477,7 +477,7 @@ Significant at the 1 percent level (*p* &lt; 0.01). -->
 
 ## Income at the very top
 
-In addition to lifecycle profiles of the seven percentile groups above, `OG-USA` has calibrations of income at the very top.  This includes breaking out percentiles at fine as the top 0.01% of earners.  The two alternative $\lambda$ vectors are $\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.001]$ and $\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.0009, 0.0001]$.
+In addition to lifecycle profiles of the seven percentile groups above, `OG-Core` has calibrations of income at the very top.  This includes breaking out percentiles at fine as the top 0.01% of earners.  The two alternative $\lambda$ vectors are $\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.001]$ and $\lambda_{j}=[0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.0009, 0.0001]$.
 
 Because we do not have panel data that allow us to observe such top percentile groups, we make the following assumptions in calibrating income at the very top.  First, we assume the shape of the lifecycle profile of these top earners is the same as the top 1% overall.  Second, we 2018 estimates from the methodology of {cite}`PikettySaez:2003` to provide factors to scale earnings process we estimate for groups inside the top 1%.[^PS_note]
 

@@ -1,10 +1,10 @@
 format: jb-book
 root: content/intro/intro
 parts:
-- caption: Contributing to OG-USA
+- caption: Contributing to OG-Core
   chapters:
   - file: content/contributing/contributor_guide
-- caption: OG-USA API
+- caption: OG-Core API
   chapters:
   - file: content/api/public_api
     sections:
@@ -26,7 +26,7 @@ parts:
     - file: content/api/txfunc
     - file: content/api/utils
     - file: content/api/wealth
-- caption: OG-USA Theory
+- caption: OG-Core Theory
   chapters:
   - file: content/theory/intro
   - file: content/theory/households
@@ -52,6 +52,6 @@ parts:
 - caption: References
   chapters:
   - file: content/theory/references
-- caption: Citations of OG-USA
+- caption: Citations of OG-Core
   chapters:
   - file: content/citations

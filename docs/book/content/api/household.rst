@@ -5,11 +5,11 @@ Household Functions
 
 **Household Functions**
 
-ogusa.household
+ogcore.household
 ------------------------------------------
 
-.. currentmodule:: ogusa.household
+.. currentmodule:: ogcore.household
 
-.. automodule:: ogusa.household
+.. automodule:: ogcore.household
   :members: marg_ut_cons, marg_ut_labor, get_bq, get_tr, get_cons, FOC_savings,
     FOC_labor, get_y, constraint_checker_SS, constraint_checker_TPI

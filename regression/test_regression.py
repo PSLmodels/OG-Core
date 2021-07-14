@@ -1,4 +1,4 @@
-from ogusa.utils import safe_read_pickle
+from ogcore.utils import safe_read_pickle
 import numpy as np
 import pytest
 import os
@@ -19,7 +19,7 @@ REFORM = os.path.join(CURDIR, 'OUTPUT_REFORM_{ref_idx}')
 @pytest.fixture(scope="module", params=REF_IDXS)
 def macro_outputs(request):
     '''
-    This function needs to be updated to work with ogusa.output_tables
+    This function needs to be updated to work with ogcore.output_tables
     ( or read in output some other way for these regression tests).
     '''
     # (pct_changes,

@@ -1,9 +1,9 @@
-import ogusa
-from ogusa.parameters import Specifications
-from ogusa.constants import REFORM_DIR, BASELINE_DIR, DEFAULT_START_YEAR
-from ogusa import output_plots as op
-from ogusa import output_tables as ot
-from ogusa import SS, TPI, utils
+import ogcore
+from ogcore.parameters import Specifications
+from ogcore.constants import REFORM_DIR, BASELINE_DIR, DEFAULT_START_YEAR
+from ogcore import output_plots as op
+from ogcore import output_tables as ot
+from ogcore import SS, TPI, utils
 import os
 import io
 import pickle
@@ -72,21 +72,21 @@ def get_version():
 def get_inputs(meta_param_dict):
     meta_params = MetaParams()
     meta_params.adjust(meta_param_dict)
-    # Set default OG-USA parameters
-    ogusa_params = Specifications()
-    ogusa_params.start_year = meta_params.year
-    filtered_ogusa_params = OrderedDict()
+    # Set default OG-Core parameters
+    ogcore_params = Specifications()
+    ogcore_params.start_year = meta_params.year
+    filtered_ogcore_params = OrderedDict()
     filter_list = [
         'chi_n_80', 'chi_b', 'eta', 'zeta', 'constant_demographics',
         'ltilde', 'use_zeta', 'constant_rates', 'zero_taxes',
         'analytical_mtrs', 'age_specific', 'gamma', 'epsilon',
         'start_year']
-    for k, v in ogusa_params.dump().items():
+    for k, v in ogcore_params.dump().items():
         if ((k not in filter_list) and
             (v.get("section_1", False) != "Model Solution Parameters")
             and (v.get("section_2", False) != "Model Dimensions")):
-            filtered_ogusa_params[k] = v
-            print('filtered ogusa = ', k)
+            filtered_ogcore_params[k] = v
+            print('filtered ogcore = ', k)
     # Set default TC params
     iit_params = TCParams()
     iit_params.set_state(year=meta_params.year.tolist())
@@ -96,7 +96,7 @@ def get_inputs(meta_param_dict):
             filtered_iit_params[k] = v
 
     default_params = {
-        "OG-USA Parameters": filtered_ogusa_params,
+        "OG-Core Parameters": filtered_ogcore_params,
         "Tax-Calculator Parameters": filtered_iit_params
     }
 
@@ -107,10 +107,10 @@ def get_inputs(meta_param_dict):
 
 
 def validate_inputs(meta_param_dict, adjustment, errors_warnings):
-    # ogusa doesn't look at meta_param_dict for validating inputs.
+    # ogcore doesn't look at meta_param_dict for validating inputs.
     params = Specifications()
-    params.adjust(adjustment["OG-USA Parameters"], raise_errors=False)
-    errors_warnings["OG-USA Parameters"]["errors"].update(
+    params.adjust(adjustment["OG-Core Parameters"], raise_errors=False)
+    errors_warnings["OG-Core Parameters"]["errors"].update(
         params.errors)
     # Validate TC parameter inputs
     pol_params = {}
@@ -129,7 +129,7 @@ def validate_inputs(meta_param_dict, adjustment, errors_warnings):
 
 def run_model(meta_param_dict, adjustment):
     '''
-    Initializes classes from OG-USA that compute the model under
+    Initializes classes from OG-Core that compute the model under
     different policies.  Then calls function get output objects.
     '''
     print('Meta_param_dict = ', meta_param_dict)
@@ -167,19 +167,19 @@ def run_model(meta_param_dict, adjustment):
     run_micro = True
     time_path = meta_param_dict['time_path'][0]['value']
 
-    # filter out OG-USA params that will not change between baseline and
+    # filter out OG-Core params that will not change between baseline and
     # reform runs (these are the non-policy parameters)
-    filtered_ogusa_params = {}
+    filtered_ogcore_params = {}
     constant_param_set = {
         'frisch', 'beta_annual', 'sigma', 'g_y_annual', 'gamma',
         'epsilon', 'Z', 'delta_annual', 'small_open', 'world_int_rate',
         'initial_debt_ratio', 'initial_foreign_debt_ratio', 'zeta_D',
         'zeta_K', 'tG1', 'tG2', 'rho_G', 'debt_ratio_ss',
         'budget_balance'}
-    filtered_ogusa_params = OrderedDict()
-    for k, v in adjustment['OG-USA Parameters'].items():
+    filtered_ogcore_params = OrderedDict()
+    for k, v in adjustment['OG-Core Parameters'].items():
         if k in constant_param_set:
-            filtered_ogusa_params[k] = v
+            filtered_ogcore_params[k] = v
 
     # Solve baseline model
     start_year = meta_param_dict['year'][0]['value']
@@ -195,7 +195,7 @@ def run_model(meta_param_dict, adjustment):
     base_spec = {
         **{'start_year': start_year,
            'tax_func_type': 'DEP',
-           'age_specific': False}, **filtered_ogusa_params}
+           'age_specific': False}, **filtered_ogcore_params}
     base_params = Specifications(
         run_micro=False, output_base=base_dir, baseline_dir=base_dir,
         test=False, time_path=False, baseline=True, iit_reform={},
@@ -218,7 +218,7 @@ def run_model(meta_param_dict, adjustment):
 
     # Solve reform model
     reform_spec = base_spec
-    reform_spec.update(adjustment["OG-USA Parameters"])
+    reform_spec.update(adjustment["OG-Core Parameters"])
     reform_params = Specifications(
         run_micro=False, output_base=reform_dir,
         baseline_dir=base_dir, test=False, time_path=time_path,

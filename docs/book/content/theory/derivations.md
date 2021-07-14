@@ -30,7 +30,7 @@ This appendix contains derivations from the theory in the body of this book.
 (SecAppDerivCESwr)=
 ### Wages as a function of interest rates
 
-The below shows that with the addition of public capital as a third factor of production, wages and interest rates are more than a function of the capital labor ratio.  This means that in the solution method for `OG-USA` we will need to guess both the interest rate $r_t$ and wage $w_t$.
+The below shows that with the addition of public capital as a third factor of production, wages and interest rates are more than a function of the capital labor ratio.  This means that in the solution method for `OG-Core` we will need to guess both the interest rate $r_t$ and wage $w_t$.
 
 ```{math}
 :label: EqAppDerivCES_YL
