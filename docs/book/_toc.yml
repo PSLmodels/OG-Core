@@ -36,16 +36,6 @@ parts:
   - file: content/theory/open_economy
   - file: content/theory/stationarization
   - file: content/theory/equilibrium
-- caption: Calibration
-  chapters:
-  - file: content/calibration/exogenous_parameters
-  - file: content/calibration/macro
-  - file: content/calibration/demographics
-  - file: content/calibration/earnings
-  - file: content/calibration/tax_functions
-  - file: content/calibration/bequests
-  - file: content/calibration/UBI
-  - file: content/calibration/matching_lwi
 - caption: Appendix
   chapters:
   - file: content/theory/derivations
