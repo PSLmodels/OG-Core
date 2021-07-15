@@ -36,4 +36,4 @@ But the main characteristic that differentiates the overlapping generations mode
 
 We will update this document as more detail is added to the model. We are currently working on adding stochastic income, aggregate shocks, multiple industries, and a large open economy multi-country version of the model. There is much to do and, as any self-respecting open source project should, we welcome outside contributions.
 
-[^dynscore_note]: For a summary of the House rule adopted in 2015 that requires dynamic scoring of significant tax legislation see [this Politico article](http://thehill.com/blogs/floor-action/house/228684-house-adopts-dynamic-scoring-rule).
+[^dynscore_note]: For a summary of the House rule adopted in 2015 that requires dynamic scoring of significant tax legislation in the United States see [this Politico article](http://thehill.com/blogs/floor-action/house/228684-house-adopts-dynamic-scoring-rule).

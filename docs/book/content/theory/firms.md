@@ -32,7 +32,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   Gross income for the firms is given by the production function $F(K,L)$ because we have normalized the price of the consumption good to 1. Labor costs to the firm are $w_t L_t$, and capital costs are $(r_t +\delta)K_t$. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate is given by $\delta$.
 
-  Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}$, which is a flat tax on corporate income. As is the case in the U.S., corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
+  Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}$, which is a flat tax on corporate income. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
 
   The next place where tax policy enters the profit function {eq}`EqFirmsProfit` is through a refund of a percent of depreciation costs $\delta^\tau$ refunded at the corporate income tax rate $\tau^{corp}$. When $\delta^\tau=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau=\delta$, all economic depreciation is deducted from corporate income.
 

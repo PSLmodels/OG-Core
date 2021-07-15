@@ -16,7 +16,7 @@ kernelspec:
 # Households
 
 
-In this section, we describe what is arguably the most important economic agent in the `OG-Core` model: the household. We model households in `OG-Core` rather than individuals, because we want to abstract from the concepts of gender, marital status, and number of children. Furthermore, the household is the usual unit of account in tax data. Because `OG-Core` is primarily a fiscal policy model using U.S. data, it is advantageous to have the most granular unit of account be the household.
+In this section, we describe what is arguably the most important economic agent in the `OG-Core` model: the household. We model households in `OG-Core` rather than individuals, because we want to abstract from the concepts of gender, marital status, and number of children. Furthermore, the household is the usual unit of account in tax data. Because `OG-Core` is primarily a fiscal policy model, it is advantageous to have the most granular unit of account be the household.
 
 (SecHHBC)=
 ## Budget Constraint
