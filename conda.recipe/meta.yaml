@@ -8,7 +8,6 @@ source:
 requirements:
   build:
     - python
-    - "taxcalc>=2.4.2"
     - "paramtools>=0.7.1"
     - setuptools
     - "scipy>=0.18.1"
@@ -19,14 +18,13 @@ requirements:
 
   run:
     - python
-    - "taxcalc>=2.4.2"
     - "paramtools>=0.7.1"
     - setuptools
     - "scipy>=0.18.1"
     - matplotlib
     - "dask>=0.20.0"
     - mkl
-    -requests
+    - requests
 
 about:
   home: https://github.com/PSLmodels/OG-Core/
@@ -38,14 +36,11 @@ test:
     - ogcore.TPI
     - ogcore.aggregates
     - ogcore.constants
-    - ogcore.demographics
     - ogcore.elliptical_u_est
     - ogcore.execute
     - ogcore.firm
     - ogcore.fiscal
-    - ogcore.get_micro_data
     - ogcore.household
-    - ogcore.income
     - ogcore.output_plots
     - ogcore.output_tables
     - ogcore.parameter_plots
