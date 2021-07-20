@@ -7,7 +7,7 @@ import os
 import numpy as np
 import scipy.interpolate as si
 import matplotlib.image as mpimg
-from ogusa import utils, parameter_plots, income
+from ogusa import utils, parameter_plots, Specifications
 
 
 # Load in test results and parameters
@@ -277,11 +277,11 @@ def test_plot_population_path_save_fig(tmpdir):
 
 
 def test_plot_income_data():
+    p = Specifications()
     ages = np.linspace(20 + 0.5, 100 - 0.5, 80)
     abil_midp = np.array([0.125, 0.375, 0.6, 0.75, 0.85, 0.945, 0.995])
     abil_pcts = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
-    age_wgts = np.ones(80) * 1 / 80
-    emat = income.get_e_orig(age_wgts, abil_pcts)
+    emat = p.e
     fig = parameter_plots.plot_income_data(
         ages, abil_midp, abil_pcts, emat)
 
@@ -289,11 +289,11 @@ def test_plot_income_data():
 
 
 def test_plot_income_data_save_fig(tmpdir):
+    p = Specifications()
     ages = np.linspace(20 + 0.5, 100 - 0.5, 80)
     abil_midp = np.array([0.125, 0.375, 0.6, 0.75, 0.85, 0.945, 0.995])
     abil_pcts = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
-    age_wgts = np.ones(80) * 1 / 80
-    emat = income.get_e_orig(age_wgts, abil_pcts)
+    emat = p.e
     parameter_plots.plot_income_data(
         ages, abil_midp, abil_pcts, emat, output_dir=tmpdir)
     img1 = mpimg.imread(os.path.join(tmpdir, 'ability_3D_lev.png'))

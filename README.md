@@ -21,7 +21,7 @@ ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations 
 * Install the [Anaconda distribution](https://www.anaconda.com/distribution/) of Python
 * Clone this repository to a directory on your computer
 * From the terminal (or Conda command prompt), navigate to the directory to which you cloned this repository and run `conda env create -f environment.yml`
-* Then, `conda activate ogusa-dev` (on Mac/Linux) or `activate ogusa-dev` on Windows.
+* Then, `conda activate ogusa-dev`
 * Then install by `pip install -e .`
 * Navigate to `./run_examples`
 * Run the model with an example reform from terminal/command prompt by typing `python run_ogusa_example.py`
@@ -42,7 +42,7 @@ ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations 
     * See `SS.py` for what is in the dictionary object in this pickle file
   * `./run_examples/OUTPUT_BASELINE/TPI/TPI_vars.pkl`
     * Outputs from the model timepath solution under the baseline policy
-    * See `SS.py` for what is in the dictionary object in this pickle file
+    * See `TPI.py` for what is in the dictionary object in this pickle file
   * An analogous set of files in the `./run_examples/OUTPUT_REFORM` directory, which represent objects from the simulation of the reform policy
 
 Note that, depending on your machine, a full model run (solving for the full time path equilibrium for the baseline and reform policies) can take from a few to several hours of compute time.
