@@ -217,7 +217,7 @@ class Specifications(paramtools.Parameters):
         # at some point, we will want to make Cost of Capital Calculator
         # a dependency to compute tau_b
         # this adjustment factor has as the numerator CIT receipts/GDP
-        # and as the demoninator CIT receipts/GDP from the
+        # and as the denominator CIT receipts/GDP from the
         # model with baseline parameterization and no adjustment to the
         # CIT_rate
         self.tau_b = (self.cit_rate * self.c_corp_share_of_assets *
