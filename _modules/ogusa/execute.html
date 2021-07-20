@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8e5499552300ddf5d7adccae7cc3b70.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -121,11 +121,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../content/api/demographics.html">
-     Demographics Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="../../content/api/elliptical_u_est.html">
      Elliptical Utility Function Estimation Functions
     </a>
@@ -146,18 +141,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../content/api/get_micro_data.html">
-     Functions to Get Micro-data from Tax-Calculator
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="../../content/api/household.html">
      Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../content/api/income.html">
-     Income Processes Functions
     </a>
    </li>
    <li class="toctree-l2">
@@ -208,6 +193,76 @@
    <li class="toctree-l2">
     <a class="reference internal" href="../../content/api/aggregates.html">
      Aggregates Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/elliptical_u_est.html">
+     Elliptical Utility Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/execute.html">
+     Model Execution Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/firm.html">
+     Firm Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/fiscal.html">
+     Fiscal Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/household.html">
+     Household Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/output_plots.html">
+     OG-USA Output Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/output_tables.html">
+     OG-USA Output Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/parameter_plots.html">
+     OG-USA Parameter Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/parameter_tables.html">
+     OG-USA Parameter Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/parameters.html">
+     OG-USA Parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/tax.html">
+     Tax Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/txfunc.html">
+     Tax Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/utils.html">
+     Utilities Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/wealth.html">
+     Wealth Functions
     </a>
    </li>
   </ul>
@@ -419,41 +474,22 @@
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">This module defines the runner() function, which is used to run OG-USA</span>
 <span class="sd">&#39;&#39;&#39;</span>
-
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">cloudpickle</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">SS</span><span class="p">,</span> <span class="n">TPI</span><span class="p">,</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">ogusa.parameters</span> <span class="kn">import</span> <span class="n">Specifications</span>
 
 
-<div class="viewcode-block" id="runner"><a class="viewcode-back" href="../../content/api/execute.html#ogusa.execute.runner">[docs]</a><span class="k">def</span> <span class="nf">runner</span><span class="p">(</span><span class="n">output_base</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">time_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-           <span class="n">baseline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">iit_reform</span><span class="o">=</span><span class="p">{},</span> <span class="n">og_spec</span><span class="o">=</span><span class="p">{},</span> <span class="n">guid</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-           <span class="n">run_micro</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tax_func_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-           <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="runner"><a class="viewcode-back" href="../../content/api/execute.html#ogusa.execute.runner">[docs]</a><span class="k">def</span> <span class="nf">runner</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">time_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This function runs the OG-USA model, solving for the steady-state</span>
 <span class="sd">    and (optionally) the time path equilibrium.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        output_base (str): path to save output to</span>
-<span class="sd">        baseline_dir (str): path where baseline model results are saved</span>
-<span class="sd">        test (bool): whether to run model in test mode (which has</span>
-<span class="sd">            a smaller state space and higher tolerances for solution)</span>
-<span class="sd">        time_path (bool): whether to solve for the time path equlibrium</span>
-<span class="sd">        baseline (bool): whether the model run is the baseline run</span>
-<span class="sd">        iit_reform (dict): Tax-Calculator policy dictionary</span>
-<span class="sd">        og_spec (dict): dictionary with updates to default</span>
-<span class="sd">            parameters in OG-USA</span>
-<span class="sd">        guid (str): id for OG-USA run</span>
-<span class="sd">        run_micro (bool): whether to estimate tax functions from micro</span>
-<span class="sd">            data or load saved parameters from pickle file</span>
-<span class="sd">        data (str or Pandas DataFrame): path to or data to use in</span>
-<span class="sd">            Tax-Calculator</span>
+<span class="sd">        p (Specifications object): model parameters</span>
+<span class="sd">        time_path (bool): whether to solve for the time path equilibrium</span>
 <span class="sd">        client (Dask client object): client</span>
-<span class="sd">        num_workers (int): number of workers to use for parallelization</span>
-<span class="sd">            with Dask</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
@@ -462,8 +498,8 @@
 
     <span class="n">tick</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="c1"># Create output directory structure</span>
-    <span class="n">ss_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">)</span>
-    <span class="n">tpi_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;TPI&quot;</span><span class="p">)</span>
+    <span class="n">ss_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">)</span>
+    <span class="n">tpi_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;TPI&quot;</span><span class="p">)</span>
     <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ss_dir</span><span class="p">,</span> <span class="n">tpi_dir</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -472,53 +508,29 @@
         <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
             <span class="k">pass</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In runner, baseline is &#39;</span><span class="p">,</span> <span class="n">baseline</span><span class="p">)</span>
-
-    <span class="c1"># Get parameter class</span>
-    <span class="c1"># Note - set run_micro false when initially load class</span>
-    <span class="c1"># Update later with call to spec.get_tax_function_parameters()</span>
-    <span class="n">spec</span> <span class="o">=</span> <span class="n">Specifications</span><span class="p">(</span><span class="n">run_micro</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tax_func_path</span><span class="o">=</span><span class="n">tax_func_path</span><span class="p">,</span>
-                          <span class="n">output_base</span><span class="o">=</span><span class="n">output_base</span><span class="p">,</span>
-                          <span class="n">baseline_dir</span><span class="o">=</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span>
-                          <span class="n">time_path</span><span class="o">=</span><span class="n">time_path</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="n">baseline</span><span class="p">,</span>
-                          <span class="n">iit_reform</span><span class="o">=</span><span class="n">iit_reform</span><span class="p">,</span> <span class="n">guid</span><span class="o">=</span><span class="n">guid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-                          <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span>
-
-    <span class="n">spec</span><span class="o">.</span><span class="n">update_specifications</span><span class="p">(</span><span class="n">og_spec</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;path for tax functions: &#39;</span><span class="p">,</span> <span class="n">tax_func_path</span><span class="p">)</span>
-    <span class="n">spec</span><span class="o">.</span><span class="n">get_tax_function_parameters</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">run_micro</span><span class="p">,</span> <span class="n">tax_func_path</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In runner, baseline is &#39;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">)</span>
 
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">        Run SS</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">ss_outputs</span> <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">run_SS</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
+    <span class="n">ss_outputs</span> <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">run_SS</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
 
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">        Pickle SS results</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">baseline</span><span class="p">:</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">))</span>
-        <span class="n">ss_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">,</span> <span class="s2">&quot;SS_vars.pkl&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ss_dir</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ss_outputs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;JUST SAVED SS output to &#39;</span><span class="p">,</span> <span class="n">ss_dir</span><span class="p">)</span>
-        <span class="c1"># Save pickle with parameter values for the run</span>
-        <span class="n">param_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">&quot;model_params.pkl&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">param_dir</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">spec</span><span class="p">),</span> <span class="n">f</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">))</span>
-        <span class="n">ss_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">,</span> <span class="s2">&quot;SS_vars.pkl&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ss_dir</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ss_outputs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-        <span class="c1"># Save pickle with parameter values for the run</span>
-        <span class="n">param_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;model_params.pkl&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">param_dir</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">spec</span><span class="p">),</span> <span class="n">f</span><span class="p">)</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">))</span>
+    <span class="n">ss_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">,</span> <span class="s2">&quot;SS_vars.pkl&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ss_dir</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ss_outputs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;JUST SAVED SS output to &#39;</span><span class="p">,</span> <span class="n">ss_dir</span><span class="p">)</span>
+    <span class="c1"># Save pickle with parameter values for the run</span>
+    <span class="n">param_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;model_params.pkl&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">param_dir</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">p</span><span class="p">),</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">time_path</span><span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -526,14 +538,14 @@
 <span class="sd">            Run the TPI simulation</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">tpi_output</span> <span class="o">=</span> <span class="n">TPI</span><span class="o">.</span><span class="n">run_TPI</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
+        <span class="n">tpi_output</span> <span class="o">=</span> <span class="n">TPI</span><span class="o">.</span><span class="n">run_TPI</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
 
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
 <span class="sd">            Pickle TPI results</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">tpi_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;TPI&quot;</span><span class="p">)</span>
+        <span class="n">tpi_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;TPI&quot;</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">tpi_dir</span><span class="p">)</span>
         <span class="n">tpi_vars</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tpi_dir</span><span class="p">,</span> <span class="s2">&quot;TPI_vars.pkl&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tpi_vars</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>

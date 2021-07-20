@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8e5499552300ddf5d7adccae7cc3b70.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -123,11 +123,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="demographics.html">
-     Demographics Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="elliptical_u_est.html">
      Elliptical Utility Function Estimation Functions
     </a>
@@ -148,18 +143,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="get_micro_data.html">
-     Functions to Get Micro-data from Tax-Calculator
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="household.html">
      Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="income.html">
-     Income Processes Functions
     </a>
    </li>
    <li class="toctree-l2">
@@ -210,6 +195,76 @@
    <li class="toctree-l2">
     <a class="reference internal" href="aggregates.html">
      Aggregates Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="elliptical_u_est.html">
+     Elliptical Utility Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Model Execution Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="firm.html">
+     Firm Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="fiscal.html">
+     Fiscal Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="household.html">
+     Household Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_plots.html">
+     OG-USA Output Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_tables.html">
+     OG-USA Output Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_plots.html">
+     OG-USA Parameter Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_tables.html">
+     OG-USA Parameter Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameters.html">
+     OG-USA Parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tax.html">
+     Tax Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="txfunc.html">
+     Tax Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="utils.html">
+     Utilities Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="wealth.html">
+     Wealth Functions
     </a>
    </li>
   </ul>
@@ -455,29 +510,15 @@
 <p>This module defines the runner() function, which is used to run OG-USA</p>
 <dl class="py function">
 <dt id="ogusa.execute.runner">
-<code class="sig-prename descclassname"><span class="pre">ogusa.execute.</span></code><code class="sig-name descname"><span class="pre">runner</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iit_reform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">og_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_micro</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/execute.html#runner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.execute.runner" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogusa.execute.</span></code><code class="sig-name descname"><span class="pre">runner</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/execute.html#runner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.execute.runner" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function runs the OG-USA model, solving for the steady-state
 and (optionally) the time path equilibrium.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>output_base</strong> (<em>str</em>) – path to save output to</p></li>
-<li><p><strong>baseline_dir</strong> (<em>str</em>) – path where baseline model results are saved</p></li>
-<li><p><strong>test</strong> (<em>bool</em>) – whether to run model in test mode (which has
-a smaller state space and higher tolerances for solution)</p></li>
-<li><p><strong>time_path</strong> (<em>bool</em>) – whether to solve for the time path equlibrium</p></li>
-<li><p><strong>baseline</strong> (<em>bool</em>) – whether the model run is the baseline run</p></li>
-<li><p><strong>iit_reform</strong> (<em>dict</em>) – Tax-Calculator policy dictionary</p></li>
-<li><p><strong>og_spec</strong> (<em>dict</em>) – dictionary with updates to default
-parameters in OG-USA</p></li>
-<li><p><strong>guid</strong> (<em>str</em>) – id for OG-USA run</p></li>
-<li><p><strong>run_micro</strong> (<em>bool</em>) – whether to estimate tax functions from micro
-data or load saved parameters from pickle file</p></li>
-<li><p><strong>data</strong> (<em>str</em><em> or </em><em>Pandas DataFrame</em>) – path to or data to use in
-Tax-Calculator</p></li>
+<li><p><strong>p</strong> (<em>Specifications object</em>) – model parameters</p></li>
+<li><p><strong>time_path</strong> (<em>bool</em>) – whether to solve for the time path equilibrium</p></li>
 <li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
-<li><p><strong>num_workers</strong> (<em>int</em>) – number of workers to use for parallelization
-with Dask</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

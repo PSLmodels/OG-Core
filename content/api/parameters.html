@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8e5499552300ddf5d7adccae7cc3b70.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -123,11 +123,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="demographics.html">
-     Demographics Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="elliptical_u_est.html">
      Elliptical Utility Function Estimation Functions
     </a>
@@ -148,18 +143,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="get_micro_data.html">
-     Functions to Get Micro-data from Tax-Calculator
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="household.html">
      Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="income.html">
-     Income Processes Functions
     </a>
    </li>
    <li class="toctree-l2">
@@ -210,6 +195,76 @@
    <li class="toctree-l2">
     <a class="reference internal" href="aggregates.html">
      Aggregates Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="elliptical_u_est.html">
+     Elliptical Utility Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="execute.html">
+     Model Execution Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="firm.html">
+     Firm Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="fiscal.html">
+     Fiscal Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="household.html">
+     Household Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_plots.html">
+     OG-USA Output Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="output_tables.html">
+     OG-USA Output Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_plots.html">
+     OG-USA Parameter Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parameter_tables.html">
+     OG-USA Parameter Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     OG-USA Parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tax.html">
+     Tax Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="txfunc.html">
+     Tax Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="utils.html">
+     Utilities Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="wealth.html">
+     Wealth Functions
     </a>
    </li>
   </ul>
@@ -454,7 +509,7 @@
 <span id="ogusa-parameters"></span><h2>ogusa.parameters<a class="headerlink" href="#module-ogusa.parameters" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="ogusa.parameters.Specifications">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ogusa.parameters.</span></code><code class="sig-name descname"><span class="pre">Specifications</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_micro</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OUTPUT_BASELINE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OUTPUT_BASELINE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iit_reform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cps'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ogusa.parameters.</span></code><code class="sig-name descname"><span class="pre">Specifications</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_micro</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OUTPUT_BASELINE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OUTPUT_BASELINE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inherits ParamTools Parameters abstract base class.</p>
 <dl class="py method">
 <dt id="ogusa.parameters.Specifications.compute_default_params">
@@ -471,27 +526,6 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="ogusa.parameters.Specifications.get_tax_function_parameters">
-<code class="sig-name descname"><span class="pre">get_tax_function_parameters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_micro</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.get_tax_function_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications.get_tax_function_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads pickle file of tax function parameters or estimates the
-parameters from microsimulation model output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
-<li><p><strong>run_micro</strong> (<em>bool</em>) – whether to estimate parameters from
-microsimulation model</p></li>
-<li><p><strong>tax_func_path</strong> (<em>string</em>) – path where find or save tax
-function parameter estimates</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="ogusa.parameters.Specifications.get_ubi_nom_objs">
 <code class="sig-name descname"><span class="pre">get_ubi_nom_objs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.get_ubi_nom_objs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications.get_ubi_nom_objs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate time series of nominal SxJ UBI household matrix and aggregate
@@ -499,18 +533,12 @@ UBI expenditure over necessary time periods. Also generate steady-state
 versions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>self</strong> – OG-USA parameters class object</p>
+<dd class="field-odd"><p><strong>self</strong> – OG-USA Specifications class object</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>T+S x S x J array time series of UBI</dt><dd><p>transfers in dollars for each type-j age-s household in every
 period t</p>
-</dd>
-<dt>UBI_nom_vec (vector): (T+S) vector time series of aggregate UBI</dt><dd><p>expenditure in dollars</p>
-</dd>
-<dt>ubi_nom_SS (array): S x J matrix of UBI steady-state (long-run)</dt><dd><p>transfers in dollars for each type-j age-s household</p>
-</dd>
-<dt>UBI_nom_SS (scalar): value of UBI steady-state (long-run) total</dt><dd><p>expenditure in dollars</p>
 </dd>
 </dl>
 </p>
@@ -532,30 +560,6 @@ Next call self.compute_default_params for further initialization</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="ogusa.parameters.Specifications.read_tax_func_estimate">
-<code class="sig-name descname"><span class="pre">read_tax_func_estimate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogusa/parameters.html#Specifications.read_tax_func_estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogusa.parameters.Specifications.read_tax_func_estimate" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function reads in tax function parameters from pickle
-files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>tax_func_path</strong> (<em>str</em>) – path to pickle with tax function
-parameter estimates</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>dictionary containing arrays of tax</dt><dd><p>function parameters</p>
-</dd>
-</dl>
-<p>run_micro (bool): whether to estimate tax function parameters</p>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict_params (dict)</p>
 </dd>
 </dl>
 </dd></dl>

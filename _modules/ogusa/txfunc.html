@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8e5499552300ddf5d7adccae7cc3b70.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -121,11 +121,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../content/api/demographics.html">
-     Demographics Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="../../content/api/elliptical_u_est.html">
      Elliptical Utility Function Estimation Functions
     </a>
@@ -146,18 +141,8 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../content/api/get_micro_data.html">
-     Functions to Get Micro-data from Tax-Calculator
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="../../content/api/household.html">
      Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../content/api/income.html">
-     Income Processes Functions
     </a>
    </li>
    <li class="toctree-l2">
@@ -208,6 +193,76 @@
    <li class="toctree-l2">
     <a class="reference internal" href="../../content/api/aggregates.html">
      Aggregates Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/elliptical_u_est.html">
+     Elliptical Utility Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/execute.html">
+     Model Execution Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/firm.html">
+     Firm Equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/fiscal.html">
+     Fiscal Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/household.html">
+     Household Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/output_plots.html">
+     OG-USA Output Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/output_tables.html">
+     OG-USA Output Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/parameter_plots.html">
+     OG-USA Parameter Plotting Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/parameter_tables.html">
+     OG-USA Parameter Table Building Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/parameters.html">
+     OG-USA Parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/tax.html">
+     Tax Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/txfunc.html">
+     Tax Function Estimation Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/utils.html">
+     Utilities Functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../content/api/wealth.html">
+     Wealth Functions
     </a>
    </li>
   </ul>
@@ -434,7 +489,6 @@
 <span class="kn">from</span> <span class="nn">dask</span> <span class="kn">import</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">compute</span>
 <span class="kn">import</span> <span class="nn">dask.multiprocessing</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">from</span> <span class="nn">ogusa</span> <span class="kn">import</span> <span class="n">get_micro_data</span>
 <span class="kn">import</span> <span class="nn">ogusa.parameter_plots</span> <span class="k">as</span> <span class="nn">pp</span>
 <span class="kn">from</span> <span class="nn">ogusa.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">SHOW_RUNTIME</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -1363,12 +1417,13 @@
             <span class="n">mtryparam_arr</span><span class="p">,</span> <span class="n">mtry_wsumsq_arr</span><span class="p">,</span> <span class="n">mtry_obs_arr</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="tax_func_estimate"><a class="viewcode-back" href="../../content/api/txfunc.html#ogusa.txfunc.tax_func_estimate">[docs]</a><span class="k">def</span> <span class="nf">tax_func_estimate</span><span class="p">(</span><span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">starting_age</span><span class="p">,</span> <span class="n">ending_age</span><span class="p">,</span>
+<div class="viewcode-block" id="tax_func_estimate"><a class="viewcode-back" href="../../content/api/txfunc.html#ogusa.txfunc.tax_func_estimate">[docs]</a><span class="k">def</span> <span class="nf">tax_func_estimate</span><span class="p">(</span><span class="n">micro_data</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">starting_age</span><span class="p">,</span> <span class="n">ending_age</span><span class="p">,</span>
                       <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                       <span class="n">analytical_mtrs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="o">=</span><span class="s1">&#39;DEP&#39;</span><span class="p">,</span>
                       <span class="n">age_specific</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reform</span><span class="o">=</span><span class="p">{},</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                       <span class="n">desc_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">graph_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="n">graph_est</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                      <span class="n">graph_est</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                      <span class="n">tax_func_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This function performs analysis on the source data from Tax-</span>
 <span class="sd">    Calculator and estimates functions for the effective tax rate (ETR),</span>
@@ -1376,6 +1431,7 @@
 <span class="sd">    capital income (MTRy).</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">        micro_data (dict): Dictionary of DataFrames with micro data</span>
 <span class="sd">        BW (int): number of years in the budget window (the period</span>
 <span class="sd">            over which tax policy is assumed to vary)</span>
 <span class="sd">        S (int): number of model periods a model agent is economically</span>
@@ -1396,6 +1452,8 @@
 <span class="sd">        client (Dask client object): client</span>
 <span class="sd">        num_workers (int): number of workers to use for parallelization</span>
 <span class="sd">            with Dask</span>
+<span class="sd">        tax_func_path (str): path to save pickle with estimated tax</span>
+<span class="sd">            function parameters to</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict_param (dict): dictionary with tax function parameters</span>
@@ -1449,11 +1507,6 @@
     <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CUR_PATH</span><span class="p">,</span> <span class="s1">&#39;OUTPUT&#39;</span><span class="p">,</span> <span class="s1">&#39;TaxFunctions&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">F_OK</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-
-    <span class="c1"># call tax caculator and get microdata</span>
-    <span class="n">micro_data</span><span class="p">,</span> <span class="n">taxcalc_version</span> <span class="o">=</span> <span class="n">get_micro_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
-        <span class="n">baseline</span><span class="o">=</span><span class="n">baseline</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="n">start_year</span><span class="p">,</span> <span class="n">reform</span><span class="o">=</span><span class="n">reform</span><span class="p">,</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span>
 
     <span class="n">lazy_values</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">years_list</span><span class="p">:</span>
@@ -1639,59 +1692,13 @@
          <span class="p">(</span><span class="s1">&#39;tfunc_mtrx_obs&#39;</span><span class="p">,</span> <span class="n">mtrx_obs_arr</span><span class="p">),</span>
          <span class="p">(</span><span class="s1">&#39;tfunc_mtry_obs&#39;</span><span class="p">,</span> <span class="n">mtry_obs_arr</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;tfunc_time&#39;</span><span class="p">,</span> <span class="n">elapsed_time</span><span class="p">),</span>
          <span class="p">(</span><span class="s1">&#39;tax_func_type&#39;</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">),</span>
-         <span class="p">(</span><span class="s1">&#39;taxcalc_version&#39;</span><span class="p">,</span> <span class="n">taxcalc_version</span><span class="p">),</span>
          <span class="p">(</span><span class="s1">&#39;start_year&#39;</span><span class="p">,</span> <span class="n">start_year</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;BW&#39;</span><span class="p">,</span> <span class="n">BW</span><span class="p">)])</span>
 
+    <span class="k">if</span> <span class="n">tax_func_path</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tax_func_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dict_params</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">dict_params</span></div>
-
-
-<div class="viewcode-block" id="get_tax_func_estimate"><a class="viewcode-back" href="../../content/api/txfunc.html#ogusa.txfunc.get_tax_func_estimate">[docs]</a><span class="k">def</span> <span class="nf">get_tax_func_estimate</span><span class="p">(</span><span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">starting_age</span><span class="p">,</span> <span class="n">ending_age</span><span class="p">,</span>
-                          <span class="n">baseline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">analytical_mtrs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                          <span class="n">tax_func_type</span><span class="o">=</span><span class="s1">&#39;DEP&#39;</span><span class="p">,</span> <span class="n">age_specific</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                          <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">reform</span><span class="o">=</span><span class="p">{},</span>
-                          <span class="n">guid</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">tax_func_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                          <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    This function calls the tax function estimation routine and saves</span>
-<span class="sd">    the resulting dictionary in pickle files corresponding to the</span>
-<span class="sd">    baseline or reform policy.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        BW (int): number of years in the budget window (the period over</span>
-<span class="sd">            which tax policy is assumed to vary)</span>
-<span class="sd">        S (int): number of model periods a model agent is economically</span>
-<span class="sd">            active for</span>
-<span class="sd">        starting_age (int): minimum age to estimate tax functions for</span>
-<span class="sd">        ending_age (int): maximum age to estimate tax functions for</span>
-<span class="sd">        baseline (bool): whether these are the baseline tax functions</span>
-<span class="sd">        analytical_mtrs (bool): whether to use the analytical derivation</span>
-<span class="sd">            of the marginal tax rates (and thus only need to estimate</span>
-<span class="sd">            the effective tax rate functions)</span>
-<span class="sd">        tax_func_type (str): functional form of tax functions</span>
-<span class="sd">        age_specific (bool): whether to estimate age specific tax</span>
-<span class="sd">            functions</span>
-<span class="sd">        start_yr (int): first year of budget window</span>
-<span class="sd">        reform (dict): policy reform dictionary for Tax-Calculator</span>
-<span class="sd">        guid (str): id for the particular run</span>
-<span class="sd">        tax_func_path (str): path to save pickle with estimated tax</span>
-<span class="sd">            function parameters to</span>
-<span class="sd">        data (str or Pandas DataFrame): path to or data to use in</span>
-<span class="sd">            Tax-Calculator</span>
-<span class="sd">        client (Dask client object): client</span>
-<span class="sd">        num_workers (int): number of workers to use for parallelization</span>
-<span class="sd">            with Dask</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">dict_params</span> <span class="o">=</span> <span class="n">tax_func_estimate</span><span class="p">(</span>
-        <span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">starting_age</span><span class="p">,</span> <span class="n">ending_age</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span>
-        <span class="n">analytical_mtrs</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span> <span class="n">age_specific</span><span class="p">,</span> <span class="n">reform</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-        <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span>
-
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tax_func_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dict_params</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
