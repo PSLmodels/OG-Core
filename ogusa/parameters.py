@@ -5,8 +5,8 @@ import pkg_resources
 import paramtools
 
 # import ogusa
-from ogusa import elliptical_u_est, demographics, income, txfunc
-from ogusa.utils import rate_conversion, safe_read_pickle
+from ogusa import elliptical_u_est
+from ogusa.utils import rate_conversion
 from ogusa.constants import BASELINE_DIR, TC_LAST_YEAR
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -19,21 +19,17 @@ class Specifications(paramtools.Parameters):
     array_first = True
 
     def __init__(self,
-                 run_micro=False, tax_func_path=None,
+                 run_micro=False,
                  output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
-                 test=False, time_path=True, baseline=False,
-                 iit_reform={}, guid='', data='cps',
+                 time_path=True, baseline=False, guid='',
                  client=None, num_workers=1):
         super().__init__()
 
         self.output_base = output_base
         self.baseline_dir = baseline_dir
-        self.test = test
         self.time_path = time_path
         self.baseline = baseline
-        self.iit_reform = iit_reform
         self.guid = guid
-        self.data = data
         self.num_workers = num_workers
 
         # put OG-USA version in parameters to save for reference
@@ -41,12 +37,6 @@ class Specifications(paramtools.Parameters):
 
         # does cheap calculations to find parameter values
         self.initialize()
-
-        # does more costly tax function estimation
-        if run_micro:
-            self.get_tax_function_parameters(
-                self, client, run_micro=True,
-                tax_func_path=tax_func_path)
 
         self.parameter_warnings = ''
         self.parameter_errors = ''
@@ -64,17 +54,6 @@ class Specifications(paramtools.Parameters):
             None
 
         '''
-
-        if self.test:
-            # Make smaller statespace for testing
-            self.S = int(40)
-            self.lambdas = np.array([0.6, 0.4]).reshape(2, 1)
-            self.J = self.lambdas.shape[0]
-            self.eta = np.ones((self.S, self.J)) / (self.S * self.J)
-            self.maxiter = 35
-            self.mindist_SS = 1e-6
-            self.mindist_TPI = 1e-3
-            self.nu = .4
 
         self.compute_default_params()
 
@@ -99,9 +78,9 @@ class Specifications(paramtools.Parameters):
         # get parameters of elliptical utility function
         self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
             self.frisch, self.ltilde)
-        # determine length of budget window from start year and last
-        # year in TC
-        self.BW = int(TC_LAST_YEAR - self.start_year + 1)
+        # determine length of budget window from individual income tax
+        # parameters passed in
+        self.BW = self.etr_params.shape[0]
         # Find number of economically active periods of life
         self.E = int(
             self.starting_age * (self.S / (self.ending_age -
@@ -120,14 +99,21 @@ class Specifications(paramtools.Parameters):
 
         # set fraction of income taxes from payroll to zero initially
         # will be updated when function tax function parameters
-        self.frac_tax_payroll = np.zeros(self.T + self.S)
+        print('T = ', self.T, ', S = ', self.S)
+        if self.T + self.S > self.BW:
+            self.frac_tax_payroll = np.append(
+                    self.frac_tax_payroll,
+                    np.ones(self.T + self.S - self.BW)
+                    * self.frac_tax_payroll[-1])
 
         # Extend parameters that may vary over the time path
         tp_param_list = [
             'alpha_G', 'alpha_T', 'Z', 'world_int_rate_annual',
-            'delta_tau_annual', 'cit_rate', 'tau_bq', 'tau_payroll',
-            'h_wealth', 'm_wealth', 'p_wealth', 'retirement_age',
-            'replacement_rate_adjust', 'zeta_D', 'zeta_K']
+            'delta_tau_annual', 'cit_rate',
+            'adjustment_factor_for_cit_receipts', 'tau_bq',
+            'tau_payroll', 'h_wealth', 'm_wealth', 'p_wealth',
+            'retirement_age', 'replacement_rate_adjust', 'zeta_D',
+            'zeta_K']
         for item in tp_param_list:
             this_attr = getattr(self, item)
             if this_attr.ndim > 1:
@@ -135,7 +121,7 @@ class Specifications(paramtools.Parameters):
             # the next if statement is a quick fix to avoid having to
             # update all these time varying parameters if change T or S
             # ideally, the default json values are read in again and the
-            # extension done is here done again with those defaults and
+            # extension done is done again here with those defaults and
             # the new T and S values...
             if this_attr.size > self.T + self.S:
                 this_attr = this_attr[:self.T + self.S]
@@ -143,24 +129,33 @@ class Specifications(paramtools.Parameters):
                 this_attr, np.ones((self.T + self.S - this_attr.size)) *
                 this_attr[-1]))
             setattr(self, item, this_attr)
-        # Try to deal with size of tau_c, but don't worry too much at
-        # this point, will change when we determine how calibrate and if
-        # add multiple consumption goods.
-        tau_c_to_set = getattr(self, 'tau_c')
-        if tau_c_to_set.size == 1:
-            setattr(self, 'tau_c', np.ones((self.T + self.S, self.S,
-                                            self.J)) * tau_c_to_set)
-        elif tau_c_to_set.ndim == 3:
-            if tau_c_to_set.shape[0] > self.T + self.S:
-                tau_c_to_set = tau_c_to_set[:self.T + self.S, :, :]
-            if tau_c_to_set.shape[1] > self.S:
-                tau_c_to_set = tau_c_to_set[:, :self.S, :]
-            if tau_c_to_set.shape[2] > self.J:
-                tau_c_to_set = tau_c_to_set[:, :, :self.J]
-            setattr(self, 'tau_c',  tau_c_to_set)
-        else:
-            print('please give a tau_c that is a single element or 3-D array')
-            assert False
+        # Deal with tax parameters that maybe age and time specific
+        tax_params_to_TP = [
+            'tau_c', 'etr_params', 'mtrx_params', 'mtry_params']
+        for item in tax_params_to_TP:
+            tax_to_set = getattr(self, item)
+            if tax_to_set.size == 1:
+                setattr(self, item, np.ones((self.T + self.S, self.S,
+                                             self.J)) * tax_to_set)
+            elif tax_to_set.ndim == 3:
+                if tax_to_set.shape[0] > self.T + self.S:
+                    tax_to_set = tax_to_set[:self.T + self.S, :, :]
+                if tax_to_set.shape[0] < self.T + self.S:
+                    tax_to_set = np.append(
+                        tax_to_set[:, :, :], np.tile(
+                            tax_to_set[-1, :, :],
+                            (self.T + self.S - tax_to_set.shape[0], 1, 1)),
+                        axis=0)
+                if tax_to_set.shape[1] > self.S:
+                    tax_to_set = tax_to_set[:, :self.S, :]
+                if item == 'tau_c':
+                    if tax_to_set.shape[2] > self.J:
+                        tax_to_set = tax_to_set[:, :, :self.J]
+                setattr(self, item,  tax_to_set)
+            else:
+                print('please give a ' + item +
+                      ' that is a single element or 3-D array')
+                assert False
 
         # Try to deal with size of eta.  It may vary by S, J, T, but
         # want to allow user to enter one that varies by only S, S and J,
@@ -194,6 +189,7 @@ class Specifications(paramtools.Parameters):
                      np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
                              (self.S, 1, 1))), axis=0)
             else:
+                print('Eta dimensions are: ', self.eta.shape)
                 print('please give an eta that is either SxJ or TxS')
                 assert False
         # this is the case where vary by S, J, T
@@ -220,24 +216,17 @@ class Specifications(paramtools.Parameters):
         # Calculations for business income taxes
         # at some point, we will want to make Cost of Capital Calculator
         # a dependency to compute tau_b
-        c_corp_share_of_assets = 0.55
         # this adjustment factor has as the numerator CIT receipts/GDP
-        # from US data and as the demoninator CIT receipts/GDP from the
+        # and as the denominator CIT receipts/GDP from the
         # model with baseline parameterization and no adjustment to the
         # CIT_rate
-        adjustment_factor_for_cit_receipts = 0.017 / 0.055
-        self.tau_b = (self.cit_rate * c_corp_share_of_assets *
-                      adjustment_factor_for_cit_receipts)
+        self.tau_b = (self.cit_rate * self.c_corp_share_of_assets *
+                      self.adjustment_factor_for_cit_receipts)
         self.delta_tau = (
             -1 * rate_conversion(-1 * self.delta_tau_annual,
                                  self.starting_age, self.ending_age,
                                  self.S))
 
-        # get population objects
-        (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
-         self.rho, self.g_n, self.imm_rates,
-         self.omega_S_preTP) = demographics.get_pop_objs(
-                self.E, self.S, self.T, 1, 100, self.start_year)
         # for constant demographics
         if self.constant_demographics:
             self.g_n_ss = 0.0
@@ -253,267 +242,19 @@ class Specifications(paramtools.Parameters):
             self.omega_S_preTP = self.omega_SS
 
         # Interpolate chi_n and create omega_SS_80 if necessary
-        if self.S == 80:
-            self.omega_SS_80 = self.omega_SS
-            self.chi_n = self.chi_n_80
-        elif self.S < 80:
+        if self.S < 80 and len(self.chi_n) == 80:
             self.age_midp_80 = np.linspace(20.5, 99.5, 80)
             self.chi_n_interp = si.interp1d(self.age_midp_80,
-                                            np.squeeze(self.chi_n_80),
+                                            np.squeeze(self.chi_n),
                                             kind='cubic')
             self.newstep = 80.0 / self.S
             self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
                                           100 - 0.5 * self.newstep,
                                           self.S)
             self.chi_n = self.chi_n_interp(self.age_midp_S)
-            (_, _, self.omega_SS_80, _, _, _, _, _) = \
-                demographics.get_pop_objs(20, 80, 320, 1, 100,
-                                          self.start_year, False)
-        self.e = income.get_e_interp(
-            self.S, self.omega_SS, self.omega_SS_80, self.lambdas,
-            plot=False)
 
         # Create time series of stationarized UBI transfers
-        (self.ubi_nom_array, self.UBI_nom_vec, self.ubi_nom_SS,
-            self.UBI_nom_SS) = self.get_ubi_nom_objs()
-
-    def get_tax_function_parameters(self, client, run_micro=False,
-                                    tax_func_path=None):
-        '''
-        Reads pickle file of tax function parameters or estimates the
-        parameters from microsimulation model output.
-
-        Args:
-            client (Dask client object): client
-            run_micro (bool): whether to estimate parameters from
-                microsimulation model
-            tax_func_path (string): path where find or save tax
-                function parameter estimates
-
-        Returns:
-            None
-
-        '''
-        # set paths if none given
-        if tax_func_path is None:
-            if self.baseline:
-                pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
-                tax_func_path = os.path.join(self.output_base, pckl)
-                print('Using baseline tax parameters from ',
-                      tax_func_path)
-            else:
-                pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
-                tax_func_path = os.path.join(self.output_base, pckl)
-                print('Using reform policy tax parameters from ',
-                      tax_func_path)
-        # If run_micro is false, check to see if parameters file exists
-        # and if it is consistent with Specifications instance
-        if not run_micro:
-            dict_params, run_micro = self.read_tax_func_estimate(
-                tax_func_path)
-        if run_micro:
-            txfunc.get_tax_func_estimate(  # pragma: no cover
-                self.BW, self.S, self.starting_age, self.ending_age,
-                self.baseline, self.analytical_mtrs, self.tax_func_type,
-                self.age_specific, self.start_year, self.iit_reform,
-                self.guid, tax_func_path, self.data, client,
-                self.num_workers)
-            dict_params, _ = self.read_tax_func_estimate(tax_func_path)
-        self.mean_income_data = dict_params['tfunc_avginc'][0]
-        try:
-            self.frac_tax_payroll = np.append(
-                dict_params['tfunc_frac_tax_payroll'],
-                np.ones(self.T + self.S - self.BW) *
-                dict_params['tfunc_frac_tax_payroll'][-1])
-        except KeyError:
-            pass
-        try:
-            self.taxcalc_version = dict_params['taxcalc_version']
-        except KeyError:
-            self.taxcalc_version = 'No version recorded'
-
-        # Reorder indices of tax function and tile for all years after
-        # budget window ends
-        num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
-        num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
-        num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
-        # First check to see if tax parameters that are used were
-        # estimated with a budget window and ages that are as long as
-        # the those implied based on the start year and model age.
-        # N.B. the tax parameters dictionary does not save the years
-        # that correspond to the parameter estimates, so the start year
-        # used there may name match what is used in a run that reads in
-        # some cached tax function parameters.  Likewise for age.
-        params_list = ['etr', 'mtrx', 'mtry']
-        BW_in_tax_params = dict_params['tfunc_etr_params_S'].shape[1]
-        S_in_tax_params = dict_params['tfunc_etr_params_S'].shape[0]
-        if self.BW != BW_in_tax_params:
-            print('Warning: There is a discrepency between the start' +
-                  ' year of the model and that of the tax functions!!')
-        # After printing warning, make it work by tiling
-        if self.BW > BW_in_tax_params:
-            for item in params_list:
-                dict_params['tfunc_' + item + '_params_S'] =\
-                    np.concatenate(
-                        (dict_params['tfunc_' + item + '_params_S'],
-                         np.tile(dict_params['tfunc_' + item +
-                                             '_params_S'][:, -1, :].
-                                 reshape(S_in_tax_params, 1, num_etr_params),
-                                 (1, self.BW - BW_in_tax_params, 1))),
-                        axis=1)
-                dict_params['tfunc_avg_' + item] =\
-                    np.append(dict_params['tfunc_avg_' + item],
-                              np.tile(dict_params['tfunc_avg_' + item][-1],
-                                      (self.BW - BW_in_tax_params)))
-        if self.S != S_in_tax_params:
-            print('Warning: There is a discrepency between the ages' +
-                  ' used in the model and those in the tax functions!!')
-        # After printing warning, make it work by tiling
-        if self.S > S_in_tax_params:
-            for item in params_list:
-                dict_params['tfunc_' + item + '_params_S'] =\
-                    np.concatenate(
-                        (dict_params['tfunc_' + item + '_params_S'],
-                         np.tile(dict_params['tfunc_' + item +
-                                             '_params_S'][-1, :, :].
-                                 reshape(1, self.BW, num_etr_params),
-                                 (self.S - S_in_tax_params, 1, 1))),
-                        axis=0)
-        self.etr_params = np.empty((self.T, self.S, num_etr_params))
-        self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
-        self.mtry_params = np.empty((self.T, self.S, num_mtry_params))
-        self.etr_params[:self.BW, :, :] =\
-            np.transpose(
-                dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :],
-                axes=[1, 0, 2])
-        self.etr_params[self.BW:, :, :] =\
-            np.tile(np.transpose(
-                dict_params['tfunc_etr_params_S'][:self.S, -1, :].reshape(
-                    self.S, 1, num_etr_params), axes=[1, 0, 2]),
-                    (self.T - self.BW, 1, 1))
-        self.mtrx_params[:self.BW, :, :] =\
-            np.transpose(
-                dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :],
-                axes=[1, 0, 2])
-        self.mtrx_params[self.BW:, :, :] =\
-            np.transpose(
-                dict_params['tfunc_mtrx_params_S'][:self.S, -1, :].reshape(
-                    self.S, 1, num_mtrx_params), axes=[1, 0, 2])
-        self.mtry_params[:self.BW, :, :] =\
-            np.transpose(
-                dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :],
-                axes=[1, 0, 2])
-        self.mtry_params[self.BW:, :, :] =\
-            np.transpose(
-                dict_params['tfunc_mtry_params_S'][:self.S, -1, :].reshape(
-                    self.S, 1, num_mtry_params), axes=[1, 0, 2])
-
-        if self.constant_rates:
-            print('Using constant rates!')
-            # # Make all ETRs equal the average
-            self.etr_params = np.zeros(self.etr_params.shape)
-            # set shift to average rate
-            self.etr_params[:self.BW, :, 10] = np.tile(
-                dict_params['tfunc_avg_etr'].reshape(self.BW, 1),
-                (1, self.S))
-            self.etr_params[self.BW:, :, 10] =\
-                dict_params['tfunc_avg_etr'][-1]
-
-            # # Make all MTRx equal the average
-            self.mtrx_params = np.zeros(self.mtrx_params.shape)
-            # set shift to average rate
-            self.mtrx_params[:self.BW, :, 10] = np.tile(
-                dict_params['tfunc_avg_mtrx'].reshape(self.BW, 1),
-                (1, self.S))
-            self.mtrx_params[self.BW:, :, 10] =\
-                dict_params['tfunc_avg_mtrx'][-1]
-
-            # # Make all MTRy equal the average
-            self.mtry_params = np.zeros(self.mtry_params.shape)
-            # set shift to average rate
-            self.mtry_params[:self.BW, :, 10] = np.tile(
-                dict_params['tfunc_avg_mtry'].reshape(self.BW, 1),
-                (1, self.S))
-            self.mtry_params[self.BW:, :, 10] =\
-                dict_params['tfunc_avg_mtry'][-1]
-        if self.zero_taxes:
-            print('Zero taxes!')
-            self.etr_params = np.zeros(self.etr_params.shape)
-            self.mtrx_params = np.zeros(self.mtrx_params.shape)
-            self.mtry_params = np.zeros(self.mtry_params.shape)
-
-    def read_tax_func_estimate(self, tax_func_path):
-        '''
-        This function reads in tax function parameters from pickle
-        files.
-
-        Args:
-            tax_func_path (str): path to pickle with tax function
-                parameter estimates
-
-        Returns:
-            dict_params (dict): dictionary containing arrays of tax
-                function parameters
-            run_micro (bool): whether to estimate tax function parameters
-
-        '''
-        flag = 0
-        if os.path.exists(tax_func_path):
-            print('Tax Function Path Exists')
-            dict_params = safe_read_pickle(tax_func_path)
-            # check to see if tax_functions compatible
-            current_taxcalc =\
-                pkg_resources.get_distribution("taxcalc").version
-            try:
-                if current_taxcalc != dict_params['tax_calc_version']:
-                    print('WARNING: Tax function parameters estimated' +
-                          ' from Tax Calculator version that is not ' +
-                          ' the one currently installed on this machine.')
-                    print('Current TC version is ', current_taxcalc,
-                          ', Estimated tax functions from version ',
-                          dict_params.get('tax_calc_version', None))
-                    flag = 1
-            except KeyError:
-                pass
-            try:
-                if self.start_year != dict_params['start_year']:
-                    print('Model start year not consistent with tax ' +
-                          'function parameter estimates')
-                    flag = 1
-            except KeyError:
-                pass
-            try:
-                if self.BW != dict_params['BW']:
-                    print('Model budget window length is not ' +
-                          'consistent with tax function parameter ' +
-                          'estimates')
-                    flag = 1
-            except KeyError:
-                pass
-            try:
-                if self.tax_func_type != dict_params['tax_func_type']:
-                    print('Model tax function type is not ' +
-                          'consistent with tax function parameter ' +
-                          'estimates')
-                    flag = 1
-            except KeyError:
-                pass
-            if flag >= 1:
-                raise RuntimeError(
-                    'Tax function parameter estimates at given path' +
-                    ' are not consistent with model parameters' +
-                    ' specified.')
-        else:
-            flag = 1
-            print('Tax function parameter estimates do not exist at' +
-                  ' given path. Running new estimation.')
-        if flag >= 1:
-            dict_params = None
-            run_micro = True
-        else:
-            run_micro = False
-
-        return dict_params, run_micro
+        self.ubi_nom_array = self.get_ubi_nom_objs()
 
     def get_ubi_nom_objs(self):
         '''
@@ -522,20 +263,13 @@ class Specifications(paramtools.Parameters):
         versions
 
         Args:
-            self: OG-USA parameters class object
+            self: OG-USA Specifications class object
 
         Returns:
             ubi_nom_array (array): T+S x S x J array time series of UBI
                 transfers in dollars for each type-j age-s household in every
                 period t
-            UBI_nom_vec (vector): (T+S) vector time series of aggregate UBI
-                expenditure in dollars
-            ubi_nom_SS (array): S x J matrix of UBI steady-state (long-run)
-                transfers in dollars for each type-j age-s household
-            UBI_nom_SS (scalar): value of UBI steady-state (long-run) total
-                expenditure in dollars
         '''
-        TpS = self.omega.shape[0]
         # Get matrices of number of children 0-17, number of dependents 18-20,
         # number of adults 21-64, and number of seniors >= 65 from
         # OG-USA-Calibration package
@@ -543,41 +277,33 @@ class Specifications(paramtools.Parameters):
         ubi_num_1864_mat = 0.85 * np.ones((self.S, self.J))
         ubi_num_65p_mat = 0.15 * np.ones((self.S, self.J))
 
-        ubi_nom_array = np.zeros((TpS, self.S, self.J))
-        UBI_nom_vec = np.zeros(TpS)
-
         # Calculate the UBI transfers to each household type in the first
         # period t=0
-        ubi_nom_mat_init = \
-            np.minimum(
-                (self.ubi_nom_017 * ubi_num_017_mat +
-                 self.ubi_nom_1864 * ubi_num_1864_mat +
-                 self.ubi_nom_65p * ubi_num_65p_mat), self.ubi_nom_max)
+        ubi_nom_init = np.tile(np.reshape(np.minimum(
+            (self.ubi_nom_017 * ubi_num_017_mat +
+             self.ubi_nom_1864 * ubi_num_1864_mat +
+             self.ubi_nom_65p * ubi_num_65p_mat), self.ubi_nom_max),
+            (1, self.S, self.J)), (self.T + self.S, 1, 1))
 
         # Calculate steady-state and transition path of stationary individual
         # household UBI payments and stationary aggregate UBI outlays
-        lambdas_mat = np.tile(self.lambdas.reshape((1, self.J)), (self.S, 1))
-        for t in range(TpS):
-            if self.ubi_growthadj or self.g_y_annual == 0:
-                # If ubi_growthadj=True or if g_y_annual<0, then uib_arr is
-                # just a copy of the initial UBI mattrix for T periods.
-                ubi_nom_mat = ubi_nom_mat_init
-            else:
-                # If ubi_growthadj=False, and g_y_annual>=0, then must divide
-                # by e^{g_y t} every period, then set the steady-state matrix
-                # to its value close to zero at t=T
-                if t <= self.T:
-                    ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * t)
-                else:  # periods where t > T
-                    ubi_nom_mat = ubi_nom_mat_init / np.exp(self.g_y * self.T)
-            ubi_nom_array[t, :, :] = ubi_nom_mat
-            omega_mat = np.tile(self.omega[t, :].reshape((self.S, 1)),
-                                (1, self.J))
-            UBI_nom_vec[t] = (lambdas_mat * omega_mat * ubi_nom_mat).sum()
-        ubi_nom_SS = ubi_nom_array[self.T + 1, :, :]
-        UBI_nom_SS = UBI_nom_vec[self.T + 1]
+        if self.ubi_growthadj or self.g_y_annual == 0:
+            # If ubi_growthadj=True or if g_y_annual<0, then ubi_arr is
+            # just a copy of the initial UBI matrix for T periods.
+            ubi_nom_array = ubi_nom_init
+        else:
+            # If ubi_growthadj=False, and g_y_annual>=0, then must divide
+            # by e^{g_y t} every period, then set the steady-state matrix
+            # to its value close to zero at t=T
+            ubi_nom_array = np.zeros_like(ubi_nom_init)
+            discount_factor = np.exp(
+                self.g_y * np.linspace(0, self.T, self.T + 1))
+            ubi_nom_array[:self.T + 1, :, :] = (
+                ubi_nom_init[:self.T + 1, :, :] /
+                discount_factor.reshape(discount_factor.shape[0], 1, 1))
+            ubi_nom_array[self.T + 1:, :, :] = ubi_nom_array[self.T, :, :]
 
-        return ubi_nom_array, UBI_nom_vec, ubi_nom_SS, UBI_nom_SS
+        return ubi_nom_array
 
     def update_specifications(self, revision, raise_errors=True):
         '''
@@ -616,7 +342,7 @@ class Specifications(paramtools.Parameters):
         '''
         if not (isinstance(revision, dict) or isinstance(revision, str)):
             raise ValueError(
-                'ERROR: revision is not a dictionary of string')
+                'ERROR: revision is not a dictionary or string')
         self.adjust(revision, raise_errors=raise_errors)
         self.compute_default_params()
 

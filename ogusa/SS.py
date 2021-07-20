@@ -162,7 +162,7 @@ def inner_loop(outer_loop_vars, p, client):
     r_hh = aggr.get_r_hh(r, r_gov, K, D)
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
-    ubi = p.ubi_nom_SS / factor
+    ubi = p.ubi_nom_array[-1, :, :] / factor
 
     lazy_values = []
     for j in range(p.J):
@@ -339,7 +339,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     factor_ss = factor
     bqssmat = household.get_bq(BQss, None, p, 'SS')
     trssmat = household.get_tr(TR_ss, None, p, 'SS')
-    ubissmat = p.ubi_nom_SS / factor_ss
+    ubissmat = p.ubi_nom_array[-1, :, :] / factor_ss
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
     # Compute effective and marginal tax rates for all agents

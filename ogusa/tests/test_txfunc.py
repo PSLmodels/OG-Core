@@ -1,4 +1,4 @@
-from ogusa import txfunc
+from ogusa import tax, txfunc
 from distributed import Client, LocalCluster
 import pytest
 import pandas as pd
@@ -26,6 +26,7 @@ def decompress_pickle(file):
     data = bz2.BZ2File(file, 'rb')
     data = pickle.load(data)
     return data
+
 
 @pytest.mark.parametrize('tax_func_type,expected',
                          [('DEP', 0.032749763), ('GS', 0.007952744)],
@@ -140,18 +141,18 @@ def test_replace_outliers():
     assert np.allclose(act, exp)
 
 
-expected_tuple_DEP = ((np.array(
-    [6.37000261e-22, 2.73401629e-03, 1.54672458e-08, 1.43446236e-02,
-        2.32797367e-01, 1.00000000e-04, 1.00000000e+00,
-        -3.69059719e-02, -1.01967001e-01, 3.96030053e-02,
-        1.02987671e-01, -1.30433574e-01]), 19527.16203007729, 3798))
+expected_tuple_DEP = (np.array(
+    [6.37000261e-22,  2.73401629e-03,  1.54672458e-08,  1.43446236e-02,
+     2.32797367e-01,  1.00000000e-04,  1.00000000e+00, -3.69059719e-02,
+     -1.01967001e-01,  3.96030053e-02,  1.02987671e-01, -1.30433574e-01]),
+    19527.16203007729, 3798)
 expected_tuple_DEP_totalinc = (
-    np.array([6.73787858e-10, 5.41788589e-02, 1.55761571e-01,
+    np.array([6.73787858e-10,  5.41788589e-02,  1.55761571e-01,
               -1.01967001e-01, 1.04544287e-01, -1.30433574e-01]),
     20322.76956242071, 3798)
 expected_tuple_linear = (0.15381972028750876, 0.0, 3798)
 expected_tuple_GS = (
-    np.array([1.29769078e-01, 4.36131826e+00, 4.44887761e-07]),
+    np.array([1.29769044e-01, 4.36139091e+00, 4.44767848e-07]),
     20323.465971499016, 3798)
 expected_tuple_linear_mtrx = (0.2677667, 0.0, 3798)
 expected_tuple_linear_mtry = (0.15604427, 0.0, 3798)
@@ -221,7 +222,7 @@ def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams,
                                    numparams, output_dir, True)
 
     for i, v in enumerate(expected_tuple):
-        assert(np.allclose(test_tuple[i], v))
+        assert(np.allclose(test_tuple[i], v, rtol=0.0, atol=1e-04))
 
 
 def test_txfunc_est_exception():
@@ -302,11 +303,15 @@ def test_tax_func_loop():
         t, micro_data, beg_yr, s_min, s_max, age_specific,
         tax_func_type, analytical_mtrs, desc_data, graph_data,
         graph_est, output_dir, numparams)
+    age_specific = False
+
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_outputs.pkl'))
+
     for i, v in enumerate(expected_tuple):
-        assert(np.allclose(test_tuple[i], v))
+        print("diff = ", np.absolute(test_tuple[i] - v).max())
+        assert(np.allclose(test_tuple[i], v, atol=1e-06))
 
 
 A = 0.02
@@ -399,23 +404,26 @@ def test_tax_func_estimate(dask_client):
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_inputs.pkl'))
+    micro_data = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'micro_data_dict_for_tests.pkl'))
     (BW, S, starting_age, ending_age, beg_yr, baseline,
      analytical_mtrs, age_specific, reform, data, client,
      num_workers) = input_tuple
     tax_func_type = 'DEP'
     age_specific = False
     BW = 1
+    test_path = os.path.join(CUR_PATH, 'test_out.pkl')
     test_dict = txfunc.tax_func_estimate(
-        BW, S, starting_age, ending_age, start_year=beg_yr,
+        micro_data, BW, S, starting_age, ending_age, start_year=2030,
         baseline=baseline, analytical_mtrs=analytical_mtrs,
         tax_func_type=tax_func_type, age_specific=age_specific,
         reform=reform, data=data, client=dask_client,
-        num_workers=NUM_WORKERS)
+        num_workers=NUM_WORKERS, tax_func_path=test_path)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))
-    del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
-    del test_dict['tfunc_time'], test_dict['taxcalc_version']
+    del expected_dict['tfunc_time']
 
     for k, v in expected_dict.items():
         if isinstance(v, str):  # for testing tax_func_type object
