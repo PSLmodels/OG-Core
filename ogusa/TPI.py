@@ -105,13 +105,12 @@ def get_initial_SS_values(p):
     return initial_values, ss_vars, theta, baseline_values
 
 
-def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
-                      initial_b, p):
+def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, ubi, j, initial_b,
+                      p):
     '''
-    Solves the first entries of the upper triangle of the twist
-    doughnut.  This is separate from the main TPI function because the
-    values of b and n are scalars, so it is easier to just have a
-    separate function for these cases.
+    Solves the first entries of the upper triangle of the twist doughnut. This
+    is separate from the main TPI function because the values of b and n are
+    scalars, so it is easier to just have a separate function for these cases.
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2
@@ -121,9 +120,10 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
         tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
+        ubi (scalar): individual UBI credit to household s=E+S of type j in
+            period 0
         j (int): index of ability type
-        initial_b (Numpy array): savings of agents alive at T=0,
-            size = SxJ
+        initial_b (Numpy array): SxJ matrix, savings of agents alive at T=0
         p (OG-USA Specifications object): model parameters
 
     Returns:
@@ -139,7 +139,7 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
     error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s,
                                    np.array([b_splus1]), np.array([n]),
                                    np.array([bq]), factor,
-                                   np.array([tr]), theta[j],
+                                   np.array([tr]), np.array([ubi]), theta[j],
                                    p.e[-1, j], p.rho[-1],
                                    np.array([p.tau_c[0, -1, j]]),
                                    p.etr_params[0, -1, :],
@@ -148,9 +148,10 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
 
     error2 = household.FOC_labor(
         np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]),
-        np.array([bq]), factor, np.array([tr]), theta[j], p.chi_n[-1],
-        p.e[-1, j], np.array([p.tau_c[0, -1, j]]), p.etr_params[0, -1, :],
-        p.mtrx_params[0, -1, :], None, j, p, 'TPI_scalar')
+        np.array([bq]), factor, np.array([tr]), np.array([ubi]), theta[j],
+        p.chi_n[-1], p.e[-1, j], np.array([p.tau_c[0, -1, j]]),
+        p.etr_params[0, -1, :], p.mtrx_params[0, -1, :], None, j, p,
+        'TPI_scalar')
 
     if n <= 0 or n >= 1:
         error2 += 1e12
@@ -159,13 +160,13 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
     return [np.squeeze(error1)] + [np.squeeze(error2)]
 
 
-def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
+def twist_doughnut(guesses, r, w, bq, tr, theta, factor, ubi, j, s, t,
                    tau_c, etr_params, mtrx_params, mtry_params,
                    initial_b, p):
     '''
-    Solves the upper triangle of time path iterations.  These are the
-    agents who are alive at time T=0 so that we do not solve for their
-    full lifetime (so of their life was before the model begins).
+    Solves the upper triangle of time path iterations. These are the agents who
+    are alive at time T=0 so that we do not solve for their full lifetime (so
+    of their life was before the model begins).
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2s
@@ -175,6 +176,7 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
         tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
+        ubi (array): length remaining periods of life UBI payout to household
         j (int): index of ability type
         s (int): years of life remaining
         t (int): model period
@@ -212,12 +214,12 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
     rho_s = p.rho[-length:]
 
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, bq,
-                                   factor, tr, theta, e_s, rho_s,
+                                   factor, tr, ubi, theta, e_s, rho_s,
                                    tau_c, etr_params, mtry_params, t,
                                    j, p, 'TPI')
 
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, bq,
-                                 factor, tr, theta, chi_n_s, e_s,
+                                 factor, tr, ubi, theta, chi_n_s, e_s,
                                  tau_c, etr_params, mtrx_params, t, j,
                                  p, 'TPI')
 
@@ -234,7 +236,7 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
+def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     '''
     Given path of economic aggregates and factor prices, solves
     household problem.  This has been termed the inner-loop (in
@@ -256,6 +258,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         initial_values (tuple): initial period variable values,
             (b_sinit, b_splus1init, factor, initial_b, initial_n,
             D0_baseline)
+        ubi (array_like): T+S x S x J array time series of UBI transfers in
+            model units for each type-j age-s household in every period t
         j (int): index of ability type
         ind (Numpy array): integers from 0 to S-1
         p (OG-USA Specifications object): model parameters
@@ -292,7 +296,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
                             args=(r_hh[0], w[0], bq[0, -1, j],
                                   tr[0, -1, j],
                                   theta * p.replacement_rate_adjust[0],
-                                  factor, j, initial_b, p),
+                                  factor, ubi[0, -1, j], j, initial_b, p),
                             xtol=MINIMIZER_TOL))
 
     for s in range(p.S - 2):  # Upper triangle
@@ -303,6 +307,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         bq_to_use = np.diag(bq[:p.S, :, j], p.S - (s + 2))
         tr_to_use = np.diag(tr[:p.S, :, j], p.S - (s + 2))
         tau_c_to_use = np.diag(p.tau_c[:p.S, :, j], p.S - (s + 2))
+        ubi_to_use = np.diag(ubi[:p.S, :, j], p.S - (s + 2))
 
         length_diag =\
             np.diag(p.etr_params[:p.S, :, 0], p.S-(s + 2)).shape[0]
@@ -316,16 +321,14 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
                 np.diag(p.mtrx_params[:p.S, :, i], p.S - (s + 2))
             mtry_params_to_use[:, i] =\
                 np.diag(p.mtry_params[:p.S, :, i], p.S - (s + 2))
-
         solutions = opt.fsolve(twist_doughnut,
                                list(b_guesses_to_use) +
                                list(n_guesses_to_use),
                                args=(r_hh, w, bq_to_use, tr_to_use,
-                                     theta_to_use, factor, j, s, 0,
-                                     tau_c_to_use,
-                                     etr_params_to_use,
-                                     mtrx_params_to_use,
-                                     mtry_params_to_use, initial_b, p),
+                                     theta_to_use, factor, ubi_to_use, j, s, 0,
+                                     tau_c_to_use, etr_params_to_use,
+                                     mtrx_params_to_use, mtry_params_to_use,
+                                     initial_b, p),
                                xtol=MINIMIZER_TOL)
 
         b_vec = solutions[:int(len(solutions) / 2)]
@@ -341,37 +344,25 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         bq_to_use = np.diag(bq[t:t + p.S, :, j])
         tr_to_use = np.diag(tr[t:t + p.S, :, j])
         tau_c_to_use = np.diag(p.tau_c[t:t + p.S, :, j])
+        ubi_to_use = np.diag(ubi[t:t + p.S, :, j])
 
         # initialize array of diagonal elements
-        etr_params_TP = np.zeros((p.T + p.S, p.S,  p.etr_params.shape[2]))
-        etr_params_TP[:p.T, :, :] = p.etr_params
-        etr_params_TP[p.T:, :, :] = p.etr_params[-1, :, :]
-
-        mtrx_params_TP = np.zeros((p.T + p.S, p.S,  p.mtrx_params.shape[2]))
-        mtrx_params_TP[:p.T, :, :] = p.mtrx_params
-        mtrx_params_TP[p.T:, :, :] = p.mtrx_params[-1, :, :]
-
-        mtry_params_TP = np.zeros((p.T + p.S, p.S,  p.mtry_params.shape[2]))
-        mtry_params_TP[:p.T, :, :] = p.mtry_params
-        mtry_params_TP[p.T:, :, :] = p.mtry_params[-1, :, :]
-
         length_diag =\
-            np.diag(etr_params_TP[t:t + p.S, :, 0]).shape[0]
+            np.diag(p.etr_params[t:t + p.S, :, 0]).shape[0]
         etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
         mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
         mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
 
         for i in range(p.etr_params.shape[2]):
-            etr_params_to_use[:, i] = np.diag(etr_params_TP[t:t + p.S, :, i])
-            mtrx_params_to_use[:, i] = np.diag(mtrx_params_TP[t:t + p.S, :, i])
-            mtry_params_to_use[:, i] = np.diag(mtry_params_TP[t:t + p.S, :, i])
+            etr_params_to_use[:, i] = np.diag(p.etr_params[t:t + p.S, :, i])
+            mtrx_params_to_use[:, i] = np.diag(p.mtrx_params[t:t + p.S, :, i])
+            mtry_params_to_use[:, i] = np.diag(p.mtry_params[t:t + p.S, :, i])
 
         [solutions, infodict, ier, message] =\
             opt.fsolve(twist_doughnut, list(b_guesses_to_use) +
                        list(n_guesses_to_use),
-                       args=(r_hh, w, bq_to_use, tr_to_use,
-                             theta_to_use, factor,
-                             j, None, t, tau_c_to_use,
+                       args=(r_hh, w, bq_to_use, tr_to_use, theta_to_use,
+                             factor, ubi_to_use, j, None, t, tau_c_to_use,
                              etr_params_to_use, mtrx_params_to_use,
                              mtry_params_to_use, initial_b, p),
                        xtol=MINIMIZER_TOL, full_output=True)
@@ -407,6 +398,10 @@ def run_TPI(p, client=None):
      initial_n) = initial_values
     (TRbaseline, Gbaseline, D0_baseline) = baseline_values
 
+    # Create time path of UBI household benefits and aggregate UBI outlays
+    ubi = p.ubi_nom_array / factor
+    UBI = aggr.get_L(ubi[:p.T], p, 'TPI')
+
     print('Government spending breakpoints are tG1: ', p.tG1,
           '; and tG2:', p.tG2)
 
@@ -420,7 +415,7 @@ def run_TPI(p, client=None):
     n_mat = guesses_n
     ind = np.arange(p.S)
 
-    # Get path for aggregate savings and labor supply`
+    # Get path for aggregate savings and labor supply
     L_init = np.ones((p.T + p.S,)) * ss_vars['Lss']
     B_init = np.ones((p.T + p.S,)) * ss_vars['Bss']
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
@@ -522,7 +517,7 @@ def run_TPI(p, client=None):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
-                                    initial_values, j, ind, p))
+                                    initial_values, ubi, j, ind, p))
         if client:
             futures = client.compute(lazy_values,
                                      num_workers=p.num_workers)
@@ -542,14 +537,14 @@ def run_TPI(p, client=None):
         bmat_splus1[:, :, :] = b_mat[:p.T, :, :]
 
         etr_params_4D = np.tile(
-            p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
+            p.etr_params[:p.T, :, :].reshape(p.T, p.S, 1, p.etr_params.shape[2]),
             (1, 1, p.J, 1))
         bqmat = household.get_bq(BQ, None, p, 'TPI')
         trmat = household.get_tr(TR, None, p, 'TPI')
         tax_mat = tax.net_taxes(
             r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-            bqmat[:p.T, :, :], factor, trmat[:p.T, :, :], theta, 0,
-            None, False, 'TPI', p.e, etr_params_4D, p)
+            bqmat[:p.T, :, :], factor, trmat[:p.T, :, :], ubi[:p.T, :, :],
+            theta, 0, None, False, 'TPI', p.e, etr_params_4D, p)
         r_hh_path = utils.to_timepath_shape(r_hh)
         wpath = utils.to_timepath_shape(w)
         c_mat = household.get_cons(r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
@@ -561,16 +556,16 @@ def run_TPI(p, client=None):
             bmat_s[:p.T, :, :], n_mat[:p.T, :, :], p)
 
         (total_tax_rev, iit_payroll_tax_revenue,
-         agg_pension_outlays, bequest_tax_revenue, wealth_tax_revenue,
-         cons_tax_revenue, business_tax_revenue, payroll_tax_revenue,
-         iit_revenue) = aggr.revenue(
+         agg_pension_outlays, UBI_outlays, bequest_tax_revenue,
+         wealth_tax_revenue, cons_tax_revenue, business_tax_revenue,
+         payroll_tax_revenue, iit_revenue) = aggr.revenue(
                 r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
-                L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-                p, 'TPI')
+                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T], L[:p.T],
+                K[:p.T], factor, ubi[:p.T, :, :], theta, etr_params_4D, p,
+                'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         dg_fixed_values = (Y, total_tax_revenue, agg_pension_outlays,
-                           TR, Gbaseline, D0_baseline)
+                           UBI_outlays, TR, Gbaseline, D0_baseline)
         (Dnew, G[:p.T], D_d[:p.T], D_f[:p.T], new_borrowing,
          debt_service, new_borrowing_f) =\
             fiscal.D_G_path(r_gov, dg_fixed_values, p)
@@ -620,16 +615,17 @@ def run_TPI(p, client=None):
                             'TPI', False)
         bqmat_new = household.get_bq(BQnew, None, p, 'TPI')
         (total_tax_rev, iit_payroll_tax_revenue,
-         agg_pension_outlays, bequest_tax_revenue, wealth_tax_revenue,
-         cons_tax_revenue, business_tax_revenue, payroll_tax_revenue,
-         iit_revenue) = aggr.revenue(
+         agg_pension_outlays, UBI_outlays, bequest_tax_revenue,
+         wealth_tax_revenue, cons_tax_revenue, business_tax_revenue,
+         payroll_tax_revenue, iit_revenue) = aggr.revenue(
                 r_hh_new[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
-                L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
+                L[:p.T], K[:p.T], factor, ubi[:p.T, :, :], theta,
+                etr_params_4D, p, 'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
             Ynew[:p.T], TR[:p.T], G[:p.T], total_tax_revenue[:p.T],
-            agg_pension_outlays[:p.T], p, 'TPI')
+            agg_pension_outlays[:p.T], UBI_outlays[:p.T], p, 'TPI')
 
         # update vars for next iteration
         # w[:p.T] = wnew[:p.T]
@@ -684,10 +680,10 @@ def run_TPI(p, client=None):
 
     # Compute effective and marginal tax rates for all agents
     mtrx_params_4D = np.tile(
-        p.mtrx_params.reshape(p.T, p.S, 1, p.mtrx_params.shape[2]),
+        p.mtrx_params[:p.T, :, :].reshape(p.T, p.S, 1, p.mtrx_params.shape[2]),
         (1, 1, p.J, 1))
     mtry_params_4D = np.tile(
-        p.mtry_params.reshape(p.T, p.S, 1, p.mtry_params.shape[2]),
+        p.mtry_params[:p.T, :, :].reshape(p.T, p.S, 1, p.mtry_params.shape[2]),
         (1, 1, p.J, 1))
 
     e_3D = np.tile(p.e.reshape(1, p.S, p.J), (p.T, 1, 1))
@@ -765,7 +761,7 @@ def run_TPI(p, client=None):
               'new_borrowing_f': new_borrowing_f,
               'debt_service_f': debt_service_f,
               'etr_path': etr_path, 'mtrx_path': mtrx_path,
-              'mtry_path': mtry_path}
+              'mtry_path': mtry_path, 'ubi_path': ubi, 'UBI_path': UBI}
 
     tpi_dir = os.path.join(p.output_base, "TPI")
     utils.mkdirs(tpi_dir)

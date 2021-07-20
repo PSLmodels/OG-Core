@@ -4,7 +4,8 @@ not break down (is still running) after 5 minutes or 300 seconds.
 '''
 import multiprocessing
 import time
-import os, sys
+import os
+import sys
 import importlib.util
 from pathlib import Path
 import pytest

@@ -30,11 +30,6 @@ def test_create_specs_object():
     assert specs
 
 
-def test_create_specs_object_test():
-    specs = Specifications(test=True)
-    assert specs
-
-
 def test_compute_default_params():
     specs = Specifications()
     specs.alpha_G = np.ones((10, 1))
@@ -42,75 +37,40 @@ def test_compute_default_params():
     assert specs.alpha_G[10] == 1
 
 
-def test_get_tax_function_parameters():
-    specs = Specifications()
-    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
-    specs.get_tax_function_parameters(None, run_micro=False,
-                                      tax_func_path=tax_func_path)
-    assert specs.etr_params.shape == (specs.T, specs.S, 12)
-    assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
-    assert specs.mtry_params.shape == (specs.T, specs.S, 12)
+param_updates1 = {
+    'T': 4, 'S': 3, 'J': 1, 'ubi_nom_017': 1000,
+    'eta': np.ones((4, 3, 1)) / 12, 'ubi_nom_1864': 1200,
+    'ubi_nom_65p': 400, 'ubi_growthadj': True}
+expected1 = np.ones((7, 3, 1)) * 2180
+param_updates2 = {
+    'T': 4, 'S': 3, 'J': 1, 'ubi_nom_017': 1000,
+    'eta': np.ones((4, 3, 1)) / 12, 'ubi_nom_1864': 1200,
+    'ubi_nom_max': 2000, 'ubi_nom_65p': 400, 'ubi_growthadj': True}
+expected2 = np.ones((7, 3, 1)) * 2000
+param_updates3 = {
+    'T': 4, 'S': 3, 'J': 1, 'ubi_nom_017': 1000,
+    'eta': np.ones((4, 3, 1)) / 12, 'ubi_nom_1864': 1200,
+    'ubi_nom_65p': 400, 'ubi_growthadj': False,
+    'g_y_annual': 0.03}
+expected3 = np.array([
+    [[2180], [2180.], [2180.]],
+    [[656.9250257], [656.9250257], [656.9250257]],
+    [[197.9589401], [197.9589401], [197.9589401]],
+    [[59.65329442], [59.65329442], [59.65329442]],
+    [[17.97602843], [17.97602843], [17.97602843]],
+    [[17.97602843], [17.97602843], [17.97602843]],
+    [[17.97602843], [17.97602843], [17.97602843]]])
 
 
-def test_get_tax_function_parameters_baseline():
-    specs = Specifications(baseline=True)
-    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
-    specs.get_tax_function_parameters(None, run_micro=False,
-                                      tax_func_path=tax_func_path)
-    assert specs.etr_params.shape == (specs.T, specs.S, 12)
-    assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
-    assert specs.mtry_params.shape == (specs.T, specs.S, 12)
-
-
-def test_get_tax_function_parameters_S():
-    specs = Specifications()
-    specs.S = 40
-    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
-    specs.get_tax_function_parameters(None, run_micro=False,
-                                      tax_func_path=tax_func_path)
-    assert specs.etr_params.shape == (specs.T, specs.S, 12)
-    assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
-    assert specs.mtry_params.shape == (specs.T, specs.S, 12)
-
-
-def test_get_tax_function_parameters_constant_rates():
-    specs = Specifications()
-    specs.constant_rates = True
-    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
-    specs.get_tax_function_parameters(None, run_micro=False,
-                                      tax_func_path=tax_func_path)
-    assert specs.etr_params.shape == (specs.T, specs.S, 12)
-    assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
-    assert specs.mtry_params.shape == (specs.T, specs.S, 12)
-    assert np.allclose(specs.etr_params[:, :, :10],
-                       np.zeros((specs.T, specs.S, 10)))
-    assert np.allclose(specs.mtrx_params[:, :, :10],
-                       np.zeros((specs.T, specs.S, 10)))
-    assert np.allclose(specs.mtry_params[:, :, :10],
-                       np.zeros((specs.T, specs.S, 10)))
-
-
-def test_get_tax_function_zero_taxes():
-    specs = Specifications()
-    specs.zero_taxes = True
-    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
-    specs.get_tax_function_parameters(None, run_micro=False,
-                                      tax_func_path=tax_func_path)
-    assert np.allclose(specs.etr_params,
-                       np.zeros((specs.T, specs.S, 12)))
-    assert np.allclose(specs.mtrx_params,
-                       np.zeros((specs.T, specs.S, 12)))
-    assert np.allclose(specs.mtry_params,
-                       np.zeros((specs.T, specs.S, 12)))
-
-
-def test_read_tax_func_estimate():
-    specs = Specifications()
-    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
-    expected_dict = utils.safe_read_pickle(tax_func_path)
-    test_dict, _ = specs.read_tax_func_estimate(tax_func_path)
-    assert np.allclose(expected_dict['tfunc_avg_etr'],
-                       test_dict['tfunc_avg_etr'])
+@pytest.mark.parametrize(
+    'param_updates, expected',
+    [(param_updates1, expected1), (param_updates2, expected2),
+     (param_updates3, expected3)],
+    ids=['UBI growth adj', 'UBI hit max', 'UBI no growth adj'])
+def test_get_ubi_nom_objs(param_updates, expected):
+    spec = Specifications()
+    spec.update_specifications(param_updates)
+    assert np.allclose(spec.ubi_nom_array, expected)
 
 
 def test_update_specifications_with_dict():
