@@ -217,7 +217,7 @@ class Specifications(paramtools.Parameters):
         # at some point, we will want to make Cost of Capital Calculator
         # a dependency to compute tau_b
         # this adjustment factor has as the numerator CIT receipts/GDP
-        # and as the demoninator CIT receipts/GDP from the
+        # and as the denominator CIT receipts/GDP from the
         # model with baseline parameterization and no adjustment to the
         # CIT_rate
         self.tau_b = (self.cit_rate * self.c_corp_share_of_assets *
@@ -342,7 +342,7 @@ class Specifications(paramtools.Parameters):
         '''
         if not (isinstance(revision, dict) or isinstance(revision, str)):
             raise ValueError(
-                'ERROR: revision is not a dictionary of string')
+                'ERROR: revision is not a dictionary or string')
         self.adjust(revision, raise_errors=raise_errors)
         self.compute_default_params()
 
