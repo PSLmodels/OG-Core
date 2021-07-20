@@ -46,8 +46,8 @@ def main():
     # Also adjust the Frisch elasticity, the start year, the
     # effective corporate income tax rate, and the SS debt-to-GDP ratio
     og_spec = {'frisch': 0.41, 'start_year': START_YEAR, 'cit_rate': [0.21],
-               'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
-               'alpha_G': alpha_G.tolist()}
+                'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
+                'alpha_G': alpha_G.tolist()}
 
     '''
     ------------------------------------------------------------------------
@@ -74,7 +74,7 @@ def main():
     ------------------------------------------------------------------------
     '''
     # update the effective corporate income tax rate
-    og_spec = og_spec.update({'cit_rate': [0.35]})
+    og_spec.update({'cit_rate': [0.35]})
     p2 = Specifications(
         baseline=False,
         client=client,
