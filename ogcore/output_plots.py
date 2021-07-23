@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 from ogcore.constants import (GROUP_LABELS, VAR_LABELS, ToGDP_LABELS,
-                             CBO_UNITS, DEFAULT_START_YEAR)
+                              CBO_UNITS, DEFAULT_START_YEAR)
 import ogcore.utils as utils
 from ogcore.utils import Inequality
 

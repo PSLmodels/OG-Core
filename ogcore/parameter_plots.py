@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
-from ogcore.constants import DEFAULT_START_YEAR, TC_LAST_YEAR, VAR_LABELS
+from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -912,8 +912,6 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
     # Check that inputs are valid
     assert isinstance(start_year, int)
     assert isinstance(year, int)
-    assert (start_year <= TC_LAST_YEAR)
-    assert (year <= TC_LAST_YEAR)
     assert (year >= start_year)
     # if list of tax function types less than list of params, assume
     # all the same functional form

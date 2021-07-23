@@ -7,7 +7,7 @@ import paramtools
 # import ogcore
 from ogcore import elliptical_u_est
 from ogcore.utils import rate_conversion
-from ogcore.constants import BASELINE_DIR, TC_LAST_YEAR
+from ogcore.constants import BASELINE_DIR
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
