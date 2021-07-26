@@ -46,7 +46,7 @@ In this section, we describe what is arguably the most important economic agent 
   T_{s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right)
   ```
 
-  where the effective tax rate can be a function of both labor income and capital income $\tau^{etr}(x,y)$. Chapter {ref}`Chap_TaxCalc` details exactly how we estimate these tax functions from microsimulation model data.
+  where the effective tax rate can be a function of both labor income and capital income $\tau^{etr}(x,y)$. The calibration chapter on the microsimulation model and tax function estimation in the country-specific repository documentation details exactly how the model estimates these tax functions from microsimulation model data.
 
   where many of the variables now have $j$ subscripts. The variables with three subscripts $(j,s,t)$ tell you to which ability type $j$ and age $s$ individual the variable belongs and in which period $t$.
 
@@ -152,7 +152,7 @@ In this section, we describe what is arguably the most important economic agent 
     (c_{j,E+S,t})^{-\sigma} = \chi^b_j(b_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
 
-  The distortion of taxation on household decisions can be seen in Euler equations {eq}`EqHHeul_n` and {eq}`EqHHeul_b` in the terms that have a marginal tax rate $(1-\tau^{mtr})$. This comes from the expression for total tax liabilities as a function of the effective tax rate and total income as expressed in Equation {eq}`EqTaxCalcLiabETR`. Using the chain rule, we can break up the derivatives of total tax liability with respect to $n_{j,s,t}$ and $b_{j,s,t}$, respectively, into simpler functions of marginal tax rates. We discuss this in more detail in Chapter {ref}`Chap_TaxCalc`.
+  The distortion of taxation on household decisions can be seen in Euler equations {eq}`EqHHeul_n` and {eq}`EqHHeul_b` in the terms that have a marginal tax rate $(1-\tau^{mtr})$. This comes from the expression for total tax liabilities as a function of the effective tax rate and total income as expressed in Equation {eq}`EqTaxCalcLiabETR`. Using the chain rule, we can break up the derivatives of total tax liability with respect to $n_{j,s,t}$ and $b_{j,s,t}$, respectively, into simpler functions of marginal tax rates. We discuss this in more detail in the calibration chapter on the microsimulation model and tax function estimation in the country-specific repository.
 
   ```{math}
   :label: EqMTRx_derive

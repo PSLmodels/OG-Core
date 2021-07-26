@@ -80,7 +80,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         6. Given $\bar{r}^i$, $\bar{r}_{gov,a}$, $\bar{K}_a$, and $\bar{D}$, solve for $\bar{r}_{hh,a}$ using {eq}`EqStnrz_rate_hh`.
 
-        7. Use $factor^i$ to solve for the tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ defined in {eq}`EqTaxCalcLiabETR2`, {eq}`EqTaxCalcMTRx`, and {eq}`EqTaxCalcMTRy`, respectively of Chapter {ref}`Chap_TaxCalc` using the factor to transform model units to dollars in the tax functions as described in Section {ref}`SecTaxCalcFactor`.
+        7. Use $factor^i$ to solve for the tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ defined in {eq}`EqTaxCalcLiabETR2`, {eq}`EqTaxCalcMTRx`, and {eq}`EqTaxCalcMTRy`, respectively of the calibration chapter on the microsimulation model and tax function estimation in the country-specific repository using the factor to transform model units to dollars in the tax functions as described in the section on the model units factor.
 
     3. Given values $\bar{r}_{hh,a}$, $\bar{w}_a$ $\overline{BQ}^i$, $\overline{TR}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
