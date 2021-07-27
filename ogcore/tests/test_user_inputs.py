@@ -6,8 +6,6 @@ from ogcore.execute import runner
 from ogcore.parameters import Specifications
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-TAX_FUNC_PATH = os.path.join(
-    CUR_PATH, '..', 'data','tax_functions','TxFuncEst_baseline_CPS.pkl')
 OUTPUT_DIR = os.path.join(CUR_PATH, "OUTPUT")
 
 
