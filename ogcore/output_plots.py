@@ -10,7 +10,7 @@ import ogcore.utils as utils
 from ogcore.utils import Inequality
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
-style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
+style_file = os.path.join(cur_path, 'OGcorePlots.mplstyle')
 plt.style.use(style_file)
 
 
