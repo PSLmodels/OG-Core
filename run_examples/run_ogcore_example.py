@@ -8,8 +8,6 @@ from distributed import Client
 import time
 import numpy as np
 import os
-import taxcalc
-from taxcalc import Calculator
 from ogcore import output_tables as ot
 from ogcore import output_plots as op
 from ogcore.execute import runner
