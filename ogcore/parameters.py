@@ -22,7 +22,7 @@ class Specifications(paramtools.Parameters):
                  run_micro=False,
                  output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
                  time_path=True, baseline=False, guid='',
-                 client=None, num_workers=1):
+                 num_workers=1):
         super().__init__()
 
         self.output_base = output_base
