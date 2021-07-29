@@ -245,7 +245,7 @@ CI test of revenue() function
 -------------------------------------------------------------------------------
 '''
 p = Specifications()
-dim4 = 12
+num_tax_params = 12
 new_param_values = {
     'T': 30,
     'S': 20,
@@ -289,15 +289,12 @@ p.e = (0.263 + (2.024 - 0.263) *
 p.omega = 0.039 * random_state.rand(p.T * p.S * 1).reshape(p.T, p.S)
 p.omega = p.omega/p.omega.sum(axis=1).reshape(p.T, 1)
 p.omega_SS = p.omega[-1, :]
-etr_params = (0.22 *
-              random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S,
-                                                          dim4))
-etr_params = np.tile(np.reshape(etr_params, (p.T, p.S, 1, dim4)),
-                     (1, 1, p.J, 1))
+etr_params = (
+    0.22 * random_state.rand(p.T * p.S * p.J * num_tax_params).reshape(
+        p.T, p.S, p.J, num_tax_params))
 theta = 0.101 + (0.156 - 0.101) * random_state.rand(p.J)
 
 p3 = Specifications()
-dim4 = 12
 new_param_values3 = {
     'T': 30,
     'S': 20,
@@ -324,7 +321,6 @@ p3.omega = p.omega
 p3.omega_SS = p.omega_SS
 
 p_u = Specifications()
-dim_ubi = 12
 new_param_values_ubi = {
     'T': 30,
     'S': 20,
@@ -369,33 +365,31 @@ p_u.e = (0.263 + (2.024 - 0.263) *
 p_u.omega = 0.039 * random_state.rand(p_u.T * p_u.S * 1).reshape(p_u.T, p_u.S)
 p_u.omega = p_u.omega/p_u.omega.sum(axis=1).reshape(p_u.T, 1)
 p_u.omega_SS = p_u.omega[-1, :]
-etr_params_u = \
-    (0.22 * random_state.rand(p_u.T * p_u.S * dim_ubi).reshape(p_u.T, p_u.S,
-                                                               dim_ubi))
-etr_params_u = np.tile(np.reshape(etr_params_u, (p_u.T, p_u.S, 1, dim_ubi)),
-                       (1, 1, p_u.J, 1))
+etr_params_u = (
+    0.22 * random_state.rand(p_u.T * p_u.S * p_u.J * num_tax_params).reshape(
+        p_u.T, p_u.S, p_u.J, num_tax_params))
 theta_u = 0.101 + (0.156 - 0.101) * random_state.rand(p_u.J)
 
-expected1 = 0.5370699180829722
+expected1 = 0.5688319028341413
 expected2 = np.array(
-    [0.50260639, 0.48109794, 0.5059882, 0.50527725, 0.57985594, 0.59290848,
-     0.52345093, 0.52404633, 0.54382821, 0.55482053, 0.51400707, 0.50237146,
-     0.4868004, 0.55008867, 0.49817611, 0.58803381, 0.54893319, 0.5484411,
-     0.66892545, 0.56201835, 0.58842445, 0.54289658, 0.50051496, 0.47262093,
-     0.50623643, 0.55579704, 0.49693837, 0.56426605, 0.51268459, 0.52148645])
+    [0.58978896, 0.5318829, 0.58291302, 0.56616446, 0.60152253, 0.63685373,
+     0.60718972, 0.56236328, 0.56929121, 0.60536959, 0.58763365, 0.59627562,
+     0.55409009, 0.56782614, 0.56400569, 0.6636463, 0.59160813, 0.64735391,
+     0.72066489, 0.64096484, 0.61899218, 0.58806093, 0.54783766, 0.5393597,
+     0.55685316, 0.65395071, 0.58946501, 0.64129696, 0.58759922, 0.5580478])
 expected3 = np.array(
-    [0.471705, 0.45212442, 0.47401651, 0.47099882, 0.57985594, 0.59290848,
-     0.52345093, 0.52404633, 0.54382821, 0.55482053, 0.51400707, 0.50237146,
-     0.4868004, 0.55008867, 0.49817611, 0.58803381, 0.54893319, 0.5484411,
-     0.66892545, 0.56201835, 0.58842445, 0.54289658, 0.50051496, 0.47262093,
-     0.50623643, 0.55579704, 0.49693837, 0.56426605, 0.51268459, 0.52148645])
-expected4 = 0.5195699180829723
+    [0.58978896, 0.5318829, 0.58291302, 0.56616446, 0.60152253, 0.63685373,
+     0.60718972, 0.56236328, 0.56929121, 0.60536959, 0.58763365, 0.59627562,
+     0.55409009, 0.56782614, 0.56400569, 0.6636463, 0.59160813, 0.64735391,
+     0.72066489, 0.64096484, 0.61899218, 0.58806093, 0.54783766, 0.5393597,
+     0.55685316, 0.65395071, 0.58946501, 0.64129696, 0.58759922, 0.5580478])
+expected4 = 0.5688319028341413
 expected5 = np.array(
-    [0.48510639, 0.4656621, 0.49237304, 0.49326803, 0.56926324, 0.58356521,
-     0.51520972, 0.51677719, 0.53741648, 0.54916507, 0.50901868, 0.49797146,
-     0.48291939, 0.54666543, 0.49515665, 0.58537051, 0.54658403, 0.54636902,
-     0.66709778, 0.56040625, 0.5870025, 0.54164236, 0.49940868, 0.47164513,
-     0.50537574, 0.55503786, 0.49626874, 0.5636754 , 0.51216361, 0.52102692])
+    [0.58978896, 0.5318829, 0.58291302, 0.56616446, 0.60152253, 0.63685373,
+     0.60718972, 0.56236328, 0.56929121, 0.60536959, 0.58763365, 0.59627562,
+     0.55409009, 0.56782614, 0.56400569, 0.6636463, 0.59160813, 0.64735391,
+     0.72066489, 0.64096484, 0.61899218, 0.58806093, 0.54783766, 0.5393597,
+     0.55685316, 0.65395071, 0.58946501, 0.64129696, 0.58759922, 0.5580478])
 test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :],
               c[0, :, :], Y[0], L[0], K[0], factor, ubi[0, :, :], theta,
               etr_params[-1, :, :, :], p, 'SS', expected1),
@@ -412,30 +406,20 @@ test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :],
 
 @pytest.mark.parametrize(
     'r,w,b,n,bq,c,Y,L,K,factor,ubi,theta,etr_params,p,method,expected',
-    test_data, ids=['SS', 'TPI', 'TPI, replace rate adjust','SS UBI>0',
+    test_data, ids=['SS', 'TPI', 'TPI, replace rate adjust', 'SS UBI>0',
                     'TPI UBI>0'])
 def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
                  p, method, expected):
     """
     Test aggregate revenue function.
     """
-    print('ETR shape = ', etr_params.shape)
-    etr_params_old = etr_params
-    p.etr_params = etr_params_old.copy()
-    p.etr_params[..., 5] = etr_params_old[..., 6]
-    p.etr_params[..., 6] = etr_params_old[..., 11]
-    p.etr_params[..., 7] = etr_params_old[..., 5]
-    p.etr_params[..., 8] = etr_params_old[..., 7]
-    p.etr_params[..., 9] = etr_params_old[..., 8]
-    p.etr_params[..., 10] = etr_params_old[..., 9]
-    p.etr_params[..., 11] = etr_params_old[..., 10]
-    etr_params = p.etr_params
-    revenue, _, agg_pension_outlays, UBI_outlays, _, _, _, _, _, _ = \
+    print('ETR shape = ', p.etr_params.shape, etr_params.shape)
+    revenue, _, _, _, _, _, _, _, _, _ = \
         aggr.revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta,
                      etr_params, p, method)
-    expected_adj = expected + agg_pension_outlays + UBI_outlays
+    print('REVENUE = ', revenue)
 
-    assert(np.allclose(revenue, expected_adj))
+    assert(np.allclose(revenue, expected))
 
 
 test_data = [(0.04, 0.02, 2.0, 4.0, 0.026666667),
