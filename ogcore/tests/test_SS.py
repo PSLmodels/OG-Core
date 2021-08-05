@@ -8,6 +8,7 @@ import pytest
 import numpy as np
 import os
 import pickle
+import copy
 from ogcore import SS, utils, aggregates, household, constants
 from ogcore.parameters import Specifications
 from ogcore.utils import safe_read_pickle
@@ -26,497 +27,86 @@ def dask_client():
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
-guesses_in, params = input_tuple
-params = params + (None, 1)
-(bssmat, nssmat, chi_params, ss_params, income_tax_params,
- iterative_params, small_open_params, client, num_workers) = params
-p1 = Specifications()
-(p1.J, p1.S, p1.T, p1.BW, beta, p1.sigma, p1.alpha, p1.gamma, p1.epsilon,
- Z, p1.delta, p1.ltilde, p1.nu, p1.g_y, p1.g_n_ss, tau_payroll,
- tau_bq, p1.rho, p1.omega_SS, p1.budget_balance, alpha_T,
- p1.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p1.e,
- retire, p1.mean_income_data, h_wealth, p_wealth, m_wealth,
- p1.b_ellipse, p1.upsilon) = ss_params
-p1.beta = np.ones(p1.J) * beta
-p1.eta = (p1.omega_SS.reshape(p1.S, 1) *
-          p1.lambdas.reshape(1, p1.J)).reshape(1, p1.S, p1.J)
-p1.Z = np.ones(p1.T + p1.S) * Z
-p1.tau_bq = np.ones(p1.T + p1.S) * 0.0
-p1.tau_payroll = np.ones(p1.T + p1.S) * tau_payroll
-p1.alpha_T = np.ones(p1.T + p1.S) * alpha_T
-p1.tau_b = np.ones(p1.T + p1.S) * tau_b
-p1.delta_tau = np.ones(p1.T + p1.S) * delta_tau
-p1.h_wealth = np.ones(p1.T + p1.S) * h_wealth
-p1.p_wealth = np.ones(p1.T + p1.S) * p_wealth
-p1.m_wealth = np.ones(p1.T + p1.S) * m_wealth
-p1.retire = (np.ones(p1.T + p1.S) * retire).astype(int)
-p1.lambdas = lambdas.reshape(p1.J, 1)
-p1.imm_rates = imm_rates.reshape(1, p1.S)
-p1.tax_func_type = 'DEP'
-p1.zeta_K = np.array([0.0])
-p1.zeta_D = np.array([0.0])
-p1.initial_foreign_debt_ratio = 0.0
-p1.r_gov_shift = np.array([0.0])
-p1.start_year = 2019
-p1.baseline = False
-p1.baseline = True
-p1.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-    income_tax_params
-etr_params_old = np.transpose(etr_params.reshape(
-    p1.S, 1, etr_params.shape[-1]), (1, 0, 2))
-mtrx_params_old = np.transpose(mtrx_params.reshape(
-    p1.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-mtry_params_old = np.transpose(mtry_params.reshape(
-    p1.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-p1.etr_params = etr_params_old.copy()
-p1.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-p1.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-p1.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-p1.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-p1.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-p1.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-p1.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-p1.mtrx_params = mtrx_params_old.copy()
-p1.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-p1.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-p1.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-p1.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-p1.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-p1.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-p1.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-p1.mtry_params = mtry_params_old.copy()
-p1.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-p1.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-p1.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-p1.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-p1.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-p1.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-p1.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
-p1.maxiter, p1.mindist_SS = iterative_params
-p1.chi_b, p1.chi_n = chi_params
-small_open, firm_r, hh_r = small_open_params
-p1.world_int_rate = np.ones(p1.T + p1.S) * firm_r
-p1.num_workers = 1
-BQ1 = np.ones((p1.J)) * 0.00019646295986015257
-guesses1 = [guesses_in[0]] + list(BQ1) + [guesses_in[1]] + [guesses_in[2]]
-args1 = (bssmat, nssmat, None, None, p1, client)
-expected1 = np.array([0.06858352869423862, 0.0157424466869841,
-                      0.020615373965602958, 0.02225725864386594,
-                      0.01359148091834126, 0.01604345296066714,
-                      0.018393166562212734, 0.0033730256425707566,
-                      -0.07014671511880782, 0.05424969771042221])
-
-input_tuple = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_reform_inputs.pkl'))
-guesses_in2, params = input_tuple
-params = params + (None, 1)
-(bssmat, nssmat, chi_params, ss_params, income_tax_params,
- iterative_params, factor, small_open_params, client,
- num_workers) = params
-p2 = Specifications()
-(p2.J, p2.S, p2.T, p2.BW, beta, p2.sigma, p2.alpha, p2.gamma, p2.epsilon,
- Z, p2.delta, p2.ltilde, p2.nu, p2.g_y, p2.g_n_ss, tau_payroll,
- tau_bq, p2.rho, p2.omega_SS, p2.budget_balance, alpha_T,
- p2.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p2.e,
- retire, p2.mean_income_data, h_wealth, p_wealth, m_wealth,
- p2.b_ellipse, p2.upsilon) = ss_params
-p2.beta = np.ones(p2.J) * beta
-p2.eta = (p2.omega_SS.reshape(p2.S, 1) *
-          p2.lambdas.reshape(1, p2.J)).reshape(1, p2.S, p2.J)
-p2.Z = np.ones(p2.T + p2.S) * Z
-p2.tau_bq = np.ones(p2.T + p2.S) * 0.0
-p2.tau_payroll = np.ones(p2.T + p2.S) * tau_payroll
-p2.alpha_T = np.ones(p2.T + p2.S) * alpha_T
-p2.tau_b = np.ones(p2.T + p2.S) * tau_b
-p2.delta_tau = np.ones(p2.T + p2.S) * delta_tau
-p2.h_wealth = np.ones(p2.T + p2.S) * h_wealth
-p2.p_wealth = np.ones(p2.T + p2.S) * p_wealth
-p2.m_wealth = np.ones(p2.T + p2.S) * m_wealth
-p2.retire = (np.ones(p2.T + p2.S) * retire).astype(int)
-p2.lambdas = lambdas.reshape(p2.J, 1)
-p2.imm_rates = imm_rates.reshape(1, p2.S)
-p2.tax_func_type = 'DEP'
-p2.zeta_K = np.array([0.0])
-p2.zeta_D = np.array([0.0])
-p2.initial_foreign_debt_ratio = 0.0
-p2.r_gov_shift = np.array([0.0])
-p2.start_year = 2019
-p2.baseline = False
-p2.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-    income_tax_params
-etr_params_old = np.transpose(etr_params.reshape(
-    p2.S, 1, etr_params.shape[-1]), (1, 0, 2))
-mtrx_params_old = np.transpose(mtrx_params.reshape(
-    p2.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-mtry_params_old = np.transpose(mtry_params.reshape(
-    p2.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-p2.etr_params = etr_params_old.copy()
-p2.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-p2.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-p2.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-p2.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-p2.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-p2.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-p2.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-p2.mtrx_params = mtrx_params_old.copy()
-p2.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-p2.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-p2.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-p2.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-p2.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-p2.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-p2.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-p2.mtry_params = mtry_params_old.copy()
-p2.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-p2.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-p2.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-p2.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-p2.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-p2.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-p2.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
-p2.maxiter, p2.mindist_SS = iterative_params
-p2.chi_b, p2.chi_n = chi_params
-small_open, firm_r, hh_r = small_open_params
-p2.world_int_rate = np.ones(p2.T + p2.S) * firm_r
-p2.num_workers = 1
-BQ2 = np.ones((p2.J)) * 0.00019646295986015257
-guesses2 = [guesses_in2[0]] + list(BQ2) + [guesses_in2[1]]
-args2 = (bssmat, nssmat, None, factor, p2, client)
-expected2 = np.array([0.016757343762877415, 0.01435509375160598,
-                      0.019450554513959047, 0.020767620498430173,
-                      0.012363834824786278, 0.014583252714123543,
-                      0.01716246184210253, 0.003106382567096101,
-                      0.0016798428580572025])
-
-input_tuple = utils.safe_read_pickle(
-    os.path.join(
-        CUR_PATH,
-        'test_io_data', 'SS_fsolve_reform_baselinespend_inputs.pkl'))
-guesses_in3, params = input_tuple
-params = params + (None, 1)
-(bssmat, nssmat, TR_ss, chi_params, ss_params, income_tax_params,
- iterative_params, factor_ss, small_open_params, client,
- num_workers) = params
-p3 = Specifications()
-(p3.J, p3.S, p3.T, p3.BW, beta, p3.sigma, p3.alpha, p3.gamma, p3.epsilon,
- Z, p3.delta, p3.ltilde, p3.nu, p3.g_y, p3.g_n_ss, tau_payroll,
- tau_bq, p3.rho, p3.omega_SS, p3.budget_balance, alpha_T,
- p3.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p3.e,
- retire, p3.mean_income_data, h_wealth, p_wealth, m_wealth,
- p3.b_ellipse, p3.upsilon) = ss_params
-p3.beta = np.ones(p3.J) * beta
-p3.eta = (p3.omega_SS.reshape(p3.S, 1) *
-          p3.lambdas.reshape(1, p3.J)).reshape(1, p3.S, p3.J)
-p3.Z = np.ones(p3.T + p3.S) * Z
-p3.tau_bq = np.ones(p3.T + p3.S) * 0.0
-p3.tau_payroll = np.ones(p3.T + p3.S) * tau_payroll
-p3.alpha_T = np.ones(p3.T + p3.S) * alpha_T
-p3.tau_b = np.ones(p3.T + p3.S) * tau_b
-p3.delta_tau = np.ones(p3.T + p3.S) * delta_tau
-p3.h_wealth = np.ones(p3.T + p3.S) * h_wealth
-p3.p_wealth = np.ones(p3.T + p3.S) * p_wealth
-p3.m_wealth = np.ones(p3.T + p3.S) * m_wealth
-p3.retire = (np.ones(p3.T + p3.S) * retire).astype(int)
-p3.lambdas = lambdas.reshape(p3.J, 1)
-p3.imm_rates = imm_rates.reshape(1, p3.S)
-p3.tax_func_type = 'DEP'
-p3.zeta_K = np.array([0.0])
-p3.zeta_D = np.array([0.0])
-p3.initial_foreign_debt_ratio = 0.0
-p3.r_gov_shift = np.array([0.0])
-p3.start_year = 2019
-p3.baseline = False
-p3.baseline_spending = True
-p3.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-    income_tax_params
-etr_params_old = np.transpose(etr_params.reshape(
-    p3.S, 1, etr_params.shape[-1]), (1, 0, 2))
-mtrx_params_old = np.transpose(mtrx_params.reshape(
-    p3.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-mtry_params_old = np.transpose(mtry_params.reshape(
-    p3.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-p3.etr_params = etr_params_old.copy()
-p3.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-p3.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-p3.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-p3.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-p3.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-p3.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-p3.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-p3.mtrx_params = mtrx_params_old.copy()
-p3.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-p3.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-p3.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-p3.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-p3.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-p3.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-p3.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-p3.mtry_params = mtry_params_old.copy()
-p3.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-p3.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-p3.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-p3.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-p3.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-p3.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-p3.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
-p3.maxiter, p3.mindist_SS = iterative_params
-p3.chi_b, p3.chi_n = chi_params
-small_open, firm_r, hh_r = small_open_params
-p3.world_int_rate = np.ones(p3.T + p3.S) * firm_r
-p3.num_workers = 1
-BQ3 = np.ones((p3.J)) * 0.00019646295986015257
-guesses3 = [guesses_in3[0]] + list(BQ3) + [guesses_in3[1]]
-args3 = (bssmat, nssmat, TR_ss, factor_ss, p3, client)
-expected3 = np.array([0.016757345515050044, 0.014355093775301265,
-                      0.019450554545951612, 0.020767620470159415,
-                      0.01236383484523906, 0.014583252738190352,
-                      0.01716246187036924, 0.0031063825724743474,
-                      0.018664915456857223])
-
-input_tuple = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
-guesses_in, params = input_tuple
-params = params + (None, 1)
-(bssmat, nssmat, chi_params, ss_params, income_tax_params,
- iterative_params, small_open_params, client, num_workers) = params
-p4 = Specifications()
-new_param_values = {
-    'zeta_D': [0.4],
-    'zeta_K': [0.2]
-}
-p4.update_specifications(new_param_values)
-(p4.J, p4.S, p4.T, p4.BW, beta, p4.sigma, p4.alpha, p4.gamma, p4.epsilon,
- Z, p4.delta, p4.ltilde, p4.nu, p4.g_y, p4.g_n_ss, tau_payroll,
- tau_bq, p4.rho, p4.omega_SS, p4.budget_balance, alpha_T,
- p4.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p4.e,
- retire, p4.mean_income_data, h_wealth, p_wealth, m_wealth,
- p4.b_ellipse, p4.upsilon) = ss_params
-p4.beta = np.ones(p4.J) * beta
-p4.eta = (p4.omega_SS.reshape(p4.S, 1) *
-          p4.lambdas.reshape(1, p4.J)).reshape(1, p4.S, p4.J)
-p4.Z = np.ones(p4.T + p4.S) * Z
-p4.tau_bq = np.ones(p4.T + p4.S) * 0.0
-p4.tau_payroll = np.ones(p4.T + p4.S) * tau_payroll
-p4.alpha_T = np.ones(p4.T + p4.S) * alpha_T
-p4.tau_b = np.ones(p4.T + p4.S) * tau_b
-p4.delta_tau = np.ones(p4.T + p4.S) * delta_tau
-p4.h_wealth = np.ones(p4.T + p4.S) * h_wealth
-p4.p_wealth = np.ones(p4.T + p4.S) * p_wealth
-p4.m_wealth = np.ones(p4.T + p4.S) * m_wealth
-p4.retire = (np.ones(p4.T + p4.S) * retire).astype(int)
-p4.lambdas = lambdas.reshape(p4.J, 1)
-p4.imm_rates = imm_rates.reshape(1, p4.S)
-p4.tax_func_type = 'DEP'
-p4.baseline = True
-p4.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-    income_tax_params
-etr_params_old = np.transpose(etr_params.reshape(
-    p4.S, 1, etr_params.shape[-1]), (1, 0, 2))
-mtrx_params_old = np.transpose(mtrx_params.reshape(
-    p4.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-mtry_params_old = np.transpose(mtry_params.reshape(
-    p4.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-p4.etr_params = etr_params_old.copy()
-p4.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-p4.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-p4.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-p4.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-p4.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-p4.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-p4.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-p4.mtrx_params = mtrx_params_old.copy()
-p4.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-p4.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-p4.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-p4.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-p4.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-p4.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-p4.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-p4.mtry_params = mtry_params_old.copy()
-p4.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-p4.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-p4.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-p4.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-p4.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-p4.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-p4.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
-p4.maxiter, p4.mindist_SS = iterative_params
-p4.chi_b, p4.chi_n = chi_params
-p4.num_workers = 1
-BQ4 = np.ones((p4.J)) * 0.00019646295986015257
-guesses4 = [guesses_in[0]] + list(BQ4) + [guesses_in[1]] + [guesses_in[2]]
-args4 = (bssmat, nssmat, None, None, p4, client)
-expected4 = np.array([0.028883118596741857, 0.014511613659907734,
-                      0.019044550115699707, 0.02065761642516883,
-                      0.012627889727738099, 0.014940813299332474,
-                      0.016999514675696315, 0.0030878921261591253,
-                      -0.06125508233576064, 0.06697984483743183])
-
-input_tuple = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
-guesses_in, params = input_tuple
-params = params + (None, 1)
-(bssmat, nssmat, chi_params, ss_params, income_tax_params,
- iterative_params, small_open_params, client, num_workers) = params
-p5 = Specifications()
-(p5.J, p5.S, p5.T, p5.BW, beta, p5.sigma, p5.alpha, p5.gamma, p5.epsilon,
- Z, p5.delta, p5.ltilde, p5.nu, p5.g_y, p5.g_n_ss, tau_payroll,
- tau_bq, p5.rho, p5.omega_SS, p5.budget_balance, alpha_T,
- p5.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p5.e,
- retire, p5.mean_income_data, h_wealth, p_wealth, m_wealth,
- p5.b_ellipse, p5.upsilon) = ss_params
-p5.beta = np.ones(p5.J) * beta
-p5.eta = (p5.omega_SS.reshape(p5.S, 1) *
-          p5.lambdas.reshape(1, p5.J)).reshape(1, p5.S, p5.J)
-p5.zeta_K = np.ones(p5.T + p5.S) * 1.0
-p5.world_int_rate = np.ones(p5.T + p5.S) * 0.05
-p5.Z = np.ones(p5.T + p5.S) * Z
-p5.tau_bq = np.ones(p5.T + p5.S) * 0.0
-p5.tau_payroll = np.ones(p5.T + p5.S) * tau_payroll
-p5.alpha_T = np.ones(p5.T + p5.S) * alpha_T
-p5.tau_b = np.ones(p5.T + p5.S) * tau_b
-p5.delta_tau = np.ones(p5.T + p5.S) * delta_tau
-p5.h_wealth = np.ones(p5.T + p5.S) * h_wealth
-p5.p_wealth = np.ones(p5.T + p5.S) * p_wealth
-p5.m_wealth = np.ones(p5.T + p5.S) * m_wealth
-p5.retire = (np.ones(p5.T + p5.S) * retire).astype(int)
-p5.lambdas = lambdas.reshape(p5.J, 1)
-p5.imm_rates = imm_rates.reshape(1, p5.S)
-p5.tax_func_type = 'DEP'
-p5.baseline = True
-p5.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-    income_tax_params
-etr_params_old = np.transpose(etr_params.reshape(
-    p5.S, 1, etr_params.shape[-1]), (1, 0, 2))
-mtrx_params_old = np.transpose(mtrx_params.reshape(
-    p5.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-mtry_params_old = np.transpose(mtry_params.reshape(
-    p5.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-p5.etr_params = etr_params_old.copy()
-p5.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-p5.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-p5.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-p5.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-p5.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-p5.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-p5.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-p5.mtrx_params = mtrx_params_old.copy()
-p5.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-p5.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-p5.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-p5.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-p5.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-p5.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-p5.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-p5.mtry_params = mtry_params_old.copy()
-p5.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-p5.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-p5.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-p5.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-p5.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-p5.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-p5.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
-p5.maxiter, p5.mindist_SS = iterative_params
-p5.chi_b, p5.chi_n = chi_params
-p5.num_workers = 1
-BQ5 = np.ones((p5.J)) * 0.00019646295986015257
-guesses5 = [guesses_in[0]] + list(BQ5) + [guesses_in[1]] + [guesses_in[2]]
-args5 = (bssmat, nssmat, None, None, p5, client)
+(bssmat, nssmat, TR_ss, factor_ss) = input_tuple
+# Parameterize the baseline, closed econ case
+p1 = Specifications(baseline=True)
+p1.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0]})
+guesses1 = np.array([
+    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+args1 = (bssmat, nssmat, None, None, p1, None)
+expected1 = np.array([
+    -0.026632037158481975, -0.0022739752626707334, -0.01871875707724979,
+    -0.01791935965422934, 0.005996289165268601, 0.00964100151012603,
+    -0.01953460990186908, -0.0029633389016814967, 0.1306862551496613,
+    0.11574464544202477])
+# Parameterize the reform, closed econ case
+p2 = Specifications(baseline=False)
+p2.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0]})
+guesses2 = np.array([
+    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
+args2 = (bssmat, nssmat, None, 0.51, p2, None)
+expected2 = np.array([
+    -0.030232643078209973, -0.002371139373741624, -0.01637669829114836,
+    -0.014404669292893904, 0.005875798127829608, 0.009489605242631064,
+    -0.01930931544418691, -0.0029454311332426275, 0.13208003970756407])
+# Parameterize the reform, closed econ, baseline spending case
+p3 = Specifications(baseline=False)
+p3.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0],
+                          'baseline_spending': True})
+guesses3 = np.array([
+    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
+args3 = (bssmat, nssmat, 0.13, 0.51, p3, None)
+expected3 = np.array([
+    -0.04031619469134644, 0.002754829779058155, 0.005665309738855779,
+    0.008140368498332051, 0.007352479311256247, 0.010806872033967399,
+    0.007183869209053399, -0.00284466958926688, 0.7269578822834164])
+# Parameterize the baseline, partial open economy case (default)
+p4 = Specifications(baseline=True)
+guesses4 = np.array([
+    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+args4 = (bssmat, nssmat, None, None, p4, None)
+expected4 = np.array([
+    -0.03615195306306068, -0.0025227018857025708, 0.0005778317722585288,
+    0.004588284248481369, 0.005706423522356211, 0.00928509074411313,
+    0.005887584256507098, 0.002849544478420344, 0.13774167744621094,
+    0.09930811783393777])
+# Parameterize the baseline, small open econ case
+p5 = Specifications(baseline=True)
+p5.update_specifications({'zeta_D': [0.0], 'zeta_K': [1.0]})
+guesses5 = np.array([
+    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+args5 = (bssmat, nssmat, None, 0.51, p5, None)
 expected5 = np.array([
-    0.010000000000000002, 0.014267680343491978, 0.01872543808956217,
-    0.02031175170902025, 0.012415197955534063, 0.014689761710816571,
-    0.016714319543654727, 0.003033421127052222, -0.05535189569237248,
-    0.06644990365361061])
-
-p6 = Specifications()
-(p6.J, p6.S, p6.T, p6.BW, beta, p6.sigma, p6.alpha, p6.gamma, p6.epsilon,
- Z, p6.delta, p6.ltilde, p6.nu, p6.g_y, p6.g_n_ss, tau_payroll,
- tau_bq, p6.rho, p6.omega_SS, p6.budget_balance, alpha_T,
- p6.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p6.e,
- retire, p6.mean_income_data, h_wealth, p_wealth, m_wealth,
- p6.b_ellipse, p6.upsilon) = ss_params
-p6.beta = np.ones(p6.J) * beta
-p6.eta = (p6.omega_SS.reshape(p6.S, 1) *
-          p6.lambdas.reshape(1, p6.J)).reshape(1, p6.S, p6.J)
-p6.Z = np.ones(p6.T + p6.S) * Z
-p6.tau_bq = np.ones(p6.T + p6.S) * 0.0
-p6.tau_payroll = np.ones(p6.T + p6.S) * tau_payroll
-p6.alpha_T = np.ones(p6.T + p6.S) * alpha_T
-p6.tau_b = np.ones(p6.T + p6.S) * tau_b
-p6.delta_tau = np.ones(p6.T + p6.S) * 0.0
-p6.h_wealth = np.ones(p6.T + p6.S) * h_wealth
-p6.p_wealth = np.ones(p6.T + p6.S) * p_wealth
-p6.m_wealth = np.ones(p6.T + p6.S) * m_wealth
-p6.retire = (np.ones(p6.T + p6.S) * retire).astype(int)
-p6.lambdas = lambdas.reshape(p6.J, 1)
-p6.imm_rates = imm_rates.reshape(1, p6.S)
-p6.tax_func_type = 'DEP'
-p6.zeta_K = np.array([0.0])
-p6.zeta_D = np.array([0.0])
-p6.initial_foreign_debt_ratio = 0.0
-p6.r_gov_shift = np.array([0.0])
-p6.start_year = 2019
-p6.baseline = False
-p6.baseline = True
-p6.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-    income_tax_params
-etr_params_old = np.transpose(etr_params.reshape(
-    p6.S, 1, etr_params.shape[-1]), (1, 0, 2))
-mtrx_params_old = np.transpose(mtrx_params.reshape(
-    p6.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-mtry_params_old = np.transpose(mtry_params.reshape(
-    p6.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-p6.etr_params = etr_params_old.copy()
-p6.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-p6.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-p6.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-p6.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-p6.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-p6.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-p6.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-p6.mtrx_params = mtrx_params_old.copy()
-p6.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-p6.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-p6.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-p6.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-p6.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-p6.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-p6.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-p6.mtry_params = mtry_params_old.copy()
-p6.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-p6.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-p6.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-p6.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-p6.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-p6.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-p6.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
-p6.maxiter, p6.mindist_SS = iterative_params
-p6.chi_b, p6.chi_n = chi_params
-small_open, firm_r, hh_r = small_open_params
-p6.world_int_rate = np.ones(p6.T + p6.S) * firm_r
-p6.num_workers = 1
-BQ6 = np.ones((p6.J)) * 0.00019646295986015257
-guesses6 = [guesses_in[0]] + list(BQ6) + [guesses_in[1]] + [guesses_in[2]]
-args6 = (bssmat, nssmat, None, None, p6, client)
+    -0.019999999999999962, -0.0021216948497802778,
+    0.0013874915656953528, 0.0053198904577732575, 0.006173756535859736,
+    0.009858904353577247, 0.006657850176415573, 0.0030235933473326034,
+    0.13082844301733987, 0.09467304802224508])
+# Parameterize the baseline closed economy, delta tau = 0 case
+p6 = Specifications(baseline=True)
+p6.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0],
+                          'delta_tau_annual': [0.0]})
+guesses6 = np.array([
+    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+args6 = (bssmat, nssmat, None, None, p6, None)
 expected6 = np.array([
-    0.07215505148288945, 0.015648438358930053, 0.020459875721456536,
-    0.022060136475180223, 0.013462001740302838, 0.015934473464005214,
-    0.018219674546277976, 0.0033400842357827754, -0.07119442016669195,
-    0.05562671567906091])
+    -0.045453339832995945, -0.002801342521138476, 0.0003419917882823524,
+    0.004084012889204677, 0.005384114713826117, 0.008889155694384665,
+    0.005358783502477, 0.0027296252357792237, 0.14237702198971164,
+    0.1009176917078035])
 
 
-@pytest.mark.parametrize('guesses,args,expected',
-                         [(guesses1, args1, expected1),
-                          (guesses2, args2, expected2),
-                          (guesses3, args3, expected3),
-                          (guesses4, args4, expected4),
-                          (guesses5, args5, expected5),
-                          (guesses6, args6, expected6)],
-                         ids=['Baseline, Closed', 'Reform, Closed',
-                              'Reform, Baseline spending=True, Closed',
-                              'Baseline, Partial Open',
-                              'Baseline, Small Open',
-                              'Baseline, Closed, delta_tau = 0'])
+@pytest.mark.parametrize(
+    'guesses,args,expected',
+    [(guesses1, args1, expected1),
+     (guesses2, args2, expected2),
+     (guesses3, args3, expected3),
+     (guesses4, args4, expected4),
+     (guesses5, args5, expected5),
+     (guesses6, args6, expected6)],
+     ids=['Baseline, Closed', 'Reform, Closed',
+           'Reform, Baseline spending=True, Closed',
+           'Baseline, Partial Open', 'Baseline, Small Open',
+           'Baseline, Closed, delta_tau = 0'])
 def test_SS_fsolve(guesses, args, expected):
     '''
     Test SS.SS_fsolve function.  Provide inputs to function and
@@ -563,8 +153,7 @@ filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline, client=dask_client,
-                       num_workers=NUM_WORKERS)
+    p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.BW = 10
     p.frac_tax_payroll = np.zeros(p.frac_tax_payroll.shape)
@@ -671,8 +260,7 @@ filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline, client=dask_client,
-                       num_workers=NUM_WORKERS)
+    p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.BW = 10
     p.frac_tax_payroll = np.zeros(p.frac_tax_payroll.shape)
@@ -793,8 +381,7 @@ filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
 def test_inner_loop(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline, client=dask_client,
-                       num_workers=NUM_WORKERS)
+    p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.BW = 10
@@ -895,8 +482,7 @@ filename6 = 'inner_loop_outputs_baseline_delta_tau0.pkl'
 def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline, client=dask_client,
-                       num_workers=NUM_WORKERS)
+    p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.BW = 10
@@ -989,7 +575,7 @@ def test_euler_equation_solver(dask_client):
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
-    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
+    p = Specifications(num_workers=NUM_WORKERS)
     (r, w, TR, factor, j, p.J, p.S, beta, p.sigma, p.ltilde, p.g_y,
      p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
@@ -1103,7 +689,7 @@ def test_euler_equation_solver_ubi(dask_client):
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
-    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
+    p = Specifications(num_workers=NUM_WORKERS)
     (r, w, TR, factor, j, p.J, p.S, beta, p.sigma, p.ltilde, p.g_y,
      p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
@@ -1292,7 +878,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
             output_base=constants.BASELINE_DIR,
             baseline_dir=constants.BASELINE_DIR,
             time_path=False, baseline=True,
-            client=dask_client, num_workers=NUM_WORKERS)
+            num_workers=NUM_WORKERS)
         p_base.update_specifications(param_updates)
         p_base.BW = 10
         p_base.frac_tax_payroll = np.zeros(p_base.frac_tax_payroll.shape)
@@ -1366,8 +952,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     else:
         dict_params = utils.safe_read_pickle(os.path.join(
             CUR_PATH, 'TxFuncEst_policy.pkl'))
-    p = Specifications(baseline=baseline, client=dask_client,
-                       num_workers=NUM_WORKERS)
+    p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.BW = 10
     p.frac_tax_payroll = np.zeros(p.frac_tax_payroll.shape)
