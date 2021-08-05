@@ -203,7 +203,6 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
 
     test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
                              factorguess, Yguess, p, None, False)
-    pickle.dump(test_dict, open(os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
@@ -241,68 +240,6 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
-    p.BW = 10
-    if p.baseline:
-        dict_params = utils.safe_read_pickle(os.path.join(
-            p.output_base, 'TxFuncEst_baseline.pkl'))
-    else:
-        dict_params = utils.safe_read_pickle(os.path.join(
-            p.output_base, 'TxFuncEst_policy.pkl'))
-    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
-    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
-    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
-    p.mean_income_data = dict_params['tfunc_avginc'][0]
-    p.etr_params = np.empty((p.T, p.S, num_etr_params))
-    p.etr_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    p.mtrx_params = np.empty((p.T, p.S, num_mtrx_params))
-    p.mtrx_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
-    p.mtry_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    etr_params_old = p.etr_params.copy()
-    p.etr_params = etr_params_old.copy()
-    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-    mtrx_params_old = p.mtrx_params.copy()
-    p.mtrx_params = mtrx_params_old.copy()
-    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-    mtry_params_old = p.mtry_params.copy()
-    p.mtry_params = mtry_params_old.copy()
-    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
     bssmat = np.ones((p.S, p.J)) * 0.07
     nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
     if p.zeta_K[-1] == 1.0:
