@@ -117,25 +117,17 @@ def test_SS_fsolve(guesses, args, expected):
                        atol=1e-6))
 
 
-# need to update parameter values that had corresponded to a different
-# start year than those in the default_parameters.json file
-g_n_ss = 0.0012907765315350872
-imm_rates = np.load(os.path.join(CUR_PATH, 'old_imm_rates.npy'))
-e = np.load(os.path.join(CUR_PATH, 'old_e.npy'))
-omega_SS = np.load(os.path.join(CUR_PATH, 'old_omega_SS.npy'))
-param_updates1 = {'start_year': 2020, 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+# Parameterize baseline, partially open econ case (default)
+param_updates1 = {}
 filename1 = 'SS_solver_outputs_baseline.pkl'
-param_updates2 = {'start_year': 2020, 'budget_balance': True,
-                  'alpha_G': [0.0], 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+# Parameterize baseline, balanced budget case
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
-param_updates3 = {'baseline_spending': True, 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+# Parameterize the reform, baseline spending case
+param_updates3 = {'baseline_spending': True}
 filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
-param_updates4 = {'start_year': 2020, 'zeta_K': [1.0],
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+# Parameterize the baseline, small open econ case
+param_updates4 = {'zeta_K': [1.0]}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 
 
@@ -155,70 +147,8 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
-    p.BW = 10
     p.frac_tax_payroll = np.zeros(p.frac_tax_payroll.shape)
     p.output_base = CUR_PATH
-    if p.baseline:
-        dict_params = utils.safe_read_pickle(os.path.join(
-            p.output_base, 'TxFuncEst_baseline.pkl'))
-    else:
-        dict_params = utils.safe_read_pickle(os.path.join(
-            p.output_base, 'TxFuncEst_policy.pkl'))
-    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
-    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
-    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
-    p.mean_income_data = dict_params['tfunc_avginc'][0]
-    p.etr_params = np.empty((p.T, p.S, num_etr_params))
-    p.etr_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    p.mtrx_params = np.empty((p.T, p.S, num_mtrx_params))
-    p.mtrx_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
-    p.mtry_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    etr_params_old = p.etr_params.copy()
-    p.etr_params = etr_params_old.copy()
-    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-    mtrx_params_old = p.mtrx_params.copy()
-    p.mtrx_params = mtrx_params_old.copy()
-    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-    mtry_params_old = p.mtry_params.copy()
-    p.mtry_params = mtry_params_old.copy()
-    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
     if p.zeta_K[-1] == 1.0:
@@ -240,14 +170,11 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         assert(np.allclose(test_dict[k], v, atol=1e-04, equal_nan=True))
 
 
-param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
-                  'budget_balance': True, 'alpha_G': [0.0],
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates5 = {'zeta_K': [1.0], 'budget_balance': True,
+                  'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0], 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+                  'zeta_D': [0.0]}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 
 
@@ -262,71 +189,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
-    p.BW = 10
-    p.frac_tax_payroll = np.zeros(p.frac_tax_payroll.shape)
     p.output_base = CUR_PATH
-    if p.baseline:
-        dict_params = utils.safe_read_pickle(os.path.join(
-            p.output_base, 'TxFuncEst_baseline.pkl'))
-    else:
-        dict_params = utils.safe_read_pickle(os.path.join(
-            p.output_base, 'TxFuncEst_policy.pkl'))
-    num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
-    num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
-    num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
-    p.mean_income_data = dict_params['tfunc_avginc'][0]
-    p.etr_params = np.empty((p.T, p.S, num_etr_params))
-    p.etr_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_etr_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.etr_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_etr_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_etr_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    p.mtrx_params = np.empty((p.T, p.S, num_mtrx_params))
-    p.mtrx_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_mtrx_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.mtrx_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_mtrx_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_mtrx_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    p.mtry_params = np.empty((p.T, p.S, num_mtry_params))
-    p.mtry_params[:p.BW, :, :] =\
-        np.transpose(
-            dict_params['tfunc_mtry_params_S'][:p.S, :p.BW, :],
-            axes=[1, 0, 2])
-    p.mtry_params[p.BW:, :, :] = np.tile(np.transpose(
-        dict_params['tfunc_mtry_params_S'][:p.S, -1, :].reshape(
-            p.S, 1, num_mtry_params), axes=[1, 0, 2]), (p.T - p.BW, 1, 1))
-    etr_params_old = p.etr_params.copy()
-    p.etr_params = etr_params_old.copy()
-    p.etr_params[:, :, 5] = etr_params_old[:, :, 6]
-    p.etr_params[:, :, 6] = etr_params_old[:, :, 11]
-    p.etr_params[:, :, 7] = etr_params_old[:, :, 5]
-    p.etr_params[:, :, 8] = etr_params_old[:, :, 7]
-    p.etr_params[:, :, 9] = etr_params_old[:, :, 8]
-    p.etr_params[:, :, 10] = etr_params_old[:, :, 9]
-    p.etr_params[:, :, 11] = etr_params_old[:, :, 10]
-    mtrx_params_old = p.mtrx_params.copy()
-    p.mtrx_params = mtrx_params_old.copy()
-    p.mtrx_params[:, :, 5] = mtrx_params_old[:, :, 6]
-    p.mtrx_params[:, :, 6] = mtrx_params_old[:, :, 11]
-    p.mtrx_params[:, :, 7] = mtrx_params_old[:, :, 5]
-    p.mtrx_params[:, :, 8] = mtrx_params_old[:, :, 7]
-    p.mtrx_params[:, :, 9] = mtrx_params_old[:, :, 8]
-    p.mtrx_params[:, :, 10] = mtrx_params_old[:, :, 9]
-    p.mtrx_params[:, :, 11] = mtrx_params_old[:, :, 10]
-    mtry_params_old = p.mtry_params.copy()
-    p.mtry_params = mtry_params_old.copy()
-    p.mtry_params[:, :, 5] = mtry_params_old[:, :, 6]
-    p.mtry_params[:, :, 6] = mtry_params_old[:, :, 11]
-    p.mtry_params[:, :, 7] = mtry_params_old[:, :, 5]
-    p.mtry_params[:, :, 8] = mtry_params_old[:, :, 7]
-    p.mtry_params[:, :, 9] = mtry_params_old[:, :, 8]
-    p.mtry_params[:, :, 10] = mtry_params_old[:, :, 9]
-    p.mtry_params[:, :, 11] = mtry_params_old[:, :, 10]
-
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
     if p.zeta_K[-1] == 1.0:
@@ -340,6 +203,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
 
     test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
                              factorguess, Yguess, p, None, False)
+    pickle.dump(test_dict, open(os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
@@ -348,23 +212,16 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         assert(np.allclose(test_dict[k], v, atol=1e-05, equal_nan=True))
 
 
-param_updates1 = {'start_year': 2020, 'zeta_K': [1.0],
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates1 = {'zeta_K': [1.0]}
 filename1 = 'inner_loop_outputs_baseline_small_open.pkl'
-param_updates2 = {'start_year': 2020, 'budget_balance': True,
-                  'alpha_G': [0.0], 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+param_updates2 = {'budget_balance': True,
+                  'alpha_G': [0.0]}
 filename2 = 'inner_loop_outputs_baseline_balance_budget.pkl'
-param_updates3 = {'start_year': 2020, 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+param_updates3 = {}
 filename3 = 'inner_loop_outputs_baseline.pkl'
-param_updates4 = {'start_year': 2020, 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+param_updates4 = {}
 filename4 = 'inner_loop_outputs_reform.pkl'
-param_updates5 = {'start_year': 2020, 'baseline_spending': True,
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates5 = {'baseline_spending': True}
 filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
 
 
@@ -469,9 +326,7 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
         assert(np.allclose(test_tuple[i], v, atol=4e-05))
 
 
-param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0], 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+param_updates6 = {'zeta_K': [0.0], 'zeta_D': [0.0]}
 filename6 = 'inner_loop_outputs_baseline_delta_tau0.pkl'
 
 
@@ -797,48 +652,29 @@ def test_euler_equation_solver_ubi(dask_client):
 
 
 imm_rates_deltatau0 = np.load(os.path.join(CUR_PATH, 'old_imm_rates_deltatau0.npy'))
-param_updates1 = {'start_year': 2020, 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+param_updates1 = {}
 # param_updates1 = {'start_year': 2020}
 filename1 = 'run_SS_baseline_outputs.pkl'
-param_updates2 = {'start_year': 2020, 'use_zeta': True,
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates2 = {'use_zeta': True}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
-param_updates3 = {'start_year': 2020, 'zeta_K': [1.0],
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates3 = {'zeta_K': [1.0]}
 filename3 = 'run_SS_baseline_small_open.pkl'
-param_updates4 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True,
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates4 = {'zeta_K': [1.0], 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
-param_updates5 = {'start_year': 2020, 'omega_SS': omega_SS,
-                  'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+param_updates5 = {}
 filename5 = 'run_SS_reform.pkl'
-param_updates6 = {'start_year': 2020, 'use_zeta': True,
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates6 = {'use_zeta': True}
 filename6 = 'run_SS_reform_use_zeta.pkl'
-param_updates7 = {'start_year': 2020, 'zeta_K': [1.0],
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates7 = {'zeta_K': [1.0]}
 filename7 = 'run_SS_reform_small_open.pkl'
-param_updates8 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True,
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates8 = {'zeta_K': [1.0], 'use_zeta': True}
 filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
-param_updates9 = {'start_year': 2020, 'baseline_spending': True,
-                  'omega_SS': omega_SS, 'g_n_ss': g_n_ss,
-                  'imm_rates': imm_rates, 'e': e}
+param_updates9 = {'baseline_spending': True}
 filename9 = 'run_SS_reform_baseline_spend.pkl'
-param_updates10 = {'start_year': 2020, 'baseline_spending': True,
-                   'use_zeta': True, 'omega_SS': omega_SS,
-                   'g_n_ss': g_n_ss, 'imm_rates': imm_rates, 'e': e}
+param_updates10 = {'baseline_spending': True, 'use_zeta': True}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                   'zeta_D': [0.0], 'omega_SS': omega_SS,
-                   'g_n_ss': g_n_ss, 'imm_rates': imm_rates_deltatau0, 'e': e}
+                   'zeta_D': [0.0]}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 
 
