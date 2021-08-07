@@ -19,17 +19,13 @@ class Specifications(paramtools.Parameters):
     array_first = True
 
     def __init__(self,
-                 run_micro=False,
                  output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
-                 time_path=True, baseline=False, guid='',
-                 num_workers=1):
+                 baseline=False, num_workers=1):
         super().__init__()
 
         self.output_base = output_base
         self.baseline_dir = baseline_dir
-        self.time_path = time_path
         self.baseline = baseline
-        self.guid = guid
         self.num_workers = num_workers
 
         # put OG-Core version in parameters to save for reference
