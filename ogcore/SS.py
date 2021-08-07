@@ -549,7 +549,7 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        if p.zeta_D[-1] == 1.0:
+        if p.zeta_K[-1] == 1.0:
             rguess = p.world_int_rate[-1]
         else:
             rguess = p.initial_guess_r_SS
