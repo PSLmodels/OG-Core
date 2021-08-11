@@ -152,6 +152,7 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, ubi, j, initial_b,
         error2 += 1e12
     if b_splus1 <= 0:
         error1 += 1e12
+
     return [np.squeeze(error1)] + [np.squeeze(error2)]
 
 
@@ -267,7 +268,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             * n_mat (Numpy array): labor supply amounts, size = TxS
 
     '''
-    # unpack variables and parameters pass to function
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) =\
         initial_values
     guesses_b, guesses_n = guesses
