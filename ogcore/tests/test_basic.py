@@ -33,9 +33,9 @@ def test_run_small(time_path, dask_client):
     TPI.ENFORCE_SOLUTION_CHECKS = False
     SS.MINIMIZER_TOL = 1e-6
     TPI.MINIMIZER_TOL = 1e-6
-    p = Specifications(baseline=True, client=dask_client,
-                       num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
-                       output_base=OUTPUT_DIR)
+    p = Specifications(
+        baseline=True, num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
+        output_base=OUTPUT_DIR)
     p.update_specifications(TEST_PARAM_DICT)
     runner(p, time_path=time_path, client=dask_client)
 
@@ -46,17 +46,15 @@ def test_constant_demographics_TPI(dask_client):
     This tests solves the model under the assumption of constant
     demographics, a balanced budget, and tax functions that do not vary
     over time.
-    In this case, given how initial guesss for the time
+    In this case, given how initial guesses for the time
     path are made, the time path should be solved for on the first
     iteration and the values all along the time path should equal their
     steady-state values.
     '''
     # Create output directory structure
-    spec = Specifications(run_micro=False, output_base=OUTPUT_DIR,
-                          baseline_dir=OUTPUT_DIR,
-                          time_path=True, baseline=True,
-                          guid='', client=dask_client,
-                          num_workers=NUM_WORKERS)
+    spec = Specifications(
+        output_base=CUR_PATH, baseline_dir=OUTPUT_DIR,
+        baseline=True, num_workers=NUM_WORKERS)
     og_spec = {'constant_demographics': True, 'budget_balance': True,
                'zero_taxes': True, 'maxiter': 2,
                'r_gov_shift': 0.0, 'zeta_D': [0.0, 0.0],
@@ -68,36 +66,36 @@ def test_constant_demographics_TPI(dask_client):
                'eta': (spec.omega_SS.reshape(spec.S, 1) *
                        spec.lambdas.reshape(1, spec.J))}
     spec.update_specifications(og_spec)
-    spec.BW = 10
-    spec.output_base = CUR_PATH
-    spec.etr_params = np.zeros((spec.T + spec.S, spec.S, spec.etr_params.shape[2]))
-    spec.mtrx_params = np.zeros((spec.T + spec.S, spec.S, spec.mtrx_params.shape[2]))
-    spec.mtry_params = np.zeros((spec.T + spec.S, spec.S, spec.mtry_params.shape[2]))
+    spec.etr_params = np.zeros((
+        spec.T + spec.S, spec.S, spec.etr_params.shape[2]))
+    spec.mtrx_params = np.zeros((
+        spec.T + spec.S, spec.S, spec.mtrx_params.shape[2]))
+    spec.mtry_params = np.zeros((
+        spec.T + spec.S, spec.S, spec.mtry_params.shape[2]))
     # Run SS
-    ss_outputs = SS.run_SS(spec, None)
+    ss_outputs = SS.run_SS(spec, client=dask_client)
     # save SS results
     utils.mkdirs(os.path.join(OUTPUT_DIR, "SS"))
     ss_dir = os.path.join(OUTPUT_DIR, "SS", "SS_vars.pkl")
     with open(ss_dir, "wb") as f:
         pickle.dump(ss_outputs, f)
     # Run TPI
-    tpi_output = TPI.run_TPI(spec, None)
+    tpi_output = TPI.run_TPI(spec, client=dask_client)
     assert(np.allclose(tpi_output['bmat_splus1'][:spec.T, :, :],
                        ss_outputs['bssmat_splus1']))
 
 
 @pytest.mark.local
-def test_constant_demographics_TPI_small_open():
+def test_constant_demographics_TPI_small_open(dask_client):
     '''
     This tests solves the model under the assumption of constant
     demographics, a balanced budget, and tax functions that do not vary
     over time, as well as with a small open economy assumption.
     '''
     # Create output directory structure
-    spec = Specifications(run_micro=False, output_base=OUTPUT_DIR,
-                          baseline_dir=OUTPUT_DIR,
-                          time_path=True, baseline=True,
-                          guid='')
+    spec = Specifications(
+        output_base=CUR_PATH, baseline_dir=OUTPUT_DIR,
+        baseline=True, num_workers=NUM_WORKERS)
     og_spec = {'constant_demographics': True, 'budget_balance': True,
                'zero_taxes': True, 'maxiter': 2,
                'r_gov_shift': 0.0, 'zeta_D': [0.0, 0.0],
@@ -109,17 +107,20 @@ def test_constant_demographics_TPI_small_open():
                'eta': (spec.omega_SS.reshape(spec.S, 1) *
                        spec.lambdas.reshape(1, spec.J))}
     spec.update_specifications(og_spec)
-    spec.etr_params = np.zeros((spec.T + spec.S, spec.S, spec.etr_params.shape[2]))
-    spec.mtrx_params = np.zeros((spec.T + spec.S, spec.S, spec.mtrx_params.shape[2]))
-    spec.mtry_params = np.zeros((spec.T + spec.S, spec.S, spec.mtry_params.shape[2]))
+    spec.etr_params = np.zeros((
+        spec.T + spec.S, spec.S, spec.etr_params.shape[2]))
+    spec.mtrx_params = np.zeros((
+        spec.T + spec.S, spec.S, spec.mtrx_params.shape[2]))
+    spec.mtry_params = np.zeros((
+        spec.T + spec.S, spec.S, spec.mtry_params.shape[2]))
     # Run SS
-    ss_outputs = SS.run_SS(spec, None)
+    ss_outputs = SS.run_SS(spec, client=dask_client)
     # save SS results
     utils.mkdirs(os.path.join(OUTPUT_DIR, "SS"))
     ss_dir = os.path.join(OUTPUT_DIR, "SS", "SS_vars.pkl")
     with open(ss_dir, "wb") as f:
         pickle.dump(ss_outputs, f)
     # Run TPI
-    tpi_output = TPI.run_TPI(spec, None)
+    tpi_output = TPI.run_TPI(spec, client=dask_client)
     assert(np.allclose(tpi_output['bmat_splus1'][:spec.T, :, :],
                        ss_outputs['bssmat_splus1']))
