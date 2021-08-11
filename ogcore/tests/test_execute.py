@@ -18,7 +18,8 @@ REFORM_DIR = os.path.join(CUR_PATH, 'OUTPUT_REFORM')
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
-TEST_PARAM_DICT = json.load(open(os.path.join(CUR_PATH, 'testing_params.json')))
+TEST_PARAM_DICT = json.load(open(os.path.join(
+    CUR_PATH, 'testing_params.json')))
 
 
 @pytest.fixture(scope="module")
