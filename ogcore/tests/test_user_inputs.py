@@ -24,9 +24,9 @@ def dask_client():
                          ids=['Frisch 0.32', 'Frisch 0.4', 'Frisch 0.6'])
 def test_frisch(frisch, dask_client):
     og_spec = {'frisch': frisch, 'debt_ratio_ss': 1.0}
-    p = Specifications(baseline=True, client=dask_client,
-                       num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
-                       output_base=OUTPUT_DIR)
+    p = Specifications(
+        baseline=True, num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
+        output_base=OUTPUT_DIR)
     p.update_specifications(og_spec)
     runner(p, time_path=False, client=dask_client)
 
@@ -37,9 +37,9 @@ def test_frisch(frisch, dask_client):
 def test_gy(g_y_annual, dask_client):
     og_spec = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
                'g_y_annual': g_y_annual}
-    p = Specifications(baseline=True, client=dask_client,
-                       num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
-                       output_base=OUTPUT_DIR)
+    p = Specifications(
+        baseline=True, num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
+        output_base=OUTPUT_DIR)
     p.update_specifications(og_spec)
     runner(p, time_path=False, client=dask_client)
 
@@ -50,8 +50,8 @@ def test_gy(g_y_annual, dask_client):
                               'sigma=1.9'])
 def test_sigma(sigma, dask_client):
     og_spec = {'frisch': 0.41, 'debt_ratio_ss': 1.0, 'sigma': sigma}
-    p = Specifications(baseline=True, client=dask_client,
-                       num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
-                       output_base=OUTPUT_DIR)
+    p = Specifications(
+        baseline=True, num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
+        output_base=OUTPUT_DIR)
     p.update_specifications(og_spec)
     runner(p, time_path=False, client=dask_client)
