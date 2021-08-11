@@ -41,9 +41,9 @@ def run_micro_macro(og_spec, guid, client):
         Run baseline
     ------------------------------------------------------------------------
     '''
-    p = Specifications(baseline=True, client=client,
-                       num_workers=NUM_WORKERS, baseline_dir=BASELINE_DIR,
-                       output_base=BASELINE_DIR)
+    p = Specifications(
+        baseline=True, num_workers=NUM_WORKERS,
+        baseline_dir=BASELINE_DIR, output_base=BASELINE_DIR)
     p.update_specifications(og_spec)
     runner(p, time_path=True, client=client)
 
@@ -52,9 +52,9 @@ def run_micro_macro(og_spec, guid, client):
         Run reform
     ------------------------------------------------------------------------
     '''
-    p = Specifications(baseline=False, client=client,
-                       num_workers=NUM_WORKERS, baseline_dir=BASELINE_DIR,
-                       output_base=REFORM_DIR)
+    p = Specifications(
+        baseline=False, num_workers=NUM_WORKERS,
+        baseline_dir=BASELINE_DIR, output_base=REFORM_DIR)
     p.update_specifications(og_spec)
     runner(p, time_path=True, client=client)
     time.sleep(0.5)
