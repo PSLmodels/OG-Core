@@ -608,11 +608,10 @@ def run_SS(p, client=None):
             else:
                 rguess = p.initial_guess_r_SS
             TRguess = p.initial_guess_TR_SS
-            factorguess = p.initial_guess_factor_SS
+            factor = p.initial_guess_factor_SS
             BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         if p.baseline_spending:
             TR_ss = TRguess
-            factor = factorguess
             ss_params_reform = (b_guess, n_guess, TR_ss, factor, p, client)
             if p.use_zeta:
                 guesses = [rguess] + list([BQguess]) + [Yguess]
