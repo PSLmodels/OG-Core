@@ -95,7 +95,6 @@ class Specifications(paramtools.Parameters):
 
         # set fraction of income taxes from payroll to zero initially
         # will be updated when function tax function parameters
-        print('T = ', self.T, ', S = ', self.S)
         if self.T + self.S > self.BW:
             self.frac_tax_payroll = np.append(
                     self.frac_tax_payroll,
