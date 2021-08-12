@@ -141,8 +141,12 @@ def test_ability_bar_ss():
     assert fig
 
 
+data_for_plot = np.ones(80) * 0.3
+
+
 @pytest.mark.parametrize(
-    'by_j,plot_data', [(True, False), (False, False), (False, True)],
+    'by_j,plot_data',
+    [(True, None), (False, None), (False, data_for_plot)],
     ids=['By j', 'Not by j', 'Plot data'])
 def test_ss_profiles(by_j, plot_data):
     fig = output_plots.ss_profiles(

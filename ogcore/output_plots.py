@@ -470,7 +470,7 @@ def tpi_profiles(base_tpi, base_params, reform_tpi=None,
 
 def ss_profiles(base_ss, base_params, reform_ss=None,
                 reform_params=None, by_j=True, var='nssmat',
-                plot_data=False,
+                plot_data=None,
                 plot_title=None, path=None):
     '''
     Plot lifecycle profiles of given variable in the SS.
@@ -483,7 +483,7 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
         reform_params (OG-Core Specifications class): reform parameters
             object
         var (string): name of variable to plot
-        plot_data (bool): whether to plot data values for given variable
+        plot_data (array_like): series of data to add to plot
         plot_title (string): title for plot
         path (string): path to save figure to
 
@@ -517,24 +517,8 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
                 reform_ss[var][:, :] *
                 reform_params.lambdas.reshape(1, reform_params.J)).sum(axis=1)
             plt.plot(age_vec, reform_var, label='Reform', linestyle='--')
-        if plot_data:
-            assert var == 'nssmat'
-            labor_file = utils.read_file(
-                cur_path, "data/labor/cps_hours_by_age_hourspct.txt")
-            data = pd.read_csv(labor_file, header=0, delimiter='\t')
-            piv = data.pivot(index='age', columns='hours_pct',
-                             values='mean_hrs')
-            lab_mat_basic = np.array(piv)
-            lab_mat_basic /= np.nanmax(lab_mat_basic)
-            piv2 = data.pivot(index='age', columns='hours_pct',
-                              values='num_obs')
-            weights = np.array(piv2)
-            weights /= np.nansum(weights, axis=1).reshape(
-                60, 1)
-            weighted = np.nansum((lab_mat_basic * weights), axis=1)
-            weighted = np.append(weighted, np.zeros(20))
-            weighted[60:] = np.nan
-            plt.plot(age_vec, weighted, linewidth=2.0, label='Data',
+        if plot_data is not None:
+            plt.plot(age_vec, plot_data, linewidth=2.0, label='Data',
                      linestyle=':')
     plt.xlabel(r'Age')
     plt.ylabel(VAR_LABELS[var])
