@@ -1,6 +1,5 @@
 name: ogcore-dev
 channels:
-- PSLmodels
 - conda-forge
 dependencies:
 - python>=3.7.7
