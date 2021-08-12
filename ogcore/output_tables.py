@@ -480,11 +480,11 @@ def dynamic_revenue_decomposition(
     table_dict = {'Year': year_list}
     T, S, J = base_params.T, base_params.S, base_params.J
     base_etr_params_4D = np.tile(
-            base_params.etr_params.reshape(
+            base_params.etr_params[:T, :, :].reshape(
                 T, S, 1, base_params.etr_params.shape[2]),
             (1, 1, J, 1))
     reform_etr_params_4D = np.tile(
-            reform_params.etr_params.reshape(
+            reform_params.etr_params[:T, :, :].reshape(
                 T, S, 1, reform_params.etr_params.shape[2]),
             (1, 1, J, 1))
     tax_rev_dict = {'indiv': {}, 'biz': {}, 'total': {}}
