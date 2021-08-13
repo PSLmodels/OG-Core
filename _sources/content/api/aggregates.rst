@@ -5,11 +5,11 @@ Aggregates Equations
 
 **Aggregates**
 
-ogusa.aggregates
+ogcore.aggregates
 ------------------------------------------
 
-.. currentmodule:: ogusa.aggregates
+.. currentmodule:: ogcore.aggregates
 
-.. automodule:: ogusa.aggregates
+.. automodule:: ogcore.aggregates
   :members: get_L, get_I, get_B, get_BQ, get_C, revenue, get_r_hh,
     resource_constraint, get_K_splits
