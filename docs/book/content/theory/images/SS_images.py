@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-This script creates the plots for the steady-state chapter of the OG-USA
+This script creates the plots for the steady-state chapter of the OG-Core
 documentation
 ------------------------------------------------------------------------
 '''
@@ -19,9 +19,9 @@ Set current folder path. Set path for pickle. Load pickle
 ------------------------------------------------------------------------
 '''
 cur_path = os.path.split(os.path.abspath(__file__))[0]
-ss_path = ('/Users/rwe/Documents/Economics/OSPC/OG-USA/run_examples/' +
+ss_path = ('/Users/rwe/Documents/Economics/OSPC/OG-Core/run_examples/' +
            'OUTPUT_BASELINE_CLOSED/SS/SS_vars.pkl')
-tpi_path = ('/Users/rwe/Documents/Economics/OSPC/OG-USA/run_examples/' +
+tpi_path = ('/Users/rwe/Documents/Economics/OSPC/OG-Core/run_examples/' +
             'OUTPUT_BASELINE_CLOSED/TPI/TPI_vars.pkl')
 ss_vars = pickle.load(open(ss_path, 'rb'))
 cssmat = ss_vars['cssmat']
