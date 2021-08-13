@@ -34,7 +34,7 @@ def dask_client():
 
 @pytest.mark.local
 def test_runner_baseline(dask_client):
-    p = Specifications(num_workers=NUM_WORKERS)
+    p = Specifications(baseline=True, num_workers=NUM_WORKERS)
     p.update_specifications(TEST_PARAM_DICT)
     p.baseline_dir = p.output_base = BASELINE_DIR
     runner(p, time_path=True, client=dask_client)
@@ -42,7 +42,7 @@ def test_runner_baseline(dask_client):
 
 @pytest.mark.local
 def test_runner_reform(dask_client):
-    p = Specifications(num_workers=NUM_WORKERS)
+    p = Specifications(baseline=False, num_workers=NUM_WORKERS)
     p.update_specifications(TEST_PARAM_DICT)
     p.baseline_dir = BASELINE_DIR
     p.output_base = REFORM_DIR
