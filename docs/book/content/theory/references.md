@@ -1,5 +1,5 @@
 # References
 
-```{bibliography} ../../OGUSA_references.bib
+```{bibliography} ../../OGCore_references.bib
 :style: alpha
 ```

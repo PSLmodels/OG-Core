@@ -11,16 +11,16 @@ version = '0.6.3'
 config = {
     'description': 'General equilibribum, overlapping generations model for the USA',
     'long_description': longdesc,
-    'url': 'https://github.com/PSLmodels/OG-USA/',
-    'download_url': 'https://github.com/PLSmodels/OG-USA/',
+    'url': 'https://github.com/PSLmodels/OG-Core/',
+    'download_url': 'https://github.com/PLSmodels/OG-Core/',
     'version': version,
     'license': 'CC0 1.0 Universal public domain dedication',
-    'packages': ['ogusa'],
+    'packages': ['ogcore'],
     'include_package_data': True,
-    'name': 'ogusa',
+    'name': 'ogcore',
     'install_requires': [],
     'package_data': {
-                     'ogusa': [
+                     'ogcore': [
                                'default_parameters.json',
                                'data/ability/*',
                                'data/demographic/*',

@@ -1,1 +1,1 @@
-fc ogusa_example_output.csv expected_ogusa_example_output.csv
+fc ogcore_example_output.csv expected_ogcore_example_output.csv

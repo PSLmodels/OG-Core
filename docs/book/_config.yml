@@ -1,9 +1,9 @@
 ####################################################
 # Book settings
-title                    : OG-USA
+title                    : OG-Core
 author                   : Jason DeBacker and Richard W. Evans
 copyright                : '2021'
-logo                     : '..//OG-USA_logo.png'
+logo                     : '..//OG-Core_logo.png'
 
 ####################################################
 # Execution settings
@@ -40,7 +40,7 @@ launch_buttons:
 ####################################################
 # Information about where the book exists on the web
 repository:
-  url                    : https://github.com/PSLmodels/OG-USA
+  url                    : https://github.com/PSLmodels/OG-Core
   path_to_book           : 'book'
 
 #######################################################################################
@@ -59,3 +59,4 @@ latex:
     targetname           : book.tex
 bibtex_bibfiles:
    - OGUSA_references.bib
+   - ../../citations.bib

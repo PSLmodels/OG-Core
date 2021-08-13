@@ -3,7 +3,7 @@
 # Development is typically conducted on Linux or Max OS X (with the Xcode
 #              command-line tools installed), so this Makefile is designed
 #              to work in that environment (and not on Windows).
-# USAGE: OG-USA$ make [TARGET]
+# USAGE: OG-Core$ make [TARGET]
 
 .PHONY=help
 help:
@@ -28,18 +28,18 @@ clean:
 
 .PHONY=package
 package:
-	@pbrelease OG-USA ogusa 0.0.0 --local
+	@pbrelease OG-Core ogcore 0.0.0 --local
 
 .PHONY=pytest
 pytest:
-	@cd ogusa ; pytest -W ignore
+	@cd ogcore ; pytest -W ignore
 
-OGUSA_JSON_FILES := $(shell ls -l ./ogusa/*json | awk '{print $$9}')
+ogcore_JSON_FILES := $(shell ls -l ./ogcore/*json | awk '{print $$9}')
 
 .PHONY=cstest
 cstest:
-	-pycodestyle ogusa
-	-pycodestyle --ignore=E501,E121 $(OGUSA_JSON_FILES)
+	-pycodestyle ogcore
+	-pycodestyle --ignore=E501,E121 $(ogcore_JSON_FILES)
 
 define coverage-cleanup
 rm -f .coverage htmlcov/*

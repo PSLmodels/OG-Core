@@ -21,8 +21,8 @@ comment:
 
 ignore:
   - "setup.py"
-  - "./ogusa/_version.py"
+  - "./ogcore/_version.py"
   - "./cs-config/**/*"  # ignore folders and all its contents
-  - "./ogusa/tests/"  # ignore folders and all its contents
+  - "./ogcore/tests/"  # ignore folders and all its contents
   - "./regression/**/*"  # ignore folders and all its contents
-  
+
