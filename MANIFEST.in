@@ -1,6 +1,6 @@
-include ogusa/data/ability/*
-include ogusa/data/demographic/*
-include ogusa/data/labor/*
-include ogusa/data/tax_functions/*
-include ogusa/default_parameters.json
-include ogusa/OGUSAplots.mplstyle
+include ogcore/data/ability/*
+include ogcore/data/demographic/*
+include ogcore/data/labor/*
+include ogcore/data/tax_functions/*
+include ogcore/default_parameters.json
+include ogcore/ogcoreplots.mplstyle

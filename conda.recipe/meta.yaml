@@ -1,5 +1,5 @@
 package:
-  name: ogusa
+  name: ogcore
   version: 0.5.13
 
 source:
@@ -8,7 +8,6 @@ source:
 requirements:
   build:
     - python
-    - "taxcalc>=2.4.2"
     - "paramtools>=0.7.1"
     - setuptools
     - "scipy>=0.18.1"
@@ -19,39 +18,35 @@ requirements:
 
   run:
     - python
-    - "taxcalc>=2.4.2"
     - "paramtools>=0.7.1"
     - setuptools
     - "scipy>=0.18.1"
     - matplotlib
     - "dask>=0.20.0"
     - mkl
-    -requests
+    - requests
 
 about:
-  home: https://github.com/PSLmodels/OG-USA/
+  home: https://github.com/PSLmodels/OG-Core/
 
 test:
   imports:
-    - ogusa
-    - ogusa.SS
-    - ogusa.TPI
-    - ogusa.aggregates
-    - ogusa.constants
-    - ogusa.demographics
-    - ogusa.elliptical_u_est
-    - ogusa.execute
-    - ogusa.firm
-    - ogusa.fiscal
-    - ogusa.get_micro_data
-    - ogusa.household
-    - ogusa.income
-    - ogusa.output_plots
-    - ogusa.output_tables
-    - ogusa.parameter_plots
-    - ogusa.parameter_tables
-    - ogusa.parameters
-    - ogusa.tax
-    - ogusa.txfunc
-    - ogusa.utils
-    - ogusa.wealth
+    - ogcore
+    - ogcore.SS
+    - ogcore.TPI
+    - ogcore.aggregates
+    - ogcore.constants
+    - ogcore.elliptical_u_est
+    - ogcore.execute
+    - ogcore.firm
+    - ogcore.fiscal
+    - ogcore.household
+    - ogcore.output_plots
+    - ogcore.output_tables
+    - ogcore.parameter_plots
+    - ogcore.parameter_tables
+    - ogcore.parameters
+    - ogcore.tax
+    - ogcore.txfunc
+    - ogcore.utils
+    - ogcore.wealth

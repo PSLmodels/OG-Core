@@ -1,16 +1,16 @@
 .. _parameters:
 
-OG-USA Parameters
+OG-Core Parameters
 =================================================
 
-**OG-USA Parameters**
+**OG-Core Parameters**
 
-ogusa.parameters
+ogcore.parameters
 ------------------------------------------
 
-.. currentmodule:: ogusa.parameters
+.. currentmodule:: ogcore.parameters
 
-.. automodule:: ogusa.parameters
+.. automodule:: ogcore.parameters
   :members: reform_warnings_errors
 
 .. autoclass:: Specifications

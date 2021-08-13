@@ -13,7 +13,7 @@ jobs:
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: ogusa-dev
+          activate-environment: ogcore-dev
           environment-file: environment.yml
           python-version: 3.7
           auto-activate-base: false

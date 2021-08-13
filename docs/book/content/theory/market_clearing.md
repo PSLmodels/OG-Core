@@ -1,7 +1,7 @@
 (Chap_MarkClr)=
 # Market Clearing
 
-Four markets must clear in `OG-USA`---the labor market, the private capital market, the government bond market, and the goods market. By Walras' Law, we only need to use three of those market clearing conditions because the fourth one is redundant. In the model, we choose to use the labor, private capital, and government bond market clearing conditions and to ignore the goods market clearing condition. But we present all four market clearing conditions here. Further, the redundant goods market clearing condition---sometimes referred to as the resource constraint---makes for a nice check on the solution method to see if everything worked.
+Four markets must clear in `OG-Core`---the labor market, the private capital market, the government bond market, and the goods market. By Walras' Law, we only need to use three of those market clearing conditions because the fourth one is redundant. In the model, we choose to use the labor, private capital, and government bond market clearing conditions and to ignore the goods market clearing condition. But we present all four market clearing conditions here. Further, the redundant goods market clearing condition---sometimes referred to as the resource constraint---makes for a nice check on the solution method to see if everything worked.
 
 We also characterize here the law of motion for total bequests $BQ_t$. Although it is not technically a market clearing condition, one could think of the bequests law of motion as the bequests market clearing condition.
 
@@ -42,7 +42,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
   (SecMarkClrMktClr_G)=
   ### Government bond market clearing
 
-  The government in `OG-USA` can run deficits or surplusses each period, as shown in equation {eq}`EqUnbalGBCbudgConstr` in Section {ref}`SecUnbalGBCbudgConstr`. Because the government can borrow or save on net each period $D_t$, someone must lend or borrow those assets on the supply side.
+  The government in `OG-Core` can run deficits or surplusses each period, as shown in equation {eq}`EqUnbalGBCbudgConstr` in Section {ref}`SecUnbalGBCbudgConstr`. Because the government can borrow or save on net each period $D_t$, someone must lend or borrow those assets on the supply side.
 
   We assume that foreigners hold a fixed percentage of new domestic government debt issuance. Let $D_{t+1} - D_t$ be the total new issuance government debt, and let $D^f_{t+1} - D^f_t$ be the amount of those new issuances held by foreigners. We assume that foreign holdings of new government issuances of debt $D^f_{t+1}-D^f_t$ are an exogenous percentage $\zeta_D\in[0,1]$ of total new government debt issuances. This percentage $\zeta_D$ is something we calibrate.
 
@@ -85,7 +85,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
     K^{f}_t = \zeta_{K}ED^{K,r^*}_t \quad\forall t
   ```
 
-  This approach nicely nests the small open economy specification discussed in Section {ref}`SecSmallOpen` of Chapter {ref}`Chap_SmOpEcn` in which $\zeta_K=1$, foreigners flexibly supply all the excess demand for private capital, the marginal product of capital is fixed at the exogenous world interest rate $r^*$, and domestic households face the least amount of crowd out by government debt. The opposite extreme is the closed private capital market assumption of $zeta_K=0$ in which $K^f_t=0$ and households must supply all the capital demanded in the domestic market. In this specification, the interest rate is the most flexible and adjusts to equilibrate domestic private capital supply $K^d_t$ with private capital demand $K_t$.
+  This approach nicely nests the small open economy specification discussed in Section {ref}`SecSmallOpen` of Chapter {ref}`Chap_SmOpEcn` in which $\zeta_K=1$, foreigners flexibly supply all the excess demand for private capital, the marginal product of capital is fixed at the exogenous world interest rate $r^*$, and domestic households face the least amount of crowd out by government debt. The opposite extreme is the closed private capital market assumption of $\zeta_K=0$ in which $K^f_t=0$ and households must supply all the capital demanded in the domestic market. In this specification, the interest rate is the most flexible and adjusts to equilibrate domestic private capital supply $K^d_t$ with private capital demand $K_t$.
 
   For the interemediate specifications of $\zeta_K\in(0,1)$, foreigners provide a fraction of the excess demand defined in {eq}`EqMarkClr_ExDemK`. This allows for partial inflows of foreign private capital, partial crowd-out of government spending on private investment, and partial adjustment of the domestic interest rate $r_t$. This latter set of model specifications could be characterized as large-open economy or partial capital mobility.
 
