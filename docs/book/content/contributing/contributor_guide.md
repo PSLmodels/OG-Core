@@ -127,7 +127,7 @@ situations, in which case other contributors are here to help.
     ```
      OG-Core/ogcore$  pytest
     ```
-   Note that running this full suite of tests may take close to 24 hours (depending on your hardware).  To run the small set of tests that run on each pull request (and take about 40 minutes), use  `pytest -m "not needs_puf and not local and not regression"`.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn't possible or doesn't work, the core maintainers are here to help via a [GitHub Issue](https://github.com/PSLmodels/OG-Core/issues).
+   Note that running this full suite of tests may take close to 24 hours (depending on your hardware).  To run the subset of tests that run on each pull request (and take about 40 minutes), use  `pytest -m "not local"`.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn't possible or doesn't work, the core maintainers are here to help via a [GitHub Issue](https://github.com/PSLmodels/OG-Core/issues).
 
 4. Now you're ready to [commit](https://help.github.com/articles/github-glossary/#commit) your changes to your local repo using the code below. The first line of code tells `Git` to track a file. Use "git status" to find all the files you've edited, and "git add" each of the files that you'd like `Git` to track. As a rule, do not add large files. If you'd like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message; this should be a short description of your changes.
 
