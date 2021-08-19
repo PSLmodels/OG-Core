@@ -1,6 +1,5 @@
 [![PSL cataloged](https://img.shields.io/badge/PSL-cataloged-a0a0a0.svg)](https://www.PSLmodels.org)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/downloads/release/python-377/)
-[![Build Status](https://travis-ci.com/PSLmodels/OG-Core.svg?branch=master)](https://travis-ci.com/PSLmodels/OG-Core)
 [![Codecov](https://codecov.io/gh/PSLmodels/OG-Core/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-Core)
 
 # OG-Core
