@@ -29,6 +29,7 @@ parts:
 - caption: OG-Core Theory
   chapters:
   - file: content/theory/intro
+  - file: content/theory/demographics
   - file: content/theory/households
   - file: content/theory/firms
   - file: content/theory/government
