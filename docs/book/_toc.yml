@@ -42,7 +42,7 @@ parts:
   - file: content/theory/derivations
 - caption: References
   chapters:
-  - file: content/theory/references
+  - file: content/OGCore_references
 - caption: Citations of OG-Core
   chapters:
   - file: content/citations

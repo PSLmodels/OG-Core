@@ -59,4 +59,4 @@ latex:
     targetname           : book.tex
 bibtex_bibfiles:
    - OGUSA_references.bib
-   - ../../citations.bib
+   - citations.bib
