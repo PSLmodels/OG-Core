@@ -23,6 +23,9 @@ jobs:
         run: |
           pip install jupyter-book
           pip install sphinxcontrib-bibtex==1.0.0
+          pip install sphinx>=3.5.4
+          pip install sphinx-book-theme>=0.1.3
+          pip install sphinx-thebe>=0.0.10
           pip install -e .
           cd docs
           jb build ./book
