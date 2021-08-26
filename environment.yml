@@ -2,7 +2,7 @@ name: ogcore-dev
 channels:
 - conda-forge
 dependencies:
-- python>=3.9.6
+- python>=3.7.7
 - ipython
 - setuptools
 - mkl>=2020.2
