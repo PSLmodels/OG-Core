@@ -15,7 +15,7 @@ jobs:
         with:
           activate-environment: ogcore-dev
           environment-file: environment.yml
-          python-version: 3.9
+          python-version: 3.7
           auto-activate-base: false
 
       - name: Build # Build Jupyter Book
