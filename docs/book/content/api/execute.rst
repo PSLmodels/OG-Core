@@ -3,12 +3,10 @@
 Model Execution Functions
 =================================================
 
-**Model Execution**
+**execute.py modules**
 
 ogcore.execute
 ------------------------------------------
-
-.. currentmodule:: ogcore.execute
 
 .. automodule:: ogcore.execute
   :members: runner

@@ -3,12 +3,10 @@
 Tax Functions
 =================================================
 
-**Tax Functions**
+**tax.py modules**
 
 ogcore.tax
 ------------------------------------------
-
-.. currentmodule:: ogcore.tax
 
 .. automodule:: ogcore.tax
   :members: replacement_rate_vals, ETR_wealth, MTR_wealth, ETR_income,
