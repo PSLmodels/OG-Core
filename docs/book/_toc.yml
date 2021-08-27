@@ -7,25 +7,6 @@ parts:
 - caption: OG-Core API
   chapters:
   - file: content/api/public_api
-    sections:
-    - file: content/api/aggregates
-    - file: content/api/demographics
-    - file: content/api/elliptical_u_est
-    - file: content/api/execute
-    - file: content/api/firm
-    - file: content/api/fiscal
-    - file: content/api/get_micro_data
-    - file: content/api/household
-    - file: content/api/income
-    - file: content/api/output_plots
-    - file: content/api/output_tables
-    - file: content/api/parameter_plots
-    - file: content/api/parameter_tables
-    - file: content/api/parameters
-    - file: content/api/tax
-    - file: content/api/txfunc
-    - file: content/api/utils
-    - file: content/api/wealth
 - caption: OG-Core Theory
   chapters:
   - file: content/theory/intro
