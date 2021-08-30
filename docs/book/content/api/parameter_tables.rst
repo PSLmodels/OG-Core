@@ -1,14 +1,12 @@
 .. _parameter_tables:
 
-OG-Core Parameter Table Building Functions
+Parameter Table Functions
 =================================================
 
-**OG-Core Parameter Table Building Functions**
+**parameter_tables.py modules**
 
 ogcore.parameter_tables
 ------------------------------------------
-
-.. currentmodule:: ogcore.parameter_tables
 
 .. automodule:: ogcore.parameter_tables
   :members: tax_rate_table, param_table

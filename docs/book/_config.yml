@@ -58,5 +58,5 @@ latex:
   latex_documents:
     targetname           : book.tex
 bibtex_bibfiles:
-   - OGUSA_references.bib
-   - ../../citations.bib
+   - OGCore_references.bib
+   - citations.bib

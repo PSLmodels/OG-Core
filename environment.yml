@@ -15,7 +15,8 @@ dependencies:
 - distributed==2.30.1
 - paramtools>=0.15.0
 - openpyxl
-- sphinx>=3.1.2
+- sphinx>=3.5.4
+- sphinx-book-theme>=0.1.3
 - pip
 - pytest>=6.0
 - pytest-pep8

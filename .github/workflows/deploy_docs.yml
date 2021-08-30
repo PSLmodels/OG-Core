@@ -1,7 +1,7 @@
 name: Build and Deploy Jupyter Book documentation
 on:
   push:
-    branches:    
+    branches:
       - master
 jobs:
   build-and-deploy:

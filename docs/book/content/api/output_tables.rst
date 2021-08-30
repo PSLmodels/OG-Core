@@ -1,14 +1,12 @@
 .. _output_tables:
 
-OG-Core Output Table Building Functions
+Output Table Functions
 =================================================
 
-**OG-Core Output Table Building Functions**
+**output_tabls.py modules*
 
 ogcore.output_tables
 ------------------------------------------
-
-.. currentmodule:: ogcore.output_tables
 
 .. automodule:: ogcore.output_tables
   :members: macro_table, macro_table_SS, ineq_table, gini_table,

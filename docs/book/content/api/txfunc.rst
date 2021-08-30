@@ -3,12 +3,10 @@
 Tax Function Estimation Functions
 =================================================
 
-**Tax Function Estimation Functions**
+**txfunc.py modules**
 
 ogcore.txfunc
 ------------------------------------------
-
-.. currentmodule:: ogcore.txfunc
 
 .. automodule:: ogcore.txfunc
   :members: gen_3Dscatters_hist, plot_txfunc_v_data, get_tax_rates, wsumsq,

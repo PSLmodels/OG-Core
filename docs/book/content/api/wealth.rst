@@ -3,12 +3,10 @@
 Wealth Functions
 =================
 
-**Wealth**
+**wealth.py modules**
 
 ogcore.wealth
 ------------------------------------------
-
-.. currentmodule:: ogcore.wealth
 
 .. automodule:: ogcore.wealth
   :members: get_wealth_data, compute_wealth_moments
