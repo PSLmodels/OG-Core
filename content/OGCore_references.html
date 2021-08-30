@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Overview: module code &#8212; OG-Core</title>
+    <title>References &#8212; OG-Core</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -42,8 +42,17 @@
     <script src="../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Citations and use cases of OG-Core" href="citations.html" />
+    <link rel="prev" title="Derivations" href="theory/derivations.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -75,7 +84,7 @@
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/intro/intro.html">
+  <a class="reference internal" href="intro/intro.html">
    OG-Core
   </a>
  </li>
@@ -87,7 +96,7 @@
 </p>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/contributing/contributor_guide.html">
+  <a class="reference internal" href="contributing/contributor_guide.html">
    Contributor Guide
   </a>
  </li>
@@ -99,7 +108,7 @@
 </p>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../content/api/public_api.html">
+  <a class="reference internal" href="api/public_api.html">
    API
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
@@ -109,77 +118,77 @@
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/aggregates.html">
+    <a class="reference internal" href="api/aggregates.html">
      Aggregates Equations
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/elliptical_u_est.html">
+    <a class="reference internal" href="api/elliptical_u_est.html">
      Elliptical Utility Function Estimation
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/execute.html">
+    <a class="reference internal" href="api/execute.html">
      Model Execution Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/firm.html">
+    <a class="reference internal" href="api/firm.html">
      Firm Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/fiscal.html">
+    <a class="reference internal" href="api/fiscal.html">
      Fiscal Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/household.html">
+    <a class="reference internal" href="api/household.html">
      Household Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/output_plots.html">
+    <a class="reference internal" href="api/output_plots.html">
      Output Plotting Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/output_tables.html">
+    <a class="reference internal" href="api/output_tables.html">
      Output Table Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/parameter_plots.html">
+    <a class="reference internal" href="api/parameter_plots.html">
      Parameter Plotting Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/parameter_tables.html">
+    <a class="reference internal" href="api/parameter_tables.html">
      Parameter Table Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/parameters.html">
+    <a class="reference internal" href="api/parameters.html">
      Parameters Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/tax.html">
+    <a class="reference internal" href="api/tax.html">
      Tax Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/txfunc.html">
+    <a class="reference internal" href="api/txfunc.html">
      Tax Function Estimation Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/utils.html">
+    <a class="reference internal" href="api/utils.html">
      Utilities Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../content/api/wealth.html">
+    <a class="reference internal" href="api/wealth.html">
      Wealth Functions
     </a>
    </li>
@@ -193,47 +202,47 @@
 </p>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/intro.html">
+  <a class="reference internal" href="theory/intro.html">
    Model Overview
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/demographics.html">
+  <a class="reference internal" href="theory/demographics.html">
    Demographics
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/households.html">
+  <a class="reference internal" href="theory/households.html">
    Households
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/firms.html">
+  <a class="reference internal" href="theory/firms.html">
    Firms
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/government.html">
+  <a class="reference internal" href="theory/government.html">
    Government
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/market_clearing.html">
+  <a class="reference internal" href="theory/market_clearing.html">
    Market Clearing
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/open_economy.html">
+  <a class="reference internal" href="theory/open_economy.html">
    Open Economy Options
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/stationarization.html">
+  <a class="reference internal" href="theory/stationarization.html">
    Stationarization
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/equilibrium.html">
+  <a class="reference internal" href="theory/equilibrium.html">
    Equilibrium
   </a>
  </li>
@@ -245,7 +254,7 @@
 </p>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/theory/derivations.html">
+  <a class="reference internal" href="theory/derivations.html">
    Derivations
   </a>
  </li>
@@ -255,9 +264,9 @@
   References
  </span>
 </p>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../content/OGCore_references.html">
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    References
   </a>
  </li>
@@ -269,7 +278,7 @@
 </p>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../content/citations.html">
+  <a class="reference internal" href="citations.html">
    Citations and use cases of OG-Core
   </a>
  </li>
@@ -306,6 +315,23 @@
             </button>
             
             
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/content/OGCore_references.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
             <!-- Source interaction buttons -->
 
 <div class="dropdown-buttons-trigger">
@@ -317,7 +343,7 @@
                 data-toggle="tooltip" data-placement="left" title="Source repository"><i
                     class="fab fa-github"></i>repository</button></a>
         <a class="issues-button"
-            href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2F_modules/index.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/OGCore_references.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
         
@@ -346,23 +372,30 @@
         
               <div>
                 
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="ogcore/aggregates.html">ogcore.aggregates</a></li>
-<li><a href="ogcore/elliptical_u_est.html">ogcore.elliptical_u_est</a></li>
-<li><a href="ogcore/execute.html">ogcore.execute</a></li>
-<li><a href="ogcore/firm.html">ogcore.firm</a></li>
-<li><a href="ogcore/fiscal.html">ogcore.fiscal</a></li>
-<li><a href="ogcore/household.html">ogcore.household</a></li>
-<li><a href="ogcore/output_plots.html">ogcore.output_plots</a></li>
-<li><a href="ogcore/output_tables.html">ogcore.output_tables</a></li>
-<li><a href="ogcore/parameter_plots.html">ogcore.parameter_plots</a></li>
-<li><a href="ogcore/parameter_tables.html">ogcore.parameter_tables</a></li>
-<li><a href="ogcore/parameters.html">ogcore.parameters</a></li>
-<li><a href="ogcore/tax.html">ogcore.tax</a></li>
-<li><a href="ogcore/txfunc.html">ogcore.txfunc</a></li>
-<li><a href="ogcore/utils.html">ogcore.utils</a></li>
-<li><a href="ogcore/wealth.html">ogcore.wealth</a></li>
-</ul>
+  <div class="section" id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
+<p id="bibtex-bibliography-content/OGCore_references-0"></p>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./content"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               
@@ -373,6 +406,24 @@
 
 <div class='prev-next-bottom'>
     
+    <div id="prev">
+        <a class="left-prev" href="theory/derivations.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">Derivations</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="citations.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">Citations and use cases of OG-Core</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
 
 </div>
         

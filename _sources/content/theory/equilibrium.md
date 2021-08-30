@@ -80,7 +80,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         6. Given $\bar{r}^i$, $\bar{r}_{gov,a}$, $\bar{K}_a$, and $\bar{D}$, solve for $\bar{r}_{hh,a}$ using {eq}`EqStnrz_rate_hh`.
 
-        7. Use $factor^i$ to solve for the tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ defined in {eq}`EqTaxCalcLiabETR2`, {eq}`EqTaxCalcMTRx`, and {eq}`EqTaxCalcMTRy`, respectively of the calibration chapter on the microsimulation model and tax function estimation in the country-specific repository using the factor to transform model units to dollars in the tax functions as described in the section on the model units factor.
+        7. Use $factor^i$ for the tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$, respectively, of the calibration chapter on the microsimulation model and tax function estimation in the country-specific repository using the factor to transform model units to dollars in the tax functions as described in the section on the model units factor.
 
     3. Given values $\bar{r}_{hh,a}$, $\bar{w}_a$ $\overline{BQ}^i$, $\overline{TR}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
@@ -162,7 +162,7 @@ The computational algorithm for solving for the steady-state follows the steps b
          \overline{TR}^{i'} = \alpha_{tr}\:\bar{Y}_b
        ```
 
-    4. Use updated $\bar{r}^{i'}$, the new $\bar{r}_{hh,b}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqTaxCalcFactor` to get an updated value for the income factor $factor^{i'}$.
+    4. Use updated $\bar{r}^{i'}$, the new $\bar{r}_{hh,b}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
 
         1. Use updated $\bar{r}^{i'}$ to get a new value for $\bar{w}_b$ using {eq}`EqStnrz_w_of_r` to get an update value of the steady-state wage $\bar{w}_b$.
 
@@ -171,7 +171,7 @@ The computational algorithm for solving for the steady-state follows the steps b
              \bar{w}_b = (1 - \gamma)^\frac{1}{\varepsilon}Z\left[\gamma^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{\bar{r}^{i'} + \delta - \tau^{corp}\delta^\tau}{(1-\tau^{corp})Z\gamma^\frac{1}{\varepsilon}}\right]^{\varepsilon - 1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon - 1}
            ```
 
-        2. Use new $\bar{r}_{hh,b}$, $\bar{w}_b$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqTaxCalcFactor` to get an updated value for the income factor $factor^{i'}$.
+        2. Use new $\bar{r}_{hh,b}$, $\bar{w}_b$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
 
            ```{math}
            :label: EqSS_factor

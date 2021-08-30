@@ -1,14 +1,12 @@
 .. _output_plots:
 
-OG-Core Output Plotting Functions
+Output Plotting Functions
 =================================================
 
-**OG-Core Output Plotting Functions**
+**output_plots.py modules**
 
 ogcore.output_plots
 ------------------------------------------
-
-.. currentmodule:: ogcore.output_plots
 
 .. automodule:: ogcore.output_plots
   :members: plot_aggregates, plot_gdp_ratio, ability_bar, ability_bar_ss,

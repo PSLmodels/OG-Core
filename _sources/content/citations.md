@@ -1,5 +1,5 @@
 # Citations and use cases of OG-Core
 
-```{bibliography} ../../../citations.bib
+```{bibliography} ../citations.bib
 :all :
 ```
