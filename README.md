@@ -1,11 +1,10 @@
 [![PSL cataloged](https://img.shields.io/badge/PSL-cataloged-a0a0a0.svg)](https://www.PSLmodels.org)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/downloads/release/python-377/)
-[![Build Status](https://travis-ci.com/PSLmodels/OG-Core.svg?branch=master)](https://travis-ci.com/PSLmodels/OG-Core)
 [![Codecov](https://codecov.io/gh/PSLmodels/OG-Core/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-Core)
 
 # OG-Core
 
-OG-Core is an overlapping-generations (OG) model that allows for dynamic general equilibrium analysis of fiscal policy.  OG-Core provides a general framework and is a dependency of several country-specific OG models, such as [OG-USA](https://github.com/PSLmodels/OG-USA) and [OG-UK](https://github.com/PSLmodels/OG-UK).  The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available [here](https://pslmodels.github.io/OG-Core).
+OG-Core is an overlapping-generations (OG) model core theory, logic, and solution method algorithms that allow for dynamic general equilibrium analysis of fiscal policy. OG-Core provides a general framework and is a dependency of several country-specific OG models, such as [OG-USA](https://github.com/PSLmodels/OG-USA) and [OG-UK](https://github.com/PSLmodels/OG-UK). The model output includes changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available [here](https://pslmodels.github.io/OG-Core).
 
 
 ## Disclaimer
@@ -44,6 +43,14 @@ Note that, depending on your machine, a full model run (solving for the full tim
 If you run into errors running the example script, please open a new issue in the OG-Core repo with a description of the issue and any relevant tracebacks you receive.
 
 The CSV output file `./run_examples/ogcore_example_output.csv` can be compared to the `./run_examples/expected_ogcore_example_output.csv` file that is checked into the repository to confirm that you are generating the expected output. The easiest way to do this is to use the `sh example-diffs` command (or `example-diffs` on Windows) from the `run_examples` directory. If you run into errors running the example script, please open a new issue in the OG-Core repo with a description of the issue and any relevant tracebacks you receive.
+
+
+## Core Maintainers
+
+The core maintainers of the OG-Core repository are:
+
+* [Jason DeBacker](https://www.jasondebacker.com/) (GitHub handle: [jdebacker](https://github.com/jdebacker)), Associate Professor, Department of Economics, Darla Moore School of Business, University of South Carolina; President, PSL Foundation; Vice President of Research and Co-founder, Open Research Group, Inc.
+* [Richard W. Evans](https://sites.google.com/site/rickecon/) (GitHub handle: [rickecon](https://github.com/rickecon)), Advisory Board Visiting Fellow, Center for Public Finance, Baker Institute for Public Policy at Rice University; President, Open Research Group, Inc.; Director, Open Source Economics Laboratory
 
 
 ## Citing OG-Core

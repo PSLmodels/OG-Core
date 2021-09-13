@@ -1,14 +1,12 @@
 .. _parameter_plots:
 
-OG-Core Parameter Plotting Functions
+Parameter Plotting Functions
 =================================================
 
-**OG-Core Parameter Plotting Functions**
+**parameter_plots.py modules**
 
 ogcore.parameter_plots
 ------------------------------------------
-
-.. currentmodule:: ogcore.parameter_plots
 
 .. automodule:: ogcore.parameter_plots
   :members: plot_imm_rates, plot_mort_rates, plot_pop_growth,

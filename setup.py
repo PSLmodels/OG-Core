@@ -6,7 +6,7 @@ except ImportError:
 with open('README.md') as f:
     longdesc = f.read()
 
-version = '0.6.3'
+version = '0.7.0'
 
 config = {
     'description': 'General equilibribum, overlapping generations model for the USA',

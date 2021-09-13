@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -8,9 +7,9 @@ from ogcore.constants import (GROUP_LABELS, VAR_LABELS, ToGDP_LABELS,
                               CBO_UNITS, DEFAULT_START_YEAR)
 import ogcore.utils as utils
 from ogcore.utils import Inequality
-
-cur_path = os.path.split(os.path.abspath(__file__))[0]
-style_file = os.path.join(cur_path, 'OGcorePlots.mplstyle')
+style_file = os.path.join(
+    'https://github.com/PSLmodels/OG-Core/blob/master/ogcore/' +
+    'OGcorePlots.mplstyle')
 plt.style.use(style_file)
 
 
