@@ -431,13 +431,13 @@ test_data = [(0.04, 0.02, 2.0, 4.0, 0.026666667),
 
 @pytest.mark.parametrize('r,r_gov,B,D,expected', test_data,
                          ids=['scalar', 'vector', 'no debt'])
-def test_get_r_hh(r, r_gov, B, D, expected):
+def test_get_r_p(r, r_gov, B, D, expected):
     """
     Test function to compute interet rate on household portfolio.
     """
-    r_hh_test = aggr.get_r_hh(r, r_gov, B, D)
+    r_p_test = aggr.get_r_p(r, r_gov, B, D)
 
-    assert(np.allclose(r_hh_test, expected))
+    assert(np.allclose(r_p_test, expected))
 
 
 def test_resource_constraint():
