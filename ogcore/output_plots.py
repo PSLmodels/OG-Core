@@ -7,9 +7,9 @@ from ogcore.constants import (GROUP_LABELS, VAR_LABELS, ToGDP_LABELS,
                               CBO_UNITS, DEFAULT_START_YEAR)
 import ogcore.utils as utils
 from ogcore.utils import Inequality
-style_file = os.path.join(
-    'https://github.com/PSLmodels/OG-Core/blob/master/ogcore/' +
-    'OGcorePlots.mplstyle')
+CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
+# style_file = os.path.join('https://raw.githubusercontent.com/PSLmodels/OG-Core/master/ogcore/OGcorePlots.mplstyle')
+style_file = os.path.join(CUR_PATH, 'OGcorePlots.mplstyle')
 plt.style.use(style_file)
 
 

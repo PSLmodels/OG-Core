@@ -9,7 +9,7 @@ functions require time-path calculation.
 
 # Packages
 import numpy as np
-from ogusa.aggregates import get_I
+from ogcore.aggregates import get_I
 
 '''
 ------------------------------------------------------------------------
@@ -214,7 +214,7 @@ def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR, UBI_outlays,
         G = p.alpha_G[-1] * Y
     else:
         G = (total_tax_revenue + new_borrowing -
-             (agg_pension_outlays + TR + debt_service + UBI_outlays))
+             (agg_pension_outlays + TR + debt_service + UBI_outlays + I_g))
 
     return G
 

@@ -335,13 +335,6 @@ def SS_solver(bmat, nmat, r, w, BQ, TR, factor, Y, p, client,
     wss = w
     r_gov_ss = fiscal.get_r_gov(rss, p)
     TR_ss = TR
-    Lss = aggr.get_L(nssmat, p, 'SS')
-    Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
-    (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
-     new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
-    K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
-    Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
-        Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
     if p.baseline_spending:
         Yss = Y
     else:
@@ -349,6 +342,14 @@ def SS_solver(bmat, nmat, r, w, BQ, TR, factor, Y, p, client,
     # Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
     I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
     K_g_ss = fiscal.get_K_g_p1(0, I_g_ss, p, 'SS')
+    Lss = aggr.get_L(nssmat, p, 'SS')
+    Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
+    (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
+     new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
+    # K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
+    K_demand_open_ss = K_demand_open = firm.get_K_new(p.world_int_rate[-1], K_g_ss, Lss, p, 'SS')
+    Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
+        Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
     r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
@@ -405,7 +406,7 @@ def SS_solver(bmat, nmat, r, w, BQ, TR, factor, Y, p, client,
     # net foreign borrowing
     debt_service_f = fiscal.get_debt_service_f(r_hh_ss, D_f_ss)
     RC = aggr.resource_constraint(
-        Yss, Css, Gss, I_d_ss, K_f_ss, new_borrowing_f, debt_service_f,
+        Yss, Css, Gss, I_d_ss, I_g_ss, K_f_ss, new_borrowing_f, debt_service_f,
         r_hh_ss, p)
     if VERBOSE:
         print('Foreign debt holdings = ', D_f_ss)

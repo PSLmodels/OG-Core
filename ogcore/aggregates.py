@@ -355,7 +355,7 @@ def get_r_hh(r, r_gov, K, D):
     return r_hh
 
 
-def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
+def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
                         debt_service_f, r, p):
     r'''
     Compute the error in the resource constraint.
@@ -363,6 +363,8 @@ def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
     .. math::
         \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}
         (1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +
+        (\hat{K}^{g}_{t+1}e^{g_{y}}
+        (1+g_{n,t+1}) - \hat{K}^{g}_{t}) + \delta \hat{K}^{g}_{t} +
         \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} -
         (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +
         r_{hh,t}\hat{D}^{f}_{t}
@@ -371,7 +373,8 @@ def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
         Y (array_like): aggregate output
         C (array_like): aggregate consumption
         G (array_like): aggregate government spending
-        I (array_like): aggregate investment
+        I_d (array_like): aggregate private investment from domestic households
+        I_g (array_like): investment in government capital
         K_f (array_like): aggregate capital that is foreign-owned
         new_borrowing_f (array_like): new borrowing of government debt
             from foreign investors
@@ -384,7 +387,7 @@ def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
         rc_error (array_like): error in the resource constraint
 
     '''
-    rc_error = (Y - C - I - G - (r + p.delta) * K_f + new_borrowing_f -
+    rc_error = (Y - C - I_d - I_g - G - (r + p.delta) * K_f + new_borrowing_f -
                 debt_service_f)
 
     return rc_error
@@ -420,12 +423,15 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
 
     '''
     K_d = B - D_d
+    print('K_d = ', K_d)
     # if isinstance(K_d, (np.ndarray, np.generic)):
     if np.any(K_d < 0):
         print('K_d has negative elements. Setting them ' +
               'positive to prevent NAN.')
-        K_d = np.fmax(K_d, 0.05 * B)
+        K_d = np.max(K_d, 0.05 * B)
     K_f = zeta_K * (K_demand_open - B + D_d)
+    print('K_f = ', K_f)
     K = K_f + K_d
+    print('K = ', K)
 
     return K, K_d, K_f
