@@ -371,7 +371,7 @@
         "type": "float",
         "value": [
             {
-                "value": 0.2
+                "value": 0.0
             }
         ],
         "validators": {
@@ -653,7 +653,7 @@
         "value": [
             {
                 "value": [
-                    0.01
+                    0.00
                 ]
             }
         ],
