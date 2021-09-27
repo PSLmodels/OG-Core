@@ -156,7 +156,8 @@ def inner_loop(outer_loop_vars, p, client):
         K_g = fiscal.get_K_g_p1(0, I_g, p, 'SS')
         print('getting K original')
         # K = firm.get_K_from_Y_and_L(w, Y, L, K_g, p, 'SS') ## TODO: try to use the FOC for K here - so K function of r, K, Kg -- does that help?
-        K = firm.get_K_new(r, K_g, L, p, 'SS')
+        # K = firm.get_K_new(r, K_g, L, p, 'SS')
+        K = firm.get_K_from_Y(Y, r, p, 'SS')
         print('K = ', K)
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
@@ -165,7 +166,8 @@ def inner_loop(outer_loop_vars, p, client):
     r_gov = fiscal.get_r_gov(r, p)
     D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
         fiscal.get_D_ss(r_gov, Y, p)
-    r_p = aggr.get_r_p(r, r_gov, K, D)
+    MPKg = firm.get_MPx(Y, K, p.gamma_g, p, 'SS')
+    r_p = aggr.get_r_p(r, r_gov, K, D, MPKg, p, 'SS')
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
     ubi = p.ubi_nom_array[-1, :, :] / factor
@@ -197,7 +199,7 @@ def inner_loop(outer_loop_vars, p, client):
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
     # K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
-    K_demand_open = firm.get_K_new(p.world_int_rate[-1], K_g, L, p, 'SS')
+    K_demand_open = firm.get_K_new(p.world_int_rate[-1], w, L, p, 'SS')
     print('getting K new')
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
     Y = firm.get_Y(K, K_g, L, p, 'SS')
@@ -206,13 +208,14 @@ def inner_loop(outer_loop_vars, p, client):
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
-        new_r = firm.get_r(Y, K, K_g, p, 'SS')
+        new_r = firm.get_r(Y, K, p, 'SS')
     new_w = firm.get_w(Y, L, p, 'SS')
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
     new_r_gov = fiscal.get_r_gov(new_r, p)
-    new_r_p = aggr.get_r_p(new_r, new_r_gov, K, D)
+    MPKg = firm.get_MPx(Y, K, p.gamma_g, p, 'SS')
+    new_r_p = aggr.get_r_p(new_r, new_r_gov, K, D, MPKg, p, 'SS')
     average_income_model = ((new_r_p * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -347,10 +350,11 @@ def SS_solver(bmat, nmat, r, w, BQ, TR, factor, Y, p, client,
     (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
      new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
     # K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
-    K_demand_open_ss = firm.get_K_new(p.world_int_rate[-1], K_g_ss, Lss, p, 'SS')
+    K_demand_open_ss = firm.get_K_new(p.world_int_rate[-1], wss, Lss, p, 'SS')
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
         Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
-    r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, Dss)
+    MPKg = firm.get_MPx(Yss, Kss, p.gamma_g, p, 'SS')
+    r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, Dss, MPKg, p, 'SS')
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')

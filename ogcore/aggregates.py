@@ -331,7 +331,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             payroll_tax_revenue, iit_revenue)
 
 
-def get_r_p(r, r_gov, K, D):
+def get_r_p(r, r_gov, K, D, MPKg, p, method):
     r'''
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
@@ -350,7 +350,12 @@ def get_r_p(r, r_gov, K, D):
             portfolio
 
     '''
-    r_p = ((r * K) + (r_gov * D)) / (K + D)
+    if method == 'SS':
+        tau_b = p.tau_b[-1]
+    else:
+        tau_b = p.tau_b[:p.T]
+    r_K = r + MPKg * (1 - tau_b)
+    r_p = ((r_K * K) + (r_gov * D)) / (K + D)
 
     return r_p
 

@@ -55,7 +55,7 @@ def get_Y(K, K_g, L, p, method):
     return Y
 
 
-def get_r(Y, K, K_g, p, method):
+def get_r(Y, K, p, method):
     r'''
     This function computes the interest rate as a function of Y, K, and
     parameters using the firm's first order condition for capital
@@ -77,18 +77,26 @@ def get_r(Y, K, K_g, p, method):
         r (array_like): the real interest rate
 
     '''
+    # if method == 'SS':
+    #     Z = p.Z[-1]
+    #     delta_tau = p.delta_tau[-1]
+    #     tau_b = p.tau_b[-1]
+    # else:
+    #     Z = p.Z[:p.T]
+    #     delta_tau = p.delta_tau[:p.T]
+    #     tau_b = p.tau_b[:p.T]
+    # r = ((1 - tau_b) * (Z ** ((p.epsilon - 1) / p.epsilon)) *
+    #      ((((p.gamma * Y) / K) ** (1 / p.epsilon)) +
+    #      ((((p.gamma * Y) / K_g) ** (1 / p.epsilon)) * (K_g / K))) -
+    #      p.delta + tau_b * delta_tau)
     if method == 'SS':
-        Z = p.Z[-1]
         delta_tau = p.delta_tau[-1]
         tau_b = p.tau_b[-1]
     else:
-        Z = p.Z[:p.T]
         delta_tau = p.delta_tau[:p.T]
         tau_b = p.tau_b[:p.T]
-    r = ((1 - tau_b) * (Z ** ((p.epsilon - 1) / p.epsilon)) *
-         ((((p.gamma * Y) / K) ** (1 / p.epsilon)) +
-         ((((p.gamma * Y) / K_g) ** (1 / p.epsilon)) * (K_g / K))) -
-         p.delta + tau_b * delta_tau)
+    MPK = get_MPx(Y, K, p.gamma, p, method)
+    r = MPK * (1 - tau_b) - p.delta + tau_b * delta_tau
 
     return r
 
@@ -123,7 +131,7 @@ def get_w(Y, L, p, method):
     return w
 
 
-def get_KLratio_from_r(r, p, method):
+def get_KLratio(r, w, p, method):
     r'''
     This function solves for the capital-labor ratio given the interest
     rate r and parameters.
@@ -144,30 +152,51 @@ def get_KLratio_from_r(r, p, method):
         KLratio (array_like): the capital-labor ratio
 
     '''
+    # if method == 'SS':
+    #     Z = p.Z[-1]
+    #     delta_tau = p.delta_tau[-1]
+    #     tau_b = p.tau_b[-1]
+    # else:
+    #     length = r.shape[0]
+    #     Z = p.Z[:length]
+    #     delta_tau = p.delta_tau[:length]
+    #     tau_b = p.tau_b[:length]
+    # if p.epsilon == 1:
+    #     # Cobb-Douglas case
+    #     bracket = (((1 - tau_b) * p.gamma * Z) /
+    #                (r + p.delta - tau_b * delta_tau))
+    #     KLratio = bracket ** (1 / (1 - p.gamma))
+    # else:
+    #     # General CES case
+    #     bracket = ((r + p.delta - (delta_tau * tau_b)) /
+    #                ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
+    #     KLratio = \
+    #         ((((1 - p.gamma) ** (1 / p.epsilon)) /
+    #           ((bracket ** (p.epsilon - 1)) -
+    #            (p.gamma ** (1 / p.epsilon)))) ** (p.epsilon /
+    #                                               (p.epsilon - 1)))
+    if method == 'SS':
+        tau_b = p.tau_b[-1]
+        delta_tau = p.delta_tau[-1]
+    else:
+        tau_b = p.tau_b[:p.T]
+        delta_tau = p.delta_tau[:p.T]
+    denominator = ((r + p.delta - tau_b * delta_tau) / (1 - tau_b)) ** p.epsilon
+    KLratio = (w ** p.epsilon) / denominator
+    return KLratio
+
+
+def get_MPx(Y, x, share, p, method):
+    '''
+    Compute the marginal product of x (where x is K, L, K_g)
+    '''
     if method == 'SS':
         Z = p.Z[-1]
-        delta_tau = p.delta_tau[-1]
-        tau_b = p.tau_b[-1]
     else:
-        length = r.shape[0]
-        Z = p.Z[:length]
-        delta_tau = p.delta_tau[:length]
-        tau_b = p.tau_b[:length]
-    if p.epsilon == 1:
-        # Cobb-Douglas case
-        bracket = (((1 - tau_b) * p.gamma * Z) /
-                   (r + p.delta - tau_b * delta_tau))
-        KLratio = bracket ** (1 / (1 - p.gamma))
-    else:
-        # General CES case
-        bracket = ((r + p.delta - (delta_tau * tau_b)) /
-                   ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
-        KLratio = \
-            ((((1 - p.gamma) ** (1 / p.epsilon)) /
-              ((bracket ** (p.epsilon - 1)) -
-               (p.gamma ** (1 / p.epsilon)))) ** (p.epsilon /
-                                                  (p.epsilon - 1)))
-    return KLratio
+        Z = p.Z[:p.T]
+    MPx = Z ** ((p.epsilon - 1) / p.epsilon) * ((share * Y) / x) ** (1 / p.epsilon)
+
+    return MPx
 
 
 def get_w_from_r(r, p, method):
@@ -197,7 +226,7 @@ def get_w_from_r(r, p, method):
         Z = p.Z[-1]
     else:
         Z = p.Z[:p.T]
-    KLratio = get_KLratio_from_r(r, p, method)
+    KLratio = get_KLratio(r, p, method)
     if p.epsilon == 1:
         # Cobb-Douglas case
         w = (1 - p.gamma) * Z * (KLratio ** p.gamma)
@@ -230,7 +259,7 @@ def get_K(L, r, p, method):
         K (array_like): aggregate capital demand
     --------------------------------------------------------------------
     '''
-    KLratio = get_KLratio_from_r(r, p, method)
+    KLratio = get_KLratio(r, p, method)
     K = KLratio * L
 
     return K
@@ -255,26 +284,42 @@ def get_K_from_Y(Y, r, p, method):
         r (array_like): the real interest rate
 
     '''
-    KLratio = get_KLratio_from_r(r, p, method)
-    LKratio = KLratio ** -1
-    YKratio = get_Y(1, LKratio, p, method)  # can use get_Y because CRS
-    K = Y / YKratio
+    # KLratio = get_KLratio_from_r(r, p, method)
+    # LKratio = KLratio ** -1
+    # YKratio = get_Y(1, LKratio, p, method)  # can use get_Y because CRS
+    # K = Y / YKratio
+    if method == 'SS':
+        Z = p.Z[-1]
+        tau_b = p.tau_b[-1]
+        delta_tau = p.delta_tau[-1]
+    else:
+        Z = p.Z[:p.T]
+        tau_b = p.tau_b[:p.T]
+        delta_tau = p.delta_tau[:p.T]
+    numerator = p.gamma * Z ** (p.epsilon - 1) * Y
+    denominator = ((r + p.delta - tau_b * delta_tau) / (1 - tau_b)) ** p.epsilon
+    K = numerator / denominator
 
     return K
 
 
 def get_L_from_Y(w, Y, p, method):
-    '''
+    r'''
     Find L from Y and w
+
+    .. math::
+        L_{t} = \frac{(1 - \gamma - \gamma_g) Z_{t}^{\varepsilon-1}
+        Y_{t}}{w_{t}^{\varepsilon}}
+
     '''
-    if method == 'TPI':
-        L = (
-            ((1 - p.gamma - p.gamma_g) * Y) /
-            ((w / p.Z ** ((p.epsilon - 1) / p.epsilon)) ** p.epsilon))
+    if method == 'SS':
+        Z = p.Z[-1]
     else:
-        L = (
-            ((1 - p.gamma - p.gamma_g) * Y) /
-            ((w / p.Z[-1] ** ((p.epsilon - 1) / p.epsilon)) ** p.epsilon))
+        Z = p.Z[:p.T]
+    L = (
+        ((1 - p.gamma - p.gamma_g) * Z ** (p.epsilon - 1) * Y) /
+        (w ** p.epsilon)
+        )
 
     return L
 
@@ -303,41 +348,43 @@ def get_K_from_Y_and_L(w, Y, L, K_g, p, method):
     return K
 
 
-def get_K_new(r, K_g, L, p, method):
+def get_K_new(r, w, L, p, method):
     '''
-    Get K from r, K_g, L
+    Get K from r, w, L
 
     For determining capital demand for open economy case.
     '''
-    if method == 'SS':
-        Z = p.Z[-1]
-        delta_tau = p.delta_tau[-1]
-        tau_b = p.tau_b[-1]
-    else:
-        length = r.shape[0]
-        Z = p.Z[:length]
-        delta_tau = p.delta_tau[:length]
-        tau_b = p.tau_b[:length]
-    if p.epsilon == 1:
-        # Cobb-Douglas case
-        bracket = (((1 - tau_b) * p.gamma * Z) /
-                   (r + p.delta - tau_b * delta_tau))
-        K = (
-             (bracket * (K_g ** p.gamma_g) *
-              (L ** (1 - p.gamma - p.gamma_g))) ** (1 / (1 - p.gamma)))
-    else:
-        # General CES case
-        bracket = ((r + p.delta - (delta_tau * tau_b)) /
-                   ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
-        denom = (
-            (p.gamma_g ** (1 / p.epsilon)) *
-            (K_g ** ((p.epsilon - 1) / p.epsilon)) +
-            ((1 - p.gamma - p.gamma_g) ** (1 / p.epsilon)) *
-            (L ** ((p.epsilon - 1) / p.epsilon)))
-        K = \
-            ((((1 - p.gamma) ** (1 / p.epsilon)) /
-              ((bracket ** (p.epsilon - 1)) -
-               ((p.gamma ** (1 / p.epsilon) / denom)))) ** (p.epsilon /
-             (p.epsilon - 1)))
+    # if method == 'SS':
+    #     Z = p.Z[-1]
+    #     delta_tau = p.delta_tau[-1]
+    #     tau_b = p.tau_b[-1]
+    # else:
+    #     length = r.shape[0]
+    #     Z = p.Z[:length]
+    #     delta_tau = p.delta_tau[:length]
+    #     tau_b = p.tau_b[:length]
+    # if p.epsilon == 1:
+    #     # Cobb-Douglas case
+    #     bracket = (((1 - tau_b) * p.gamma * Z) /
+    #                (r + p.delta - tau_b * delta_tau))
+    #     K = (
+    #          (bracket * (K_g ** p.gamma_g) *
+    #           (L ** (1 - p.gamma - p.gamma_g))) ** (1 / (1 - p.gamma)))
+    # else:
+    #     # General CES case
+    #     bracket = ((r + p.delta - (delta_tau * tau_b)) /
+    #                ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
+    #     denom = (
+    #         (p.gamma_g ** (1 / p.epsilon)) *
+    #         (K_g ** ((p.epsilon - 1) / p.epsilon)) +
+    #         ((1 - p.gamma - p.gamma_g) ** (1 / p.epsilon)) *
+    #         (L ** ((p.epsilon - 1) / p.epsilon)))
+    #     K = \
+    #         ((((1 - p.gamma) ** (1 / p.epsilon)) /
+    #           ((bracket ** (p.epsilon - 1)) -
+    #            ((p.gamma ** (1 / p.epsilon) / denom)))) ** (p.epsilon /
+    #          (p.epsilon - 1)))
+    KLratio = get_KLratio(r, w, p, method)
+    K = KLratio * L
 
     return K
