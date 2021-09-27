@@ -331,13 +331,13 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             payroll_tax_revenue, iit_revenue)
 
 
-def get_r_hh(r, r_gov, K, D):
+def get_r_p(r, r_gov, K, D):
     r'''
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
 
     .. math::
-        r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}
+        r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}
 
     Args:
         r (array_like): the real interest rate
@@ -346,13 +346,13 @@ def get_r_hh(r, r_gov, K, D):
         D (array_like): aggregate government debt
 
     Returns:
-        r_hh (array_like): the real interest rate on the households
+        r_p (array_like): the real interest rate on the households
             portfolio
 
     '''
-    r_hh = ((r * K) + (r_gov * D)) / (K + D)
+    r_p = ((r * K) + (r_gov * D)) / (K + D)
 
-    return r_hh
+    return r_p
 
 
 def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
@@ -365,9 +365,9 @@ def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
         (1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +
         (\hat{K}^{g}_{t+1}e^{g_{y}}
         (1+g_{n,t+1}) - \hat{K}^{g}_{t}) + \delta \hat{K}^{g}_{t} +
-        \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} -
+        \hat{G}_{t} + r_{p, t}\hat{K}^{f}_{t} -
         (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +
-        r_{hh,t}\hat{D}^{f}_{t}
+        r_{p,t}\hat{D}^{f}_{t}
 
     Args:
         Y (array_like): aggregate output

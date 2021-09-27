@@ -20,7 +20,7 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'D_f': 'Foreign-owned Gov Debt ($D^f_t$)',
               'r': 'Real interest rate ($r_t$)',
               'r_gov': 'Real interest rate on gov debt ($r_{gov,t}$)',
-              'r_hh': 'Real interest rate on HH portfolio ($r_{hh,t}$)',
+              'r_p': 'Real interest rate on HH portfolio ($r_{p,t}$)',
               'w': 'Wage rate', 'BQ': 'Aggregate bequests ($BQ_{j,t}$)',
               'total_tax_revenue': 'Total tax revenue ($REV_t$)',
               'business_tax_revenue': 'Business tax revenue',
@@ -73,7 +73,7 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'rss': 'Real interest rate ($\\bar{r}$)',
               'r_gov_ss':
                   'Real interest rate on gov debt ($\\bar{r}_{gov}$)',
-              'r_hh_ss':
+              'r_p_ss':
                   'Real interest rate on HH portfolio ($\\bar{r}_{hh}$)',
               'wss': 'Wage rate ($\\bar{w}$)',
               'BQss': 'Aggregate bequests ($\\bar{BQ}_{j}$)',

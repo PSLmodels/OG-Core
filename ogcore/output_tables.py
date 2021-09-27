@@ -373,7 +373,7 @@ def tp_output_dump_table(base_params, base_tpi, reform_params=None,
     T = base_params.T
     # keep just items of interest for final table
     vars_to_keep = ['Y', 'L', 'G', 'TR', 'B', 'K', 'K_d', 'K_f', 'D',
-                    'D_d', 'D_f', 'r', 'r_gov', 'r_hh', 'w',
+                    'D_d', 'D_f', 'r', 'r_gov', 'r_p', 'w',
                     'total_tax_revenue', 'business_tax_revenue']
     base_dict = {k: base_tpi[k] for k in vars_to_keep}
     # update key names
@@ -491,25 +491,25 @@ def dynamic_revenue_decomposition(
     indiv_liab = {}
     # Baseline IIT + payroll tax liability
     indiv_liab['A'] = tax.income_tax_liab(
-        base_tpi['r_hh'][:T], base_tpi['w'][:T], base_tpi['bmat_s'],
+        base_tpi['r_p'][:T], base_tpi['w'][:T], base_tpi['bmat_s'],
         base_tpi['n_mat'][:T, :, :], base_ss['factor_ss'], 0, None,
         'TPI', base_params.e, base_etr_params_4D, base_params)
     # IIT + payroll tax liability using baseline behavior and macros
     # with the reform tax functions (this is the OG-Core static estimate)
     indiv_liab['B'] = tax.income_tax_liab(
-        base_tpi['r_hh'][:T], base_tpi['w'][:T], base_tpi['bmat_s'],
+        base_tpi['r_p'][:T], base_tpi['w'][:T], base_tpi['bmat_s'],
         base_tpi['n_mat'][:T, :, :], base_ss['factor_ss'], 0, None,
         'TPI', base_params.e, reform_etr_params_4D, base_params)
     # IIT + payroll tax liability using reform behavior and baseline
     # macros
     indiv_liab['C'] = tax.income_tax_liab(
-        base_tpi['r_hh'][:T], base_tpi['w'][:T],
+        base_tpi['r_p'][:T], base_tpi['w'][:T],
         reform_tpi['bmat_s'], reform_tpi['n_mat'][:T, :, :],
         base_ss['factor_ss'], 0, None, 'TPI', reform_params.e,
         reform_etr_params_4D, reform_params)
     # IIT + payroll tax liability from the reform simulation
     indiv_liab['D'] = tax.income_tax_liab(
-        reform_tpi['r_hh'][:T], reform_tpi['w'][:T],
+        reform_tpi['r_p'][:T], reform_tpi['w'][:T],
         reform_tpi['bmat_s'], reform_tpi['n_mat'][:T, :, :],
         base_ss['factor_ss'], 0, None, 'TPI', reform_params.e,
         reform_etr_params_4D, reform_params)

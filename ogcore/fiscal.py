@@ -219,12 +219,12 @@ def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR, UBI_outlays,
     return G
 
 
-def get_debt_service_f(r_hh, D_f):
+def get_debt_service_f(r_p, D_f):
     r'''
     Function to compute foreign debt service payments.
 
     .. math::
-        \text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}
+        \text{Foreign debt service}_{t} = r_{p,t} * D^{f}_{t}
 
     Args:
 
@@ -232,7 +232,7 @@ def get_debt_service_f(r_hh, D_f):
         debt_service_f (array_like): foreign debt service payment amount
 
     '''
-    debt_service_f = r_hh * D_f
+    debt_service_f = r_p * D_f
 
     return debt_service_f
 
