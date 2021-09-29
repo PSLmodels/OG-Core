@@ -28,7 +28,7 @@ The previous chapters derive all the equations necessary to solve for the steady
 * - $\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}$
   -
   - $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$
-  - $r_{hh,t}$
+  - $r_{p,t}$
 * - $\hat{y}_{j,s,t}\equiv \frac{y_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{C}_t\equiv\frac{C_t}{e^{g_y t}\tilde{N}_t}$
@@ -57,7 +57,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzHHBCstat
-    \hat{c}_{j,s,t} + e^{g_y}\hat{b}_{j,s+1,t+1} &= (1 + r_{hh,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{s,t}  \\
+    \hat{c}_{j,s,t} + e^{g_y}\hat{b}_{j,s+1,t+1} &= (1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
   ```
 
@@ -75,7 +75,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzHHeul_b
-    (\hat{c}_{j,s,t})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{hh,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(\hat{c}_{j,s+1,t+1})^{-\sigma}\biggr] \\
+    (\hat{c}_{j,s,t})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(\hat{c}_{j,s+1,t+1})^{-\sigma}\biggr] \\
     \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
@@ -141,7 +141,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrzLiabETR
     \hat{T}_{s,t} &= \tau^{etr}_{s,t}(\hat{x}_{j,s,t}, \hat{y}_{j,s,t})\left(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\right) \qquad\qquad\qquad\qquad\forall t \quad\text{and}\quad E+1\leq s\leq E+S \\
-    &= \tau^{etr}_{s,t}(\hat{w}_t e_{j,s}n_{j,s,t}, r_{hh,t}\hat{b}_{j,s,t})\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{hh,t}\hat{b}_{j,s,t}\right) \quad\forall t \quad\text{and}\quad E+1\leq s\leq E+S
+    &= \tau^{etr}_{s,t}(\hat{w}_t e_{j,s}n_{j,s,t}, r_{p,t}\hat{b}_{j,s,t})\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) \quad\forall t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   We can stationarize the simple expressions for total government spending on public goods $G_t$ in {eq}`EqUnbalGBC_Gt` and on household transfers $TR_t$ in {eq}`EqUnbalGBCtfer` by dividing both sides by $e^{g_y t}\tilde{N}_t$,
@@ -177,11 +177,11 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \hat{UBI}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t
   ```
 
-  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The expression for the return to household savings $r_{hh,t}$ in {eq}`EqUnbalGBC_rate_hh` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
+  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The expression for the return to household savings $r_{p,t}$ in {eq}`EqUnbalGBC_rate_hh` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
 
   ```{math}
     :label: EqStnrz_rate_hh
-    r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} = \frac{r_{gov,t}\hat{D}_{t} + r_{t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t
+  p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} = \frac{r_{gov,t}\hat{D}_{t} + r_{t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t
   ```
 
   The long-run debt-to-GDP ratio condition is also the same in both the nonstationary version in {eq}`EqUnbalGBC_DY` as well as the stationary version below because the endogenous side is a ratio of macroeconomic variables that are growing at the same rate.
@@ -294,7 +294,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrzMarkClrGoods
     \begin{split}
-      \hat{Y}_t &= \hat{C}_t + \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} - \hat{K}^d_t\Bigr) + \delta\hat{K}_t + \hat{G}_t + r_{hh,t}\hat{K}^f_t - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) + r_{hh,t}\hat{D}^f_t \quad\forall t \\
+      \hat{Y}_t &= \hat{C}_t + \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} - \hat{K}^d_t\Bigr) + \delta\hat{K}_t + \hat{G}_t + r_{p,t}\hat{K}^f_t - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) + r_{p,t}\hat{D}^f_t \quad\forall t \\
       &\quad\text{where}\quad \hat{C}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j\hat{c}_{j,s,t}
     \end{split}
   ```
@@ -303,5 +303,5 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzMarkClrBQ
-    \hat{BQ}_{t} = \left(\frac{1+r_{hh,t}}{1 + \tilde{g}_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\hat{\omega}_{s-1,t-1}\hat{b}_{j,s,t}\right) \quad\forall t
+    \hat{BQ}_{t} = \left(\frac{1+r_{p,t}}{1 + \tilde{g}_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\hat{\omega}_{s-1,t-1}\hat{b}_{j,s,t}\right) \quad\forall t
   ```
