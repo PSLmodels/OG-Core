@@ -71,7 +71,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
     K_t = K^d_t + K^f_t \quad\forall t
   ```
 
-  Assume that there exists some exogenous world interest rate $r^*_t$. We assume that foreign capital supply $K^f_t$ is an exogenous percentage $\zeta_K\in[0,1]$ of the excess total domestic private capital demand $ED^{K,r^*}_t$ that would exist if domestic private capital demand were determined by the exogenous world interest rate $r^*_t$ and domestic private capital supply were determined by the model consistent return on household savings $r_{hh,t}$. This percentage $\zeta_K$ is something we calibrate. Define excess total domestic capital demand at the exogenous world interest rate $r^*_t$ as $ED^{K,r^*}_t$. Define $K^{r^*}_t$ as the capital demand by domestic firms at the world interest rate $r^*_t$, and define $K^{d}_t$ as the domestic supply of private capital to firms, which is modeled as being a function of the actual rate faced by households $r_{hh,t}$. Then our measure of excess demand at the world interest rate is the following.
+  Assume that there exists some exogenous world interest rate $r^*_t$. We assume that foreign capital supply $K^f_t$ is an exogenous percentage $\zeta_K\in[0,1]$ of the excess total domestic private capital demand $ED^{K,r^*}_t$ that would exist if domestic private capital demand were determined by the exogenous world interest rate $r^*_t$ and domestic private capital supply were determined by the model consistent return on household savings $r_{p,t}$. This percentage $\zeta_K$ is something we calibrate. Define excess total domestic capital demand at the exogenous world interest rate $r^*_t$ as $ED^{K,r^*}_t$. Define $K^{r^*}_t$ as the capital demand by domestic firms at the world interest rate $r^*_t$, and define $K^{d}_t$ as the domestic supply of private capital to firms, which is modeled as being a function of the actual rate faced by households $r_{p,t}$. Then our measure of excess demand at the world interest rate is the following.
 
   ```{math}
   :label: EqMarkClr_ExDemK
@@ -100,7 +100,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
   ```{math}
   :label: EqMarkClrGoods
     \begin{split}
-      Y_t &= C_t + \bigl(K^d_{t+1} - K^d_t\bigr) + \delta K_t + G_t + r_{hh,t} K^f_t - \bigl(D^f_{t+1} - D^f_t\bigr) + r_{hh,t}D^f_t \quad\forall t \\
+      Y_t &= C_t + \bigl(K^d_{t+1} - K^d_t\bigr) + \delta K_t + G_t + r_{p,t} K^f_t - \bigl(D^f_{t+1} - D^f_t\bigr) + r_{p,t}D^f_t \quad\forall t \\
       &\quad\text{where}\quad C_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{j,s,t}
     \end{split}
   ```
@@ -115,7 +115,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 
   ```{math}
   :label: EqMarkClrBQ
-    BQ_{t} = (1+r_{hh,t})\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}b_{j,s,t}\right) \quad\forall t
+    BQ_{t} = (1+r_{p,t})\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}b_{j,s,t}\right) \quad\forall t
   ```
 
   Because the form of the period utility function in {eq}`EqHHPerUtil` ensures that $b_{j,s,t}>0$ for all $j$, $s$, and $t$, total bequests will always be positive $BQ_{j,t}>0$ for all $j$ and $t$.
@@ -125,4 +125,4 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 ## Footnotes
 
 [^indif_KD_note]: By assuming that households are indifferent between the savings allocation to private capital $K^d_t$ and government bonds $D^d_t$, we avoid the need for another state variable in the solution method. In our approach the allocation between the two types of capital is simply a residual of the exogenous proportion $\zeta_K$ of total private captial $K_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaK` and {eq}`EqMarkClr_KtKdKf` and a residual of the exogenous proportion $\zeta_D$ of total government bonds $D_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaD` and {eq}`EqMarkClr_DtDdDf`.
-[^RCrates_note]: Because we treat household return $r_{hh,t}$ as an average between the return on private capital $r_t$ and the return on government bonds $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_hh`, and because this return is actually given to households in the budget constraint {eq}`EqHHBC2`, it is required for market clearing that the return paid to foreign suppliers of private capital $K^f_t$ and foreign holders of government bonds $D^f_t$ be paid that same average return $r_{hh,t}$.
+[^RCrates_note]: Because we treat household return $r_{p,t}$ as an average between the return on private capital $r_t$ and the return on government bonds $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_hh`, and because this return is actually given to households in the budget constraint {eq}`EqHHBC2`, it is required for market clearing that the return paid to foreign suppliers of private capital $K^f_t$ and foreign holders of government bonds $D^f_t$ be paid that same average return $r_{p,t}$.
