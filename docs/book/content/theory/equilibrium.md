@@ -333,7 +333,7 @@ We call this solution algorithm the time path iteration (TPI) method or transiti
 
 The key assumption is that the economy will reach the steady-state equilibrium $\boldsymbol{\bar{\Gamma}}$ described in {ref}`SecEqlbSSdef` in a finite number of periods $T<\infty$ regardless of the initial state $\boldsymbol{\hat{\Gamma}}_1$. The first step in solving for the non-steady-state equilibrium transition path is to solve for the steady-state using the method described in Section {ref}`SecEqlbSSsoln`. After solving for the steady-state, one must then find a fixed point over the entire time path or transition path of endogenous objects that satisfies the characterizing equilibrium equations in every period.
 
-The non-steady-state solution algorithm follows the steps below. We again use a notational convention of a subscript $a$ or a subscript $b$ in steps (?) and (?) to differentiate between the same inner-loop variables computed two different ways at two different stages of the algorithm ($\hat{w}_{t,a}$, $\hat{w}_{t,b}$, $r_{gov,t,a}$, $r_{gov,t,b}$, $r_{hh,t,a}$, $r_{hh,t,b}$, $\hat{Y}_{t,a}$, $\hat{Y}_{t,b}$, $\hat{K}_{t,a}$, $\hat{K}_{t,b}$).
+The non-steady-state solution algorithm follows the steps below. We again use a notational convention of a subscript $a$ or a subscript $b$ in steps (?) and (?) to differentiate between the same inner-loop variables computed two different ways at two different stages of the algorithm ($\hat{w}_{t,a}$, $\hat{w}_{t,b}$, $r_{gov,t,a}$, $r_{gov,t,b}$, $r_{p,t,a}$, $r_{p,t,b}$, $\hat{Y}_{t,a}$, $\hat{Y}_{t,b}$, $\hat{K}_{t,a}$, $\hat{K}_{t,b}$).
 
 We outline the stationary non-steady state (transition path) solution algorithm in the following steps.
 
@@ -349,7 +349,7 @@ We outline the stationary non-steady state (transition path) solution algorithm 
 
         1. Solve for the transition path of $r_{gov,t}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
 
-        2. Solve for the transition path of $r_{hh,t}$ using equation {eq}`EqStnrz_rate_hh`.
+        2. Solve for the transition path of $r_{p,t}$ using equation {eq}`EqStnrz_rate_hh`.
 
 3. Given initial condition $\boldsymbol{\hat{\Gamma}}_1$, guesses for the aggregate time paths $\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$, we solve for the inner loop lifetime decisions of every household that will be alive across the time path $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$ and $1\leq t\leq T$.
 
