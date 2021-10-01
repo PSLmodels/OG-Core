@@ -720,6 +720,24 @@
             }
         }
     },
+    "initial_Kg_ratio": {
+        "title": "Government capital to GDP ratio in the initial period",
+        "description": "Government capital (aka infrastructure) to GDP ratio in the initial period.",
+        "section_1": "Fiscal Policy Parameters",
+        "notes": "Should be calibrated based on the value of public infrastructure to GDP in the model start year.",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 50.0
+            }
+        }
+    },
     "r_gov_scale": {
         "title": "Scale parameter to determine government interest rate",
         "description": "Parameter to scale the market interest rate to find interest rate on government debt.",
