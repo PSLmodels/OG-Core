@@ -46,9 +46,9 @@ def main():
     og_spec = {
         'frisch': 0.41, 'start_year': START_YEAR, 'cit_rate': [0.21],
         'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
-        'alpha_G': alpha_G.tolist(), 'zeta_D': [0.0], 'zeta_K': [0.0],
-        'delta_g_annual': 0.02, 'r_gov_shift': 0.0, 'alpha_I': [0.00],
-        'gamma_g': 0.0}
+        'alpha_G': alpha_G.tolist(), 'zeta_D': [0.4], 'zeta_K': [0.1],
+        'delta_g_annual': 0.02, 'r_gov_shift': 0.02, 'alpha_I': [0.01],
+        'gamma_g': 0.1}
 
     '''
     ------------------------------------------------------------------------
