@@ -425,6 +425,11 @@ def run_TPI(p, client=None):
     Y = np.zeros_like(K)
     Y[:p.T] = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
     Y[p.T:] = ss_vars['Yss']
+    I_g = fiscal.get_I_g(Y, p.alpha_I)
+    K_g = np.zeros_like(Y)
+    K_g[0] = p.initial_Kg_ratio * Y[0]
+    for t in range(len(Y) - 1):
+        K_g[t + 1] = fiscal.get_K_g_p1(K_g[t], I_g[t], p, 'TPI')
     r = np.zeros_like(Y)
     r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
     r[p.T:] = ss_vars['rss']
@@ -490,9 +495,11 @@ def run_TPI(p, client=None):
         r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
         if not p.budget_balance:
             K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
-
-        r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
-                                   D[:p.T])
+            MPKg = firm.get_MPx(Y[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
+            r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
+                                     D[:p.T], MPKg[:p.T], 'TPI')
+        else:
+            r_p = r  # not quite right -- will need MPKg here
 
         outer_loop_vars = (r, w, r_p, BQ, TR, theta)
 
@@ -557,11 +564,16 @@ def run_TPI(p, client=None):
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
+
         K_demand_open = firm.get_K(
             L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
         K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
             B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
-        Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
+        Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
+        I_g = fiscal.get_I_g(Ynew, p.alpha_I)
+        K_g[0] = p.initial_Kg_ratio * Ynew[0]
+        for t in range(len(Y) - 1):  # TODO: vectorize this
+            K_g[t + 1] = fiscal.get_K_g_p1(K_g[t], I_g[t], p, 'TPI')
         rnew = r.copy()
         rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         # For case where economy is small open econ

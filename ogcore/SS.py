@@ -154,11 +154,7 @@ def inner_loop(outer_loop_vars, p, client):
         L = firm.get_L_from_Y(w, Y, p, 'SS')
         I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
         K_g = fiscal.get_K_g_p1(0, I_g, p, 'SS')
-        print('getting K original')
-        # K = firm.get_K_from_Y_and_L(w, Y, L, K_g, p, 'SS') ## TODO: try to use the FOC for K here - so K function of r, K, Kg -- does that help?
-        # K = firm.get_K_new(r, K_g, L, p, 'SS')
         K = firm.get_K_from_Y(Y, r, p, 'SS')
-        print('K = ', K)
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
@@ -198,9 +194,7 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
-    # K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
     K_demand_open = firm.get_K_new(p.world_int_rate[-1], w, L, p, 'SS')
-    print('getting K new')
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
     Y = firm.get_Y(K, K_g, L, p, 'SS')
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
