@@ -1,7 +1,7 @@
 (Chap_SmOpEcn)=
 # Open Economy Options
 
-`OG-Core` offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by (Kotlikoff cites) and others. However, one of the findings of (Kotlikoff) is that a full multi-country model is closely approximated by the types of large partial open economy specifications we use in `OG-Core`. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discussed some of these specifications in the previous chapter {ref}`Chap_MarkClr`. But the open economy assumptions only refer to how foreign capital can flow into the private capital market $K_t$ and into the government bond market $D_t$. The labor market and goods market are closed.
+`OG-Core` offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by {cite}`BenzellEtAl:2017` and others. However, one of the findings of {cite}`BenzellEtAl:2017` is that a full multi-country model is closely approximated by the types of large partial open economy specifications we use in `OG-Core`. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discussed some of these specifications in the previous chapter {ref}`Chap_MarkClr`. But the open economy assumptions only refer to how foreign capital can flow into the private capital market $K_t$ and into the government bond market $D_t$. The labor market and goods market are closed.
 
 (SecSmallOpen)=
 ## Small Open Economy

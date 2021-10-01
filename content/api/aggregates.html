@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -42,7 +42,7 @@
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script >
@@ -72,6 +72,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
       
@@ -229,13 +233,18 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/market_clearing.html">
-   Market Clearing
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/open_economy.html">
-   Open Economy Options
+  <a class="reference internal" href="../theory/financial.html">
+   Financial Intermediary
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/market_clearing.html">
+   Market Clearing
   </a>
  </li>
  <li class="toctree-l1">
@@ -581,12 +590,12 @@ by foreign investors</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.aggregates.get_r_hh">
-<code class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_r_hh</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_r_hh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_r_hh" title="Permalink to this definition">¶</a></dt>
+<dt id="ogcore.aggregates.get_r_p">
+<code class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></code><code class="sig-name descname"><span class="pre">get_r_p</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_r_p"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_r_p" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the interest rate on the household’s portfolio of assets,
 a mix of government debt and private equity.</p>
 <div class="math notranslate nohighlight">
-\[r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}\]</div>
+\[r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -604,7 +613,7 @@ a mix of government debt and private equity.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>r_hh (array_like)</p>
+<dd class="field-odd"><p>r_p (array_like)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -616,9 +625,9 @@ a mix of government debt and private equity.</p>
 <div class="math notranslate nohighlight">
 \[\hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}
 (1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +
-\hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} -
+\hat{G}_{t} + r_{p, t}\hat{K}^{f}_{t} -
 (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +
-r_{hh,t}\hat{D}^{f}_{t}\]</div>
+r_{p,t}\hat{D}^{f}_{t}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -763,7 +772,7 @@ iit_tax_revenue (array_like): aggregate income tax revenue</p>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         

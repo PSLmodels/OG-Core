@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -61,6 +61,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
       
@@ -218,13 +222,18 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../content/theory/market_clearing.html">
-   Market Clearing
+  <a class="reference internal" href="../../content/theory/open_economy.html">
+   Open Economy Options
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../content/theory/open_economy.html">
-   Open Economy Options
+  <a class="reference internal" href="../../content/theory/financial.html">
+   Financial Intermediary
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/market_clearing.html">
+   Market Clearing
   </a>
  </li>
  <li class="toctree-l1">
@@ -412,7 +421,7 @@
     <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;pct_diff&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;r_gov&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;r_hh&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;r_gov&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;r_p&#39;</span><span class="p">]:</span>
                 <span class="c1"># Compute just percentage point changes for rates</span>
                 <span class="n">plot_var</span> <span class="o">=</span> <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1169,7 +1178,7 @@
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         

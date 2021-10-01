@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -42,7 +42,7 @@
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script >
@@ -72,6 +72,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
       
@@ -229,13 +233,18 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/market_clearing.html">
-   Market Clearing
+  <a class="reference internal" href="../theory/open_economy.html">
+   Open Economy Options
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/open_economy.html">
-   Open Economy Options
+  <a class="reference internal" href="../theory/financial.html">
+   Financial Intermediary
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../theory/market_clearing.html">
+   Market Clearing
   </a>
  </li>
  <li class="toctree-l1">
@@ -633,16 +642,16 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt id="ogcore.household.get_y">
-<code class="sig-prename descclassname"><span class="pre">ogcore.household.</span></code><code class="sig-name descname"><span class="pre">get_y</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_hh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_y" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">ogcore.household.</span></code><code class="sig-name descname"><span class="pre">get_y</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute household income before taxes.</p>
 <dl class="simple">
-<dt>..math::</dt><dd><p>y_{j,s,t} = r_{hh,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}</p>
+<dt>..math::</dt><dd><p>y_{j,s,t} = r_{p,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}</p>
 </dd>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r_hh</strong> (<em>array_like</em>) – real interest rate on the household portfolio</p></li>
+<li><p><strong>r_p</strong> (<em>array_like</em>) – real interest rate on the household portfolio</p></li>
 <li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
 <li><p><strong>b_s</strong> (<em>Numpy array</em>) – household savings coming into the period</p></li>
 <li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
@@ -756,7 +765,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         

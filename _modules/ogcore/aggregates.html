@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -61,6 +61,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
       
@@ -218,13 +222,18 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../content/theory/market_clearing.html">
-   Market Clearing
+  <a class="reference internal" href="../../content/theory/open_economy.html">
+   Open Economy Options
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../content/theory/open_economy.html">
-   Open Economy Options
+  <a class="reference internal" href="../../content/theory/financial.html">
+   Financial Intermediary
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../content/theory/market_clearing.html">
+   Market Clearing
   </a>
  </li>
  <li class="toctree-l1">
@@ -680,13 +689,13 @@
             <span class="n">payroll_tax_revenue</span><span class="p">,</span> <span class="n">iit_revenue</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_r_hh"><a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_r_hh">[docs]</a><span class="k">def</span> <span class="nf">get_r_hh</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r_gov</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+<div class="viewcode-block" id="get_r_p"><a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_r_p">[docs]</a><span class="k">def</span> <span class="nf">get_r_p</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r_gov</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Compute the interest rate on the household&#39;s portfolio of assets,</span>
 <span class="sd">    a mix of government debt and private equity.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}</span>
+<span class="sd">        r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -695,13 +704,13 @@
 <span class="sd">        D (array_like): aggregate government debt</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        r_hh (array_like): the real interest rate on the households</span>
+<span class="sd">        r_p (array_like): the real interest rate on the households</span>
 <span class="sd">            portfolio</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">r_hh</span> <span class="o">=</span> <span class="p">((</span><span class="n">r</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">r_gov</span> <span class="o">*</span> <span class="n">D</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">K</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span>
+    <span class="n">r_p</span> <span class="o">=</span> <span class="p">((</span><span class="n">r</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">r_gov</span> <span class="o">*</span> <span class="n">D</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">K</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">r_hh</span></div>
+    <span class="k">return</span> <span class="n">r_p</span></div>
 
 
 <div class="viewcode-block" id="resource_constraint"><a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.resource_constraint">[docs]</a><span class="k">def</span> <span class="nf">resource_constraint</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">K_f</span><span class="p">,</span> <span class="n">new_borrowing_f</span><span class="p">,</span>
@@ -712,9 +721,9 @@
 <span class="sd">    .. math::</span>
 <span class="sd">        \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}</span>
 <span class="sd">        (1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +</span>
-<span class="sd">        \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} -</span>
+<span class="sd">        \hat{G}_{t} + r_{p, t}\hat{K}^{f}_{t} -</span>
 <span class="sd">        (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +</span>
-<span class="sd">        r_{hh,t}\hat{D}^{f}_{t}</span>
+<span class="sd">        r_{p,t}\hat{D}^{f}_{t}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
@@ -794,7 +803,7 @@
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         

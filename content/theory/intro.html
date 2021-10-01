@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -42,7 +42,7 @@
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script >
@@ -72,6 +72,10 @@
     
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
       
       <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
       
@@ -229,13 +233,18 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="market_clearing.html">
-   Market Clearing
+  <a class="reference internal" href="open_economy.html">
+   Open Economy Options
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="open_economy.html">
-   Open Economy Options
+  <a class="reference internal" href="financial.html">
+   Financial Intermediary
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="market_clearing.html">
+   Market Clearing
   </a>
  </li>
  <li class="toctree-l1">
@@ -389,7 +398,7 @@
 <li><p>realistic demographics: mortality rates, fertility rates, immigration rates, population growth, and population distribution dynamics</p></li>
 <li><p>heterogeneous lifetime income groups within each age cohort, calibrated from U.S. tax data</p>
 <ul>
-<li><p>each lifetime income group has its own discount factor <span class="math notranslate nohighlight">\(\beta_j\)</span> following <span class="bibtex" id="id2">[CarrollEtAl:2017]</span></p></li>
+<li><p>each lifetime income group has its own discount factor <span class="math notranslate nohighlight">\(\beta_j\)</span> following <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id18">Carroll <em>et al.</em>, 2017</a>]</span></p></li>
 </ul>
 </li>
 <li><p>incorporation of detailed household tax data from specified microsimulation model</p></li>
@@ -481,7 +490,7 @@
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         

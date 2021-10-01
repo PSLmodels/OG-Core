@@ -12,7 +12,7 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
 
   ```{math}
   :label: EqHHBC
-    c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{hh,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
+    c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
   ```
 
@@ -30,7 +30,7 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     Rev_t = \underbrace{\tau^{corp}\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}\delta^\tau K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
 
-  where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{hh,t} b_{j,s,t}$.
+  where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.
 
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
@@ -79,16 +79,7 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d}
   ```
 
-  where $r_t$ is the marginal product of capital faced by firms. The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premia.
-
-  In the cases where there is a differential ($\tau_{d,t}$ or $\mu_{d,t} \neq 0$), then we need to be careful to specify how the household chooses government debt and private capital in its portfolio of asset holdings. We make the assumption that under the exogenous interest rate wedge, the household is indifferent between holding its assets as debt and private capital. This amounts to an assumption that these two assets are perfect substitutes given the exogenous wedge in interest rates. Given the indifference between government debt and private capital at these two interest rates, we assume that the household holds debt and capital in the same ratio that debt and capital are demanded by the government and private firms, respectively. The interest rate on the household portfolio of asset is thus given by:
-
-  ```{math}
-    :label: EqUnbalGBC_rate_hh
-    r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} \quad\forall t
-  ```
-
-  It is technically more correct to assume that the domestic households return to savings $r_{hh,t}$ is a function of the amount of domestic household savings allocated to private capital $K^d_t$ and the amount allocated to government debt $D^d_t$. However, this would require us to add another state variable to the model, which would exponentially increase the difficulty and computation time of the equilibrium solution method. The characterization of the household savings rate of return in {eq}`EqUnbalGBC_rate_hh` as a function of total government debt $D_t$ and total private captial $K_t$ is a simplifying assumption.
+  where $r_t$ is the marginal product of capital faced by firms. The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premium.
 
 
 (SecUnbalGBCcloseRule)=

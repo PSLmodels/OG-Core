@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Model Execution Functions &#8212; OG-Core</title>
+    <title>Financial Intermediary &#8212; OG-Core</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -42,6 +42,8 @@
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -51,8 +53,8 @@
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Firm Functions" href="firm.html" />
-    <link rel="prev" title="Elliptical Utility Function Estimation" href="elliptical_u_est.html" />
+    <link rel="next" title="Market Clearing" href="market_clearing.html" />
+    <link rel="prev" title="Open Economy Options" href="open_economy.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -110,89 +112,89 @@
   OG-Core API
  </span>
 </p>
-<ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="public_api.html">
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../api/public_api.html">
    API
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="current">
+  <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="aggregates.html">
+    <a class="reference internal" href="../api/aggregates.html">
      Aggregates Equations
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="elliptical_u_est.html">
+    <a class="reference internal" href="../api/elliptical_u_est.html">
      Elliptical Utility Function Estimation
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/execute.html">
      Model Execution Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="firm.html">
+    <a class="reference internal" href="../api/firm.html">
      Firm Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="fiscal.html">
+    <a class="reference internal" href="../api/fiscal.html">
      Fiscal Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="household.html">
+    <a class="reference internal" href="../api/household.html">
      Household Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="output_plots.html">
+    <a class="reference internal" href="../api/output_plots.html">
      Output Plotting Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="output_tables.html">
+    <a class="reference internal" href="../api/output_tables.html">
      Output Table Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="parameter_plots.html">
+    <a class="reference internal" href="../api/parameter_plots.html">
      Parameter Plotting Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="parameter_tables.html">
+    <a class="reference internal" href="../api/parameter_tables.html">
      Parameter Table Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="parameters.html">
+    <a class="reference internal" href="../api/parameters.html">
      Parameters Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="tax.html">
+    <a class="reference internal" href="../api/tax.html">
      Tax Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="txfunc.html">
+    <a class="reference internal" href="../api/txfunc.html">
      Tax Function Estimation Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="utils.html">
+    <a class="reference internal" href="../api/utils.html">
      Utilities Functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="wealth.html">
+    <a class="reference internal" href="../api/wealth.html">
      Wealth Functions
     </a>
    </li>
@@ -204,54 +206,54 @@
   OG-Core Theory
  </span>
 </p>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/intro.html">
+  <a class="reference internal" href="intro.html">
    Model Overview
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/demographics.html">
+  <a class="reference internal" href="demographics.html">
    Demographics
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/households.html">
+  <a class="reference internal" href="households.html">
    Households
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/firms.html">
+  <a class="reference internal" href="firms.html">
    Firms
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/government.html">
+  <a class="reference internal" href="government.html">
    Government
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/open_economy.html">
+  <a class="reference internal" href="open_economy.html">
    Open Economy Options
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/financial.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    Financial Intermediary
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/market_clearing.html">
+  <a class="reference internal" href="market_clearing.html">
    Market Clearing
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/stationarization.html">
+  <a class="reference internal" href="stationarization.html">
    Stationarization
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/equilibrium.html">
+  <a class="reference internal" href="equilibrium.html">
    Equilibrium
   </a>
  </li>
@@ -263,7 +265,7 @@
 </p>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../theory/derivations.html">
+  <a class="reference internal" href="derivations.html">
    Derivations
   </a>
  </li>
@@ -332,9 +334,9 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../../_sources/content/api/execute.rst"><button type="button"
+        <a class="dropdown-buttons" href="../../_sources/content/theory/financial.md"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.rst</button></a>
+                data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
             onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
@@ -352,7 +354,7 @@
                 data-toggle="tooltip" data-placement="left" title="Source repository"><i
                     class="fab fa-github"></i>repository</button></a>
         <a class="issues-button"
-            href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/api/execute.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/financial.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
         
@@ -373,19 +375,6 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
-            </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-ogcore.execute">
-   ogcore.execute
-  </a>
- </li>
-</ul>
-
-            </nav>
         </div>
     </div>
 </div>
@@ -394,32 +383,29 @@
         
               <div>
                 
-  <div class="section" id="model-execution-functions">
-<span id="execute"></span><h1>Model Execution Functions<a class="headerlink" href="#model-execution-functions" title="Permalink to this headline">¶</a></h1>
-<p><strong>execute.py modules</strong></p>
-<div class="section" id="module-ogcore.execute">
-<span id="ogcore-execute"></span><h2>ogcore.execute<a class="headerlink" href="#module-ogcore.execute" title="Permalink to this headline">¶</a></h2>
-<p>This module defines the runner() function, which is used to run OG-Core</p>
-<dl class="py function">
-<dt id="ogcore.execute.runner">
-<code class="sig-prename descclassname"><span class="pre">ogcore.execute.</span></code><code class="sig-name descname"><span class="pre">runner</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/execute.html#runner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.execute.runner" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function runs the OG-Core model, solving for the steady-state
-and (optionally) the time path equilibrium.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>p</strong> (<em>Specifications object</em>) – model parameters</p></li>
-<li><p><strong>time_path</strong> (<em>bool</em>) – whether to solve for the time path equilibrium</p></li>
-<li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
+  <div class="section" id="financial-intermediary">
+<span id="chap-finint"></span><h1>Financial Intermediary<a class="headerlink" href="#financial-intermediary" title="Permalink to this headline">¶</a></h1>
+<p>Domestic household wealth, <span class="math notranslate nohighlight">\(W^d_{t}=B_{t}\)</span> and foreign ownership of domestic assets <span class="math notranslate nohighlight">\(W^f_{t}\)</span> are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.</p>
+<p>Foreign demand for government bonds is specified in section <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-g"><span class="std std-ref">Government bond market clearing</span></a> of the <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a> chapter:</p>
+<div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad2">
+<span class="eqno">(48)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Permalink to this equation">¶</a></span>\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t}) \quad\forall t\]</div>
+<p>This leaves domestic investors to buy up the residual amount of government debt:</p>
+<div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad2">
+<span class="eqno">(48)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Permalink to this equation">¶</a></span>\[  D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t\]</div>
+<p>We assume that debt dominates the capital markets, such that domestic investor demand for capital, <span class="math notranslate nohighlight">\(K^{d}_{t}\)</span> is given as:</p>
+<div class="math notranslate nohighlight" id="equation-eq-domestic-cap-demand">
+<span class="eqno">(49)<a class="headerlink" href="#equation-eq-domestic-cap-demand" title="Permalink to this equation">¶</a></span>\[  K^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t\]</div>
+<p>Foreign demand for capital is given in <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-k"><span class="std std-ref">Private capital market clearing</span></a>, where <span class="math notranslate nohighlight">\(K^{f}_{t}\)</span> is an exogenous fraction of excess capital demand at the world interest rate:</p>
+<div class="math notranslate nohighlight" id="equation-eq-foreign-cap-demand">
+<span class="eqno">(50)<a class="headerlink" href="#equation-eq-foreign-cap-demand" title="Permalink to this equation">¶</a></span>\[  K^{f}_t = \zeta_{K}ED^{K,r^*}_t \quad\forall t\]</div>
+<p>The total amount invested in the financial intermediary is thus:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}W_{t} &amp; = W^d_{t} + W^f_{t} \\
+    &amp; = D^d_t + K^d_t  + D^f_t + K^f_t \\
+    &amp; = D_t + K_t\end{split}\]</div>
+<p>Interest rates on private capital and government bonds differ.  The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return:</p>
+<div class="math notranslate nohighlight" id="equation-eq-portfolio-return">
+<span class="eqno">(51)<a class="headerlink" href="#equation-eq-portfolio-return" title="Permalink to this equation">¶</a></span>\[r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} \quad\forall t\]</div>
 </div>
 
     <script type="text/x-thebe-config">
@@ -435,7 +421,7 @@ and (optionally) the time path equilibrium.</p>
         },
         kernelOptions: {
             kernelName: "python3",
-            path: "./content/api"
+            path: "./content/theory"
         },
         predefinedOutput: true
     }
@@ -452,19 +438,19 @@ and (optionally) the time path equilibrium.</p>
 <div class='prev-next-bottom'>
     
     <div id="prev">
-        <a class="left-prev" href="elliptical_u_est.html" title="previous page">
+        <a class="left-prev" href="open_economy.html" title="previous page">
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Elliptical Utility Function Estimation</p>
+                <p class="prevnext-title">Open Economy Options</p>
             </div>
         </a>
     </div>
      <div id="next">
-        <a class="right-next" href="firm.html" title="next page">
+        <a class="right-next" href="market_clearing.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Firm Functions</p>
+                <p class="prevnext-title">Market Clearing</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>
