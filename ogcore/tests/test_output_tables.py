@@ -12,14 +12,18 @@ from ogcore import utils, output_tables
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 base_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_vars_baseline.pkl'))
+base_ss['r_p_ss'] = base_ss.pop('r_hh_ss')
 base_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TPI_vars_baseline.pkl'))
+base_tpi['r_p'] = base_tpi.pop('r_hh')
 base_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'model_params_baseline.pkl'))
 reform_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_vars_reform.pkl'))
+reform_ss['r_p_ss'] = reform_ss.pop('r_hh_ss')
 reform_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TPI_vars_reform.pkl'))
+reform_tpi['r_p'] = reform_tpi.pop('r_hh')
 reform_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'model_params_reform.pkl'))
 

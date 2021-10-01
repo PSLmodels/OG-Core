@@ -164,6 +164,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
                              factorguess, Yguess, p, dask_client, False)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
+    expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
 
     for k, v in expected_dict.items():
         print('Testing ', k)
@@ -205,6 +206,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
                              factorguess, Yguess, p, dask_client, False)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
+    expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
 
     for k, v in expected_dict.items():
         print('Testing ', k)
@@ -490,6 +492,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     test_dict = SS.run_SS(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
+    expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
 
     for k, v in expected_dict.items():
         print('Checking item = ', k)
