@@ -27,4 +27,4 @@ The model is continuously under development. Users will be notified through [clo
 (Sec_CitingOGUSA)=
 ## Citing OG-Core
 
-`OG-Core` (Version 0.6.4)[Source code], https://github.com/PSLmodels/OG-Core
+`OG-Core` (Version #.#.#)[Source code], https://github.com/PSLmodels/OG-Core
