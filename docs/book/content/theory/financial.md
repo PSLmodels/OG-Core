@@ -3,9 +3,9 @@
 
 # Financial Intermediary
 
-Domestic household wealth, $W^d_{t}=B_{t}$, and foreign ownership of domestic assets, $W^f_{t}$, are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.
+Domestic household wealth, $W^d_{t}=B_{t}$ and foreign ownership of domestic assets $W^f_{t}$ are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.
 
-Foreign demand for government bonds is specified in {ref}`SecMarkClrMktClr_G`:
+Foreign demand for government bonds is specified in section {ref}`SecMarkClrMktClr_G` of the {ref}`Chap_MarkClr` chapter:
 
   ```{math}
   :label: EqMarkClr_zetaD2
@@ -47,4 +47,3 @@ Interest rates on private capital and government bonds differ.  The return on th
 :label: eq_portfolio_return
 r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} \quad\forall t
 ```
-
