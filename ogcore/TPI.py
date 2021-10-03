@@ -273,8 +273,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     guesses_b, guesses_n = guesses
     r, w, r_p, BQ, TR, theta = outer_loop_vars
 
-    # compute w
-    w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
     # compute bq
     bq = household.get_bq(BQ, None, p, 'TPI')
     # compute tr
@@ -422,8 +420,9 @@ def run_TPI(p, client=None):
     K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
     L = L_init
     B = B_init
+    K_g = np.ones_like(K) * ss_vars['K_g_ss']
     Y = np.zeros_like(K)
-    Y[:p.T] = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
+    Y[:p.T] = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
     Y[p.T:] = ss_vars['Yss']
     I_g = fiscal.get_I_g(Y, p.alpha_I)
     K_g = np.zeros_like(Y)
@@ -437,12 +436,14 @@ def run_TPI(p, client=None):
     r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
     # Compute other interest rates
     r_gov = fiscal.get_r_gov(r, p)
-    r_p = aggr.get_r_p(r, r_gov, K, ss_vars['Dss'])
+    r_p = np.ones_like(r) * ss_vars['r_p_ss']
+    MPKg = firm.get_MPx(Y[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
+    r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
+                             ss_vars['Dss'], MPKg, p, 'TPI')
 
     # compute w
-    w = np.zeros_like(r)
-    w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
-    w[p.T:] = ss_vars['wss']
+    w = np.ones_like(r) * ss_vars['wss']
+    w[:p.T] = firm.get_w(Y[:p.T], L[:p.T], p, 'TPI')
 
     # initial guesses at fiscal vars
     if p.budget_balance:
@@ -497,7 +498,7 @@ def run_TPI(p, client=None):
             K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
             MPKg = firm.get_MPx(Y[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
             r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
-                                     D[:p.T], MPKg[:p.T], 'TPI')
+                                     D[:p.T], MPKg[:p.T], p, 'TPI')
         else:
             r_p = r  # not quite right -- will need MPKg here
 
@@ -564,25 +565,25 @@ def run_TPI(p, client=None):
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
-
-        K_demand_open = firm.get_K(
-            L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
+        K_demand_open = firm.get_K_new(
+            p.world_int_rate[:p.T], w[:p.T], L[:p.T], p, 'TPI')
         K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
             B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
         Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
         I_g = fiscal.get_I_g(Ynew, p.alpha_I)
         K_g[0] = p.initial_Kg_ratio * Ynew[0]
-        for t in range(len(Y) - 1):  # TODO: vectorize this
+        for t in range(p.T - 1):  # TODO: vectorize this
             K_g[t + 1] = fiscal.get_K_g_p1(K_g[t], I_g[t], p, 'TPI')
         rnew = r.copy()
         rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         # For case where economy is small open econ
         r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
+        MPKg = firm.get_MPx(Ynew[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
         r_p_new = aggr.get_r_p(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
-                                 Dnew[:p.T])
+                               Dnew[:p.T], MPKg[:p.T], p, 'TPI')
         # compute w
-        wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
+        wnew = firm.get_w(Ynew[:p.T], L[:p.T], p, 'TPI')
 
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
@@ -603,15 +604,19 @@ def run_TPI(p, client=None):
             agg_pension_outlays[:p.T], UBI_outlays[:p.T], p, 'TPI')
 
         # update vars for next iteration
-        w[:p.T] = wnew[:p.T]
+        w[:p.T] = utils.convex_combo(wnew[:p.T], w[:p.T], p.nu)
         r[:p.T] = utils.convex_combo(rnew[:p.T], r[:p.T], p.nu)
         BQ[:p.T] = utils.convex_combo(BQnew[:p.T], BQ[:p.T], p.nu)
         D[:p.T] = Dnew[:p.T]
         Y[:p.T] = utils.convex_combo(Ynew[:p.T], Y[:p.T], p.nu)
+        print('r = ', r[:5])
+        print('w = ', w[:5])
         if not p.baseline_spending:
             TR[:p.T] = utils.convex_combo(TR_new[:p.T], TR[:p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
+        print('w diff: ', (wnew[:p.T] - w[:p.T]).max(),
+              (wnew[:p.T] - w[:p.T]).min())
         print('r diff: ', (rnew[:p.T] - r[:p.T]).max(),
               (rnew[:p.T] - r[:p.T]).min())
         print('BQ diff: ', (BQnew[:p.T] - BQ[:p.T]).max(),
@@ -684,7 +689,7 @@ def run_TPI(p, client=None):
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
     RC_error = aggr.resource_constraint(
-        Y[:p.T - 1], C[:p.T - 1], G[:p.T - 1], I_d[:p.T - 1],
+        Y[:p.T - 1], C[:p.T - 1], G[:p.T - 1], I_d[:p.T - 1], I_g[:p.T - 1],
         K_f[:p.T - 1], new_borrowing_f[:p.T - 1],
         debt_service_f[:p.T - 1], r_p[:p.T - 1], p)
     # Compute total investment (not just domestic)
