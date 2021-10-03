@@ -151,9 +151,6 @@ def inner_loop(outer_loop_vars, p, client):
         K = 1.0  # placeholder
     else:
         bssmat, nssmat, r, w, BQ, Y, TR, factor = outer_loop_vars
-        L = firm.get_L_from_Y(w, Y, p, 'SS')
-        I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
-        K_g = fiscal.get_K_g_p1(0, I_g, p, 'SS')
         K = firm.get_K_from_Y(Y, r, p, 'SS')
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
@@ -162,6 +159,8 @@ def inner_loop(outer_loop_vars, p, client):
     r_gov = fiscal.get_r_gov(r, p)
     D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
         fiscal.get_D_ss(r_gov, Y, p)
+    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
+    K_g = fiscal.get_K_g_p1(0, I_g, p, 'SS')
     MPKg = firm.get_MPx(Y, K, p.gamma_g, p, 'SS')
     r_p = aggr.get_r_p(r, r_gov, K, D, MPKg, p, 'SS')
     bq = household.get_bq(BQ, None, p, 'SS')
@@ -234,9 +233,9 @@ def inner_loop(outer_loop_vars, p, client):
         aggr.revenue(new_r_p, new_w, b_s, nssmat, new_bq, cssmat, Y, L,
                      K, factor, ubi, theta, etr_params_3D, p, 'SS')
     G = fiscal.get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
-                        UBI_outlays, new_borrowing, debt_service, p)
+                        UBI_outlays, I_g, new_borrowing, debt_service, p)
     new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays,
-                           UBI_outlays, p, 'SS')
+                           UBI_outlays, I_g, p, 'SS')
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
         new_w, new_TR, Y, new_factor, new_BQ, average_income_model
@@ -395,7 +394,7 @@ def SS_solver(bmat, nmat, r, w, BQ, TR, factor, Y, p, client,
          factor, ubissmat, theta, etr_params_3D, p, 'SS')
     Gss = fiscal.get_G_ss(
         Yss, total_tax_revenue, agg_pension_outlays, TR_ss, UBI_outlays,
-        new_borrowing, debt_service, p)
+        I_g_ss, new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
     Iss_total = aggr.get_I(None, Kss, Kss, p, 'total_ss')

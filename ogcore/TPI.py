@@ -56,12 +56,14 @@ def get_initial_SS_values(p):
     initial_n = ss_baseline_vars['nssmat']
     TRbaseline = None
     Gbaseline = None
+    Ig_baseline = None
     if p.baseline_spending:
         baseline_tpi = os.path.join(
             p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         TRbaseline = tpi_baseline_vars['TR']
         Gbaseline = tpi_baseline_vars['G']
+        Ig_baseline = tpi_baseline_vars['I_g']
 
     if p.baseline:
         ss_vars = ss_baseline_vars
@@ -84,18 +86,21 @@ def get_initial_SS_values(p):
                        list(initial_b[:-1]))
     b_splus1init = initial_b
 
-    # Intial gov't debt must match that in the baseline
+    # Intial gov't debt and capital stock must match that in the baseline
     if not p.baseline:
         baseline_tpi = os.path.join(
             p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         D0_baseline = tpi_baseline_vars['D'][0]
+        Kg0_baseline = tpi_baseline_vars['K_g'][0]
     else:
         D0_baseline = None
+        Kg0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
                       initial_n)
-    baseline_values = (TRbaseline, Gbaseline, D0_baseline)
+    baseline_values = (
+        TRbaseline, Gbaseline, Ig_baseline, D0_baseline, Kg0_baseline)
 
     return initial_values, ss_vars, theta, baseline_values
 
@@ -236,7 +241,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     '''
     Given path of economic aggregates and factor prices, solves
     household problem.  This has been termed the inner-loop (in
-    constrast to the outer fixed point loop that soves for GE factor
+    contrast to the outer fixed point loop that solves for GE factor
     prices and economic aggregates).
 
     Args:
@@ -389,7 +394,8 @@ def run_TPI(p, client=None):
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) =\
         initial_values
-    (TRbaseline, Gbaseline, D0_baseline) = baseline_values
+    (TRbaseline, Gbaseline, Ig_baseline, D0_baseline,
+     Kg0_baseline) = baseline_values
 
     # Create time path of UBI household benefits and aggregate UBI outlays
     ubi = p.ubi_nom_array / factor
@@ -424,9 +430,15 @@ def run_TPI(p, client=None):
     Y = np.zeros_like(K)
     Y[:p.T] = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
     Y[p.T:] = ss_vars['Yss']
-    I_g = fiscal.get_I_g(Y, p.alpha_I)
+    if p.baseline_spending:
+        I_g = Ig_baseline
+    else:
+        I_g = fiscal.get_I_g(Y, p.alpha_I)
     K_g = np.zeros_like(Y)
-    K_g[0] = p.initial_Kg_ratio * Y[0]
+    if p.baseline:
+        K_g[0] = p.initial_Kg_ratio * Y[0]
+    else:
+        K_g[0] = Kg0_baseline
     for t in range(len(Y) - 1):
         K_g[t + 1] = fiscal.get_K_g_p1(K_g[t], I_g[t], p, 'TPI')
     r = np.zeros_like(Y)
@@ -494,13 +506,10 @@ def run_TPI(p, client=None):
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
-        if not p.budget_balance:
-            K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
-            MPKg = firm.get_MPx(Y[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
-            r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
-                                     D[:p.T], MPKg[:p.T], p, 'TPI')
-        else:
-            r_p = r  # not quite right -- will need MPKg here
+        K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
+        MPKg = firm.get_MPx(Y[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
+        r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
+                                 D[:p.T], MPKg[:p.T], p, 'TPI')
 
         outer_loop_vars = (r, w, r_p, BQ, TR, theta)
 
@@ -558,7 +567,7 @@ def run_TPI(p, client=None):
                 'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         dg_fixed_values = (Y, total_tax_revenue, agg_pension_outlays,
-                           UBI_outlays, TR, Gbaseline, D0_baseline)
+                           UBI_outlays, TR, I_g, Gbaseline, D0_baseline)
         (Dnew, G[:p.T], D_d[:p.T], D_f[:p.T], new_borrowing,
          debt_service, new_borrowing_f) =\
             fiscal.D_G_path(r_gov, dg_fixed_values, p)
@@ -570,8 +579,10 @@ def run_TPI(p, client=None):
         K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
             B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
         Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
-        I_g = fiscal.get_I_g(Ynew, p.alpha_I)
-        K_g[0] = p.initial_Kg_ratio * Ynew[0]
+        if not p.baseline_spending:
+            I_g = fiscal.get_I_g(Ynew, p.alpha_I)
+        if p.baseline:
+            K_g[0] = p.initial_Kg_ratio * Ynew[0]
         for t in range(p.T - 1):  # TODO: vectorize this
             K_g[t + 1] = fiscal.get_K_g_p1(K_g[t], I_g[t], p, 'TPI')
         rnew = r.copy()
@@ -601,7 +612,8 @@ def run_TPI(p, client=None):
         total_tax_revenue[:p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
             Ynew[:p.T], TR[:p.T], G[:p.T], total_tax_revenue[:p.T],
-            agg_pension_outlays[:p.T], UBI_outlays[:p.T], p, 'TPI')
+            agg_pension_outlays[:p.T], UBI_outlays[:p.T], I_g[:p.T],
+            p, 'TPI')
 
         # update vars for next iteration
         w[:p.T] = utils.convex_combo(wnew[:p.T], w[:p.T], p.nu)
