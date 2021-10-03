@@ -72,12 +72,15 @@ def D_G_path(r_gov, dg_fixed_values, p):
 
     if p.baseline_spending:
         G = Gbaseline[:p.T]
+        #TODO: add optiont to keep I_g at baseline level
     else:
         G = p.alpha_G[:p.T] * Y[:p.T]
+        I_g = p.alpha_I[:p.T] * Y[:p.T]
 
     if p.budget_balance:
         D = np.zeros(p.T + 1)
         G = p.alpha_G[:p.T] * Y[:p.T]
+        I_g = p.alpha_I[:p.T] * Y[:p.T]
         D_f = np.zeros(p.T)
         D_d = np.zeros(p.T)
         new_borrowing = np.zeros(p.T)
@@ -88,7 +91,8 @@ def D_G_path(r_gov, dg_fixed_values, p):
         while t < p.T-1:
             D[t] = (
                 (1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] +
-                                   G[t - 1] + TR[t - 1] + UBI_outlays[t - 1] +
+                                   G[t - 1] + I_g[t-1] + TR[t - 1] +
+                                   UBI_outlays[t - 1] +
                                    agg_pension_outlays[t-1] -
                                    total_tax_revenue[t - 1]))
             if (t >= p.tG1) and (t < p.tG2):
@@ -96,12 +100,14 @@ def D_G_path(r_gov, dg_fixed_values, p):
                     growth[t + 1] * (p.rho_G * p.debt_ratio_ss * Y[t] +
                                      (1 - p.rho_G) * D[t]) -
                     (1 + r_gov[t]) * D[t] + total_tax_revenue[t] -
-                    agg_pension_outlays[t] - TR[t] - UBI_outlays[t])
+                    agg_pension_outlays[t] - I_g[t-1] - TR[t] -
+                    UBI_outlays[t])
             elif t >= p.tG2:
                 G[t] = (
                     growth[t + 1] * (p.debt_ratio_ss * Y[t]) -
                     (1 + r_gov[t]) * D[t] + total_tax_revenue[t] -
-                    agg_pension_outlays[t] - TR[t] - UBI_outlays[t])
+                    agg_pension_outlays[t] - I_g[t-1] - TR[t] -
+                    UBI_outlays[t])
             t += 1
 
         # in final period, growth rate has stabilized, so we can replace
@@ -109,15 +115,17 @@ def D_G_path(r_gov, dg_fixed_values, p):
         t = p.T - 1
         D[t] = (
             (1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] + G[t - 1]
-                               + TR[t - 1] + UBI_outlays[t - 1] +
+                               + I_g[t-1] + TR[t - 1] +
+                               UBI_outlays[t - 1] +
                                agg_pension_outlays[t-1] -
                                total_tax_revenue[t - 1]))
         G[t] = (
             growth[t] * (p.debt_ratio_ss * Y[t]) - (1 + r_gov[t]) * D[t] +
-            total_tax_revenue[t] - agg_pension_outlays[t] - TR[t] -
-            UBI_outlays[t])
+            total_tax_revenue[t] - agg_pension_outlays[t] - I_g[t-1] -
+            TR[t] - UBI_outlays[t])
         D[t + 1] = (
-            (1 / growth[t + 1]) * ((1 + r_gov[t]) * D[t] + G[t] + TR[t] +
+            (1 / growth[t + 1]) * ((1 + r_gov[t]) * D[t] + G[t] +
+                                   I_g[t-1] + TR[t] +
                                    UBI_outlays[t] + agg_pension_outlays[t] -
                                    total_tax_revenue[t]))
         D_ratio_max = np.amax(D[:p.T] / Y[:p.T])
