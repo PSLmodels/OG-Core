@@ -59,8 +59,8 @@ def D_G_path(r_gov, dg_fixed_values, p):
             * new_borrowing_f: new borrowing from foreigners
 
     '''
-    (Y, total_tax_revenue, agg_pension_outlays, UBI_outlays, TR, Gbaseline,
-        D0_baseline) = dg_fixed_values
+    (Y, total_tax_revenue, agg_pension_outlays, UBI_outlays, TR, I_g,
+     Gbaseline, D0_baseline) = dg_fixed_values
 
     growth = (1 + p.g_n) * np.exp(p.g_y)
 
@@ -72,15 +72,12 @@ def D_G_path(r_gov, dg_fixed_values, p):
 
     if p.baseline_spending:
         G = Gbaseline[:p.T]
-        #TODO: add optiont to keep I_g at baseline level
     else:
         G = p.alpha_G[:p.T] * Y[:p.T]
-        I_g = p.alpha_I[:p.T] * Y[:p.T]
 
     if p.budget_balance:
         D = np.zeros(p.T + 1)
         G = p.alpha_G[:p.T] * Y[:p.T]
-        I_g = p.alpha_I[:p.T] * Y[:p.T]
         D_f = np.zeros(p.T)
         D_d = np.zeros(p.T)
         new_borrowing = np.zeros(p.T)
@@ -195,7 +192,7 @@ def get_D_ss(r_gov, Y, p):
 
 
 def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR, UBI_outlays,
-             new_borrowing, debt_service, p):
+             I_g, new_borrowing, debt_service, p):
     r'''
     Calculate the steady-state values of government spending.
 
@@ -217,7 +214,6 @@ def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR, UBI_outlays,
         G (tuple): steady-state government spending
 
     '''
-    I_g = get_I_g(Y, p.alpha_I[-1])
     if p.budget_balance:
         G = p.alpha_G[-1] * Y
     else:
@@ -245,8 +241,8 @@ def get_debt_service_f(r_p, D_f):
     return debt_service_f
 
 
-def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays, p,
-           method):
+def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays,
+           I_g, p, method):
     r'''
     Function to compute aggregate transfers.  Note that this excludes
     transfer spending through the public pension system.
@@ -276,7 +272,9 @@ def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays, p,
 
     '''
     if p.budget_balance:
-        new_TR = total_tax_revenue - agg_pension_outlays - G - UBI_outlays
+        new_TR = (
+            total_tax_revenue - agg_pension_outlays - G - UBI_outlays -
+            I_g)
     elif p.baseline_spending:
         new_TR = TR
     else:
