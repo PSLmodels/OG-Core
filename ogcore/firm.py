@@ -1,3 +1,5 @@
+import numpy as np
+
 '''
 ------------------------------------------------------------------------
 Firm functions for firms in the steady state and along the transition
@@ -44,6 +46,8 @@ def get_Y(K, K_g, L, p, method):
              (L ** (1 - p.gamma - p.gamma_g)))
     else:
         # General case
+        if np.any(K_g) == 0:  # issues if K_g = 0 in this case, but with gamma_g = 0, then ok to have K_g value not important
+            K_g[K_g == 0] = 1.0
         Y = (Z * (((p.gamma ** (1 / p.epsilon)) *
                    (K ** ((p.epsilon - 1) / p.epsilon))) +
                   ((p.gamma_g ** (1 / p.epsilon)) *
@@ -121,14 +125,63 @@ def get_w(Y, L, p, method):
         w (array_like): the real wage rate
 
     '''
-    if method == 'SS':
-        Z = p.Z[-1]
-    else:
-        Z = p.Z[:p.T]
-    w = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
-         ((((1 - p.gamma - p.gamma_g) * Y) / L) ** (1 / p.epsilon)))
+    # if method == 'SS':
+    #     Z = p.Z[-1]
+    # else:
+    #     Z = p.Z[:p.T]
+    # w = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
+    #      ((((1 - p.gamma - p.gamma_g) * Y) / L) ** (1 / p.epsilon)))
+    w = get_MPx(Y, L, 1 - p.gamma - p.gamma_g, p, method)
 
     return w
+
+
+def get_KLratio_old(r, p, method):
+    r'''
+    This function solves for the capital-labor ratio given the interest
+    rate r and parameters.
+
+    .. math::
+        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
+        {\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})
+        \gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -
+        \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}
+
+    Args:
+        r (array_like): the real interest rate
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        KLratio (array_like): the capital-labor ratio
+
+    '''
+    if method == 'SS':
+        Z = p.Z[-1]
+        delta_tau = p.delta_tau[-1]
+        tau_b = p.tau_b[-1]
+    else:
+        length = r.shape[0]
+        Z = p.Z[:length]
+        delta_tau = p.delta_tau[:length]
+        tau_b = p.tau_b[:length]
+    if p.epsilon == 1:
+        # Cobb-Douglas case
+        bracket = (((1 - tau_b) * p.gamma * Z) /
+                   (r + p.delta - tau_b * delta_tau))
+        KLratio = bracket ** (1 / (1 - p.gamma))
+    else:
+        # General CES case
+        bracket = ((r + p.delta - (delta_tau * tau_b)) /
+                   ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
+        KLratio = \
+            ((((1 - p.gamma) ** (1 / p.epsilon)) /
+              ((bracket ** (p.epsilon - 1)) -
+               (p.gamma ** (1 / p.epsilon)))) ** (p.epsilon /
+                                                  (p.epsilon - 1)))
+
+    return KLratio
 
 
 def get_KLratio(r, w, p, method):
@@ -181,8 +234,10 @@ def get_KLratio(r, w, p, method):
     else:
         tau_b = p.tau_b[:p.T]
         delta_tau = p.delta_tau[:p.T]
-    denominator = ((r + p.delta - tau_b * delta_tau) / (1 - tau_b)) ** p.epsilon
-    KLratio = (w ** p.epsilon) / denominator
+    cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
+    KLratio = (
+        (w / cost_of_capital) ** p.epsilon *
+        (p.gamma / (1 - p.gamma - p.gamma_g)))
     return KLratio
 
 
@@ -194,7 +249,14 @@ def get_MPx(Y, x, share, p, method):
         Z = p.Z[-1]
     else:
         Z = p.Z[:p.T]
-    MPx = Z ** ((p.epsilon - 1) / p.epsilon) * ((share * Y) / x) ** (1 / p.epsilon)
+    if np.any(x) == 0:
+        MPx = np.zeros_like(Y)
+    else:
+        MPx = Z ** ((p.epsilon - 1) / p.epsilon) * ((share * Y) / x) ** (1 / p.epsilon)
+    # try:
+    #     MPx[x == 0] = 0
+    # except TypeError:
+    #     MPx = 0
 
     return MPx
 
@@ -226,7 +288,7 @@ def get_w_from_r(r, p, method):
         Z = p.Z[-1]
     else:
         Z = p.Z[:p.T]
-    KLratio = get_KLratio(r, p, method)
+    KLratio = get_KLratio_old(r, p, method)
     if p.epsilon == 1:
         # Cobb-Douglas case
         w = (1 - p.gamma) * Z * (KLratio ** p.gamma)
@@ -259,7 +321,7 @@ def get_K(L, r, p, method):
         K (array_like): aggregate capital demand
     --------------------------------------------------------------------
     '''
-    KLratio = get_KLratio(r, p, method)
+    KLratio = get_KLratio_old(r, p, method)
     K = KLratio * L
 
     return K
