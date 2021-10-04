@@ -428,11 +428,10 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
 
     '''
     K_d = B - D_d
-    # if isinstance(K_d, (np.ndarray, np.generic)):
     if np.any(K_d < 0):
         print('K_d has negative elements. Setting them ' +
               'positive to prevent NAN.')
-        K_d = np.max(K_d, 0.05 * B)
+        K_d = np.fmax(K_d, 0.05 * B)
     K_f = zeta_K * (K_demand_open - B + D_d)
     K = K_f + K_d
 

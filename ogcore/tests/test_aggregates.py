@@ -422,20 +422,25 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
     assert(np.allclose(revenue, expected))
 
 
-test_data = [(0.04, 0.02, 2.0, 4.0, 0.026666667),
+test_data = [(0.04, 0.02, 2.0, 4.0, 0.0, 0.026666667),
              (np.array([0.05, 0.03]), np.array([0.02, 0.01]),
-              np.array([3.0, 4.0]), np.array([7.0, 6.0]),
+              np.array([3.0, 4.0]), np.array([7.0, 6.0]), np.array([0.0, 0.0]),
               np.array([0.029, 0.018])),
-             (0.04, 0.02, 2.0, 0.0, 0.04)]
+             (0.04, 0.02, 2.0, 0.0, 0.0, 0.04),
+             (np.array([0.05, 0.03]), np.array([0.02, 0.01]),
+              np.array([3.0, 4.0]), np.array([7.0, 6.0]), np.array([0.04, 0.2]),
+              np.array([0.029 + 0.3 * 0.038572, 0.018 + 0.4 * 0.19286]))]
 
 
-@pytest.mark.parametrize('r,r_gov,B,D,expected', test_data,
-                         ids=['scalar', 'vector', 'no debt'])
-def test_get_r_p(r, r_gov, B, D, expected):
+@pytest.mark.parametrize('r,r_gov,K,D,MPKg,expected', test_data,
+                         ids=['scalar', 'vector', 'no debt', 'vector,MPKg>0'])
+def test_get_r_p(r, r_gov, K, D, MPKg, expected):
     """
-    Test function to compute interet rate on household portfolio.
+    Test function to compute interest rate on household portfolio.
     """
-    r_p_test = aggr.get_r_p(r, r_gov, B, D)
+    p = Specifications()
+    p.update_specifications({'T': 3})
+    r_p_test = aggr.get_r_p(r, r_gov, K, D, MPKg, p, 'SS')
 
     assert(np.allclose(r_p_test, expected))
 
@@ -450,12 +455,13 @@ def test_resource_constraint():
     C = np.array([33, 44, 0.4, 55, 6])
     G = np.array([4, 5, 0.01, 22, 0])
     I = np.array([20, 5, 0.6, 10, 1])
+    I_g = np.zeros_like(I)
     K_f = np.array([0, 0, 0.2, 3, 0.05])
     new_borrowing_f = np.array([0, 0.1, 0.3, 4, 0.5])
     debt_service_f = np.array([0.1, 0.1, 0.3, 2, 0.02])
     r = np.array([0.03, 0.04, 0.03, 0.06, 0.01])
     expected = np.array([-9.1, 1, 0.974, 13.67, 1.477])
-    test_RC = aggr.resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
+    test_RC = aggr.resource_constraint(Y, C, G, I, I_g, K_f, new_borrowing_f,
                                        debt_service_f, r, p)
 
     assert(np.allclose(test_RC, expected))
