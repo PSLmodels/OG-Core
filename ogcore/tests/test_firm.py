@@ -14,6 +14,7 @@ new_param_values = {
 p1.update_specifications(new_param_values)
 L1 = np.array([4.0])
 K1 = np.array([9.0])
+K_g1 = np.array([0.0])
 expected1 = np.array([12.0])
 p2 = Specifications()
 new_param_values2 = {
@@ -32,6 +33,7 @@ new_param_values3 = {
 p3.update_specifications(new_param_values3)
 L3 = np.array([1 / 12.0])
 K3 = np.array([1 / 4.0])
+K_g3 = np.array([0.0])
 expected3 = np.array([0.592030917])
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -48,6 +50,7 @@ new_param_values4 = {
 p4.update_specifications(new_param_values4)
 L4 = np.array([4.0, 4.0, 4.0])
 K4 = np.array([9.0, 9.0, 9.0])
+K_g4 = np.array([0.0, 0.0, 0.0])
 expected4 = np.array([12.0, 12.0, 12.0])
 p5 = Specifications()
 new_param_values5 = {
@@ -61,23 +64,39 @@ new_param_values5 = {
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
 expected5 = np.array([9.0, 15.0, 3.6])
+p6 = Specifications()
+new_param_values6 = {
+    'Z': [1.5, 2.5, 0.6],
+    'gamma': 0.5,
+    'epsilon': 1.0,
+    'T': 3,
+    'S': 3,
+    'eta': (np.ones((3, p5.J)) / (3 * p5.J)),
+    'gamma_g': 0.2
+}
+# update parameters instance with new values for test
+p6.update_specifications(new_param_values6)
+K_g6 = np.array([1.2, 3.0, 0.9])
+expected6 = np.array([7.07402777, 14.16131267, 2.671400509])
 
 
-@pytest.mark.parametrize('K,L,p,method,expected',
-                         [(K1, L1, p1, 'SS', expected1),
-                          (K1, L1, p2, 'SS', expected2),
-                          (K3, L3, p3, 'SS', expected3),
-                          (K4, L4, p4, 'TPI', expected4),
-                          (K4, L4, p5, 'TPI', expected5)],
+@pytest.mark.parametrize('K,K_g,L,p,method,expected',
+                         [(K1, K_g1, L1, p1, 'SS', expected1),
+                          (K1, K_g1, L1, p2, 'SS', expected2),
+                          (K3, K_g3, L3, p3, 'SS', expected3),
+                          (K4, K_g4, L4, p4, 'TPI', expected4),
+                          (K4, K_g4, L4, p5, 'TPI', expected5),
+                          (K4, K_g6, L4, p6, 'TPI', expected6)],
                          ids=['epsilon=1.0,SS', 'epsilon=0.2,SS',
                               'epsilon=1.2,SS', 'epsilon=1.0,TP',
-                              'epsilon=1.0,TP,varyZ'])
-def test_get_Y(K, L, p, method, expected):
+                              'epsilon=1.0,TP,varyZ',
+                              'epsilon=1.0,TP,varyZ,non-zeroKg'])
+def test_get_Y(K, K_g, L, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
-    Y = firm.get_Y(K, L, p, method)
+    Y = firm.get_Y(K, K_g, L, p, method)
     assert (np.allclose(Y, expected, atol=1e-6))
 
 
@@ -301,7 +320,27 @@ def test_get_KLratio_from_r(r, p, method, expected):
         choose values that simplify the calculations and are similar to
         observed values
     """
-    KLratio = firm.get_KLratio_from_r(r, p, method)
+    KLratio = firm.get_KLratio_old(r, p, method)
+    assert (np.allclose(KLratio, expected, atol=1e-6))
+
+
+expected4 = np.array([0.465031434, 0.045936078, 0.575172024])
+
+
+@pytest.mark.parametrize('r,p,method,expected',
+                         [(r1, p1, 'SS', expected1),
+                          (r1, p2, 'SS', expected2),
+                          (r1, p3, 'SS', expected3),
+                          (r4, p4, 'TPI', expected4)],
+                         ids=['epsilon=0.8,SS', 'epsilon=1.2,SS',
+                              'epsilon=1.0,SS', 'epsilon=0.5,TP'])
+def test_get_KLratio(r, p, method, expected):
+    """
+        choose values that simplify the calculations and are similar to
+        observed values
+    """
+    w = firm.get_w_from_r(r, p, method)
+    KLratio = firm.get_KLratio(r, w, p, method)
     assert (np.allclose(KLratio, expected, atol=1e-6))
 
 
@@ -447,3 +486,45 @@ def test_get_K(L, r, p, method, expected):
     """
     K = firm.get_K(L, r, p, method)
     assert (np.allclose(K, expected, atol=1e-6))
+
+
+@pytest.mark.parametrize('L,r,p,method,expected',
+                         [(L1, r1, p1, 'SS', expected1),
+                          (L1, r1, p2, 'SS', expected2),
+                          (L1, r1, p3, 'SS', expected3),
+                          (L4, r4, p4, 'TPI', expected4)],
+                         ids=['epsilon=1.2,SS', 'epsilon=1.0,SS',
+                              'epsilon=0.4,SS', 'epsilon=0.4,TP'])
+def test_get_K_new(L, r, p, method, expected):
+    """
+        choose values that simplify the calculations and are similar to
+        observed values
+    """
+    w = firm.get_w_from_r(r, p, method)
+    K = firm.get_K_new(r, w, L, p, method)
+    assert (np.allclose(K, expected, atol=1e-6))
+
+
+Y1 = 2.0
+x1 = 1.0
+expected1 = 1.0
+Y2 = np.array([2.0, 1.0])
+x2 = np.array([1.0, 0.5])
+expected2 = np.array([0.6, 0.6])
+
+
+@pytest.mark.parametrize('Y,x,share,method,expected',
+                         [(Y1, x1, 0.5, 'SS', expected1),
+                          (Y2, x2, 0.3, 'TPI', expected2),
+                          (Y2, np.zeros_like(Y2), 0.5, 'TPI', np.zeros_like(Y2)),
+                          (Y1, np.zeros_like(Y1), 0.5, 'SS', np.zeros_like(Y1))],
+                         ids=['SS', 'TPI', 'x=0, TPI', 'x=0,SS'])
+def test_get_MPx(Y, x, share, method, expected):
+    """
+    Test of the marginal product function
+    """
+    p = Specifications()
+    p.Z = np.ones(2)
+    mpx = firm.get_MPx(Y, x, share, p, method)
+
+    assert (np.allclose(mpx, expected, atol=1e-6))

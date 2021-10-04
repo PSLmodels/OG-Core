@@ -45,7 +45,7 @@ def get_Y(K, K_g, L, p, method):
         Y = (Z * (K ** p.gamma) * (K_g ** p.gamma_g) *
              (L ** (1 - p.gamma - p.gamma_g)))
     else:
-        # General case
+        # General CES
         if np.any(K_g) == 0:  # issues if K_g = 0 in this case, but with gamma_g = 0, then ok to have K_g value not important
             K_g[K_g == 0] = 1.0
         Y = (Z * (((p.gamma ** (1 / p.epsilon)) *
