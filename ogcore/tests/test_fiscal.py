@@ -210,3 +210,36 @@ r_gov3 = 0.0
 def test_get_r_gov(r, p, r_gov_expected):
     r_gov = fiscal.get_r_gov(r, p)
     assert np.allclose(r_gov, r_gov_expected)
+
+
+def test_get_I_g():
+    '''
+    Test function to determine investment in public capital
+    '''
+    Y = np.array([0.2, 4.0])
+    alpha_I = np.array([0.1, 0.5])
+    expected = np.array([0.02, 2.0])
+    test_val = fiscal.get_I_g(Y, alpha_I)
+
+    assert np.allclose(test_val, expected)
+
+
+# need to parameterize to test for TPI and SS
+@pytest.mark.parametrize(
+    'K_g0,I_g,method,expected',
+    [(None, 0.2, 'SS', 3.425855334),
+     (0.0, np.array([0.2, 0.3, 0.01]), 'TPI',
+     np.array([0, 0.190283438, 0.462843312]))],
+    ids=['SS', 'TPI'])
+def test_get_K_g(K_g0, I_g, method, expected):
+    '''
+    Test of the law of motion for the government capital stock
+    '''
+    p = Specifications()
+    p.update_specifications({'T': 3})
+    p.g_n = np.array([0.02, 0.02, 0.02])
+    p.g_n_ss = 0.01
+
+    test_val = fiscal.get_K_g(K_g0, I_g, p, method)
+
+    assert np.allclose(test_val, expected)

@@ -317,13 +317,18 @@ def get_I_g(Y, alpha_I):
     return I_g
 
 
-def get_K_g_p1(K_g, I_g, p, method):
+def get_K_g(K_g0, I_g, p, method):
     '''
     Law of motion for the government capital stock
     '''
     if method == 'TPI':
-        K_g_p1 = (1 - p.delta_g) * K_g + I_g
+        K_g = np.zeros(p.T)
+        K_g[0] = K_g0
+        for t in range(p.T - 1):  # TODO: numba jit this
+            growth = (1 + p.g_n[t + 1]) * np.exp(p.g_y)
+            K_g[t + 1] = ((1 - p.delta_g) * K_g[t] + I_g[t]) / growth
     else:  # SS
-        K_g_p1 = I_g / p.delta_g
+        growth = (1 + p.g_n_ss) * np.exp(p.g_y)
+        K_g = I_g / (1 - ((1 - p.delta_g) / growth))
 
-    return K_g_p1
+    return K_g
