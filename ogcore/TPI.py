@@ -620,8 +620,6 @@ def run_TPI(p, client=None):
         BQ[:p.T] = utils.convex_combo(BQnew[:p.T], BQ[:p.T], p.nu)
         D[:p.T] = Dnew[:p.T]
         Y[:p.T] = utils.convex_combo(Ynew[:p.T], Y[:p.T], p.nu)
-        print('r = ', r[:5])
-        print('w = ', w[:5])
         if not p.baseline_spending:
             TR[:p.T] = utils.convex_combo(TR_new[:p.T], TR[:p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
@@ -636,25 +634,28 @@ def run_TPI(p, client=None):
               (TR_new[:p.T] - TR[:p.T]).min())
         print('Y diff: ', (Ynew[:p.T]-Y[:p.T]).max(),
               (Ynew[:p.T] - Y[:p.T]).min())
-        if not p.baseline_spending:
-            if TR.all() != 0:
-                TPIdist = np.array(
-                    list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
-                    list(utils.pct_diff_func(BQnew[:p.T],
-                                             BQ[:p.T]).flatten()) +
-                    list(utils.pct_diff_func(TR_new[:p.T],
-                                             TR[:p.T]))).max()
-            else:
-                TPIdist = np.array(
-                    list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
-                    list(utils.pct_diff_func(BQnew[:p.T],
-                                             BQ[:p.T]).flatten()) +
-                    list(np.abs(TR[:p.T]))).max()
-        else:
-            TPIdist = np.array(
-                list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
-                list(utils.pct_diff_func(BQnew[:p.T], BQ[:p.T]).flatten())
-                + list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T]))).max()
+        # if not p.baseline_spending:
+        #     if TR.all() != 0:
+        #
+        TPIdist = np.array(
+            list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
+            list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
+            list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T])) +
+            list(utils.pct_diff_func(BQnew[:p.T], BQ[:p.T]).flatten()) +
+            list(utils.pct_diff_func(TR_new[:p.T], TR[:p.T]))).max()
+        #     else:
+        #         TPIdist = np.array(
+        #             list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
+        #             list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
+        #             list(utils.pct_diff_func(BQnew[:p.T],
+        #                                      BQ[:p.T]).flatten()) +
+        #             list(np.abs(TR[:p.T]))).max()
+        # else:
+        #     TPIdist = np.array(
+        #         list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
+        #         list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
+        #         list(utils.pct_diff_func(BQnew[:p.T], BQ[:p.T]).flatten())
+        #         + list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T]))).max()
 
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
