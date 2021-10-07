@@ -51,6 +51,12 @@ def test_get_initial_SS_values(baseline, param_updates, filename,
 
     (exp_initial_values, exp_ss_vars, exp_theta,
      exp_baseline_values) = expected_tuple
+    # (exp_TRbaseline, exp_Gbaseline, exp_D0_baseline) = exp_baseline_values
+    # exp_Ig_baseline = np.zeros_like(exp_Gbaseline)
+    # exp_Kg0_baseline = np.zeros_like(exp_Gbaseline)
+    # exp_baseline_values = (
+    #     exp_TRbaseline, exp_Gbaseline, exp_Ig_baseline, exp_D0_baseline,
+    #     exp_Kg0_baseline)
     (B0, b_sinit, b_splus1init, factor, initial_b,
      initial_n) = exp_initial_values
     B0 = aggr.get_B(exp_ss_vars['bssmat_splus1'], p, 'SS', True)

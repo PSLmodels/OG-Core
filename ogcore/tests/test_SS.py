@@ -12,6 +12,7 @@ import copy
 from ogcore import SS, utils, aggregates, household, constants
 from ogcore.parameters import Specifications
 from ogcore.utils import safe_read_pickle
+from ogcore import firm
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
@@ -104,9 +105,9 @@ expected6 = np.array([
      (guesses5, args5, expected5),
      (guesses6, args6, expected6)],
      ids=['Baseline, Closed', 'Reform, Closed',
-           'Reform, Baseline spending=True, Closed',
-           'Baseline, Partial Open', 'Baseline, Small Open',
-           'Baseline, Closed, delta_tau = 0'])
+          'Reform, Baseline spending=True, Closed',
+          'Baseline, Partial Open', 'Baseline, Small Open',
+          'Baseline, Closed, delta_tau = 0'])
 def test_SS_fsolve(guesses, args, expected):
     '''
     Test SS.SS_fsolve function.  Provide inputs to function and
@@ -153,15 +154,19 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
     if p.zeta_K[-1] == 1.0:
         rguess = p.world_int_rate[-1]
+        wguess = firm.get_w_from_r(rguess, p, 'SS')
     else:
         rguess = 0.06483431412921253
+        wguess = firm.get_w_from_r(rguess, p, 'SS')
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = 0.6376591201150815
 
-    test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
-                             factorguess, Yguess, p, dask_client, False)
+    test_dict = SS.SS_solver(
+        b_guess, n_guess, rguess, wguess, BQguess, TRguess,
+        factorguess, Yguess, p, dask_client, False)
+
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
@@ -207,6 +212,8 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
+    del expected_dict['K_g_ss']
+    del expected_dict['I_g_ss']
 
     for k, v in expected_dict.items():
         print('Testing ', k)
@@ -248,14 +255,15 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
         r = p.world_int_rate[-1]
     else:
         r = 0.05
+    w = firm.get_w_from_r(r, p, 'SS')
     TR = 0.12
     Y = 1.3
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor)
+        outer_loop_vars = (bssmat, nssmat, r, w, BQ, TR, factor)
     else:
-        outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
+        outer_loop_vars = (bssmat, nssmat, r, w, BQ, Y, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
@@ -461,6 +469,7 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
                               'Reform, small open use zeta',
                               'Baseline, delta_tau=0'
                               ])
+
 
 @pytest.mark.local
 def test_run_SS(baseline, param_updates, filename, dask_client):
