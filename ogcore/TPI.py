@@ -430,17 +430,16 @@ def run_TPI(p, client=None):
     Y = np.zeros_like(K)
     Y[:p.T] = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
     Y[p.T:] = ss_vars['Yss']
+    I_g = np.ones_like(Y) * ss_vars['I_g_ss']
     if p.baseline_spending:
-        I_g = Ig_baseline
+        I_g[:p.T] = Ig_baseline[:p.T]
     else:
         I_g = fiscal.get_I_g(Y, p.alpha_I)
-    K_g = np.zeros_like(Y)
     if p.baseline:
-        K_g[0] = p.initial_Kg_ratio * Y[0]
+        K_g0 = p.initial_Kg_ratio * Y[0]
     else:
-        K_g[0] = Kg0_baseline
-    for t in range(len(Y) - 1):
-        K_g[t + 1] = fiscal.get_K_g_p1(K_g[t], I_g[t], p, 'TPI')
+        K_g0 = Kg0_baseline
+    K_g = fiscal.get_K_g(K_g0, I_g, p, 'TPI')
     r = np.zeros_like(Y)
     r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
     r[p.T:] = ss_vars['rss']
@@ -449,7 +448,7 @@ def run_TPI(p, client=None):
     # Compute other interest rates
     r_gov = fiscal.get_r_gov(r, p)
     r_p = np.ones_like(r) * ss_vars['r_p_ss']
-    MPKg = firm.get_MPx(Y[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
+    MPKg = firm.get_MPx(Y[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
     r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
                              ss_vars['Dss'], MPKg, p, 'TPI')
 
@@ -507,7 +506,7 @@ def run_TPI(p, client=None):
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
         K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
-        MPKg = firm.get_MPx(Y[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
+        MPKg = firm.get_MPx(Y[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
         r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
                                  D[:p.T], MPKg[:p.T], p, 'TPI')
 
@@ -574,23 +573,23 @@ def run_TPI(p, client=None):
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
+        w_open = firm.get_w_from_r(p.world_int_rate[:p.T], p, 'TPI')
         K_demand_open = firm.get_K_new(
-            p.world_int_rate[:p.T], w[:p.T], L[:p.T], p, 'TPI')
+            p.world_int_rate[:p.T], w_open, L[:p.T], p, 'TPI')
         K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
             B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
         Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
         if not p.baseline_spending:
             I_g = fiscal.get_I_g(Ynew, p.alpha_I)
         if p.baseline:
-            K_g[0] = p.initial_Kg_ratio * Ynew[0]
-        for t in range(p.T - 1):  # TODO: vectorize this
-            K_g[t + 1] = fiscal.get_K_g_p1(K_g[t], I_g[t], p, 'TPI')
+            K_g0 = p.initial_Kg_ratio * Ynew[0]
+        K_g = fiscal.get_K_g(K_g0, I_g, p, 'TPI')
         rnew = r.copy()
         rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         # For case where economy is small open econ
         r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
-        MPKg = firm.get_MPx(Ynew[:p.T], K[:p.T], p.gamma_g, p, 'TPI')
+        MPKg = firm.get_MPx(Ynew[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
         r_p_new = aggr.get_r_p(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
                                Dnew[:p.T], MPKg[:p.T], p, 'TPI')
         # compute w
@@ -729,7 +728,7 @@ def run_TPI(p, client=None):
     '''
 
     output = {'Y': Y[:p.T], 'B': B, 'K': K, 'K_f': K_f, 'K_d': K_d,
-              'L': L, 'C': C, 'I': I,
+              'L': L, 'C': C, 'I': I, 'K_g': K_g, 'I_g': I_g,
               'I_total': I_total, 'I_d': I_d, 'BQ': BQ,
               'total_tax_revenue': total_tax_revenue,
               'business_tax_revenue': business_tax_revenue,
