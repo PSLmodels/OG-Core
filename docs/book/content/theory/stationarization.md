@@ -167,21 +167,33 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzGovBC
-    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
+    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{TR}_t + \hat{UBI}_t \quad\forall t
+  ```
+
+  The stationarized infrastructure investment spending rule and the law of motion for the public capital stock are given by:
+
+      ```{math}
+  :label: EqStnrzGBC_Ig
+    \hat{I}_{g,t} = \alpha_{I,t} \hat{Y}_t \quad\forall t  \quad\forall t
+  ```
+
+    ```{math}
+  :label: EqStnrzGBC_Kg
+    \hat{K}_{g,t+1} = \frac{(1 - \delta^{g}) \hat{K}_{g,t} + \hat{I}_{g,t}}{e^{g_{y}(1 + g_{n,t+1})}}  \quad\forall t
   ```
 
   Stationary aggregate universal basic income expenditure $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzGBC_UBI
-    \hat{UBI}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t
+    \hat{UBI}_t = \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t
   ```
 
-  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The expression for the return to household savings $r_{p,t}$ in {eq}`EqUnbalGBC_rate_p` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
+  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The net return on capital, $r_{K,t}$ is also stationary because the marginal products private and public capital are stationary.  The expression for the return to household savings $r_{p,t}$ in {eq}`EqUnbalGBC_rate_p` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
 
   ```{math}
     :label: EqStnrz_rate_p
-    r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} = \frac{r_{gov,t}\hat{D}_{t} + r_{t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t
+    r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} = \frac{r_{gov,t}\hat{D}_{t} + r_{K,t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t
   ```
 
   The long-run debt-to-GDP ratio condition is also the same in both the nonstationary version in {eq}`EqUnbalGBC_DY` as well as the stationary version below because the endogenous side is a ratio of macroeconomic variables that are growing at the same rate.
@@ -200,8 +212,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
     &\text{where}\quad g_{g,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -215,8 +227,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
     &\text{where}\quad g_{tr,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -230,8 +242,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```
