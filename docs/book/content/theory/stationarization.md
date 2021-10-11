@@ -177,10 +177,10 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \hat{UBI}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t
   ```
 
-  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The expression for the return to household savings $r_{p,t}$ in {eq}`EqUnbalGBC_rate_hh` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
+  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The expression for the return to household savings $r_{p,t}$ in {eq}`EqUnbalGBC_rate_p` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
 
   ```{math}
-    :label: EqStnrz_rate_hh
+    :label: EqStnrz_rate_p
     r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} = \frac{r_{gov,t}\hat{D}_{t} + r_{t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t
   ```
 

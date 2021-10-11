@@ -3,7 +3,7 @@
 
 The equilibrium for the `OG-Core` model is broadly characterized as the solution to the model for all possible periods from the current period $t=1$ to infinity $t=\infty$. However, the solution algorithm for the equilibrium makes it useful to divide the equilibrium definition into two sub-definitions.
 
-The first equilibrium definition we charactersize is the {ref}`SecSSeqlb`. This is really a long-run equilibrium concept. It is where the economy settles down after a large number of periods into the future. The distributions in the economy (e.g., population, wealth, labor supply) have settled down and remain constant from some future period $t=\bar{T}$ for the rest of time $t=\infty$.
+The first equilibrium definition we characterize is the {ref}`SecSSeqlb`. This is really a long-run equilibrium concept. It is where the economy settles down after a large number of periods into the future. The distributions in the economy (e.g., population, wealth, labor supply) have settled down and remain constant from some future period $t=\bar{T}$ for the rest of time $t=\infty$.
 
 The second equilibrium definition we characterize is the {ref}`SecNSSeqlb`. This equilibrium concept is "non-steady-state" because it characterizes equilibrium in all time periods from the current period $t=1$ to the period in which the economy has reached the steady-state $t=\bar{T}$. It is "non-steady-state" because the distributions in the economy (e.g., population, wealth, labor supply) are changing across time periods.
 
@@ -17,15 +17,15 @@ We implemented an automatic government budget closure rule using government spen
 We first give a general definition of the steady-state (long-run) equilibrium of the model. We then detail the computational algorithm for solving for the equilibrium in each distinct case of the model. There are three distinct cases or parameterization permutations of the model that have to do with the following specification choices.
 
 * Baseline or reform
-* Balanced budget or allow for government deficits/surplusses
+* Balanced budget or allow for government deficits/surpluses
 * Small open economy or partially/closed economy
-* Fixed baseline spending level or not
+* Fixed baseline spending level or not (relevant only for a reform specification)
 
 In all of the specifications of `OG-Core`, we use a two-stage fixed point algorithm to solve for the equilibrium solution. The solution is mathematically characterized by $2JS$ equations and $2JS$ unknowns. The most straightforward and simple way to solve these equations would be a multidimensional root finder. However, because each of the equations is highly nonlinear and depends on all of the $2JS$ variables (low sparsity) and because the dimensionality $2JS$ is high, standard root finding methods are not tractable.
 
 Our approach is to choose the minimum number of macroeconomic variables in an outer loop in order to be able to solve the household's $2JS$ Euler equations in terms of only the $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ variables directly, holding all other variables constant. The household system of Euler equations has a provable root solution and is orders of magnitude more tractable (less nonlinear) to solve holding these outer loop variables constant.
 
-The steady-state solution method for each of the cases above is associated with a solution method that has a subset of the following outer-loop variables $\{\bar{r}, \overline{TR}, \overline{BQ}, \bar{Y}, factor\}$.
+The steady-state solution method for each of the cases above is associated with a solution method that has a subset of the following outer-loop variables $\{\bar{r}, \bar{Y}, \overline{TR}, \overline{BQ}, factor\}$.
 
 
 (SecEqlbSSdef)=
@@ -33,7 +33,7 @@ The steady-state solution method for each of the cases above is associated with 
 
 With the stationarized model, we can now define the stationary steady-state equilibrium. This equilibrium will be long-run values of the endogenous variables that are constant over time. In a perfect foresight model, the steady-state equilibrium is the state of the economy at which the model settles after a finite amount of time, regardless of the initial condition of the model. Once the model arrives at the steady-state, it stays there indefinitely unless it receives some type of shock or stimulus.
 
-These stationary values have all the growth components from productivity growth and population growth removed as defined in {numref}`TabStnrzStatVars`. Because the productivity growth rate $g_y$ and population growth rate series $\tilde{g}_{n,t}$ are exogenous. We can transform the stationary equilibrium values of the variables back to their nonstationary values by reversing the identities in {numref}`TabStnrzStatVars`.
+These stationary values have all the components of growth, from productivity growth and population growth, removed as defined in {numref}`TabStnrzStatVars`. Because the productivity growth rate $g_y$ and population growth rate series $\tilde{g}_{n,t}$ are exogenous. We can transform the stationary equilibrium values of the variables back to their nonstationary values by reversing the identities in {numref}`TabStnrzStatVars`.
 
 We define a stationary steady-state equilibrium as the following.
 
@@ -43,7 +43,7 @@ A non-autarkic stationary steady-state equilibrium in the `OG-Core` model is def
 1. The population has reached its stationary steady-state distribution $\hat{\omega}_{s,t} = \bar{\omega}_s$ for all $s$ and $t$ as characterized in Section {ref}`SecDemogPopSSTP`,
 2. households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS`,
 3. firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
-4. Government activity behaves according to {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrzGovBC`, {eq}`EqStnrz_rate_hh`, and {eq}`EqStnrzClosureRule_Gt`, and
+4. government activity behaves according to {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrzGovBC`, {eq}`EqStnrz_rate_p`, and {eq}`EqStnrzClosureRule_Gt`, and
 5. markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrz_DtDdDf`, {eq}`EqStnrz_KtKdKf`, and {eq}`EqStnrzMarkClrBQ`.
 
 ```
@@ -78,7 +78,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         5. Use $\bar{D}^f$ and $\bar{D}$ in the government debt market clearing equation {eq}`EqStnrz_DtDdDf` to solve for domestic holdings of government bonds $\bar{D}^d$.
 
-        6. Given $\bar{r}^i$, $\bar{r}_{gov,a}$, $\bar{K}_a$, and $\bar{D}$, solve for $\bar{r}_{hh,a}$ using {eq}`EqStnrz_rate_hh`.
+        6. Given $\bar{r}^i$, $\bar{r}_{gov,a}$, $\bar{K}_a$, and $\bar{D}$, solve for $\bar{r}_{hh,a}$ using {eq}`EqStnrz_rate_p`.
 
         7. Use $factor^i$ for the tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$, respectively, of the calibration chapter on the microsimulation model and tax function estimation in the country-specific repository using the factor to transform model units to dollars in the tax functions as described in the section on the model units factor.
 
@@ -144,9 +144,9 @@ The computational algorithm for solving for the steady-state follows the steps b
          \bar{r}^{i'} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\bar{Y}_b}{\bar{K}_b}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
        ```
 
-    2. Use $\bar{r}^{i'}$, $\bar{K}_b$, $\bar{D}$ and $\bar{b}_{j,s}$ in equations {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrz_rate_hh`, and {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
+    2. Use $\bar{r}^{i'}$, $\bar{K}_b$, $\bar{D}$ and $\bar{b}_{j,s}$ in equations {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrz_rate_p`, and {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
 
-        1. Use $\bar{r}^{i'}$ in equation {eq}`EqUnbalGBC_rate_wedge` to get an updated $\bar{r}_{gov,b}$, and then use $\bar{r}^{i'}$, the new $\bar{r}_{gov,b}$, $\bar{K}_b$, and $\bar{D}$ in {eq}`EqStnrz_rate_hh` to get a new value for $\bar{r}_{hh,b}$.
+        1. Use $\bar{r}^{i'}$ in equation {eq}`EqUnbalGBC_rate_wedge` to get an updated $\bar{r}_{gov,b}$, and then use $\bar{r}^{i'}$, the new $\bar{r}_{gov,b}$, $\bar{K}_b$, and $\bar{D}$ in {eq}`EqStnrz_rate_p` to get a new value for $\bar{r}_{hh,b}$.
 
         2. Use new $\bar{r}_{hh,b}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to get an updated value for aggregate steady-state aggregate bequests $\overline{BQ}^{i'}$.
 
@@ -314,7 +314,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
   2. Households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS`,
   3. Firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
-  4. Government activity behaves according to {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrzGovBC`, {eq}`EqStnrz_rate_hh`, and {eq}`EqStnrzClosureRule_Gt`, and
+  4. Government activity behaves according to {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrzGovBC`, {eq}`EqStnrz_rate_p`, and {eq}`EqStnrzClosureRule_Gt`, and
   5. Markets clear according to {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrz_DtDdDf`, {eq}`EqStnrz_KtKdKf`, and {eq}`EqStnrzMarkClrBQ`.
 
   ```
@@ -349,7 +349,7 @@ We outline the stationary non-steady state (transition path) solution algorithm 
 
         1. Solve for the transition path of $r_{gov,t}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
 
-        2. Solve for the transition path of $r_{p,t}$ using equation {eq}`EqStnrz_rate_hh`.
+        2. Solve for the transition path of $r_{p,t}$ using equation {eq}`EqStnrz_rate_p`.
 
 3. Given initial condition $\boldsymbol{\hat{\Gamma}}_1$, guesses for the aggregate time paths $\{\boldsymbol{r}^i,\boldsymbol{\hat{BQ}}^i, \boldsymbol{\hat{TR}}^i\}$, we solve for the inner loop lifetime decisions of every household that will be alive across the time path $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$ and $1\leq t\leq T$.
 
