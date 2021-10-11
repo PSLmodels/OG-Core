@@ -54,41 +54,32 @@ A non-autarkic stationary steady-state equilibrium in the `OG-Core` model is def
 
 The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surpluses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending $G$ and transfers $TR$ are not held at baseline levels (`baseline_spending = False`).
 
-The computational algorithm for solving for the steady-state follows the steps below. We use a notational convention of a subscript $a$ or a subscript $b$ in steps (2) and (3) to differentiate between the same inner-loop variables computed two different ways at two different stages of the algorithm ($\bar{w}_a$, $\bar{w}_b$, $\bar{r}_{gov,a}$, $\bar{r}_{gov,b}$, $\bar{r}_{hh,a}$, $\bar{r}_{hh,b}$, $\bar{Y}_a$, $\bar{Y}_b$, $\bar{K}_a$, $\bar{K}_b$).
+The computational algorithm for solving for the steady-state follows the steps below. We use a notational convention of a subscript $a$ or a subscript $b$ in steps (2) and (3) to differentiate between the same inner-loop variables computed two different ways at two different stages of the algorithm ($\bar{w}_a$, $\bar{w}_b$, $\bar{r}_{gov,a}$, $\bar{r}_{gov,b}$, $\bar{r}_{p,a}$, $\bar{r}_{p,b}$, $\bar{Y}_a$, $\bar{Y}_b$, $\bar{K}_a$, $\bar{K}_b$).
 
 1. Use the techniques from Section {ref}`SecDemogPopSSTP` to solve for the steady-state population distribution vector $\boldsymbol{\bar{\omega}}$ and steady-state growth rate $\bar{g}_n$ of the exogenous population process.
 
-2. Choose an initial guess for the values of the steady-state interest rate (marginal product of capital) $\bar{r}^i$, total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
+2. Choose an initial guess for the values of the steady-state interest rate (marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$, total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
 
-    1. Given guess $\bar{r}^i$:
+    1. Given guesses $\bar{r}^i$, $\bar{w}^i$, $\overline{TR}^{\,i}$, $\overline{BQ}^{\,i}$:
 
-        1. Use firm's two first order conditions {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K` to solve for the steady-state capital-labor ratio $\frac{\bar{K}}{\bar{L}}$ and the steady-state wage $\bar{w}_a$.
+        1. Solve for the exogenous government interest rate $\bar{r}_{gov,a}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
+        2. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\bar{TR}^i$
+        3. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
+        4. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrzGBC_Ig`
+        5. Using the law of motion of the stock of infrastrutcure, {eq}`EqStnrzGBC_Kg`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
+        6. Using $\bar{K}_{g}^{i}$, $\bar{Y}^i$, and the firms' FOC with respect to public capital, find the mariginal product of public capital, $\bar{MPK}_{g}^{i}$
+        7. From the firm's FOC for the choice of capital, find $\bar{K}^i$ using $\bar{Y}^i$ and $\bar{r}^i$
+        8. Compute $\bar{r}_{p}^{i}$ from eq`EqStnrz_rate_p`, using $\bar{K}^i$, $\bar{D}^i$, $\bar{r}^i$, $\bar{r}_{gov}^i$, $\bar{MPK}_g^i$
+        9. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}^{j,s}$
+        10. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
 
-        2. Solve for the exogenous government interest rate $\bar{r}_{gov,a}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
-
-    2. Given guess $\overline{TR}^{\,i}$:
-
-        1. Solve for $\bar{Y}_a$ from long-run aggregate transfers assumption as a percent of GDP {eq}`EqStnrzTfer`.
-
-        2. Solve for total private capital $\bar{K}_a$ given GDP $\bar{Y}_a$ and the marginal product of capital guess $\bar{r}^i$ using firms first order condition for capital demand {eq}`EqStnrzFOC_K`.
-
-        3. Solve for steady-state government debt $\bar{D}$ using the long-run debt-to-GDP relationship to $\bar{Y}_a$ {eq}`EqStnrz_DY`.
-
-        4. Solve for foreign holdings of government debt $\bar{D}^f$ as a fixed fraction of government debt using the steady-state version of the exogenous foreign government debt rule {eq}`EqStnrz_zetaD` $\bar{D}^f = \zeta_D \bar{D}$.
-
-        5. Use $\bar{D}^f$ and $\bar{D}$ in the government debt market clearing equation {eq}`EqStnrz_DtDdDf` to solve for domestic holdings of government bonds $\bar{D}^d$.
-
-        6. Given $\bar{r}^i$, $\bar{r}_{gov,a}$, $\bar{K}_a$, and $\bar{D}$, solve for $\bar{r}_{hh,a}$ using {eq}`EqStnrz_rate_p`.
-
-        7. Use $factor^i$ for the tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$, respectively, of the calibration chapter on the microsimulation model and tax function estimation in the country-specific repository using the factor to transform model units to dollars in the tax functions as described in the section on the model units factor.
-
-    3. Given values $\bar{r}_{hh,a}$, $\bar{w}_a$ $\overline{BQ}^i$, $\overline{TR}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
+    2. Given values $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}^i$, $\overline{tr}_{j,s}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
         1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` simultaneously for each $j$.
 
         ```{math}
         :label: EqSS_HHBC
-          \bar{c}_{j,s} &= (1 + \bar{r}_{hh,a})\bar{b}_{j,s} + \bar{w}_a e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1} + \zeta_{j,s}\frac{\overline{BQ}^i}{\lambda_j\bar{\omega}_{s}} + \eta_{j,s}\frac{\overline{TR}^i}{\lambda_j\bar{\omega}_{s}} + \hat{ubi}_{j,s} - \bar{T}_{s}  \\
+          \bar{c}_{j,s} &= (1 + \bar{r}_{p,a})\bar{b}_{j,s} + \bar{w}_a e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1} + \overline{bq}_{j,s}^i + \overline{tr}_[j,s}^i + \hat{ubi}_{j,s} - \bar{T}_{j,s}  \\
           &\qquad\qquad\forall j\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \bar{b}_{j,E+1}=0
         ```
 
@@ -100,7 +91,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         ```{math}
         :label: EqSS_HHeul_b
-          (\bar{c}_{j,s})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\bar{b}_{j,s+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + \bar{r}_{hh,a}\bigl[1 - \tau^{mtry}_{s+1}\bigr]\Bigr)(\bar{c}_{j,s+1})^{-\sigma}\biggr] \\
+          (\bar{c}_{j,s})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\bar{b}_{j,s+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + \bar{r}_{p,a}\bigl[1 - \tau^{mtry}_{s+1}\bigr]\Bigr)(\bar{c}_{j,s+1})^{-\sigma}\biggr] \\
           \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
         ```
 
@@ -109,7 +100,7 @@ The computational algorithm for solving for the steady-state follows the steps b
           (\bar{c}_{j,E+S})^{-\sigma} = e^{-\sigma g_y}\chi^b_j(\bar{b}_{j,E+S+1})^{-\sigma} \quad\forall j
         ```
 
-    4. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state $\bar{L}$, $\bar{B}$, $\bar{K}_b$, $\bar{K}^d$, $\bar{K}^f$, and $\bar{Y}_b$.
+    3. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state $\bar{L}$, $\bar{B}$, $\bar{K}^{i'}$, $\bar{K}^d$, $\bar{K}^f$, and $\bar{Y}^{i'}$.
 
         1. Use $\bar{n}_{j,s}$ and the steady-state version of the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\bar{L}$.
 
@@ -146,13 +137,13 @@ The computational algorithm for solving for the steady-state follows the steps b
 
     2. Use $\bar{r}^{i'}$, $\bar{K}_b$, $\bar{D}$ and $\bar{b}_{j,s}$ in equations {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrz_rate_p`, and {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
 
-        1. Use $\bar{r}^{i'}$ in equation {eq}`EqUnbalGBC_rate_wedge` to get an updated $\bar{r}_{gov,b}$, and then use $\bar{r}^{i'}$, the new $\bar{r}_{gov,b}$, $\bar{K}_b$, and $\bar{D}$ in {eq}`EqStnrz_rate_p` to get a new value for $\bar{r}_{hh,b}$.
+        1. Use $\bar{r}^{i'}$ in equation {eq}`EqUnbalGBC_rate_wedge` to get an updated $\bar{r}_{gov,b}$, and then use $\bar{r}^{i'}$, the new $\bar{r}_{gov,b}$, $\bar{K}_b$, and $\bar{D}$ in {eq}`EqStnrz_rate_p` to get a new value for $\bar{r}_{p,b}$.
 
-        2. Use new $\bar{r}_{hh,b}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to get an updated value for aggregate steady-state aggregate bequests $\overline{BQ}^{i'}$.
+        2. Use new $\bar{r}_{p,b}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to get an updated value for aggregate steady-state aggregate bequests $\overline{BQ}^{i'}$.
 
            ```{math}
            :label: EqSS_MarkClrBQ
-             \overline{BQ}^{i'} = \left(\frac{1+\bar{r}_{hh,b}}{1 + \bar{g}_{n}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\bar{\omega}_{s-1}\bar{b}_{j,s}\right)
+             \overline{BQ}^{i'} = \left(\frac{1+\bar{r}_{p,b}}{1 + \bar{g}_{n}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\bar{\omega}_{s-1}\bar{b}_{j,s}\right)
            ```
 
     3. Use $\bar{Y}_b$ in long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
@@ -162,7 +153,7 @@ The computational algorithm for solving for the steady-state follows the steps b
          \overline{TR}^{i'} = \alpha_{tr}\:\bar{Y}_b
        ```
 
-    4. Use updated $\bar{r}^{i'}$, the new $\bar{r}_{hh,b}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
+    4. Use updated $\bar{r}^{i'}$, the new $\bar{r}_{p,b}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
 
         1. Use updated $\bar{r}^{i'}$ to get a new value for $\bar{w}_b$ using {eq}`EqStnrz_w_of_r` to get an update value of the steady-state wage $\bar{w}_b$.
 
@@ -171,11 +162,11 @@ The computational algorithm for solving for the steady-state follows the steps b
              \bar{w}_b = (1 - \gamma)^\frac{1}{\varepsilon}Z\left[\gamma^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{\bar{r}^{i'} + \delta - \tau^{corp}\delta^\tau}{(1-\tau^{corp})Z\gamma^\frac{1}{\varepsilon}}\right]^{\varepsilon - 1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon - 1}
            ```
 
-        2. Use new $\bar{r}_{hh,b}$, $\bar{w}_b$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
+        2. Use new $\bar{r}_{p,b}$, $\bar{w}_b$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
 
            ```{math}
            :label: EqSS_factor
-             factor^{i'} = \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{hh,b}\bar{b}_{j,s} + \bar{w}_b e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
+             factor^{i'} = \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p,b}\bar{b}_{j,s} + \bar{w}_b e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
            ```
 
 4. If the updated values of the outer-loop variables $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ are close enough to the initial guess for the outer-loop variables $\{\bar{r}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\{\bar{r}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ as a convex combination of the first initial guess $\{\bar{r}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeat steps (2) through (4).
@@ -188,9 +179,9 @@ The computational algorithm for solving for the steady-state follows the steps b
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
-	      2. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
-	      3. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
-	      4. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
+	      1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
+	      2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
+	      3. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
     2. If the distance metric of the original value of the outer-loop variables and the updated values is greater than the tolerance $toler_{ss,out}$, then an updated initial guess for the outer-loop variables is made as a convex combination of the first guess and the updated guess and steps (2) through (4) are repeated.
 
