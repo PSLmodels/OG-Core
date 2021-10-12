@@ -2,8 +2,36 @@
 (Chap_UnbalGBC)=
 # Government
 
-In `OG-Core`, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.
+In `OG-Core`, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods and infrastructure, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.
 
+
+(SecUnbalGBC_policy)=
+## Government Tax and Transfer Policy
+
+Government levies taxes on households and firms, funds public pensions, and makes other transfers to households.
+
+### Taxes
+
+Individual income taxes, consumption taxes, corporate income taxes.
+
+### Spending
+
+#### Pensions
+
+#### Lump sum transfers:
+
+
+   ```{math}
+  :label: Eq_tr
+    tr_{j,s,t} = \boldmath{\eta}_{t} TR_{t}
+  ```
+
+#### Universal basic income
+
+```{math}
+  :label: Eq_ubi
+    ubi_{j,s,t} =
+  ```
 
 (SecUnbalGBCrev)=
 ## Government Tax Revenue
@@ -35,19 +63,14 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest of the debt, government spending on public goods $G_t$, and total transfer payments to households $TR_t$ every period $t$,
+  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest of the debt, government spending on public goods $G_t$, infrastructure investments $I_{gov,t}$, and total transfer payments to households $TR_t$ every period $t$,
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
-    D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + TR_t + UBI_t  \quad\forall t
+    D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + TR_t + UBI_t  \quad\forall t
   ```
 
-  where $r_{gov,t}$ is the interest rate paid by the government and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
-
-  ```{math}
-  :label: EqUnbalGBC_UBI
-    UBI_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\omega_{s,t} ubi_{j,s,t} \quad\forall t
-  ```
+  where $r_{gov,t}$ is the interest rate paid by the government, $G_{t}$ is government spending on public goods, $I_{gov,t}$ is government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
 
   And we assume that total government transfers to households are a fixed fraction $\alpha_{tr}$ of GDP each period.
 
@@ -55,7 +78,6 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
   :label: EqUnbalGBCtfer
     TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \quad\forall t
   ```
-
   The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.
 
   We also assume that government spending on public goods is a fixed fraction of GDP each period in the initial periods.
@@ -67,7 +89,28 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
 
   Similar to transfers $TR_t$, the time dependent multiplier $g_{g,t}$ in front of the right-hand-side of {eq}`EqUnbalGBC_Gt` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We make this more specific in the next section.
 
-  Government spending on goods and services is comprised on spending on public infrastructure, $I_{g,t}$ and non-capital expenditures, $G_{g,t}$ such that $G_{t} = I_{g,t} + G_{g,t}$.  We assume that infrastructure spending is a fraction fo total government spending, $I_{g,t} = \alpha_{i,t} * G_{g,t}$.  The stock of public capital (i.e., infrastructure) evolves according to the law of motion, $K_{g,t+1} = (1 - \delta^{g}) K_{g,t} + I_{g,t}$.  The stock of public capital complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
+  Government infrastructure investment spending, $I_{g,t}$ is assumed to be a fraction of GDP:
+
+  ```{math}
+  :label: EqUnbalGBC_Igt
+    I_{g,t} = \alpha_{I,t}\: Y_t \quad\forall t
+  ```
+  The stock of public capital (i.e., infrastructure) evolves according to the law of motion,
+
+  ```{math}
+  :label: EqUnbalGBC_Kgt
+    K_{g,t+1} = (1 - \delta^{g}) K_{g,t} + I_{g,t} \quad\forall t,
+  ```
+
+  where $\delta^g$ is the depreciation rate on infrastructure.  The stock of public capital complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
+
+  Aggregate spending on UBI at time $t$ is the sum of UBI payments across all households at time $t$:
+
+  ```{math}
+  :label: EqUnbalGBC_UBI
+    UBI_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\omega_{s,t} ubi_{j,s,t} \quad\forall t
+  ```
+
 
 (SecRateWedge)=
 ## Interest Rate on Government Debt and Household Savings
@@ -118,8 +161,8 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     &\text{where}\quad g_{g,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -139,8 +182,8 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     &\text{where}\quad g_{tr,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -170,8 +213,8 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t < T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```

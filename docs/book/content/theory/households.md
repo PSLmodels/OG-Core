@@ -165,6 +165,16 @@ In this section, we describe what is arguably the most important economic agent 
     \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t} b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t} b_{j,s,t}}r_{p,t} = \tau^{mtry}_{s,t}r_{p,t}
   ```
 
+(SecHHbequests)=
+## The Distribution of Bequests
+
+The distribution of bequests across age and lifetime ability is given by:
+
+   ```{math}
+  :label: Eq_bq
+    bq_{j,s,t} = \boldmath{\zeta}_{t} BQ_{t}
+  ```
+
 (SecHHexp)=
 ## Expectations
 
