@@ -43,12 +43,15 @@ def main():
     START_YEAR = 2021
     # Also adjust the Frisch elasticity, the start year, the
     # effective corporate income tax rate, and the SS debt-to-GDP ratio
-    og_spec = {
-        'frisch': 0.41, 'start_year': START_YEAR, 'cit_rate': [0.21],
-        'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
-        'alpha_G': alpha_G.tolist(), 'zeta_D': [0.4], 'zeta_K': [0.1],
-        'delta_g_annual': 0.02, 'r_gov_shift': 0.02, 'alpha_I': [0.01],
-        'gamma_g': 0.1}
+    # og_spec = {
+    #     'frisch': 0.41, 'start_year': START_YEAR, 'cit_rate': [0.21],
+    #     'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
+    #     'alpha_G': alpha_G.tolist(), 'zeta_D': [0.4], 'zeta_K': [0.1],
+    #     'delta_g_annual': 0.02, 'r_gov_shift': 0.02, 'alpha_I': [0.01],
+    #     'gamma_g': 0.1, 'initial_Kg_ratio': 0.05, 'budget_balance': False}
+    #     # 'delta_g_annual': 0.02, 'r_gov_shift': 0.02, 'alpha_I': [0.00],
+    #     # 'gamma_g': 0.0}
+    og_spec = {}
 
     '''
     ------------------------------------------------------------------------
@@ -74,7 +77,7 @@ def main():
     ------------------------------------------------------------------------
     '''
     # update the effective corporate income tax rate
-    og_spec.update({'cit_rate': [0.35]})
+    og_spec.update({'cit_rate': [0.35], 'baseline_spending': True})
     p2 = Specifications(
         baseline=False,
         num_workers=num_workers,
