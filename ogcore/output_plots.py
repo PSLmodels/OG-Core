@@ -7,10 +7,6 @@ from ogcore.constants import (GROUP_LABELS, VAR_LABELS, ToGDP_LABELS,
                               CBO_UNITS, DEFAULT_START_YEAR)
 import ogcore.utils as utils
 from ogcore.utils import Inequality
-style_file = os.path.join(
-    'https://github.com/PSLmodels/OG-Core/blob/master/ogcore/' +
-    'OGcorePlots.mplstyle')
-plt.style.use(style_file)
 
 
 def plot_aggregates(base_tpi, base_params, reform_tpi=None,
