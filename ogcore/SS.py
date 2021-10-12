@@ -146,6 +146,8 @@ def inner_loop(outer_loop_vars, p, client):
     # unpack variables to pass to function
     bssmat, nssmat, r, w, Y, BQ, TR, factor = outer_loop_vars
 
+    print('IN inner looPPP -- r, w, Y = ', r, w, Y)
+
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
@@ -193,13 +195,16 @@ def inner_loop(outer_loop_vars, p, client):
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
 
     Y = firm.get_Y(K, K_g, L, p, 'SS')
+    print('Inner loop get Y 1 = ', Y)
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
+    Y = firm.get_Y(K, K_g, L, p, 'SS')
+    print('Inner loop get Y 2 = ', Y)
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
         new_r = firm.get_r(Y, K, p, 'SS')
-    new_w = firm.get_w(Y, L, p, 'SS')
+    new_w = firm.get_w(Y, L, p, 'SS')  # does this work for the open econ case?
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
@@ -268,60 +273,85 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
     if fsolve_flag:  # case where already solved via SS_fsolve
         maxiter_ss = 1
     if p.baseline_spending:
-            TR_ss = TR
+        TR_ss = TR
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
         # Solve for the steady state levels of b and n, given w, r,
         # Y, BQ, TR, and factor
-        if p.baseline_spending:
-            TR = TR_ss
-        if not p.budget_balance:
-            Y = TR / p.alpha_T[-1]
+        # if p.baseline_spending:
+        #     TR = TR_ss
+        # if not p.budget_balance and not p.baseline_spending:
+        #     Y = TR / p.alpha_T[-1]
+
         outer_loop_vars = (bmat, nmat, r, w, Y, BQ, TR, factor)
+
+        print('IN SS SOLVE outer loop -- r, w, Y = ', r, w, Y)
 
         (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_p,
          new_w, new_TR, new_Y, new_factor, new_BQ,
          average_income_model) =\
             inner_loop(outer_loop_vars, p, client)
 
-        r = utils.convex_combo(new_r, r, nu_ss)
-        w = utils.convex_combo(new_w, w, nu_ss)
-        Y = utils.convex_combo(new_Y, Y, nu_ss)
-        BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
-        TR = utils.convex_combo(new_TR, TR, nu_ss)
-        factor = utils.convex_combo(new_factor, factor, nu_ss)
-        dist = np.array(
-            [utils.pct_diff_func(new_r, r)] +
-            [utils.pct_diff_func(new_w, w)] +
-            [utils.pct_diff_func(new_Y, Y)] +
-            list(utils.pct_diff_func(new_BQ, BQ)) +
-            [utils.pct_diff_func(new_TR, TR)] +
-            [utils.pct_diff_func(new_factor, factor)]).max()
+        print('IN SS SOLVE -- r, w, Y = ', new_r, new_w, new_Y)
+        # print('from inner loop: r, w,TR, Y, BQ = ', new_r,
+        #  new_w, new_TR, new_Y, new_BQ)
 
-        # if p.baseline_spending:
-        #     Y = utils.convex_combo(new_Y, Y, nu_ss)
-        #     if Y != 0:
-        #         dist = np.array([utils.pct_diff_func(new_r, r)] +
-        #                         [utils.pct_diff_func(new_w, w)] +
-        #                         list(utils.pct_diff_func(new_BQ, BQ)) +
-        #                         [utils.pct_diff_func(new_Y, Y)] +
-        #                         [utils.pct_diff_func(new_factor,
-        #                                              factor)]).max()
-        #     else:
-        #         # If Y is zero (if there is no output), a percent difference
-        #         # will throw NaN's, so we use an absolute difference
-        #         dist = np.array([utils.pct_diff_func(new_r, r)] +
-        #                         [utils.pct_diff_func(new_w, w)] +
-        #                         list(utils.pct_diff_func(new_BQ, BQ)) +
-        #                         [abs(new_Y - Y)] +
-        #                         [utils.pct_diff_func(new_factor,
-        #                                              factor)]).max()
+        #### OPTION 1: #####
+        # update guesses for next iteration
+        bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
+        nmat = utils.convex_combo(new_nmat, nmat, nu_ss)
+        w = utils.convex_combo(new_w, w, nu_ss)
+        r = utils.convex_combo(new_r, r, nu_ss)
+        factor = utils.convex_combo(new_factor, factor, nu_ss)
+        BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
+        if p.baseline_spending:
+            Y = utils.convex_combo(new_Y, Y, nu_ss)
+            if Y != 0:
+                dist = np.array([utils.pct_diff_func(new_r, r)] +
+                                [utils.pct_diff_func(new_w, w)] +
+                                list(utils.pct_diff_func(new_BQ, BQ)) +
+                                [utils.pct_diff_func(new_Y, Y)] +
+                                [utils.pct_diff_func(new_factor,
+                                                     factor)]).max()
+            else:
+                # If Y is zero (if there is no output), a percent difference
+                # will throw NaN's, so we use an absolute difference
+                dist = np.array([utils.pct_diff_func(new_r, r)] +
+                                [utils.pct_diff_func(new_w, w)] +
+                                list(utils.pct_diff_func(new_BQ, BQ)) +
+                                [abs(new_Y - Y)] +
+                                [utils.pct_diff_func(new_factor,
+                                                     factor)]).max()
+        else:
+            TR = utils.convex_combo(new_TR, TR, nu_ss)
+            dist = np.array([utils.pct_diff_func(new_r, r)] +
+                            [utils.pct_diff_func(new_w, w)] +
+                            list(utils.pct_diff_func(new_BQ, BQ)) +
+                            [utils.pct_diff_func(new_TR, TR)] +
+                            [utils.pct_diff_func(new_factor, factor)]).max()
+
+
+
+        # # if not p.budget_balance and not p.baseline_spending:
+        #     pass
         # else:
-        #     TR = utils.convex_combo(new_TR, TR, nu_ss)
-        #     dist = np.array([utils.pct_diff_func(new_r, r)] +
-        #                     [utils.pct_diff_func(new_w, w)] +
-        #                     list(utils.pct_diff_func(new_BQ, BQ)) +
-        #                     [utils.pct_diff_func(new_TR, TR)] +
-        #                     [utils.pct_diff_func(new_factor, factor)]).max()
+        ###### OPTION 2 ######
+        # bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
+        # nmat = utils.convex_combo(new_nmat, nmat, nu_ss)
+        # r = utils.convex_combo(new_r, r, nu_ss)
+        # w = utils.convex_combo(new_w, w, nu_ss)
+        # Y = utils.convex_combo(new_Y, Y, nu_ss)
+        # BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
+        # TR = utils.convex_combo(new_TR, TR, nu_ss)
+        # factor = utils.convex_combo(new_factor, factor, nu_ss)
+
+        # dist = np.array(
+        #     [utils.pct_diff_func(new_r, r)] +
+        #     [utils.pct_diff_func(new_w, w)] +
+        #     [utils.pct_diff_func(new_Y, Y)] +
+        #     list(utils.pct_diff_func(new_BQ, BQ)) +
+        #     [utils.pct_diff_func(new_TR, TR)] +
+        #     [utils.pct_diff_func(new_factor, factor)]).max()
+
         dist_vec[iteration] = dist
         # Similar to TPI: if the distance between iterations increases, then
         # decrease the value of nu to prevent cycling
@@ -333,6 +363,9 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
         if VERBOSE:
             print('Iteration: %02d' % iteration, ' Distance: ', dist)
 
+
+    print('IN SS SOLVE after convex combo -- r, w, Y = ', r, w, Y)
+
     # Generate the SS values of variables, including euler errors
     bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
     bssmat_splus1 = bmat
@@ -342,25 +375,29 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
     wss = w
     r_gov_ss = fiscal.get_r_gov(rss, p)
     TR_ss = TR
-    if p.baseline_spending:
-        Yss = Y
-    else:
-        Yss = TR / p.alpha_T[-1]
-    # Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
+    # if p.baseline_spending:
+    #     Yss = Y
+    # else:
+    #     Yss = TR / p.alpha_T[-1]
+    Yss = Y
     I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, 'SS')
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
     (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
-     new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
+     new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Yss, p)
     # K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
     w_open = firm.get_w_from_r(p.world_int_rate[-1], p, 'SS')
     K_demand_open_ss = firm.get_K_new(p.world_int_rate[-1], w_open, Lss, p, 'SS')
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
         Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
+    Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
+    I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
+    K_g_ss = fiscal.get_K_g(0, I_g_ss, p, 'SS')
     MPKg = firm.get_MPx(Yss, K_g_ss, p.gamma_g, p, 'SS')
     print('MPKg = ', MPKg)
     r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, Dss, MPKg, p, 'SS')
+    print('R and Rp = ', rss, r_p_ss)
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
@@ -444,6 +481,9 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
         print('Maximum error in savings FOC = ',
               np.absolute(euler_savings).max())
 
+    # print('from FINAL: r, w,TR, Y, BQ = ', rss,
+    #        wss, TR_ss, Yss, BQss)
+
     # Return dictionary of SS results
     output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
               'K_g_ss': K_g_ss, 'I_g_ss': I_g_ss,
@@ -517,8 +557,10 @@ def SS_fsolve(guesses, *args):
         factor = factor_ss
     if p.baseline_spending:
         TR = TR_ss
-    if not p.budget_balance:
+    if not p.budget_balance and not p.baseline_spending:
         Y = TR / p.alpha_T[-1]
+
+    print('guess in = ', guesses)
     # if p.baseline:
     #     if p.budget_balance:
     #         Y = guesses[2]
@@ -560,6 +602,9 @@ def SS_fsolve(guesses, *args):
      new_TR, new_Y, new_factor, new_BQ, average_income_model) =\
         inner_loop(outer_loop_vars, p, client)
 
+    print('r, w, Y = ', new_r, new_w, new_Y)
+    print('BQ, TR, factor = ', BQ, TR, factor)
+
     # Create list of errors in general equilibrium variables
     error_r = new_r - r
     # Check and punish violations of the bounds on the interest rate
@@ -568,8 +613,8 @@ def SS_fsolve(guesses, *args):
     error_w = new_w - w
     error_Y = new_Y - Y
     error_BQ = new_BQ - BQ
+    error_BQ[BQ < 0] = 1e9
     error_TR = new_TR - TR
-
     # divide factor by 1000000 to put on similar scale
     error_factor = new_factor / 1000000 - factor / 1000000
     # Check and punish violations of the factor
@@ -612,6 +657,7 @@ def run_SS(p, client=None):
     if p.baseline:
         if p.zeta_K[-1] == 1.0:
             rguess = p.world_int_rate[-1]
+            # wguess = 1.3320748594894016  # this works perfetly for the default world int rate
         else:
             rguess = p.initial_guess_r_SS
         if p.use_zeta:
@@ -621,14 +667,16 @@ def run_SS(p, client=None):
             b_guess = np.ones((p.S, p.J)) * 0.07
             n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
         wguess = p.initial_guess_w_SS
+        print('wguess = ', wguess)
+        print('rguess = ', rguess)
         TRguess = p.initial_guess_TR_SS
-        Yguess = TRguess/p.alpha_T[-1]
+        Yguess = TRguess / p.alpha_T[-1]
         factorguess = p.initial_guess_factor_SS
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         ss_params_baseline = (b_guess, n_guess, None, None, p, client)
         if p.use_zeta:
             BQguess = 0.12231465279007188
-            guesses = [rguess, wguess, Yguess] + list([BQguess]) + [TRguess, factorguess]
+            guesses = [rguess, wguess, Yguess, BQguess, TRguess, factorguess]
         else:
             guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess, factorguess]
         [solutions_fsolve, infodict, ier, message] =\
@@ -642,10 +690,12 @@ def run_SS(p, client=None):
         BQss = solutions_fsolve[3:-2]
         TR_ss = solutions_fsolve[-2]
         factor_ss = solutions_fsolve[-1]
-        # Yss = TR_ss/p.alpha_T[-1]  # may not be right - if budget_balance
+        Yss = TR_ss/p.alpha_T[-1]  # may not be right - if budget_balance
         # # = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
         # Return SS values of variables
+        print('YSS = ', Yss)
+        print('F solve solutions: ', solutions_fsolve)
         output = SS_solver(b_guess, n_guess, rss, wss, Yss, BQss, TR_ss,
                            factor_ss, p, client, fsolve_flag)
     else:
@@ -670,31 +720,33 @@ def run_SS(p, client=None):
                 n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
             if p.zeta_D[-1] == 1.0:
                 rguess = p.world_int_rate[-1]
+                # wguess = 1.3320748594894016  # this works perfectly for the default world int rate
             else:
                 rguess = p.initial_guess_r_SS
             wguess = p.initial_guess_w_SS
+            print('wguess = ', wguess)
+            print('rguess = ', rguess)
             TRguess = p.initial_guess_TR_SS
-            Yguess = TRguess/p.alpha_T[-1]
+            Yguess = TRguess / p.alpha_T[-1]
             factor = p.initial_guess_factor_SS
             BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
-        if p.baseline_spending:
-            ss_params_reform = (b_guess, n_guess, TRguess, factor, p, client)
-            if p.use_zeta:
-                guesses = [rguess, wguess, Yguess] + list([BQguess]) + [TRguess]
-            else:
-                guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess]
-            [solutions_fsolve, infodict, ier, message] =\
-                opt.fsolve(SS_fsolve, guesses,
-                           args=ss_params_reform, xtol=p.mindist_SS,
-                           full_output=True)
-            rss = solutions_fsolve[0]
-            wss = solutions_fsolve[1]
-            Yss = solutions_fsolve[2]
-            BQss = solutions_fsolve[3:-1]
-            TR_ss = solutions_fsolve[-1]
-            # Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
-            # budget_balance = True, but that's ok - will be fixed in
-            # SS_solver
+        ss_params_reform = (b_guess, n_guess, TRguess, factor, p, client)
+        if p.use_zeta:
+            guesses = [rguess, wguess, Yguess, BQguess, TRguess]
+        else:
+            guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess]
+        [solutions_fsolve, infodict, ier, message] =\
+            opt.fsolve(SS_fsolve, guesses,
+                       args=ss_params_reform, xtol=p.mindist_SS,
+                       full_output=True)
+        rss = solutions_fsolve[0]
+        wss = solutions_fsolve[1]
+        Yss = solutions_fsolve[2]
+        BQss = solutions_fsolve[3:-1]
+        TR_ss = solutions_fsolve[-1]
+        Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
+        # budget_balance = True, but that's ok - will be fixed in
+        # SS_solver
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError('Steady state equilibrium not found')
         # Return SS values of variables

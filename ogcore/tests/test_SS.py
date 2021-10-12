@@ -196,17 +196,17 @@ filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates1, filename1),
-#                           (True, param_updates2, filename2),
-#                           (False, param_updates3, filename3),
-#                           (True, param_updates4, filename4)],
-#                          ids=['Baseline', 'Baseline, budget balance',
-#                               'Reform, baseline spending=True',
-#                               'Baseline, small open'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates1, filename1)],
-                         ids=['Baseline'])
+                         [(True, param_updates1, filename1),
+                          (True, param_updates2, filename2),
+                          (False, param_updates3, filename3),
+                          (True, param_updates4, filename4)],
+                         ids=['Baseline', 'Baseline, budget balance',
+                              'Reform, baseline spending=True',
+                              'Baseline, small open'])
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates1, filename1)],
+#                          ids=['Baseline'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -514,31 +514,42 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [
+#                           (True, param_updates1, filename1),
+#                           (False, param_updates9, filename9),
+#                           (True, param_updates2, filename2),
+#                           (False, param_updates10, filename10),
+#                           (True, param_updates3, filename3),
+#                           (True, param_updates4, filename4),
+#                           (False, param_updates5, filename5),
+#                           (False, param_updates6, filename6),
+#                           (False, param_updates7, filename7),
+#                           (False, param_updates8, filename8),
+#                           (False, param_updates11, filename11)
+#                           ],
+#                          ids=[
+#                               'Baseline', 'Reform, baseline spending',
+#                               'Baseline, use zeta',
+#                               'Reform, baseline spending, use zeta',
+#                               'Baseline, small open',
+#                               'Baseline, small open use zeta',
+#                               'Reform', 'Reform, use zeta',
+#                               'Reform, small open',
+#                               'Reform, small open use zeta',
+#                               'Baseline, delta_tau=0'
+#                               ])
+
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-                          (True, param_updates1, filename1),
-                          (False, param_updates9, filename9),
-                          (True, param_updates2, filename2),
-                          (False, param_updates10, filename10),
-                          (True, param_updates3, filename3),
-                          (True, param_updates4, filename4),
-                          (False, param_updates5, filename5),
-                          (False, param_updates6, filename6),
-                          (False, param_updates7, filename7),
-                          (False, param_updates8, filename8),
-                          (False, param_updates11, filename11)
+
+                          (True, param_updates2, filename2)
                           ],
                          ids=[
-                              'Baseline', 'Reform, baseline spending',
-                              'Baseline, use zeta',
-                              'Reform, baseline spending, use zeta',
-                              'Baseline, small open',
-                              'Baseline, small open use zeta',
-                              'Reform', 'Reform, use zeta',
-                              'Reform, small open',
-                              'Reform, small open use zeta',
-                              'Baseline, delta_tau=0'
+
+                              'Baseline, use zeta'
                               ])
+
 
 
 @pytest.mark.local
@@ -556,7 +567,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
         p_base.update_specifications(param_updates)
         if p_base.use_zeta:
             p_base.update_specifications({
-                'initial_guess_r_SS': 0.10, 'initial_guess_TR_SS': 0.02})
+                'initial_guess_r_SS': 0.05, 'initial_guess_TR_SS': 0.02})
         p_base.baseline_spending = False
         base_ss_outputs = SS.run_SS(p_base, client=dask_client)
         utils.mkdirs(os.path.join(
@@ -572,6 +583,8 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
+
+    print('Expected TR = ', expected_dict['TR_ss'])
 
     for k, v in expected_dict.items():
         print('Checking item = ', k)
