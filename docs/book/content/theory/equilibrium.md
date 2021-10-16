@@ -108,7 +108,7 @@ The computational algorithm for solving for the steady-state follows the steps b
            :label: EqSS_MarkClrLab
              \bar{L} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \bar{\omega}_{s}\lambda_j e_{j,s}\bar{n}_{j,s}
            ```
-        2. Use $\bar{b}_{j,s+1}$ and the steady-state version of the stationarized expresssion for total savings by domestic households {eq}`EqStnrz_Bt`to solve for $\bar{B}$.
+        2. Use $\bar{b}_{j,s+1}$ and the steady-state version of the stationarized expression for total savings by domestic households {eq}`EqStnrz_Bt`to solve for $\bar{B}$.
 
            ```{math}
            :label: EqSS_Bt
@@ -119,12 +119,15 @@ The computational algorithm for solving for the steady-state follows the steps b
 
            ```{math}
            :label: EqSS_FOC_K2
-             \bar{K}^{r^*} = \bar{L}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{\bar{r}^* + \delta - \tau^{corp}\delta^\tau}{(1-\tau^{corp})(Z)\gamma^\frac{1}{\varepsilon}}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}
+             \bar{ED}^{K,r^*}_t = \bar{L}\left(\frac{\bar{w}}{\frac{\bar{r} + \delta - \bar{\tau}^b\bar{\delta}^{\tau}}{1 - \bar{\tau}^b}}\right)^{\varepsilon} \frac{\gamma / (1 - \gamma - \gamma_g)}
            ```
 
-        4. Given $\bar{B}$ and $\bar{D}^d$, use {eq}`EqStnrz_DomCapCnstr` to solve for $\bar{K}^d$. Given $\bar{K}^{r*}$ and $\bar{K}^d$, use {eq}`EqStnrz_ExDemK` to solve for $\overline{ED}^{K,r^*}$. Use $\overline{ED}^{K,r^*}$ in {eq}`EqStnrz_zetaK` to get $\bar{K}^f$. And use $\bar{K}^d$ and $\bar{K}^f$ in {eq}`EqStnrz_KtKdKf` to solve for $\bar{K}_b$.
+          We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: \bar{K}^{f} = \bar{\zeta}_{K}ED^{K,r^*}_t$
+        4. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
+        5. We can then find domestic investors' holdings of private capital as the residual in their asset holdings: , $\bar{K}^{d,i} = $\bar{B}^i - \bar{D}^{d,i}$
+        6. Aggregate capital supply is then determined as $\bar{K}^i = \bar{K}^{d,i} + \bar{K}^{f,i}$.
 
-        5. Use $\bar{K}_b$ and $\bar{L}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}_b$.
+        7. Use $\bar{K}_{i}$ and $\bar{L}^{i}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}_b$.
 
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using remaining equations.
 
