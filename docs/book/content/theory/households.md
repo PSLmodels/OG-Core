@@ -168,10 +168,19 @@ In this section, we describe what is arguably the most important economic agent 
 (SecHHbequests)=
 ## The Distribution of Bequests
 
-The distribution of bequests across age and lifetime ability is given by:
+`OG-Core` allows for two parameterization of the distribution of bequests.  Users can choose the bequest transmission process through two parameters: `use_zeta` and `zeta`.
+
+If `use_zeta=False`, then bequests from households of lifetime earnings type `j` are distributed equality across households of type `j`.  That is:
 
    ```{math}
   :label: Eq_bq
+    bq_{j,s,t} = \frac{BQ_{j,t}}{\lambda_j \omega_{s,t}}
+  ```
+
+   If `use_zeta=True`, then in the distribution of bequests across age and lifetime ability is determined by $\boldmath{\zeta}_{t}$, which allocated aggregate bequests across households by age and lifetime income group:
+
+   ```{math}
+  :label: Eq_bq_use_zeta
     bq_{j,s,t} = \boldmath{\zeta}_{t} BQ_{t}
   ```
 
