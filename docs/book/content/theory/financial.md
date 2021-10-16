@@ -9,7 +9,7 @@ Foreign demand for government bonds is specified in section {ref}`SecMarkClrMktC
 
   ```{math}
   :label: EqMarkClr_zetaD2
-    D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t}) \quad\forall t
+    D^{f}_{t+1} = D^{f}_{t} + \zeta_{D, t}(D_{t+1} - D_{t}) \quad\forall t
   ```
 
 This leaves domestic investors to buy up the residual amount of government debt:
@@ -30,7 +30,7 @@ Foreign demand for capital is given in {ref}`SecMarkClrMktClr_K`, where $K^{f}_{
 
   ```{math}
   :label: eq_foreign_cap_demand
-    K^{f}_t = \zeta_{K}ED^{K,r^*}_t \quad\forall t
+    K^{f}_t = \zeta_{K, t}ED^{K,r^*}_t \quad\forall t
   ```
 
 The total amount invested in the financial intermediary is thus:
