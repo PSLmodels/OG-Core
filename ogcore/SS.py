@@ -239,6 +239,7 @@ def inner_loop(outer_loop_vars, p, client):
     new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays,
                            UBI_outlays, I_g, p, 'SS')
 
+    print('BQ at the end of inner loop: ', new_BQ)
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
         new_w, new_TR, Y, new_factor, new_BQ, average_income_model
 
@@ -549,6 +550,8 @@ def SS_fsolve(guesses, *args):
     Y = guesses[2]
     if p.baseline:
         BQ = guesses[3:-2]
+        print('Initial BQ = ', BQ, Y)
+
         TR = guesses[-2]
         factor = guesses[-1]
     else:
@@ -603,7 +606,7 @@ def SS_fsolve(guesses, *args):
         inner_loop(outer_loop_vars, p, client)
 
     print('r, w, Y = ', new_r, new_w, new_Y)
-    print('BQ, TR, factor = ', BQ, TR, factor)
+    print('NEW BQ, TR, factor, Y = ', new_BQ,  new_TR, new_factor, new_Y)
 
     # Create list of errors in general equilibrium variables
     error_r = new_r - r
@@ -666,7 +669,8 @@ def run_SS(p, client=None):
         else:
             b_guess = np.ones((p.S, p.J)) * 0.07
             n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
-        wguess = p.initial_guess_w_SS
+        # wguess = p.initial_guess_w_SS
+        wguess = firm.get_w_from_r(rguess, p, 'SS')
         print('wguess = ', wguess)
         print('rguess = ', rguess)
         TRguess = p.initial_guess_TR_SS
@@ -723,7 +727,8 @@ def run_SS(p, client=None):
                 # wguess = 1.3320748594894016  # this works perfectly for the default world int rate
             else:
                 rguess = p.initial_guess_r_SS
-            wguess = p.initial_guess_w_SS
+            # wguess = p.initial_guess_w_SS
+            wguess = firm.get_w_from_r(rguess, p, 'SS')
             print('wguess = ', wguess)
             print('rguess = ', rguess)
             TRguess = p.initial_guess_TR_SS

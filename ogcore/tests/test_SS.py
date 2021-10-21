@@ -486,7 +486,7 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
 
 param_updates1 = {}
 filename1 = 'run_SS_baseline_outputs.pkl'
-param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.10,
+param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.08,
                   'initial_guess_TR_SS': 0.02}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
 param_updates3 = {'zeta_K': [1.0]}
@@ -514,41 +514,41 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [
-#                           (True, param_updates1, filename1),
-#                           (False, param_updates9, filename9),
-#                           (True, param_updates2, filename2),
-#                           (False, param_updates10, filename10),
-#                           (True, param_updates3, filename3),
-#                           (True, param_updates4, filename4),
-#                           (False, param_updates5, filename5),
-#                           (False, param_updates6, filename6),
-#                           (False, param_updates7, filename7),
-#                           (False, param_updates8, filename8),
-#                           (False, param_updates11, filename11)
-#                           ],
-#                          ids=[
-#                               'Baseline', 'Reform, baseline spending',
-#                               'Baseline, use zeta',
-#                               'Reform, baseline spending, use zeta',
-#                               'Baseline, small open',
-#                               'Baseline, small open use zeta',
-#                               'Reform', 'Reform, use zeta',
-#                               'Reform, small open',
-#                               'Reform, small open use zeta',
-#                               'Baseline, delta_tau=0'
-#                               ])
-
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-
-                          (True, param_updates2, filename2)
+                          (True, param_updates1, filename1),
+                          (False, param_updates9, filename9),
+                          (True, param_updates2, filename2),
+                          (False, param_updates10, filename10),
+                          (True, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6),
+                          (False, param_updates7, filename7),
+                          (False, param_updates8, filename8),
+                          (False, param_updates11, filename11)
                           ],
                          ids=[
-
-                              'Baseline, use zeta'
+                              'Baseline', 'Reform, baseline spending',
+                              'Baseline, use zeta',
+                              'Reform, baseline spending, use zeta',
+                              'Baseline, small open',
+                              'Baseline, small open use zeta',
+                              'Reform', 'Reform, use zeta',
+                              'Reform, small open',
+                              'Reform, small open use zeta',
+                              'Baseline, delta_tau=0'
                               ])
+
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [
+
+#                           (True, param_updates2, filename2)
+#                           ],
+#                          ids=[
+
+#                               'Baseline, use zeta'
+#                               ])
 
 
 
@@ -556,7 +556,7 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    SS.ENFORCE_SOLUTION_CHECKS = True#False
+    SS.ENFORCE_SOLUTION_CHECKS = True
     # if running reform, then need to solve baseline first to get values
     if baseline is False:
         p_base = Specifications(
@@ -567,7 +567,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
         p_base.update_specifications(param_updates)
         if p_base.use_zeta:
             p_base.update_specifications({
-                'initial_guess_r_SS': 0.05, 'initial_guess_TR_SS': 0.02})
+                'initial_guess_r_SS': 0.07, 'initial_guess_TR_SS': 0.02})
         p_base.baseline_spending = False
         base_ss_outputs = SS.run_SS(p_base, client=dask_client)
         utils.mkdirs(os.path.join(
