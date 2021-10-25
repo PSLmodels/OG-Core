@@ -22,8 +22,8 @@
       
 
     
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -33,19 +33,19 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script >
+    <script>
         const thebe_selector = ".thebe"
         const thebe_selector_input = "pre"
         const thebe_selector_output = ".output"
@@ -95,7 +95,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Contributing to OG-Core
  </span>
@@ -107,7 +107,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   OG-Core API
  </span>
@@ -201,7 +201,7 @@
   </ul>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   OG-Core Theory
  </span>
@@ -258,7 +258,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Appendix
  </span>
@@ -270,7 +270,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   References
  </span>
@@ -282,7 +282,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Citations of OG-Core
  </span>
@@ -406,8 +406,8 @@
 functions require time-path calculation.</p>
 <hr class="docutils" />
 <dl class="py function">
-<dt id="ogcore.fiscal.D_G_path">
-<code class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></code><code class="sig-name descname"><span class="pre">D_G_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dg_fixed_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#D_G_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.D_G_path" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.fiscal.D_G_path">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">D_G_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dg_fixed_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#D_G_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.D_G_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the time paths of debt and government spending</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
@@ -464,8 +464,8 @@ baseline_spending=True</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.fiscal.get_D_ss">
-<code class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></code><code class="sig-name descname"><span class="pre">get_D_ss</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_D_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_D_ss" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.fiscal.get_D_ss">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_D_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_D_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_D_ss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the steady-state values of government spending and debt</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
@@ -506,8 +506,8 @@ baseline_spending=True</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.fiscal.get_G_ss">
-<code class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></code><code class="sig-name descname"><span class="pre">get_G_ss</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_G_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.fiscal.get_G_ss">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_G_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_G_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the steady-state values of government spending.</p>
 <div class="math notranslate nohighlight">
 \[\bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr] -
@@ -535,8 +535,8 @@ baseline_spending=True</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.fiscal.get_TR">
-<code class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></code><code class="sig-name descname"><span class="pre">get_TR</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_TR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.fiscal.get_TR">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_TR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_TR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to compute aggregate transfers.  Note that this excludes
 transfer spending through the public pension system.</p>
 <div class="math notranslate nohighlight">
@@ -571,8 +571,8 @@ outlays</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.fiscal.get_debt_service_f">
-<code class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></code><code class="sig-name descname"><span class="pre">get_debt_service_f</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D_f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_debt_service_f"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_debt_service_f" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.fiscal.get_debt_service_f">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_debt_service_f</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D_f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_debt_service_f"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_debt_service_f" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to compute foreign debt service payments.</p>
 <div class="math notranslate nohighlight">
 \[\text{Foreign debt service}_{t} = r_{p,t} * D^{f}_{t}\]</div>
@@ -588,8 +588,8 @@ outlays</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.fiscal.get_r_gov">
-<code class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></code><code class="sig-name descname"><span class="pre">get_r_gov</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_r_gov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_r_gov" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.fiscal.get_r_gov">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_r_gov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_r_gov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_r_gov" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine the interest rate on government debt</p>
 <div class="math notranslate nohighlight">
 \[r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}\]</div>

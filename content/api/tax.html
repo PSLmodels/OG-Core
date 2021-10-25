@@ -22,8 +22,8 @@
       
 
     
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -33,19 +33,19 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script >
+    <script>
         const thebe_selector = ".thebe"
         const thebe_selector_input = "pre"
         const thebe_selector_output = ".output"
@@ -95,7 +95,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Contributing to OG-Core
  </span>
@@ -107,7 +107,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   OG-Core API
  </span>
@@ -201,7 +201,7 @@
   </ul>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   OG-Core Theory
  </span>
@@ -258,7 +258,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Appendix
  </span>
@@ -270,7 +270,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   References
  </span>
@@ -282,7 +282,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Citations of OG-Core
  </span>
@@ -411,8 +411,8 @@
 <div class="section" id="functions-for-taxes-in-the-steady-state-and-along-the-transition-path">
 <h3>Functions for taxes in the steady state and along the transition path.<a class="headerlink" href="#functions-for-taxes-in-the-steady-state-and-along-the-transition-path" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="ogcore.tax.ETR_income">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">ETR_income</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_income" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.ETR_income">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">ETR_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_income" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates effective personal income tax rate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -438,8 +438,8 @@ dollars</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.ETR_wealth">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">ETR_wealth</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_wealth" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.ETR_wealth">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">ETR_wealth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_wealth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the effective tax rate on wealth.</p>
 <div class="math notranslate nohighlight">
 \[T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\]</div>
@@ -462,8 +462,8 @@ dollars</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.MTR_income">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">MTR_income</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_capital</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_income" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.MTR_income">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">MTR_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_capital</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_income" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates the marginal tax rate on labor income for households.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -491,8 +491,8 @@ capital income or labor income</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.MTR_wealth">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">MTR_wealth</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_wealth" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.MTR_wealth">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">MTR_wealth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_wealth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the marginal tax rate on wealth from the wealth tax.</p>
 <div class="math notranslate nohighlight">
 \[\frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =
@@ -516,8 +516,8 @@ capital income or labor income</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.bequest_tax_liab">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">bequest_tax_liab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#bequest_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.bequest_tax_liab" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.bequest_tax_liab">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">bequest_tax_liab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#bequest_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.bequest_tax_liab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate liability due from taxes on bequests for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -542,8 +542,8 @@ capital income or labor income</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.get_biz_tax">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">get_biz_tax</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#get_biz_tax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.get_biz_tax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.get_biz_tax">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">get_biz_tax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#get_biz_tax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.get_biz_tax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds total business income tax revenue.</p>
 <div class="math notranslate nohighlight">
 \[R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) -
@@ -567,8 +567,8 @@ capital income or labor income</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.income_tax_liab">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">income_tax_liab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#income_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.income_tax_liab" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.income_tax_liab">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">income_tax_liab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#income_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.income_tax_liab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate income and payroll tax liability for each household</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -602,8 +602,8 @@ dollars</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.net_taxes">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">net_taxes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#net_taxes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.net_taxes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.net_taxes">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">net_taxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#net_taxes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.net_taxes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate net taxes paid for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -640,8 +640,8 @@ lifetime income group j</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.pension_amount">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">pension_amount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#pension_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.pension_amount" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.pension_amount">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">pension_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#pension_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.pension_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate public pension benefit amounts for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -670,8 +670,8 @@ lifetime income group j</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.replacement_rate_vals">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">replacement_rate_vals</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#replacement_rate_vals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.replacement_rate_vals" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.replacement_rate_vals">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">replacement_rate_vals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#replacement_rate_vals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.replacement_rate_vals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates replacement rate values for the social security system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -698,8 +698,8 @@ dollars</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="ogcore.tax.wealth_tax_liab">
-<code class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></code><code class="sig-name descname"><span class="pre">wealth_tax_liab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#wealth_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.wealth_tax_liab" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ogcore.tax.wealth_tax_liab">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">wealth_tax_liab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#wealth_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.wealth_tax_liab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate wealth tax liability for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

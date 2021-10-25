@@ -22,8 +22,8 @@
       
 
     
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -33,14 +33,14 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -84,7 +84,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Contributing to OG-Core
  </span>
@@ -96,7 +96,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   OG-Core API
  </span>
@@ -190,7 +190,7 @@
   </ul>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   OG-Core Theory
  </span>
@@ -247,7 +247,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Appendix
  </span>
@@ -259,7 +259,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   References
  </span>
@@ -271,7 +271,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Citations of OG-Core
  </span>
@@ -939,120 +939,6 @@
                         <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 
         <span class="k">return</span> <span class="n">pctile_share</span></div>
-
-
-<div class="viewcode-block" id="read_cbo_forecast"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.read_cbo_forecast">[docs]</a><span class="k">def</span> <span class="nf">read_cbo_forecast</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    This function reads the CBO Long-Term Budget Projections document</span>
-<span class="sd">    from https://www.cbo.gov/about/products/budget-economic-data#1</span>
-<span class="sd">    and then formats the relevant data for use with OG-Core</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">CBO_LT_URL</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;https://www.cbo.gov/system/files/2020-09/51119-2020-09-ltbo_0.xlsx&#39;</span>
-        <span class="p">)</span>
-    <span class="c1"># Read in data</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_LT_URL</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;3. Economic Vars&#39;</span><span class="p">,</span>
-                       <span class="n">skiprows</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 4&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">]))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">]))</span> <span class="o">&amp;</span>
-         <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">])))]</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;full_var_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">]</span> <span class="o">+</span>
-                           <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">])</span>
-    <span class="n">CBO_VAR_NAMES</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;Real GDP (Billions of 2019 dollars) &#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;On 10-year Treasury notes and the OASDI trust funds&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Growth of Real Earnings per Worker&#39;</span><span class="p">:</span> <span class="s1">&#39;w_growth&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Growth of Total Hours Worked&#39;</span><span class="p">:</span> <span class="s1">&#39;L_growth&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Hours of All Persons (Nonfarm Business Sector)&#39;</span><span class="p">:</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Personal Consumption Expenditures&#39;</span><span class="p">:</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Gross Private Domestic Investment&#39;</span><span class="p">:</span> <span class="s1">&#39;I_total&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Government Consumption Expenditures and Gross Investment&#39;</span><span class="p">:</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Old-Age and Survivors Insurance&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_pension_outlays&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Individual income taxes&#39;</span><span class="p">:</span> <span class="s1">&#39;iit_revenue&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Payroll taxes&#39;</span><span class="p">:</span> <span class="s1">&#39;payroll_tax_revenue&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Corporate income taxes&#39;</span><span class="p">:</span> <span class="s1">&#39;business_tax_revenue&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Wages and Salaries&#39;</span><span class="p">:</span> <span class="s1">&#39;wL&#39;</span><span class="p">}</span>
-    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;var_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;full_var_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">CBO_VAR_NAMES</span><span class="p">)</span>
-    <span class="c1"># keep just variables of interest</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span>
-        <span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;full_var_name&#39;</span><span class="p">],</span>
-            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;var_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">CBO_VAR_NAMES</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
-    <span class="c1"># Keep just real interest rate (not nominal)</span>
-    <span class="c1"># Note that real interest rate comes first in table</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="c1"># reshape so that variable names down column</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span>
-                 <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1990</span><span class="p">,</span> <span class="mi">2051</span><span class="p">)])</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="s1">&#39;year&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="c1"># add debt forcast</span>
-    <span class="n">df_fiscal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_LT_URL</span><span class="p">,</span>
-                              <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;1. Summary Extended Baseline&#39;</span><span class="p">,</span>
-                              <span class="n">skiprows</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
-    <span class="n">df_fiscal</span> <span class="o">=</span> <span class="n">df_fiscal</span><span class="p">[[</span><span class="s1">&#39;Fiscal Year&#39;</span><span class="p">,</span> <span class="s1">&#39;Revenues&#39;</span><span class="p">,</span>
-                           <span class="s1">&#39;Federal Debt Held by the Public&#39;</span><span class="p">]]</span>
-    <span class="n">df_lt</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_fiscal</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;Fiscal Year&#39;</span><span class="p">,</span>
-                     <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-    <span class="n">df_lt</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Federal Debt Held by the Public&#39;</span><span class="p">:</span> <span class="s1">&#39;D/Y&#39;</span><span class="p">},</span>
-                 <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df_lt</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_lt</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df_lt</span><span class="p">[</span><span class="s1">&#39;D/Y&#39;</span><span class="p">]</span>
-
-    <span class="n">CBO_10yr_budget_URL</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;https://www.cbo.gov/system/files/2021-02/51118-2021-02-11-&#39;</span> <span class="o">+</span>
-        <span class="s1">&#39;budgetprojections.xlsx&#39;</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_10yr_budget_URL</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;Table 1-1&#39;</span><span class="p">,</span>
-                       <span class="n">skiprows</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-        <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">:</span> <span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="s1">&#39;Actual, </span><span class="se">\n</span><span class="s1">2020&#39;</span><span class="p">:</span> <span class="mi">2020</span><span class="p">},</span>
-        <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Unnamed: 15&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 16&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;2026.1&#39;</span><span class="p">,</span> <span class="s1">&#39;2031.1&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span> <span class="o">==</span> <span class="s1">&#39;Other&#39;</span><span class="p">))]</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_10yr_budget_URL</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;Table 1-3&#39;</span><span class="p">,</span>
-                       <span class="n">skiprows</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">:</span> <span class="s1">&#39;variable&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2026.1&#39;</span><span class="p">,</span> <span class="s1">&#39;2031.1&#39;</span><span class="p">],</span>
-            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span><span class="p">)]</span>
-
-    <span class="n">CBO_10yr_macro_URL</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;https://www.cbo.gov/system/files/2021-02/51135-2021-02-&#39;</span> <span class="o">+</span>
-        <span class="s1">&#39;economicprojections.xlsx&#39;</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">CBO_10yr_macro_URL</span><span class="p">,</span>
-                       <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;2. Calendar Year&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-                       <span class="n">nrows</span><span class="o">=</span><span class="mi">131</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Unnamed: 1&#39;</span><span class="p">:</span> <span class="s1">&#39;variable&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span>
-        <span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Units&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 19&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Unnamed: 20&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 21&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 22&#39;</span><span class="p">,</span> <span class="s1">&#39;Unnamed: 23&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;Unnamed: 24&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="c1"># Note that real values come second (after nominal values)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df3</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">variable</span><span class="p">)]</span>
-    <span class="n">df_st</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df2</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-        <span class="n">df3</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df_st</span><span class="p">[</span><span class="s1">&#39;var_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_st</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">CBO_VAR_NAMES</span><span class="p">)</span>
-    <span class="n">df_st</span> <span class="o">=</span> <span class="n">df_st</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">df_st</span><span class="o">.</span><span class="n">var_name</span><span class="p">)]</span>
-    <span class="n">df_st</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="c1"># reshape so each row a year</span>
-    <span class="n">df_st</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df_st</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span>
-                    <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2017</span><span class="p">,</span> <span class="mi">2031</span><span class="p">)])</span>
-    <span class="n">df_st</span> <span class="o">=</span> <span class="n">df_st</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;var_name&#39;</span><span class="p">,</span>
-                        <span class="n">values</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-    <span class="n">df_st</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="s1">&#39;year&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="c1"># merge with long term data</span>
-    <span class="n">df_cbo</span> <span class="o">=</span> <span class="n">df_lt</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_st</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span>
-                         <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;_lt&#39;</span><span class="p">,</span> <span class="s1">&#39;_st&#39;</span><span class="p">))</span>
-    <span class="c1"># replace * with 0</span>
-    <span class="n">df_cbo</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">to_replace</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">df_cbo</span></div>
 
 
 <div class="viewcode-block" id="print_progress"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.print_progress">[docs]</a><span class="k">def</span> <span class="nf">print_progress</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;Progress:&#39;</span><span class="p">,</span>

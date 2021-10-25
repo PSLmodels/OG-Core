@@ -22,8 +22,8 @@
       
 
     
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -33,14 +33,14 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -84,7 +84,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Contributing to OG-Core
  </span>
@@ -96,7 +96,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   OG-Core API
  </span>
@@ -190,7 +190,7 @@
   </ul>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   OG-Core Theory
  </span>
@@ -247,7 +247,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Appendix
  </span>
@@ -259,7 +259,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   References
  </span>
@@ -271,7 +271,7 @@
   </a>
  </li>
 </ul>
-<p class="caption">
+<p class="caption" role="heading">
  <span class="caption-text">
   Citations of OG-Core
  </span>
@@ -362,7 +362,7 @@
 <span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">from</span> <span class="nn">ogcore.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">GROUP_LABELS</span><span class="p">,</span> <span class="n">VAR_LABELS</span><span class="p">,</span> <span class="n">ToGDP_LABELS</span><span class="p">,</span>
-                              <span class="n">CBO_UNITS</span><span class="p">,</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">)</span>
+                              <span class="n">DEFAULT_START_YEAR</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">ogcore.utils</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">ogcore.utils</span> <span class="kn">import</span> <span class="n">Inequality</span>
 
@@ -371,6 +371,8 @@
                     <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">],</span>
                     <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;pct_diff&#39;</span><span class="p">,</span> <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
                     <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
+                    <span class="n">forecast_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">forecast_units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">vertical_line_years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -390,11 +392,13 @@
 <span class="sd">            &#39;diff&#39;: plots difference between baseline and reform</span>
 <span class="sd">                (reform-base)</span>
 <span class="sd">            &#39;levels&#39;: plot variables in model units</span>
-<span class="sd">            &#39;cbo&#39;: plots variables in levels relative to CBO baseline</span>
-<span class="sd">                projection (only available for macro variables in CBO</span>
-<span class="sd">                long-term forecasts)</span>
+<span class="sd">            &#39;forecast&#39;: plots variables in levels relative to baseline</span>
+<span class="sd">                economic forecast</span>
 <span class="sd">        num_years_to_plot (integer): number of years to include in plot</span>
 <span class="sd">        start_year (integer): year to start plot</span>
+<span class="sd">        forecast_data (array_like): baseline economic forecast series,</span>
+<span class="sd">            must have length = num_year_to_plot</span>
+<span class="sd">        forecast_units (str): units that baseline economic forecast is in</span>
 <span class="sd">        vertical_line_years (list): list of integers for years want</span>
 <span class="sd">            vertical lines at</span>
 <span class="sd">        plot_title (string): title for plot</span>
@@ -443,34 +447,23 @@
                                        <span class="n">num_years_to_plot</span><span class="p">],</span>
                          <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform &#39;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
             <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Model Units&#39;</span>
-        <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;cbo&#39;</span><span class="p">:</span>
-            <span class="c1"># Need reform and baseline to ensure CBO plot makes sense</span>
+        <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;forecast&#39;</span><span class="p">:</span>
+            <span class="c1"># Need reform and baseline to ensure plot makes sense</span>
             <span class="k">assert</span> <span class="p">(</span><span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="c1"># read in CBO forecasts</span>
-            <span class="n">df_cbo</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_cbo_forecast</span><span class="p">()</span>
-            <span class="c1"># assert variable in cbo data</span>
-            <span class="k">assert</span> <span class="p">(</span><span class="n">v</span> <span class="ow">in</span> <span class="n">df_cbo</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-            <span class="c1"># assert cbo data has start year and end year</span>
-            <span class="k">assert</span> <span class="p">(</span><span class="n">df_cbo</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">start_year</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="p">(</span><span class="n">df_cbo</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">start_year</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">)</span>
-            <span class="n">cbo_data</span> <span class="o">=</span> <span class="n">df_cbo</span><span class="p">[</span>
-                <span class="p">(</span><span class="n">df_cbo</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">start_year</span><span class="p">)</span> <span class="o">&amp;</span>
-                <span class="p">(</span><span class="n">df_cbo</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">start_year</span> <span class="o">+</span>
-                 <span class="n">num_years_to_plot</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="c1"># Plot CBO baseline</span>
-            <span class="n">plot_var_base</span> <span class="o">=</span> <span class="n">cbo_data</span>
+            <span class="c1"># Plot forecast of baseline</span>
+            <span class="n">plot_var_base</span> <span class="o">=</span> <span class="n">forecast_data</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var_base</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline &#39;</span> <span class="o">+</span>
                      <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
-            <span class="c1"># Plot change in CBO baseline</span>
+            <span class="c1"># Plot change from baseline forecast</span>
             <span class="n">pct_change</span> <span class="o">=</span> <span class="p">((</span><span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">/</span>
                           <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">])[</span><span class="n">start_index</span><span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span>
                                        <span class="n">num_years_to_plot</span><span class="p">]</span>
-            <span class="n">plot_var_reform</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">pct_change</span><span class="p">)</span> <span class="o">*</span> <span class="n">cbo_data</span>
+            <span class="n">plot_var_reform</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">pct_change</span><span class="p">)</span> <span class="o">*</span> <span class="n">forecast_data</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">year_vec</span><span class="p">,</span> <span class="n">plot_var_reform</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Reform &#39;</span> <span class="o">+</span>
                      <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
             <span class="c1"># making units labels will not work if multiple variables</span>
             <span class="c1"># and they are in different units</span>
-            <span class="n">ylabel</span> <span class="o">=</span> <span class="n">CBO_UNITS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="n">forecast_units</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Please enter a valid plot type&#39;</span><span class="p">)</span>
             <span class="k">assert</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
