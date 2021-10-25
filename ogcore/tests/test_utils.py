@@ -498,16 +498,6 @@ def test_compare_dict_diff_ndarrays_relative():
                               tol=1e-3, relative=True)
 
 
-def test_read_cbo_forecast():
-    '''
-    Test that CBO data read as expected.
-    '''
-    test_df = utils.read_cbo_forecast()
-
-    assert np.allclose(
-        test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20344)
-
-
 def test_print_progress():
     '''
     Test print_progress() function for complete and incomplete status
