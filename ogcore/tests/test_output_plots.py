@@ -84,6 +84,12 @@ def test_plot_aggregates_save_fig(tmpdir):
     assert isinstance(img, np.ndarray)
 
 
+def test_plot_aggregates_not_a_type(tmpdir):
+    with pytest.raises(AssertionError):
+        output_plots.plot_aggregates(
+            base_tpi, base_params, plot_type='levels2')
+
+
 test_data = [(base_tpi, base_params, None, None, None, None, 'levels'),
              (base_tpi, base_params, reform_tpi, reform_params, None,
               None, 'levels'),
