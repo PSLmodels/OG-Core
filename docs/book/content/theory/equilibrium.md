@@ -65,13 +65,14 @@ The computational algorithm for solving for the steady-state follows the steps b
         1. Solve for the exogenous government interest rate $\bar{r}_{gov,a}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
         2. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\bar{TR}^i$
         3. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
-        4. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrzGBC_Ig`
-        5. Using the law of motion of the stock of infrastrutcure, {eq}`EqStnrzGBC_Kg`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
-        6. Using $\bar{K}_{g}^{i}$, $\bar{Y}^i$, and the firms' FOC with respect to public capital, find the mariginal product of public capital, $\bar{MPK}_{g}^{i}$
-        7. From the firm's FOC for the choice of capital, find $\bar{K}^i$ using $\bar{Y}^i$ and $\bar{r}^i$
-        8. Compute $\bar{r}_{p}^{i}$ from eq`EqStnrz_rate_p`, using $\bar{K}^i$, $\bar{D}^i$, $\bar{r}^i$, $\bar{r}_{gov}^i$, $\bar{MPK}_g^i$
-        9. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}^{j,s}$
-        10. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
+        4. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
+        5. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrzGBC_Ig`
+        6. Using the law of motion of the stock of infrastructure, {eq}`EqStnrzGBC_Kg`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
+        7. Using $\bar{K}_{g}^{i}$, $\bar{Y}^i$, and the firms' FOC with respect to public capital, find the mariginal product of public capital, $\bar{MPK}_{g}^{i}$
+        8. From the firm's FOC for the choice of capital, find $\bar{K}^i$ using $\bar{Y}^i$ and $\bar{r}^i$
+        9. Compute $\bar{r}_{p}^{i}$ from eq`EqStnrz_rate_p`, using $\bar{K}^i$, $\bar{D}^i$, $\bar{r}^i$, $\bar{r}_{gov}^i$, $\bar{MPK}_g^i$
+        10. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}^{j,s}$
+        11. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
 
     2. Given values $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}^i$, $\overline{tr}_{j,s}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
@@ -123,13 +124,15 @@ The computational algorithm for solving for the steady-state follows the steps b
            ```
 
           We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: \bar{K}^{f} = \bar{\zeta}_{K}ED^{K,r^*}_t$
-        4. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
-        5. We can then find domestic investors' holdings of private capital as the residual in their asset holdings: , $\bar{K}^{d,i} = $\bar{B}^i - \bar{D}^{d,i}$
-        6. Aggregate capital supply is then determined as $\bar{K}^i = \bar{K}^{d,i} + \bar{K}^{f,i}$.
+        4. Using $D^{d,i}$ we can then find domestic investors' holdings of private capital as the residual in their asset holdings: , $\bar{K}^{d,i} = $\bar{B}^i - \bar{D}^{d,i}$
+        5. Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d,i} + \bar{K}^{f,i}$.
 
-        7. Use $\bar{K}_{i}$ and $\bar{L}^{i}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}_b$.
+        6. Use $\bar{K}^{i'}$, $\bar{K}_g^{i}$, and $\bar{L}^{i}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}^{i'}$.
+        7. Use $\bar{Y}^{i'}$ and \eq`EqStnrzGBC_Ig` to find $\bar{I}_g^{i'}$
+        8. Use $\bar{I}_g^{i'}$ and the law of motion for government capital, eq`EqStnrzGBC_Kg` to find $\bar{K}_g^{i'}$.
+        9. Use $\bar{K}^{i'}$, $\bar{K}_g^{i'}$, and $\bar{L}^{i}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}^{i''}$.
 
-3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using remaining equations.
+3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}^i, \bar{w}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations.
 
     1. Use $\bar{Y}_b$ and $\bar{K}_b$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
 
