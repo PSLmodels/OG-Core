@@ -103,7 +103,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
     3. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state $\bar{L}$, $\bar{B}$, $\bar{K}^{i'}$, $\bar{K}^d$, $\bar{K}^f$, and $\bar{Y}^{i'}$.
 
-        1. Use $\bar{n}_{j,s}$ and the steady-state version of the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\bar{L}$.
+        1. Use $\bar{n}_{j,s}$ and the steady-state version of the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\bar{L}^{i}$.
 
            ```{math}
            :label: EqSS_MarkClrLab
@@ -134,54 +134,45 @@ The computational algorithm for solving for the steady-state follows the steps b
 
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}^i, \bar{w}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations.
 
-    1. Use $\bar{Y}_b$ and $\bar{K}_b$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
+    1. Use $\bar{Y}^{i''}$ and $\bar{K}^{i'}$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
 
        ```{math}
        :label: EqSS_FOC_K
          \bar{r}^{i'} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\bar{Y}_b}{\bar{K}_b}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
        ```
 
-    2. Use $\bar{r}^{i'}$, $\bar{K}_b$, $\bar{D}$ and $\bar{b}_{j,s}$ in equations {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrz_rate_p`, and {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
-
-        1. Use $\bar{r}^{i'}$ in equation {eq}`EqUnbalGBC_rate_wedge` to get an updated $\bar{r}_{gov,b}$, and then use $\bar{r}^{i'}$, the new $\bar{r}_{gov,b}$, $\bar{K}_b$, and $\bar{D}$ in {eq}`EqStnrz_rate_p` to get a new value for $\bar{r}_{p,b}$.
-
-        2. Use new $\bar{r}_{p,b}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to get an updated value for aggregate steady-state aggregate bequests $\overline{BQ}^{i'}$.
+    2. Use $\bar{Y}^{i''}$ and $\bar{L}^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
+    3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i}$
+    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in in {eq}`EqStnrzFOC_Kg` to solve for the value of the marginal product of government capital, $\overline{MPK}_g^i$
+    5. Use $\overline{MPK}_g^i$, $\bar{r}^{i'}$, and $\bar{r}_{gov}^{i}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i}$
+    6. Use $\bar{r}_{p}^{i}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
 
            ```{math}
            :label: EqSS_MarkClrBQ
              \overline{BQ}^{i'} = \left(\frac{1+\bar{r}_{p,b}}{1 + \bar{g}_{n}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\bar{\omega}_{s-1}\bar{b}_{j,s}\right)
            ```
 
-    3. Use $\bar{Y}_b$ in long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
+    7. Use $\bar{Y}^{i''}$ in long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
 
        ```{math}
        :label: EqSS_Tfer
-         \overline{TR}^{i'} = \alpha_{tr}\:\bar{Y}_b
+         \overline{TR}^{i'} = \alpha_{tr}\:\bar{Y}^{i''}
        ```
 
-    4. Use updated $\bar{r}^{i'}$, the new $\bar{r}_{p,b}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
-
-        1. Use updated $\bar{r}^{i'}$ to get a new value for $\bar{w}_b$ using {eq}`EqStnrz_w_of_r` to get an update value of the steady-state wage $\bar{w}_b$.
-
-           ```{math}
-           :label: EqSS_w_of_r
-             \bar{w}_b = (1 - \gamma)^\frac{1}{\varepsilon}Z\left[\gamma^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{\bar{r}^{i'} + \delta - \tau^{corp}\delta^\tau}{(1-\tau^{corp})Z\gamma^\frac{1}{\varepsilon}}\right]^{\varepsilon - 1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon - 1}
-           ```
-
-        2. Use new $\bar{r}_{p,b}$, $\bar{w}_b$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
+    8. Use updated $\bar{r}^{i'}$, the new $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
 
            ```{math}
            :label: EqSS_factor
-             factor^{i'} = \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p,b}\bar{b}_{j,s} + \bar{w}_b e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
+             factor^{i'} = \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p}^{i'}\bar{b}_{j,s} + \bar{w}^{i'} e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
            ```
 
-4. If the updated values of the outer-loop variables $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ are close enough to the initial guess for the outer-loop variables $\{\bar{r}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\{\bar{r}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ as a convex combination of the first initial guess $\{\bar{r}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeat steps (2) through (4).
+4. If the updated values of the outer-loop variables $\{\bar{r}^{i'}, $\{\bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ are close enough to the initial guess for the outer-loop variables $\{\bar{r}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\{\bar{r}^{i+1}, $\{\bar{w}^{i+1} \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ as a convex combination of the first initial guess $\{\bar{r}^{i}, \{\bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values $\{\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeat steps (2) through (4).
 
-    1. Define a tolerance $toler_{ss,out}$ and a distance metric $\left\lVert\,\cdot\,\right\rVert$ on the space of 4-tuples of outer-loop variables $\{\bar{r}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$. If the distance between the original guess for the outer-loop variables and the updated values for the outer-loop variables is less-than-or-equal-to the tolerance value, then the steady-state equilibrium has been found and it is the fixed point values of the variables at this point in the iteration.
+    1. Define a tolerance $toler_{ss,out}$ and a distance metric $\left\lVert\,\cdot\,\right\rVert$ on the space of 4-tuples of outer-loop variables $\{\bar{r}^{i}, \bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$. If the distance between the original guess for the outer-loop variables and the updated values for the outer-loop variables is less-than-or-equal-to the tolerance value, then the steady-state equilibrium has been found and it is the fixed point values of the variables at this point in the iteration.
 
        ```{math}
        :label: EqSS_toldistdone
-         \left\lVert\left(\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert \leq toler_{ss,out}
+         \left\lVert\left(\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}^{i}, \left(\bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert \leq toler_{ss,out}
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
@@ -195,18 +186,18 @@ The computational algorithm for solving for the steady-state follows the steps b
 
            ```{math}
            :label: EqSS_toldistrepeat
-             \left\lVert\left(\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert > toler_{ss,out}
+             \left\lVert\left(\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}^{i}, \bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert > toler_{ss,out}
            ```
 
-        2. If the distance metric is not satisfied {eq}`EqSS_toldistrepeat`, then an updated initial guess for the outer-loop variables $\{\bar{r}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ is made as a convex combination of the previous initial guess $\{\bar{r}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values based on the previous initial guess $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeats steps (2) through (4) with this new initial guess. The parameter $\xi_{ss}\in(0,1]$ governs the degree to which the new guess $i+1$ is close to the updated guess $i'$.
+        2. If the distance metric is not satisfied {eq}`EqSS_toldistrepeat`, then an updated initial guess for the outer-loop variables $\{\bar{r}^{i+1}, \bar{w}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ is made as a convex combination of the previous initial guess $\{\bar{r}^{i}, \bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values based on the previous initial guess $\{\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeats steps (2) through (4) with this new initial guess. The parameter $\xi_{ss}\in(0,1]$ governs the degree to which the new guess $i+1$ is close to the updated guess $i'$.
 
            ```{math}
            :label: EqSS_updateguess
-             \left(\bar{r}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\right) &= \xi_{ss}\left(\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) + ... \\
-             &\qquad(1-\xi_{ss})\left(\bar{r}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)
+             \left(\bar{r}^{i+1}, \bar{w}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\right) &= \xi_{ss}\left(\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) + ... \\
+             &\qquad(1-\xi_{ss})\left(\bar{r}^{i}, \bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)
            ```
 
-        3. Because the outer loop of the steady-state solution only has four variables, there are only four error functions to minimize or set to zero. We use a root-finder and its corresponding Newton method for the updating the guesses of the outer-loop variables because it works well and is faster than the bisection method described in the previous step. The `OG-Core` code has the option to use either the bisection method or the root fining method to updated the outer-loop variables. The root finding algorithm is generally faster but is less robust than the bisection method in the previous step.
+        3. Because the outer loop of the steady-state solution only has five variables, there are only five error functions to minimize or set to zero. We use a root-finder and its corresponding Newton method for the updating the guesses of the outer-loop variables because it works well and is faster than the bisection method described in the previous step. The `OG-Core` code has the option to use either the bisection method or the root fining method to updated the outer-loop variables. The root finding algorithm is generally faster but is less robust than the bisection method in the previous step.
 
 
 (SecSSeqlbResults)=
