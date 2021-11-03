@@ -54,24 +54,24 @@ A non-autarkic stationary steady-state equilibrium in the `OG-Core` model is def
 
 The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surpluses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending $G$ and transfers $TR$ are not held at baseline levels (`baseline_spending = False`).
 
-The computational algorithm for solving for the steady-state follows the steps below. We use a notational convention of a subscript $a$ or a subscript $b$ in steps (2) and (3) to differentiate between the same inner-loop variables computed two different ways at two different stages of the algorithm ($\bar{w}_a$, $\bar{w}_b$, $\bar{r}_{gov,a}$, $\bar{r}_{gov,b}$, $\bar{r}_{p,a}$, $\bar{r}_{p,b}$, $\bar{Y}_a$, $\bar{Y}_b$, $\bar{K}_a$, $\bar{K}_b$).
+The computational algorithm for solving for the steady-state follows the steps below.
 
 1. Use the techniques from Section {ref}`SecDemogPopSSTP` to solve for the steady-state population distribution vector $\boldsymbol{\bar{\omega}}$ and steady-state growth rate $\bar{g}_n$ of the exogenous population process.
 
-2. Choose an initial guess for the values of the steady-state interest rate (marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$, total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
+2. Choose an initial guess for the values of the steady-state interest rate (the after-tax marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$, total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
 
     1. Given guesses $\bar{r}^i$, $\bar{w}^i$, $\overline{TR}^{\,i}$, $\overline{BQ}^{\,i}$:
 
-        1. Solve for the exogenous government interest rate $\bar{r}_{gov,a}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
-        2. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\bar{TR}^i$
+        1. Solve for the exogenous government interest rate $\bar{r}_{gov}^{i}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
+        2. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\overline{TR}^i$
         3. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
         4. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
         5. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrzGBC_Ig`
         6. Using the law of motion of the stock of infrastructure, {eq}`EqStnrzGBC_Kg`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
-        7. Using $\bar{K}_{g}^{i}$, $\bar{Y}^i$, and the firms' FOC with respect to public capital, find the mariginal product of public capital, $\bar{MPK}_{g}^{i}$
+        7. Using $\bar{K}_{g}^{i}$, $\bar{Y}^i$, and the firms' FOC with respect to public capital, find the mariginal product of public capital, $\overline{MPK}_{g}^{i}$
         8. From the firm's FOC for the choice of capital, find $\bar{K}^i$ using $\bar{Y}^i$ and $\bar{r}^i$
-        9. Compute $\bar{r}_{p}^{i}$ from eq`EqStnrz_rate_p`, using $\bar{K}^i$, $\bar{D}^i$, $\bar{r}^i$, $\bar{r}_{gov}^i$, $\bar{MPK}_g^i$
-        10. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}^{j,s}$
+        9. Compute $\bar{r}_{p}^{i}$ from {eq}`EqStnrz_rate_p`, using $\bar{K}^i$, $\bar{D}^i$, $\bar{r}^i$, $\bar{r}_{gov}^i$, $\overline{MPK}_g^i$
+        10. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}_{j,s}^i$
         11. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
 
     2. Given values $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}^i$, $\overline{tr}_{j,s}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
@@ -120,17 +120,22 @@ The computational algorithm for solving for the steady-state follows the steps b
 
            ```{math}
            :label: EqSS_FOC_K2
-             \bar{ED}^{K,r^*}_t = \bar{L}\left(\frac{\bar{w}}{\frac{\bar{r} + \delta - \bar{\tau}^b\bar{\delta}^{\tau}}{1 - \bar{\tau}^b}}\right)^{\varepsilon} \frac{\gamma / (1 - \gamma - \gamma_g)}
+             \bar{ED}^{K,r^*}_t = \bar{L}\left(\frac{\bar{w}}{\frac{\bar{r} + \delta - \bar{\tau}^b\bar{\delta}^{\tau}}{1 - \bar{\tau}^b}}\right)^{\varepsilon} \frac{\gamma}{(1 - \gamma - \gamma_g)}
            ```
 
-          We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: \bar{K}^{f} = \bar{\zeta}_{K}ED^{K,r^*}_t$
-        4. Using $D^{d,i}$ we can then find domestic investors' holdings of private capital as the residual in their asset holdings: , $\bar{K}^{d,i} = $\bar{B}^i - \bar{D}^{d,i}$
-        5. Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d,i} + \bar{K}^{f,i}$.
+        4. We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: $\bar{K}^{f} = \bar{\zeta}_{K}ED^{K,r^*}_t$
 
-        6. Use $\bar{K}^{i'}$, $\bar{K}_g^{i}$, and $\bar{L}^{i}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}^{i'}$.
-        7. Use $\bar{Y}^{i'}$ and \eq`EqStnrzGBC_Ig` to find $\bar{I}_g^{i'}$
-        8. Use $\bar{I}_g^{i'}$ and the law of motion for government capital, eq`EqStnrzGBC_Kg` to find $\bar{K}_g^{i'}$.
-        9. Use $\bar{K}^{i'}$, $\bar{K}_g^{i'}$, and $\bar{L}^{i}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}^{i''}$.
+        5. Using $\bar{D}^{d,i}$ we can then find domestic investors' holdings of private capital as the residual from their total asset holdings: , $\bar{K}^{d,i} = \bar{B}^i - \bar{D}^{d,i}$
+
+        6. Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d,i} + \bar{K}^{f,i}$.
+
+        7. Use $\bar{K}^{i'}$, $\bar{K}_g^{i}$, and $\bar{L}^{i}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}^{i'}$.
+
+        8. Use $\bar{Y}^{i'}$ and {eq}`EqStnrzGBC_Ig` to find $\bar{I}_g^{i'}$
+
+        9. Use $\bar{I}_g^{i'}$ and the law of motion for government capital, {eq}`EqStnrzGBC_Kg` to find $\bar{K}_g^{i'}$.
+
+        10. Use $\bar{K}^{i'}$, $\bar{K}_g^{i'}$, and $\bar{L}^{i}$ in the production function {eq}`EqStnrzCESprodfun` to get a new $\bar{Y}^{i''}$.
 
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}^i, \bar{w}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations.
 
@@ -142,15 +147,15 @@ The computational algorithm for solving for the steady-state follows the steps b
        ```
 
     2. Use $\bar{Y}^{i''}$ and $\bar{L}^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
-    3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i}$
-    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in in {eq}`EqStnrzFOC_Kg` to solve for the value of the marginal product of government capital, $\overline{MPK}_g^i$
-    5. Use $\overline{MPK}_g^i$, $\bar{r}^{i'}$, and $\bar{r}_{gov}^{i}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i}$
-    6. Use $\bar{r}_{p}^{i}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
+    3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
+    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in in {eq}`EqStnrzFOC_Kg` to solve for the value of the marginal product of government capital, $\overline{MPK}_g^{i'}$
+    5. Use $\overline{MPK}_g^{i'}$, $\bar{r}^{i'}$, and $\bar{r}_{gov}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
+    6. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
 
-           ```{math}
-           :label: EqSS_MarkClrBQ
-             \overline{BQ}^{i'} = \left(\frac{1+\bar{r}_{p,b}}{1 + \bar{g}_{n}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\bar{\omega}_{s-1}\bar{b}_{j,s}\right)
-           ```
+     ```{math}
+     :label: EqSS_MarkClrBQ
+       \overline{BQ}^{i'} = \left(\frac{1+\bar{r}_{p,b}}{1 + \bar{g}_{n}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\bar{\omega}_{s-1}\bar{b}_{j,s}\right)
+     ```
 
     7. Use $\bar{Y}^{i''}$ in long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
 
@@ -159,20 +164,20 @@ The computational algorithm for solving for the steady-state follows the steps b
          \overline{TR}^{i'} = \alpha_{tr}\:\bar{Y}^{i''}
        ```
 
-    8. Use updated $\bar{r}^{i'}$, the new $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
+    8. Use $\bar{r}^{i'}$, $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
 
-           ```{math}
-           :label: EqSS_factor
-             factor^{i'} = \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p}^{i'}\bar{b}_{j,s} + \bar{w}^{i'} e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
-           ```
+        ```{math}
+        :label: EqSS_factor
+          factor^{i'} = \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p}^{i'}\bar{b}_{j,s} + \bar{w}^{i'} e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
+        ```
 
-4. If the updated values of the outer-loop variables $\{\bar{r}^{i'}, $\{\bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ are close enough to the initial guess for the outer-loop variables $\{\bar{r}^i, \overline{BQ}^i, \overline{TR}^i, factor^i\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\{\bar{r}^{i+1}, $\{\bar{w}^{i+1} \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ as a convex combination of the first initial guess $\{\bar{r}^{i}, \{\bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values $\{\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeat steps (2) through (4).
+4. If the updated values of the outer-loop variables $\{\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ are close enough to the initial guess for the outer-loop variables $\{\bar{r}^i, \bar{w}^{i}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\{\bar{r}^{i+1}, \bar{w}^{i+1} \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ as a convex combination of the first initial guess $\{\bar{r}^{i}, \bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values $\{\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeat steps (2) through (4).
 
-    1. Define a tolerance $toler_{ss,out}$ and a distance metric $\left\lVert\,\cdot\,\right\rVert$ on the space of 4-tuples of outer-loop variables $\{\bar{r}^{i}, \bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$. If the distance between the original guess for the outer-loop variables and the updated values for the outer-loop variables is less-than-or-equal-to the tolerance value, then the steady-state equilibrium has been found and it is the fixed point values of the variables at this point in the iteration.
+    1. Define a tolerance $toler_{ss,out}$ and a distance metric $\left\lVert\,\cdot\,\right\rVert$ on the space of 5-tuples of outer-loop variables $\{\bar{r}^{i}, \bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$. If the distance between the original guess for the outer-loop variables and the updated values for the outer-loop variables is less-than-or-equal-to the tolerance value, then the steady-state equilibrium has been found and it is the fixed point values of the variables at this point in the iteration.
 
        ```{math}
        :label: EqSS_toldistdone
-         \left\lVert\left(\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}^{i}, \left(\bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert \leq toler_{ss,out}
+         \left\lVert\left(\bar{r}^{i'}, \bar{w}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}^{i}, \bar{w}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert \leq toler_{ss,out}
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
@@ -199,6 +204,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         3. Because the outer loop of the steady-state solution only has five variables, there are only five error functions to minimize or set to zero. We use a root-finder and its corresponding Newton method for the updating the guesses of the outer-loop variables because it works well and is faster than the bisection method described in the previous step. The `OG-Core` code has the option to use either the bisection method or the root fining method to updated the outer-loop variables. The root finding algorithm is generally faster but is less robust than the bisection method in the previous step.
 
+Under alternative model configurations, the solution algorithm changes slightly.  For example, when `baseline = False`, one need not solve for the $factor$, as it is determined in the baseline model solution.  When `budget_balance = True`, the guess of $\overline{TR}$ in the outer loop is replaced by the guess of $\bar{Y}$ and transfers are determined a residual from the government budget constraint given revenues and other spending policy.  When `baseline_spending = True`, $\overline{TR}$ is determined from the baseline model solution and not updated in the outer loop described above.
 
 (SecSSeqlbResults)=
 ### Steady-state results: default specification
