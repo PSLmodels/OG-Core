@@ -12,26 +12,88 @@ Government levies taxes on households and firms, funds public pensions, and make
 
 ### Taxes
 
-Individual income taxes, consumption taxes, corporate income taxes.
+#### Individual income taxes
+
+#### Corporate income taxes
+
+#### Consumption taxes
 
 ### Spending
 
+Government spending is comprised of government provided pension benefits, lump sum transfers, universal basic income payments, infrastructure investment, spending on public goods, and interest payments on debt.  Below, we describe the transfer spending amounts.  Spending on infrastructure, public goods, and interest are described in {ref}`SecUnbalGBCbudgConstr`.
 #### Pensions
+
+[TODO: Add description of government pensions and the relevant parameters]
 
 #### Lump sum transfers:
 
+ Aggregate non-pension transfers to households are assumed to be a fixed fraction $\alpha_{tr}$ of GDP each period:
+
+  ```{math}
+  :label: EqUnbalGBCtfer
+    TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \quad\forall t
+  ```
+  The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.
+
+  We assume that total non-pension transfers are distributed in a lump sum manner to households.  The distribution across households by age and lifetime income group is parameterized by the the parameters $\eta_{j,s,t}$, which are in the time specific $\boldsymbol{\eta}_{t}$ matrix. Thus, transfers to households of lifetime income group $j$, age $s$, at time $t$ are given as:
 
    ```{math}
   :label: Eq_tr
-    tr_{j,s,t} = \boldmath{\eta}_{t} TR_{t}
+    tr_{j,s,t} = \boldsymbol{\eta}_{t} TR_{t}
   ```
 
 #### Universal basic income
 
-```{math}
-  :label: Eq_ubi
-    ubi_{j,s,t} =
+[TODO: This section is far along but needs to be updated.]
+
+ Universal basic income (UBI) transfers show up in the household budget constraint {eq}`EqHHBC`. Household amounts of UBI can vary by household age $s$, lifetime income group $j$, and time period $t$.  These transfers are represented by $ubi_{j,s,t}$.
+
+
+(SecUBIcalc)=
+##### Calculating UBI
+
+  Household transfers in model units $ubi_{j,s,t)}$ are a function of five policy parameters described in the [`default_parameters.json`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json) file (`ubi_growthadj`, `ubi_nom_017`, `ubi_nom_1864`, `ubi_nom_65p`, and `ubi_nom_max`).  Three additional parameters provide information on household structure by age, lifetime income group, and year: [`ubi_num_017_mat`, `ubi_num_1864_mat`, `ubi_num_65p_mat`].
+
+  As a convenience to users, UBI policy parameters `ubi_nom_017`, `ubi_nom_1864`, `ubi_nom_65p`, and `ubi_nom_max` are entered as nominal amounts (e.g., in dollars or pounds). The parameter `ubi_nom_017` represents the nominal value of the UBI transfer to each household per dependent child age 17 and under. The parameter `ubi_nom_1864` represents the nominal value of the UBI transfer to each household per adult between the ages of 18 and 64. And `ubi_nom_65p` is the nominal value of UBI transfer to each household per senior 65 and over. The maximum UBI benefit per household, `ubi_nom_max`, is also a nominal amount.  From these parameters, the model computes nominal UBI payments to each household in the model:
+
+  ```{math}
+  :label: EqUBIubi_nom_jst0
+    \begin{split}
+      ubi^{nom}_{j,s,t=0} = \min\Bigl(&\texttt{ubi_nom_max}, \\
+      &\texttt{ubi_nom_017} * \texttt{ubi_num_017_mat}_{j,s} + \\
+      &\texttt{ubi_nom_1864} * \texttt{ubi_num_1864_mat}_{j,s} + \\
+      &\texttt{ubi_nom_65p} * \texttt{ubi_num_65p_mat}_{j,s}\Bigr) \quad\forall j,s
+    \end{split}
   ```
+
+  The rest of the time periods of the household UBI transfer and the respective steady-states are determined by whether the UBI is growth adjusted or not as given in the `ubi_growthadj` boolean parameter. The following two sections cover these two cases.
+
+
+(SecUBI_NonGrowthAdj)=
+###### UBI specification not adjusted for economic growth
+
+  A non-growth adjusted UBI (`ubi_growthadj = False`) is one in which the initial nonstationary nominal-valued $t=0$ UBI matrix $ubi^{\$}_{j,s,t=0}$ does not grow, while the economy's long-run growth rate is $g_y$ for the most common parameterization is positive ($g_y>0$).
+
+  ```{math}
+  :label: EqUBIubi_nom_NonGrwAdj_jst
+    ubi^{nom}_{j,s,t} = ubi^{nom}_{j,s,t=0} \quad\forall j,s,t
+  ```
+
+  As described in the [OG-Core chapter on stationarization](https://pslmodels.github.io/OG-Core/content/theory/stationarization.html), the stationarized UBI transfer to each household $\hat{ubi}_{j,s,t}$ is the nonstationary transfer divided by the growth rate since the initial period. When the long-run economic growth rate is positive $g_y>0$ and the UBI specification is not growth-adjusted the steady-state stationary UBI household transfer is zero $\overline{ubi}_{j,s}=0$ for all lifetime income groups $j$ and ages $s$ as time periods $t$ go to infinity. However, to simplify, we assume in this case that the stationarized steady-state UBI transfer matrix to households is the stationarized value of that matrix in period $T$.
+
+  ```{math}
+  :label: EqUBIubi_mod_NonGrwAdj_SS
+    \overline{ubi}_{j,s} = ubi_{j,s,t=T} \quad\forall j,s
+  ```
+
+  Note that in non-growth-adjusted case, if $g_y<0$, then the stationary value of $\hat{ubi}_{j,s,t}$ is going to infinity as $t$ goes to infinity. Therefore, a UBI specification must be growth adjusted for any assumed negative long run growth $g_y<0$.[^GrowthAdj_note]
+
+
+(SecUBI_GrowthAdj)=
+###### UBI specification adjusted for economic growth
+
+  Put description of growth-adjusted specification here.
+
 
 (SecUnbalGBCrev)=
 ## Government Tax Revenue
@@ -72,15 +134,9 @@ Individual income taxes, consumption taxes, corporate income taxes.
 
   where $r_{gov,t}$ is the interest rate paid by the government, $G_{t}$ is government spending on public goods, $I_{gov,t}$ is government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
 
-  And we assume that total government transfers to households are a fixed fraction $\alpha_{tr}$ of GDP each period.
 
-  ```{math}
-  :label: EqUnbalGBCtfer
-    TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \quad\forall t
-  ```
-  The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.
 
-  We also assume that government spending on public goods is a fixed fraction of GDP each period in the initial periods.
+  We assume that government spending on public goods is a fixed fraction of GDP each period in the initial periods.
 
   ```{math}
   :label: EqUnbalGBC_Gt
@@ -234,3 +290,10 @@ And finally, in closure rules {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclos
 
 
 [^negative_val_note]: Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period $T_{G2}$.
+
+(SecUBIfootnotes)=
+## Footnotes
+
+
+[^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`ogusa_default_parameters.json`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/ogusa_default_parameters.json) "validators" specification of the parameter.
+

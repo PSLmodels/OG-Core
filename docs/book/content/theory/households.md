@@ -177,11 +177,11 @@ If `use_zeta=False`, then bequests from households of lifetime earnings type `j`
     bq_{j,s,t} = \frac{BQ_{j,t}}{\lambda_j \omega_{s,t}}
   ```
 
-   If `use_zeta=True`, then in the distribution of bequests across age and lifetime ability is determined by $\boldmath{\zeta}_{t}$, which allocated aggregate bequests across households by age and lifetime income group:
+   If `use_zeta=True`, then in the distribution of bequests across age and lifetime ability is determined by $\boldsymbol{\zeta}_{t}$, which allocated aggregate bequests across households by age and lifetime income group:
 
    ```{math}
   :label: Eq_bq_use_zeta
-    bq_{j,s,t} = \boldmath{\zeta}_{t} BQ_{t}
+    bq_{j,s,t} = \boldsymbol{\zeta}_{t} BQ_{t}
   ```
 
 (SecHHexp)=
