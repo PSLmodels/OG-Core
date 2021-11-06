@@ -22,11 +22,14 @@ def get_Y(K, K_g, L, p, method):
     .. math::
         Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}
         K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} +
-        (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}
+        \gamma_g^{\frac{1}{\varepsilon}}
+        K_{g,t}^{\frac{\varepsilon - 1}{\varepsilon}} +
+        (1 - \gamma-\gamma_g)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}
         {\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}
 
     Args:
-        K (array_like): aggregate capital
+        K (array_like): aggregate private capital
+        K (array_like): aggregate government capital
         L (array_like): aggregate labor
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
@@ -69,7 +72,7 @@ def get_r(Y, K, p, method):
     demand.
 
     .. math::
-        r_{t} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}
+        r_{t} = (1 - \tau^{corp})Z_t^\frac{\varepsilon-1}{\varepsilon}
         \left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -
         \delta + \tau^{corp}\delta^\tau
 
@@ -84,18 +87,6 @@ def get_r(Y, K, p, method):
         r (array_like): the real interest rate
 
     '''
-    # if method == 'SS':
-    #     Z = p.Z[-1]
-    #     delta_tau = p.delta_tau[-1]
-    #     tau_b = p.tau_b[-1]
-    # else:
-    #     Z = p.Z[:p.T]
-    #     delta_tau = p.delta_tau[:p.T]
-    #     tau_b = p.tau_b[:p.T]
-    # r = ((1 - tau_b) * (Z ** ((p.epsilon - 1) / p.epsilon)) *
-    #      ((((p.gamma * Y) / K) ** (1 / p.epsilon)) +
-    #      ((((p.gamma * Y) / K_g) ** (1 / p.epsilon)) * (K_g / K))) -
-    #      p.delta + tau_b * delta_tau)
     if method == 'SS':
         delta_tau = p.delta_tau[-1]
         tau_b = p.tau_b[-1]
@@ -114,7 +105,7 @@ def get_w(Y, L, p, method):
     parameters using the firm's first order condition for labor demand.
 
     .. math::
-        w_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)
+        w_t = Z_t^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_g)
         \frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon}
 
     Args:
@@ -128,12 +119,6 @@ def get_w(Y, L, p, method):
         w (array_like): the real wage rate
 
     '''
-    # if method == 'SS':
-    #     Z = p.Z[-1]
-    # else:
-    #     Z = p.Z[:p.T]
-    # w = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
-    #      ((((1 - p.gamma - p.gamma_g) * Y) / L) ** (1 / p.epsilon)))
     w = get_MPx(Y, L, 1 - p.gamma - p.gamma_g, p, method)
 
     return w
@@ -142,12 +127,13 @@ def get_w(Y, L, p, method):
 def get_KLratio_old(r, p, method):
     r'''
     This function solves for the capital-labor ratio given the interest
-    rate r and parameters.
+    rate, r, and parameters.
 
     .. math::
         \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
-        {\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})
-        \gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -
+        {\left[\frac{r_t + \delta - \tau_t^{corp}\delta_t^\tau}
+        {(1 - \tau_t^{corp})\gamma^\frac{1}
+        {\varepsilon}Z_t}\right]^{\varepsilon-1} -
         \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}
 
     Args:
@@ -193,13 +179,13 @@ def get_KLratio(r, w, p, method):
     rate r and parameters.
 
     .. math::
-        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
-        {\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})
-        \gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} -
-        \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}
+        \frac{K}{L} = \frac{\gamma}{1 - \gamma - \gamma_g}
+            \left(\frac{w_t}{\frac{r_t + \delta -
+            \tau_t^{corp}\delta_t^{\tau}}{1 - \tau_t^{corp}}}\right)
 
     Args:
         r (array_like): the real interest rate
+        w (array_like): the wage rate
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
@@ -208,29 +194,6 @@ def get_KLratio(r, w, p, method):
         KLratio (array_like): the capital-labor ratio
 
     '''
-    # if method == 'SS':
-    #     Z = p.Z[-1]
-    #     delta_tau = p.delta_tau[-1]
-    #     tau_b = p.tau_b[-1]
-    # else:
-    #     length = r.shape[0]
-    #     Z = p.Z[:length]
-    #     delta_tau = p.delta_tau[:length]
-    #     tau_b = p.tau_b[:length]
-    # if p.epsilon == 1:
-    #     # Cobb-Douglas case
-    #     bracket = (((1 - tau_b) * p.gamma * Z) /
-    #                (r + p.delta - tau_b * delta_tau))
-    #     KLratio = bracket ** (1 / (1 - p.gamma))
-    # else:
-    #     # General CES case
-    #     bracket = ((r + p.delta - (delta_tau * tau_b)) /
-    #                ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
-    #     KLratio = \
-    #         ((((1 - p.gamma) ** (1 / p.epsilon)) /
-    #           ((bracket ** (p.epsilon - 1)) -
-    #            (p.gamma ** (1 / p.epsilon)))) ** (p.epsilon /
-    #                                               (p.epsilon - 1)))
     if method == 'SS':
         tau_b = p.tau_b[-1]
         delta_tau = p.delta_tau[-1]
@@ -245,8 +208,23 @@ def get_KLratio(r, w, p, method):
 
 
 def get_MPx(Y, x, share, p, method):
-    '''
-    Compute the marginal product of x (where x is K, L, K_g)
+    r'''
+    Compute the marginal product of x (where x is K, L, or K_g)
+
+    .. math::
+        MPx = Z_t^\frac{\varepsilon-1}{\varepsilon}\left[(share)
+        \frac{\hat{Y}_t}{\hat{x}_t}\right]^\frac{1}{\varepsilon}
+
+    Args:
+        Y (array_like): output
+        x (array_like): input to production function
+        share (scalar): share of output paid to factor x
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        MPx (array_like): the marginal product of x
     '''
     if method == 'SS':
         Z = p.Z[-1]
@@ -255,11 +233,10 @@ def get_MPx(Y, x, share, p, method):
     if np.any(x) == 0:
         MPx = np.zeros_like(Y)
     else:
-        MPx = Z ** ((p.epsilon - 1) / p.epsilon) * ((share * Y) / x) ** (1 / p.epsilon)
-    # try:
-    #     MPx[x == 0] = 0
-    # except TypeError:
-    #     MPx = 0
+        MPx = (
+            Z ** ((p.epsilon - 1) / p.epsilon) * ((share * Y) / x)
+            ** (1 / p.epsilon)
+        )
 
     return MPx
 
@@ -313,7 +290,7 @@ def get_K(L, r, p, method):
     .. math::
         K_{t} = \frac{K_{t}}{L_{t}} \times L_{t}
 
-    Inputs:
+    Args:
         L (array_like): aggregate labor
         r (array_like): the real interest rate
         p (OG-Core Specifications object): model parameters
@@ -322,7 +299,7 @@ def get_K(L, r, p, method):
 
     Returns:
         K (array_like): aggregate capital demand
-    --------------------------------------------------------------------
+
     '''
     KLratio = get_KLratio_old(r, p, method)
     K = KLratio * L
@@ -336,7 +313,10 @@ def get_K_from_Y(Y, r, p, method):
     options.
 
     .. math::
-        K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}}
+        K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}} \\
+        K_{t} = \frac{\gamma Z_t^{\varepsilon -1} Y_t}{
+            \left(\frac{r_t + \delta + \tau_t^{corp}\delta_t^\tau}
+            {1 - \tau_{t}^{corp}}\right)^\varepsilon}
 
     Args:
         Y (array_like): aggregate output
@@ -349,10 +329,6 @@ def get_K_from_Y(Y, r, p, method):
         r (array_like): the real interest rate
 
     '''
-    # KLratio = get_KLratio_from_r(r, p, method)
-    # LKratio = KLratio ** -1
-    # YKratio = get_Y(1, LKratio, p, method)  # can use get_Y because CRS
-    # K = Y / YKratio
     if method == 'SS':
         Z = p.Z[-1]
         tau_b = p.tau_b[-1]
@@ -362,7 +338,9 @@ def get_K_from_Y(Y, r, p, method):
         tau_b = p.tau_b[:p.T]
         delta_tau = p.delta_tau[:p.T]
     numerator = p.gamma * Z ** (p.epsilon - 1) * Y
-    denominator = ((r + p.delta - tau_b * delta_tau) / (1 - tau_b)) ** p.epsilon
+    denominator = (
+        ((r + p.delta - tau_b * delta_tau) / (1 - tau_b)) ** p.epsilon
+        )
     K = numerator / denominator
 
     return K
@@ -375,6 +353,16 @@ def get_L_from_Y(w, Y, p, method):
     .. math::
         L_{t} = \frac{(1 - \gamma - \gamma_g) Z_{t}^{\varepsilon-1}
         Y_{t}}{w_{t}^{\varepsilon}}
+
+    Args:
+        w (array_like): the wage rate
+        Y (array_like): aggregate output
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        L (array_like): firm labor demand
 
     '''
     if method == 'SS':
@@ -390,65 +378,64 @@ def get_L_from_Y(w, Y, p, method):
 
 
 def get_K_from_Y_and_L(w, Y, L, K_g, p, method):
-    '''
+    r'''
     Find L from Y and w
+
+    .. math::
+        K_{t} = \left(\frac{\left(\frac{Y_t}{Z_t}\right)^{\frac{\varepsilon-1}
+        {\varepsilon}} -
+        (1-\gamma-\gamma_g)L_t^{\frac{\varepsilon-1}{\varepsilon}} -
+        \gamma_g^{\frac{1}{\varepsilon}}K_{g,t}^{\frac{\varepsilon-1}{\varepsilon}}}
+        {\gamma^{frac{1}{\varepsilon}}}\right)^{\frac{\varepsilon}{\varepsilon-1}}
+
+    Args:
+        w (array_like): the wage rate
+        Y (array_like): aggregate output
+        L (array_like): aggregate labor
+        K_g (array_like): aggregate public capital
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        K (array_like): firm capital demand
+
     '''
-    if method == 'TPI':
-        K = (
-            (((Y / p.Z) ** ((p.epsilon - 1) / p.epsilon) -
-             (1 - p.gamma - p.gamma_g) *
-             L ** ((p.epsilon - 1) / p.epsilon) -
-             (p.gamma_g ** (1 / p.epsilon)) *
-             (K_g ** ((p.epsilon - 1) / p.epsilon))) /
-             (p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (p.epsilon - 1)))
+    if method == 'SS':
+        Z = p.Z[-1]
     else:
-        K = (
-            (((Y / p.Z[-1]) ** ((p.epsilon - 1) / p.epsilon) -
-             (1 - p.gamma - p.gamma_g) *
-             L ** ((p.epsilon - 1) / p.epsilon) -
-             (p.gamma_g ** (1 / p.epsilon)) *
-             (K_g ** ((p.epsilon - 1) / p.epsilon))) /
-             (p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (p.epsilon - 1)))
+        Z = p.Z[:p.T]
+    K = (
+        (((Y / Z) ** ((p.epsilon - 1) / p.epsilon) -
+            (1 - p.gamma - p.gamma_g) *
+            L ** ((p.epsilon - 1) / p.epsilon) -
+            (p.gamma_g ** (1 / p.epsilon)) *
+            (K_g ** ((p.epsilon - 1) / p.epsilon))) /
+            (p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (p.epsilon - 1)))
 
     return K
 
 
 def get_K_new(r, w, L, p, method):
-    '''
-    Get K from r, w, L
+    r'''
+    Get K from r, w, L.  For determining capital demand for open
+    economy case.
 
-    For determining capital demand for open economy case.
+    .. math::
+        K_{t} = \frac{K_{t}}{L_{t}} \times L_{t}
+
+    Args:
+        r (array_like): the real interest rate
+        w (array_like): the wage rate
+        L (array_like): aggregate labor
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        K (array_like): aggregate capital demand
+
     '''
-    # if method == 'SS':
-    #     Z = p.Z[-1]
-    #     delta_tau = p.delta_tau[-1]
-    #     tau_b = p.tau_b[-1]
-    # else:
-    #     length = r.shape[0]
-    #     Z = p.Z[:length]
-    #     delta_tau = p.delta_tau[:length]
-    #     tau_b = p.tau_b[:length]
-    # if p.epsilon == 1:
-    #     # Cobb-Douglas case
-    #     bracket = (((1 - tau_b) * p.gamma * Z) /
-    #                (r + p.delta - tau_b * delta_tau))
-    #     K = (
-    #          (bracket * (K_g ** p.gamma_g) *
-    #           (L ** (1 - p.gamma - p.gamma_g))) ** (1 / (1 - p.gamma)))
-    # else:
-    #     # General CES case
-    #     bracket = ((r + p.delta - (delta_tau * tau_b)) /
-    #                ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
-    #     denom = (
-    #         (p.gamma_g ** (1 / p.epsilon)) *
-    #         (K_g ** ((p.epsilon - 1) / p.epsilon)) +
-    #         ((1 - p.gamma - p.gamma_g) ** (1 / p.epsilon)) *
-    #         (L ** ((p.epsilon - 1) / p.epsilon)))
-    #     K = \
-    #         ((((1 - p.gamma) ** (1 / p.epsilon)) /
-    #           ((bracket ** (p.epsilon - 1)) -
-    #            ((p.gamma ** (1 / p.epsilon) / denom)))) ** (p.epsilon /
-    #          (p.epsilon - 1)))
     KLratio = get_KLratio(r, w, p, method)
     K = KLratio * L
 

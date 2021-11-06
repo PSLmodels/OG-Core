@@ -309,8 +309,18 @@ def get_r_gov(r, p):
 
 
 def get_I_g(Y, alpha_I):
-    '''
+    r'''
     Find investment in public capital
+
+    .. math::
+        I_{g,t} = \alpha_{I,t}Y_{t}
+
+    Args:
+        Y (array_like): aggregate output
+        alpha_I (array_like): percentage of output invested in public capital
+
+    Returns
+        I_g (array_like): investment in public capital
     '''
     I_g = alpha_I * Y
 
@@ -318,8 +328,20 @@ def get_I_g(Y, alpha_I):
 
 
 def get_K_g(K_g0, I_g, p, method):
-    '''
+    r'''
     Law of motion for the government capital stock
+
+    .. math::
+        K_{g,t+1} = \frac{(1 - \delta_g)K_{g,t} + I_{g,t}}
+            {(1 + g_{n,t+1})e^{g_y}}
+
+    Args:
+        Y (array_like): aggregate output
+        alpha_I (array_like): percentage of output invested in public capital
+
+    Returns
+        K_g (array_like): stock of public capital
+
     '''
     if method == 'TPI':
         K_g = np.zeros(p.T)

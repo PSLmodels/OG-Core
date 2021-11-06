@@ -344,6 +344,10 @@ def get_r_p(r, r_gov, K, D, MPKg, p, method):
         r_gov (array_like): the real interest rate on government debt
         K (array_like): aggregate capital
         D (array_like): aggregate government debt
+        MPKg (array_like): marginal product of government capital
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
     Returns:
         r_p (array_like): the real interest rate on the households
@@ -392,8 +396,10 @@ def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
         rc_error (array_like): error in the resource constraint
 
     '''
-    rc_error = (Y - C - I_d - I_g - G - (r + p.delta) * K_f + new_borrowing_f -
-                debt_service_f)
+    rc_error = (
+        Y - C - I_d - I_g - G - (r + p.delta) * K_f + new_borrowing_f -
+        debt_service_f
+        )
 
     return rc_error
 
