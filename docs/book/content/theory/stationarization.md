@@ -17,7 +17,7 @@ The previous chapters derive all the equations necessary to solve for the steady
   - $\tilde{N}_t$
   - $e^{g_y t}\tilde{N}_t$
   - Not growing
-* - $\hat{c}_{j,s,t}\equiv \frac{c_{j,s,t}}{e^{g_y t}}$
+* - $\hat{y}_{j,s,t}\equiv \frac{c_{j,s,t}}{e^{g_y t}}$
   - $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}$
   - $\hat{Y}_t\equiv\frac{Y_t}{e^{g_y t}\tilde{N}_t}$
   - $n_{j,s,t}$
@@ -25,15 +25,15 @@ The previous chapters derive all the equations necessary to solve for the steady
   - $\hat{L}_t\equiv\frac{L_t}{\tilde{N}_t}$
   - $\hat{K}_t\equiv\frac{K_t}{e^{g_y t}\tilde{N}_t}$
   - $r_t$
-* - $\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}$
+* - $\hat{bq}_{t,s,j}\equiv \frac{bq_{t,s,j}}{e^{g_y t}}$
   -
   - $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_{p,t}$
-* - $\hat{y}_{j,s,t}\equiv \frac{y_{j,s,t}}{e^{g_y t}}$
+* - $\hat{c}_{j,s,t}\equiv \frac{y_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{C}_t\equiv\frac{C_t}{e^{g_y t}\tilde{N}_t}$
   - $r_{gov,t}$
-* - $\hat{T}_{j,s,t}\equiv \frac{T_{j,s,t}}{e^{g_y t}}$
+* - $\hat{tr}_{j,s,t}\equiv \frac{tr_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}$
   -
@@ -41,9 +41,13 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{UBI}_t\equiv\frac{UBI_t}{e^{g_y t}\tilde{N}_t}$
   -
-* -
+* - $\hat{T}_{j,s,t}\equiv \frac{T_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
+  -
+* - $\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}$
+  -
+  - $\hat{K}_{g,t}\equiv\frac{K_{g,t}}{e^{g_y t}\tilde{N}_t}$
   -
 ```
 
