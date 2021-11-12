@@ -495,19 +495,20 @@ param_updates4 = {'zeta_K': [1.0], 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
 param_updates5 = {}
 filename5 = 'run_SS_reform.pkl'
-param_updates6 = {'use_zeta': True}
+param_updates6 = {'use_zeta': True, 'initial_guess_r_SS': 0.07,
+                  'initial_guess_TR_SS': 0.02}
 filename6 = 'run_SS_reform_use_zeta.pkl'
 param_updates7 = {'zeta_K': [1.0]}
 filename7 = 'run_SS_reform_small_open.pkl'
-param_updates8 = {'zeta_K': [1.0], 'use_zeta': True,
-                  'initial_guess_TR_SS': 0.02}
+param_updates8 = {'zeta_K': [1.0], 'use_zeta': True}
 filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
 param_updates9 = {'baseline_spending': True}
 filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'baseline_spending': True, 'use_zeta': True}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                   'zeta_D': [0.0]}
+                   'zeta_D': [0.0], 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.02}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 
 
@@ -537,21 +538,8 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
                               'Reform', 'Reform, use zeta',
                               'Reform, small open',
                               'Reform, small open use zeta',
-                              'Baseline, delta_tau=0'
+                              'Reform, delta_tau=0'
                               ])
-
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [
-
-#                           (True, param_updates2, filename2)
-#                           ],
-#                          ids=[
-
-#                               'Baseline, use zeta'
-#                               ])
-
-
-
 @pytest.mark.local
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
@@ -565,9 +553,9 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
             baseline=True,
             num_workers=NUM_WORKERS)
         p_base.update_specifications(param_updates)
-        if p_base.use_zeta:
-            p_base.update_specifications({
-                'initial_guess_r_SS': 0.07, 'initial_guess_TR_SS': 0.02})
+        # if p_base.use_zeta:
+        #     p_base.update_specifications({
+        #         'initial_guess_r_SS': 0.07, 'initial_guess_TR_SS': 0.02})
         p_base.baseline_spending = False
         base_ss_outputs = SS.run_SS(p_base, client=dask_client)
         utils.mkdirs(os.path.join(

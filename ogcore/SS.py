@@ -146,7 +146,7 @@ def inner_loop(outer_loop_vars, p, client):
     # unpack variables to pass to function
     bssmat, nssmat, r, w, Y, BQ, TR, factor = outer_loop_vars
 
-    print('IN inner looPPP -- r, w, Y = ', r, w, Y)
+    # print('IN inner looPPP -- r, w, Y = ', r, w, Y)
 
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
@@ -195,11 +195,11 @@ def inner_loop(outer_loop_vars, p, client):
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
 
     Y = firm.get_Y(K, K_g, L, p, 'SS')
-    print('Inner loop get Y 1 = ', Y)
+    # print('Inner loop get Y 1 = ', Y)
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     Y = firm.get_Y(K, K_g, L, p, 'SS')
-    print('Inner loop get Y 2 = ', Y)
+    # print('Inner loop get Y 2 = ', Y)
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
@@ -239,7 +239,7 @@ def inner_loop(outer_loop_vars, p, client):
     new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays,
                            UBI_outlays, I_g, p, 'SS')
 
-    print('BQ at the end of inner loop: ', new_BQ)
+    # print('BQ at the end of inner loop: ', new_BQ)
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
         new_w, new_TR, Y, new_factor, new_BQ, average_income_model
 
@@ -285,14 +285,14 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
 
         outer_loop_vars = (bmat, nmat, r, w, Y, BQ, TR, factor)
 
-        print('IN SS SOLVE outer loop -- r, w, Y = ', r, w, Y)
+        # print('IN SS SOLVE outer loop -- r, w, Y = ', r, w, Y)
 
         (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_p,
          new_w, new_TR, new_Y, new_factor, new_BQ,
          average_income_model) =\
             inner_loop(outer_loop_vars, p, client)
 
-        print('IN SS SOLVE -- r, w, Y = ', new_r, new_w, new_Y)
+        # print('IN SS SOLVE -- r, w, Y = ', new_r, new_w, new_Y)
         # print('from inner loop: r, w,TR, Y, BQ = ', new_r,
         #  new_w, new_TR, new_Y, new_BQ)
 
@@ -365,7 +365,7 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
             print('Iteration: %02d' % iteration, ' Distance: ', dist)
 
 
-    print('IN SS SOLVE after convex combo -- r, w, Y = ', r, w, Y)
+    # print('IN SS SOLVE after convex combo -- r, w, Y = ', r, w, Y)
 
     # Generate the SS values of variables, including euler errors
     bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
@@ -396,9 +396,9 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
     I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, 'SS')
     MPKg = firm.get_MPx(Yss, K_g_ss, p.gamma_g, p, 'SS')
-    print('MPKg = ', MPKg)
+    # print('MPKg = ', MPKg)
     r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, Dss, MPKg, p, 'SS')
-    print('R and Rp = ', rss, r_p_ss)
+    # print('R and Rp = ', rss, r_p_ss)
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
@@ -550,7 +550,7 @@ def SS_fsolve(guesses, *args):
     Y = guesses[2]
     if p.baseline:
         BQ = guesses[3:-2]
-        print('Initial BQ = ', BQ, Y)
+        # print('Initial BQ = ', BQ, Y)
 
         TR = guesses[-2]
         factor = guesses[-1]
@@ -563,7 +563,7 @@ def SS_fsolve(guesses, *args):
     if not p.budget_balance and not p.baseline_spending:
         Y = TR / p.alpha_T[-1]
 
-    print('guess in = ', guesses)
+    # print('guess in = ', guesses)
     # if p.baseline:
     #     if p.budget_balance:
     #         Y = guesses[2]
@@ -605,8 +605,8 @@ def SS_fsolve(guesses, *args):
      new_TR, new_Y, new_factor, new_BQ, average_income_model) =\
         inner_loop(outer_loop_vars, p, client)
 
-    print('r, w, Y = ', new_r, new_w, new_Y)
-    print('NEW BQ, TR, factor, Y = ', new_BQ,  new_TR, new_factor, new_Y)
+    # print('r, w, Y = ', new_r, new_w, new_Y)
+    # print('NEW BQ, TR, factor, Y = ', new_BQ,  new_TR, new_factor, new_Y)
 
     # Create list of errors in general equilibrium variables
     error_r = new_r - r
@@ -698,8 +698,8 @@ def run_SS(p, client=None):
         # # = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
         # Return SS values of variables
-        print('YSS = ', Yss)
-        print('F solve solutions: ', solutions_fsolve)
+        # print('YSS = ', Yss)
+        # print('F solve solutions: ', solutions_fsolve)
         output = SS_solver(b_guess, n_guess, rss, wss, Yss, BQss, TR_ss,
                            factor_ss, p, client, fsolve_flag)
     else:
