@@ -35,7 +35,7 @@ test_data = [(base_tpi, base_params, reform_tpi, reform_params,
               'pct_diff', None, None),
              (base_tpi, base_params, reform_tpi, reform_params, 'diff',
               None, None),
-             (base_tpi, base_params, reform_tpi, reform_params, 'cbo',
+             (base_tpi, base_params, reform_tpi, reform_params, 'forecast',
               None, None),
              (base_tpi, base_params, reform_tpi, reform_params,
               'levels', None, None),
@@ -50,7 +50,7 @@ test_data = [(base_tpi, base_params, reform_tpi, reform_params,
 @pytest.mark.parametrize(
     'base_tpi,base_params,reform_tpi,reform_parms,plot_type,' +
     'vertical_line_years,plot_title',
-    test_data, ids=['Pct Diff', 'Diff', 'CBO', 'Levels w reform',
+    test_data, ids=['Pct Diff', 'Diff', 'Forecast', 'Levels w reform',
                     'Levels w/o reform', 'Vertical line included',
                     'Plot title included'])
 def test_plot_aggregates(base_tpi, base_params, reform_tpi,
@@ -60,6 +60,7 @@ def test_plot_aggregates(base_tpi, base_params, reform_tpi,
         base_tpi, base_params, reform_tpi=reform_tpi,
         reform_params=reform_params, var_list=['Y', 'r'],
         plot_type=plot_type, num_years_to_plot=20,
+        forecast_data=np.ones(20), forecast_units='ones',
         vertical_line_years=vertical_line_years, plot_title=plot_title)
     assert fig
 
@@ -81,6 +82,12 @@ def test_plot_aggregates_save_fig(tmpdir):
     img = mpimg.imread(path)
 
     assert isinstance(img, np.ndarray)
+
+
+def test_plot_aggregates_not_a_type(tmpdir):
+    with pytest.raises(AssertionError):
+        output_plots.plot_aggregates(
+            base_tpi, base_params, plot_type='levels2')
 
 
 test_data = [(base_tpi, base_params, None, None, None, None, 'levels'),
