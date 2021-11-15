@@ -142,20 +142,19 @@ def test_replace_outliers():
 
 
 expected_tuple_DEP = (np.array(
-    [6.37000261e-22,  2.73401629e-03,  1.54672458e-08,  1.43446236e-02,
-     2.32797367e-01,  1.00000000e-04,  1.00000000e+00, -3.69059719e-02,
-     -1.01967001e-01,  3.96030053e-02,  1.02987671e-01, -1.30433574e-01]),
-    19527.16203007729, 3798)
+    [2.27262567e-23, 6.52118581e-05, 2.58989255e-13, 5.79350547e-09,
+     3.37733466e-01, 7.99995110e-01, 9.14366888e-01, 9.02760087e-06,
+     9.02760087e-06, 3.37724438e-03, 7.99986083e-03, 9.02760087e-06]),
+     237677.14110076256, 152900)
 expected_tuple_DEP_totalinc = (
-    np.array([6.73787858e-10,  5.41788589e-02,  1.55761571e-01,
-              -1.01967001e-01, 1.04544287e-01, -1.30433574e-01]),
-    20322.76956242071, 3798)
-expected_tuple_linear = (0.15381972028750876, 0.0, 3798)
-expected_tuple_GS = (
-    np.array([1.29769044e-01, 4.36139091e+00, 4.44767848e-07]),
-    20323.465971499016, 3798)
-expected_tuple_linear_mtrx = (0.2677667, 0.0, 3798)
-expected_tuple_linear_mtry = (0.15604427, 0.0, 3798)
+    np.array(
+        [2.37823197e-24, 1.23804760e-05, 2.98681155e-01, 9.02760087e-06,
+         2.98672127e-03, 9.02760087e-06]), 256983.45682508417, 152900)
+expected_tuple_linear = (0.26135747, 0.0, 152900)
+expected_tuple_GS = (np.array(
+    [0.42897179, 0.39679734, 0.00239574]), 242750.4467703229, 152900)
+expected_tuple_linear_mtrx = (0.37030104, 0.0, 152900)
+expected_tuple_linear_mtry = (0.24793767, 0.0, 152900)
 
 
 @pytest.mark.local  # only marking as local because platform
@@ -172,9 +171,11 @@ def test_txfunc_est(rate_type, tax_func_type, numparams,
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
     '''
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
-    (df, s, t, _, output_dir, graph) = input_tuple
+    micro_data = utils.safe_read_pickle(os.path.join(
+        CUR_PATH, 'test_io_data', 'micro_data_dict_for_tests.pkl'))
+    s = 80
+    t = 2030
+    df = txfunc.tax_data_sample(micro_data[str(t)])
     output_dir = tmpdir
     # Put old df variables into new df var names
     df.rename(columns={
@@ -206,9 +207,11 @@ def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams,
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
     '''
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
-    (df, s, t, _, output_dir, graph) = input_tuple
+    micro_data = utils.safe_read_pickle(os.path.join(
+        CUR_PATH, 'test_io_data', 'micro_data_dict_for_tests.pkl'))
+    s = 80
+    t = 2030
+    df = txfunc.tax_data_sample(micro_data[str(t)])
     output_dir = tmpdir
     # Put old df variables into new df var names
     df.rename(columns={
@@ -225,10 +228,13 @@ def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams,
         assert(np.allclose(test_tuple[i], v, rtol=0.0, atol=1e-04))
 
 
-def test_txfunc_est_exception():
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
-    (df, s, t, rate_type, output_dir, graph) = input_tuple
+def test_txfunc_est_exception(tmpdir):
+    micro_data = utils.safe_read_pickle(os.path.join(
+        CUR_PATH, 'test_io_data', 'micro_data_dict_for_tests.pkl'))
+    s = 80
+    t = 2030
+    df = txfunc.tax_data_sample(micro_data[str(t)])
+    output_dir = tmpdir
     df.rename(columns={
         'MTR labor income': 'mtr_labinc',
         'MTR capital income': 'mtr_capinc',
@@ -238,7 +244,7 @@ def test_txfunc_est_exception():
         'Weights': 'weight'}, inplace=True)
     with pytest.raises(RuntimeError) as excinfo:
         txfunc.txfunc_est(
-            df, s, t, 'etr', 'NotAType', 12, output_dir, graph)
+            df, s, t, 'etr', 'NotAType', 12, output_dir, False)
         assert 'Choice of tax function is not in the set' in str(excinfo.value)
 
 
