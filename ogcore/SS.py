@@ -611,17 +611,17 @@ def SS_fsolve(guesses, *args):
     # Create list of errors in general equilibrium variables
     error_r = new_r - r
     # Check and punish violations of the bounds on the interest rate
-    if r + p.delta <= 0:
+    if new_r + p.delta <= 0:
         error_r = 1e9
     error_w = new_w - w
     error_Y = new_Y - Y
-    error_BQ = new_BQ - BQ
-    error_BQ[BQ < 0] = 1e9
+    error_BQ = np.squeeze(new_BQ) - np.squeeze(BQ)
+    error_BQ[np.array(new_BQ) < 0] = 1e9
     error_TR = new_TR - TR
     # divide factor by 1000000 to put on similar scale
     error_factor = new_factor / 1000000 - factor / 1000000
     # Check and punish violations of the factor
-    if factor <= 0:
+    if new_factor <= 0:
         error_factor = 1e9
     if p.baseline:
         # if p.budget_balance:
