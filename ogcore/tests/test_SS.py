@@ -231,10 +231,6 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     for k, v in expected_dict.items():
         print('Testing ', k)
         print('diff = ', np.abs(test_dict[k] - v).max())
-
-    for k, v in expected_dict.items():
-        print('Testing ', k)
-        print('diff = ', np.abs(test_dict[k] - v).max())
         assert(np.allclose(test_dict[k], v, atol=1e-04, equal_nan=True))
 
 
@@ -242,7 +238,8 @@ param_updates5 = {'zeta_K': [1.0], 'budget_balance': True,
                   'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0]}
+                  'zeta_D': [0.0], 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.02}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 
 
@@ -264,18 +261,20 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         rguess = p.world_int_rate[-1]
     else:
         rguess = 0.06483431412921253
+    wguess = firm.get_w_from_r(rguess, p, 'SS')
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = 0.6376591201150815
 
-    test_dict = SS.SS_solver(b_guess, n_guess, rguess, Yguess, BQguess, TRguess,
-                             factorguess, p, dask_client, False)
+    test_dict = SS.SS_solver(
+        b_guess, n_guess, rguess, wguess, Yguess, BQguess, TRguess,
+        factorguess, p, dask_client, False)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
-    del expected_dict['K_g_ss']
-    del expected_dict['I_g_ss']
+    del test_dict['K_g_ss']
+    del test_dict['I_g_ss']
 
     for k, v in expected_dict.items():
         print('Testing ', k)
