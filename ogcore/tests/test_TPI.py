@@ -167,17 +167,24 @@ filename7 = os.path.join(
 
 
 @pytest.mark.local
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates2, filename2),
+#                           (True, {}, filename1),
+#                           (False, {}, filename3),
+#                           (False, param_updates4, filename4),
+#                           (True, param_updates5, filename5),
+#                           (True, param_updates6, filename6),
+#                           (True, param_updates7, filename7)],
+#                          ids=['Baseline, balanced budget', 'Baseline',
+#                               'Reform', 'Reform, baseline spending',
+#                               'Baseline, small open',
+#                               'Baseline, small open some periods',
+#                               'Baseline, delta_tau = 0'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates2, filename2),
-                          (True, {}, filename1),
-                          (False, {}, filename3),
-                          (False, param_updates4, filename4),
-                          (True, param_updates5, filename5),
+                         [
                           (True, param_updates6, filename6),
                           (True, param_updates7, filename7)],
-                         ids=['Baseline, balanced budget', 'Baseline',
-                              'Reform', 'Reform, baseline spending',
-                              'Baseline, small open',
+                         ids=[
                               'Baseline, small open some periods',
                               'Baseline, delta_tau = 0'])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
@@ -308,7 +315,9 @@ param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
 filename6 = filename = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_small_open_some_periods_2.pkl')
-param_updates7 = {'delta_tau_annual': [0.0]}
+param_updates7 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+                  'zeta_D': [0.0], 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.02}
 filename7 = filename = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_delta_tau0_2.pkl')

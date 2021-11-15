@@ -80,7 +80,7 @@ def main():
     ------------------------------------------------------------------------
     '''
     # update the effective corporate income tax rate
-    og_spec.update({'cit_rate': [0.35], 'baseline_spending': True})
+    og_spec.update({'cit_rate': [0.35], 'baseline_spending': False})
     p2 = Specifications(
         baseline=False,
         num_workers=num_workers,
