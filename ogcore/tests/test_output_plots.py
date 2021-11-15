@@ -13,16 +13,18 @@ from ogcore import utils, output_plots
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 base_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_vars_baseline.pkl'))
+base_ss['r_p_ss'] = base_ss.pop('r_hh_ss')
 base_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TPI_vars_baseline.pkl'))
+base_tpi['r_p'] = base_tpi.pop('r_hh')
 base_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'model_params_baseline.pkl'))
-base_taxfunctions = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, 'test_io_data', 'TxFuncEst_baseline.pkl'))
 reform_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_vars_reform.pkl'))
+reform_ss['r_p_ss'] = reform_ss.pop('r_hh_ss')
 reform_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TPI_vars_reform.pkl'))
+reform_tpi['r_p'] = reform_tpi.pop('r_hh')
 reform_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'model_params_reform.pkl'))
 reform_taxfunctions = utils.safe_read_pickle(
@@ -33,7 +35,7 @@ test_data = [(base_tpi, base_params, reform_tpi, reform_params,
               'pct_diff', None, None),
              (base_tpi, base_params, reform_tpi, reform_params, 'diff',
               None, None),
-             (base_tpi, base_params, reform_tpi, reform_params, 'cbo',
+             (base_tpi, base_params, reform_tpi, reform_params, 'forecast',
               None, None),
              (base_tpi, base_params, reform_tpi, reform_params,
               'levels', None, None),
@@ -48,7 +50,7 @@ test_data = [(base_tpi, base_params, reform_tpi, reform_params,
 @pytest.mark.parametrize(
     'base_tpi,base_params,reform_tpi,reform_parms,plot_type,' +
     'vertical_line_years,plot_title',
-    test_data, ids=['Pct Diff', 'Diff', 'CBO', 'Levels w reform',
+    test_data, ids=['Pct Diff', 'Diff', 'Forecast', 'Levels w reform',
                     'Levels w/o reform', 'Vertical line included',
                     'Plot title included'])
 def test_plot_aggregates(base_tpi, base_params, reform_tpi,
@@ -58,6 +60,7 @@ def test_plot_aggregates(base_tpi, base_params, reform_tpi,
         base_tpi, base_params, reform_tpi=reform_tpi,
         reform_params=reform_params, var_list=['Y', 'r'],
         plot_type=plot_type, num_years_to_plot=20,
+        forecast_data=np.ones(20), forecast_units='ones',
         vertical_line_years=vertical_line_years, plot_title=plot_title)
     assert fig
 
@@ -79,6 +82,12 @@ def test_plot_aggregates_save_fig(tmpdir):
     img = mpimg.imread(path)
 
     assert isinstance(img, np.ndarray)
+
+
+def test_plot_aggregates_not_a_type(tmpdir):
+    with pytest.raises(AssertionError):
+        output_plots.plot_aggregates(
+            base_tpi, base_params, plot_type='levels2')
 
 
 test_data = [(base_tpi, base_params, None, None, None, None, 'levels'),

@@ -4,19 +4,17 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 from ogcore.constants import (GROUP_LABELS, VAR_LABELS, ToGDP_LABELS,
-                              CBO_UNITS, DEFAULT_START_YEAR)
+                              DEFAULT_START_YEAR)
 import ogcore.utils as utils
 from ogcore.utils import Inequality
-style_file = os.path.join(
-    'https://github.com/PSLmodels/OG-Core/blob/master/ogcore/' +
-    'OGcorePlots.mplstyle')
-plt.style.use(style_file)
 
 
 def plot_aggregates(base_tpi, base_params, reform_tpi=None,
                     reform_params=None, var_list=['Y', 'C', 'K', 'L'],
                     plot_type='pct_diff', num_years_to_plot=50,
                     start_year=DEFAULT_START_YEAR,
+                    forecast_data=None,
+                    forecast_units=None,
                     vertical_line_years=None,
                     plot_title=None, path=None):
     '''
@@ -36,11 +34,13 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
             'diff': plots difference between baseline and reform
                 (reform-base)
             'levels': plot variables in model units
-            'cbo': plots variables in levels relative to CBO baseline
-                projection (only available for macro variables in CBO
-                long-term forecasts)
+            'forecast': plots variables in levels relative to baseline
+                economic forecast
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
+        forecast_data (array_like): baseline economic forecast series,
+            must have length = num_year_to_plot
+        forecast_units (str): units that baseline economic forecast is in
         vertical_line_years (list): list of integers for years want
             vertical lines at
         plot_title (string): title for plot
@@ -63,7 +63,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
         if plot_type == 'pct_diff':
-            if v in ['r_gov', 'r', 'r_hh']:
+            if v in ['r_gov', 'r', 'r_p']:
                 # Compute just percentage point changes for rates
                 plot_var = reform_tpi[v] - base_tpi[v]
             else:
@@ -89,34 +89,23 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
                                        num_years_to_plot],
                          label='Reform ' + VAR_LABELS[v])
             ylabel = r'Model Units'
-        elif plot_type == 'cbo':
-            # Need reform and baseline to ensure CBO plot makes sense
+        elif plot_type == 'forecast':
+            # Need reform and baseline to ensure plot makes sense
             assert (reform_tpi is not None)
-            # read in CBO forecasts
-            df_cbo = utils.read_cbo_forecast()
-            # assert variable in cbo data
-            assert (v in df_cbo.columns)
-            # assert cbo data has start year and end year
-            assert (df_cbo.year.min() <= start_year)
-            assert (df_cbo.year.max() >= start_year + num_years_to_plot)
-            cbo_data = df_cbo[
-                (df_cbo['year'] >= start_year) &
-                (df_cbo['year'] <= start_year +
-                 num_years_to_plot - 1)][v].values
-            # Plot CBO baseline
-            plot_var_base = cbo_data
+            # Plot forecast of baseline
+            plot_var_base = forecast_data
             plt.plot(year_vec, plot_var_base, label='Baseline ' +
                      VAR_LABELS[v])
-            # Plot change in CBO baseline
+            # Plot change from baseline forecast
             pct_change = ((reform_tpi[v] - base_tpi[v]) /
                           base_tpi[v])[start_index: start_index +
                                        num_years_to_plot]
-            plot_var_reform = (1 + pct_change) * cbo_data
+            plot_var_reform = (1 + pct_change) * forecast_data
             plt.plot(year_vec, plot_var_reform, label='Reform ' +
                      VAR_LABELS[v])
             # making units labels will not work if multiple variables
             # and they are in different units
-            ylabel = CBO_UNITS[v]
+            ylabel = forecast_units
         else:
             print('Please enter a valid plot type')
             assert(False)

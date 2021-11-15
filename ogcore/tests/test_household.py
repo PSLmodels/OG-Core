@@ -581,7 +581,7 @@ def test_get_y():
     '''
     Test of household.get_y() function.
     '''
-    r_hh = np.array([0.05, 0.04, 0.09])
+    r_p = np.array([0.05, 0.04, 0.09])
     w = np.array([1.2, 0.8, 2.5])
     b_s = np.array([0.5, 0.99, 9])
     n = np.array([0.8, 3.2, 0.2])
@@ -591,7 +591,7 @@ def test_get_y():
     p.S = 3
     p.e = np.array([0.99, 1.5, 0.2])
 
-    test_y = household.get_y(r_hh, w, b_s, n, p)
+    test_y = household.get_y(r_p, w, b_s, n, p)
 
     assert np.allclose(test_y, expected_y)
 

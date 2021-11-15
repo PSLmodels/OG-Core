@@ -6,10 +6,6 @@ import matplotlib
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
-style_file = os.path.join(
-    'https://github.com/PSLmodels/OG-Core/blob/master/ogcore/' +
-    'OGcorePlots.mplstyle')
-plt.style.use(style_file)
 
 
 def plot_imm_rates(p, year=DEFAULT_START_YEAR, include_title=False,

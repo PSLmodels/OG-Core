@@ -20,7 +20,7 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'D_f': 'Foreign-owned Gov Debt ($D^f_t$)',
               'r': 'Real interest rate ($r_t$)',
               'r_gov': 'Real interest rate on gov debt ($r_{gov,t}$)',
-              'r_hh': 'Real interest rate on HH portfolio ($r_{hh,t}$)',
+              'r_p': 'Real interest rate on HH portfolio ($r_{p,t}$)',
               'w': 'Wage rate', 'BQ': 'Aggregate bequests ($BQ_{j,t}$)',
               'total_tax_revenue': 'Total tax revenue ($REV_t$)',
               'business_tax_revenue': 'Business tax revenue',
@@ -73,7 +73,7 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'rss': 'Real interest rate ($\\bar{r}$)',
               'r_gov_ss':
                   'Real interest rate on gov debt ($\\bar{r}_{gov}$)',
-              'r_hh_ss':
+              'r_p_ss':
                   'Real interest rate on HH portfolio ($\\bar{r}_{hh}$)',
               'wss': 'Wage rate ($\\bar{w}$)',
               'BQss': 'Aggregate bequests ($\\bar{BQ}_{j}$)',
@@ -105,14 +105,6 @@ GROUP_LABELS = {7: {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
                      7: '99.5-99.9%', 8: '99.9-99.99%',
                      9: 'Top 0.01%'}}
 
-CBO_UNITS = {
-    'Y': r'Billions of \$', 'r': 'Percent', 'w_growth': 'Percent',
-    'L_growth': 'Percent', 'I_total': r'Billions of \$', 'L': '2012=100',
-    'C': r'Billions of \$', 'agg_pension_outlays': r'Billions of \$',
-    'G': r'Billions of \$', 'iit_revenue': r'Billions of \$',
-    'payroll_tax_revenue': r'Billions of \$',
-    'business_tax_revenue': r'Billions of \$', 'wL': r'Billions of \$',
-    'D': r'Billions of \$'}
 
 PARAM_LABELS = {
     'start_year': ['Initial year', r'$\texttt{start_year}$'],

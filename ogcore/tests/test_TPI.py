@@ -212,6 +212,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
 
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
+    expected_dict['r_p'] = expected_dict.pop('r_hh')
 
     for k, v in expected_dict.items():
         try:
@@ -275,6 +276,7 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
+    expected_dict['r_p'] = expected_dict.pop('r_hh')
 
     for k, v in expected_dict.items():
         print('Max diff in ', k, ' = ')
@@ -354,6 +356,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
+    expected_dict['r_p'] = expected_dict.pop('r_hh')
 
     for k, v in expected_dict.items():
         try:
