@@ -34,67 +34,60 @@ input_tuple = utils.safe_read_pickle(
 p1 = Specifications(baseline=True)
 p1.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0]})
 guesses1 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args1 = (bssmat, nssmat, None, None, p1, None)
 expected1 = np.array([
-    -0.026632037158481975, -0.0022739752626707334, -0.01871875707724979,
-    -0.01791935965422934, 0.005996289165268601, 0.00964100151012603,
-    -0.01953460990186908, -0.0029633389016814967, 0.1306862551496613,
-    0.11574464544202477])
+    -0.02663204, 0.19439221, 1.4520695, -0.00227398, -0.01871876, -0.01791936,
+    0.00599629, 0.009641, -0.01953461, -0.00296334, 0.13068626, 0.11574465])
 # Parameterize the reform, closed econ case
 p2 = Specifications(baseline=False)
 p2.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0]})
 guesses2 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
 args2 = (bssmat, nssmat, None, 0.51, p2, None)
 expected2 = np.array([
-    -0.030232643078209973, -0.002371139373741624, -0.01637669829114836,
-    -0.014404669292893904, 0.005875798127829608, 0.009489605242631064,
-    -0.01930931544418691, -0.0029454311332426275, 0.13208003970756407])
+    -0.03023264, 0.22820741, 1.467556, -0.00237114, -0.0163767, -0.01440467,
+    0.0058758, 0.00948961, -0.01930932, -0.00294543, 0.13208004])
 # Parameterize the reform, closed econ, baseline spending case
 p3 = Specifications(baseline=False)
 p3.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0],
                           'baseline_spending': True})
 guesses3 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
 args3 = (bssmat, nssmat, 0.13, 0.51, p3, None)
 expected3 = np.array([
-    -0.04031619469134644, 0.002754829779058155, 0.005665309738855779,
-    0.008140368498332051, 0.007352479311256247, 0.010806872033967399,
-    0.007183869209053399, -0.00284466958926688, 0.7269578822834164])
+    -0.03162803, 0.24195882, 0.41616509, 0.00285045, 0.00579616, 0.00828384,
+    0.00744095, 0.01091296, 0.00732247, -0.00284388, 0.])
 # Parameterize the baseline, partial open economy case (default)
 p4 = Specifications(baseline=True)
 guesses4 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args4 = (bssmat, nssmat, None, None, p4, None)
 expected4 = np.array([
-    -0.03615195306306068, -0.0025227018857025708, 0.0005778317722585288,
-    0.004588284248481369, 0.005706423522356211, 0.00928509074411313,
-    0.005887584256507098, 0.002849544478420344, 0.13774167744621094,
-    0.09930811783393777])
+    -3.61519332e-02, 2.89296724e-01, 1.53046291e+00, -2.52270144e-03,
+    5.77827654e-04, 4.58828506e-03, 5.70642404e-03, 9.28509138e-03,
+    5.88758511e-03, 2.84954467e-03, 1.37741662e-01, 9.93081343e-02])
 # Parameterize the baseline, small open econ case
 p5 = Specifications(baseline=True)
 p5.update_specifications({'zeta_D': [0.0], 'zeta_K': [1.0]})
 guesses5 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args5 = (bssmat, nssmat, None, 0.51, p5, None)
 expected5 = np.array([
-    -0.019999999999999962, -0.0021216948497802778,
-    0.0013874915656953528, 0.0053198904577732575, 0.006173756535859736,
-    0.009858904353577247, 0.006657850176415573, 0.0030235933473326034,
-    0.13082844301733987, 0.09467304802224508])
+    -2.00000000e-02, 1.37696942e-01, 1.45364937e+00, -2.12169485e-03,
+    1.38749157e-03, 5.31989046e-03, 6.17375654e-03, 9.85890435e-03,
+    6.65785018e-03, 3.02359335e-03, 1.30828443e-01, 9.46730480e-02])
 # Parameterize the baseline closed economy, delta tau = 0 case
 p6 = Specifications(baseline=True)
 p6.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0],
                           'delta_tau_annual': [0.0]})
 guesses6 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args6 = (bssmat, nssmat, None, None, p6, None)
 expected6 = np.array([
-    -0.045453339832995945, -0.002801342521138476, 0.0003419917882823524,
-    0.004084012889204677, 0.005384114713826117, 0.008889155694384665,
-    0.005358783502477, 0.0027296252357792237, 0.14237702198971164,
-    0.1009176917078035])
+    -4.54533398e-02, 3.95241402e-01, 1.58196691e+00, -2.80134252e-03,
+    3.41991788e-04, 4.08401289e-03, 5.38411471e-03, 8.88915569e-03,
+    5.35878350e-03, 2.72962524e-03, 1.42377022e-01, 1.00917692e-01])
 
 
 @pytest.mark.parametrize(
@@ -105,10 +98,10 @@ expected6 = np.array([
      (guesses4, args4, expected4),
      (guesses5, args5, expected5),
      (guesses6, args6, expected6)],
-     ids=['Baseline, Closed', 'Reform, Closed',
-          'Reform, Baseline spending=True, Closed',
-          'Baseline, Partial Open', 'Baseline, Small Open',
-          'Baseline, Closed, delta_tau = 0'])
+    ids=['Baseline, Closed', 'Reform, Closed',
+         'Reform, Baseline spending=True, Closed',
+         'Baseline, Partial Open', 'Baseline, Small Open',
+         'Baseline, Closed, delta_tau = 0'])
 def test_SS_fsolve(guesses, args, expected):
     '''
     Test SS.SS_fsolve function.  Provide inputs to function and
@@ -122,17 +115,17 @@ def test_SS_fsolve(guesses, args, expected):
     w = firm.get_w_from_r(r, p, 'SS')
 
     if p.baseline:
-        BQ = guesses[1:-2]
+        BQ = guesses[3:-2]
         TR = guesses[-2]
         factor = guesses[-1]
         Y = TR / p.alpha_T[-1]
     else:
-        BQ = guesses[1:-1]
+        BQ = guesses[3:-1]
+        TR = guesses[-1]
         if p.baseline_spending:
-            Y = guesses[-1]
             TR = TR_ss
+            Y = guesses[2]
         else:
-            TR = guesses[-1]
             Y = TR / p.alpha_T[-1]
 
     if p.baseline:
@@ -175,7 +168,8 @@ def test_SS_fsolve(guesses, args, expected):
     # new_list = errors = [error_r, error_w, error_Y] + list(error_BQ) + [error_TR, error_factor]
 
     test_list = SS.SS_fsolve(new_guesses, *args)
-    assert(np.allclose(np.array(test_list)[0], np.array(expected)[0],
+    print('Test results = ', np.array(test_list))
+    assert(np.allclose(np.array(test_list), np.array(expected),
                        atol=1e-6))
 
 
