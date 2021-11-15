@@ -371,8 +371,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         n_vec = solutions[p.S:]
         n_mat[t + ind, ind] = n_vec
 
-    print('Type ', j, ' max euler error = ',
-          np.absolute(euler_errors).max())
+    # print('Type ', j, ' max euler error = ',
+    #       np.absolute(euler_errors).max())
 
     return euler_errors, b_mat, n_mat
 
@@ -453,8 +453,10 @@ def run_TPI(p, client=None):
                              ss_vars['Dss'], MPKg, p, 'TPI')
 
     # compute w
-    w = np.ones_like(r) * ss_vars['wss']
-    w[:p.T] = firm.get_w(Y[:p.T], L[:p.T], p, 'TPI')
+    w = np.ones_like(r) * ss_vars['wss']  # if just this un commenteed, no open fails
+    if not any(p.zeta_K == 1):
+        w[:p.T] = firm.get_w(Y[:p.T], L[:p.T], p, 'TPI')
+    # wnew = firm.get_w_from_r(r[:p.T], p, 'TPI')  #TODO: delete this
 
     # initial guesses at fiscal vars
     if p.budget_balance:
@@ -576,6 +578,8 @@ def run_TPI(p, client=None):
         w_open = firm.get_w_from_r(p.world_int_rate[:p.T], p, 'TPI')
         K_demand_open = firm.get_K_new(
             p.world_int_rate[:p.T], w_open, L[:p.T], p, 'TPI')
+        # K_demand_open = firm.get_K(
+        #      L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
         K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
             B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
         Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
@@ -584,16 +588,18 @@ def run_TPI(p, client=None):
         if p.baseline:
             K_g0 = p.initial_Kg_ratio * Ynew[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, 'TPI')
+        Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
         rnew = r.copy()
         rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         # For case where economy is small open econ
-        r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
+        rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
         MPKg = firm.get_MPx(Ynew[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
         r_p_new = aggr.get_r_p(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
                                Dnew[:p.T], MPKg[:p.T], p, 'TPI')
         # compute w
         wnew = firm.get_w(Ynew[:p.T], L[:p.T], p, 'TPI')
+        # wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
 
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
@@ -716,11 +722,11 @@ def run_TPI(p, client=None):
         household.constraint_checker_TPI(
             b_mat[t], n_mat[t], c_mat[t], t, p.ltilde)
 
-    eul_savings = euler_errors[:, :p.S, :].max(1).max(1)
-    eul_laborleisure = euler_errors[:, p.S:, :].max(1).max(1)
+    eul_savings = euler_errors[:, :p.S, :]
+    eul_laborleisure = euler_errors[:,  p.S:, :]
 
-    print('Max Euler error, savings: ', eul_savings)
-    print('Max Euler error labor supply: ', eul_laborleisure)
+    print('Max Euler error, savings: ', np.abs(eul_savings).max())
+    print('Max Euler error labor supply: ', np.abs(eul_laborleisure).max())
 
     '''
     ------------------------------------------------------------------------

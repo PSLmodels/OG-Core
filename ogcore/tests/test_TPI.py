@@ -159,7 +159,8 @@ filename6 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_small_open_some_periods.pkl')
 param_updates7 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0]}
+                  'zeta_D': [0.0], 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.02}
 filename7 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_delta_tau0.pkl')
@@ -212,12 +213,20 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
     expected_dict['r_p'] = expected_dict.pop('r_hh')
+    print('EULER sizes = ', expected_dict['eul_savings'].shape, test_dict['eul_savings'].shape)
+    test_dict['eul_savings'] = \
+        test_dict['eul_savings'][:, :, :].max(1).max(1)
+    test_dict['eul_laborleisure'] = \
+        test_dict['eul_laborleisure'][:, :, :].max(1).max(1)
 
     for k, v in expected_dict.items():
+        print('Testing, ', k)
         try:
+            print('Diff = ', np.abs(test_dict[k][:p.T] - v[:p.T]).max())
             assert(np.allclose(
                 test_dict[k][:p.T], v[:p.T], rtol=1e-04, atol=1e-04))
         except ValueError:
+            print('Diff = ', np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
             assert(np.allclose(
                 test_dict[k][:p.T, :, :], v[:p.T, :, :], rtol=1e-04,
                 atol=1e-04))
@@ -275,7 +284,6 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
-    expected_dict['r_p'] = expected_dict.pop('r_hh')
 
     for k, v in expected_dict.items():
         print('Max diff in ', k, ' = ')
@@ -355,12 +363,14 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
-    expected_dict['r_p'] = expected_dict.pop('r_hh')
 
     for k, v in expected_dict.items():
+        print('Checking ', k)
         try:
+            print('Diff = ', np.abs(test_dict[k][:p.T] - v[:p.T]).max())
             assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04,
                                atol=1e-04))
         except ValueError:
+            print('Diff = ', np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
             assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :],
                                rtol=1e-04, atol=1e-04))
