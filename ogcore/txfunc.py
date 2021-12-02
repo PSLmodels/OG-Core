@@ -1222,7 +1222,7 @@ def tax_func_estimate(micro_data, BW, S, starting_age, ending_age,
          ('tfunc_mtry_obs', mtry_obs_arr), ('tfunc_time', elapsed_time),
          ('tax_func_type', tax_func_type),
          ('start_year', start_year), ('BW', BW),
-         ('taxcalc_version': taxcalc_version)])
+         ('taxcalc_version', taxcalc_version)])
 
     if tax_func_path:
         with open(tax_func_path, "wb") as f:
