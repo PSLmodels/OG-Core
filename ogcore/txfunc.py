@@ -16,6 +16,7 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
+import pkg_resources
 import ogcore.parameter_plots as pp
 from ogcore.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
 import warnings
@@ -1205,6 +1206,7 @@ def tax_func_estimate(micro_data, BW, S, starting_age, ending_age,
 
     # Save tax function parameters array and computation time in
     # dictionary
+    taxcalc_version = pkg_resources.get_distribution("taxcalc").version
     dict_params = dict(
         [('tfunc_etr_params_S', etrparam_arr_S),
          ('tfunc_mtrx_params_S', mtrxparam_arr_S),
@@ -1219,7 +1221,8 @@ def tax_func_estimate(micro_data, BW, S, starting_age, ending_age,
          ('tfunc_mtrx_obs', mtrx_obs_arr),
          ('tfunc_mtry_obs', mtry_obs_arr), ('tfunc_time', elapsed_time),
          ('tax_func_type', tax_func_type),
-         ('start_year', start_year), ('BW', BW)])
+         ('start_year', start_year), ('BW', BW),
+         ('taxcalc_version': taxcalc_version)])
 
     if tax_func_path:
         with open(tax_func_path, "wb") as f:
