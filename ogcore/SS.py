@@ -151,6 +151,8 @@ def inner_loop(outer_loop_vars, p, client):
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
+    print('r, w = ', r, w)
+
     # w = firm.get_w_from_r(r, p, 'SS')
     r_gov = fiscal.get_r_gov(r, p)
     D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
@@ -722,7 +724,8 @@ def run_SS(p, client=None):
             else:
                 b_guess = np.ones((p.S, p.J)) * 0.07
                 n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-            if p.zeta_D[-1] == 1.0:
+            # if p.zeta_D[-1] == 1.0:
+            if p.zeta_K[-1] == 1.0:
                 rguess = p.world_int_rate[-1]
                 # wguess = 1.3320748594894016  # this works perfectly for the default world int rate
             else:

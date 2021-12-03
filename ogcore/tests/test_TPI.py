@@ -154,7 +154,9 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
 param_updates5 = {'zeta_K': [1.0]}
 filename5 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_small_open.pkl')
-param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
+param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2],
+                  'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.02}
 filename6 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_small_open_some_periods.pkl')
@@ -182,11 +184,9 @@ filename7 = os.path.join(
 #                               'Baseline, delta_tau = 0'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-                          (True, param_updates6, filename6),
-                          (True, param_updates7, filename7)],
+                          (True, param_updates6, filename6)],
                          ids=[
-                              'Baseline, small open some periods',
-                              'Baseline, delta_tau = 0'])
+                              'Baseline, small open some periods'])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
                           dask_client):
     '''
@@ -203,7 +203,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
     p.update_specifications(param_updates)
 
     # Need to run SS first to get results
-    SS.ENFORCE_SOLUTION_CHECKS = False
+    SS.ENFORCE_SOLUTION_CHECKS = True#False
     ss_outputs = SS.run_SS(p, client=dask_client)
 
     if p.baseline:
@@ -218,13 +218,16 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
+    # pickle.dump(test_dict, open(filename, 'wb'))
     expected_dict = utils.safe_read_pickle(filename)
-    expected_dict['r_p'] = expected_dict.pop('r_hh')
-    print('EULER sizes = ', expected_dict['eul_savings'].shape, test_dict['eul_savings'].shape)
-    test_dict['eul_savings'] = \
-        test_dict['eul_savings'][:, :, :].max(1).max(1)
-    test_dict['eul_laborleisure'] = \
-        test_dict['eul_laborleisure'][:, :, :].max(1).max(1)
+    try:
+        expected_dict['r_p'] = expected_dict.pop('r_hh')
+        test_dict['eul_savings'] = \
+            test_dict['eul_savings'][:, :, :].max(1).max(1)
+        test_dict['eul_laborleisure'] = \
+            test_dict['eul_laborleisure'][:, :, :].max(1).max(1)
+    except KeyError:
+        pass
 
     for k, v in expected_dict.items():
         print('Testing, ', k)
