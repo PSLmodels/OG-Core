@@ -498,11 +498,16 @@ def run_TPI(p, client=None):
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
+        if client:
+            scattered_p = client.scatter(p, broadcast=True)
+        else:
+            scattered_p = p
         for j in range(p.J):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
             lazy_values.append(
-                delayed(inner_loop)(guesses, outer_loop_vars,
-                                    initial_values, ubi, j, ind, p))
+                delayed(inner_loop)(
+                    guesses, outer_loop_vars, initial_values, ubi, j,
+                    ind, scattered_p))
         if client:
             futures = client.compute(lazy_values,
                                      num_workers=p.num_workers)
