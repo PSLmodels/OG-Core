@@ -167,14 +167,18 @@ def inner_loop(outer_loop_vars, p, client):
     ubi = p.ubi_nom_array[-1, :, :] / factor
 
     lazy_values = []
+    if client:
+        scattered_p = client.scatter(p, broadcast=True)
+    else:
+        scattered_p = p
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
-        euler_params = (r_p, w, bq[:, j], tr[:, j], ubi[:, j], factor, j, p)
-        lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
-                                               guesses * .9,
-                                               args=euler_params,
-                                               xtol=MINIMIZER_TOL,
-                                               full_output=True))
+        euler_params = (
+            r_p, w, bq[:, j], tr[:, j], ubi[:, j], factor, j,
+            scattered_p)
+        lazy_values.append(delayed(opt.fsolve)(
+            euler_equation_solver, guesses * .9,
+            args=euler_params, xtol=MINIMIZER_TOL, full_output=True))
     if client:
         futures = client.compute(lazy_values, num_workers=p.num_workers)
         results = client.gather(futures)
@@ -183,7 +187,6 @@ def inner_loop(outer_loop_vars, p, client):
             *lazy_values, scheduler=dask.multiprocessing.get,
             num_workers=p.num_workers)
 
-    # for j, result in results.items():
     for j, result in enumerate(results):
         [solutions, infodict, ier, message] = result
         euler_errors[:, j] = infodict['fvec']

@@ -480,7 +480,7 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
 param_updates1 = {}
 filename1 = 'run_SS_baseline_outputs.pkl'
 param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.08,
-                  'initial_guess_TR_SS': 0.02}
+                  'initial_guess_TR_SS': 0.03}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
 param_updates3 = {'zeta_K': [1.0]}
 filename3 = 'run_SS_baseline_small_open.pkl'
@@ -488,8 +488,8 @@ param_updates4 = {'zeta_K': [1.0], 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
 param_updates5 = {}
 filename5 = 'run_SS_reform.pkl'
-param_updates6 = {'use_zeta': True, 'initial_guess_r_SS': 0.07,
-                  'initial_guess_TR_SS': 0.02}
+param_updates6 = {'use_zeta': True, 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.03}
 filename6 = 'run_SS_reform_use_zeta.pkl'
 param_updates7 = {'zeta_K': [1.0]}
 filename7 = 'run_SS_reform_small_open.pkl'
@@ -500,8 +500,8 @@ filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'baseline_spending': True, 'use_zeta': True}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                   'zeta_D': [0.0], 'initial_guess_r_SS': 0.08,
-                  'initial_guess_TR_SS': 0.02}
+                   'zeta_D': [0.0]}#, 'initial_guess_r_SS': 0.06,
+                #    'initial_guess_TR_SS': 0.02}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 param_updates12 = {'delta_g_annual': 0.02, 'alpha_I': [0.00],
                    'gamma_g': 0.00, 'initial_guess_r_SS': 0.044}
@@ -523,7 +523,7 @@ filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
 #                           (False, param_updates6, filename6),
 #                           (False, param_updates7, filename7),
 #                           (False, param_updates8, filename8),
-#                           (False, param_updates11, filename11)
+#                           (False, param_updates11, filename11),
 #                           (True, param_updates12, filename12)
 #                           ],
 #                          ids=[
@@ -538,14 +538,21 @@ filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
 #                               'Reform, delta_tau=0',
 #                               'Baseline, non-zero Kg'
 #                               ])
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [
+#                           (True, param_updates2, filename2)
+#                           ],
+#                          ids=[
+
+#                               'Baseline, use zeta'
+#                               ])
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-
+                          (True, param_updates11, filename11),
                           (True, param_updates12, filename12)
                           ],
                          ids=[
-
-                              'Baseline, non-zero Kg'
+                              'Reform, delta_tau=0', 'Baseline, non-zero Kg'
                               ])
 @pytest.mark.local
 def test_run_SS(baseline, param_updates, filename, dask_client):
