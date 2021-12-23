@@ -620,8 +620,9 @@ def SS_fsolve(guesses, *args):
         error_r = 1e9
     error_w = new_w - w
     error_Y = new_Y - Y
-    error_BQ = np.squeeze(new_BQ) - np.squeeze(BQ)
-    error_BQ[np.array(new_BQ) < 0] = 1e9
+    # error_BQ = np.squeeze(new_BQ) - np.squeeze(BQ)
+    error_BQ = new_BQ - BQ
+    # error_BQ[np.array(new_BQ) < 0] = 1e9
     error_TR = new_TR - TR
     # divide factor by 1000000 to put on similar scale
     error_factor = new_factor / 1000000 - factor / 1000000
