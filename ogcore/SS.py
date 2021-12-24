@@ -161,7 +161,7 @@ def inner_loop(outer_loop_vars, p, client):
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
     K = firm.get_K_from_Y(Y, r, p, 'SS')
-    r_p = aggr.get_r_p(r, r_gov, K, D, MPKg, p, 'SS')
+    r_p = aggr.get_r_p(r, r_gov, K, K_g, D, MPKg, p, 'SS')
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
     ubi = p.ubi_nom_array[-1, :, :] / factor
@@ -215,7 +215,7 @@ def inner_loop(outer_loop_vars, p, client):
                    list(bssmat[:-1, :]))
     new_r_gov = fiscal.get_r_gov(new_r, p)
     MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
-    new_r_p = aggr.get_r_p(new_r, new_r_gov, K, D, MPKg, p, 'SS')
+    new_r_p = aggr.get_r_p(new_r, new_r_gov, K, K_g, D, MPKg, p, 'SS')
     average_income_model = ((new_r_p * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -402,7 +402,7 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, 'SS')
     MPKg = firm.get_MPx(Yss, K_g_ss, p.gamma_g, p, 'SS')
     # print('MPKg = ', MPKg)
-    r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, Dss, MPKg, p, 'SS')
+    r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, K_g_ss, Dss, MPKg, p, 'SS')
     # print('R and Rp = ', rss, r_p_ss)
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
@@ -568,40 +568,6 @@ def SS_fsolve(guesses, *args):
     if not p.budget_balance and not p.baseline_spending:
         Y = TR / p.alpha_T[-1]
 
-    # print('guess in = ', guesses)
-    # if p.baseline:
-    #     if p.budget_balance:
-    #         Y = guesses[2]
-    #         BQ = guesses[3:-2]
-    #     else:
-    #         BQ = guesses[2:-2]
-    #     TR = guesses[-2]
-    #     factor = guesses[-1]
-    #     Y = TR / p.alpha_T[-1]
-    # else:
-    #     BQ = guesses[2:-1]
-    #     if p.baseline_spending:
-    #         Y = guesses[-1]
-    #     else:
-    #         TR = guesses[-1]
-    #         Y = TR / p.alpha_T[-1]
-    # Create tuples of outler loop vars
-    # if p.baseline:
-        # if p.budget_balance:
-        #     outer_loop_vars = (bssmat, nssmat, r, w, BQ, Y, TR, factor)
-        # else:
-        #     Y = TR / p.alpha_T[-1]
-        #     outer_loop_vars = (bssmat, nssmat, r, w, BQ, Y, TR, factor)
-    # else:
-    #     if p.baseline_spending:
-    #         outer_loop_vars = (bssmat, nssmat, r, w, BQ, Y, TR_ss, factor_ss)
-    #     else:
-    #         if p.budget_balance:
-    #             outer_loop_vars = (bssmat, nssmat, r, w, BQ, TR, factor_ss)
-    #         else:
-    #             Y = TR / p.alpha_T[-1]
-    #             outer_loop_vars = (bssmat, nssmat, r, w, BQ, Y, TR, factor_ss)
-
     outer_loop_vars = (bssmat, nssmat, r, w, Y, BQ, TR, factor)
 
     # Solve for the steady state levels of b and n, given w, r, TR and
@@ -610,19 +576,15 @@ def SS_fsolve(guesses, *args):
      new_TR, new_Y, new_factor, new_BQ, average_income_model) =\
         inner_loop(outer_loop_vars, p, client)
 
-    # print('r, w, Y = ', new_r, new_w, new_Y)
-    # print('NEW BQ, TR, factor, Y = ', new_BQ,  new_TR, new_factor, new_Y)
-
     # Create list of errors in general equilibrium variables
+    print("Implied r = ", new_r)
     error_r = new_r - r
     # Check and punish violations of the bounds on the interest rate
     if new_r + p.delta <= 0:
         error_r = 1e9
     error_w = new_w - w
     error_Y = new_Y - Y
-    # error_BQ = np.squeeze(new_BQ) - np.squeeze(BQ)
     error_BQ = new_BQ - BQ
-    # error_BQ[np.array(new_BQ) < 0] = 1e9
     error_TR = new_TR - TR
     # divide factor by 1000000 to put on similar scale
     error_factor = new_factor / 1000000 - factor / 1000000
@@ -630,17 +592,8 @@ def SS_fsolve(guesses, *args):
     if new_factor <= 0:
         error_factor = 1e9
     if p.baseline:
-        # if p.budget_balance:
         errors = [error_r, error_w, error_Y] + list(error_BQ) + [error_TR, error_factor]
-        # else:
-        #     errors = [error_r, error_w] + list(error_BQ) + [error_TR, error_factor]
     else:
-        # if p.baseline_spending:
-        #     errors = [error_r, error_w, error_Y] + list(error_BQ)
-        # else:
-        #     if p.budget_balance:
-        #         errors = [error_r, error_w, error_Y] + list(error_BQ)
-        #     else:
         errors = [error_r, error_w, error_Y] + list(error_BQ) + [error_TR]
     if VERBOSE:
         print('GE loop errors = ', errors)

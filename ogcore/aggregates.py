@@ -400,12 +400,7 @@ def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
         Y - C - I_d - I_g - G - (r + p.delta) * K_f + new_borrowing_f -
         debt_service_f
         )
-    rc_error1 = (
-        Y - C - I_d - I_g - G - (r) * K_f + new_borrowing_f -
-        debt_service_f
-        )
-    print('Two RC errors = ', rc_error, rc_error1)
-    print('I_g = ', I_g)
+
     return rc_error
 
 

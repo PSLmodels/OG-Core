@@ -500,11 +500,11 @@ filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'baseline_spending': True, 'use_zeta': True}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                   'zeta_D': [0.0]}#, 'initial_guess_r_SS': 0.06,
-                #    'initial_guess_TR_SS': 0.02}
+                   'zeta_D': [0.0]}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
-param_updates12 = {'delta_g_annual': 0.02, 'alpha_I': [0.00],
-                   'gamma_g': 0.00, 'initial_guess_r_SS': 0.044}
+param_updates12 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
+                   'gamma_g': 0.07, 'initial_guess_r_SS': 0.06,
+                   'initial_guess_TR_SS': 0.03}
 filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
 
 
@@ -538,22 +538,6 @@ filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
                               'Reform, delta_tau=0',
                               'Baseline, non-zero Kg'
                               ])
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [
-#                           (True, param_updates2, filename2)
-#                           ],
-#                          ids=[
-
-#                               'Baseline, use zeta'
-#                               ])
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [
-#                           (True, param_updates11, filename11),
-#                           (True, param_updates12, filename12)
-#                           ],
-#                          ids=[
-#                               'Reform, delta_tau=0', 'Baseline, non-zero Kg'
-#                               ])
 @pytest.mark.local
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
@@ -567,9 +551,6 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
             baseline=True,
             num_workers=NUM_WORKERS)
         p_base.update_specifications(param_updates)
-        # if p_base.use_zeta:
-        #     p_base.update_specifications({
-        #         'initial_guess_r_SS': 0.07, 'initial_guess_TR_SS': 0.02})
         p_base.baseline_spending = False
         base_ss_outputs = SS.run_SS(p_base, client=dask_client)
         utils.mkdirs(os.path.join(
@@ -582,8 +563,6 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     test_dict = SS.run_SS(p, client=dask_client)
-    # pickle.dump(test_dict, open(
-    #     os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     try:
