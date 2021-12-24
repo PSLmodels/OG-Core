@@ -422,25 +422,27 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
     assert(np.allclose(revenue, expected))
 
 
-test_data = [(0.04, 0.02, 2.0, 4.0, 0.0, 0.026666667),
+test_data = [(0.04, 0.02, 2.0, 0.0, 4.0, 0.0, 0.026666667),
              (np.array([0.05, 0.03]), np.array([0.02, 0.01]),
-              np.array([3.0, 4.0]), np.array([7.0, 6.0]), np.array([0.0, 0.0]),
+              np.array([3.0, 4.0]), np.array([0.0, 0.0]),
+              np.array([7.0, 6.0]), np.array([0.0, 0.0]),
               np.array([0.029, 0.018])),
-             (0.04, 0.02, 2.0, 0.0, 0.0, 0.04),
+             (0.04, 0.02, 2.0, 0.0, 0.0, 0.0, 0.04),
              (np.array([0.05, 0.03]), np.array([0.02, 0.01]),
-              np.array([3.0, 4.0]), np.array([7.0, 6.0]), np.array([0.04, 0.2]),
-              np.array([0.029 + 0.3 * 0.038572, 0.018 + 0.4 * 0.19286]))]
+              np.array([3.0, 4.0]), np.array([1.0, 2.0]),
+              np.array([7.0, 6.0]), np.array([0.04, 0.2]),
+              np.array([0.029 + 0.3 * 0.038572 * 1.0 / 3.0, 0.018 + 0.4 * 0.19286 * 2.0 / 4.0]))]
 
 
-@pytest.mark.parametrize('r,r_gov,K,D,MPKg,expected', test_data,
+@pytest.mark.parametrize('r,r_gov,K,K_g,D,MPKg,expected', test_data,
                          ids=['scalar', 'vector', 'no debt', 'vector,MPKg>0'])
-def test_get_r_p(r, r_gov, K, D, MPKg, expected):
+def test_get_r_p(r, r_gov, K, K_g, D, MPKg, expected):
     """
     Test function to compute interest rate on household portfolio.
     """
     p = Specifications()
     p.update_specifications({'T': 3})
-    r_p_test = aggr.get_r_p(r, r_gov, K, D, MPKg, p, 'SS')
+    r_p_test = aggr.get_r_p(r, r_gov, K, K_g, D, MPKg, p, 'SS')
 
     assert(np.allclose(r_p_test, expected))
 
