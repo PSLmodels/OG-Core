@@ -331,7 +331,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             payroll_tax_revenue, iit_revenue)
 
 
-def get_r_p(r, r_gov, K, D, MPKg, p, method):
+def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
     r'''
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
@@ -358,7 +358,7 @@ def get_r_p(r, r_gov, K, D, MPKg, p, method):
         tau_b = p.tau_b[-1]
     else:
         tau_b = p.tau_b[:p.T]
-    r_K = r + MPKg * (1 - tau_b)
+    r_K = r + (K_g * MPKg * (1 - tau_b)) / K
     r_p = ((r_K * K) + (r_gov * D)) / (K + D)
 
     return r_p
@@ -400,7 +400,12 @@ def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
         Y - C - I_d - I_g - G - (r + p.delta) * K_f + new_borrowing_f -
         debt_service_f
         )
-
+    rc_error1 = (
+        Y - C - I_d - I_g - G - (r) * K_f + new_borrowing_f -
+        debt_service_f
+        )
+    print('Two RC errors = ', rc_error, rc_error1)
+    print('I_g = ', I_g)
     return rc_error
 
 
