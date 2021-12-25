@@ -94,7 +94,6 @@ def get_r(Y, K, p, method):
         delta_tau = p.delta_tau[:p.T]
         tau_b = p.tau_b[:p.T]
     MPK = get_MPx(Y, K, p.gamma, p, method)
-    print('MPK = ', MPK)
     r = MPK * (1 - tau_b) - p.delta + tau_b * delta_tau
 
     return r

@@ -577,7 +577,6 @@ def SS_fsolve(guesses, *args):
         inner_loop(outer_loop_vars, p, client)
 
     # Create list of errors in general equilibrium variables
-    print("Implied r = ", new_r)
     error_r = new_r - r
     # Check and punish violations of the bounds on the interest rate
     if new_r + p.delta <= 0:

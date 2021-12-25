@@ -449,14 +449,13 @@ def run_TPI(p, client=None):
     r_gov = fiscal.get_r_gov(r, p)
     r_p = np.ones_like(r) * ss_vars['r_p_ss']
     MPKg = firm.get_MPx(Y[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
-    r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
+    r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T], K_g[:p.T],
                              ss_vars['Dss'], MPKg, p, 'TPI')
 
     # compute w
-    w = np.ones_like(r) * ss_vars['wss']  # if just this un commenteed, no open fails
+    w = np.ones_like(r) * ss_vars['wss']
     if not any(p.zeta_K == 1):
         w[:p.T] = firm.get_w(Y[:p.T], L[:p.T], p, 'TPI')
-    # wnew = firm.get_w_from_r(r[:p.T], p, 'TPI')  #TODO: delete this
 
     # initial guesses at fiscal vars
     if p.budget_balance:
@@ -509,7 +508,7 @@ def run_TPI(p, client=None):
         r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
         K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
         MPKg = firm.get_MPx(Y[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
-        r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T],
+        r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T], K_g[:p.T],
                                  D[:p.T], MPKg[:p.T], p, 'TPI')
 
         outer_loop_vars = (r, w, r_p, BQ, TR, theta)
@@ -600,11 +599,10 @@ def run_TPI(p, client=None):
         rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
         MPKg = firm.get_MPx(Ynew[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
-        r_p_new = aggr.get_r_p(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
+        r_p_new = aggr.get_r_p(rnew[:p.T], r_gov_new[:p.T], K[:p.T], K_g[:p.T],
                                Dnew[:p.T], MPKg[:p.T], p, 'TPI')
         # compute w
         wnew = firm.get_w(Ynew[:p.T], L[:p.T], p, 'TPI')
-        # wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
 
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
@@ -645,28 +643,13 @@ def run_TPI(p, client=None):
               (TR_new[:p.T] - TR[:p.T]).min())
         print('Y diff: ', (Ynew[:p.T]-Y[:p.T]).max(),
               (Ynew[:p.T] - Y[:p.T]).min())
-        # if not p.baseline_spending:
-        #     if TR.all() != 0:
-        #
+
         TPIdist = np.array(
             list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
             list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
             list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T])) +
             list(utils.pct_diff_func(BQnew[:p.T], BQ[:p.T]).flatten()) +
             list(utils.pct_diff_func(TR_new[:p.T], TR[:p.T]))).max()
-        #     else:
-        #         TPIdist = np.array(
-        #             list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
-        #             list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
-        #             list(utils.pct_diff_func(BQnew[:p.T],
-        #                                      BQ[:p.T]).flatten()) +
-        #             list(np.abs(TR[:p.T]))).max()
-        # else:
-        #     TPIdist = np.array(
-        #         list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
-        #         list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
-        #         list(utils.pct_diff_func(BQnew[:p.T], BQ[:p.T]).flatten())
-        #         + list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T]))).max()
 
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
@@ -703,7 +686,7 @@ def run_TPI(p, client=None):
                               etr_params_4D, p)
 
     C = aggr.get_C(c_mat, p, 'TPI')
-    # Note that implicity in this computation is that immigrants'
+    # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d = aggr.get_I(bmat_splus1[:p.T], K_d[1:p.T + 1], K_d[:p.T], p,
                      'TPI')
