@@ -46,8 +46,9 @@ guesses2 = np.array([
     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
 args2 = (bssmat, nssmat, None, 0.51, p2, None)
 expected2 = np.array([
-    -0.03023264, 0.22820741, 1.467556, -0.00237114, -0.0163767, -0.01440467,
-    0.0058758, 0.00948961, -0.01930932, -0.00294543, 0.13208004])
+    -0.03023206549190516, 0.22820179599757107, 1.4675625231437683,
+    -0.00237113, -0.0163767 , -0.01440477, 0.00587581, 0.00948961,
+    -0.01930931, -0.00294543, 0.13208062708293913])
 # Parameterize the reform, closed econ, baseline spending case
 p3 = Specifications(baseline=False)
 p3.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0],
@@ -133,43 +134,9 @@ def test_SS_fsolve(guesses, args, expected):
     else:
         new_guesses = [r, w, Y, BQ, TR]
 
-    # guesses old:
-
-    #     r = guesses[0]
-    # if p.baseline:
-    #     BQ = guesses[1:-2]
-    #     TR = guesses[-2]
-    #     factor = guesses[-1]
-    # else:
-    #     BQ = guesses[1:-1]
-    #     if p.baseline_spending:
-    #         Y = guesses[-1]
-    #     else:
-    #         TR = guesses[-1]
-
-
-    # new guesses:
-    #     r = guesses[0]
-    # w = guesses[1]
-    # Y = guesses[2]
-    # if p.baseline:
-    #     BQ = guesses[3:-2]
-    #     TR = guesses[-2]
-    #     factor = guesses[-1]
-    # else:
-    #     BQ = guesses[3:-1]
-    #     TR = guesses[-1]
-    #     factor = factor_ss
-
-    # old_list = r, BQ, TR, factor  -- for baseline
-    #     = r, BQ, Y -- if baseline spending
-    #     = r, BQ, TR -- if reform, not baseline spend
-
-    # new_list = errors = [error_r, error_w, error_Y] + list(error_BQ) + [error_TR, error_factor]
-
     test_list = SS.SS_fsolve(new_guesses, *args)
     print('Test results = ', np.array(test_list))
-    assert(np.allclose(np.array(test_list), np.array(expected),
+    assert(np.allclose(np.hstack(np.array(test_list)), np.array(expected),
                        atol=1e-6))
 
 
