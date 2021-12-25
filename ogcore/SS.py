@@ -575,7 +575,6 @@ def run_SS(p, client=None):
     if p.baseline:
         if p.zeta_K[-1] == 1.0:
             rguess = p.world_int_rate[-1]
-            # wguess = 1.3320748594894016  # this works perfetly for the default world int rate
         else:
             rguess = p.initial_guess_r_SS
         if p.use_zeta:
@@ -584,10 +583,7 @@ def run_SS(p, client=None):
         else:
             b_guess = np.ones((p.S, p.J)) * 0.07
             n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
-        # wguess = p.initial_guess_w_SS
         wguess = firm.get_w_from_r(rguess, p, 'SS')
-        print('wguess = ', wguess)
-        print('rguess = ', rguess)
         TRguess = p.initial_guess_TR_SS
         Yguess = TRguess / p.alpha_T[-1]
         factorguess = p.initial_guess_factor_SS
@@ -639,8 +635,6 @@ def run_SS(p, client=None):
             else:
                 rguess = p.initial_guess_r_SS
             wguess = firm.get_w_from_r(rguess, p, 'SS')
-            print('wguess = ', wguess)
-            print('rguess = ', rguess)
             TRguess = p.initial_guess_TR_SS
             Yguess = TRguess / p.alpha_T[-1]
             factor = p.initial_guess_factor_SS
