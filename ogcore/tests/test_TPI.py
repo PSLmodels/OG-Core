@@ -170,7 +170,8 @@ param_updates8 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
                   'gamma_g': 0.07, 'initial_Kg_ratio': 0.15,
                   'initial_guess_r_SS': 0.06,
                   'initial_guess_TR_SS': 0.03}
-filename8 = 'run_TPI_outputs_baseline_Kg_nonzero.pkl'
+filename8 = os.path.join(
+    CUR_PATH, 'test_io_data', 'run_TPI_outputs_baseline_Kg_nonzero.pkl')
 
 
 @pytest.mark.local
@@ -328,7 +329,8 @@ param_updates8 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
                   'gamma_g': 0.07, 'initial_Kg_ratio': 0.15,
                   'initial_guess_r_SS': 0.06,
                   'initial_guess_TR_SS': 0.03}
-filename8 = 'run_TPI_outputs_baseline_Kg_nonzero_2.pkl'
+filename8 = os.path.join(
+    CUR_PATH, 'test_io_data', 'run_TPI_outputs_baseline_Kg_nonzero_2.pkl')
 
 
 @pytest.mark.local
