@@ -637,7 +637,7 @@ def run_SS(p, client=None):
             Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in
             # SS_solver
-        if ENFORCE_SOLUTION_CHECKS and not ier == 1:
+        if ENFORCE_SOLUTION_CHECKS and not sol.success == 1:
             raise RuntimeError('Steady state equilibrium not found')
         # Return SS values of variables
         fsolve_flag = True
