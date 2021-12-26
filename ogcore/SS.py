@@ -176,7 +176,7 @@ def inner_loop(outer_loop_vars, p, client):
             scattered_p)
         lazy_values.append(delayed(opt.root)(
             euler_equation_solver, guesses * .9,
-            args=euler_params, method='hybr', tol=MINIMIZER_TOL))
+            args=euler_params, method=p.FOC_root_method, tol=MINIMIZER_TOL))
     if client:
         futures = client.compute(lazy_values, num_workers=p.num_workers)
         results = client.gather(futures)
@@ -571,7 +571,7 @@ def run_SS(p, client=None):
         else:
             guesses = [rguess] + list(BQguess) + [TRguess, factorguess]
         sol = opt.root(SS_fsolve, guesses, args=ss_params_baseline,
-                       method='hybr', tol=p.mindist_SS)
+                       method=p.SS_root_method, tol=p.mindist_SS)
         if ENFORCE_SOLUTION_CHECKS and not sol.success:
             raise RuntimeError('Steady state equilibrium not found')
         rss = sol.x[0]
@@ -619,7 +619,7 @@ def run_SS(p, client=None):
             else:
                 guesses = [rguess] + list(BQguess) + [Yguess]
             sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
-                           tol=p.mindist_SS)
+                           method=p.SS_root_method, tol=p.mindist_SS)
             rss = sol.x[0]
             BQss = sol.x[1:-1]
             Yss = sol.x[-1]
@@ -630,7 +630,7 @@ def run_SS(p, client=None):
             else:
                 guesses = [rguess] + list(BQguess) + [TRguess]
             sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
-                           method='hybr', tol=p.mindist_SS)
+                           method=p.SS_root_method, tol=p.mindist_SS)
             rss = sol.x[0]
             BQss = sol.x[1:-1]
             TR_ss = sol.x[-1]

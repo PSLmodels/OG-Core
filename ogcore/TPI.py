@@ -289,7 +289,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         firstdoughnutring, [guesses_b[0, -1], guesses_n[0, -1]],
         args=(r_p[0], w[0], bq[0, -1, j], tr[0, -1, j],
               theta * p.replacement_rate_adjust[0], factor, ubi[0, -1, j],
-              j, initial_b, p), method='hybr', tol=MINIMIZER_TOL)
+              j, initial_b, p), method=p.FOC_root_method, tol=MINIMIZER_TOL)
     b_mat[0, -1], n_mat[0, -1] = solutions.x[0], solutions.x[1]
 
     for s in range(p.S - 2):  # Upper triangle
@@ -321,7 +321,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                   tau_c_to_use, etr_params_to_use,
                   mtrx_params_to_use, mtry_params_to_use,
                   initial_b, p),
-            method='hybr', tol=MINIMIZER_TOL)
+            method=p.FOC_root_method, tol=MINIMIZER_TOL)
 
         b_vec = solutions.x[:int(len(solutions.x) / 2)]
         b_mat[ind2, p.S - (s + 2) + ind2] = b_vec
@@ -355,7 +355,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             args=(r_p, w, bq_to_use, tr_to_use, theta_to_use,
                   factor, ubi_to_use, j, None, t, tau_c_to_use,
                   etr_params_to_use, mtrx_params_to_use,
-                  mtry_params_to_use, initial_b, p), method='hybr',
+                  mtry_params_to_use, initial_b, p), method=p.FOC_root_method,
             tol=MINIMIZER_TOL)
         euler_errors[t, :] = solutions.fun
 
