@@ -6,7 +6,6 @@
 * Contributing to `OG-Core`
 * `OG-Core` API
 * `OG-Core` Theory
-* Calibration
 * Appendix
 * References
 * Citations of `OG-Core`
