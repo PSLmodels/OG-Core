@@ -25,7 +25,7 @@ If you have already completed the {ref}`Sec_SetupPython` and {ref}`Sec_SetupGit`
 
 4. Sign in to GitHub and create your own [remote](https://help.github.com/articles/github-glossary/#remote) [repository](https://help.github.com/articles/github-glossary/#repository) (repo) of `OG-Core` by clicking [Fork](https://help.github.com/articles/github-glossary/#fork) in the upper right corner of the [OG-Core GitHub page](https://github.com/PSLmodels/OG-Core). Select your username when asked "Where should we fork this repository?"
 
-5. From your command line, navigate to the directory on your computer where you would like your local repo to live.
+5. From your command line on your local computer, navigate to the directory on your computer where you would like your local repo to reside.
 
 6. Create a local repo by entering at the command line the text after the $.[^commandline_note] This step creates a directory called `OG-Core` in the directory that you specified in the prior step:
 
@@ -39,7 +39,7 @@ If you have already completed the {ref}`Sec_SetupPython` and {ref}`Sec_SetupGit`
 
     ```
       $ cd OG-Core
-      OG-Core$ git remote add upstream https://github.com/open-source-economics/OG-Core.git
+      OG-Core$ git remote add upstream https://github.com/PSLmodels/OG-Core.git
     ```
 
 9. Create a conda environment with all of the necessary packages to
@@ -54,6 +54,12 @@ If you have already completed the {ref}`Sec_SetupPython` and {ref}`Sec_SetupGit`
 
     ```
       OG-Core$ conda activate ogcore-dev
+    ```
+
+11. To make sure that the `ogcore` Python package from the `OG-Core` repository is installed and operational in your `ogcore-dev` conda environment, type the following command at your command prompt.
+
+    ```
+    OG-Core$ pip install -e .
     ```
 
 If you have made it this far, you've successfully made a remote copy (a
@@ -86,25 +92,25 @@ The following text describes a typical workflow for changing
 `OG-Core`.  Different workflows may be necessary in some
 situations, in which case other contributors are here to help.
 
-1. Before you edit the OG-Core source code on your machine,
+1. Before you edit the `OG-Core` source code on your machine,
    make sure you have the latest version of the central OG-Core
    repository by executing the following **four** Git commands:
 
    a. Tell Git to switch to the master branch in your local repo.
-      Navigate to your local OG-Core directory and enter the
+      Navigate to your local `OG-Core` directory and enter the
       following text at the command line:
 
     ```
         OG-Core$ git checkout master
     ```
 
-   b. Download all of the content from the central OG-Core repo:
+   b. Download all of the content from the central `OG-Core` repo:
     ```
         OG-Core$ git fetch upstream
     ```
    c. Update your local master branch to contain the latest content of
       the central master branch using [merge](https://help.github.com/articles/github-glossary/#merge). This step ensures that
-      you are working with the latest version of OG-Core:
+      you are working with the latest version of `OG-Core`:
     ```
         OG-Core$ git merge upstream/master
     ```
@@ -115,21 +121,21 @@ situations, in which case other contributors are here to help.
 2. Create a new [branch](https://help.github.com/articles/github-glossary/#branch) on your local machine. Think of your
    branches as a way to organize your projects. If you want to work on
    this documentation, for example, create a separate branch for that
-   work. If you want to change an element of the OG-Core model, create
+   work. If you want to change an element of the `OG-Core` model, create
    a different branch for that project:
     ```
      OG-Core$ git checkout -b [new-branch-name]
     ```
 3. As you make changes, frequently check that your changes do not
-   introduce bugs or degrade the accuracy of the OG-Core. To do
+   introduce bugs or degrade the accuracy of the `OG-Core`. To do
    this, run the following command from the command line from inside
-   the OG-Core/ogcore directory:
+   the `OG-Core/ogcore` directory:
     ```
      OG-Core/ogcore$  pytest
     ```
-   Note that running this full suite of tests may take close to 24 hours (depending on your hardware).  To run the subset of tests that run on each pull request (and take about 40 minutes), use  `pytest -m "not local"`.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn't possible or doesn't work, the core maintainers are here to help via a [GitHub Issue](https://github.com/PSLmodels/OG-Core/issues).
+   Note that running this full suite of tests may take more than 6 hours (depending on your hardware). To run the subset of tests that run on each pull request (and take about 40 minutes), use  `pytest -m "not local"`.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn't possible or doesn't work, the core maintainers are here to help via a [GitHub Issue](https://github.com/PSLmodels/OG-Core/issues).
 
-4. Now you're ready to [commit](https://help.github.com/articles/github-glossary/#commit) your changes to your local repo using the code below. The first line of code tells `Git` to track a file. Use "git status" to find all the files you've edited, and "git add" each of the files that you'd like `Git` to track. As a rule, do not add large files. If you'd like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message; this should be a short description of your changes.
+4. Now you're ready to [commit](https://help.github.com/articles/github-glossary/#commit) your changes to your local repo using the code below. The first line of code tells `Git` to track a file. Use the `git status` command to find all the files you have edited, and `git add` command to add each of the files that you would like `Git` to track. As a rule, do not add large files. If you'd like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message. This should be a short description of your changes.
 
    *Tip*: Committing often is a good idea as `Git` keeps a record of your changes. This means that you can always revert to a previous version of your work if you need to. Do this to commit:
     ```
