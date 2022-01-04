@@ -36,7 +36,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   The next place where tax policy enters the profit function {eq}`EqFirmsProfit` is through a refund of a percent of depreciation costs $\delta^\tau$ refunded at the corporate income tax rate $\tau^{corp}$. When $\delta^\tau=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau=\delta$, all economic depreciation is deducted from corporate income.
 
-  Firms take as given prices $w_t$ and $r_t$ and the level of public capital supply $K_{g,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_t$ and setting it equal to zero and taking the derivative of the profit function with respect to capital $K_t$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
+  Firms take as given prices $w_t$ and $r_t$ and the level of public capital supply $K_{g,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_t$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to capital $K_t$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
 
   ```{math}
   :label: EqFirmFOC_L
