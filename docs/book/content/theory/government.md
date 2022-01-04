@@ -14,9 +14,11 @@ Government levies taxes on households and firms, funds public pensions, and make
 
 #### Individual income taxes
 
-#### Corporate income taxes
-
 #### Consumption taxes
+
+#### Wealth taxes
+
+#### Corporate income taxes
 
 ### Spending
 
@@ -109,7 +111,7 @@ Government spending is comprised of government provided pension benefits, lump s
   where we defined the tax liability function $T_{s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate $\tau^{corp}$ and the tax on depreciation expensing $\tau^\delta$ enters the firms' profit function.
 
   ```{math}
-  :label: EqFirmsProfit
+  :label: EqFirmsProfit2
     PR_t = (1 - \tau^{corp})\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t
   ```
 
@@ -145,7 +147,7 @@ Government spending is comprised of government provided pension benefits, lump s
 
   Similar to transfers $TR_t$, the time dependent multiplier $g_{g,t}$ in front of the right-hand-side of {eq}`EqUnbalGBC_Gt` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We make this more specific in the next section.
 
-  Government infrastructure investment spending, $I_{g,t}$ is assumed to be a fraction of GDP:
+  Government infrastructure investment spending, $I_{g,t}$ is assumed to be a time-dependent fraction of GDP.
 
   ```{math}
   :label: EqUnbalGBC_Igt
@@ -296,4 +298,3 @@ And finally, in closure rules {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclos
 
 
 [^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`ogusa_default_parameters.json`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/ogusa_default_parameters.json) "validators" specification of the parameter.
-
