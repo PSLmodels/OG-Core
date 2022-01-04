@@ -168,7 +168,7 @@ In this section, we describe what is arguably the most important economic agent 
 (SecHHbequests)=
 ## The Distribution of Bequests
 
-`OG-Core` allows for two parameterization of the distribution of bequests.  Users can choose the bequest transmission process through two parameters: `use_zeta` and `zeta`.
+`OG-Core` allows for two parameterizations of the distribution of bequests.  Users can choose the bequest transmission process through two parameters: `use_zeta` and `zeta`.
 
 If `use_zeta=False`, then bequests from households of lifetime earnings type `j` are distributed equality across households of type `j`.  That is:
 
