@@ -162,7 +162,7 @@ situations, in which case other contributors are here to help.
 (Sec_SimpleUsage)=
 ## Simple Usage
 
-[TODO: Include simple usage examples.]
+`OG-Core` comes with an example run script [`OG-Core/run_examples/run_ogcore_example.py](https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py). Running this script will solve for the current-law baseline steady state and transition path solution of a calibrated version of an economy as well as a simple reform (increasing the corporate income tax rate) version of the model with its corresponding steady-state and transition path solution. This example script saves the full set of model output from both baseline and reform runs of the model. It also creates a large number of commonly used analytical figures and tables. This example run script is a nice foundation for using the model to run your own customized simulations. Below are the steps to running the example script.
 
 
 (Sec_ContribFootnotes)=
