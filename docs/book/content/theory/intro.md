@@ -1,9 +1,9 @@
 (Chap_Intro)=
 # Model Overview
 
-The overlapping generations model is a workhorse of dynamic fiscal analysis. `OG-Core` is dynamic in that households in the model make consumption, savings, and labor supply decisions based on their expectations over their entire lifetime, not just the current period. Because `OG-Core` is a general equilibrium model, behavioral changes by households and firms can cause macroeconomic variables and prices to adjust. This characteristic has recently become a required component of fiscal policy analysis in the United States.[^dynscore_note]
+The overlapping generations model is a workhorse of dynamic fiscal analysis. The `OG-Core` model is dynamic in that households in the model make consumption, savings, and labor supply decisions based on their expectations over their entire lifetime, not just the current period. Because `OG-Core` is a general equilibrium model, behavioral changes by households and firms can cause macroeconomic variables and prices to adjust. This characteristic has recently become a required component of fiscal policy analysis in the United States.[^dynscore_note]
 
-But the main characteristic that differentiates the overlapping generations model from other dynamic general equilibrium models is its realistic modeling of the finite lifetimes of individuals and the cross-sectional age heterogeneity that exists in the economy. One can make a strong case that age heterogeneity and income heterogeneity are two of the main sources of diversity that explain much of the behavior in which we are interested for policy analysis.
+The main characteristic that differentiates the overlapping generations model from other dynamic general equilibrium models is its realistic modeling of the finite lifetimes of individuals and the cross-sectional age heterogeneity that exists in the economy. One can make a strong case that age heterogeneity and income heterogeneity are two of the main sources of diversity that explain much of the behavior in which we are interested for policy analysis.
 
 `OG-Core` can be summarized as having the following characteristics.
 
@@ -18,12 +18,13 @@ But the main characteristic that differentiates the overlapping generations mode
     * incorporation of detailed household tax data from specified microsimulation model
     * calibrated intentional and unintentional bequests by households to surviving generations
 * Firms
-    * representative perfectly competitive firm maximizes static profits with general CES production function by choosing capital and labor demand
+    * representative perfectly competitive firm maximizes static profits with general CES production function by choosing private capital, public capital, and labor demand
     * exogenous productivity growth is labor augmenting technological change
     * firms face a corporate income tax as well as various depreciation deductions and tax treatments
 * Government
     * government collects tax revenue from households and firms
     * government distributes transfers to households
+    * government supplies capital to the private firms production process
     * government spends resources on public goods
     * government can run deficits and surpluses
     * a stabilization rule (budget closure rule) must be implemented at some point in the time path if government debt is growing at a rate permanently different from GDP.
