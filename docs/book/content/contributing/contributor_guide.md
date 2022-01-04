@@ -162,7 +162,25 @@ situations, in which case other contributors are here to help.
 (Sec_SimpleUsage)=
 ## Simple Usage
 
-`OG-Core` comes with an example run script [`OG-Core/run_examples/run_ogcore_example.py](https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py). Running this script will solve for the current-law baseline steady state and transition path solution of a calibrated version of an economy as well as a simple reform (increasing the corporate income tax rate) version of the model with its corresponding steady-state and transition path solution. This example script saves the full set of model output from both baseline and reform runs of the model. It also creates a large number of commonly used analytical figures and tables. This example run script is a nice foundation for using the model to run your own customized simulations. Below are the steps to running the example script.
+`OG-Core` comes with an example run script [`OG-Core/run_examples/run_ogcore_example.py`](https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py). Running this script will solve for the current-law baseline steady state and transition path solution of a calibrated version of an economy as well as a simple reform (increasing the corporate income tax rate) version of the model with its corresponding steady-state and transition path solution. This example script saves the full set of model output from both baseline and reform runs of the model. It also creates a large number of commonly used analytical figures and tables. This example run script is a nice foundation for using the model to run your own customized simulations. Below are the steps to running the example script.
+
+1. Navigate to your local `OG-Core` repository in the terminal of your local machine and activate the `ogcore-dev` conda environment. If you have not created the `ogcore-dev` conda environment, follow steps 1-11 in Section {ref}`Sec_SetupGit` above.
+
+    ```
+    OG-Core$ conda activate ogcore-dev
+    ```
+
+2. Run the Python example script [`OG-Core/run_examples/run_ogcore_example.py`](https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py) by entering the following command in your terminal in your local machine `OG-Core` repository with the `ogcore-dev` conda environment activated.
+
+    ```
+    (ogcore-dev) OG-Core$ python ./run_examples/run_ogcore_example.py
+    ```
+
+This might take more than an hour to run despite being optimized to use up to seven cores on your machine for parallel processing. The full set of model input objects for the baseline simulation of the model are stored in a newly created Python pickle file at the following path `./OG-Core/run_examples/OUTPUT_BASELINE/model_params.pkl`. The baseline steady-state model output is stored in a newly created Python pickle file at the following path `/OG-Core/run_examples/OUTPUT_BASELINE/SS/SS_vars.pkl`. The baseline transition path model output is stored in a newly created Python pickle file at the following path `/OG-Core/run_examples/OUTPUT_BASELINE/TPI/TPI_vars.pkl`.
+
+The full set of model input objects for the reform simulation of the model are stored in a newly created Python pickle file at the following path `./OG-Core/run_examples/OUTPUT_REFORM/model_params.pkl`. The reform steady-state model output is stored in a newly created Python pickle file at the following path `/OG-Core/run_examples/OUTPUT_REFORM/SS/SS_vars.pkl`. The reform transition path model output is stored in a newly created Python pickle file at the following path `/OG-Core/run_examples/OUTPUT_REFORM/TPI/TPI_vars.pkl`.
+
+A large set of plots that compare the changes among key variables from the baseline simulation to the reform simulation are saved in the `/OG-Core/run_examples/run_example_plots` directory. And a `.csv`-file table of key macroeconomic variable changes over the budget window (10 years) and in the long-run steady state is saved at the following path `/OG-Core/run_examples/ogcore_example_output.csv`.
 
 
 (Sec_ContribFootnotes)=
