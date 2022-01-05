@@ -91,27 +91,27 @@ The usual definition of equilibrium would be allocations and prices such that ho
 (SecStnrzFirms)=
 ## Stationarized Firms Equations
 
-  The nonstationary production function {eq}`EqFirmsCESprodfun` can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_t$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xL) = xF(K,L)$, which means the right-hand-side of the production function is stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
+  The nonstationary production function {eq}`EqFirmsCESprodfun` can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_t$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xK_g,xL) = xF(K,K_g,L)$, which means the right-hand-side of the production function is stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzCESprodfun
-    \hat{Y}_t = F(\hat{K}_t, \hat{L}_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
+    \hat{Y}_t = F(\hat{K}_t, \hat{K}_{g,t}, \hat{L}_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_g)^\frac{1}{\varepsilon}(\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_g)^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
   ```
   Notice that the growth term multiplied by the labor input drops out in this stationarized version of the production function. We stationarize the nonstationary profit function {eq}`EqFirmsProfit` in the same way, by dividing both sides by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzProfit
-    \hat{PR}_t = (1 - \tau^{corp})\Bigl[F(\hat{K}_t,\hat{L}_t) - \hat{w}_t \hat{L}_t\Bigr] - \bigl(r_t + \delta\bigr)\hat{K}_t + \tau^{corp}\delta^\tau \hat{K}_t \quad\forall t
+    \hat{PR}_t = (1 - \tau^{corp})\Bigl[F(\hat{K}_t,\hat{K}_{g,t},\hat{L}_t) - \hat{w}_t \hat{L}_t\Bigr] - \bigl(r_t + \delta\bigr)\hat{K}_t + \tau^{corp}\delta^\tau \hat{K}_t \quad\forall t
   ```
 
   The firms' first order equation for labor demand {eq}`EqFirmFOC_L` is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_t}{e^{g_y t}L_t}$ term on the right-hand-side by $\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzFOC_L
-    \hat{w}_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon} \quad\forall t
+    \hat{w}_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_g)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon} \quad\forall t
   ```
 
-  It can be seen from the firms' first order equation for capital demand {eq}`EqFirmFOC_K` that the interest rate is already stationary. If we multiply and divide the $\frac{Y_t}{K_t}$ term on the right-hand-side by $e^{t_y t}\tilde{N}_t$, those two aggregate variables become stationary. In other words, $Y_t$ and $K_t$ grow at the same rate and $\frac{Y_t}{K_t} = \frac{\hat{Y}_t}{\hat{K}_t}$.
+  It can be seen from the firms' first order equation for capital demand {eq}`EqFirmFOC_K` that the interest rate is already stationary. If we multiply and divide the $\frac{Y_t}{K_t}$ term on the right-hand-side by $e^{g_y t}\tilde{N}_t$, those two aggregate variables become stationary. In other words, $Y_t$ and $K_t$ grow at the same rate and $\frac{Y_t}{K_t} = \frac{\hat{Y}_t}{\hat{K}_t}$.
 
   ```{math}
   :label: EqStnrzFOC_K
