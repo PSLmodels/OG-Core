@@ -48,4 +48,4 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
     r_t = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t
   ```
 
-  Note that the presence of the public capital good creates economic rents. However, given perfect competition, any economic profits will be competed away. For this reason, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by $K_{g,t}$ through the $Y_t$ term.
+  Note that the presence of the public capital good creates economic rents. However, given perfect competition, any economic profits will be competed away. For this reason, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,t}$ through the $Y_t$ term.
