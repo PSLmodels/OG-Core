@@ -33,7 +33,7 @@ The steady-state solution method for each of the cases above is associated with 
 
 With the stationarized model, we can now define the stationary steady-state equilibrium. This equilibrium will be long-run values of the endogenous variables that are constant over time. In a perfect foresight model, the steady-state equilibrium is the state of the economy at which the model settles after a finite amount of time, regardless of the initial condition of the model. Once the model arrives at the steady-state, it stays there indefinitely unless it receives some type of shock or stimulus.
 
-These stationary values have all the components of growth, from productivity growth and population growth, removed as defined in {numref}`TabStnrzStatVars`. Because the productivity growth rate $g_y$ and population growth rate series $\tilde{g}_{n,t}$ are exogenous. We can transform the stationary equilibrium values of the variables back to their nonstationary values by reversing the identities in {numref}`TabStnrzStatVars`.
+These stationary values have all the components of growth, from productivity growth and population growth, removed as defined in {numref}`TabStnrzStatVars`. This is possible because the productivity growth rate $g_y$ and population growth rate series $\tilde{g}_{n,t}$ are exogenous. We can transform the stationary equilibrium values of the variables back to their nonstationary values by reversing the identities in {numref}`TabStnrzStatVars`.
 
 We define a stationary steady-state equilibrium as the following.
 
