@@ -157,16 +157,16 @@ The usual definition of equilibrium would be allocations and prices such that ho
     e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{TR}_t + \hat{UBI}_t \quad\forall t
   ```
 
-  The stationarized infrastructure investment spending rule and the law of motion for the public capital stock are given by:
+  The stationarized infrastructure investment spending rule $I_{g,t}$ in {eq}`EqUnbalGBC_Igt`, and the law of motion for the public capital stock $K_{g,t}$ in {eq}`EqUnbalGBC_Kgt` are given by:
 
-      ```{math}
+  ```{math}
   :label: EqStnrzGBC_Ig
     \hat{I}_{g,t} = \alpha_{I,t} \hat{Y}_t \quad\forall t  \quad\forall t
   ```
 
-    ```{math}
+  ```{math}
   :label: EqStnrzGBC_Kg
-    \hat{K}_{g,t+1} = \frac{(1 - \delta^{g}) \hat{K}_{g,t} + \hat{I}_{g,t}}{e^{g_{y}(1 + g_{n,t+1})}}  \quad\forall t
+    \hat{K}_{g,t+1} = \frac{(1 - \delta^{g})\hat{K}_{g,t} + \hat{I}_{g,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall t
   ```
 
   Stationary aggregate universal basic income expenditure $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$.
