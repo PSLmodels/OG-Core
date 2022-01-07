@@ -51,5 +51,5 @@ r_{K,t}  = r_{t} + (1 - \tau^b_t )MPK_{g,t}
 The return on the portfolio of assets held by the financial intermediary is thus:
 ```{math}
 :label: eq_portfolio_return
-r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,tK_{t}}{D_{t} + K_{t}} \quad\forall t
+r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t
 ```
