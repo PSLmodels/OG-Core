@@ -10,7 +10,10 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   ```{math}
   :label: EqFirmsCESprodfun
-    Y_t = F(K_t, K_{g,t}, L_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
+    \begin{split}
+      Y_t &= F(K_t, K_{g,t}, L_t) \\
+      &\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
+    \end{split}
   ```
   where $Z_t$ is an exogenous scale parameter (total factor productivity) that can be time dependent, $\gamma$ represents private capital's share of income, $\gamma_{g}$ is public capital's share of income, and $\varepsilon$ is the constant elasticity of substitution among the two types of capital and labor. We have included constant productivity growth rate $g_y$ as the rate of labor augmenting technological progress.
 
