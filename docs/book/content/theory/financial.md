@@ -41,7 +41,7 @@ W_{t} & = W^d_{t} + W^f_{t} \\
     & = D_t + K_t
 ```
 
-Interest rates on private capital and government bonds differ.  The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return.  As explained in {ref}`MoorePecoraro:2021`, the presence of public infrastructure in the production function means that the returns to private factors of production exhibit decreasing returns to scale.  It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders.  The return on capital is therefore the sum of the (after-tax) returns to private and public capital:
+Interest rates on private capital and government bonds differ. The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return. As explained in {cite}`MoorePecoraro:2021`, the presence of public infrastructure in the production function means that the returns to private factors of production ($r_t$ and $w_t$) exhibit decreasing returns to scale. It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders. The return on capital is therefore the sum of the (after-tax) returns to private and public capital:
 
 ```{math}
 :label: eq_rK
