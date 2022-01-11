@@ -91,7 +91,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
     MPK_{g,t} =  Z_t^{\frac{\varepsilon - 1}{\varepsilon}}\left(\frac{\gamma_g Y_t}{K_{g,t}}\right)^{\frac{1}{\varepsilon}} \quad\forall t
   ```
 
-  If we plug the expressions for $MPK_t$, $MPK_{g,t}$, and $MPL_t$ from {eq}`EqFirmsMPK_opt`, {eq}`EqFirmsMPKg_opt`, and {eq}`EqFirmsMPL_opt`, respectively, into the total revenue $Y_t$ decomposition in {eq}`EqFirmsMargRevEq` and then substitute that into the profit function {eq}`EqFirmsProfit`, we see that positive economic rents arise when costless public capital is positive $K_{g,t}>0$.
+  If we plug the expressions for $MPK_t$, $MPK_{g,t}$, and $MPL_t$ from {eq}`EqFirmsMPK_opt`, {eq}`EqFirmsMPKg_opt`, and {eq}`EqFirmsMPL_opt`, respectively, into the total revenue $Y_t$ decomposition in {eq}`EqFirmsMargRevEq` and then substitute that into the profit function {eq}`EqFirmsProfit`, we see that positive economic rents arise when public capital is positive $K_{g,t}>0$.
 
   ```{math}
   :label: EqFirmsProfit_Kg
