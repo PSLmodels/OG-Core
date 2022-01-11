@@ -37,14 +37,14 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   ```{math}
   :label: EqFirmsProfit
-    PR_t = (1 - \tau^{corp})\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t
+    PR_t = (1 - \tau^{corp}_t)\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t
   ```
 
   Gross income for the firms is given by the production function $F(K,K_g,L)$ because we have normalized the price of the consumption good to 1. Labor costs to the firm are $w_t L_t$, and capital costs are $(r_t +\delta)K_t$. The government supplies public capital to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta$. The $\delta^\tau$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
 
-  Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}$, which is a flat tax on corporate income. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
+  Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_t$, which is a flat tax on corporate income. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
 
-  The next place where tax policy enters the profit function {eq}`EqFirmsProfit` is through a refund of a percent of depreciation costs $\delta^\tau$ refunded at the corporate income tax rate $\tau^{corp}$. When $\delta^\tau=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau=\delta$, all economic depreciation is deducted from corporate income.
+  The next place where tax policy enters the profit function {eq}`EqFirmsProfit` is through a refund of a percent of depreciation costs $\delta^\tau$ refunded at the corporate income tax rate $\tau^{corp}_t$. When $\delta^\tau=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau=\delta$, all economic depreciation is deducted from corporate income.
 
   Firms take as given prices $w_t$ and $r_t$ and the level of public capital supply $K_{g,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_t$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to capital $K_t$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
 
@@ -55,7 +55,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   ```{math}
   :label: EqFirmFOC_K
-    r_t = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t
+    r_t = (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t
   ```
 
   Note that the presence of the public capital good creates economic rents. However, given perfect competition, any economic profits will be competed away. For this reason, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,t}$ through the $Y_t$ term.
@@ -74,7 +74,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   ```{math}
   :label: EqFirmsMPK_opt
-    MPK_t =  \frac{r_t + \delta - \tau^{corp}\delta^{\tau}}{1 - \tau^{corp}} \quad\forall t
+    MPK_t =  \frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}}{1 - \tau^{corp}_t} \quad\forall t
   ```
 
   Firm profit maximization for labor demand from equation {eq}`EqFirmFOC_L` implies that the marginal product of labor is the following.
@@ -84,7 +84,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
     MPL_t =  w_t \quad\forall t
   ```
 
-  Even though firms take the stock of public capital $K_{g,t}$ from government infrastructure investment as constant, we can still calculate the marginal product of public capital from the production function {eq}`EqFirmsCESprodfun`.
+  Even though firms take the stock of public capital $K_{g,t}$ from government infrastructure investment as given, we can still calculate the marginal product of public capital from the production function {eq}`EqFirmsCESprodfun`.
 
   ```{math}
   :label: EqFirmsMPKg_opt
@@ -96,17 +96,24 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
   ```{math}
   :label: EqFirmsProfit_Kg
     \begin{split}
-    PR_t &= (1 - \tau^{corp})\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \\
-    &= (1 - \tau^{corp})\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}\delta^{\tau}}{1 - \tau^{corp}}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t L_t\Biggr] ... \\
-    &\quad\quad - (1 - \tau^{corp})w_t L_t - (r_t + \delta)K_t + \tau^{corp}\delta^{\tau}K_t \\
-    &= (1 - \tau^{corp})MPK_{g,t}K_{g,t} \\
-    &= (1 - \tau^{corp})(Z_t K_{g,t})^{\frac{\varepsilon-1}{\varepsilon}}(\gamma_g Y_t)^{\frac{1}{\varepsilon}}
+    PR_t &= (1 - \tau^{corp}_t)\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau K_t \\
+    &= (1 - \tau^{corp}_t)\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}}{1 - \tau^{corp}_t}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t L_t\Biggr] ... \\
+    &\quad\quad - (1 - \tau^{corp}_t)w_t L_t - (r_t + \delta)K_t + \tau^{corp}_t\delta^{\tau}K_t \\
+    &= (1 - \tau^{corp}_t)MPK_{g,t}K_{g,t} \\
+    &= (1 - \tau^{corp}_t)(Z_t K_{g,t})^{\frac{\varepsilon-1}{\varepsilon}}(\gamma_g Y_t)^{\frac{1}{\varepsilon}}
     \end{split}
   ```
 
-  We assume these positive economic profits resulting from government infrastructure investment are passed on to the owners of private capital through an adjusted interest rate $r_{K,t}$ that zeroes out profits among the perfectly competitive firms and is a function of $MPK_{g,t}$ and $K_{g,t}$.
+  We assume these positive economic profits resulting from government infrastructure investment are passed on to the owners of private capital through an adjusted interest rate $r_{K,t}$ provided by the financial intermediary (see Section {chap}`Chap_FinInt`) that zeroes out profits among the perfectly competitive firms and is a function of $MPK_{g,t}$ and $K_{g,t}$. Total payouts from the financial intermediary $r_{K,t}K_t$ are a function of the perfectly competitive payout to owners of private capital $r_t K_t$ plus any positive profits when $K_{g,t}>0$ from {eq}`EqFirmsProfit_Kg`.
 
   ```{math}
-  :label: EqFirmsMPKg_opt
-    MPK_{g,t} =  Z_t^{\frac{\varepsilon - 1}{\varepsilon}}\left(\frac{\gamma_g Y_t}{K_{g,t}}\right)^{\frac{1}{\varepsilon}} \quad\forall t
+  :label: EqFirmsPayout
+    r_{K,t}K_t =  r_tK_t + (1 - \tau^{corp}_t)MPK_{g,t}K_{g,t} \quad\forall t
+  ```
+
+  This implies that the rate of return paid from the financial intermediary to the households $r_{K,t}$ is the interest rate on private capital $r_t$ plus the positive profits from {eq}`EqFirmsProfit_Kg`, in which the units are put in terms of $K_t$ (see equation {eq}`eq_rK` in Chapter {chap}`Chap_FinInt`).
+
+  ```{math}
+  :label: EqFirms_rKt
+    r_{K,t} =  r_t + (1 - \tau^{corp}_t)MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right) \quad\forall t
   ```
