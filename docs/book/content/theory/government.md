@@ -108,7 +108,7 @@ Government spending is comprised of government provided pension benefits, lump s
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
   ```
 
-  where we defined the tax liability function $T_{s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate $\tau^{corp}$ and the tax on depreciation expensing $\tau^\delta$ enters the firms' profit function.
+  where we defined the tax liability function $T_{s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate $\tau^{corp}_t$ and the tax on depreciation expensing $\tau^\delta$ enters the firms' profit function.
 
   ```{math}
   :label: EqFirmsProfit2
