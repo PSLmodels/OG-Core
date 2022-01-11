@@ -59,3 +59,37 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
   ```
 
   Note that the presence of the public capital good creates economic rents. However, given perfect competition, any economic profits will be competed away. For this reason, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,t}$ through the $Y_t$ term.
+
+(EqFirmsPosProfits)=
+## Positive Profits from Government Infrastructure Investment
+
+  The CES production function in {eq}`EqFirmsCESprodfun` exhibits constant returns to scale (CRS). A feature of CRS production functions is that total revenue is a sum of each marginal factor income,
+
+  ```{math}
+  :label: EqFirmsMargRevEq
+    Y_t = MPK_t K_t + MPK_{g,t} K_{g,t} + MPL_t (e^{g_y t}L_t) \quad\forall t
+  ```
+
+  where $MPK_t$ is the marginal product of private capital, $MPK_{g,t}$ is the marginal product of public capital, and $MPL_t$ is the marginal product of labor. Firm profit maximization for private capital demand from equation {eq}`EqFirmFOC_K` implies that the marginal product of private capital is the following.
+
+  ```{math}
+  :label: EqFirmsMPK_opt
+    MPK_t =  \frac{r_t + \delta - \tau^{corp}\delta^{\tau}}{1 - \tau^{corp}} \quad\forall t
+  ```
+
+  Firm profit maximization for labor demand from equation {eq}`EqFirmFOC_L` implies that the marginal product of labor is the following.
+
+  ```{math}
+  :label: EqFirmsMPL_opt
+    MPL_t =  w_t \quad\forall t
+  ```
+
+  If we plug the expressions for $MPK_t$ and $MPL_t$ from {eq}`EqFirmsMPK_opt` and {eq}`EqFirmsMPL_opt`, respectively, into the total revenue $Y_t$ decomposition in {eq}`EqFirmsMargRevEq` and then substitute that into the profit function {eq}`EqFirmsProfit`, we see that economic rents arise when public capital is positive $K_{g,t}>0$.
+
+  ```{math}
+  :label: EqFirmsProfit_Kg
+    \begin{split}
+    PR_t &= (1 - \tau^{corp})\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \\
+    &= (1 - \tau^{corp})\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}\delta^{\tau}}{1 - \tau^{corp}}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t(e^{g_y t}L_t)\Biggr]
+    \end{split}
+  ```
