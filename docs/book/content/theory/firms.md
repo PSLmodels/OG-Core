@@ -14,6 +14,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
       Y_t &= F(K_t, K_{g,t}, L_t) \\
       &\equiv \begin{cases}
         &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \:\text{if}\: K_{g,t}>0 \\
+        &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{or}\quad K_{g,t}=0 \quad\text{and}\quad \varepsilon>1 \\
         &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\text{if}\quad K_{g,t}=0 \quad\text{and}\quad \varepsilon=1
       \end{cases}\quad\forall t
     \end{split}
