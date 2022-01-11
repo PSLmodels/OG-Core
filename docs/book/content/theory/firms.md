@@ -12,7 +12,10 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
   :label: EqFirmsCESprodfun
     \begin{split}
       Y_t &= F(K_t, K_{g,t}, L_t) \\
-      &\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
+      &\equiv \begin{cases}
+        &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \:\text{if}\: K_{g,t}>0 \\
+        &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\text{if}\quad K_{g,t}=0 \quad\text{and}\quad \varepsilon=1
+      \end{cases}\quad\forall t
     \end{split}
   ```
   where $Z_t$ is an exogenous scale parameter (total factor productivity) that can be time dependent, $\gamma$ represents private capital's share of income, $\gamma_{g}$ is public capital's share of income, and $\varepsilon$ is the constant elasticity of substitution among the two types of capital and labor. We have included constant productivity growth rate $g_y$ as the rate of labor augmenting technological progress.
@@ -20,7 +23,11 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
   A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for $\varepsilon=1$.
   ```{math}
   :label: EqFirmsCDprodfun
-    Y_t = Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\text{for}\quad \varepsilon=1 \quad\forall t
+    Y_t =
+    \begin{cases}
+      &Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\text{for}\quad K_{g,t}>0 \\
+      &Z_t K_t^\gamma (e^{g_y t}L_t)^{1-\gamma} \quad\text{for}\quad K_{g,t}=0
+    \end{cases} \quad\forall t \quad\text{for}\quad \varepsilon=1
   ```
 
 (EqFirmsFOC)=
