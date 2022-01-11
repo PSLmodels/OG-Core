@@ -112,14 +112,14 @@ Government spending is comprised of government provided pension benefits, lump s
 
   ```{math}
   :label: EqFirmsProfit2
-    PR_t = (1 - \tau^{corp})\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t
+    PR_t = (1 - \tau^{corp}_t)\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau K_t \quad\forall t
   ```
 
   We define total government revenue from taxes as the following,
 
   ```{math}
   :label: EqUnbalGBCgovRev
-    Rev_t = \underbrace{\tau^{corp}\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}\delta^\tau K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    Rev_t = \underbrace{\tau^{corp}_t\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}_t\delta^\tau K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
 
   where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.

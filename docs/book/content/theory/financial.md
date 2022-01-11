@@ -45,11 +45,12 @@ Interest rates on private capital and government bonds differ. The return on the
 
 ```{math}
 :label: eq_rK
-r_{K,t}  = r_{t} + (1 - \tau^{corp}_t )MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right)
+  r_{K,t}  = r_{t} + (1 - \tau^{corp}_t )MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right)
 ```
 
 The return on the portfolio of assets held by the financial intermediary is thus:
+
 ```{math}
 :label: eq_portfolio_return
-r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t
+  r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t
 ```

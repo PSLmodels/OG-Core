@@ -18,13 +18,13 @@ The main characteristic that differentiates the overlapping generations model fr
     * incorporation of detailed household tax data from specified microsimulation model
     * calibrated intentional and unintentional bequests by households to surviving generations
 * Firms
-    * representative perfectly competitive firm maximizes static profits with general CES production function by choosing private capital, public capital, and labor demand
+    * representative perfectly competitive firm maximizes static profits with general CES production function by choosing private capital and labor demand, taking public capital as given
     * exogenous productivity growth is labor augmenting technological change
     * firms face a corporate income tax as well as various depreciation deductions and tax treatments
 * Government
     * government collects tax revenue from households and firms
     * government distributes transfers to households
-    * government supplies capital at no cost to the private firms production process
+    * government supplies capital at no cost to the private firms' production process
     * government spends resources on public goods
     * government can run deficits and surpluses
     * a stabilization rule (budget closure rule) must be implemented at some point in the time path if government debt is growing at a rate permanently different from GDP.

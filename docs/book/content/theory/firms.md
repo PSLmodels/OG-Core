@@ -104,14 +104,14 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
     \end{split}
   ```
 
-  We assume these positive economic profits resulting from government infrastructure investment are passed on to the owners of private capital through an adjusted interest rate $r_{K,t}$ provided by the financial intermediary (see Section {chap}`Chap_FinInt`) that zeroes out profits among the perfectly competitive firms and is a function of $MPK_{g,t}$ and $K_{g,t}$. Total payouts from the financial intermediary $r_{K,t}K_t$ are a function of the perfectly competitive payout to owners of private capital $r_t K_t$ plus any positive profits when $K_{g,t}>0$ from {eq}`EqFirmsProfit_Kg`.
+  We assume these positive economic profits resulting from government infrastructure investment are passed on to the owners of private capital through an adjusted interest rate $r_{K,t}$ provided by the financial intermediary (see Chapter {ref}`Chap_FinInt`) that zeroes out profits among the perfectly competitive firms and is a function of $MPK_{g,t}$ and $K_{g,t}$. Total payouts from the financial intermediary $r_{K,t}K_t$ are a function of the perfectly competitive payout to owners of private capital $r_t K_t$ plus any positive profits when $K_{g,t}>0$ from {eq}`EqFirmsProfit_Kg`.
 
   ```{math}
   :label: EqFirmsPayout
     r_{K,t}K_t =  r_tK_t + (1 - \tau^{corp}_t)MPK_{g,t}K_{g,t} \quad\forall t
   ```
 
-  This implies that the rate of return paid from the financial intermediary to the households $r_{K,t}$ is the interest rate on private capital $r_t$ plus the positive profits from {eq}`EqFirmsProfit_Kg`, in which the units are put in terms of $K_t$ (see equation {eq}`eq_rK` in Chapter {chap}`Chap_FinInt`).
+  This implies that the rate of return paid from the financial intermediary to the households $r_{K,t}$ is the interest rate on private capital $r_t$ plus the positive profits from {eq}`EqFirmsProfit_Kg`, in which the units are put in terms of $K_t$ (see equation {eq}`eq_rK` in Chapter {ref}`Chap_FinInt`).
 
   ```{math}
   :label: EqFirms_rKt
