@@ -96,11 +96,10 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
   ```{math}
   :label: EqFirmsProfit_Kg
     \begin{split}
-    PR_t &= (1 - \tau^{corp}_t)\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau K_t \\
-    &= (1 - \tau^{corp}_t)\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}}{1 - \tau^{corp}_t}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t L_t\Biggr] ... \\
-    &\quad\quad - (1 - \tau^{corp}_t)w_t L_t - (r_t + \delta)K_t + \tau^{corp}_t\delta^{\tau}K_t \\
-    &= (1 - \tau^{corp}_t)MPK_{g,t}K_{g,t} \\
-    &= (1 - \tau^{corp}_t)(Z_t K_{g,t})^{\frac{\varepsilon-1}{\varepsilon}}(\gamma_g Y_t)^{\frac{1}{\varepsilon}}
+      PR_t &= (1 - \tau^{corp}_t)\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau K_t \\
+      &= (1 - \tau^{corp}_t)\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}}{1 - \tau^{corp}_t}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t L_t\Biggr] ... \\
+      &\quad\quad - (1 - \tau^{corp}_t)w_t L_t - (r_t + \delta)K_t + \tau^{corp}_t\delta^{\tau}K_t \\
+      &= (1 - \tau^{corp}_t)MPK_{g,t}K_{g,t} \\
     \end{split}
   ```
 
