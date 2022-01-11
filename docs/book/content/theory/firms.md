@@ -63,7 +63,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 (EqFirmsPosProfits)=
 ## Positive Profits from Government Infrastructure Investment
 
-  The CES production function in {eq}`EqFirmsCESprodfun` exhibits constant returns to scale (CRS). A feature of CRS production functions is that total revenue is a sum of the revenue attributed to each factor,
+  The CES production function in {eq}`EqFirmsCESprodfun` exhibits constant returns to scale (CRS). A feature of CRS production functions is that gross revenue $Y_t$ is a sum of the gross revenue attributed to each factor of production,
 
   ```{math}
   :label: EqFirmsMargRevEq
