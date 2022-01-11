@@ -37,10 +37,10 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   ```{math}
   :label: EqFirmsProfit
-    PR_t = (1 - \tau^{corp}_t)\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t
+    PR_t = (1 - \tau^{corp}_t)\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau_t K_t \quad\forall t
   ```
 
-  Gross income for the firms is given by the production function $F(K,K_g,L)$ because we have normalized the price of the consumption good to 1. Labor costs to the firm are $w_t L_t$, and capital costs are $(r_t +\delta)K_t$. The government supplies public capital to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta$. The $\delta^\tau$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
+  Gross income for the firms is given by the production function $F(K,K_g,L)$ because we have normalized the price of the consumption good to 1. Labor costs to the firm are $w_t L_t$, and capital costs are $(r_t +\delta)K_t$. The government supplies public capital to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta$. The $\delta^\tau_t$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
 
   Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_t$, which is a flat tax on corporate income. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
 
@@ -55,7 +55,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   ```{math}
   :label: EqFirmFOC_K
-    r_t = (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau \quad\forall t
+    r_t = (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau_t \quad\forall t
   ```
 
   Note that the presence of the public capital good creates economic rents. However, given perfect competition, any economic profits will be competed away. For this reason, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,t}$ through the $Y_t$ term.
@@ -74,7 +74,7 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 
   ```{math}
   :label: EqFirmsMPK_opt
-    MPK_t =  \frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}}{1 - \tau^{corp}_t} \quad\forall t
+    MPK_t =  \frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}_t}{1 - \tau^{corp}_t} \quad\forall t
   ```
 
   Firm profit maximization for labor demand from equation {eq}`EqFirmFOC_L` implies that the marginal product of labor is the following.
@@ -96,9 +96,9 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
   ```{math}
   :label: EqFirmsProfit_Kg
     \begin{split}
-      PR_t &= (1 - \tau^{corp}_t)\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau K_t \\
-      &= (1 - \tau^{corp}_t)\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}}{1 - \tau^{corp}_t}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t L_t\Biggr] ... \\
-      &\quad\quad - (1 - \tau^{corp}_t)w_t L_t - (r_t + \delta)K_t + \tau^{corp}_t\delta^{\tau}K_t \\
+      PR_t &= (1 - \tau^{corp}_t)\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau_t K_t \\
+      &= (1 - \tau^{corp}_t)\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}_t}{1 - \tau^{corp}_t}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t L_t\Biggr] ... \\
+      &\quad\quad - (1 - \tau^{corp}_t)w_t L_t - (r_t + \delta)K_t + \tau^{corp}_t\delta^{\tau}_t K_t \\
       &= (1 - \tau^{corp}_t)MPK_{g,t}K_{g,t} \\
     \end{split}
   ```

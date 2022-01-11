@@ -101,7 +101,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzProfit
-    \hat{PR}_t = (1 - \tau^{corp}_t)\Bigl[F(\hat{K}_t,\hat{K}_{g,t},\hat{L}_t) - \hat{w}_t \hat{L}_t\Bigr] - \bigl(r_t + \delta\bigr)\hat{K}_t + \tau^{corp}_t\delta^\tau \hat{K}_t \quad\forall t
+    \hat{PR}_t = (1 - \tau^{corp}_t)\Bigl[F(\hat{K}_t,\hat{K}_{g,t},\hat{L}_t) - \hat{w}_t \hat{L}_t\Bigr] - \bigl(r_t + \delta\bigr)\hat{K}_t + \tau^{corp}_t\delta^\tau_t \hat{K}_t \quad\forall t
   ```
 
   The firms' first order equation for labor demand {eq}`EqFirmFOC_L` is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_t}{e^{g_y t}L_t}$ term on the right-hand-side by $\tilde{N}_t$.
@@ -115,8 +115,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzFOC_K
-    r_t &= (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_t}{\hat{K}_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau \quad\forall t \\
-    &= (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau \quad\forall t
+    r_t &= (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_t}{\hat{K}_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau_t \quad\forall t \\
+    &= (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau_t \quad\forall t
   ```
 
 
@@ -147,7 +147,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   We can stationarize the expression for total government revenue $Rev_t$ in {eq}`EqUnbalGBCgovRev` by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.
   ```{math}
   :label: EqStnrzGovRev
-    \hat{Rev}_t = \underbrace{\tau^{corp}_t\bigl[\hat{Y}_t - \hat{w}_t\hat{L}_t\bigr] - \tau^{corp}_t\delta^\tau \hat{K}_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    \hat{Rev}_t = \underbrace{\tau^{corp}_t\bigl[\hat{Y}_t - \hat{w}_t\hat{L}_t\bigr] - \tau^{corp}_t\delta^\tau_t \hat{K}_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
 
   Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.

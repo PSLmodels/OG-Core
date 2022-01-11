@@ -143,7 +143,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
        ```{math}
        :label: EqSS_FOC_K
-         \bar{r}^{i'} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\bar{Y}_b}{\bar{K}_b}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
+         \bar{r}^{i'} = (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\bar{Y}_b}{\bar{K}_b}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau_t
        ```
 
     2. Use $\bar{Y}^{i''}$ and $\bar{L}^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
