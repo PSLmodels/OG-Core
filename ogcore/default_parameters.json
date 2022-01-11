@@ -382,8 +382,8 @@
         }
     },
     "epsilon": {
-        "title": "Elasticity of substitution between capital and labor in firm production function",
-        "description": "Elasticity of substitution between capital and labor in firm production function.",
+        "title": "Elasticity of substitution among private capital, public capital, and labor in firm production function",
+        "description": "Elasticity of substitution among private capital, public capital, and labor in firm production function.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
