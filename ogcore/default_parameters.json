@@ -721,7 +721,7 @@
         }
     },
     "initial_Kg_ratio": {
-        "title": "Government capital to GDP ratio in the initial period",
+        "title": "Government capital (public capital) to GDP ratio in the initial period",
         "description": "Government capital (aka infrastructure) to GDP ratio in the initial period.",
         "section_1": "Fiscal Policy Parameters",
         "notes": "Should be calibrated based on the value of public infrastructure to GDP in the model start year.",
