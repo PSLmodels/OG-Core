@@ -63,14 +63,14 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 (EqFirmsPosProfits)=
 ## Positive Profits from Government Infrastructure Investment
 
-  The CES production function in {eq}`EqFirmsCESprodfun` exhibits constant returns to scale (CRS). A feature of CRS production functions is that total revenue is a sum of each marginal factor income,
+  The CES production function in {eq}`EqFirmsCESprodfun` exhibits constant returns to scale (CRS). A feature of CRS production functions is that total revenue is a sum of the revenue attributed to each factor,
 
   ```{math}
   :label: EqFirmsMargRevEq
-    Y_t = MPK_t K_t + MPK_{g,t} K_{g,t} + MPL_t (e^{g_y t}L_t) \quad\forall t
+    Y_t = MPK_t K_t + MPK_{g,t} K_{g,t} + MPL_t L_t \quad\forall t
   ```
 
-  where $MPK_t$ is the marginal product of private capital, $MPK_{g,t}$ is the marginal product of public capital, and $MPL_t$ is the marginal product of labor. Firm profit maximization for private capital demand from equation {eq}`EqFirmFOC_K` implies that the marginal product of private capital is the following.
+  where $MPK_t$ is the marginal product of private capital, $MPK_{g,t}$ is the marginal product of public capital, and $MPL_t$ is the marginal product of labor. Each of the terms in {eq}`EqFirmsMargRevEq` is growing at the macroeconomic variable rate of $e^{g_y t}\tilde{N_t}$ (see the third column of {numref}`TabStnrzStatVars`). Firm profit maximization for private capital demand from equation {eq}`EqFirmFOC_K` implies that the marginal product of private capital is the following.
 
   ```{math}
   :label: EqFirmsMPK_opt
@@ -84,12 +84,29 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
     MPL_t =  w_t \quad\forall t
   ```
 
-  If we plug the expressions for $MPK_t$ and $MPL_t$ from {eq}`EqFirmsMPK_opt` and {eq}`EqFirmsMPL_opt`, respectively, into the total revenue $Y_t$ decomposition in {eq}`EqFirmsMargRevEq` and then substitute that into the profit function {eq}`EqFirmsProfit`, we see that economic rents arise when public capital is positive $K_{g,t}>0$.
+  Even though firms take the stock of public capital $K_{g,t}$ from government infrastructure investment as constant, we can still calculate the marginal product of public capital from the production function {eq}`EqFirmsCESprodfun`.
+
+  ```{math}
+  :label: EqFirmsMPKg_opt
+    MPK_{g,t} =  Z_t^{\frac{\varepsilon - 1}{\varepsilon}}\left(\frac{\gamma_g Y_t}{K_{g,t}}\right)^{\frac{1}{\varepsilon}} \quad\forall t
+  ```
+
+  If we plug the expressions for $MPK_t$, $MPK_{g,t}$, and $MPL_t$ from {eq}`EqFirmsMPK_opt`, {eq}`EqFirmsMPKg_opt`, and {eq}`EqFirmsMPL_opt`, respectively, into the total revenue $Y_t$ decomposition in {eq}`EqFirmsMargRevEq` and then substitute that into the profit function {eq}`EqFirmsProfit`, we see that positive economic rents arise when costless public capital is positive $K_{g,t}>0$.
 
   ```{math}
   :label: EqFirmsProfit_Kg
     \begin{split}
     PR_t &= (1 - \tau^{corp})\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \\
-    &= (1 - \tau^{corp})\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}\delta^{\tau}}{1 - \tau^{corp}}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t(e^{g_y t}L_t)\Biggr]
+    &= (1 - \tau^{corp})\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}\delta^{\tau}}{1 - \tau^{corp}}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t L_t\Biggr] ... \\
+    &\quad\quad - (1 - \tau^{corp})w_t L_t - (r_t + \delta)K_t + \tau^{corp}\delta^{\tau}K_t \\
+    &= (1 - \tau^{corp})MPK_{g,t}K_{g,t} \\
+    &= (1 - \tau^{corp})(Z_t K_{g,t})^{\frac{\varepsilon-1}{\varepsilon}}(\gamma_g Y_t)^{\frac{1}{\varepsilon}}
     \end{split}
+  ```
+
+  We assume these positive economic profits resulting from government infrastructure investment are passed on to the owners of private capital through an adjusted interest rate $r_{K,t}$ that zeroes out profits among the perfectly competitive firms and is a function of $MPK_{g,t}$ and $K_{g,t}$.
+
+  ```{math}
+  :label: EqFirmsMPKg_opt
+    MPK_{g,t} =  Z_t^{\frac{\varepsilon - 1}{\varepsilon}}\left(\frac{\gamma_g Y_t}{K_{g,t}}\right)^{\frac{1}{\varepsilon}} \quad\forall t
   ```
