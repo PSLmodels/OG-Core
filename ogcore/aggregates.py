@@ -358,8 +358,8 @@ def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
         tau_b = p.tau_b[-1]
     else:
         tau_b = p.tau_b[:p.T]
-    r_K = r + (K_g * MPKg * (1 - tau_b)) / K
-    r_p = ((r_K * K) + (r_gov * D)) / (K + D)
+    r_K = r + (1 - tau_b) * MPKg * (K_g / K)
+    r_p = ((r_gov * D) + (r_K * K)) / (D + K)
 
     return r_p
 
