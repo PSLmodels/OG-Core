@@ -359,7 +359,7 @@ def get_K_from_Y(Y, r, p, method):
 
 def get_L_from_Y(w, Y, p, method):
     r'''
-    Find L from Y and w
+    Find aggregate labor L from output Y and wages w
 
     .. math::
         L_{t} = \frac{(1 - \gamma - \gamma_g) Z_{t}^{\varepsilon-1}
