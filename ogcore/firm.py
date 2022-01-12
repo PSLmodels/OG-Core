@@ -20,16 +20,22 @@ def get_Y(K, K_g, L, p, method):
     aggregate labor, and CES production function parameters.
 
     .. math::
-        Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}
-        K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} +
-        \gamma_g^{\frac{1}{\varepsilon}}
-        K_{g,t}^{\frac{\varepsilon - 1}{\varepsilon}} +
-        (1 - \gamma-\gamma_g)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}
-        {\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}
+        \hat{Y}_t &= F(\hat{K}_t, \hat{K}_{g,t}, \hat{L}_t) \\
+        &\equiv \begin{cases}
+          &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} +
+          (\gamma_{g})^\frac{1}{\varepsilon}(\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} +
+          (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+          \:\text{if}\: \hat{K}_{g,t}>0 \\
+          &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{or}\quad
+          \hat{K}_{g,t}=0 \quad\text{and}\quad \varepsilon>1 \\
+          &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} +
+          (1-\gamma)^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+          \quad\text{if}\quad \hat{K}_{g,t}=0 \quad\text{and}\quad \varepsilon=1
+        \end{cases}\quad\forall t
 
     Args:
         K (array_like): aggregate private capital
-        K (array_like): aggregate government capital
+        K_g (array_like): aggregate government capital
         L (array_like): aggregate labor
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
@@ -41,24 +47,28 @@ def get_Y(K, K_g, L, p, method):
     '''
     if method == 'SS':
         Z = p.Z[-1]
+        # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+        if K_g == 0 and p.epsilon == 1:
+            gamma_g = 0
+        else:
+            gamma_g = p.gamma_g
     else:
         Z = p.Z[:p.T]
-    if np.any(K_g) == 0:  # issues if K_g = 0 in this case, but with gamma_g = 0, then ok to have K_g value not important
-        if isinstance(K_g, np.ndarray):
+        # Change values of K_g=0 to 1 when eps=1 to remove K_g from prod func
+        if np.any(K_g, 0) and p.epsilon == 1:
             K_g[K_g == 0] = 1.0
-        else:  # scalar case
-            K_g = 1.0
+        gamma_g = p.gamma
     if p.epsilon == 1:
         # Unit elasticity, Cobb-Douglas
-        Y = (Z * (K ** p.gamma) * (K_g ** p.gamma_g) *
-             (L ** (1 - p.gamma - p.gamma_g)))
+        Y = (Z * (K ** p.gamma) * (K_g ** gamma_g) *
+             (L ** (1 - p.gamma - gamma_g)))
     else:
         # General CES
         Y = (Z * (((p.gamma ** (1 / p.epsilon)) *
                    (K ** ((p.epsilon - 1) / p.epsilon))) +
-                  ((p.gamma_g ** (1 / p.epsilon)) *
+                  ((gamma_g ** (1 / p.epsilon)) *
                    (K_g ** ((p.epsilon - 1) / p.epsilon))) +
-                  (((1 - p.gamma - p.gamma_g) ** (1 / p.epsilon)) *
+                  (((1 - p.gamma - gamma_g) ** (1 / p.epsilon)) *
                    (L ** ((p.epsilon - 1) / p.epsilon)))) **
              (p.epsilon / (p.epsilon - 1)))
 
@@ -72,9 +82,9 @@ def get_r(Y, K, p, method):
     demand.
 
     .. math::
-        r_{t} = (1 - \tau^{corp})Z_t^\frac{\varepsilon-1}{\varepsilon}
+        r_{t} = (1 - \tau^{corp}_t)Z_t^\frac{\varepsilon-1}{\varepsilon}
         \left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -
-        \delta + \tau^{corp}\delta^\tau
+        \delta + \tau^{corp}_t\delta^\tau_t
 
     Args:
         Y (array_like): aggregate output
@@ -94,7 +104,7 @@ def get_r(Y, K, p, method):
         delta_tau = p.delta_tau[:p.T]
         tau_b = p.tau_b[:p.T]
     MPK = get_MPx(Y, K, p.gamma, p, method)
-    r = MPK * (1 - tau_b) - p.delta + tau_b * delta_tau
+    r = (1 - tau_b) * MPK - p.delta + tau_b * delta_tau
 
     return r
 
