@@ -337,7 +337,7 @@ def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
     a mix of government debt and private equity.
 
     .. math::
-        r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}
+        r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}}
 
     Args:
         r (array_like): the real interest rate
@@ -351,8 +351,7 @@ def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
             'TPI'
 
     Returns:
-        r_p (array_like): the real interest rate on the households
-            portfolio
+        r_p (array_like): the real interest rate on the household portfolio
 
     '''
     if method == 'SS':
@@ -371,13 +370,13 @@ def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
     Compute the error in the resource constraint.
 
     .. math::
-        \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}
-        (1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +
-        (\hat{K}^{g}_{t+1}e^{g_{y}}
-        (1+g_{n,t+1}) - \hat{K}^{g}_{t}) + \delta \hat{K}^{g}_{t} +
-        \hat{G}_{t} + r_{p, t}\hat{K}^{f}_{t} -
-        (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +
-        r_{p,t}\hat{D}^{f}_{t}
+      \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
+      \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
+      \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
+      r_{p,t}\hat{K}^f_t ... \\
+      &\quad\quad + \Bigl(e^{g_y}\bigl[1 +
+      \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) -
+      r_{p,t}\hat{D}^f_t \quad\forall t
 
     Args:
         Y (array_like): aggregate output
