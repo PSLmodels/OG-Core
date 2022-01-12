@@ -388,16 +388,17 @@ def get_L_from_Y(w, Y, p, method):
     return L
 
 
-def get_K_from_Y_and_L(w, Y, L, K_g, p, method):
+def get_K_from_Y_and_L(Y, L, K_g, p, method):
     r'''
-    Find L from Y and w
+    Find aggregate private capital K from output Y, aggregate labor L,
+    and public capital K_g
 
     .. math::
         K_{t} = \left(\frac{\left(\frac{Y_t}{Z_t}\right)^{\frac{\varepsilon-1}
         {\varepsilon}} -
         (1-\gamma-\gamma_g)L_t^{\frac{\varepsilon-1}{\varepsilon}} -
         \gamma_g^{\frac{1}{\varepsilon}}K_{g,t}^{\frac{\varepsilon-1}{\varepsilon}}}
-        {\gamma^{frac{1}{\varepsilon}}}\right)^{\frac{\varepsilon}{\varepsilon-1}}
+        {\gamma^{\frac{1}{\varepsilon}}}\right)^{\frac{\varepsilon}{\varepsilon-1}}
 
     Args:
         w (array_like): the wage rate
