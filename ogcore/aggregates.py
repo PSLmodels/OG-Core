@@ -342,7 +342,8 @@ def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
     Args:
         r (array_like): the real interest rate
         r_gov (array_like): the real interest rate on government debt
-        K (array_like): aggregate capital
+        K (array_like): aggregate private capital
+        K_g (array_like): aggregate public capital
         D (array_like): aggregate government debt
         MPKg (array_like): marginal product of government capital
         p (OG-Core Specifications object): model parameters
