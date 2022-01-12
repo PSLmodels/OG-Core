@@ -186,12 +186,13 @@ def get_KLratio_old(r, p, method):
 def get_KLratio(r, w, p, method):
     r'''
     This function solves for the capital-labor ratio given the interest
-    rate r and parameters.
+    rate r wage w and parameters.
 
     .. math::
-        \frac{K}{L} = \frac{\gamma}{1 - \gamma - \gamma_g}
+        \frac{K}{L} = \left(\frac{\gamma}{1 - \gamma - \gamma_g}\right)
             \left(\frac{w_t}{\frac{r_t + \delta -
-            \tau_t^{corp}\delta_t^{\tau}}{1 - \tau_t^{corp}}}\right)
+            \tau_t^{corp}\delta_t^{\tau}}{1 -
+            \tau_t^{corp}}}\right)^\varepsilon
 
     Args:
         r (array_like): the real interest rate
@@ -212,8 +213,8 @@ def get_KLratio(r, w, p, method):
         delta_tau = p.delta_tau[:p.T]
     cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
     KLratio = (
-        (w / cost_of_capital) ** p.epsilon *
-        (p.gamma / (1 - p.gamma - p.gamma_g)))
+        (p.gamma / (1 - p.gamma - p.gamma_g)) *
+        (w / cost_of_capital) ** p.epsilon)
     return KLratio
 
 
@@ -325,7 +326,7 @@ def get_K_from_Y(Y, r, p, method):
     .. math::
         K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}} \\
         K_{t} = \frac{\gamma Z_t^{\varepsilon -1} Y_t}{
-            \left(\frac{r_t + \delta + \tau_t^{corp}\delta_t^\tau}
+            \left(\frac{r_t + \delta - \tau_t^{corp}\delta_t^\tau}
             {1 - \tau_{t}^{corp}}\right)^\varepsilon}
 
     Args:
