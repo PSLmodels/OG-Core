@@ -24,7 +24,7 @@ The main characteristic that differentiates the overlapping generations model fr
 * Government
     * government collects tax revenue from households and firms
     * government distributes transfers to households
-    * government supplies capital at no cost to the private firms' production process
+    * government supplies capital to the private firms' production process
     * government spends resources on public goods
     * government can run deficits and surpluses
     * a stabilization rule (budget closure rule) must be implemented at some point in the time path if government debt is growing at a rate permanently different from GDP.
