@@ -337,8 +337,10 @@ def get_K_g(K_g0, I_g, p, method):
             {(1 + \tilde{g}_{n,t+1})e^{g_y}}
 
     Args:
-        Y (array_like): aggregate output
-        alpha_I (array_like): percentage of output invested in public capital
+        K_g0 (scalar): initial stock of public capital
+        I_g (array_like): government infrastructure investment
+        p (ParamTools object): model parameters
+        method (str): either 'SS' for steady-state or 'TPI' for transition path
 
     Returns
         K_g (array_like): stock of public capital

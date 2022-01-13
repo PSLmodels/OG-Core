@@ -227,9 +227,9 @@ def test_get_I_g():
 # need to parameterize to test for TPI and SS
 @pytest.mark.parametrize(
     'K_g0,I_g,method,expected',
-    [(None, 0.2, 'SS', 3.425855334),
+    [(None, 0.2, 'SS', 3.291689115882805),
      (0.0, np.array([0.2, 0.3, 0.01]), 'TPI',
-     np.array([0, 0.190283438, 0.462843312]))],
+     np.array([0, 0.19028344,  0.46284331]))],
     ids=['SS', 'TPI'])
 def test_get_K_g(K_g0, I_g, method, expected):
     '''
