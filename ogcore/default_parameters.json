@@ -348,7 +348,7 @@
         "description": "Capital's share of output in firm production function.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
-        "notes": "Histroical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
+        "notes": "Historical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
         "type": "float",
         "value": [
             {
@@ -376,7 +376,7 @@
         ],
         "validators": {
             "when": {
-                "param": "alpha_I",
+                "param": "initial_Kg_ratio",
                 "is": {"equal_to": 0},
                 "then": {"range": {"min": 0.0, "max": 0.0}},
                 "otherwise": {"range": {"min": 0.0, "max": 1.0}}
