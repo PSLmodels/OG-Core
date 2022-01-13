@@ -97,11 +97,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   :label: EqStnrzCESprodfun
     \begin{split}
       \hat{Y}_t &= F(\hat{K}_t, \hat{K}_{g,t}, \hat{L}_t) \\
-      &\equiv \begin{cases}
-        &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \:\text{if}\: \hat{K}_{g,t}>0 \\
-        &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{or}\quad \hat{K}_{g,t}=0 \quad\text{and}\quad \varepsilon>1 \\
-        &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\text{if}\quad \hat{K}_{g,t}=0 \quad\text{and}\quad \varepsilon=1
-      \end{cases}\quad\forall t
+      &\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
     \end{split}
   ```
 
