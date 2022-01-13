@@ -265,6 +265,7 @@ def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays,
         agg_pension_outlays (array_like): total government pension
             outlays
         UBI_outlays (array_like): total universal basic income (UBI) outlays
+        I_g (array_like): public infrastructure investement
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
 
@@ -274,8 +275,7 @@ def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays,
     '''
     if p.budget_balance:
         new_TR = (
-            total_tax_revenue - agg_pension_outlays - G - UBI_outlays -
-            I_g)
+            total_tax_revenue - agg_pension_outlays - G - UBI_outlays - I_g)
     elif p.baseline_spending:
         new_TR = TR
     else:
@@ -334,7 +334,7 @@ def get_K_g(K_g0, I_g, p, method):
 
     .. math::
         K_{g,t+1} = \frac{(1 - \delta_g)K_{g,t} + I_{g,t}}
-            {(1 + g_{n,t+1})e^{g_y}}
+            {(1 + \tilde{g}_{n,t+1})e^{g_y}}
 
     Args:
         Y (array_like): aggregate output
@@ -352,6 +352,6 @@ def get_K_g(K_g0, I_g, p, method):
             K_g[t + 1] = ((1 - p.delta_g) * K_g[t] + I_g[t]) / growth
     else:  # SS
         growth = (1 + p.g_n_ss) * np.exp(p.g_y)
-        K_g = I_g / (1 - ((1 - p.delta_g) / growth))
+        K_g = I_g / (growth - (1 - p.delta_g))
 
     return K_g
