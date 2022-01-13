@@ -12,23 +12,15 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
   :label: EqFirmsCESprodfun
     \begin{split}
       Y_t &= F(K_t, K_{g,t}, L_t) \\
-      &\equiv \begin{cases}
-        &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \:\text{if}\: K_{g,t}>0 \\
-        &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{or}\quad K_{g,t}=0 \quad\text{and}\quad \varepsilon>1 \\
-        &Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma)^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\text{if}\quad K_{g,t}=0 \quad\text{and}\quad \varepsilon=1
-      \end{cases}\quad\forall t
+      &\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
     \end{split}
   ```
   where $Z_t$ is an exogenous scale parameter (total factor productivity) that can be time dependent, $\gamma$ represents private capital's share of income, $\gamma_{g}$ is public capital's share of income, and $\varepsilon$ is the constant elasticity of substitution among the two types of capital and labor. We have included constant productivity growth rate $g_y$ as the rate of labor augmenting technological progress.
 
-  A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for $\varepsilon=1$.
+  A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for $\varepsilon=1$.[^Kg0_case]
   ```{math}
   :label: EqFirmsCDprodfun
-    Y_t =
-    \begin{cases}
-      &Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\text{for}\quad K_{g,t}>0 \\
-      &Z_t K_t^\gamma (e^{g_y t}L_t)^{1-\gamma} \quad\text{for}\quad K_{g,t}=0
-    \end{cases} \quad\forall t \quad\text{for}\quad \varepsilon=1
+    Y_t = Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\forall t \quad\text{for}\quad \varepsilon=1
   ```
 
 (EqFirmsFOC)=
@@ -117,3 +109,8 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
   :label: EqFirms_rKt
     r_{K,t} =  r_t + (1 - \tau^{corp}_t)MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right) \quad\forall t
   ```
+
+(SecFirmsfootnotes)=
+## Footnotes
+
+  [^Kg0_case]: It is important to note a special case of the Cobb-Douglas ($\varepsilon=1$) production function that we have to manually restrict. The inputs of production of private capital $K_t$ and labor $L_t$ are endogenous and have characteristics of the model that naturally bound them away from zero. But public capital $K_g$, although it is a function of endogenous variables in {eq}`EqUnbalGBC_Igt` and {eq}`EqUnbalGBC_Kgt`, can be exogenously set to zero as a policy parameter choice by setting $\alpha_{I,t}=0$. In the Cobb-Douglas case of the production function $\varepsilon=1$ {eq}`EqFirmsCDprodfun`, $K_g=0$ would zero out production and break the model. In the case when $\varepsilon=1$ and $K_g=0$, we set $gamma_g=0$, thereby restricting the production function to only depend on private capital $K_t$ and labor $L_t$. This necessary restriction limits us from performing experiments in the model of the effect of changing $K_{g,t}=0$ to $K_{g,t}>0$ or vice versa in the $\varepsilon=1$ case.
