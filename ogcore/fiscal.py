@@ -197,8 +197,8 @@ def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR, UBI_outlays,
     Calculate the steady-state values of government spending.
 
     .. math::
-            \bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr] -
-            \bar{TR} - \overline{UBI}
+            \bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} -
+            (1 + \bar{r}_{gov})\bigr] - \bar{I}_g - \bar{TR} - \overline{UBI}
 
     Args:
         Y (scalar): aggregate output
