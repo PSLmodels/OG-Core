@@ -467,11 +467,11 @@ filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'baseline_spending': True, 'use_zeta': True}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                   'zeta_D': [0.0]}
+                   'zeta_D': [0.0], 'initial_guess_r_SS': 0.04}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 param_updates12 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
                    'gamma_g': 0.07, 'initial_guess_r_SS': 0.06,
-                   'initial_guess_TR_SS': 0.03}
+                   'initial_guess_TR_SS': 0.03, 'initial_Kg_ratio': 0.01}
 filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
 
 

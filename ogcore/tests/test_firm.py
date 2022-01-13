@@ -72,7 +72,8 @@ new_param_values6 = {
     'T': 3,
     'S': 3,
     'eta': (np.ones((3, p5.J)) / (3 * p5.J)),
-    'gamma_g': 0.2
+    'gamma_g': 0.2,
+    'initial_Kg_ratio': 0.01
 }
 # update parameters instance with new values for test
 p6.update_specifications(new_param_values6)
