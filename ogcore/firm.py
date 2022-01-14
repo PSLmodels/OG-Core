@@ -49,7 +49,7 @@ def get_Y(K, K_g, L, p, method):
     else:
         Z = p.Z[:p.T]
         # Change values of K_g=0 to 1 when eps=1 to remove K_g from prod func
-        if np.any(K_g, 0) and p.epsilon == 1:
+        if np.any(K_g == 0) and p.epsilon == 1:
             K_g[K_g == 0] = 1.0
             gamma_g = 0
         else:
