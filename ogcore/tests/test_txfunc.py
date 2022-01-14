@@ -142,10 +142,10 @@ def test_replace_outliers():
 
 
 expected_tuple_DEP = (np.array(
-    [2.27262567e-23, 6.52122551e-05, 2.58997184e-13, 5.79233037e-09,
-     3.37854043e-01, 7.96933258e-01, 9.14367060e-01, 9.02760087e-06,
-     9.02760087e-06, 3.37845016e-03, 7.96924230e-03, 9.02760087e-06]),
-     237677.14172577334, 152900)
+    [2.27262567e-23, 6.52118581e-05, 2.58989255e-13, 5.79350547e-09,
+     3.37733466e-01, 7.99995110e-01, 9.14366888e-01, 9.02760087e-06,
+     9.02760087e-06, 3.37724438e-03, 7.99986083e-03, 9.02760087e-06]),
+     237677.14110076256, 152900)
 
 expected_tuple_DEP_totalinc = (
     np.array(
@@ -153,8 +153,7 @@ expected_tuple_DEP_totalinc = (
          2.98672127e-03, 9.02760087e-06]), 256983.45682508417, 152900)
 expected_tuple_linear = (0.26135747, 0.0, 152900)
 expected_tuple_GS = (np.array(
-    [3.03099167e-01, 9.64733515e-01, 1.77900880e-05]),
-    256366.43079363462, 152900)
+    [0.42897179, 0.39679734, 0.00239574]), 242750.4467703229, 152900)
 expected_tuple_linear_mtrx = (0.37030104, 0.0, 152900)
 expected_tuple_linear_mtry = (0.24793767, 0.0, 152900)
 
@@ -311,7 +310,6 @@ def test_tax_func_loop():
         t, micro_data, beg_yr, s_min, s_max, age_specific,
         tax_func_type, analytical_mtrs, desc_data, graph_data,
         graph_est, output_dir, numparams)
-    age_specific = False
 
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
