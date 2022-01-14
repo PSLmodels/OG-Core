@@ -206,7 +206,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
     p.update_specifications(param_updates)
 
     # Need to run SS first to get results
-    SS.ENFORCE_SOLUTION_CHECKS = True#False
+    SS.ENFORCE_SOLUTION_CHECKS = True
     ss_outputs = SS.run_SS(p, client=dask_client)
 
     if p.baseline:
@@ -238,7 +238,8 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
             assert(np.allclose(
                 test_dict[k][:p.T], v[:p.T], rtol=1e-04, atol=1e-04))
         except ValueError:
-            print('Diff = ', np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
+            print('Diff = ',
+                  np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
             assert(np.allclose(
                 test_dict[k][:p.T, :, :], v[:p.T, :, :], rtol=1e-04,
                 atol=1e-04))
@@ -392,6 +393,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
             assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04,
                                atol=1e-04))
         except ValueError:
-            print('Diff = ', np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
+            print('Diff = ',
+                  np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
             assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :],
                                rtol=1e-04, atol=1e-04))
