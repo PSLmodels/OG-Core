@@ -49,7 +49,7 @@ def main():
     og_spec = {
         'frisch': 0.41, 'start_year': START_YEAR, 'cit_rate': [0.21],
         'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
-        'alpha_G': alpha_G.tolist(), 'zeta_D': [0.4], 'zeta_K': [0.1]}
+        'alpha_G': alpha_G.tolist()}
 
     '''
     ------------------------------------------------------------------------
@@ -75,7 +75,7 @@ def main():
     ------------------------------------------------------------------------
     '''
     # update the effective corporate income tax rate
-    og_spec.update({'cit_rate': [0.35], 'baseline_spending': False})
+    og_spec.update({'cit_rate': [0.35]})
     p2 = Specifications(
         baseline=False,
         num_workers=num_workers,

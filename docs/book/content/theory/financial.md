@@ -41,15 +41,21 @@ W_{t} & = W^d_{t} + W^f_{t} \\
     & = D_t + K_t
 ```
 
-Interest rates on private capital and government bonds differ.  The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return.  As explained in {ref}`MoorePecoraro:2021`, the presence of public infrastructure in the production function means that the returns to private factors of production exhibit decreasing returns to scale.  It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders.  The return on capital is therefore the sum of the (after-tax) returns to private and public capital:
+Interest rates on private capital and government bonds differ. The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return. As derived in {eq}`EqFirms_rKt` of Section {ref}`EqFirmsPosProfits`, the presence of public infrastructure in the production function means that the returns to private factors of production ($r_t$ and $w_t$) exhibit decreasing returns to scale.[^MoorePecoraro] It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders. The return on capital is therefore the sum of the (after-tax) returns to private and public capital.
 
 ```{math}
 :label: eq_rK
-r_{K,t}  = r_{t} + (1 - \tau^b_t )MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right)
+  r_{K,t}  = r_{t} + (1 - \tau^{corp}_t )MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right)
 ```
 
-The return on the portfolio of assets held by the financial intermediary is thus:
+The return on the portfolio of assets held by the financial intermediary is thus a weighted average of the return to government debt $r_{gov,t}$ from {eq}`EqUnbalGBC_rate_wedge` and the adjusted return on private capital $r_{K,t}$ from {eq}`eq_rK`.
+
 ```{math}
 :label: eq_portfolio_return
-r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t
+  r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t
 ```
+
+(SecFinfootnotes)=
+## Footnotes
+
+  [^MoorePecoraro]: See also {cite}`MoorePecoraro:2021` for a similar treatment of government infrastructure investment, positive profits, and returns to the owners of capital.

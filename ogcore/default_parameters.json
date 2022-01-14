@@ -384,8 +384,8 @@
         }
     },
     "epsilon": {
-        "title": "Elasticity of substitution between capital and labor in firm production function",
-        "description": "Elasticity of substitution between capital and labor in firm production function.",
+        "title": "Elasticity of substitution among private capital, public capital, and labor in firm production function",
+        "description": "Elasticity of substitution among private capital, public capital, and labor in firm production function.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
@@ -645,7 +645,7 @@
         }
     },
     "alpha_I": {
-        "title": "Government spending that goes towards investment in infrastructure (public capital) as a fraction of GDP",
+        "title": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)",
         "description": "",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
@@ -723,7 +723,7 @@
         }
     },
     "initial_Kg_ratio": {
-        "title": "Government capital to GDP ratio in the initial period",
+        "title": "Government capital (public capital) to GDP ratio in the initial period",
         "description": "Government capital (aka infrastructure) to GDP ratio in the initial period.",
         "section_1": "Fiscal Policy Parameters",
         "notes": "Should be calibrated based on the value of public infrastructure to GDP in the model start year.",
