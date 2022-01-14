@@ -164,8 +164,9 @@ expected_tuple_linear_mtry = (0.24793767, 0.0, 152900)
 @pytest.mark.parametrize('rate_type,tax_func_type,numparams,expected_tuple',
                          [('etr', 'DEP', 12, expected_tuple_DEP),
                           ('etr', 'DEP_totalinc', 6,
-                           expected_tuple_DEP_totalinc)],
-                         ids=['DEP', 'DEP_totalinc'])
+                           expected_tuple_DEP_totalinc),
+                          ('etr', 'GS', 3, expected_tuple_GS)],
+                         ids=['DEP', 'DEP_totalinc', 'GS'])
 def test_txfunc_est(rate_type, tax_func_type, numparams,
                     expected_tuple, tmpdir):
     '''
@@ -195,12 +196,11 @@ def test_txfunc_est(rate_type, tax_func_type, numparams,
 
 @pytest.mark.parametrize('rate_type,tax_func_type,numparams,expected_tuple',
                          [('etr', 'linear', 1, expected_tuple_linear),
-                          ('etr', 'GS', 3, expected_tuple_GS),
                           ('mtrx', 'linear', 1,
                            expected_tuple_linear_mtrx),
                           ('mtry', 'linear', 1,
                            expected_tuple_linear_mtry)],
-                         ids=['linear', 'GS', 'linear, mtrx',
+                         ids=['linear', 'linear, mtrx',
                               'linear, mtry'])
 def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams,
                           expected_tuple, tmpdir):
