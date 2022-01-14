@@ -321,7 +321,7 @@ def test_get_KLratio_from_r(r, p, method, expected):
         choose values that simplify the calculations and are similar to
         observed values
     """
-    KLratio = firm.get_KLratio_old(r, p, method)
+    KLratio = firm.get_KLratio_KLonly(r, p, method)
     assert (np.allclose(KLratio, expected, atol=1e-6))
 
 
@@ -480,12 +480,12 @@ expected4 = np.array([3.39707089, 2.85348453, 2.85348453])
                           (L4, r4, p4, 'TPI', expected4)],
                          ids=['epsilon=1.2,SS', 'epsilon=1.0,SS',
                               'epsilon=0.4,SS', 'epsilon=0.4,TP'])
-def test_get_K(L, r, p, method, expected):
+def test_get_K_KLonly(L, r, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
-    K = firm.get_K(L, r, p, method)
+    K = firm.get_K_KLonly(L, r, p, method)
     assert (np.allclose(K, expected, atol=1e-6))
 
 
@@ -496,13 +496,13 @@ def test_get_K(L, r, p, method, expected):
                           (L4, r4, p4, 'TPI', expected4)],
                          ids=['epsilon=1.2,SS', 'epsilon=1.0,SS',
                               'epsilon=0.4,SS', 'epsilon=0.4,TP'])
-def test_get_K_new(L, r, p, method, expected):
+def test_get_K(L, r, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
     w = firm.get_w_from_r(r, p, method)
-    K = firm.get_K_new(r, w, L, p, method)
+    K = firm.get_K(r, w, L, p, method)
     assert (np.allclose(K, expected, atol=1e-6))
 
 

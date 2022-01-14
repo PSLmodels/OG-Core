@@ -580,10 +580,8 @@ def run_TPI(p, client=None):
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
         w_open = firm.get_w_from_r(p.world_int_rate[:p.T], p, 'TPI')
-        K_demand_open = firm.get_K_new(
+        K_demand_open = firm.get_K(
             p.world_int_rate[:p.T], w_open, L[:p.T], p, 'TPI')
-        # K_demand_open = firm.get_K(
-        #      L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
         K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
             B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
         Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')

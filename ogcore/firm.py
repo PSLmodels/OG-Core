@@ -130,10 +130,11 @@ def get_w(Y, L, p, method):
     return w
 
 
-def get_KLratio_old(r, p, method):
+def get_KLratio_KLonly(r, p, method):
     r'''
     This function solves for the capital-labor ratio given the interest
-    rate, r, and parameters.
+    rate, r, and parameters when the production function is only a
+    function of K and L.  This is used in the get_w_from_r function.
 
     .. math::
         \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
@@ -250,8 +251,12 @@ def get_MPx(Y, x, share, p, method):
 
 def get_w_from_r(r, p, method):
     r'''
-    Solve for steady-state wage w or time path of wages w_t given
-    interest rate.
+    Solve for a wage rate from a given interest rate.  N.B. this is only
+    appropriate if the production function only uses capital and labor
+    as inputs.  As such, this is not used for determining the domestic
+    wage rate due to the presense of public capital in the production
+    function.  It is used only to determine the wage rate that affects
+    the open economy demand for capital.
 
     .. math::
         w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}
@@ -275,7 +280,7 @@ def get_w_from_r(r, p, method):
         Z = p.Z[-1]
     else:
         Z = p.Z[:p.T]
-    KLratio = get_KLratio_old(r, p, method)
+    KLratio = get_KLratio_KLonly(r, p, method)
     if p.epsilon == 1:
         # Cobb-Douglas case
         w = (1 - p.gamma) * Z * (KLratio ** p.gamma)
@@ -289,10 +294,10 @@ def get_w_from_r(r, p, method):
     return w
 
 
-def get_K(L, r, p, method):
+def get_K_KLonly(L, r, p, method):
     r'''
-    Generates vector of aggregate capital. Use with the open economy
-    options.
+    Generates vector of aggregate capital when the production function
+    uses only K and L as inputs. Use with the open economy options.
 
     .. math::
         K_{t} = \frac{K_{t}}{L_{t}} \times L_{t}
@@ -308,7 +313,7 @@ def get_K(L, r, p, method):
         K (array_like): aggregate capital demand
 
     '''
-    KLratio = get_KLratio_old(r, p, method)
+    KLratio = get_KLratio_KLonly(r, p, method)
     K = KLratio * L
 
     return K
@@ -424,7 +429,7 @@ def get_K_from_Y_and_L(Y, L, K_g, p, method):
     return K
 
 
-def get_K_new(r, w, L, p, method):
+def get_K(r, w, L, p, method):
     r'''
     Get K from r, w, L.  For determining capital demand for open
     economy case.

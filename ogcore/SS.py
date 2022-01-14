@@ -196,7 +196,7 @@ def inner_loop(outer_loop_vars, p, client):
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
     w_open = firm.get_w_from_r(p.world_int_rate[-1], p, 'SS')
-    K_demand_open = firm.get_K_new(p.world_int_rate[-1], w_open, L, p, 'SS')
+    K_demand_open = firm.get_K(p.world_int_rate[-1], w_open, L, p, 'SS')
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
 
     Y = firm.get_Y(K, K_g, L, p, 'SS')
@@ -357,9 +357,8 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
     Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
     (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
      new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Yss, p)
-    # K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
     w_open = firm.get_w_from_r(p.world_int_rate[-1], p, 'SS')
-    K_demand_open_ss = firm.get_K_new(p.world_int_rate[-1], w_open, Lss, p, 'SS')
+    K_demand_open_ss = firm.get_K(p.world_int_rate[-1], w_open, Lss, p, 'SS')
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
         Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
     Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
