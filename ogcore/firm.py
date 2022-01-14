@@ -51,7 +51,9 @@ def get_Y(K, K_g, L, p, method):
         # Change values of K_g=0 to 1 when eps=1 to remove K_g from prod func
         if np.any(K_g, 0) and p.epsilon == 1:
             K_g[K_g == 0] = 1.0
-        gamma_g = p.gamma
+            gamma_g = 0
+        else:
+            gamma_g = p.gamma_g
     if p.epsilon == 1:
         # Unit elasticity, Cobb-Douglas
         Y = (Z * (K ** p.gamma) * (K_g ** gamma_g) *
