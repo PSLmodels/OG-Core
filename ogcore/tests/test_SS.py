@@ -135,8 +135,6 @@ def test_SS_fsolve(guesses, args, expected):
         new_guesses = [r, w, Y, BQ, TR]
 
     test_list = SS.SS_fsolve(new_guesses, *args)
-    print('Test results = ', np.array(test_list))
-    print('Diffs = ', np.absolute(np.hstack(np.array(test_list)) - np.array(expected)).max())
     assert(np.allclose(np.hstack(np.array(test_list)), np.array(expected),
                        atol=1e-5))
 
@@ -166,9 +164,6 @@ filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
                          ids=['Baseline', 'Baseline, budget balance',
                               'Reform, baseline spending=True',
                               'Baseline, small open'])
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates1, filename1)],
-#                          ids=['Baseline'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
