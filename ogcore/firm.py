@@ -41,8 +41,9 @@ def get_Y(K, K_g, L, p, method):
     if method == 'SS':
         Z = p.Z[-1]
         # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
-        if K_g == 0 and p.epsilon == 1:
+        if K_g == 0 and p.epsilon <= 1:
             gamma_g = 0
+            K_g = 1
         else:
             gamma_g = p.gamma_g
     else:
