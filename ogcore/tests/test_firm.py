@@ -22,6 +22,7 @@ new_param_values2 = {
     'gamma': 0.5,
     'epsilon': 0.2
 }
+p2.update_specifications(new_param_values2)
 expected2 = np.array([18.84610765])
 p3 = Specifications()
 new_param_values3 = {
@@ -36,7 +37,6 @@ K3 = np.array([1 / 4.0])
 K_g3 = np.array([0.0])
 expected3 = np.array([0.592030917])
 # update parameters instance with new values for test
-p2.update_specifications(new_param_values2)
 p4 = Specifications()
 new_param_values4 = {
     'Z': [2.0],
