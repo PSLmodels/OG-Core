@@ -136,8 +136,9 @@ def test_SS_fsolve(guesses, args, expected):
 
     test_list = SS.SS_fsolve(new_guesses, *args)
     print('Test results = ', np.array(test_list))
+    print('Diffs = ', np.absolute(np.hstack(np.array(test_list)) - np.array(expected)).max())
     assert(np.allclose(np.hstack(np.array(test_list)), np.array(expected),
-                       atol=1e-6))
+                       atol=1e-5))
 
 
 # Parameterize baseline, partially open econ case (default)
