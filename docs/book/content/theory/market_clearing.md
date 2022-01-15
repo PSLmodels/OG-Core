@@ -100,7 +100,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
   ```{math}
   :label: EqMarkClrGoods
     \begin{split}
-      Y_t &= C_t + \bigl(K^d_{t+1} - K^d_t\bigr) + \delta K_t + G_t + r_{p,t} K^f_t - \bigl(D^f_{t+1} - D^f_t\bigr) + r_{p,t}D^f_t \quad\forall t \\
+      Y_t &= C_t + \bigl(K^d_{t+1} - K^d_t\bigr) + \delta K_t + G_t + I_{g,t} + r_{p,t} K^f_t - \bigl(D^f_{t+1} - D^f_t\bigr) + r_{p,t}D^f_t \quad\forall t \\
       &\quad\text{where}\quad C_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{j,s,t}
     \end{split}
   ```

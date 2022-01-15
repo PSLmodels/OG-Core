@@ -48,7 +48,6 @@ def test_get_initial_SS_values(baseline, param_updates, filename,
      test_baseline_values) = test_tuple
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
-
     (exp_initial_values, exp_ss_vars, exp_theta,
      exp_baseline_values) = expected_tuple
     (B0, b_sinit, b_splus1init, factor, initial_b,
@@ -155,15 +154,24 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
 param_updates5 = {'zeta_K': [1.0]}
 filename5 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_small_open.pkl')
-param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
+param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2],
+                  'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.02}
 filename6 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_small_open_some_periods.pkl')
 param_updates7 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0]}
+                  'zeta_D': [0.0], 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.02}
 filename7 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_delta_tau0.pkl')
+param_updates8 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
+                  'gamma_g': 0.07, 'initial_Kg_ratio': 0.15,
+                  'initial_guess_r_SS': 0.06,
+                  'initial_guess_TR_SS': 0.03}
+filename8 = os.path.join(
+    CUR_PATH, 'test_io_data', 'run_TPI_outputs_baseline_Kg_nonzero.pkl')
 
 
 @pytest.mark.local
@@ -174,12 +182,14 @@ filename7 = os.path.join(
                           (False, param_updates4, filename4),
                           (True, param_updates5, filename5),
                           (True, param_updates6, filename6),
-                          (True, param_updates7, filename7)],
+                          (True, param_updates7, filename7),
+                          (True, param_updates8, filename8)],
                          ids=['Baseline, balanced budget', 'Baseline',
                               'Reform', 'Reform, baseline spending',
                               'Baseline, small open',
                               'Baseline, small open some periods',
-                              'Baseline, delta_tau = 0'])
+                              'Baseline, delta_tau = 0',
+                              'Baseline, Kg >0'])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
                           dask_client):
     '''
@@ -196,7 +206,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
     p.update_specifications(param_updates)
 
     # Need to run SS first to get results
-    SS.ENFORCE_SOLUTION_CHECKS = False
+    SS.ENFORCE_SOLUTION_CHECKS = True
     ss_outputs = SS.run_SS(p, client=dask_client)
 
     if p.baseline:
@@ -212,13 +222,24 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
 
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
-    expected_dict['r_p'] = expected_dict.pop('r_hh')
+    try:
+        expected_dict['r_p'] = expected_dict.pop('r_hh')
+        test_dict['eul_savings'] = \
+            test_dict['eul_savings'][:, :, :].max(1).max(1)
+        test_dict['eul_laborleisure'] = \
+            test_dict['eul_laborleisure'][:, :, :].max(1).max(1)
+    except KeyError:
+        pass
 
     for k, v in expected_dict.items():
+        print('Testing, ', k)
         try:
+            print('Diff = ', np.abs(test_dict[k][:p.T] - v[:p.T]).max())
             assert(np.allclose(
                 test_dict[k][:p.T], v[:p.T], rtol=1e-04, atol=1e-04))
         except ValueError:
+            print('Diff = ',
+                  np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
             assert(np.allclose(
                 test_dict[k][:p.T, :, :], v[:p.T, :, :], rtol=1e-04,
                 atol=1e-04))
@@ -276,7 +297,6 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
-    expected_dict['r_p'] = expected_dict.pop('r_hh')
 
     for k, v in expected_dict.items():
         print('Max diff in ', k, ' = ')
@@ -301,10 +321,17 @@ param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
 filename6 = filename = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_small_open_some_periods_2.pkl')
-param_updates7 = {'delta_tau_annual': [0.0]}
+param_updates7 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+                  'zeta_D': [0.0]}
 filename7 = filename = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_delta_tau0_2.pkl')
+param_updates8 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
+                  'gamma_g': 0.07, 'initial_Kg_ratio': 0.15,
+                  'initial_guess_r_SS': 0.06,
+                  'initial_guess_TR_SS': 0.03}
+filename8 = os.path.join(
+    CUR_PATH, 'test_io_data', 'run_TPI_outputs_baseline_Kg_nonzero_2.pkl')
 
 
 @pytest.mark.local
@@ -314,12 +341,14 @@ filename7 = filename = os.path.join(
                           (True, param_updates6, filename6),
                           (True, param_updates7, filename7),
                           (True, {}, filename1),
-                          (False, param_updates4, filename4)],
+                          (False, param_updates4, filename4),
+                          (True, param_updates8, filename8)],
                          ids=['Baseline, balanced budget',
                               'Baseline, small open',
                               'Baseline, small open for some periods',
                               'Baseline, delta_tau = 0', 'Baseline',
-                              'Reform, baseline spending'])
+                              'Reform, baseline spending',
+                              'Baseline, Kg>0'])
 def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
                        dask_client):
     '''
@@ -356,12 +385,15 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
-    expected_dict['r_p'] = expected_dict.pop('r_hh')
 
     for k, v in expected_dict.items():
+        print('Checking ', k)
         try:
+            print('Diff = ', np.abs(test_dict[k][:p.T] - v[:p.T]).max())
             assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04,
                                atol=1e-04))
         except ValueError:
+            print('Diff = ',
+                  np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
             assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :],
                                rtol=1e-04, atol=1e-04))

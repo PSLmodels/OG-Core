@@ -110,8 +110,8 @@ def inner_loop(outer_loop_vars, p, client):
 
     Args:
         outer_loop_vars (tuple): tuple of outer loop variables,
-            (bssmat, nssmat, r, BQ, TR, factor) or
-            (bssmat, nssmat, r, BQ, Y, TR, factor)
+            (bssmat, nssmat, r, w, BQ, TR, factor) or
+            (bssmat, nssmat, r, w, BQ, Y, TR, factor)
         bssmat (Numpy array): initial guess at savings, size = SxJ
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
         BQ (array_like): aggregate bequest amount(s)
@@ -144,22 +144,24 @@ def inner_loop(outer_loop_vars, p, client):
 
     '''
     # unpack variables to pass to function
-    if p.budget_balance:
-        bssmat, nssmat, r, BQ, TR, factor = outer_loop_vars
-        r_p = r
-        Y = 1.0  # placeholder
-        K = 1.0  # placeholder
-    else:
-        bssmat, nssmat, r, BQ, Y, TR, factor = outer_loop_vars
-        K = firm.get_K_from_Y(Y, r, p, 'SS')
+    bssmat, nssmat, r, w, Y, BQ, TR, factor = outer_loop_vars
+
+    # print('IN inner looPPP -- r, w, Y = ', r, w, Y)
+
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
-    w = firm.get_w_from_r(r, p, 'SS')
+    print('r, w = ', r, w)
+
+    # w = firm.get_w_from_r(r, p, 'SS')
     r_gov = fiscal.get_r_gov(r, p)
     D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
         fiscal.get_D_ss(r_gov, Y, p)
-    r_p = aggr.get_r_p(r, r_gov, K, D)
+    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
+    K_g = fiscal.get_K_g(0, I_g, p, 'SS')
+    MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
+    K = firm.get_K_from_Y(Y, r, p, 'SS')
+    r_p = aggr.get_r_p(r, r_gov, K, K_g, D, MPKg, p, 'SS')
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
     ubi = p.ubi_nom_array[-1, :, :] / factor
@@ -193,19 +195,27 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
-    K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
+    w_open = firm.get_w_from_r(p.world_int_rate[-1], p, 'SS')
+    K_demand_open = firm.get_K(p.world_int_rate[-1], w_open, L, p, 'SS')
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
-    Y = firm.get_Y(K, L, p, 'SS')
+
+    Y = firm.get_Y(K, K_g, L, p, 'SS')
+    # print('Inner loop get Y 1 = ', Y)
+    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
+    K_g = fiscal.get_K_g(0, I_g, p, 'SS')
+    Y = firm.get_Y(K, K_g, L, p, 'SS')
+    # print('Inner loop get Y 2 = ', Y)
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
         new_r = firm.get_r(Y, K, p, 'SS')
-    new_w = firm.get_w_from_r(new_r, p, 'SS')
+    new_w = firm.get_w(Y, L, p, 'SS')  # does this work for the open econ case?
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
     new_r_gov = fiscal.get_r_gov(new_r, p)
-    new_r_p = aggr.get_r_p(new_r, new_r_gov, K, D)
+    MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
+    new_r_p = aggr.get_r_p(new_r, new_r_gov, K, K_g, D, MPKg, p, 'SS')
     average_income_model = ((new_r_p * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -230,15 +240,16 @@ def inner_loop(outer_loop_vars, p, client):
         aggr.revenue(new_r_p, new_w, b_s, nssmat, new_bq, cssmat, Y, L,
                      K, factor, ubi, theta, etr_params_3D, p, 'SS')
     G = fiscal.get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
-                        UBI_outlays, new_borrowing, debt_service, p)
+                        UBI_outlays, I_g, new_borrowing, debt_service, p)
     new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays,
-                           UBI_outlays, p, 'SS')
+                           UBI_outlays, I_g, p, 'SS')
 
+    # print('BQ at the end of inner loop: ', new_BQ)
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
         new_w, new_TR, Y, new_factor, new_BQ, average_income_model
 
 
-def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
+def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
               fsolve_flag=False):
     '''
     Solves for the steady state distribution of capital, labor, as well
@@ -267,19 +278,29 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     nu_ss = p.nu
     if fsolve_flag:  # case where already solved via SS_fsolve
         maxiter_ss = 1
+    if p.baseline_spending:
+        TR_ss = TR
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
         # Solve for the steady state levels of b and n, given w, r,
-        # Y and factor
-        if p.budget_balance:
-            outer_loop_vars = (bmat, nmat, r, BQ, TR, factor)
-        else:
-            outer_loop_vars = (bmat, nmat, r, BQ, Y, TR, factor)
+        # Y, BQ, TR, and factor
+        # if p.baseline_spending:
+        #     TR = TR_ss
+        # if not p.budget_balance and not p.baseline_spending:
+        #     Y = TR / p.alpha_T[-1]
+
+        outer_loop_vars = (bmat, nmat, r, w, Y, BQ, TR, factor)
+
+        # print('IN SS SOLVE outer loop -- r, w, Y = ', r, w, Y)
 
         (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_p,
          new_w, new_TR, new_Y, new_factor, new_BQ,
          average_income_model) =\
             inner_loop(outer_loop_vars, p, client)
 
+        # update guesses for next iteration
+        bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
+        nmat = utils.convex_combo(new_nmat, nmat, nu_ss)
+        w = utils.convex_combo(new_w, w, nu_ss)
         r = utils.convex_combo(new_r, r, nu_ss)
         factor = utils.convex_combo(new_factor, factor, nu_ss)
         BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
@@ -287,6 +308,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
             Y = utils.convex_combo(new_Y, Y, nu_ss)
             if Y != 0:
                 dist = np.array([utils.pct_diff_func(new_r, r)] +
+                                [utils.pct_diff_func(new_w, w)] +
                                 list(utils.pct_diff_func(new_BQ, BQ)) +
                                 [utils.pct_diff_func(new_Y, Y)] +
                                 [utils.pct_diff_func(new_factor,
@@ -295,6 +317,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
                 # If Y is zero (if there is no output), a percent difference
                 # will throw NaN's, so we use an absolute difference
                 dist = np.array([utils.pct_diff_func(new_r, r)] +
+                                [utils.pct_diff_func(new_w, w)] +
                                 list(utils.pct_diff_func(new_BQ, BQ)) +
                                 [abs(new_Y - Y)] +
                                 [utils.pct_diff_func(new_factor,
@@ -302,9 +325,11 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         else:
             TR = utils.convex_combo(new_TR, TR, nu_ss)
             dist = np.array([utils.pct_diff_func(new_r, r)] +
+                            [utils.pct_diff_func(new_w, w)] +
                             list(utils.pct_diff_func(new_BQ, BQ)) +
                             [utils.pct_diff_func(new_TR, TR)] +
                             [utils.pct_diff_func(new_factor, factor)]).max()
+
         dist_vec[iteration] = dist
         # Similar to TPI: if the distance between iterations increases, then
         # decrease the value of nu to prevent cycling
@@ -322,22 +347,29 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     nssmat = nmat
 
     rss = r
+    wss = w
     r_gov_ss = fiscal.get_r_gov(rss, p)
     TR_ss = TR
+    Yss = Y
+    I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
+    K_g_ss = fiscal.get_K_g(0, I_g_ss, p, 'SS')
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
     (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
-     new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
-    K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
+     new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Yss, p)
+    w_open = firm.get_w_from_r(p.world_int_rate[-1], p, 'SS')
+    K_demand_open_ss = firm.get_K(p.world_int_rate[-1], w_open, Lss, p, 'SS')
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
         Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
-    Yss = firm.get_Y(Kss, Lss, p, 'SS')
-    r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, Dss)
-    # Note that implicity in this computation is that immigrants'
+    Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
+    I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
+    K_g_ss = fiscal.get_K_g(0, I_g_ss, p, 'SS')
+    MPKg = firm.get_MPx(Yss, K_g_ss, p.gamma_g, p, 'SS')
+    r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, K_g_ss, Dss, MPKg, p, 'SS')
+    # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
     Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
-    wss = new_w
     BQss = new_BQ
     factor_ss = factor
     bqssmat = household.get_bq(BQss, None, p, 'SS')
@@ -379,7 +411,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
          factor, ubissmat, theta, etr_params_3D, p, 'SS')
     Gss = fiscal.get_G_ss(
         Yss, total_tax_revenue, agg_pension_outlays, TR_ss, UBI_outlays,
-        new_borrowing, debt_service, p)
+        I_g_ss, new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
     Iss_total = aggr.get_I(None, Kss, Kss, p, 'total_ss')
@@ -388,7 +420,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     # net foreign borrowing
     debt_service_f = fiscal.get_debt_service_f(r_p_ss, D_f_ss)
     RC = aggr.resource_constraint(
-        Yss, Css, Gss, I_d_ss, K_f_ss, new_borrowing_f, debt_service_f,
+        Yss, Css, Gss, I_d_ss, I_g_ss, K_f_ss, new_borrowing_f, debt_service_f,
         r_p_ss, p)
     if VERBOSE:
         print('Foreign debt holdings = ', D_f_ss)
@@ -412,12 +444,13 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     euler_labor_leisure = euler_errors[p.S:, :]
     if VERBOSE:
         print('Maximum error in labor FOC = ',
-            np.absolute(euler_labor_leisure).max())
+              np.absolute(euler_labor_leisure).max())
         print('Maximum error in savings FOC = ',
-            np.absolute(euler_savings).max())
+              np.absolute(euler_savings).max())
 
     # Return dictionary of SS results
     output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
+              'K_g_ss': K_g_ss, 'I_g_ss': I_g_ss,
               'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
               'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
               'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
@@ -476,32 +509,22 @@ def SS_fsolve(guesses, *args):
 
     # Rename the inputs
     r = guesses[0]
+    w = guesses[1]
+    Y = guesses[2]
     if p.baseline:
-        BQ = guesses[1:-2]
+        BQ = guesses[3:-2]
         TR = guesses[-2]
         factor = guesses[-1]
     else:
-        BQ = guesses[1:-1]
-        if p.baseline_spending:
-            Y = guesses[-1]
-        else:
-            TR = guesses[-1]
-    # Create tuples of outler loop vars
-    if p.baseline:
-        if p.budget_balance:
-            outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor)
-        else:
-            Y = TR / p.alpha_T[-1]
-            outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
-    else:
-        if p.baseline_spending:
-            outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR_ss, factor_ss)
-        else:
-            if p.budget_balance:
-                outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor_ss)
-            else:
-                Y = TR / p.alpha_T[-1]
-                outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor_ss)
+        BQ = guesses[3:-1]
+        TR = guesses[-1]
+        factor = factor_ss
+    if p.baseline_spending:
+        TR = TR_ss
+    if not p.budget_balance and not p.baseline_spending:
+        Y = TR / p.alpha_T[-1]
+
+    outer_loop_vars = (bssmat, nssmat, r, w, Y, BQ, TR, factor)
 
     # Solve for the steady state levels of b and n, given w, r, TR and
     # factor
@@ -510,28 +533,25 @@ def SS_fsolve(guesses, *args):
         inner_loop(outer_loop_vars, p, client)
 
     # Create list of errors in general equilibrium variables
-    error1 = new_r - r
-    error2 = new_BQ - BQ
-    if p.baseline:
-        error3 = new_TR - TR
-        error4 = new_factor / 1000000 - factor / 1000000
-        if VERBOSE:
-            print('GE loop errors = ', error1, error2, error3, error4)
-        # Check and punish violations of the factor
-        if factor <= 0:
-            error4 = 1e9
-        errors = [error1] + list(error2) + [error3, error4]
-    else:
-        if p.baseline_spending:
-            error3 = new_Y - Y
-        else:
-            error3 = new_TR - TR
-        errors = [error1] + list(error2) + [error3]
-        if VERBOSE:
-            print('GE loop errors = ', error1, error2, error3)
+    error_r = new_r - r
     # Check and punish violations of the bounds on the interest rate
-    if r + p.delta <= 0:
-        errors[0] = 1e9
+    if new_r + p.delta <= 0:
+        error_r = 1e9
+    error_w = new_w - w
+    error_Y = new_Y - Y
+    error_BQ = new_BQ - BQ
+    error_TR = new_TR - TR
+    # divide factor by 1000000 to put on similar scale
+    error_factor = new_factor / 1000000 - factor / 1000000
+    # Check and punish violations of the factor
+    if new_factor <= 0:
+        error_factor = 1e9
+    if p.baseline:
+        errors = [error_r, error_w, error_Y] + list(error_BQ) + [error_TR, error_factor]
+    else:
+        errors = [error_r, error_w, error_Y] + list(error_BQ) + [error_TR]
+    if VERBOSE:
+        print('GE loop errors = ', errors)
 
     return errors
 
@@ -562,30 +582,33 @@ def run_SS(p, client=None):
         else:
             b_guess = np.ones((p.S, p.J)) * 0.07
             n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
+        wguess = firm.get_w_from_r(rguess, p, 'SS')
         TRguess = p.initial_guess_TR_SS
+        Yguess = TRguess / p.alpha_T[-1]
         factorguess = p.initial_guess_factor_SS
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         ss_params_baseline = (b_guess, n_guess, None, None, p, client)
         if p.use_zeta:
             BQguess = 0.12231465279007188
-            guesses = [rguess] + list([BQguess]) + [TRguess, factorguess]
+            guesses = [rguess, wguess, Yguess, BQguess, TRguess, factorguess]
         else:
-            guesses = [rguess] + list(BQguess) + [TRguess, factorguess]
+            guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess, factorguess]
         [solutions_fsolve, infodict, ier, message] =\
             opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline,
                        xtol=p.mindist_SS, full_output=True)
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError('Steady state equilibrium not found')
         rss = solutions_fsolve[0]
-        BQss = solutions_fsolve[1:-2]
+        wss = solutions_fsolve[1]
+        Yss = solutions_fsolve[2]
+        BQss = solutions_fsolve[3:-2]
         TR_ss = solutions_fsolve[-2]
         factor_ss = solutions_fsolve[-1]
         Yss = TR_ss/p.alpha_T[-1]  # may not be right - if budget_balance
-        # = True, but that's ok - will be fixed in SS_solver
+        # # = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
-        # Return SS values of variables
-        output = SS_solver(b_guess, n_guess, rss, BQss, TR_ss,
-                           factor_ss, Yss, p, client, fsolve_flag)
+        output = SS_solver(b_guess, n_guess, rss, wss, Yss, BQss, TR_ss,
+                           factor_ss, p, client, fsolve_flag)
     else:
         # Use the baseline solution to get starting values for the reform
         baseline_ss_dir = os.path.join(
@@ -593,12 +616,12 @@ def run_SS(p, client=None):
         ss_solutions = utils.safe_read_pickle(baseline_ss_dir)
         # use baseline solution as starting values if dimensions match
         if ss_solutions['bssmat_splus1'].shape == (p.S, p.J):
-            (b_guess, n_guess, rguess, BQguess, TRguess, Yguess,
+            (b_guess, n_guess, rguess, wguess, BQguess, TRguess, Yguess,
              factor) =\
                 (ss_solutions['bssmat_splus1'], ss_solutions['nssmat'],
-                 ss_solutions['rss'], ss_solutions['BQss'],
-                 ss_solutions['TR_ss'], ss_solutions['Yss'],
-                 ss_solutions['factor_ss'])
+                 ss_solutions['rss'], ss_solutions['wss'],
+                 ss_solutions['BQss'], ss_solutions['TR_ss'],
+                 ss_solutions['Yss'], ss_solutions['factor_ss'])
         else:
             if p.use_zeta:
                 b_guess = np.ones((p.S, p.J)) * 0.0055
@@ -606,50 +629,39 @@ def run_SS(p, client=None):
             else:
                 b_guess = np.ones((p.S, p.J)) * 0.07
                 n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-            if p.zeta_D[-1] == 1.0:
+            if p.zeta_K[-1] == 1.0:
                 rguess = p.world_int_rate[-1]
             else:
                 rguess = p.initial_guess_r_SS
+            wguess = firm.get_w_from_r(rguess, p, 'SS')
             TRguess = p.initial_guess_TR_SS
+            Yguess = TRguess / p.alpha_T[-1]
             factor = p.initial_guess_factor_SS
             BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
-        if p.baseline_spending:
-            TR_ss = TRguess
-            ss_params_reform = (b_guess, n_guess, TR_ss, factor, p, client)
-            if p.use_zeta:
-                guesses = [rguess] + list([BQguess]) + [Yguess]
-            else:
-                guesses = [rguess] + list(BQguess) + [Yguess]
-            [solutions_fsolve, infodict, ier, message] =\
-                opt.fsolve(SS_fsolve, guesses,
-                           args=ss_params_reform, xtol=p.mindist_SS,
-                           full_output=True)
-            rss = solutions_fsolve[0]
-            BQss = solutions_fsolve[1:-1]
-            Yss = solutions_fsolve[-1]
+        ss_params_reform = (b_guess, n_guess, TRguess, factor, p, client)
+        if p.use_zeta:
+            guesses = [rguess, wguess, Yguess, BQguess, TRguess]
         else:
-            ss_params_reform = (b_guess, n_guess, None, factor, p, client)
-            if p.use_zeta:
-                guesses = [rguess] + list([BQguess]) + [TRguess]
-            else:
-                guesses = [rguess] + list(BQguess) + [TRguess]
-            [solutions_fsolve, infodict, ier, message] =\
-                opt.fsolve(SS_fsolve, guesses,
-                           args=ss_params_reform, xtol=p.mindist_SS,
-                           full_output=True)
-            rss = solutions_fsolve[0]
-            BQss = solutions_fsolve[1:-1]
-            TR_ss = solutions_fsolve[-1]
-            Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
-            # budget_balance = True, but that's ok - will be fixed in
-            # SS_solver
+            guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess]
+        [solutions_fsolve, infodict, ier, message] =\
+            opt.fsolve(SS_fsolve, guesses,
+                       args=ss_params_reform, xtol=p.mindist_SS,
+                       full_output=True)
+        rss = solutions_fsolve[0]
+        wss = solutions_fsolve[1]
+        Yss = solutions_fsolve[2]
+        BQss = solutions_fsolve[3:-1]
+        TR_ss = solutions_fsolve[-1]
+        Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
+        # budget_balance = True, but that's ok - will be fixed in
+        # SS_solver
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError('Steady state equilibrium not found')
         # Return SS values of variables
         fsolve_flag = True
         # Return SS values of variables
-        output = SS_solver(b_guess, n_guess, rss, BQss, TR_ss, factor,
-                           Yss, p, client, fsolve_flag)
+        output = SS_solver(b_guess, n_guess, rss, wss, Yss, BQss, TR_ss, factor,
+                           p, client, fsolve_flag)
         if output['Gss'] < 0.:
             warnings.warn('Warning: The combination of the tax policy '
                           + 'you specified and your target debt-to-GDP '

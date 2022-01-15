@@ -3,6 +3,7 @@ Test of steady-state module
 '''
 
 import multiprocessing
+from _pytest.fixtures import scope2index
 from distributed import Client, LocalCluster
 import pytest
 import numpy as np
@@ -12,6 +13,7 @@ import copy
 from ogcore import SS, utils, aggregates, household, constants
 from ogcore.parameters import Specifications
 from ogcore.utils import safe_read_pickle
+from ogcore import firm
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
@@ -32,67 +34,61 @@ input_tuple = utils.safe_read_pickle(
 p1 = Specifications(baseline=True)
 p1.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0]})
 guesses1 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args1 = (bssmat, nssmat, None, None, p1, None)
 expected1 = np.array([
-    -0.026632037158481975, -0.0022739752626707334, -0.01871875707724979,
-    -0.01791935965422934, 0.005996289165268601, 0.00964100151012603,
-    -0.01953460990186908, -0.0029633389016814967, 0.1306862551496613,
-    0.11574464544202477])
+    -0.02663204, 0.19439221, 1.4520695, -0.00227398, -0.01871876, -0.01791936,
+    0.00599629, 0.009641, -0.01953461, -0.00296334, 0.13068626, 0.11574465])
 # Parameterize the reform, closed econ case
 p2 = Specifications(baseline=False)
 p2.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0]})
 guesses2 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
 args2 = (bssmat, nssmat, None, 0.51, p2, None)
 expected2 = np.array([
-    -0.030232643078209973, -0.002371139373741624, -0.01637669829114836,
-    -0.014404669292893904, 0.005875798127829608, 0.009489605242631064,
-    -0.01930931544418691, -0.0029454311332426275, 0.13208003970756407])
+    -0.03023206549190516, 0.22820179599757107, 1.4675625231437683,
+    -0.00237113, -0.0163767 , -0.01440477, 0.00587581, 0.00948961,
+    -0.01930931, -0.00294543, 0.13208062708293913])
 # Parameterize the reform, closed econ, baseline spending case
 p3 = Specifications(baseline=False)
 p3.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0],
                           'baseline_spending': True})
 guesses3 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
 args3 = (bssmat, nssmat, 0.13, 0.51, p3, None)
 expected3 = np.array([
-    -0.04031619469134644, 0.002754829779058155, 0.005665309738855779,
-    0.008140368498332051, 0.007352479311256247, 0.010806872033967399,
-    0.007183869209053399, -0.00284466958926688, 0.7269578822834164])
+    -0.03162803, 0.24195882, 0.41616509, 0.00285045, 0.00579616, 0.00828384,
+    0.00744095, 0.01091296, 0.00732247, -0.00284388, 0.])
 # Parameterize the baseline, partial open economy case (default)
 p4 = Specifications(baseline=True)
 guesses4 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args4 = (bssmat, nssmat, None, None, p4, None)
 expected4 = np.array([
-    -0.03615195306306068, -0.0025227018857025708, 0.0005778317722585288,
-    0.004588284248481369, 0.005706423522356211, 0.00928509074411313,
-    0.005887584256507098, 0.002849544478420344, 0.13774167744621094,
-    0.09930811783393777])
+    -3.61519332e-02, 2.89296724e-01, 1.53046291e+00, -2.52270144e-03,
+    5.77827654e-04, 4.58828506e-03, 5.70642404e-03, 9.28509138e-03,
+    5.88758511e-03, 2.84954467e-03, 1.37741662e-01, 9.93081343e-02])
 # Parameterize the baseline, small open econ case
 p5 = Specifications(baseline=True)
 p5.update_specifications({'zeta_D': [0.0], 'zeta_K': [1.0]})
 guesses5 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args5 = (bssmat, nssmat, None, 0.51, p5, None)
 expected5 = np.array([
-    -0.019999999999999962, -0.0021216948497802778,
-    0.0013874915656953528, 0.0053198904577732575, 0.006173756535859736,
-    0.009858904353577247, 0.006657850176415573, 0.0030235933473326034,
-    0.13082844301733987, 0.09467304802224508])
+    -2.00000000e-02, 1.37696942e-01, 1.45364937e+00, -2.12169485e-03,
+    1.38749157e-03, 5.31989046e-03, 6.17375654e-03, 9.85890435e-03,
+    6.65785018e-03, 3.02359335e-03, 1.30828443e-01, 9.46730480e-02])
 # Parameterize the baseline closed economy, delta tau = 0 case
 p6 = Specifications(baseline=True)
 p6.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0],
                           'delta_tau_annual': [0.0]})
 guesses6 = np.array([
-    0.06, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+    0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args6 = (bssmat, nssmat, None, None, p6, None)
 expected6 = np.array([
-    -0.045453339832995945, -0.002801342521138476, 0.0003419917882823524,
-    0.004084012889204677, 0.005384114713826117, 0.008889155694384665,
-    0.005358783502477, 0.0027296252357792237, 0.14237702198971164,
-    0.1009176917078035])
+    -4.54533398e-02, 3.95241402e-01, 1.58196691e+00, -2.80134252e-03,
+    3.41991788e-04, 4.08401289e-03, 5.38411471e-03, 8.88915569e-03,
+    5.35878350e-03, 2.72962524e-03, 1.42377022e-01, 1.00917692e-01])
 
 
 @pytest.mark.parametrize(
@@ -103,18 +99,44 @@ expected6 = np.array([
      (guesses4, args4, expected4),
      (guesses5, args5, expected5),
      (guesses6, args6, expected6)],
-     ids=['Baseline, Closed', 'Reform, Closed',
-           'Reform, Baseline spending=True, Closed',
-           'Baseline, Partial Open', 'Baseline, Small Open',
-           'Baseline, Closed, delta_tau = 0'])
+    ids=['Baseline, Closed', 'Reform, Closed',
+         'Reform, Baseline spending=True, Closed',
+         'Baseline, Partial Open', 'Baseline, Small Open',
+         'Baseline, Closed, delta_tau = 0'])
 def test_SS_fsolve(guesses, args, expected):
     '''
     Test SS.SS_fsolve function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    test_list = SS.SS_fsolve(guesses, *args)
-    assert(np.allclose(np.array(test_list), np.array(expected),
-                       atol=1e-6))
+    # args =
+    (bssmat, nssmat, TR_ss, factor_ss, p, client) = args
+
+    # take old format for guesses and put in new format
+    r = guesses[0]
+    w = firm.get_w_from_r(r, p, 'SS')
+
+    if p.baseline:
+        BQ = guesses[3:-2]
+        TR = guesses[-2]
+        factor = guesses[-1]
+        Y = TR / p.alpha_T[-1]
+    else:
+        BQ = guesses[3:-1]
+        TR = guesses[-1]
+        if p.baseline_spending:
+            TR = TR_ss
+            Y = guesses[2]
+        else:
+            Y = TR / p.alpha_T[-1]
+
+    if p.baseline:
+        new_guesses = [r, w, Y, BQ, TR, factor]
+    else:
+        new_guesses = [r, w, Y, BQ, TR]
+
+    test_list = SS.SS_fsolve(new_guesses, *args)
+    assert(np.allclose(np.hstack(np.array(test_list)), np.array(expected),
+                       atol=1e-5))
 
 
 # Parameterize baseline, partially open econ case (default)
@@ -155,19 +177,23 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         rguess = p.world_int_rate[-1]
     else:
         rguess = 0.06483431412921253
+    wguess = firm.get_w_from_r(rguess, p, 'SS')
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = 0.6376591201150815
 
-    test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
-                             factorguess, Yguess, p, dask_client, False)
+    test_dict = SS.SS_solver(
+        b_guess, n_guess, rguess, wguess, Yguess, BQguess, TRguess,
+        factorguess, p, dask_client, False)
+
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
 
     for k, v in expected_dict.items():
         print('Testing ', k)
+        print('diff = ', np.abs(test_dict[k] - v).max())
         assert(np.allclose(test_dict[k], v, atol=1e-04, equal_nan=True))
 
 
@@ -175,7 +201,8 @@ param_updates5 = {'zeta_K': [1.0], 'budget_balance': True,
                   'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0]}
+                  'zeta_D': [0.0], 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.02}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 
 
@@ -197,16 +224,20 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         rguess = p.world_int_rate[-1]
     else:
         rguess = 0.06483431412921253
+    wguess = firm.get_w_from_r(rguess, p, 'SS')
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = 0.6376591201150815
 
-    test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
-                             factorguess, Yguess, p, dask_client, False)
+    test_dict = SS.SS_solver(
+        b_guess, n_guess, rguess, wguess, Yguess, BQguess, TRguess,
+        factorguess, p, dask_client, False)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
     expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
+    del test_dict['K_g_ss']
+    del test_dict['I_g_ss']
 
     for k, v in expected_dict.items():
         print('Testing ', k)
@@ -248,17 +279,19 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
         r = p.world_int_rate[-1]
     else:
         r = 0.05
+    w = firm.get_w_from_r(r, p, 'SS')
     TR = 0.12
     Y = 1.3
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor)
+        outer_loop_vars = (bssmat, nssmat, r, w, Y, BQ, TR, factor)
     else:
-        outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
+        outer_loop_vars = (bssmat, nssmat, r, w, Y, BQ, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
+
     for i, v in enumerate(expected_tuple):
         print('Max diff = ', np.absolute(test_tuple[i] - v).max())
         print('Checking item = ', i)
@@ -280,11 +313,12 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     r = 0.05
+    w = firm.get_w_from_r(r, p, 'SS')
     TR = 0.12
     Y = 1.3
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
-    outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
+    outer_loop_vars = (bssmat, nssmat, r, w, Y, BQ, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
@@ -408,8 +442,8 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
 
 param_updates1 = {}
 filename1 = 'run_SS_baseline_outputs.pkl'
-param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.10,
-                  'initial_guess_TR_SS': 0.02}
+param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.03}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
 param_updates3 = {'zeta_K': [1.0]}
 filename3 = 'run_SS_baseline_small_open.pkl'
@@ -417,20 +451,24 @@ param_updates4 = {'zeta_K': [1.0], 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
 param_updates5 = {}
 filename5 = 'run_SS_reform.pkl'
-param_updates6 = {'use_zeta': True}
+param_updates6 = {'use_zeta': True, 'initial_guess_r_SS': 0.08,
+                  'initial_guess_TR_SS': 0.03}
 filename6 = 'run_SS_reform_use_zeta.pkl'
 param_updates7 = {'zeta_K': [1.0]}
 filename7 = 'run_SS_reform_small_open.pkl'
-param_updates8 = {'zeta_K': [1.0], 'use_zeta': True,
-                  'initial_guess_TR_SS': 0.02}
+param_updates8 = {'zeta_K': [1.0], 'use_zeta': True}
 filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
 param_updates9 = {'baseline_spending': True}
 filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'baseline_spending': True, 'use_zeta': True}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                   'zeta_D': [0.0]}
+                   'zeta_D': [0.0], 'initial_guess_r_SS': 0.04}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
+param_updates12 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
+                   'gamma_g': 0.07, 'initial_guess_r_SS': 0.06,
+                   'initial_guess_TR_SS': 0.03, 'initial_Kg_ratio': 0.01}
+filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
 
 
 # Note that chaning the order in which these tests are run will cause
@@ -448,7 +486,8 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
                           (False, param_updates6, filename6),
                           (False, param_updates7, filename7),
                           (False, param_updates8, filename8),
-                          (False, param_updates11, filename11)
+                          (False, param_updates11, filename11),
+                          (True, param_updates12, filename12)
                           ],
                          ids=[
                               'Baseline', 'Reform, baseline spending',
@@ -459,14 +498,14 @@ filename11 = 'run_SS_baseline_delta_tau0.pkl'
                               'Reform', 'Reform, use zeta',
                               'Reform, small open',
                               'Reform, small open use zeta',
-                              'Baseline, delta_tau=0'
+                              'Reform, delta_tau=0',
+                              'Baseline, non-zero Kg'
                               ])
-
 @pytest.mark.local
 def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    SS.ENFORCE_SOLUTION_CHECKS = True#False
+    SS.ENFORCE_SOLUTION_CHECKS = True
     # if running reform, then need to solve baseline first to get values
     if baseline is False:
         p_base = Specifications(
@@ -475,9 +514,6 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
             baseline=True,
             num_workers=NUM_WORKERS)
         p_base.update_specifications(param_updates)
-        if p_base.use_zeta:
-            p_base.update_specifications({
-                'initial_guess_r_SS': 0.10, 'initial_guess_TR_SS': 0.02})
         p_base.baseline_spending = False
         base_ss_outputs = SS.run_SS(p_base, client=dask_client)
         utils.mkdirs(os.path.join(
@@ -492,8 +528,10 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     test_dict = SS.run_SS(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
-    expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
-
+    try:
+        expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
+    except KeyError:
+        pass
     for k, v in expected_dict.items():
         print('Checking item = ', k)
         assert(np.allclose(test_dict[k], v, atol=1e-06))

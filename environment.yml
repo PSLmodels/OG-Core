@@ -5,9 +5,9 @@ dependencies:
 - python>=3.7.7
 - ipython
 - setuptools
-- mkl>=2020.2
+- mkl>=2021.4.0
 - psutil
-- scipy>=1.5.0
+- scipy>=1.7.1
 - pandas>=1.2.5
 - matplotlib
 - dask>=2.30.0

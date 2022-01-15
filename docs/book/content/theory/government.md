@@ -2,7 +2,99 @@
 (Chap_UnbalGBC)=
 # Government
 
-In `OG-Core`, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.
+In `OG-Core`, the government enters by levying taxes on households, providing transfers to households, levying taxes on firms, spending resources on public goods and infrastructure, and making rule-based adjustments to stabilize the economy in the long-run. It is this last activity that is the focus of this chapter.
+
+
+(SecUnbalGBC_policy)=
+## Government Tax and Transfer Policy
+
+Government levies taxes on households and firms, funds public pensions, and makes other transfers to households.
+
+### Taxes
+
+#### Individual income taxes
+
+#### Consumption taxes
+
+#### Wealth taxes
+
+#### Corporate income taxes
+
+### Spending
+
+Government spending is comprised of government provided pension benefits, lump sum transfers, universal basic income payments, infrastructure investment, spending on public goods, and interest payments on debt.  Below, we describe the transfer spending amounts.  Spending on infrastructure, public goods, and interest are described in {ref}`SecUnbalGBCbudgConstr`.
+#### Pensions
+
+[TODO: Add description of government pensions and the relevant parameters]
+
+#### Lump sum transfers:
+
+ Aggregate non-pension transfers to households are assumed to be a fixed fraction $\alpha_{tr}$ of GDP each period:
+
+  ```{math}
+  :label: EqUnbalGBCtfer
+    TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \quad\forall t
+  ```
+  The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.
+
+  We assume that total non-pension transfers are distributed in a lump sum manner to households.  The distribution across households by age and lifetime income group is parameterized by the the parameters $\eta_{j,s,t}$, which are in the time specific $\boldsymbol{\eta}_{t}$ matrix. Thus, transfers to households of lifetime income group $j$, age $s$, at time $t$ are given as:
+
+   ```{math}
+  :label: Eq_tr
+    tr_{j,s,t} = \boldsymbol{\eta}_{t} TR_{t}
+  ```
+
+#### Universal basic income
+
+[TODO: This section is far along but needs to be updated.]
+
+ Universal basic income (UBI) transfers show up in the household budget constraint {eq}`EqHHBC`. Household amounts of UBI can vary by household age $s$, lifetime income group $j$, and time period $t$.  These transfers are represented by $ubi_{j,s,t}$.
+
+
+(SecUBIcalc)=
+##### Calculating UBI
+
+  Household transfers in model units $ubi_{j,s,t)}$ are a function of five policy parameters described in the [`default_parameters.json`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json) file (`ubi_growthadj`, `ubi_nom_017`, `ubi_nom_1864`, `ubi_nom_65p`, and `ubi_nom_max`).  Three additional parameters provide information on household structure by age, lifetime income group, and year: [`ubi_num_017_mat`, `ubi_num_1864_mat`, `ubi_num_65p_mat`].
+
+  As a convenience to users, UBI policy parameters `ubi_nom_017`, `ubi_nom_1864`, `ubi_nom_65p`, and `ubi_nom_max` are entered as nominal amounts (e.g., in dollars or pounds). The parameter `ubi_nom_017` represents the nominal value of the UBI transfer to each household per dependent child age 17 and under. The parameter `ubi_nom_1864` represents the nominal value of the UBI transfer to each household per adult between the ages of 18 and 64. And `ubi_nom_65p` is the nominal value of UBI transfer to each household per senior 65 and over. The maximum UBI benefit per household, `ubi_nom_max`, is also a nominal amount.  From these parameters, the model computes nominal UBI payments to each household in the model:
+
+  ```{math}
+  :label: EqUBIubi_nom_jst0
+    \begin{split}
+      ubi^{nom}_{j,s,t=0} = \min\Bigl(&\texttt{ubi_nom_max}, \\
+      &\texttt{ubi_nom_017} * \texttt{ubi_num_017_mat}_{j,s} + \\
+      &\texttt{ubi_nom_1864} * \texttt{ubi_num_1864_mat}_{j,s} + \\
+      &\texttt{ubi_nom_65p} * \texttt{ubi_num_65p_mat}_{j,s}\Bigr) \quad\forall j,s
+    \end{split}
+  ```
+
+  The rest of the time periods of the household UBI transfer and the respective steady-states are determined by whether the UBI is growth adjusted or not as given in the `ubi_growthadj` boolean parameter. The following two sections cover these two cases.
+
+
+(SecUBI_NonGrowthAdj)=
+###### UBI specification not adjusted for economic growth
+
+  A non-growth adjusted UBI (`ubi_growthadj = False`) is one in which the initial nonstationary nominal-valued $t=0$ UBI matrix $ubi^{\$}_{j,s,t=0}$ does not grow, while the economy's long-run growth rate is $g_y$ for the most common parameterization is positive ($g_y>0$).
+
+  ```{math}
+  :label: EqUBIubi_nom_NonGrwAdj_jst
+    ubi^{nom}_{j,s,t} = ubi^{nom}_{j,s,t=0} \quad\forall j,s,t
+  ```
+
+  As described in the [OG-Core chapter on stationarization](https://pslmodels.github.io/OG-Core/content/theory/stationarization.html), the stationarized UBI transfer to each household $\hat{ubi}_{j,s,t}$ is the nonstationary transfer divided by the growth rate since the initial period. When the long-run economic growth rate is positive $g_y>0$ and the UBI specification is not growth-adjusted the steady-state stationary UBI household transfer is zero $\overline{ubi}_{j,s}=0$ for all lifetime income groups $j$ and ages $s$ as time periods $t$ go to infinity. However, to simplify, we assume in this case that the stationarized steady-state UBI transfer matrix to households is the stationarized value of that matrix in period $T$.
+
+  ```{math}
+  :label: EqUBIubi_mod_NonGrwAdj_SS
+    \overline{ubi}_{j,s} = ubi_{j,s,t=T} \quad\forall j,s
+  ```
+
+  Note that in non-growth-adjusted case, if $g_y<0$, then the stationary value of $\hat{ubi}_{j,s,t}$ is going to infinity as $t$ goes to infinity. Therefore, a UBI specification must be growth adjusted for any assumed negative long run growth $g_y<0$.[^GrowthAdj_note]
+
+
+(SecUBI_GrowthAdj)=
+###### UBI specification adjusted for economic growth
+
+  Put description of growth-adjusted specification here.
 
 
 (SecUnbalGBCrev)=
@@ -16,18 +108,18 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
   ```
 
-  where we defined the tax liability function $T_{s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate $\tau^{corp}$ and the tax on depreciation expensing $\tau^\delta$ enters the firms' profit function.
+  where we defined the tax liability function $T_{s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate $\tau^{corp}_t$ and the tax on depreciation expensing $\tau^\delta$ enters the firms' profit function.
 
   ```{math}
-  :label: EqFirmsProfit
-    PR_t = (1 - \tau^{corp})\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t
+  :label: EqFirmsProfit2
+    PR_t = (1 - \tau^{corp}_t)\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau_t K_t \quad\forall t
   ```
 
   We define total government revenue from taxes as the following,
 
   ```{math}
   :label: EqUnbalGBCgovRev
-    Rev_t = \underbrace{\tau^{corp}\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}\delta^\tau K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    Rev_t = \underbrace{\tau^{corp}_t\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}_t\delta^\tau_t K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
 
   where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.
@@ -35,30 +127,18 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest of the debt, government spending on public goods $G_t$, and total transfer payments to households $TR_t$ every period $t$,
+  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest of the debt, government spending on public goods $G_t$, infrastructure investments $I_{gov,t}$, and total transfer payments to households $TR_t$ every period $t$,
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
-    D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + TR_t + UBI_t  \quad\forall t
+    D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + TR_t + UBI_t  \quad\forall t
   ```
 
-  where $r_{gov,t}$ is the interest rate paid by the government and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
+  where $r_{gov,t}$ is the interest rate paid by the government, $G_{t}$ is government spending on public goods, $I_{gov,t}$ is government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
 
-  ```{math}
-  :label: EqUnbalGBC_UBI
-    UBI_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\omega_{s,t} ubi_{j,s,t} \quad\forall t
-  ```
 
-  And we assume that total government transfers to households are a fixed fraction $\alpha_{tr}$ of GDP each period.
 
-  ```{math}
-  :label: EqUnbalGBCtfer
-    TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \quad\forall t
-  ```
-
-  The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.
-
-  We also assume that government spending on public goods is a fixed fraction of GDP each period in the initial periods.
+  We assume that government spending on public goods is a fixed fraction of GDP each period in the initial periods.
 
   ```{math}
   :label: EqUnbalGBC_Gt
@@ -67,7 +147,28 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
 
   Similar to transfers $TR_t$, the time dependent multiplier $g_{g,t}$ in front of the right-hand-side of {eq}`EqUnbalGBC_Gt` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We make this more specific in the next section.
 
-  Government spending on goods and services is comprised on spending on public infrastructure, $I_{g,t}$ and non-capital expenditures, $G_{g,t}$ such that $G_{t} = I_{g,t} + G_{g,t}$.  We assume that infrastructure spending is a fraction fo total government spending, $I_{g,t} = \alpha_{i,t} * G_{g,t}$.  The stock of public capital (i.e., infrastructure) evolves according to the law of motion, $K_{g,t+1} = (1 - \delta^{g}) K_{g,t} + I_{g,t}$.  The stock of public capital complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
+  Government infrastructure investment spending, $I_{g,t}$ is assumed to be a time-dependent fraction of GDP.
+
+  ```{math}
+  :label: EqUnbalGBC_Igt
+    I_{g,t} = \alpha_{I,t}\: Y_t \quad\forall t
+  ```
+  The stock of public capital (i.e., infrastructure) evolves according to the law of motion,
+
+  ```{math}
+  :label: EqUnbalGBC_Kgt
+    K_{g,t+1} = (1 - \delta^{g}) K_{g,t} + I_{g,t} \quad\forall t,
+  ```
+
+  where $\delta^g$ is the depreciation rate on infrastructure.  The stock of public capital complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
+
+  Aggregate spending on UBI at time $t$ is the sum of UBI payments across all households at time $t$:
+
+  ```{math}
+  :label: EqUnbalGBC_UBI
+    UBI_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\omega_{s,t} ubi_{j,s,t} \quad\forall t
+  ```
+
 
 (SecRateWedge)=
 ## Interest Rate on Government Debt and Household Savings
@@ -118,8 +219,8 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     &\text{where}\quad g_{g,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -139,8 +240,8 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     &\text{where}\quad g_{tr,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -170,8 +271,8 @@ In `OG-Core`, the government enters by levying taxes on households, providing tr
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t < T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```
@@ -191,3 +292,9 @@ And finally, in closure rules {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclos
 
 
 [^negative_val_note]: Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period $T_{G2}$.
+
+(SecUBIfootnotes)=
+## Footnotes
+
+
+[^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`ogusa_default_parameters.json`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/ogusa_default_parameters.json) "validators" specification of the parameter.

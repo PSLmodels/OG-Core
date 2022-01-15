@@ -90,6 +90,10 @@ class Specifications(paramtools.Parameters):
             -1 * rate_conversion(-1 * self.delta_annual,
                                  self.starting_age, self.ending_age,
                                  self.S))
+        self.delta_g = (
+            -1 * rate_conversion(-1 * self.delta_g_annual,
+                                 self.starting_age, self.ending_age,
+                                 self.S))
         self.g_y = rate_conversion(self.g_y_annual, self.starting_age,
                                    self.ending_age, self.S)
 
