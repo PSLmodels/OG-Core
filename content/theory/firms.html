@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -342,7 +342,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -376,7 +376,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -393,6 +393,16 @@
    Optimality Conditions
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#positive-profits-from-government-infrastructure-investment">
+   Positive Profits from Government Infrastructure Investment
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#footnotes">
+   Footnotes
+  </a>
+ </li>
 </ul>
 
             </nav>
@@ -401,36 +411,115 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Firms</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#production-function">
+   Production Function
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#optimality-conditions">
+   Optimality Conditions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#positive-profits-from-government-infrastructure-investment">
+   Positive Profits from Government Infrastructure Investment
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#footnotes">
+   Footnotes
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="firms">
 <span id="chap-firms"></span><h1>Firms<a class="headerlink" href="#firms" title="Permalink to this headline">¶</a></h1>
-<p>The production side of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model is populated by a unit measure of identical perfectly competitive firms that rent capital <span class="math notranslate nohighlight">\(K_t\)</span> and hire labor <span class="math notranslate nohighlight">\(L_t\)</span> to produce output <span class="math notranslate nohighlight">\(Y_t\)</span>. Firms also face a flat corporate income tax <span class="math notranslate nohighlight">\(\tau^{corp}\)</span> as well as a tax on the amount of capital they depreciate <span class="math notranslate nohighlight">\(\tau^\delta\)</span>.</p>
+<p>The production side of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model is populated by a unit measure of identical perfectly competitive firms that rent private capital <span class="math notranslate nohighlight">\(K_t\)</span> and public capital <span class="math notranslate nohighlight">\(K_{g,t}\)</span> and hire labor <span class="math notranslate nohighlight">\(L_t\)</span> to produce output <span class="math notranslate nohighlight">\(Y_t\)</span>. Firms also face a flat corporate income tax <span class="math notranslate nohighlight">\(\tau^{corp}\)</span> as well as a tax on the amount of capital they depreciate <span class="math notranslate nohighlight">\(\tau^\delta\)</span>.</p>
 <div class="section" id="production-function">
 <span id="eqfirmsprodfunc"></span><h2>Production Function<a class="headerlink" href="#production-function" title="Permalink to this headline">¶</a></h2>
-<p>Firms produce output <span class="math notranslate nohighlight">\(Y_t\)</span> using inputs of capital <span class="math notranslate nohighlight">\(K_t\)</span> and labor <span class="math notranslate nohighlight">\(L_t\)</span> according to a general constant elasticity (CES) of substitution production function,</p>
+<p>Firms produce output <span class="math notranslate nohighlight">\(Y_t\)</span> using inputs of private capital <span class="math notranslate nohighlight">\(K_t\)</span>, public capital <span class="math notranslate nohighlight">\(K_{g,t}\)</span>, and labor <span class="math notranslate nohighlight">\(L_t\)</span> according to a general constant elasticity (CES) of substitution production function,</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmscesprodfun">
-<span class="eqno">(25)<a class="headerlink" href="#equation-eqfirmscesprodfun" title="Permalink to this equation">¶</a></span>\[  Y_t = F(K_t, K_{g,t}, L_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t\]</div>
-<p>where <span class="math notranslate nohighlight">\(Z_t\)</span> is an exogenous scale parameter (total factor productivity) that can be time dependent, <span class="math notranslate nohighlight">\(K_{g,t}\)</span> is the stock of public capital, <span class="math notranslate nohighlight">\(\gamma\)</span> represents private capital’s share of income, <span class="math notranslate nohighlight">\(\gamma_{g}\)</span> is public capital’s share of income, and <span class="math notranslate nohighlight">\(\varepsilon\)</span> is the constant elasticity of substitution between capital and labor. We have included constant productivity growth <span class="math notranslate nohighlight">\(g_y\)</span> as the rate of labor augmenting technological progress.</p>
-<p>A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for <span class="math notranslate nohighlight">\(\varepsilon=1\)</span>.</p>
+<span class="eqno">(27)<a class="headerlink" href="#equation-eqfirmscesprodfun" title="Permalink to this equation">¶</a></span>\[\begin{split}  \begin{split}
+    Y_t &amp;= F(K_t, K_{g,t}, L_t) \\
+    &amp;\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
+  \end{split}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(Z_t\)</span> is an exogenous scale parameter (total factor productivity) that can be time dependent, <span class="math notranslate nohighlight">\(\gamma\)</span> represents private capital’s share of income, <span class="math notranslate nohighlight">\(\gamma_{g}\)</span> is public capital’s share of income, and <span class="math notranslate nohighlight">\(\varepsilon\)</span> is the constant elasticity of substitution among the two types of capital and labor. We have included constant productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span> as the rate of labor augmenting technological progress.</p>
+<p>A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for <span class="math notranslate nohighlight">\(\varepsilon=1\)</span>.<a class="footnote-reference brackets" href="#kg0-case" id="id1">1</a></p>
 <div class="math notranslate nohighlight" id="equation-eqfirmscdprodfun">
-<span class="eqno">(26)<a class="headerlink" href="#equation-eqfirmscdprodfun" title="Permalink to this equation">¶</a></span>\[  Y_t = Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\text{for}\quad \varepsilon=1 \quad\forall t\]</div>
+<span class="eqno">(28)<a class="headerlink" href="#equation-eqfirmscdprodfun" title="Permalink to this equation">¶</a></span>\[  Y_t = Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\forall t \quad\text{for}\quad \varepsilon=1\]</div>
 </div>
 <div class="section" id="optimality-conditions">
 <span id="eqfirmsfoc"></span><h2>Optimality Conditions<a class="headerlink" href="#optimality-conditions" title="Permalink to this headline">¶</a></h2>
 <p>The profit function of the representative firm is the following.</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmsprofit">
-<span class="eqno">(27)<a class="headerlink" href="#equation-eqfirmsprofit" title="Permalink to this equation">¶</a></span>\[  PR_t = (1 - \tau^{corp})\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}\delta^\tau K_t \quad\forall t\]</div>
-<p>Gross income for the firms is given by the production function <span class="math notranslate nohighlight">\(F(K,L)\)</span> because we have normalized the price of the consumption good to 1. Labor costs to the firm are <span class="math notranslate nohighlight">\(w_t L_t\)</span>, and capital costs are <span class="math notranslate nohighlight">\((r_t +\delta)K_t\)</span>. The per-period interest rate (rental rate) of capital for firms is <span class="math notranslate nohighlight">\(r_t\)</span>. The per-period economic depreciation rate is given by <span class="math notranslate nohighlight">\(\delta\)</span>.</p>
-<p>Taxes enter the firm’s profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(31)</a> in two places. The first is the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span>, which is a flat tax on corporate income. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms’ capital demand decision.</p>
-<p>The next place where tax policy enters the profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(31)</a> is through a refund of a percent of depreciation costs <span class="math notranslate nohighlight">\(\delta^\tau\)</span> refunded at the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}\)</span>. When <span class="math notranslate nohighlight">\(\delta^\tau=0\)</span>, no depreciation expense is deducted from the firm’s tax liability. When <span class="math notranslate nohighlight">\(\delta^\tau=\delta\)</span>, all economic depreciation is deducted from corporate income.</p>
-<p>Taking the derivative of the profit function <a class="reference internal" href="government.html#equation-eqfirmsprofit">(31)</a> with respect to labor <span class="math notranslate nohighlight">\(L_t\)</span> and setting it equal to zero and taking the derivative of the profit function with respect to capital <span class="math notranslate nohighlight">\(K_t\)</span> and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.</p>
+<span class="eqno">(29)<a class="headerlink" href="#equation-eqfirmsprofit" title="Permalink to this equation">¶</a></span>\[  PR_t = (1 - \tau^{corp}_t)\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau_t K_t \quad\forall t\]</div>
+<p>Gross income for the firms is given by the production function <span class="math notranslate nohighlight">\(F(K,K_g,L)\)</span> because we have normalized the price of the consumption good to 1. Labor costs to the firm are <span class="math notranslate nohighlight">\(w_t L_t\)</span>, and capital costs are <span class="math notranslate nohighlight">\((r_t +\delta)K_t\)</span>. The government supplies public capital to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is <span class="math notranslate nohighlight">\(r_t\)</span>. The per-period economic depreciation rate for private capital is <span class="math notranslate nohighlight">\(\delta\)</span>. The <span class="math notranslate nohighlight">\(\delta^\tau_t\)</span> parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.</p>
+<p>Taxes enter the firm’s profit function <a class="reference internal" href="#equation-eqfirmsprofit">(29)</a> in two places. The first is the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}_t\)</span>, which is a flat tax on corporate income. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms’ capital demand decision.</p>
+<p>The tax policy also enters the profit function <a class="reference internal" href="#equation-eqfirmsprofit">(29)</a> through depreciation deductions at rate <span class="math notranslate nohighlight">\(\delta^\tau_t\)</span>, which then lower corporate tax liability. When <span class="math notranslate nohighlight">\(\delta^\tau_t=0\)</span>, no depreciation expense is deducted from the firm’s tax liability. When <span class="math notranslate nohighlight">\(\delta^\tau_t=\delta\)</span>, all economic depreciation is deducted from corporate income.</p>
+<p>Firms take as given prices <span class="math notranslate nohighlight">\(w_t\)</span> and <span class="math notranslate nohighlight">\(r_t\)</span> and the level of public capital supply <span class="math notranslate nohighlight">\(K_{g,t}\)</span>. Taking the derivative of the profit function <a class="reference internal" href="#equation-eqfirmsprofit">(29)</a> with respect to labor <span class="math notranslate nohighlight">\(L_t\)</span> and setting it equal to zero (using the general CES form of the production function <a class="reference internal" href="#equation-eqfirmscesprodfun">(27)</a>) and taking the derivative of the profit function with respect to capital <span class="math notranslate nohighlight">\(K_t\)</span> and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmfoc-l">
-<span class="eqno">(28)<a class="headerlink" href="#equation-eqfirmfoc-l" title="Permalink to this equation">¶</a></span>\[  w_t = e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t\]</div>
+<span class="eqno">(30)<a class="headerlink" href="#equation-eqfirmfoc-l" title="Permalink to this equation">¶</a></span>\[  w_t = e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t\]</div>
 <div class="math notranslate nohighlight" id="equation-eqfirmfoc-k">
-<span class="eqno">(29)<a class="headerlink" href="#equation-eqfirmfoc-k" title="Permalink to this equation">¶</a></span>\[  r_t = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\left(\gamma\frac{Y_t}{K_t}\right)^\frac{1}{\varepsilon}+ \left(\gamma\frac{Y_t}{K_{g,t}}\right)^\frac{1}{\varepsilon}\frac{K_{g,t}}{K_{t}}\right] - \delta + \tau^{corp}\delta^\tau \quad\forall t\]</div>
-<p>Note that the presence of the public capital good creates economic rents.  However, given perfect competition, any economic profits will be competed away.  We therefore assume that these rents are captured by the owners of capital, as can be seen through the second term inside the square brackets in Equation <a class="reference internal" href="#equation-eqfirmfoc-k">(29)</a>.</p>
+<span class="eqno">(31)<a class="headerlink" href="#equation-eqfirmfoc-k" title="Permalink to this equation">¶</a></span>\[  r_t = (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau_t \quad\forall t\]</div>
+<p>Note that the presence of the public capital good creates economic rents. However, given perfect competition, any economic profits will be competed away. For this reason, the optimality condition for capital demand <a class="reference internal" href="#equation-eqfirmfoc-k">(31)</a> is only affected by public capital <span class="math notranslate nohighlight">\(K_{g,t}\)</span> through the <span class="math notranslate nohighlight">\(Y_t\)</span> term.</p>
+</div>
+<div class="section" id="positive-profits-from-government-infrastructure-investment">
+<span id="eqfirmsposprofits"></span><h2>Positive Profits from Government Infrastructure Investment<a class="headerlink" href="#positive-profits-from-government-infrastructure-investment" title="Permalink to this headline">¶</a></h2>
+<p>The CES production function in <a class="reference internal" href="#equation-eqfirmscesprodfun">(27)</a> exhibits constant returns to scale (CRS). A feature of CRS production functions is that gross revenue <span class="math notranslate nohighlight">\(Y_t\)</span> is a sum of the gross revenue attributed to each factor of production,</p>
+<div class="math notranslate nohighlight" id="equation-eqfirmsmargreveq">
+<span class="eqno">(32)<a class="headerlink" href="#equation-eqfirmsmargreveq" title="Permalink to this equation">¶</a></span>\[  Y_t = MPK_t K_t + MPK_{g,t} K_{g,t} + MPL_t L_t \quad\forall t\]</div>
+<p>where <span class="math notranslate nohighlight">\(MPK_t\)</span> is the marginal product of private capital, <span class="math notranslate nohighlight">\(MPK_{g,t}\)</span> is the marginal product of public capital, and <span class="math notranslate nohighlight">\(MPL_t\)</span> is the marginal product of labor. Each of the terms in <a class="reference internal" href="#equation-eqfirmsmargreveq">(32)</a> is growing at the macroeconomic variable rate of <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N_t}\)</span> (see the third column of <a class="reference internal" href="stationarization.html#tabstnrzstatvars"><span class="std std-numref">Table 1</span></a>). Firm profit maximization for private capital demand from equation <a class="reference internal" href="#equation-eqfirmfoc-k">(31)</a> implies that the marginal product of private capital is the following.</p>
+<div class="math notranslate nohighlight" id="equation-eqfirmsmpk-opt">
+<span class="eqno">(33)<a class="headerlink" href="#equation-eqfirmsmpk-opt" title="Permalink to this equation">¶</a></span>\[  MPK_t =  \frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}_t}{1 - \tau^{corp}_t} \quad\forall t\]</div>
+<p>Firm profit maximization for labor demand from equation <a class="reference internal" href="#equation-eqfirmfoc-l">(30)</a> implies that the marginal product of labor is the following.</p>
+<div class="math notranslate nohighlight" id="equation-eqfirmsmpl-opt">
+<span class="eqno">(34)<a class="headerlink" href="#equation-eqfirmsmpl-opt" title="Permalink to this equation">¶</a></span>\[  MPL_t =  w_t \quad\forall t\]</div>
+<p>Even though firms take the stock of public capital <span class="math notranslate nohighlight">\(K_{g,t}\)</span> from government infrastructure investment as given, we can still calculate the marginal product of public capital from the production function <a class="reference internal" href="#equation-eqfirmscesprodfun">(27)</a>.</p>
+<div class="math notranslate nohighlight" id="equation-eqfirmsmpkg-opt">
+<span class="eqno">(35)<a class="headerlink" href="#equation-eqfirmsmpkg-opt" title="Permalink to this equation">¶</a></span>\[  MPK_{g,t} =  Z_t^{\frac{\varepsilon - 1}{\varepsilon}}\left(\frac{\gamma_g Y_t}{K_{g,t}}\right)^{\frac{1}{\varepsilon}} \quad\forall t\]</div>
+<p>If we plug the expressions for <span class="math notranslate nohighlight">\(MPK_t\)</span>, <span class="math notranslate nohighlight">\(MPK_{g,t}\)</span>, and <span class="math notranslate nohighlight">\(MPL_t\)</span> from <a class="reference internal" href="#equation-eqfirmsmpk-opt">(33)</a>, <a class="reference internal" href="#equation-eqfirmsmpkg-opt">(35)</a>, and <a class="reference internal" href="#equation-eqfirmsmpl-opt">(34)</a>, respectively, into the total revenue <span class="math notranslate nohighlight">\(Y_t\)</span> decomposition in <a class="reference internal" href="#equation-eqfirmsmargreveq">(32)</a> and then substitute that into the profit function <a class="reference internal" href="#equation-eqfirmsprofit">(29)</a>, we see that positive economic rents arise when public capital is positive <span class="math notranslate nohighlight">\(K_{g,t}&gt;0\)</span>.</p>
+<div class="math notranslate nohighlight" id="equation-eqfirmsprofit-kg">
+<span class="eqno">(36)<a class="headerlink" href="#equation-eqfirmsprofit-kg" title="Permalink to this equation">¶</a></span>\[\begin{split}  \begin{split}
+    PR_t &amp;= (1 - \tau^{corp}_t)\Bigl[Y_t - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau_t K_t \\
+    &amp;= (1 - \tau^{corp}_t)\Biggl[\biggl(\frac{r_t + \delta - \tau^{corp}_t\delta^{\tau}_t}{1 - \tau^{corp}_t}\biggr)K_t + MPK_{g,t}K_{g,t} + w_t L_t\Biggr] ... \\
+    &amp;\quad\quad - (1 - \tau^{corp}_t)w_t L_t - (r_t + \delta)K_t + \tau^{corp}_t\delta^{\tau}_t K_t \\
+    &amp;= (1 - \tau^{corp}_t)MPK_{g,t}K_{g,t} \\
+  \end{split}\end{split}\]</div>
+<p>We assume these positive economic profits resulting from government infrastructure investment are passed on to the owners of private capital through an adjusted interest rate <span class="math notranslate nohighlight">\(r_{K,t}\)</span> provided by the financial intermediary (see Chapter <a class="reference internal" href="financial.html#chap-finint"><span class="std std-ref">Financial Intermediary</span></a>) that zeroes out profits among the perfectly competitive firms and is a function of <span class="math notranslate nohighlight">\(MPK_{g,t}\)</span> and <span class="math notranslate nohighlight">\(K_{g,t}\)</span>. Total payouts from the financial intermediary <span class="math notranslate nohighlight">\(r_{K,t}K_t\)</span> are a function of the perfectly competitive payout to owners of private capital <span class="math notranslate nohighlight">\(r_t K_t\)</span> plus any positive profits when <span class="math notranslate nohighlight">\(K_{g,t}&gt;0\)</span> from <a class="reference internal" href="#equation-eqfirmsprofit-kg">(36)</a>.</p>
+<div class="math notranslate nohighlight" id="equation-eqfirmspayout">
+<span class="eqno">(37)<a class="headerlink" href="#equation-eqfirmspayout" title="Permalink to this equation">¶</a></span>\[  r_{K,t}K_t =  r_tK_t + (1 - \tau^{corp}_t)MPK_{g,t}K_{g,t} \quad\forall t\]</div>
+<p>This implies that the rate of return paid from the financial intermediary to the households <span class="math notranslate nohighlight">\(r_{K,t}\)</span> is the interest rate on private capital <span class="math notranslate nohighlight">\(r_t\)</span> plus the positive profits from <a class="reference internal" href="#equation-eqfirmsprofit-kg">(36)</a>, in which the units are put in terms of <span class="math notranslate nohighlight">\(K_t\)</span> (see equation <a class="reference internal" href="financial.html#equation-eq-rk">(66)</a> in Chapter <a class="reference internal" href="financial.html#chap-finint"><span class="std std-ref">Financial Intermediary</span></a>).</p>
+<div class="math notranslate nohighlight" id="equation-eqfirms-rkt">
+<span class="eqno">(38)<a class="headerlink" href="#equation-eqfirms-rkt" title="Permalink to this equation">¶</a></span>\[  r_{K,t} =  r_t + (1 - \tau^{corp}_t)MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right) \quad\forall t\]</div>
+</div>
+<div class="section" id="footnotes">
+<span id="secfirmsfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="kg0-case"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>It is important to note a special case of the Cobb-Douglas (<span class="math notranslate nohighlight">\(\varepsilon=1\)</span>) production function that we have to manually restrict. The inputs of production of private capital <span class="math notranslate nohighlight">\(K_t\)</span> and labor <span class="math notranslate nohighlight">\(L_t\)</span> are endogenous and have characteristics of the model that naturally bound them away from zero. But public capital <span class="math notranslate nohighlight">\(K_g\)</span>, although it is a function of endogenous variables in <a class="reference internal" href="government.html#equation-equnbalgbc-igt">(49)</a> and <a class="reference internal" href="government.html#equation-equnbalgbc-kgt">(50)</a>, can be exogenously set to zero as a policy parameter choice by setting <span class="math notranslate nohighlight">\(\alpha_{I,t}=0\)</span>. In the Cobb-Douglas case of the production function <span class="math notranslate nohighlight">\(\varepsilon=1\)</span> <a class="reference internal" href="#equation-eqfirmscdprodfun">(28)</a>, <span class="math notranslate nohighlight">\(K_g=0\)</span> would zero out production and break the model. In the case when <span class="math notranslate nohighlight">\(\varepsilon=1\)</span> and <span class="math notranslate nohighlight">\(K_g=0\)</span>, we set <span class="math notranslate nohighlight">\(gamma_g=0\)</span>, thereby restricting the production function to only depend on private capital <span class="math notranslate nohighlight">\(K_t\)</span> and labor <span class="math notranslate nohighlight">\(L_t\)</span>. This necessary restriction limits us from performing experiments in the model of the effect of changing <span class="math notranslate nohighlight">\(K_{g,t}=0\)</span> to <span class="math notranslate nohighlight">\(K_{g,t}&gt;0\)</span> or vice versa in the <span class="math notranslate nohighlight">\(\varepsilon=1\)</span> case.</p>
+</dd>
+</dl>
 </div>
 </div>
 
@@ -456,8 +545,8 @@
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="households.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -474,19 +563,17 @@
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Jason DeBacker and Richard W. Evans<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Jason DeBacker and Richard W. Evans<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -345,7 +345,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -396,7 +396,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -419,6 +419,11 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-distribution-of-bequests">
+   The Distribution of Bequests
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#expectations">
    Expectations
   </a>
@@ -436,7 +441,55 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Households</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#budget-constraint">
+   Budget Constraint
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#elliptical-disutility-of-labor-supply">
+   Elliptical Disutility of Labor Supply
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#optimality-conditions">
+   Optimality Conditions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-distribution-of-bequests">
+   The Distribution of Bequests
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#expectations">
+   Expectations
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#footnotes">
+   Footnotes
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="households">
@@ -450,7 +503,7 @@
 <span class="eqno">(10)<a class="headerlink" href="#equation-eqhhbc" title="Permalink to this equation">¶</a></span>\[\begin{split}  c_{j,s,t} + b_{j,s+1,t+1} &amp;= (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
   &amp;\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
   &amp;\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> is consumption, <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span> is savings for the next period, <span class="math notranslate nohighlight">\(r_{p,t}\)</span> is the interest rate (return) on household savings invested in the financial intermediary, <span class="math notranslate nohighlight">\(b_{j,s,t}\)</span> is current period wealth (savings from last period), <span class="math notranslate nohighlight">\(w_t\)</span> is the wage, and <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> is labor supply. Equation <a class="reference internal" href="financial.html#equation-eq-portfolio-return">(51)</a> of Chapter <a class="reference internal" href="financial.html#chap-finint"><span class="std std-ref">Financial Intermediary</span></a> shows how the rate of return from the financial intermediary, <span class="math notranslate nohighlight">\(r_{p,t}\)</span> might differ from the marginal product of capital <span class="math notranslate nohighlight">\(r_t\)</span> and from the interest rate the government pays <span class="math notranslate nohighlight">\(r_{gov,t}\)</span>.</p>
+<p>where <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> is consumption, <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span> is savings for the next period, <span class="math notranslate nohighlight">\(r_{p,t}\)</span> is the interest rate (return) on household savings invested in the financial intermediary, <span class="math notranslate nohighlight">\(b_{j,s,t}\)</span> is current period wealth (savings from last period), <span class="math notranslate nohighlight">\(w_t\)</span> is the wage, and <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> is labor supply. Equations <a class="reference internal" href="financial.html#equation-eq-rk">(66)</a> and <a class="reference internal" href="financial.html#equation-eq-portfolio-return">(67)</a> of Chapter <a class="reference internal" href="financial.html#chap-finint"><span class="std std-ref">Financial Intermediary</span></a> show how the rate of return from the financial intermediary <span class="math notranslate nohighlight">\(r_{p,t}\)</span> might differ from the marginal product of capital <span class="math notranslate nohighlight">\(r_t\)</span> and from the interest rate the government pays <span class="math notranslate nohighlight">\(r_{gov,t}\)</span>.</p>
 <p>The next term on the right-hand-side of the budget constraint <a class="reference internal" href="#equation-eqhhbc">(10)</a> represents the portion of total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> that go to the age-<span class="math notranslate nohighlight">\(s\)</span>, income-group-<span class="math notranslate nohighlight">\(j\)</span> household. Let <span class="math notranslate nohighlight">\(\zeta_{j,s}\)</span> be the fraction of total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> that go to the age-<span class="math notranslate nohighlight">\(s\)</span>, income-group-<span class="math notranslate nohighlight">\(j\)</span> household, such that <span class="math notranslate nohighlight">\(\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1\)</span>. We must divide that amount by the population of <span class="math notranslate nohighlight">\((j,s)\)</span> households <span class="math notranslate nohighlight">\(\lambda_j\omega_{s,t}\)</span>. The calibration chapter on beqests in the country-specific repository documentation details how to calibrate the <span class="math notranslate nohighlight">\(\zeta_{j,s}\)</span> values from consumer finance data.</p>
 <p>The last three terms on the right-hand-side of the budget constraint <a class="reference internal" href="#equation-eqhhbc">(10)</a> have to do with government transfers, universal basic income transfer, and taxes, respectively. <span class="math notranslate nohighlight">\(TR_{t}\)</span> is total government transfers to households in period <span class="math notranslate nohighlight">\(t\)</span> and <span class="math notranslate nohighlight">\(\eta_{j,s,t}\)</span> is the percent of those transfers that go to households of age <span class="math notranslate nohighlight">\(s\)</span> and lifetime income group <span class="math notranslate nohighlight">\(j\)</span> such that <span class="math notranslate nohighlight">\(\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1\)</span>. This term is divided by the population of type <span class="math notranslate nohighlight">\((j,s)\)</span> households. We assume government transfers to be lump sum, so they do not create any direct distortions to household decisions.</p>
 <p>The term <span class="math notranslate nohighlight">\(ubi_{j,s,t}\)</span> the time series of a matrix of universal basic income (UBI) transfers by lifetime income group <span class="math notranslate nohighlight">\(j\)</span> and age group <span class="math notranslate nohighlight">\(s\)</span> in each period <span class="math notranslate nohighlight">\(t\)</span>. There is a specification where the time series of this matrix is stationary (growth adjusted) and a specification in which it’s stationary value is going to zero in the limit (non-growth-adjusted). The calibration chapter on UBI in the country-specific repository documentation describes the exact way in which this matrix is calibrated from the values of five parameters, household composition data, and OG-Core’s demographics. Similar to the transfers term <span class="math notranslate nohighlight">\(TR_{t}\)</span>, the UBI transfers will not be distortionary.</p>
@@ -465,7 +518,7 @@
 <p>In <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>, the period utility function of each household is a function of consumption <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span>, savings <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span>, and labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>.<a class="footnote-reference brackets" href="#sav-util-note" id="id1">1</a> We detail this utility function, its justification, and functional form in Section <a class="reference internal" href="#sechheulers"><span class="std std-ref">Optimality Conditions</span></a>. With endogenous labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>, we must specify how labor enters an agent’s utility function and what are the constraints. Assume that each household is endowed with a measure of time <span class="math notranslate nohighlight">\(\tilde{l}\)</span> each period that it can choose to spend as either labor <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span> or leisure <span class="math notranslate nohighlight">\(l_{j,s,t}\in[0,\tilde{l}]\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqlabconstr">
 <span class="eqno">(12)<a class="headerlink" href="#equation-eqlabconstr" title="Permalink to this equation">¶</a></span>\[n_{j,s,t} + l_{j,s,t} = \tilde{l} \quad\forall s, t\]</div>
-<p>The functional form for the utility of leisure or the disutility of labor supply has important implications for the computational tractability of the model. One difference of the household’s labor supply decision <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> from the consumption decision <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> is that the consumption decision only has a lower bound <span class="math notranslate nohighlight">\(c_{j,s,t}\geq 0\)</span> whereas the labor supply decision has both upper and lower bounds <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span>. <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id31">Evans and Phillips, 2017</a>]</span> show that many of the traditional functional forms for the disutility of labor—Cobb-Douglas, constant Frisch elasticty, constant relative risk aversion (CRRA)—do not have Inada conditions on both the upper and lower bounds of labor supply. To solve these in a heterogeneous agent model would require occasionally binding constraints, which is a notoriously difficult computational problem.</p>
+<p>The functional form for the utility of leisure or the disutility of labor supply has important implications for the computational tractability of the model. One difference of the household’s labor supply decision <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> from the consumption decision <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> is that the consumption decision only has a lower bound <span class="math notranslate nohighlight">\(c_{j,s,t}\geq 0\)</span> whereas the labor supply decision has both upper and lower bounds <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span>. <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id15">Evans and Phillips, 2017</a>]</span> show that many of the traditional functional forms for the disutility of labor—Cobb-Douglas, constant Frisch elasticty, constant relative risk aversion (CRRA)—do not have Inada conditions on both the upper and lower bounds of labor supply. To solve these in a heterogeneous agent model would require occasionally binding constraints, which is a notoriously difficult computational problem.</p>
 <div class="cell tag_hide-cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myst_nb</span> <span class="kn">import</span> <span class="n">glue</span>
@@ -483,7 +536,7 @@
 <a class="reference internal image-reference" href="../../_images/EllipVsCFE_MargUtil.png"><img alt="../../_images/EllipVsCFE_MargUtil.png" src="../../_images/EllipVsCFE_MargUtil.png" style="height: 500px;" /></a>
 <p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Comparison of CFE marginal disutility of leisure <span class="math notranslate nohighlight">\(\theta=1.67\)</span> to fitted elliptical utility</span><a class="headerlink" href="#figmducompar" title="Permalink to this image">¶</a></p>
 </div>
-<p><span id="id3">[<a class="reference internal" href="../OGCore_references.html#id31">Evans and Phillips, 2017</a>]</span> propose using an equation for an ellipse to match the disutility of labor supply to whatever traditional functional form one wants. Our preferred specification in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is to fit an elliptical disutility of labor supply function to approximate a linearly separable constant Frisch elasticity (CFE) functional form. Let <span class="math notranslate nohighlight">\(v(n)\)</span> be a general disutility of labor function. A CFE disutility of labor function is the following,</p>
+<p><span id="id3">[<a class="reference internal" href="../OGCore_references.html#id15">Evans and Phillips, 2017</a>]</span> propose using an equation for an ellipse to match the disutility of labor supply to whatever traditional functional form one wants. Our preferred specification in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is to fit an elliptical disutility of labor supply function to approximate a linearly separable constant Frisch elasticity (CFE) functional form. Let <span class="math notranslate nohighlight">\(v(n)\)</span> be a general disutility of labor function. A CFE disutility of labor function is the following,</p>
 <div class="math notranslate nohighlight" id="equation-eqcfe">
 <span class="eqno">(13)<a class="headerlink" href="#equation-eqcfe" title="Permalink to this equation">¶</a></span>\[v(n) \equiv \frac{n^{1+\frac{1}{\theta}}}{1+\frac{1}{\theta}}, \quad\theta &gt; 0\]</div>
 <p>where <span class="math notranslate nohighlight">\(\theta&gt;0\)</span> represents the Frisch elasticity of labor supply. The elliptical disutility of labor supply functional form is the following,</p>
@@ -507,7 +560,7 @@
 <div class="math notranslate nohighlight" id="equation-eqhhbc2">
 <span class="eqno">(17)<a class="headerlink" href="#equation-eqhhbc2" title="Permalink to this equation">¶</a></span>\[\begin{split}  &amp;\quad\text{s.t.}\quad c_{j,s,t} + b_{j,s+1,t+1} = (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t} \\
   &amp;\qquad\text{and}\quad c_{j,s,t}\geq 0,\: n_{j,s,t} \in[0,\tilde{l}],\:\text{and}\: b_{j,1,t}=0 \quad\forall j, t, \:\text{and}\: E+1\leq s\leq E+S \nonumber\end{split}\]</div>
-<p>The nonnegativity constraint on consumption does not bind in equilibrium because of the Inada condition <span class="math notranslate nohighlight">\(\lim_{c\rightarrow 0}u_1(c,n,b') = \infty\)</span>, which implies consumption is always strictly positive in equilibrium <span class="math notranslate nohighlight">\(c_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>. The warm glow bequest motive in Equation <a class="reference internal" href="#equation-eqhhperutil">(15)</a> also has an Inada condition for savings at zero, so <span class="math notranslate nohighlight">\(b_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>. This is an implicit borrowing constraint.<a class="footnote-reference brackets" href="#constraint-note" id="id6">4</a> And note that the discount factor <span class="math notranslate nohighlight">\(\beta_j\)</span> has a <span class="math notranslate nohighlight">\(j\)</span> subscript for lifetime income group. We use heterogeneous discount factors following <span id="id7">[<a class="reference internal" href="../OGCore_references.html#id18">Carroll <em>et al.</em>, 2017</a>]</span>. And finally, as discussed in Section <a class="reference internal" href="#sechhelliputil"><span class="std std-ref">Elliptical Disutility of Labor Supply</span></a>, the elliptical disutility of labor supply functional form in Equation <a class="reference internal" href="#equation-eqhhperutil">(15)</a> imposes Inada conditions on both the upper and lower bounds of labor supply such that labor supply is strictly interior in equilibrium <span class="math notranslate nohighlight">\(n_{j,s,t}\in(0,\tilde{l})\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<p>The nonnegativity constraint on consumption does not bind in equilibrium because of the Inada condition <span class="math notranslate nohighlight">\(\lim_{c\rightarrow 0}u_1(c,n,b') = \infty\)</span>, which implies consumption is always strictly positive in equilibrium <span class="math notranslate nohighlight">\(c_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>. The warm glow bequest motive in Equation <a class="reference internal" href="#equation-eqhhperutil">(15)</a> also has an Inada condition for savings at zero, so <span class="math notranslate nohighlight">\(b_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>. This is an implicit borrowing constraint.<a class="footnote-reference brackets" href="#constraint-note" id="id6">4</a> And note that the discount factor <span class="math notranslate nohighlight">\(\beta_j\)</span> has a <span class="math notranslate nohighlight">\(j\)</span> subscript for lifetime income group. We use heterogeneous discount factors following <span id="id7">[<a class="reference internal" href="../OGCore_references.html#id12">Carroll <em>et al.</em>, 2017</a>]</span>. And finally, as discussed in Section <a class="reference internal" href="#sechhelliputil"><span class="std std-ref">Elliptical Disutility of Labor Supply</span></a>, the elliptical disutility of labor supply functional form in Equation <a class="reference internal" href="#equation-eqhhperutil">(15)</a> imposes Inada conditions on both the upper and lower bounds of labor supply such that labor supply is strictly interior in equilibrium <span class="math notranslate nohighlight">\(n_{j,s,t}\in(0,\tilde{l})\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>.</p>
 <p>The household maximization problem can be further reduced by substituting in the household budget constraint, which binds with equality. This simplifies the household’s problem to choosing labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> and savings <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span> every period to maximize lifetime discounted expected utility. The <span class="math notranslate nohighlight">\(2S\)</span> first order conditions for every type-<span class="math notranslate nohighlight">\(j\)</span> household that characterize the its <span class="math notranslate nohighlight">\(S\)</span> optimal labor supply decisions and <span class="math notranslate nohighlight">\(S\)</span> optimal savings decisions are the following.</p>
 <div class="math notranslate nohighlight" id="equation-eqhheul-n">
 <span class="eqno">(18)<a class="headerlink" href="#equation-eqhheul-n" title="Permalink to this equation">¶</a></span>\[\begin{split}&amp;w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = e^{g_y(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
@@ -523,15 +576,25 @@
 <div class="math notranslate nohighlight" id="equation-eqmtry-derive">
 <span class="eqno">(22)<a class="headerlink" href="#equation-eqmtry-derive" title="Permalink to this equation">¶</a></span>\[  \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t} b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t} b_{j,s,t}}r_{p,t} = \tau^{mtry}_{s,t}r_{p,t}\]</div>
 </div>
+<div class="section" id="the-distribution-of-bequests">
+<span id="sechhbequests"></span><h2>The Distribution of Bequests<a class="headerlink" href="#the-distribution-of-bequests" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> allows for two parameterizations of the distribution of bequests.  Users can choose the bequest transmission process through two parameters: <code class="docutils literal notranslate"><span class="pre">use_zeta</span></code> and <code class="docutils literal notranslate"><span class="pre">zeta</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">use_zeta=False</span></code>, then bequests from households of lifetime earnings type <code class="docutils literal notranslate"><span class="pre">j</span></code> are distributed equality across households of type <code class="docutils literal notranslate"><span class="pre">j</span></code>.  That is:</p>
+<div class="math notranslate nohighlight" id="equation-eq-bq">
+<span class="eqno">(23)<a class="headerlink" href="#equation-eq-bq" title="Permalink to this equation">¶</a></span>\[ bq_{j,s,t} = \frac{BQ_{j,t}}{\lambda_j \omega_{s,t}}\]</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">use_zeta=True</span></code>, then in the distribution of bequests across age and lifetime ability is determined by <span class="math notranslate nohighlight">\(\boldsymbol{\zeta}_{t}\)</span>, which allocated aggregate bequests across households by age and lifetime income group:</p>
+<div class="math notranslate nohighlight" id="equation-eq-bq-use-zeta">
+<span class="eqno">(24)<a class="headerlink" href="#equation-eq-bq-use-zeta" title="Permalink to this equation">¶</a></span>\[ bq_{j,s,t} = \boldsymbol{\zeta}_{t} BQ_{t}\]</div>
+</div>
 <div class="section" id="expectations">
 <span id="sechhexp"></span><h2>Expectations<a class="headerlink" href="#expectations" title="Permalink to this headline">¶</a></h2>
 <p>To conclude the household’s problem, we must make an assumption about how the age-<span class="math notranslate nohighlight">\(s\)</span> household can forecast the time path of interest rates paid by firms (marginal product of capital), wages, and total bequests <span class="math notranslate nohighlight">\(\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}\)</span> over his remaining lifetime. As we will show in Chapter <a class="reference internal" href="equilibrium.html#chap-eqm"><span class="std std-ref">Equilibrium</span></a>, the equilibrium interest rate paid by firms (marginal product of capital) <span class="math notranslate nohighlight">\(r_t\)</span>, wage <span class="math notranslate nohighlight">\(w_t\)</span>, and total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> will be functions of the state vector <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}_t\)</span>, which turns out to be the entire distribution of savings in period <span class="math notranslate nohighlight">\(t\)</span>.</p>
 <p>Define <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}_t\)</span> as the distribution of household savings across households at time <span class="math notranslate nohighlight">\(t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqsavdist">
-<span class="eqno">(23)<a class="headerlink" href="#equation-eqsavdist" title="Permalink to this equation">¶</a></span>\[  \boldsymbol{\Gamma}_t \equiv \bigl\{b_{j,s,t}\bigr\}_{s=E+2}^{E+S} \quad\forall j,t\]</div>
+<span class="eqno">(25)<a class="headerlink" href="#equation-eqsavdist" title="Permalink to this equation">¶</a></span>\[  \boldsymbol{\Gamma}_t \equiv \bigl\{b_{j,s,t}\bigr\}_{s=E+2}^{E+S} \quad\forall j,t\]</div>
 <p>Let general beliefs about the future distribution of capital in period <span class="math notranslate nohighlight">\(t+u\)</span> be characterized by the operator <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> such that:</p>
 <div class="math notranslate nohighlight" id="equation-eqbeliefs">
-<span class="eqno">(24)<a class="headerlink" href="#equation-eqbeliefs" title="Permalink to this equation">¶</a></span>\[  \boldsymbol{\Gamma}^e_{t+u} = \Omega^u\left(\boldsymbol{\Gamma}_t\right) \quad \forall t, \quad u\geq 1\]</div>
+<span class="eqno">(26)<a class="headerlink" href="#equation-eqbeliefs" title="Permalink to this equation">¶</a></span>\[  \boldsymbol{\Gamma}^e_{t+u} = \Omega^u\left(\boldsymbol{\Gamma}_t\right) \quad \forall t, \quad u\geq 1\]</div>
 <p>where the <span class="math notranslate nohighlight">\(e\)</span> superscript signifies that <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}^e_{t+u}\)</span> is the expected distribution of wealth at time <span class="math notranslate nohighlight">\(t+u\)</span> based on general beliefs <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> that are not constrained to be correct. <a class="footnote-reference brackets" href="#nssequilibrium-note" id="id8">5</a></p>
 </div>
 <div class="section" id="footnotes">
@@ -542,7 +605,7 @@
 <dd><p>Savings enters the period utility function to provide a “warm glow” bequest motive.</p>
 </dd>
 <dt class="label" id="frisch-note"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
-<dd><p><span id="id9">[<a class="reference internal" href="../OGCore_references.html#id60">Peterman, 2016</a>]</span> shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor—such as <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>—a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates—which include both extensive and intensive margin agents—are observed.</p>
+<dd><p><span id="id9">[<a class="reference internal" href="../OGCore_references.html#id19">Peterman, 2016</a>]</span> shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor—such as <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>—a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates—which include both extensive and intensive margin agents—are observed.</p>
 </dd>
 <dt class="label" id="mort-rates-note"><span class="brackets"><a class="fn-backref" href="#id5">3</a></span></dt>
 <dd><p>See Section the mortality rate section of the calibration chapter on demographics in the country-specific repository documentation for a detailed discussion of mortality rates for the specific country calibration interfacing with <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>.</p>
@@ -579,8 +642,8 @@
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="demographics.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -597,19 +660,17 @@
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Jason DeBacker and Richard W. Evans<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Jason DeBacker and Richard W. Evans<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

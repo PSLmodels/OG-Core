@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -342,7 +342,7 @@
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -376,7 +376,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -403,7 +403,37 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Aggregates Equations</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ogcore.aggregates">
+   ogcore.aggregates
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#functions-to-compute-economic-aggregates">
+     Functions to compute economic aggregates.
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="section" id="aggregates-equations">
@@ -594,26 +624,27 @@ by foreign investors</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.get_r_p">
-<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_r_p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_r_p"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_r_p" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_r_p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MPKg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_r_p"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_r_p" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the interest rate on the household’s portfolio of assets,
 a mix of government debt and private equity.</p>
 <div class="math notranslate nohighlight">
-\[r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}\]</div>
+\[r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
 <li><p><strong>r_gov</strong> (<em>array_like</em>) – the real interest rate on government debt</p></li>
-<li><p><strong>K</strong> (<em>array_like</em>) – aggregate capital</p></li>
+<li><p><strong>K</strong> (<em>array_like</em>) – aggregate private capital</p></li>
+<li><p><strong>K_g</strong> (<em>array_like</em>) – aggregate public capital</p></li>
 <li><p><strong>D</strong> (<em>array_like</em>) – aggregate government debt</p></li>
+<li><p><strong>MPKg</strong> (<em>array_like</em>) – marginal product of government capital</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>the real interest rate on the households</dt><dd><p>portfolio</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>the real interest rate on the household portfolio</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>r_p (array_like)</p>
@@ -623,21 +654,24 @@ a mix of government debt and private equity.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.resource_constraint">
-<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">resource_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#resource_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.resource_constraint" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">resource_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#resource_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.resource_constraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the error in the resource constraint.</p>
 <div class="math notranslate nohighlight">
-\[\hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}
-(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +
-\hat{G}_{t} + r_{p, t}\hat{K}^{f}_{t} -
-(\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +
-r_{p,t}\hat{D}^{f}_{t}\]</div>
+\[\begin{split}\text{rc_error} &amp;= \hat{Y}_t - \hat{C}_t -
+\Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
+\hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
+r_{p,t}\hat{K}^f_t ... \\
+&amp;\quad\quad + \Bigl(e^{g_y}\bigl[1 +
+\tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) -
+r_{p,t}\hat{D}^f_t \quad\forall t\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
 <li><p><strong>C</strong> (<em>array_like</em>) – aggregate consumption</p></li>
 <li><p><strong>G</strong> (<em>array_like</em>) – aggregate government spending</p></li>
-<li><p><strong>I</strong> (<em>array_like</em>) – aggregate investment</p></li>
+<li><p><strong>I_d</strong> (<em>array_like</em>) – aggregate private investment from domestic households</p></li>
+<li><p><strong>I_g</strong> (<em>array_like</em>) – investment in government capital</p></li>
 <li><p><strong>K_f</strong> (<em>array_like</em>) – aggregate capital that is foreign-owned</p></li>
 <li><p><strong>new_borrowing_f</strong> (<em>array_like</em>) – new borrowing of government debt
 from foreign investors</p></li>
@@ -745,8 +779,8 @@ iit_tax_revenue (array_like): aggregate income tax revenue</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="public_api.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -763,19 +797,17 @@ iit_tax_revenue (array_like): aggregate income tax revenue</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Jason DeBacker and Richard W. Evans<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Jason DeBacker and Richard W. Evans<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -342,7 +342,7 @@
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -376,7 +376,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -396,7 +396,30 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Fiscal Functions</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ogcore.fiscal">
+   ogcore.fiscal
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="section" id="fiscal-functions">
@@ -510,11 +533,11 @@ baseline_spending=True</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.get_G_ss">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_G_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_G_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_G_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_G_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_G_ss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the steady-state values of government spending.</p>
 <div class="math notranslate nohighlight">
-\[\bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr] -
-\bar{TR} - \overline{UBI}\]</div>
+\[\bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} -
+(1 + \bar{r}_{gov})\bigr] - \bar{I}_g - \bar{TR} - \overline{UBI}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -523,6 +546,7 @@ baseline_spending=True</p></li>
 <li><p><strong>agg_pension_outlays</strong> (<em>scalar</em>) – steady-state pension outlays</p></li>
 <li><p><strong>TR</strong> (<em>scalar</em>) – steady-state transfer spending</p></li>
 <li><p><strong>UBI_outlays</strong> (<em>scalar</em>) – steady-state total UBI outlays</p></li>
+<li><p><strong>I_g</strong> (<em>scalar</em>) – steady-state public infrastructure investment</p></li>
 <li><p><strong>new_borrowing</strong> (<em>scalar</em>) – steady-state amount of new borowing</p></li>
 <li><p><strong>debt_service</strong> (<em>scalar</em>) – steady-state debt service costs</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
@@ -538,8 +562,51 @@ baseline_spending=True</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.fiscal.get_I_g">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_I_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_I</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_I_g"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_I_g" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find investment in public capital</p>
+<div class="math notranslate nohighlight">
+\[I_{g,t} = \alpha_{I,t}Y_{t}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
+<li><p><strong>alpha_I</strong> (<em>array_like</em>) – percentage of output invested in public capital</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><p>I_g (array_like): investment in public capital</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.fiscal.get_K_g">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_K_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K_g0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_K_g"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_K_g" title="Permalink to this definition">¶</a></dt>
+<dd><p>Law of motion for the government capital stock</p>
+<div class="math notranslate nohighlight">
+\[K_{g,t+1} = \frac{(1 - \delta_g)K_{g,t} + I_{g,t}}
+    {(1 + \tilde{g}_{n,t+1})e^{g_y}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>K_g0</strong> (<em>scalar</em>) – initial stock of public capital</p></li>
+<li><p><strong>I_g</strong> (<em>array_like</em>) – government infrastructure investment</p></li>
+<li><p><strong>p</strong> (<em>ParamTools object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – either ‘SS’ for steady-state or ‘TPI’ for transition path</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><p>K_g (array_like): stock of public capital</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.get_TR">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_TR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_TR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_TR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_TR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_TR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to compute aggregate transfers.  Note that this excludes
 transfer spending through the public pension system.</p>
 <div class="math notranslate nohighlight">
@@ -560,6 +627,7 @@ government pension benefits</p></li>
 <li><p><strong>agg_pension_outlays</strong> (<em>array_like</em>) – total government pension
 outlays</p></li>
 <li><p><strong>UBI_outlays</strong> (<em>array_like</em>) – total universal basic income (UBI) outlays</p></li>
+<li><p><strong>I_g</strong> (<em>array_like</em>) – public infrastructure investement</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – whether doing SS or TP calculation</p></li>
 </ul>
@@ -642,8 +710,8 @@ time path or in the steady state</p></li>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="firm.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -660,19 +728,17 @@ time path or in the steady state</p></li>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Jason DeBacker and Richard W. Evans<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Jason DeBacker and Richard W. Evans<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script>
         const thebe_selector = ".thebe"
@@ -340,7 +340,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -374,7 +374,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -426,7 +426,62 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Contributor Guide</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#setup-python">
+   Setup Python
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#setup-git">
+   Setup Git
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#workflow">
+   Workflow
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#submitting-a-github-issue">
+     Submitting a GitHub Issue
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#submitting-a-github-pull-request">
+     Submitting a GitHub Pull Request
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#simple-usage">
+   Simple Usage
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#footnotes">
+   Footnotes
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="contributor-guide">
@@ -445,7 +500,7 @@
 <li><p>Install Git on your local machine by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/set-up-git/">Git setup</a>.</p></li>
 <li><p>Tell Git to remember your GitHub password by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/caching-your-github-password-in-git/">password setup</a>.</p></li>
 <li><p>Sign in to GitHub and create your own <a class="reference external" href="https://help.github.com/articles/github-glossary/#remote">remote</a> <a class="reference external" href="https://help.github.com/articles/github-glossary/#repository">repository</a> (repo) of <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> by clicking <a class="reference external" href="https://help.github.com/articles/github-glossary/#fork">Fork</a> in the upper right corner of the <a class="reference external" href="https://github.com/PSLmodels/OG-Core">OG-Core GitHub page</a>. Select your username when asked “Where should we fork this repository?”</p></li>
-<li><p>From your command line, navigate to the directory on your computer where you would like your local repo to live.</p></li>
+<li><p>From your command line on your local computer, navigate to the directory on your computer where you would like your local repo to reside.</p></li>
 <li><p>Create a local repo by entering at the command line the text after the $.<a class="footnote-reference brackets" href="#commandline-note" id="id2">2</a> This step creates a directory called <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> in the directory that you specified in the prior step:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="p">[</span><span class="n">github</span><span class="o">-</span><span class="n">username</span><span class="p">]</span><span class="o">/</span><span class="n">OG</span><span class="o">-</span><span class="n">Core</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
@@ -454,7 +509,7 @@
 <li><p>From your command line or terminal, navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> directory.</p></li>
 <li><p>Make it easier to <a class="reference external" href="https://help.github.com/articles/github-glossary/#pull">push</a> your local work to others and <a class="reference external" href="https://help.github.com/articles/github-glossary/#pull">pull</a> others’ work to your local machine by entering at the command line:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  $ cd OG-Core
-  OG-Core$ git remote add upstream https://github.com/open-source-economics/OG-Core.git
+  OG-Core$ git remote add upstream https://github.com/PSLmodels/OG-Core.git
 </pre></div>
 </div>
 </li>
@@ -467,6 +522,11 @@ execute the source code:</p>
 <li><p>The prior command will create a conda environment called <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code>.
 Activate this environment as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  OG-Core$ conda activate ogcore-dev
+</pre></div>
+</div>
+</li>
+<li><p>To make sure that the <code class="docutils literal notranslate"><span class="pre">ogcore</span></code> Python package from the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository is installed and operational in your <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment, type the following command at your command prompt.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>OG-Core$ pip install -e .
 </pre></div>
 </div>
 </li>
@@ -495,22 +555,22 @@ the contribution process.</p>
 <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>.  Different workflows may be necessary in some
 situations, in which case other contributors are here to help.</p>
 <ol>
-<li><p>Before you edit the OG-Core source code on your machine,
+<li><p>Before you edit the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> source code on your machine,
 make sure you have the latest version of the central OG-Core
 repository by executing the following <strong>four</strong> Git commands:</p>
 <p>a. Tell Git to switch to the master branch in your local repo.
-Navigate to your local OG-Core directory and enter the
+Navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> directory and enter the
 following text at the command line:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    OG-Core$ git checkout master
 </pre></div>
 </div>
-<p>b. Download all of the content from the central OG-Core repo:</p>
+<p>b. Download all of the content from the central <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repo:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    OG-Core$ git fetch upstream
 </pre></div>
 </div>
 <p>c. Update your local master branch to contain the latest content of
 the central master branch using <a class="reference external" href="https://help.github.com/articles/github-glossary/#merge">merge</a>. This step ensures that
-you are working with the latest version of OG-Core:</p>
+you are working with the latest version of <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    OG-Core$ git merge upstream/master
 </pre></div>
 </div>
@@ -522,22 +582,22 @@ you are working with the latest version of OG-Core:</p>
 <li><p>Create a new <a class="reference external" href="https://help.github.com/articles/github-glossary/#branch">branch</a> on your local machine. Think of your
 branches as a way to organize your projects. If you want to work on
 this documentation, for example, create a separate branch for that
-work. If you want to change an element of the OG-Core model, create
+work. If you want to change an element of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model, create
 a different branch for that project:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-Core$ git checkout -b [new-branch-name]
 </pre></div>
 </div>
 </li>
 <li><p>As you make changes, frequently check that your changes do not
-introduce bugs or degrade the accuracy of the OG-Core. To do
+introduce bugs or degrade the accuracy of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>. To do
 this, run the following command from the command line from inside
-the OG-Core/ogcore directory:</p>
+the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore</span></code> directory:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-Core/ogcore$  pytest
 </pre></div>
 </div>
-<p>Note that running this full suite of tests may take close to 24 hours (depending on your hardware).  To run the subset of tests that run on each pull request (and take about 40 minutes), use  <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">-m</span> <span class="pre">&quot;not</span> <span class="pre">local&quot;</span></code>.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn’t possible or doesn’t work, the core maintainers are here to help via a <a class="reference external" href="https://github.com/PSLmodels/OG-Core/issues">GitHub Issue</a>.</p>
+<p>Note that running this full suite of tests may take more than 6 hours (depending on your hardware). To run the subset of tests that run on each pull request (and take about 40 minutes), use  <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">-m</span> <span class="pre">&quot;not</span> <span class="pre">local&quot;</span></code>.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn’t possible or doesn’t work, the core maintainers are here to help via a <a class="reference external" href="https://github.com/PSLmodels/OG-Core/issues">GitHub Issue</a>.</p>
 </li>
-<li><p>Now you’re ready to <a class="reference external" href="https://help.github.com/articles/github-glossary/#commit">commit</a> your changes to your local repo using the code below. The first line of code tells <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track a file. Use “git status” to find all the files you’ve edited, and “git add” each of the files that you’d like <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track. As a rule, do not add large files. If you’d like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message; this should be a short description of your changes.</p>
+<li><p>Now you’re ready to <a class="reference external" href="https://help.github.com/articles/github-glossary/#commit">commit</a> your changes to your local repo using the code below. The first line of code tells <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track a file. Use the <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code> command to find all the files you have edited, and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span></code> command to add each of the files that you would like <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track. As a rule, do not add large files. If you’d like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message. This should be a short description of your changes.</p>
 <p><em>Tip</em>: Committing often is a good idea as <code class="docutils literal notranslate"><span class="pre">Git</span></code> keeps a record of your changes. This means that you can always revert to a previous version of your work if you need to. Do this to commit:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-Core$ git add [filename]
  OG-Core$ git commit -m &quot;[description-of-your-commit]&quot;
@@ -563,7 +623,22 @@ the OG-Core/ogcore directory:</p>
 </div>
 <div class="section" id="simple-usage">
 <span id="sec-simpleusage"></span><h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Permalink to this headline">¶</a></h2>
-<p>[TODO: Include simple usage examples.]</p>
+<p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> comes with an example run script <a class="reference external" href="https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py"><code class="docutils literal notranslate"><span class="pre">OG-Core/run_examples/run_ogcore_example.py</span></code></a>. Running this script will solve for the current-law baseline steady state and transition path solution of a calibrated version of an economy as well as a simple reform (increasing the corporate income tax rate) version of the model with its corresponding steady-state and transition path solution. This example script saves the full set of model output from both baseline and reform runs of the model. It also creates a large number of commonly used analytical figures and tables. This example run script is a nice foundation for using the model to run your own customized simulations. Below are the steps to running the example script.</p>
+<ol>
+<li><p>Navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository in the terminal of your local machine and activate the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment. If you have not created the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment, follow steps 1-11 in Section <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> above.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>OG-Core$ conda activate ogcore-dev
+</pre></div>
+</div>
+</li>
+<li><p>Run the Python example script <a class="reference external" href="https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py"><code class="docutils literal notranslate"><span class="pre">OG-Core/run_examples/run_ogcore_example.py</span></code></a> by entering the following command in your terminal in your local machine <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository with the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment activated.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ogcore-dev) OG-Core$ python ./run_examples/run_ogcore_example.py
+</pre></div>
+</div>
+</li>
+</ol>
+<p>This might take more than an hour to run despite being optimized to use up to seven cores on your machine for parallel processing. The full set of model input objects for the baseline simulation of the model are stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">./OG-Core/run_examples/OUTPUT_BASELINE/model_params.pkl</span></code>. The baseline steady-state model output is stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/OUTPUT_BASELINE/SS/SS_vars.pkl</span></code>. The baseline transition path model output is stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/OUTPUT_BASELINE/TPI/TPI_vars.pkl</span></code>.</p>
+<p>The full set of model input objects for the reform simulation of the model are stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">./OG-Core/run_examples/OUTPUT_REFORM/model_params.pkl</span></code>. The reform steady-state model output is stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/OUTPUT_REFORM/SS/SS_vars.pkl</span></code>. The reform transition path model output is stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/OUTPUT_REFORM/TPI/TPI_vars.pkl</span></code>.</p>
+<p>A large set of plots that compare the changes among key variables from the baseline simulation to the reform simulation are saved in the <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/run_example_plots</span></code> directory. And a <code class="docutils literal notranslate"><span class="pre">.csv</span></code>-file table of key macroeconomic variable changes over the budget window (10 years) and in the long-run steady state is saved at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/ogcore_example_output.csv</span></code>.</p>
 </div>
 <div class="section" id="footnotes">
 <span id="sec-contribfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
@@ -601,8 +676,8 @@ the OG-Core/ogcore directory:</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="../intro/intro.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -619,19 +694,17 @@ the OG-Core/ogcore directory:</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Jason DeBacker and Richard W. Evans<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Jason DeBacker and Richard W. Evans<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

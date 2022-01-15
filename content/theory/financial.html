@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -342,7 +342,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -376,14 +376,50 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#footnotes">
+   Footnotes
+  </a>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Financial Intermediary</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#footnotes">
+   Footnotes
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="financial-intermediary">
@@ -391,24 +427,36 @@
 <p>Domestic household wealth, <span class="math notranslate nohighlight">\(W^d_{t}=B_{t}\)</span> and foreign ownership of domestic assets <span class="math notranslate nohighlight">\(W^f_{t}\)</span> are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.</p>
 <p>Foreign demand for government bonds is specified in section <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-g"><span class="std std-ref">Government bond market clearing</span></a> of the <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a> chapter:</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad2">
-<span class="eqno">(48)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Permalink to this equation">¶</a></span>\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t}) \quad\forall t\]</div>
+<span class="eqno">(63)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Permalink to this equation">¶</a></span>\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D, t}(D_{t+1} - D_{t}) \quad\forall t\]</div>
 <p>This leaves domestic investors to buy up the residual amount of government debt:</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad2">
-<span class="eqno">(48)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Permalink to this equation">¶</a></span>\[  D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t\]</div>
+<span class="eqno">(63)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Permalink to this equation">¶</a></span>\[  D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t\]</div>
 <p>We assume that debt dominates the capital markets, such that domestic investor demand for capital, <span class="math notranslate nohighlight">\(K^{d}_{t}\)</span> is given as:</p>
 <div class="math notranslate nohighlight" id="equation-eq-domestic-cap-demand">
-<span class="eqno">(49)<a class="headerlink" href="#equation-eq-domestic-cap-demand" title="Permalink to this equation">¶</a></span>\[  K^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t\]</div>
+<span class="eqno">(64)<a class="headerlink" href="#equation-eq-domestic-cap-demand" title="Permalink to this equation">¶</a></span>\[  K^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t\]</div>
 <p>Foreign demand for capital is given in <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-k"><span class="std std-ref">Private capital market clearing</span></a>, where <span class="math notranslate nohighlight">\(K^{f}_{t}\)</span> is an exogenous fraction of excess capital demand at the world interest rate:</p>
 <div class="math notranslate nohighlight" id="equation-eq-foreign-cap-demand">
-<span class="eqno">(50)<a class="headerlink" href="#equation-eq-foreign-cap-demand" title="Permalink to this equation">¶</a></span>\[  K^{f}_t = \zeta_{K}ED^{K,r^*}_t \quad\forall t\]</div>
+<span class="eqno">(65)<a class="headerlink" href="#equation-eq-foreign-cap-demand" title="Permalink to this equation">¶</a></span>\[  K^{f}_t = \zeta_{K, t}ED^{K,r^*}_t \quad\forall t\]</div>
 <p>The total amount invested in the financial intermediary is thus:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}W_{t} &amp; = W^d_{t} + W^f_{t} \\
     &amp; = D^d_t + K^d_t  + D^f_t + K^f_t \\
     &amp; = D_t + K_t\end{split}\]</div>
-<p>Interest rates on private capital and government bonds differ.  The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return:</p>
+<p>Interest rates on private capital and government bonds differ. The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return. As derived in <a class="reference internal" href="firms.html#equation-eqfirms-rkt">(38)</a> of Section <a class="reference internal" href="firms.html#eqfirmsposprofits"><span class="std std-ref">Positive Profits from Government Infrastructure Investment</span></a>, the presence of public infrastructure in the production function means that the returns to private factors of production (<span class="math notranslate nohighlight">\(r_t\)</span> and <span class="math notranslate nohighlight">\(w_t\)</span>) exhibit decreasing returns to scale.<a class="footnote-reference brackets" href="#moorepecoraro" id="id1">1</a> It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders. The return on capital is therefore the sum of the (after-tax) returns to private and public capital.</p>
+<div class="math notranslate nohighlight" id="equation-eq-rk">
+<span class="eqno">(66)<a class="headerlink" href="#equation-eq-rk" title="Permalink to this equation">¶</a></span>\[  r_{K,t}  = r_{t} + (1 - \tau^{corp}_t )MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right)\]</div>
+<p>The return on the portfolio of assets held by the financial intermediary is thus a weighted average of the return to government debt <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> from <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(52)</a> and the adjusted return on private capital <span class="math notranslate nohighlight">\(r_{K,t}\)</span> from <a class="reference internal" href="#equation-eq-rk">(66)</a>.</p>
 <div class="math notranslate nohighlight" id="equation-eq-portfolio-return">
-<span class="eqno">(51)<a class="headerlink" href="#equation-eq-portfolio-return" title="Permalink to this equation">¶</a></span>\[r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}} \quad\forall t\]</div>
+<span class="eqno">(67)<a class="headerlink" href="#equation-eq-portfolio-return" title="Permalink to this equation">¶</a></span>\[  r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t\]</div>
+<div class="section" id="footnotes">
+<span id="secfinfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="moorepecoraro"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>See also <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id16">Moore and Pecoraro, 2021</a>]</span> for a similar treatment of government infrastructure investment, positive profits, and returns to the owners of capital.</p>
+</dd>
+</dl>
+</div>
 </div>
 
     <script type="text/x-thebe-config">
@@ -433,8 +481,8 @@
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="open_economy.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -451,19 +499,17 @@
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Jason DeBacker and Richard W. Evans<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Jason DeBacker and Richard W. Evans<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 

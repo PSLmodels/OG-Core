@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -342,7 +342,7 @@
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -376,20 +376,30 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
         </div>
     </div>
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Model Overview</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="model-overview">
 <span id="chap-intro"></span><h1>Model Overview<a class="headerlink" href="#model-overview" title="Permalink to this headline">¶</a></h1>
-<p>The overlapping generations model is a workhorse of dynamic fiscal analysis. <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is dynamic in that households in the model make consumption, savings, and labor supply decisions based on their expectations over their entire lifetime, not just the current period. Because <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is a general equilibrium model, behavioral changes by households and firms can cause macroeconomic variables and prices to adjust. This characteristic has recently become a required component of fiscal policy analysis in the United States.<a class="footnote-reference brackets" href="#dynscore-note" id="id1">1</a></p>
-<p>But the main characteristic that differentiates the overlapping generations model from other dynamic general equilibrium models is its realistic modeling of the finite lifetimes of individuals and the cross-sectional age heterogeneity that exists in the economy. One can make a strong case that age heterogeneity and income heterogeneity are two of the main sources of diversity that explain much of the behavior in which we are interested for policy analysis.</p>
+<p>The overlapping generations model is a workhorse of dynamic fiscal analysis. The <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model is dynamic in that households in the model make consumption, savings, and labor supply decisions based on their expectations over their entire lifetime, not just the current period. Because <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is a general equilibrium model, behavioral changes by households and firms can cause macroeconomic variables and prices to adjust. This characteristic has recently become a required component of fiscal policy analysis in the United States.<a class="footnote-reference brackets" href="#dynscore-note" id="id1">1</a></p>
+<p>The main characteristic that differentiates the overlapping generations model from other dynamic general equilibrium models is its realistic modeling of the finite lifetimes of individuals and the cross-sectional age heterogeneity that exists in the economy. One can make a strong case that age heterogeneity and income heterogeneity are two of the main sources of diversity that explain much of the behavior in which we are interested for policy analysis.</p>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> can be summarized as having the following characteristics.</p>
 <ul class="simple">
 <li><p>Households</p>
@@ -401,7 +411,7 @@
 <li><p>realistic demographics: mortality rates, fertility rates, immigration rates, population growth, and population distribution dynamics</p></li>
 <li><p>heterogeneous lifetime income groups within each age cohort, calibrated from U.S. tax data</p>
 <ul>
-<li><p>each lifetime income group has its own discount factor <span class="math notranslate nohighlight">\(\beta_j\)</span> following <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id18">Carroll <em>et al.</em>, 2017</a>]</span></p></li>
+<li><p>each lifetime income group has its own discount factor <span class="math notranslate nohighlight">\(\beta_j\)</span> following <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id12">Carroll <em>et al.</em>, 2017</a>]</span></p></li>
 </ul>
 </li>
 <li><p>incorporation of detailed household tax data from specified microsimulation model</p></li>
@@ -410,7 +420,7 @@
 </li>
 <li><p>Firms</p>
 <ul>
-<li><p>representative perfectly competitive firm maximizes static profits with general CES production function by choosing capital and labor demand</p></li>
+<li><p>representative perfectly competitive firm maximizes static profits with general CES production function by choosing private capital and labor demand, taking public capital as given</p></li>
 <li><p>exogenous productivity growth is labor augmenting technological change</p></li>
 <li><p>firms face a corporate income tax as well as various depreciation deductions and tax treatments</p></li>
 </ul>
@@ -419,6 +429,7 @@
 <ul>
 <li><p>government collects tax revenue from households and firms</p></li>
 <li><p>government distributes transfers to households</p></li>
+<li><p>government supplies capital to the private firms’ production process</p></li>
 <li><p>government spends resources on public goods</p></li>
 <li><p>government can run deficits and surpluses</p></li>
 <li><p>a stabilization rule (budget closure rule) must be implemented at some point in the time path if government debt is growing at a rate permanently different from GDP.</p></li>
@@ -463,8 +474,8 @@
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="../api/wealth.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -481,19 +492,17 @@
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Jason DeBacker and Richard W. Evans<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Jason DeBacker and Richard W. Evans<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
 </main>
 
 
