@@ -15,8 +15,9 @@ from ogcore.parameters import Specifications
 from ogcore.constants import REFORM_DIR, BASELINE_DIR
 from ogcore.utils import safe_read_pickle
 import matplotlib.pyplot as plt
-style_file = os.path.join('..', 'ogcore', 'OGcorePlots.mplstyle')
-plt.style.use(style_file)
+style_file_url = ('https://raw.githubusercontent.com/PSLmodels/OG-Core/' +
+                  'master/ogcore/OGcorePlots.mplstyle')
+plt.style.use(style_file_url)
 
 
 def main():
