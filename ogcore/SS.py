@@ -591,14 +591,15 @@ def run_SS(p, client=None):
             BQguess = 0.12231465279007188
             guesses = [rguess, wguess, Yguess, BQguess, TRguess, factorguess]
         else:
-            guesses = [rguess] + [wguess] + list(BQguess) + [TRguess, factorguess]
+            guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess, factorguess]
         sol = opt.root(SS_fsolve, guesses, args=ss_params_baseline,
                        method=p.SS_root_method, tol=p.mindist_SS)
         if ENFORCE_SOLUTION_CHECKS and not sol.success:
             raise RuntimeError('Steady state equilibrium not found')
         rss = sol.x[0]
         wss = sol.x[1]
-        BQss = sol.x[2:-2]
+        Yss = sol.x[2]
+        BQss = sol.x[3:-2]
         TR_ss = sol.x[-2]
         factor_ss = sol.x[-1]
         Yss = TR_ss/p.alpha_T[-1]  # may not be right - if budget_balance
@@ -639,26 +640,28 @@ def run_SS(p, client=None):
             TR_ss = TRguess
             ss_params_reform = (b_guess, n_guess, TR_ss, factor, p, client)
             if p.use_zeta:
-                guesses = [rguess] + [wguess] + list([BQguess]) + [Yguess]
+                guesses = [rguess, wguess, Yguess] + list([BQguess]) + [Yguess]
             else:
-                guesses = [rguess] + [wguess] + list(BQguess) + [Yguess]
+                guesses = [rguess, wguess, Yguess] + list(BQguess) + [Yguess]
             sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
                            method=p.SS_root_method, tol=p.mindist_SS)
             rss = sol.x[0]
             wss = sol.x[1]
-            BQss = sol.x[2:-1]
+            Yss = sol.x[2]
+            BQss = sol.x[3:-1]
             Yss = sol.x[-1]
         else:
             ss_params_reform = (b_guess, n_guess, None, factor, p, client)
             if p.use_zeta:
-                guesses = [rguess] + [wguess] + list([BQguess]) + [TRguess]
+                guesses = [rguess, wguess, Yguess] + list([BQguess]) + [TRguess]
             else:
-                guesses = [rguess] + [wguess] + list(BQguess) + [TRguess]
+                guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess]
             sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
                            method=p.SS_root_method, tol=p.mindist_SS)
             rss = sol.x[0]
             wss = sol.x[1]
-            BQss = sol.x[2:-1]
+            Yss = sol.x[2]
+            BQss = sol.x[3:-1]
             TR_ss = sol.x[-1]
             Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in
