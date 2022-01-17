@@ -331,47 +331,59 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             payroll_tax_revenue, iit_revenue)
 
 
-def get_r_p(r, r_gov, K, D):
+def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
     r'''
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
 
     .. math::
-        r_{p,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}
+        r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}}
 
     Args:
         r (array_like): the real interest rate
         r_gov (array_like): the real interest rate on government debt
-        K (array_like): aggregate capital
+        K (array_like): aggregate private capital
+        K_g (array_like): aggregate public capital
         D (array_like): aggregate government debt
+        MPKg (array_like): marginal product of government capital
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
     Returns:
-        r_p (array_like): the real interest rate on the households
-            portfolio
+        r_p (array_like): the real interest rate on the household portfolio
 
     '''
-    r_p = ((r * K) + (r_gov * D)) / (K + D)
+    if method == 'SS':
+        tau_b = p.tau_b[-1]
+    else:
+        tau_b = p.tau_b[:p.T]
+    r_K = r + (1 - tau_b) * MPKg * (K_g / K)
+    r_p = ((r_gov * D) + (r_K * K)) / (D + K)
 
     return r_p
 
 
-def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
+def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
                         debt_service_f, r, p):
     r'''
     Compute the error in the resource constraint.
 
     .. math::
-        \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}
-        (1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +
-        \hat{G}_{t} + r_{p, t}\hat{K}^{f}_{t} -
-        (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) +
-        r_{p,t}\hat{D}^{f}_{t}
+      \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
+      \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
+      \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
+      r_{p,t}\hat{K}^f_t ... \\
+      &\quad\quad + \Bigl(e^{g_y}\bigl[1 +
+      \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) -
+      r_{p,t}\hat{D}^f_t \quad\forall t
 
     Args:
         Y (array_like): aggregate output
         C (array_like): aggregate consumption
         G (array_like): aggregate government spending
-        I (array_like): aggregate investment
+        I_d (array_like): aggregate private investment from domestic households
+        I_g (array_like): investment in government capital
         K_f (array_like): aggregate capital that is foreign-owned
         new_borrowing_f (array_like): new borrowing of government debt
             from foreign investors
@@ -384,8 +396,10 @@ def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
         rc_error (array_like): error in the resource constraint
 
     '''
-    rc_error = (Y - C - I - G - (r + p.delta) * K_f + new_borrowing_f -
-                debt_service_f)
+    rc_error = (
+        Y - C - I_d - I_g - G - (r + p.delta) * K_f + new_borrowing_f -
+        debt_service_f
+        )
 
     return rc_error
 
@@ -420,7 +434,6 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
 
     '''
     K_d = B - D_d
-    # if isinstance(K_d, (np.ndarray, np.generic)):
     if np.any(K_d < 0):
         print('K_d has negative elements. Setting them ' +
               'positive to prevent NAN.')

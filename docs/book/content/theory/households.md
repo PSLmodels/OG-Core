@@ -32,7 +32,7 @@ In this section, we describe what is arguably the most important economic agent 
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
   ```
 
-  where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the wage, and $n_{j,s,t}$ is labor supply. Equation {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` shows how the rate of return from the financial intermediary, $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$.
+  where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the wage, and $n_{j,s,t}$ is labor supply. Equations {eq}`eq_rK` and {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` show how the rate of return from the financial intermediary $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$.
 
   The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. The calibration chapter on beqests in the country-specific repository documentation details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
 
@@ -163,6 +163,25 @@ In this section, we describe what is arguably the most important economic agent 
   ```{math}
   :label: EqMTRy_derive
     \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t} b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t} b_{j,s,t}}r_{p,t} = \tau^{mtry}_{s,t}r_{p,t}
+  ```
+
+(SecHHbequests)=
+## The Distribution of Bequests
+
+`OG-Core` allows for two parameterizations of the distribution of bequests.  Users can choose the bequest transmission process through two parameters: `use_zeta` and `zeta`.
+
+If `use_zeta=False`, then bequests from households of lifetime earnings type `j` are distributed equality across households of type `j`.  That is:
+
+   ```{math}
+  :label: Eq_bq
+    bq_{j,s,t} = \frac{BQ_{j,t}}{\lambda_j \omega_{s,t}}
+  ```
+
+   If `use_zeta=True`, then in the distribution of bequests across age and lifetime ability is determined by $\boldsymbol{\zeta}_{t}$, which allocated aggregate bequests across households by age and lifetime income group:
+
+   ```{math}
+  :label: Eq_bq_use_zeta
+    bq_{j,s,t} = \boldsymbol{\zeta}_{t} BQ_{t}
   ```
 
 (SecHHexp)=

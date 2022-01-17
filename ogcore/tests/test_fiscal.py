@@ -67,10 +67,11 @@ def test_D_G_path(baseline_spending, Y, TR, Revenue, Gbaseline,
     p.g_n = np.ones(p.T + p.S) * 0.02
     D0_baseline = 0.59
     Gbaseline[0] = 0.05
+    I_g = np.zeros_like(TR)
     net_revenue = Revenue
     pension_amount = np.zeros_like(net_revenue)
     UBI_outlays = np.zeros_like(net_revenue)
-    dg_fixed_values = (Y, Revenue, pension_amount, UBI_outlays, TR, Gbaseline,
+    dg_fixed_values = (Y, Revenue, pension_amount, UBI_outlays, TR, I_g, Gbaseline,
                        D0_baseline)
     test_tuple = fiscal.D_G_path(r_gov, dg_fixed_values, p)
     for i, v in enumerate(test_tuple):
@@ -124,13 +125,14 @@ def test_get_G_ss(budget_balance, expected_G):
     net_revenue = 2.3
     pension_amount = 0.0
     TR = 1.6
+    I_g = 0.0
     UBI = 0.0
     new_borrowing = 0.072076633
     debt_service = 0.042345192
     p = Specifications()
     p.budget_balance = budget_balance
     test_G = fiscal.get_G_ss(
-        Y, net_revenue, pension_amount, TR, UBI, new_borrowing,
+        Y, net_revenue, pension_amount, TR, UBI, I_g, new_borrowing,
         debt_service, p)
 
     assert np.allclose(test_G, expected_G)
@@ -171,6 +173,7 @@ def test_get_TR(baseline, budget_balance, baseline_spending, method,
     G = 0.0
     agg_pension_outlays = 0.0
     UBI_outlays = 0.0
+    I_g = 0.0
     total_tax_revenue = 1.9
     p = Specifications(baseline=baseline)
     p.budget_balance = budget_balance
@@ -180,7 +183,7 @@ def test_get_TR(baseline, budget_balance, baseline_spending, method,
         TR = np.ones(p.T * p.S) * TR
         total_tax_revenue = np.ones(p.T * p.S) * total_tax_revenue
     test_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue,
-                            agg_pension_outlays, UBI_outlays, p, method)
+                            agg_pension_outlays, UBI_outlays, I_g, p, method)
 
     assert np.allclose(test_TR, expected_TR)
 
@@ -207,3 +210,36 @@ r_gov3 = 0.0
 def test_get_r_gov(r, p, r_gov_expected):
     r_gov = fiscal.get_r_gov(r, p)
     assert np.allclose(r_gov, r_gov_expected)
+
+
+def test_get_I_g():
+    '''
+    Test function to determine investment in public capital
+    '''
+    Y = np.array([0.2, 4.0])
+    alpha_I = np.array([0.1, 0.5])
+    expected = np.array([0.02, 2.0])
+    test_val = fiscal.get_I_g(Y, alpha_I)
+
+    assert np.allclose(test_val, expected)
+
+
+# need to parameterize to test for TPI and SS
+@pytest.mark.parametrize(
+    'K_g0,I_g,method,expected',
+    [(None, 0.2, 'SS', 3.291689115882805),
+     (0.0, np.array([0.2, 0.3, 0.01]), 'TPI',
+     np.array([0, 0.19028344,  0.46284331]))],
+    ids=['SS', 'TPI'])
+def test_get_K_g(K_g0, I_g, method, expected):
+    '''
+    Test of the law of motion for the government capital stock
+    '''
+    p = Specifications()
+    p.update_specifications({'T': 3})
+    p.g_n = np.array([0.02, 0.02, 0.02])
+    p.g_n_ss = 0.01
+
+    test_val = fiscal.get_K_g(K_g0, I_g, p, method)
+
+    assert np.allclose(test_val, expected)

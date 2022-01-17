@@ -348,7 +348,7 @@
         "description": "Capital's share of output in firm production function.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
-        "notes": "Histroical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
+        "notes": "Historical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
         "type": "float",
         "value": [
             {
@@ -362,9 +362,30 @@
             }
         }
     },
+    "gamma_g": {
+        "title": "Public capital's share of output in firm production function",
+        "description": "Public capital's share of output in firm production function.",
+        "section_1": "Firm Parameters",
+        "section_2": "Production Function",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "when": {
+                "param": "initial_Kg_ratio",
+                "is": {"equal_to": 0},
+                "then": {"range": {"min": 0.0, "max": 0.0}},
+                "otherwise": {"range": {"min": 0.0, "max": 1.0}}
+            }
+        }
+    },
     "epsilon": {
-        "title": "Elasticity of substitution between capital and labor in firm production function",
-        "description": "Elasticity of substitution between capital and labor in firm production function.",
+        "title": "Elasticity of substitution among private capital, public capital, and labor in firm production function",
+        "description": "Elasticity of substitution among private capital, public capital, and labor in firm production function.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
@@ -413,6 +434,25 @@
         "value": [
             {
                 "value": 0.05
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "delta_g_annual": {
+        "title": "Annual rate of economic depreciation of public capital",
+        "description": "Annual rate of economic depreciation of public capital.",
+        "section_1": "Government Parameters",
+        "section_2": "",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.02
             }
         ],
         "validators": {
@@ -604,6 +644,28 @@
             }
         }
     },
+    "alpha_I": {
+        "title": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)",
+        "description": "",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.00
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.3
+            }
+        }
+    },
     "rho_G": {
         "title": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
         "description": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1].",
@@ -657,6 +719,24 @@
             "range": {
                 "min": 0.0,
                 "max": 2.0
+            }
+        }
+    },
+    "initial_Kg_ratio": {
+        "title": "Government capital (public capital) to GDP ratio in the initial period",
+        "description": "Government capital (aka infrastructure) to GDP ratio in the initial period.",
+        "section_1": "Fiscal Policy Parameters",
+        "notes": "Should be calibrated based on the value of public infrastructure to GDP in the model start year.",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 50.0
             }
         }
     },
@@ -3108,6 +3188,24 @@
             "range": {
                 "min": 0.01,
                 "max": 0.15
+            }
+        }
+    },
+    "initial_guess_w_SS": {
+        "title": "Initial guess of w for the SS solution",
+        "description": "Initial guess of w for the SS solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1.1617041226785383
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.01,
+                "max": 5.15
             }
         }
     },

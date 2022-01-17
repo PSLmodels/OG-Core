@@ -48,8 +48,11 @@ def pct_diff_func(simul, data):
         output (array_like): percentage differences between model and
             data moments
     '''
-    frac = (simul - data) / data
-    output = np.abs(frac)
+    if np.asarray(data).all() != 0:
+        frac = (simul - data) / data
+        output = np.abs(frac)
+    else:
+        output = np.abs(simul - data)
     return output
 
 
