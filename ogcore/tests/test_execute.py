@@ -39,7 +39,9 @@ def test_runner_baseline_reform(tmpdir, dask_client):
         os.path.join(tmpdir, 'OUTPUT_BASELINE')
     runner(p_b, time_path=True, client=dask_client)
 
-    # Run reform runner(). If errors out, test will fail
+    # Run reform runner(). If errors out, test will fail. These two have to be
+    # run in the same test because the reform run below depends on output saved
+    # in the baseline run above.
     p_r = Specifications(baseline=False, num_workers=NUM_WORKERS)
     p_r.update_specifications(TEST_PARAM_DICT)
     p_r.baseline_dir = os.path.join(tmpdir, 'OUTPUT_BASELINE')
