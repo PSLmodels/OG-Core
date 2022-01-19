@@ -11,8 +11,6 @@ NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
 # Set paths
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-BASELINE_DIR = os.path.join(CUR_PATH, 'OUTPUT_BASELINE')
-REFORM_DIR = os.path.join(CUR_PATH, 'OUTPUT_REFORM')
 
 # Monkey patch enforcement flag since small data won't pass checks
 SS.ENFORCE_SOLUTION_CHECKS = False
@@ -33,17 +31,17 @@ def dask_client():
 
 
 @pytest.mark.local
-def test_runner_baseline(dask_client):
-    p = Specifications(baseline=True, num_workers=NUM_WORKERS)
-    p.update_specifications(TEST_PARAM_DICT)
-    p.baseline_dir = p.output_base = BASELINE_DIR
-    runner(p, time_path=True, client=dask_client)
+def test_runner_baseline_reform(tmpdir, dask_client):
+    # Run baseline runner(). If errors out, test will fail
+    p_b = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    p_b.update_specifications(TEST_PARAM_DICT)
+    p_b.baseline_dir = p_b.output_base = \
+        os.path.join(tmpdir, 'OUTPUT_BASELINE')
+    runner(p_b, time_path=True, client=dask_client)
 
-
-@pytest.mark.local
-def test_runner_reform(dask_client):
-    p = Specifications(baseline=False, num_workers=NUM_WORKERS)
-    p.update_specifications(TEST_PARAM_DICT)
-    p.baseline_dir = BASELINE_DIR
-    p.output_base = REFORM_DIR
-    runner(p, time_path=False, client=dask_client)
+    # Run reform runner(). If errors out, test will fail
+    p_r = Specifications(baseline=False, num_workers=NUM_WORKERS)
+    p_r.update_specifications(TEST_PARAM_DICT)
+    p_r.baseline_dir = os.path.join(tmpdir, 'OUTPUT_BASELINE')
+    p_r.output_base = os.path.join(tmpdir, 'OUTPUT_REFORM')
+    runner(p_r, time_path=False, client=dask_client)
