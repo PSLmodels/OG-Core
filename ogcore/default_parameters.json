@@ -3067,7 +3067,7 @@
         "title": "Root finding algorithm for outer loop of the SS solution",
         "description": "Root finding algorithm for outer loop of the SS solution.",
         "section_1": "Model Solution Parameters",
-        "notes": "",
+        "notes": "Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in SS.py and TPI.py and will therefore break without modifications of the source code.",
         "type": "str",
         "value": [
             {
@@ -3093,9 +3093,9 @@
     },
     "FOC_root_method": {
         "title": "Root finding algorithm for solving household first order conditions",
-        "description": "Root finding algorithm for solving household first order conditions.",
+        "description": "Root finding algorithm for solving household first order conditions. ",
         "section_1": "Model Solution Parameters",
-        "notes": "",
+        "notes": "Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in SS.py and TPI.py and will therefore break without modifications of the source code.",
         "type": "str",
         "value": [
             {
