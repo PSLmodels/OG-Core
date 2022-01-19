@@ -26,7 +26,7 @@ def dask_client():
 
 @pytest.mark.local
 @pytest.mark.parametrize('time_path', [False, True], ids=['SS', 'TPI'])
-def test_run_small(time_path, dask_client):
+def test_run_small(tmpdir, time_path, dask_client):
     from ogcore.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
@@ -34,14 +34,14 @@ def test_run_small(time_path, dask_client):
     SS.MINIMIZER_TOL = 1e-6
     TPI.MINIMIZER_TOL = 1e-6
     p = Specifications(
-        baseline=True, num_workers=NUM_WORKERS, baseline_dir=OUTPUT_DIR,
-        output_base=OUTPUT_DIR)
+        baseline=True, num_workers=NUM_WORKERS, baseline_dir=tmpdir,
+        output_base=tmpdir)
     p.update_specifications(TEST_PARAM_DICT)
     runner(p, time_path=time_path, client=dask_client)
 
 
 @pytest.mark.local
-def test_constant_demographics_TPI(dask_client):
+def test_constant_demographics_TPI(tmpdir, dask_client):
     '''
     This tests solves the model under the assumption of constant
     demographics, a balanced budget, and tax functions that do not vary
@@ -53,7 +53,7 @@ def test_constant_demographics_TPI(dask_client):
     '''
     # Create output directory structure
     spec = Specifications(
-        output_base=CUR_PATH, baseline_dir=OUTPUT_DIR,
+        output_base=tmpdir, baseline_dir=tmpdir,
         baseline=True, num_workers=NUM_WORKERS)
     og_spec = {'constant_demographics': True, 'budget_balance': True,
                'zero_taxes': True, 'maxiter': 2,
@@ -75,8 +75,8 @@ def test_constant_demographics_TPI(dask_client):
     # Run SS
     ss_outputs = SS.run_SS(spec, client=dask_client)
     # save SS results
-    utils.mkdirs(os.path.join(OUTPUT_DIR, "SS"))
-    ss_dir = os.path.join(OUTPUT_DIR, "SS", "SS_vars.pkl")
+    utils.mkdirs(os.path.join(tmpdir, "SS"))
+    ss_dir = os.path.join(tmpdir, "SS", "SS_vars.pkl")
     with open(ss_dir, "wb") as f:
         pickle.dump(ss_outputs, f)
     # Run TPI
@@ -86,7 +86,7 @@ def test_constant_demographics_TPI(dask_client):
 
 
 @pytest.mark.local
-def test_constant_demographics_TPI_small_open(dask_client):
+def test_constant_demographics_TPI_small_open(tmpdir, dask_client):
     '''
     This tests solves the model under the assumption of constant
     demographics, a balanced budget, and tax functions that do not vary
@@ -94,7 +94,7 @@ def test_constant_demographics_TPI_small_open(dask_client):
     '''
     # Create output directory structure
     spec = Specifications(
-        output_base=CUR_PATH, baseline_dir=OUTPUT_DIR,
+        output_base=tmpdir, baseline_dir=tmpdir,
         baseline=True, num_workers=NUM_WORKERS)
     og_spec = {'constant_demographics': True, 'budget_balance': True,
                'zero_taxes': True, 'maxiter': 2,
@@ -116,8 +116,8 @@ def test_constant_demographics_TPI_small_open(dask_client):
     # Run SS
     ss_outputs = SS.run_SS(spec, client=dask_client)
     # save SS results
-    utils.mkdirs(os.path.join(OUTPUT_DIR, "SS"))
-    ss_dir = os.path.join(OUTPUT_DIR, "SS", "SS_vars.pkl")
+    utils.mkdirs(os.path.join(tmpdir, "SS"))
+    ss_dir = os.path.join(tmpdir, "SS", "SS_vars.pkl")
     with open(ss_dir, "wb") as f:
         pickle.dump(ss_outputs, f)
     # Run TPI
