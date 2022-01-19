@@ -402,7 +402,7 @@ def test_get_tax_rates(tax_func_type, rate_type, params,
 
 
 @pytest.mark.local
-def test_tax_func_estimate(dask_client):
+def test_tax_func_estimate(tmpdir, dask_client):
     '''
     Test txfunc.tax_func_loop() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -419,7 +419,7 @@ def test_tax_func_estimate(dask_client):
     tax_func_type = 'DEP'
     age_specific = False
     BW = 1
-    test_path = os.path.join(CUR_PATH, 'test_out.pkl')
+    test_path = os.path.join(tmpdir, 'test_out.pkl')
     test_dict = txfunc.tax_func_estimate(
         micro_data, BW, S, starting_age, ending_age, start_year=2030,
         baseline=baseline, analytical_mtrs=analytical_mtrs,

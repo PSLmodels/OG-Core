@@ -1031,7 +1031,11 @@ def tax_func_estimate(micro_data, BW, S, starting_age, ending_age,
     # --------------------------------------------------------------------
     # '''
     start_time = time.time()
-    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'TaxFunctions')
+    if not tax_func_path:
+        output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'TaxFunctions')
+    else:
+        output_dir = os.path.join(os.path.dirname(tax_func_path), 'OUTPUT',
+                                  'TaxFunctions')
     if not os.access(output_dir, os.F_OK):
         os.makedirs(output_dir)
 
