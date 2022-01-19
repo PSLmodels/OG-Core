@@ -176,9 +176,9 @@ def inner_loop(outer_loop_vars, p, client):
         euler_params = (
             r_p, w, bq[:, j], tr[:, j], ubi[:, j], factor, j,
             scattered_p)
-        lazy_values.append(delayed(opt.fsolve)(
+        lazy_values.append(delayed(opt.root)(
             euler_equation_solver, guesses * .9,
-            args=euler_params, xtol=MINIMIZER_TOL, full_output=True))
+            args=euler_params, method=p.FOC_root_method, tol=MINIMIZER_TOL))
     if client:
         futures = client.compute(lazy_values, num_workers=p.num_workers)
         results = client.gather(futures)
@@ -188,10 +188,9 @@ def inner_loop(outer_loop_vars, p, client):
             num_workers=p.num_workers)
 
     for j, result in enumerate(results):
-        [solutions, infodict, ier, message] = result
-        euler_errors[:, j] = infodict['fvec']
-        bssmat[:, j] = solutions[:p.S]
-        nssmat[:, j] = solutions[p.S:]
+        euler_errors[:, j] = result.fun
+        bssmat[:, j] = result.x[:p.S]
+        nssmat[:, j] = result.x[p.S:]
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
@@ -593,17 +592,16 @@ def run_SS(p, client=None):
             guesses = [rguess, wguess, Yguess, BQguess, TRguess, factorguess]
         else:
             guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess, factorguess]
-        [solutions_fsolve, infodict, ier, message] =\
-            opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline,
-                       xtol=p.mindist_SS, full_output=True)
-        if ENFORCE_SOLUTION_CHECKS and not ier == 1:
+        sol = opt.root(SS_fsolve, guesses, args=ss_params_baseline,
+                       method=p.SS_root_method, tol=p.mindist_SS)
+        if ENFORCE_SOLUTION_CHECKS and not sol.success:
             raise RuntimeError('Steady state equilibrium not found')
-        rss = solutions_fsolve[0]
-        wss = solutions_fsolve[1]
-        Yss = solutions_fsolve[2]
-        BQss = solutions_fsolve[3:-2]
-        TR_ss = solutions_fsolve[-2]
-        factor_ss = solutions_fsolve[-1]
+        rss = sol.x[0]
+        wss = sol.x[1]
+        Yss = sol.x[2]
+        BQss = sol.x[3:-2]
+        TR_ss = sol.x[-2]
+        factor_ss = sol.x[-1]
         Yss = TR_ss/p.alpha_T[-1]  # may not be right - if budget_balance
         # # = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
@@ -638,24 +636,37 @@ def run_SS(p, client=None):
             Yguess = TRguess / p.alpha_T[-1]
             factor = p.initial_guess_factor_SS
             BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
-        ss_params_reform = (b_guess, n_guess, TRguess, factor, p, client)
-        if p.use_zeta:
-            guesses = [rguess, wguess, Yguess, BQguess, TRguess]
+        if p.baseline_spending:
+            TR_ss = TRguess
+            ss_params_reform = (b_guess, n_guess, TR_ss, factor, p, client)
+            if p.use_zeta:
+                guesses = [rguess, wguess, Yguess] + list([BQguess]) + [Yguess]
+            else:
+                guesses = [rguess, wguess, Yguess] + list(BQguess) + [Yguess]
+            sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
+                           method=p.SS_root_method, tol=p.mindist_SS)
+            rss = sol.x[0]
+            wss = sol.x[1]
+            Yss = sol.x[2]
+            BQss = sol.x[3:-1]
+            Yss = sol.x[-1]
         else:
-            guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess]
-        [solutions_fsolve, infodict, ier, message] =\
-            opt.fsolve(SS_fsolve, guesses,
-                       args=ss_params_reform, xtol=p.mindist_SS,
-                       full_output=True)
-        rss = solutions_fsolve[0]
-        wss = solutions_fsolve[1]
-        Yss = solutions_fsolve[2]
-        BQss = solutions_fsolve[3:-1]
-        TR_ss = solutions_fsolve[-1]
-        Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
-        # budget_balance = True, but that's ok - will be fixed in
-        # SS_solver
-        if ENFORCE_SOLUTION_CHECKS and not ier == 1:
+            ss_params_reform = (b_guess, n_guess, None, factor, p, client)
+            if p.use_zeta:
+                guesses = [rguess, wguess, Yguess] + list([BQguess]) + [TRguess]
+            else:
+                guesses = [rguess, wguess, Yguess] + list(BQguess) + [TRguess]
+            sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
+                           method=p.SS_root_method, tol=p.mindist_SS)
+            rss = sol.x[0]
+            wss = sol.x[1]
+            Yss = sol.x[2]
+            BQss = sol.x[3:-1]
+            TR_ss = sol.x[-1]
+            Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
+            # budget_balance = True, but that's ok - will be fixed in
+            # SS_solver
+        if ENFORCE_SOLUTION_CHECKS and not sol.success == 1:
             raise RuntimeError('Steady state equilibrium not found')
         # Return SS values of variables
         fsolve_flag = True
