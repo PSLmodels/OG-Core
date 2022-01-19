@@ -9,8 +9,6 @@ from ogcore import SS, TPI, utils
 from ogcore.parameters import Specifications
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-TAX_FUNC_PATH = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
-OUTPUT_DIR = os.path.join(CUR_PATH, "OUTPUT")
 TEST_PARAM_DICT = json.load(open(os.path.join(CUR_PATH, 'testing_params.json')))
 
 
