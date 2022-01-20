@@ -39,8 +39,12 @@ def test_frisch(tmpdir, frisch, dask_client):
 @pytest.mark.parametrize('g_y_annual', [0.0, 0.04],
                          ids=['0.0', '0.04'])
 def test_gy(tmpdir, g_y_annual, dask_client):
-    og_spec = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
-               'g_y_annual': g_y_annual}
+    if g_y_annual == 0.0:
+        og_spec = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
+                   'g_y_annual': g_y_annual, 'initial_guess_r_SS': 0.06}
+    else:
+        og_spec = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
+                   'g_y_annual': g_y_annual}
     p = Specifications(
         baseline=True, num_workers=NUM_WORKERS, baseline_dir=tmpdir,
         output_base=tmpdir)
