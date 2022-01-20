@@ -24,13 +24,14 @@ def dask_client():
     cluster.close()
 
 
-def run_micro_macro(og_spec, guid, client):
-
+@pytest.mark.local
+def test_run_micro_macro(tmpdir, dask_client):
+    og_spec=os.path.join(CUR_PATH, 'testing_params.json')
     guid = ''
     start_time = time.time()
 
-    REFORM_DIR = os.path.join(CUR_PATH, "OUTPUT_REFORM_" + guid)
-    BASELINE_DIR = os.path.join(CUR_PATH, "OUTPUT_BASELINE" + guid)
+    REFORM_DIR = os.path.join(tmpdir, "OUTPUT_REFORM_" + guid)
+    BASELINE_DIR = os.path.join(tmpdir, "OUTPUT_BASELINE" + guid)
 
     with open("log_{}.log".format(guid), 'w') as f:
         f.write("guid: {}\n".format(guid))
@@ -45,7 +46,7 @@ def run_micro_macro(og_spec, guid, client):
         baseline=True, num_workers=NUM_WORKERS,
         baseline_dir=BASELINE_DIR, output_base=BASELINE_DIR)
     p.update_specifications(og_spec)
-    runner(p, time_path=True, client=client)
+    runner(p, time_path=True, client=dask_client)
 
     '''
     ------------------------------------------------------------------------
@@ -56,7 +57,7 @@ def run_micro_macro(og_spec, guid, client):
         baseline=False, num_workers=NUM_WORKERS,
         baseline_dir=BASELINE_DIR, output_base=REFORM_DIR)
     p.update_specifications(og_spec)
-    runner(p, time_path=True, client=client)
+    runner(p, time_path=True, client=dask_client)
     time.sleep(0.5)
     base_tpi = safe_read_pickle(
         os.path.join(BASELINE_DIR, 'TPI', 'TPI_vars.pkl'))
@@ -72,12 +73,3 @@ def run_micro_macro(og_spec, guid, client):
         var_list=['Y', 'C', 'K', 'L', 'r', 'w'], output_type='pct_diff',
         num_years=10, start_year=base_params.start_year)
     print("total time was ", (time.time() - start_time))
-
-    return ans
-
-
-@pytest.mark.local
-def test_run_micro_macro(dask_client):
-    run_micro_macro(
-        og_spec=os.path.join(CUR_PATH, 'testing_params.json'),
-        guid='abc', client=dask_client)
