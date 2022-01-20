@@ -23,7 +23,11 @@ def dask_client():
 @pytest.mark.parametrize('frisch', [0.32, 0.4, 0.62],
                          ids=['Frisch 0.32', 'Frisch 0.4', 'Frisch 0.6'])
 def test_frisch(tmpdir, frisch, dask_client):
-    og_spec = {'frisch': frisch, 'debt_ratio_ss': 1.0}
+    if frisch == 0.4:
+        og_spec = {'frisch': frisch, 'debt_ratio_ss': 1.0,
+                   'initial_guess_r_SS': 0.06}
+    else:
+        og_spec = {'frisch': frisch, 'debt_ratio_ss': 1.0}
     p = Specifications(
         baseline=True, num_workers=NUM_WORKERS, baseline_dir=tmpdir,
         output_base=tmpdir)
