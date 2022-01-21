@@ -196,10 +196,11 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    baseline_dir = os.path.join(tmpdir, 'baseline')
     if baseline:
+        baseline_dir = os.path.join(tmpdir, 'baseline')
         output_base = baseline_dir
     else:
+        baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
         output_base = os.path.join(tmpdir, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, num_workers=NUM_WORKERS)
@@ -267,10 +268,11 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir,
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    baseline_dir = os.path.join(tmpdir, 'baseline')
     if baseline:
+        baseline_dir = os.path.join(tmpdir, 'baseline')
         output_base = baseline_dir
     else:
+        baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
         output_base = os.path.join(tmpdir, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, num_workers=NUM_WORKERS)
@@ -355,10 +357,11 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir,
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    baseline_dir = os.path.join(tmpdir, 'baseline')
     if baseline:
+        baseline_dir = os.path.join(tmpdir, 'baseline')
         output_base = baseline_dir
     else:
+        baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
         output_base = os.path.join(tmpdir, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, num_workers=NUM_WORKERS)
