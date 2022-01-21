@@ -336,76 +336,21 @@ filename8 = os.path.join(
     CUR_PATH, 'test_io_data', 'run_TPI_outputs_baseline_Kg_nonzero_2.pkl')
 
 
-# @pytest.mark.local
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates2, filename2),
-#                           (True, param_updates5, filename5),
-#                           (True, param_updates6, filename6),
-#                           (True, param_updates7, filename7),
-#                           (True, {}, filename1),
-#                           (False, param_updates4, filename4),
-#                           (True, param_updates8, filename8)],
-#                          ids=['Baseline, balanced budget',
-#                               'Baseline, small open',
-#                               'Baseline, small open for some periods',
-#                               'Baseline, delta_tau = 0', 'Baseline',
-#                               'Reform, baseline spending',
-#                               'Baseline, Kg>0'])
-# def test_run_TPI_extra(baseline, param_updates, filename, tmpdir,
-#                        dask_client):
-#     '''
-#     Test TPI.run_TPI function.  Provide inputs to function and
-#     ensure that output returned matches what it has been before.
-#     '''
-#     if baseline:
-#         baseline_dir = os.path.join(tmpdir, 'baseline')
-#         output_base = baseline_dir
-#     else:
-#         baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
-#         output_base = os.path.join(tmpdir, 'reform')
-#     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
-#                        output_base=output_base, num_workers=NUM_WORKERS)
-#     test_dict = TEST_PARAM_DICT.copy()
-#     test_dict.update(param_updates)
-#     p.update_specifications(test_dict)
-#     p.maxiter = 2  # this test runs through just two iterations
-
-#     # Need to run SS first to get results
-#     SS.ENFORCE_SOLUTION_CHECKS = False
-#     ss_outputs = SS.run_SS(p, client=dask_client)
-
-#     if p.baseline:
-#         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
-#         ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
-#         with open(ss_dir, "wb") as f:
-#             pickle.dump(ss_outputs, f)
-#     else:
-#         utils.mkdirs(os.path.join(p.output_base, "SS"))
-#         ss_dir = os.path.join(p.output_base, "SS", "SS_vars.pkl")
-#         with open(ss_dir, "wb") as f:
-#             pickle.dump(ss_outputs, f)
-
-#     TPI.ENFORCE_SOLUTION_CHECKS = False
-#     test_dict = TPI.run_TPI(p, client=dask_client)
-#     expected_dict = utils.safe_read_pickle(filename)
-
-#     for k, v in expected_dict.items():
-#         print('Checking ', k)
-#         try:
-#             print('Diff = ', np.abs(test_dict[k][:p.T] - v[:p.T]).max())
-#             assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04,
-#                                atol=1e-04))
-#         except ValueError:
-#             print('Diff = ',
-#                   np.abs(test_dict[k][:p.T, :, :] - v[:p.T, :, :]).max())
-#             assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :],
-#                                rtol=1e-04, atol=1e-04))
-
-
 @pytest.mark.local
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(False, param_updates4, filename4)],
-                         ids=['Reform, baseline spending'])
+                         [(True, param_updates2, filename2),
+                          (True, param_updates5, filename5),
+                          (True, param_updates6, filename6),
+                          (True, param_updates7, filename7),
+                          (True, {}, filename1),
+                          (False, param_updates4, filename4),
+                          (True, param_updates8, filename8)],
+                         ids=['Baseline, balanced budget',
+                              'Baseline, small open',
+                              'Baseline, small open for some periods',
+                              'Baseline, delta_tau = 0', 'Baseline',
+                              'Reform, baseline spending',
+                              'Baseline, Kg>0'])
 def test_run_TPI_extra(baseline, param_updates, filename, tmpdir,
                        dask_client):
     '''
