@@ -272,7 +272,7 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir,
         baseline_dir = os.path.join(tmpdir, 'baseline')
         output_base = baseline_dir
     else:
-        baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
+        baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT2')
         output_base = os.path.join(tmpdir, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, num_workers=NUM_WORKERS)
