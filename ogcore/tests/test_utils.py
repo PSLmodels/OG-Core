@@ -564,15 +564,16 @@ test_data = [(df1, 'tex', path1), (df1, 'csv', path2),
 
 @pytest.mark.parametrize('df,output_type,path', test_data,
                          ids=['tex', 'csv', 'json', 'excel'])
-def test_save_return_table_write(df, output_type, path):
+def test_save_return_table_write(tmpdir, df, output_type, path):
     '''
     Test of the utils.save_return_table function for case when write to
     disk
     '''
-    utils.save_return_table(df, output_type, path=path)
-    filehandle = open(path)
+    newpath = os.path.join(tmpdir, path)
+    utils.save_return_table(df, output_type, path=newpath)
+    filehandle = open(newpath)
     try:
         assert filehandle.read() is not None
     except UnicodeDecodeError:
         from openpyxl import load_workbook
-        wb = load_workbook(filename=path)
+        wb = load_workbook(filename=newpath)

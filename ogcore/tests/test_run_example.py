@@ -7,6 +7,7 @@ import time
 import os
 import sys
 import importlib.util
+import shutil
 from pathlib import Path
 import pytest
 
@@ -38,5 +39,11 @@ def test_run_ogcore_example(f=call_run_ogcore_example):
         print("run_ogcore_example did not run for minimum time")
         timetest = False
     print('timetest ==', timetest)
+    # Delete directory created by run_ogcore_example.py
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    path = Path(cur_path)
+    roe_output_dir = os.path.join(path.parent.parent, "run_examples",
+                                  "OUTPUT_BASELINE")
+    shutil.rmtree(roe_output_dir)
 
     assert timetest

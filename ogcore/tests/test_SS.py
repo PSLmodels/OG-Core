@@ -103,13 +103,15 @@ expected6 = np.array([
          'Reform, Baseline spending=True, Closed',
          'Baseline, Partial Open', 'Baseline, Small Open',
          'Baseline, Closed, delta_tau = 0'])
-def test_SS_fsolve(guesses, args, expected):
+def test_SS_fsolve(tmpdir, guesses, args, expected):
     '''
     Test SS.SS_fsolve function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
     # args =
     (bssmat, nssmat, TR_ss, factor_ss, p, client) = args
+    p.baseline_dir = tmpdir
+    p.output_base = tmpdir
 
     # take old format for guesses and put in new format
     r = guesses[0]
@@ -502,28 +504,28 @@ filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
                               'Baseline, non-zero Kg'
                               ])
 @pytest.mark.local
-def test_run_SS(baseline, param_updates, filename, dask_client):
+def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     SS.ENFORCE_SOLUTION_CHECKS = True
     # if running reform, then need to solve baseline first to get values
+    baseline_dir = os.path.join(tmpdir, 'OUTPUT_BASELINE')
     if baseline is False:
         p_base = Specifications(
-            output_base=constants.BASELINE_DIR,
-            baseline_dir=constants.BASELINE_DIR,
+            output_base=baseline_dir,
+            baseline_dir=baseline_dir,
             baseline=True,
             num_workers=NUM_WORKERS)
         p_base.update_specifications(param_updates)
         p_base.baseline_spending = False
         base_ss_outputs = SS.run_SS(p_base, client=dask_client)
-        utils.mkdirs(os.path.join(
-            constants.BASELINE_DIR, "SS"))
-        ss_dir = os.path.join(
-            constants.BASELINE_DIR, "SS", "SS_vars.pkl")
+        utils.mkdirs(os.path.join(baseline_dir, "SS"))
+        ss_dir = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
         with open(ss_dir, "wb") as f:
             pickle.dump(base_ss_outputs, f)
     # now run specification for test
-    p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
+    p = Specifications(baseline=baseline, num_workers=NUM_WORKERS,
+                       baseline_dir=baseline_dir)
     p.update_specifications(param_updates)
     test_dict = SS.run_SS(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(

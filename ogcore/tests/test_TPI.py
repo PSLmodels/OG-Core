@@ -190,17 +190,18 @@ filename8 = os.path.join(
                               'Baseline, small open some periods',
                               'Baseline, delta_tau = 0',
                               'Baseline, Kg >0'])
-def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
+def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
                           dask_client):
     '''
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    baseline_dir = os.path.join(CUR_PATH, 'baseline')
     if baseline:
+        baseline_dir = os.path.join(tmpdir, 'baseline')
         output_base = baseline_dir
     else:
-        output_base = os.path.join(CUR_PATH, 'reform')
+        baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
+        output_base = os.path.join(tmpdir, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
@@ -261,17 +262,18 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          [(True, {}, filename1),
                           (False, {}, filename3)],
                          ids=['Baseline', 'Reform'])
-def test_run_TPI(baseline, param_updates, filename, tmp_path,
+def test_run_TPI(baseline, param_updates, filename, tmpdir,
                  dask_client):
     '''
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    baseline_dir = os.path.join(CUR_PATH, 'baseline')
     if baseline:
+        baseline_dir = os.path.join(tmpdir, 'baseline')
         output_base = baseline_dir
     else:
-        output_base = os.path.join(CUR_PATH, 'reform')
+        baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT2')
+        output_base = os.path.join(tmpdir, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, num_workers=NUM_WORKERS)
     test_params = TEST_PARAM_DICT.copy()
@@ -349,17 +351,18 @@ filename8 = os.path.join(
                               'Baseline, delta_tau = 0', 'Baseline',
                               'Reform, baseline spending',
                               'Baseline, Kg>0'])
-def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
+def test_run_TPI_extra(baseline, param_updates, filename, tmpdir,
                        dask_client):
     '''
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    baseline_dir = os.path.join(CUR_PATH, 'baseline')
     if baseline:
+        baseline_dir = os.path.join(tmpdir, 'baseline')
         output_base = baseline_dir
     else:
-        output_base = os.path.join(CUR_PATH, 'reform')
+        baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT2')
+        output_base = os.path.join(tmpdir, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, num_workers=NUM_WORKERS)
     test_dict = TEST_PARAM_DICT.copy()
