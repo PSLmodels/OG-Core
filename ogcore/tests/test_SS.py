@@ -3,16 +3,13 @@ Test of steady-state module
 '''
 
 import multiprocessing
-from _pytest.fixtures import scope
 from distributed import Client, LocalCluster
 import pytest
 import numpy as np
 import os
 import pickle
-import copy
-from ogcore import SS, utils, aggregates, household, constants
+from ogcore import SS, utils, aggregates
 from ogcore.parameters import Specifications
-from ogcore.utils import safe_read_pickle
 from ogcore import firm
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
