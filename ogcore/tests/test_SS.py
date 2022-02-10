@@ -3,7 +3,7 @@ Test of steady-state module
 '''
 
 import multiprocessing
-from _pytest.fixtures import scope2index
+# from _pytest.fixtures import scope2index
 from distributed import Client, LocalCluster
 import pytest
 import numpy as np
