@@ -957,7 +957,9 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
         rate_type_dict = {'etr': 'etr', 'mtrx': 'mtr_labinc',
                           'mtry': 'mtr_capinc'}
         # censor data to range of the plot
+        print('OUTSIDE')
         for d, data in enumerate(data_list):
+            print('INSIDE')
             data_to_plot = data[str(year)].copy()
             if age is not None:
                 data_to_plot.drop(
@@ -969,11 +971,18 @@ def plot_2D_taxfunc(year, start_year, tax_param_list, age=None,
                 inplace=True)
             # other censoring used in txfunc.py
             data_to_plot = txfunc.tax_data_sample(data_to_plot)
+            print(data_to_plot.describe())
             # set number of bins to 100 or bins of $1000 dollars
             n_bins = min(100, np.floor_divide(max_inc_amt, 1000))
             # need to compute weighted averages by group...
-            wm = lambda x: np.average(
-                x, weights=data_to_plot.loc[x.index, "weight"])
+
+            def wm(x):
+                try:
+                    np.average(
+                        x,
+                        weights=data_to_plot.loc[x.index, "weight"])
+                except ZeroDivisionError:
+                    return 0
             data_to_plot['inc_bin'] = pd.cut(data_to_plot[key1], n_bins)
             groups = pd.DataFrame(
                 data_to_plot.groupby(["inc_bin"]).agg(
