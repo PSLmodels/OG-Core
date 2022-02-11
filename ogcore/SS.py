@@ -518,10 +518,10 @@ def SS_fsolve(guesses, *args):
         BQ = guesses[3:-1]
         TR = guesses[-1]
         factor = factor_ss
-    if p.baseline_spending:
-        TR = TR_ss
-    if not p.budget_balance and not p.baseline_spending:
-        Y = TR / p.alpha_T[-1]
+        if p.baseline_spending:
+            TR = TR_ss
+        if not p.budget_balance and not p.baseline_spending:
+            Y = TR / p.alpha_T[-1]
 
     outer_loop_vars = (bssmat, nssmat, r, w, Y, BQ, TR, factor)
 

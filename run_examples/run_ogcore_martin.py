@@ -56,13 +56,14 @@ def main():
         'start_year': 2021,
         'frisch': 0.41,
         'cit_rate': [0.21],
-        'alpha_T': [0.09],
-        'alpha_G': [0.05],
-        'r_gov_shift': 0.04,
-        'PIA_maxpayment': 470,
+        'alpha_T': [0.07],
+        'alpha_G': [0.03],
+        'r_gov_shift': 0.03,
+        # 'PIA_maxpayment': 470,
         'baseline_spending': True,
-        'debt_ratio_ss': 1.0,
+        'debt_ratio_ss': 1.3,
         'tG1': 20, 'tG2': 256,
+        'initial_guess_r_SS': 0.06,
     }
 
     '''
