@@ -57,7 +57,7 @@ def get_initial_SS_values(p):
     TRbaseline = None
     Gbaseline = None
     Ig_baseline = None
-    if p.baseline_spending:
+    if p.baseline_spending and not p.baseline:
         baseline_tpi = os.path.join(
             p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
@@ -427,7 +427,7 @@ def run_TPI(p, client=None):
     Y[:p.T] = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
     Y[p.T:] = ss_vars['Yss']
     I_g = np.ones_like(Y) * ss_vars['I_g_ss']
-    if p.baseline_spending:
+    if p.baseline_spending and not p.baseline:
         I_g[:p.T] = Ig_baseline[:p.T]
     else:
         I_g = fiscal.get_I_g(Y, p.alpha_I)
@@ -468,7 +468,7 @@ def run_TPI(p, client=None):
         D_d = np.zeros(p.T + p.S)
         D_f = np.zeros(p.T + p.S)
     else:
-        if p.baseline_spending:
+        if p.baseline_spending and not p.baseline:
             TR = TRbaseline
             G = Gbaseline
             G[p.T:] = ss_vars['Gss']
