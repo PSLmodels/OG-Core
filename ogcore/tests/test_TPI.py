@@ -5,7 +5,7 @@ import pickle
 import numpy as np
 import os
 import json
-from ogcore import SS, TPI, utils, firm
+from ogcore import SS, TPI, utils
 import ogcore.aggregates as aggr
 from ogcore.parameters import Specifications
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)

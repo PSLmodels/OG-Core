@@ -1,4 +1,4 @@
-from ogcore import tax, txfunc
+from ogcore import txfunc
 from distributed import Client, LocalCluster
 import pytest
 import pandas as pd
