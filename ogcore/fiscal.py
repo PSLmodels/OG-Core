@@ -276,7 +276,7 @@ def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, UBI_outlays,
     if p.budget_balance:
         new_TR = (
             total_tax_revenue - agg_pension_outlays - G - UBI_outlays - I_g)
-    elif p.baseline_spending:
+    elif p.baseline_spending and not p.baseline:
         new_TR = TR
     else:
         if method == 'SS':
