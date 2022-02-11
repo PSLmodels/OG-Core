@@ -277,7 +277,7 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
     nu_ss = p.nu
     if fsolve_flag:  # case where already solved via SS_fsolve
         maxiter_ss = 1
-    if p.baseline_spending:
+    if p.baseline_spending and not p.baseline:
         TR_ss = TR
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
         # Solve for the steady state levels of b and n, given w, r,
@@ -303,7 +303,7 @@ def SS_solver(bmat, nmat, r, w, Y, BQ, TR, factor, p, client,
         r = utils.convex_combo(new_r, r, nu_ss)
         factor = utils.convex_combo(new_factor, factor, nu_ss)
         BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
-        if p.baseline_spending:
+        if p.baseline_spending and not p.baseline:
             Y = utils.convex_combo(new_Y, Y, nu_ss)
             if Y != 0:
                 dist = np.array([utils.pct_diff_func(new_r, r)] +
