@@ -450,8 +450,8 @@ param_updates4 = {'zeta_K': [1.0], 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
 param_updates5 = {}
 filename5 = 'run_SS_reform.pkl'
-param_updates6 = {'use_zeta': True, 'initial_guess_r_SS': 0.08,
-                  'initial_guess_TR_SS': 0.03}
+param_updates6 = {'use_zeta': True, 'initial_guess_r_SS': 0.09,
+                  'initial_guess_TR_SS': 0.04}
 filename6 = 'run_SS_reform_use_zeta.pkl'
 param_updates7 = {'zeta_K': [1.0]}
 filename7 = 'run_SS_reform_small_open.pkl'
