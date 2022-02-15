@@ -2985,7 +2985,7 @@
         }
     },
     "baseline_spending": {
-        "title": "Flag to for use in reform simulations to keep level of government spending and transfers constant between baseline and reform runs",
+        "title": "Flag for use in reform simulations to keep level of government spending and transfers constant between baseline and reform runs",
         "description": "Flag for use in reform simulations to keep level of government spending and transfers constant between baseline and reform runs.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
