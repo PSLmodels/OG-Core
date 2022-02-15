@@ -34,11 +34,6 @@ class Specifications(paramtools.Parameters):
         # does cheap calculations to find parameter values
         self.initialize()
 
-        if self.baseline_spending and self.baseline:
-            err_msg = ('Parameter baseline_spending=True cannot coincide ' +
-                       'with baseline=True.')
-            raise ValueError(err_msg)
-
         self.parameter_warnings = ''
         self.parameter_errors = ''
         self._ignore_errors = False
@@ -69,6 +64,13 @@ class Specifications(paramtools.Parameters):
             None
 
         '''
+        # Catch error if baseline_spending=True and baseline=True
+        if self.baseline_spending and self.baseline:
+            err_msg = (
+                'Parameter baseline_spending=True cannot coincide with ' +
+                'baseline=True.')
+            raise ValueError(err_msg)
+
         # reshape lambdas
         self.lambdas = self.lambdas.reshape(self.lambdas.shape[0], 1)
         # cast integers as integers
