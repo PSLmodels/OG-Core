@@ -475,31 +475,30 @@ filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
 # output of the baseline run just prior
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-                          # (True, param_updates1, filename1),
-                          # (False, param_updates9, filename9),
-                          # (True, param_updates2, filename2),
-                          # (False, param_updates10, filename10),
-                          # (True, param_updates3, filename3),
-                          # (True, param_updates4, filename4),
-                          # (False, param_updates5, filename5),
-                          (False, param_updates6, filename6)
-                          # (False, param_updates7, filename7),
-                          # (False, param_updates8, filename8),
-                          # (False, param_updates11, filename11),
-                          # (True, param_updates12, filename12)
+                          (True, param_updates1, filename1),
+                          (False, param_updates9, filename9),
+                          (True, param_updates2, filename2),
+                          (False, param_updates10, filename10),
+                          (True, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6),
+                          (False, param_updates7, filename7),
+                          (False, param_updates8, filename8),
+                          (False, param_updates11, filename11),
+                          (True, param_updates12, filename12)
                           ],
                          ids=[
-                              # 'Baseline', 'Reform, baseline spending',
-                              # 'Baseline, use zeta',
-                              # 'Reform, baseline spending, use zeta',
-                              # 'Baseline, small open',
-                              # 'Baseline, small open use zeta',
-                              # 'Reform',
-                              'Reform, use zeta'
-                              # 'Reform, small open',
-                              # 'Reform, small open use zeta',
-                              # 'Reform, delta_tau=0',
-                              # 'Baseline, non-zero Kg'
+                              'Baseline', 'Reform, baseline spending',
+                              'Baseline, use zeta',
+                              'Reform, baseline spending, use zeta',
+                              'Baseline, small open',
+                              'Baseline, small open use zeta',
+                              'Reform', 'Reform, use zeta',
+                              'Reform, small open',
+                              'Reform, small open use zeta',
+                              'Reform, delta_tau=0',
+                              'Baseline, non-zero Kg'
                               ])
 @pytest.mark.local
 def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
