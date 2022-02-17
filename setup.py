@@ -20,7 +20,7 @@ config = {
     'name': 'ogcore',
     'install_requires': [
         'mkl', 'psutil', 'scipy', 'pandas', 'matplotlib', 'dask',
-        'dask-core', 'distributed', 'paramtools'],
+        'distributed', 'paramtools'],
     'package_data': {
                      'ogcore': [
                                'default_parameters.json',
