@@ -18,7 +18,9 @@ config = {
     'packages': ['ogcore'],
     'include_package_data': True,
     'name': 'ogcore',
-    'install_requires': [],
+    'install_requires': [
+        'mkl', 'psutil', 'scipy', 'pandas', 'matplotlib', 'dask',
+        'distributed', 'paramtools'],
     'package_data': {
                      'ogcore': [
                                'default_parameters.json',
