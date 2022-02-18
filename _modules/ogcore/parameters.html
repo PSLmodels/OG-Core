@@ -438,6 +438,13 @@
 <span class="sd">            None</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Catch error if baseline_spending=True and baseline=True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseline_spending</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Parameter baseline_spending=True cannot coincide with &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;baseline=True.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
         <span class="c1"># reshape lambdas</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># cast integers as integers</span>
