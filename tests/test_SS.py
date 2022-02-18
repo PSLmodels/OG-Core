@@ -514,8 +514,7 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
             baseline=True,
             num_workers=NUM_WORKERS)
         param_updates_base = param_updates.copy()
-        if param_updates['baseline_spending'] == True:
-            param_updates_base['baseline_spending'] = False
+        param_updates_base['baseline_spending'] = False
         p_base.update_specifications(param_updates_base)
         base_ss_outputs = SS.run_SS(p_base, client=dask_client)
         utils.mkdirs(os.path.join(baseline_dir, "SS"))
