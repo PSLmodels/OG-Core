@@ -64,6 +64,13 @@ class Specifications(paramtools.Parameters):
             None
 
         '''
+        # Catch error if baseline_spending=True and baseline=True
+        if self.baseline_spending and self.baseline:
+            err_msg = (
+                'Parameter baseline_spending=True cannot coincide with ' +
+                'baseline=True.')
+            raise ValueError(err_msg)
+
         # reshape lambdas
         self.lambdas = self.lambdas.reshape(self.lambdas.shape[0], 1)
         # cast integers as integers
