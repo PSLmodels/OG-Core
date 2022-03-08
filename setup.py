@@ -6,15 +6,16 @@ except ImportError:
 with open('README.md') as f:
     longdesc = f.read()
 
-version = '0.7.0'
+version = '0.8.0'
 
 config = {
-    'description': 'General equilibribum, overlapping generations model for the USA',
+    'description': 'A general equilibribum overlapping generations model for fiscal policy analysis',
+    'long_description_content_type': 'text/markdown',
     'long_description': longdesc,
     'url': 'https://github.com/PSLmodels/OG-Core/',
     'download_url': 'https://github.com/PLSmodels/OG-Core/',
     'version': version,
-    'license': 'CC0 1.0 Universal public domain dedication',
+    'license': 'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
     'packages': ['ogcore'],
     'include_package_data': True,
     'name': 'ogcore',
@@ -33,7 +34,7 @@ config = {
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Natural Language :: English',
-        'License :: OSI Approved :: CC0 1.0 Universal public domain dedication',
+        'License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
