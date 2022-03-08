@@ -232,6 +232,28 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     return cons
 
 
+def get_cm(c_s, p_m, p_tilde, alpha_c):
+    r'''
+    Compute consumption of good m given amount of composite consumption
+    and prices.
+
+    .. math::
+        c_{m,j,s,t} = \frac{c_{s,j,t}}{\alpha_{m,j}p_{m,j}}
+
+    Args:
+        c_s (array_like): composite consumption
+        p_m (array_like): prices for consumption good m
+        p_tilde (array_like): composite good price
+        alpha_c (array_like): consumption share parameters
+
+    Returns:
+        c_sm (array_like): consumption of good m
+    '''
+    c_sm = alpha_c * ((p_m / p_tilde) ** (-1)) * c_s
+
+    return c_sm
+
+
 def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, e, rho,
                 tau_c, etr_params, mtry_params, t, j, p, method):
     r'''
