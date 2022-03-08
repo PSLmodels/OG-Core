@@ -202,13 +202,7 @@ def get_KLratio(r, w, p, method):
         KLratio (array_like): the capital-labor ratio
 
     '''
-    if method == 'SS':
-        tau_b = p.tau_b[-1]
-        delta_tau = p.delta_tau[-1]
-    else:
-        tau_b = p.tau_b[:p.T]
-        delta_tau = p.delta_tau[:p.T]
-    cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
+    cost_of_capital = get_cost_of_capital(r, p, method)
     KLratio = (
         (p.gamma / (1 - p.gamma - p.gamma_g)) *
         (w / cost_of_capital) ** p.epsilon)
@@ -453,3 +447,56 @@ def get_K(r, w, L, p, method):
     K = KLratio * L
 
     return K
+
+
+def get_cost_of_capital(r, p, method):
+    r'''
+    Compute the cost of capital.
+
+    .. math::
+        \rho = \frac{r + delta - \tau^{b} delta_tau}{1 - \tau^{b}}
+
+    Args:
+        r (array_like): the real interest rate
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+
+    Returns:
+        cost_of_capital (array_like): cost of capital
+    '''
+    if method == 'SS':
+        tau_b = p.tau_b[-1]
+        delta_tau = p.delta_tau[-1]
+    else:
+        tau_b = p.tau_b[:p.T]
+        delta_tau = p.delta_tau[:p.T]
+    cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
+
+    return cost_of_capital
+
+
+def get_pm(w, KL_ratio, p):
+    r'''
+    Find prices for outputs from each industry.
+
+    .. math::
+        p_{m,t} = \frac{w_{t}^{\varepsilon}}{K_{t}L_{t}}
+
+    Args:
+        w (array_like): the wage rate
+        KL_ratio (array_like): ratio of capital to labor
+        Z (array_like): total factor productivity
+        gamma (array_like): capital's share of output
+
+    Returns:
+        p_m (array_like): output prices for each industry
+    '''
+    # p_m = (w / ((1 - gamma) * Z)) * (KL_ratio ** (-gamma))
+    p_m = (
+        (w / (
+            p.Z * (1 - p.gamma) ** (1 / p.epsilon))) * (
+                p.gamma ** (1 / p.epsilon) * KL_ratio ** ((p.epsilon -1) / p.epsilon) +
+                (1 - p.gamma) ** (1 / p.epsilon)) **
+                (1 / (1 - p.epsilon)))
+
+    return p_m
