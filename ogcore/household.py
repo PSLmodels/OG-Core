@@ -202,7 +202,7 @@ def get_tr(TR, j, p, method):
     return tr
 
 
-def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
+def get_cons(r, w, b, b_splus1, n, bq, net_tax, p_tilde, e, tau_c, p):
     r'''
     Calculate household consumption.
 
@@ -219,6 +219,7 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
         net_tax (Numpy array): household net taxes paid
+        p_tilde (Numpy array): composite good price
         e (Numpy array): effective labor units
         tau_c (array_like): consumption tax rates
         p (OG-Core Specifications object): model parameters
@@ -228,7 +229,7 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
 
     '''
     cons = ((1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) -
-            net_tax) / (1 + tau_c)
+            net_tax) / (p_tilde * (1 + tau_c))
     return cons
 
 
@@ -254,8 +255,9 @@ def get_cm(c_s, p_m, p_tilde, alpha_c):
     return c_sm
 
 
-def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, e, rho,
-                tau_c, etr_params, mtry_params, t, j, p, method):
+def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta,
+                p_tilde, e, rho, tau_c, etr_params, mtry_params, t, j,
+                p, method):
     r'''
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
@@ -315,7 +317,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, e, rho,
 
     taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t, j,
                           False, method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, p_tilde, e, tau_c, p)
     deriv = ((1 + r) - (
         r * tax.MTR_income(r, w, b, n, factor, True, e, etr_params,
                            mtry_params, p)) -
@@ -339,8 +341,8 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, e, rho,
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, chi_n, e,
-              tau_c, etr_params, mtrx_params, t, j, p, method):
+def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, p_tilde,
+              chi_n, e, tau_c, etr_params, mtrx_params, t, j, p, method):
     r'''
     Computes errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
@@ -399,7 +401,7 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, chi_n, e,
 
     taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t, j,
                           False, method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, p_tilde, e, tau_c, p)
     deriv = (1 - tau_payroll -
              tax.MTR_income(r, w, b, n, factor, False, e, etr_params,
                             mtrx_params, p))
