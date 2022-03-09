@@ -500,3 +500,24 @@ def get_pm(w, KL_ratio, p):
                 (1 / (1 - p.epsilon)))
 
     return p_m
+
+
+def get_KY_ratio(r, p_m, p, method):
+    r'''
+    Get capital output ratio from FOC for interest rate.
+
+    .. math::
+
+    Args:
+        r (array_like): the real interest rate
+        p_m (array_like): output prices for each industry
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+
+    Returns:
+        KY_ratio (array_like): capital output ratio
+    '''
+    cost_of_capital = get_cost_of_capital(r, p, method)
+    KY_ratio = (p_m * p.gamma) / cost_of_capital
+
+    return KY_ratio
