@@ -194,10 +194,6 @@ filename8 = os.path.join(
                               'Baseline, small open some periods',
                               'Baseline, delta_tau = 0',
                               'Baseline, Kg >0'])
-@pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates2, filename2),
-                          (True, {}, filename1)],
-                         ids=['Baseline, balanced budget', 'Baseline'])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
                           dask_client):
     '''
