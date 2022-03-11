@@ -127,7 +127,11 @@ def test_inner_loop():
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'tpi_inner_loop_inputs.pkl'))
-    guesses, outer_loop_vars, initial_values, ubi, j, ind = input_tuple
+    guesses, outer_loop_vars_old, initial_values, ubi, j, ind = input_tuple
+    outer_loop_vars = (
+        outer_loop_vars_old[2], outer_loop_vars_old[1],
+        outer_loop_vars_old[3], outer_loop_vars_old[4],
+        outer_loop_vars_old[5])
     p = Specifications()
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars,
                                 initial_values, ubi, j, ind, p)
@@ -190,6 +194,10 @@ filename8 = os.path.join(
                               'Baseline, small open some periods',
                               'Baseline, delta_tau = 0',
                               'Baseline, Kg >0'])
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates2, filename2),
+                          (True, {}, filename1)],
+                         ids=['Baseline, balanced budget', 'Baseline'])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
                           dask_client):
     '''
