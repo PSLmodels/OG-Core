@@ -442,3 +442,22 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
     K = K_f + K_d
 
     return K, K_d, K_f
+
+
+def get_ptilde(p_m, alpha_c):
+    r'''
+    Calculate price of composite good.
+
+    .. math::
+        \tilde{p}_{t} = \prod_{m=1}^{M} \frac{p_{m,j}}{\alpha_{m,j}} ^{\alpha_{m,j}}
+
+    Args:
+        p_m (array_like): prices for consumption good m
+        alpha_c (array_like): consumption share parameters
+
+    Returns:
+        p_tilde (array_like): price of composite good
+    '''
+    p_tilde = np.prod((p_m/ alpha_c) ** alpha_c)
+
+    return p_tilde
