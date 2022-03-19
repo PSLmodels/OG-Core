@@ -1,49 +1,51 @@
 (Chap_Firms)=
 # Firms
 
-The production side of the `OG-Core` model is populated by a unit measure of identical perfectly competitive firms that rent private capital $K_t$ and public capital $K_{g,t}$ and hire labor $L_t$ to produce output $Y_t$. Firms also face a flat corporate income tax $\tau^{corp}$ as well as a tax on the amount of capital they depreciate $\tau^\delta$.
+The production side of the `OG-Core` model is populated by $M$ industries indexed by $m=1,2,...M$, each of which industry has a unit measure of identical perfectly competitive firms that rent private capital $K_{m,t}$ and public capital $K_{g,m,t}$ and hire labor $L_{m,t}$ to produce output $Y_{m,t}$. Firms also face a flat corporate income tax $\tau^{corp}_{m,t}$ as well as a tax on the amount of capital they depreciate $\delta^\tau_{m,t}$, each of which parameter can vary by industry $m$.
 
 (EqFirmsProdFunc)=
 ## Production Function
 
-  Firms produce output $Y_t$ using inputs of private capital $K_t$, public capital $K_{g,t}$, and labor $L_t$ according to a general constant elasticity (CES) of substitution production function,
+  Firms in each industry produce output $Y_{m,t}$ using inputs of private capital $K_{m,t}$, public capital $K_{g,m,t}$, and labor $L_{m,t}$ according to a general constant elasticity (CES) of substitution production function,
 
   ```{math}
   :label: EqFirmsCESprodfun
     \begin{split}
-      Y_t &= F(K_t, K_{g,t}, L_t) \\
-      &\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
+      Y_{m,t} &= F(K_{m,t}, K_{g,m,t}, L_{m,t}) \\
+      &\equiv Z_{m,t}\biggl[(\gamma_m)^\frac{1}{\varepsilon_m}(K_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m} + (\gamma_{g,m})^\frac{1}{\varepsilon_m}(K_{g,m,t})^\frac{\varepsilon_m-1}{\varepsilon_m} + \\
+      &\quad\quad\quad\quad\quad(1-\gamma_m-\gamma_{g,m})^\frac{1}{\varepsilon_m}(e^{g_y t}L_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\biggr]^\frac{\varepsilon_m}{\varepsilon_m-1} \quad\forall m,t
     \end{split}
   ```
-  where $Z_t$ is an exogenous scale parameter (total factor productivity) that can be time dependent, $\gamma$ represents private capital's share of income, $\gamma_{g}$ is public capital's share of income, and $\varepsilon$ is the constant elasticity of substitution among the two types of capital and labor. We have included constant productivity growth rate $g_y$ as the rate of labor augmenting technological progress.
+  where $Z_{m,t}$ is an exogenous scale parameter (total factor productivity) that can be time dependent, $\gamma_m$ represents private capital's share of income, $\gamma_{g,m}$ is public capital's share of income, and $\varepsilon_m$ is the constant elasticity of substitution among the two types of capital and labor. We have included constant productivity growth rate $g_y$ as the rate of labor augmenting technological progress.
 
-  A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for $\varepsilon=1$.[^Kg0_case]
+  A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for $\varepsilon_m=1$.[^Kg0_case]
   ```{math}
   :label: EqFirmsCDprodfun
-    Y_t = Z_t K_t^\gamma K_{g,t}^{\gamma_{g}}(e^{g_y t}L_t)^{1-\gamma-\gamma_{g}} \quad\forall t \quad\text{for}\quad \varepsilon=1
+    Y_{m,t} = Z_{m,t} (K_{m,t})^{\gamma_m} (K_{g,m,t})^{\gamma_{g,m}}(e^{g_y t}L_{m,t})^{1-\gamma_m-\gamma_{g,m}} \quad\forall m,t \quad\text{for}\quad \varepsilon_m=1
   ```
 
 (EqFirmsFOC)=
 ## Optimality Conditions
 
-  The profit function of the representative firm is the following.
+  The static per-period profit function of the representative firm in each industry $m$ is the following.
 
   ```{math}
   :label: EqFirmsProfit
-    PR_t = (1 - \tau^{corp}_t)\Bigl[F(K_t,K_{g,t},L_t) - w_t L_t\Bigr] - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau_t K_t \quad\forall t
+    PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
+    &\quad\quad\quad\quad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} K_{m,t} \quad\forall m,t
   ```
 
-  Gross income for the firms is given by the production function $F(K,K_g,L)$ because we have normalized the price of the consumption good to 1. Labor costs to the firm are $w_t L_t$, and capital costs are $(r_t +\delta)K_t$. The government supplies public capital to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta$. The $\delta^\tau_t$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
+  Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
 
-  Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_t$, which is a flat tax on corporate income. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
+  Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_{m,t}$, which is a flat tax on corporate income that can vary by industry $m$. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
 
-  The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_t$, which then lower corporate tax liability. When $\delta^\tau_t=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_t=\delta$, all economic depreciation is deducted from corporate income.
+  The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_{m,t}$, which then lower corporate tax liability. When $\delta^\tau_{m,t}=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_{m,t}=\delta_{M,t}$, all economic depreciation is deducted from corporate income.
 
-  Firms take as given prices $w_t$ and $r_t$ and the level of public capital supply $K_{g,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_t$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to capital $K_t$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
+  Firms take as given prices $p_{m,t}$, $w_t$, and $r_t$ and the level of public capital supply $K_{g,m,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_{m,t}$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to private capital $K_{m,t}$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
 
   ```{math}
   :label: EqFirmFOC_L
-    w_t = e^{g_y t}(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y_t}{e^{g_y t}L_t}\right]^\frac{1}{\varepsilon} \quad\forall t
+    w_t = e^{g_y t}p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[(1-\gamma_m-\gamma_{g,m})\frac{Y_{m,t}}{e^{g_y t}L_{m,t}}\right]^\frac{1}{\varepsilon_m} \quad\forall m,t
   ```
 
   ```{math}
@@ -113,4 +115,6 @@ The production side of the `OG-Core` model is populated by a unit measure of ide
 (SecFirmsfootnotes)=
 ## Footnotes
 
-  [^Kg0_case]: It is important to note a special case of the Cobb-Douglas ($\varepsilon=1$) production function that we have to manually restrict. The inputs of production of private capital $K_t$ and labor $L_t$ are endogenous and have characteristics of the model that naturally bound them away from zero. But public capital $K_g$, although it is a function of endogenous variables in {eq}`EqUnbalGBC_Igt` and {eq}`EqUnbalGBC_Kgt`, can be exogenously set to zero as a policy parameter choice by setting $\alpha_{I,t}=0$. In the Cobb-Douglas case of the production function $\varepsilon=1$ {eq}`EqFirmsCDprodfun`, $K_g=0$ would zero out production and break the model. In the case when $\varepsilon=1$ and $K_g=0$, we set $gamma_g=0$, thereby restricting the production function to only depend on private capital $K_t$ and labor $L_t$. This necessary restriction limits us from performing experiments in the model of the effect of changing $K_{g,t}=0$ to $K_{g,t}>0$ or vice versa in the $\varepsilon=1$ case.
+  [^Kg0_case]: It is important to note a special case of the Cobb-Douglas ($\varepsilon_m=1$) production function that we have to manually restrict. The inputs of production of private capital $K_{m,t}$ and labor $L_{m,t}$ are endogenous and have characteristics of the model that naturally bound them away from zero. But public capital $K_{g,m,t}$, although it is a function of endogenous variables in {eq}`EqUnbalGBC_Igt` and {eq}`EqUnbalGBC_Kgt`, can be exogenously set to zero as a policy parameter choice by setting $\alpha_{I,t}=0$. In the Cobb-Douglas case of the production function $\varepsilon_m=1$ {eq}`EqFirmsCDprodfun`, $K_{g,m,t}=0$ would zero out production and break the model. In the case when $\varepsilon_m=1$ and $K_{g,m,t}=0$, we set $\gamma_{g,m}=0$, thereby restricting the production function to only depend on private capital $K_{m,t}$ and labor $L_{m,t}$. This necessary restriction limits us from performing experiments in the model of the effect of changing $K_{g,mt}=0$ to $K_{g,mt}>0$ or vice versa in the $\varepsilon_m=1$ case.
+
+  [^delta_M]: Because we are assuming that only the output of the $M$th industry can be used for investment and because that industry's output is the numeraire, the only depreciation rate that matters or can be nonzero is that of the $M$th industry $\delta_{M,t}$.
