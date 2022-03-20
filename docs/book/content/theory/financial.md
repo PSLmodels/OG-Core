@@ -45,14 +45,14 @@ Interest rates on private capital and government bonds differ. The return on the
 
 ```{math}
 :label: eq_rK
-  r_{K,t}  = r_{t} + (1 - \tau^{corp}_t )MPK_{g,t}\left(\frac{K_{g,t}}{K_t}\right)
+  r_{K,t}  = r_{t} + \frac{\sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t}}{\sum_{m=1}^M K_{m,t}} \quad\forall t
 ```
 
 The return on the portfolio of assets held by the financial intermediary is thus a weighted average of the return to government debt $r_{gov,t}$ from {eq}`EqUnbalGBC_rate_wedge` and the adjusted return on private capital $r_{K,t}$ from {eq}`eq_rK`.
 
 ```{math}
 :label: eq_portfolio_return
-  r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t
+  r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t \quad\text{where}\quad K_t \equiv \sum_{m=1}^M K_{m,t}
 ```
 
 (SecFinfootnotes)=
