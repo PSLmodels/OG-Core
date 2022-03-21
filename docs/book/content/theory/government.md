@@ -33,8 +33,10 @@ Government spending is comprised of government provided pension benefits, lump s
 
   ```{math}
   :label: EqUnbalGBCtfer
-    TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \quad\forall t
+    TR_t = g_{tr,t}\:\alpha_{tr}\: p_t Y_t \quad\forall t \quad\text{where}\quad p_t Y_t \equiv \sum_{m=1}^M p_{m,t}Y_{m,t}
   ```
+  where total government transfers to households $TR_t$ and GDP ($p_t Y_t$) are in terms of the numeraire good and the term $Y_t$ is in terms of the composite good.
+
   The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.
 
   We assume that total non-pension transfers are distributed in a lump sum manner to households.  The distribution across households by age and lifetime income group is parameterized by the the parameters $\eta_{j,s,t}$, which are in the time specific $\boldsymbol{\eta}_{t}$ matrix. Thus, transfers to households of lifetime income group $j$, age $s$, at time $t$ are given as:
@@ -54,7 +56,7 @@ Government spending is comprised of government provided pension benefits, lump s
 (SecUBIcalc)=
 ##### Calculating UBI
 
-  Household transfers in model units $ubi_{j,s,t)}$ are a function of five policy parameters described in the [`default_parameters.json`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json) file (`ubi_growthadj`, `ubi_nom_017`, `ubi_nom_1864`, `ubi_nom_65p`, and `ubi_nom_max`).  Three additional parameters provide information on household structure by age, lifetime income group, and year: [`ubi_num_017_mat`, `ubi_num_1864_mat`, `ubi_num_65p_mat`].
+  Household transfers in model units of the numeraire good $ubi_{j,s,t}$ are a function of five policy parameters described in the [`default_parameters.json`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json) file (`ubi_growthadj`, `ubi_nom_017`, `ubi_nom_1864`, `ubi_nom_65p`, and `ubi_nom_max`).  Three additional parameters provide information on household structure by age, lifetime income group, and year: [`ubi_num_017_mat`, `ubi_num_1864_mat`, `ubi_num_65p_mat`].
 
   As a convenience to users, UBI policy parameters `ubi_nom_017`, `ubi_nom_1864`, `ubi_nom_65p`, and `ubi_nom_max` are entered as nominal amounts (e.g., in dollars or pounds). The parameter `ubi_nom_017` represents the nominal value of the UBI transfer to each household per dependent child age 17 and under. The parameter `ubi_nom_1864` represents the nominal value of the UBI transfer to each household per adult between the ages of 18 and 64. And `ubi_nom_65p` is the nominal value of UBI transfer to each household per senior 65 and over. The maximum UBI benefit per household, `ubi_nom_max`, is also a nominal amount.  From these parameters, the model computes nominal UBI payments to each household in the model:
 
@@ -81,7 +83,7 @@ Government spending is comprised of government provided pension benefits, lump s
     ubi^{nom}_{j,s,t} = ubi^{nom}_{j,s,t=0} \quad\forall j,s,t
   ```
 
-  As described in the [OG-Core chapter on stationarization](https://pslmodels.github.io/OG-Core/content/theory/stationarization.html), the stationarized UBI transfer to each household $\hat{ubi}_{j,s,t}$ is the nonstationary transfer divided by the growth rate since the initial period. When the long-run economic growth rate is positive $g_y>0$ and the UBI specification is not growth-adjusted the steady-state stationary UBI household transfer is zero $\overline{ubi}_{j,s}=0$ for all lifetime income groups $j$ and ages $s$ as time periods $t$ go to infinity. However, to simplify, we assume in this case that the stationarized steady-state UBI transfer matrix to households is the stationarized value of that matrix in period $T$.
+  As described in chapter {ref}`Chap_Stnrz`, the stationarized UBI transfer to each household $\hat{ubi}_{j,s,t}$ is the nonstationary transfer divided by the growth rate since the initial period. When the long-run economic growth rate is positive $g_y>0$ and the UBI specification is not growth-adjusted, the steady-state stationary UBI household transfer is zero $\overline{ubi}_{j,s}=0$ for all lifetime income groups $j$ and ages $s$ as time periods $t$ go to infinity. However, to simplify, we assume in this case that the stationarized steady-state UBI transfer matrix to households is the stationarized value of that matrix in period $T$.[^UBIgrowthadj]
 
   ```{math}
   :label: EqUBIubi_mod_NonGrwAdj_SS
@@ -100,26 +102,30 @@ Government spending is comprised of government provided pension benefits, lump s
 (SecUnbalGBCrev)=
 ## Government Tax Revenue
 
-  We see from the household's budget constraint that taxes $T_{s,t}$ and transfers $TR_{t}$ enter into the household's decision,
+  We see from the household's budget constraint that taxes $T_{j,s,t}$ and transfers $TR_{t}$ enter into the household's decision,
 
   ```{math}
-  :label: EqHHBC
-    c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
+  :label: EqHHBC2
+    p_t c_{j,s,t} + &\sum_{m=1}^M p_{m,t}c_{min,m} + b_{j,s+1,t+1} = \\
+    &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
+    &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
   ```
 
-  where we defined the tax liability function $T_{s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate $\tau^{corp}_t$ and the tax on depreciation expensing $\tau^\delta$ enters the firms' profit function.
+  where we defined the tax liability function $T_{j,s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate schedule $\tau^{corp}_{m,t}$ and the tax on depreciation expensing schedule $\delta^\tau_{m,t}$ enters the firms' profit function in each industry $m$.
 
   ```{math}
   :label: EqFirmsProfit2
-    PR_t = (1 - \tau^{corp}_t)\bigl(Y_t - w_t L_t\bigr) - \bigl(r_t + \delta\bigr)K_t + \tau^{corp}_t\delta^\tau_t K_t \quad\forall t
+    PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
+    &\quad\quad\quad\quad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} K_{m,t} \quad\forall m,t
   ```
 
-  We define total government revenue from taxes as the following,
+  We define total government revenue from taxes in terms of the numeraire good as the following,
 
   ```{math}
   :label: EqUnbalGBCgovRev
-    Rev_t = \underbrace{\tau^{corp}_t\bigl[Y_t - w_t L_t\bigr] - \tau^{corp}_t\delta^\tau_t K_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
 
   where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.
@@ -127,40 +133,43 @@ Government spending is comprised of government provided pension benefits, lump s
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest of the debt, government spending on public goods $G_t$, infrastructure investments $I_{gov,t}$, and total transfer payments to households $TR_t$ every period $t$,
+  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, and total transfer payments to households $TR_t$ and $UBI_t$ every period $t$,
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
     D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + TR_t + UBI_t  \quad\forall t
   ```
 
-  where $r_{gov,t}$ is the interest rate paid by the government, $G_{t}$ is government spending on public goods, $I_{gov,t}$ is government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
+  where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
 
-
-
-  We assume that government spending on public goods is a fixed fraction of GDP each period in the initial periods.
+  We assume that government spending on public goods in terms of the numeraire good is a fixed fraction of GDP each period in the initial periods.
 
   ```{math}
   :label: EqUnbalGBC_Gt
-    G_t = g_{g,t}\:\alpha_{g}\: Y_t
+    G_t = g_{g,t}\:\alpha_{g}\: p_t Y_t \quad\forall t \quad\text{where}\quad p_t Y_t \equiv \sum_{m=1}^M p_{m,t}Y_{m,t}
   ```
 
   Similar to transfers $TR_t$, the time dependent multiplier $g_{g,t}$ in front of the right-hand-side of {eq}`EqUnbalGBC_Gt` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We make this more specific in the next section.
 
-  Government infrastructure investment spending, $I_{g,t}$ is assumed to be a time-dependent fraction of GDP.
-
+  Total government infrastructure investment spending, $I_{g,t}$ is assumed to be a time-dependent fraction of GDP.
   ```{math}
   :label: EqUnbalGBC_Igt
-    I_{g,t} = \alpha_{I,t}\: Y_t \quad\forall t
+    I_{g,t} = \alpha_{I,t}\: p_t Y_t \quad\forall t
   ```
-  The stock of public capital (i.e., infrastructure) evolves according to the law of motion,
+  The government also chooses what percent of total infrastructure investment goes to each industry $\alpha_{I,m,t}$, although these are exogenously calibrated parameters in the model.
+  ```{math}
+  :label: EqUnbalGBC_Igmt
+    I_{g,m,t} = \alpha_{I,m,t}\: I_{g,t} \quad\forall t
+  ```
+
+  The stock of public capital (i.e., infrastructure) in each industry $m$ evolves according to the law of motion,
 
   ```{math}
-  :label: EqUnbalGBC_Kgt
-    K_{g,t+1} = (1 - \delta^{g}) K_{g,t} + I_{g,t} \quad\forall t,
+  :label: EqUnbalGBC_Kgmt
+    K_{g,m,t+1} = (1 - \delta_g) K_{g,m,t} + I_{g,m,t} \quad\forall m,t
   ```
 
-  where $\delta^g$ is the depreciation rate on infrastructure.  The stock of public capital complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
+  where $\delta_g$ is the depreciation rate on infrastructure. The stock of public capital in each industry $m$ complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
 
   Aggregate spending on UBI at time $t$ is the sum of UBI payments across all households at time $t$:
 
@@ -194,7 +203,7 @@ Government spending is comprised of government provided pension benefits, lump s
 
   ```{math}
   :label: EqUnbalGBC_DY
-    \frac{D_t}{Y_t} = \alpha_D \quad\text{for}\quad t\geq T
+    \frac{D_t}{p_t Y_t} = \alpha_D \quad\text{for}\quad t\geq T
   ```
 
   where $\alpha_D$ is a scalar long-run value of the debt-to-GDP ratio. This long-run stability condition on the debt-to-GDP ratio clearly applies to the steady-state as well as any point in the time path for $t>T$.
@@ -210,23 +219,23 @@ Government spending is comprised of government provided pension benefits, lump s
 (SecUnbalGBC_chgGt)=
 ### Change government spending only
 
-  We specify a closure rule that is automatically implemented after some period $T_{G1}$ to stabilize government debt as a percent of GDP (debt-to-GDP ratio). Let $\alpha_D$ represent the long-run debt-to-GDP ratio at which we want the economy to eventually settle.
+  We specify a closure rule that is automatically implemented after some period $T_{G1}$ to stabilize government debt as a percent of GDP (debt-to-GDP ratio) by period $T_{G2}$. Let $\alpha_D$ represent the long-run debt-to-GDP ratio at which we want the economy to eventually settle.
 
   ```{math}
   :label: EqUnbalGBCclosure_Gt
   \begin{split}
-    &G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
+    &G_t = g_{g,t}\:\alpha_{g}\: p_t Y_t \\
     &\text{where}\quad g_{g,t} =
       \begin{cases}
-        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\,\text{if}\quad t < T_{G1} \\
+        \frac{\left[\rho_{d}\alpha_{D}p_t Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g p_t Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}p_t Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g p_t Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
   ```
 
-  The first case in {eq}`EqUnbalGBCclosure_Gt` says that government spending $G_t$ will be a fixed fraction $\alpha_g$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between $\alpha_D Y_t$ and the current debt level $D_t$, where $\alpha_D$ is a target debt-to-GDP ratio and $\rho_d\in(0,1]$ is the percent of the way to jump toward the target $\alpha_D Y_t$ from the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending $G_t$ is set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
+  The first case in {eq}`EqUnbalGBCclosure_Gt` says that government spending $G_t$ will be a fixed fraction $\alpha_g$ of GDP $p_t Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between its long-run stable level $\alpha_D p_t Y_t$ and the current debt level $D_t$, where $\alpha_D$ is a target debt-to-GDP ratio and $\rho_d\in(0,1]$ is the percent of the way to jump toward the target $\alpha_D p_t Y_t$ from the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending $G_t$ is set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
 (SecUnbalGBC_chgTRt)=
 ### Change government transfers only
@@ -236,18 +245,18 @@ Government spending is comprised of government provided pension benefits, lump s
   ```{math}
   :label: EqUnbalGBCclosure_TRt
   \begin{split}
-    &TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \\
+    &TR_t = g_{tr,t}\:\alpha_{tr}\: p_t Y_t \\
     &\text{where}\quad g_{tr,t} =
       \begin{cases}
-        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t < T_{G1} \\
+        \frac{\left[\rho_{d}\alpha_{D}p_t Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t}}{\alpha_{tr} p_t Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}p_t Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\alpha_{tr}p_t Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
   ```
 
-  The first case in {eq}`EqUnbalGBCclosure_TRt` says that government transfers $TR_t$ will be a fixed fraction $\alpha_{tr}$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government transfers be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between $\alpha_D Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government transfers $TR_t$ are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
+  The first case in {eq}`EqUnbalGBCclosure_TRt` says that government transfers $TR_t$ will be a fixed fraction $\alpha_{tr}$ of GDP $p_t Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government transfers be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between the target debt $\alpha_D p_t Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government transfers $TR_t$ are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
 
 (SecUnbalGBC_chgGtTRt)=
@@ -267,19 +276,19 @@ Government spending is comprised of government provided pension benefits, lump s
   ```{math}
   :label: EqUnbalGBCclosure_TRGt
   \begin{split}
-    &G_t + TR_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)Y_t \quad\Rightarrow\quad G_t = g_{trg,t}\:\alpha_g\: Y_t \quad\text{and}\quad TR_t = g_{trg,t}\:\alpha_{tr}\:Y_t \\
+    &G_t + TR_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)p_t Y_t \quad\Rightarrow\quad G_t = g_{trg,t}\:\alpha_g\: p_t Y_t \quad\text{and}\quad TR_t = g_{trg,t}\:\alpha_{tr}\: p_t Y_t \\
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
-      1 \qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t < T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\text{if}\quad t \geq T_{G2}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\:\,\text{if}\quad t < T_{G1} \\
+      \frac{\left[\rho_{d}\alpha_{D}p_t Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{\alpha_{D}p_t Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```
 
- The first case in {eq}`EqUnbalGBCclosure_TRGt` says that government spending and government transfers $Tr_t$ will their respective fixed fractions $\alpha_g$ and $\alpha_{tr}$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending and transfers be adjusted by the same rate to set tomorrow's debt $D_{t+1}$ to be a convex combination between $\alpha_D Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending and transfers are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
+ The first case in {eq}`EqUnbalGBCclosure_TRGt` says that government spending and government transfers $TR_t$ will their respective fixed fractions $\alpha_g$ and $\alpha_{tr}$ of GDP $p_t Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending and transfers be adjusted by the same rate to set tomorrow's debt $D_{t+1}$ to be a convex combination between target debt $\alpha_D p_t Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending and transfers are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
- Each of these budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` allows the government to run increasing deficits or surpluses in the short run (before period $T_{G1}$). But then the adjustment rule is implemented gradually beginning in period $t=T_{G1}$ to return the debt-to-GDP ratio back to its long-run target of $\alpha_D$. Then the rule is implemented exactly in period $T_{G2}$ by adjusting some combination of government spending $G_t$ and transfers $TR_t$ to set the debt $D_{t+1}$ such that it is exactly $\alpha_D$ proportion of GDP $Y_t$.
+ Each of these budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` allows the government to run increasing deficits or surpluses in the short run (before period $T_{G1}$). But then the adjustment rule is implemented gradually beginning in period $t=T_{G1}$ to return the debt-to-GDP ratio back to its long-run target of $\alpha_D$. Then the rule is implemented exactly in period $T_{G2}$ by adjusting some combination of government spending $G_t$ and transfers $TR_t$ to set the debt $D_{t+1}$ such that it is exactly $\alpha_D$ proportion of GDP $p_t Y_t$.
 
 (SecUnbalGBCcaveat)=
 ## Some Caveats and Alternatives
@@ -291,10 +300,12 @@ There is no guarantee that any of our stated closure rules {eq}`EqUnbalGBCclosur
 And finally, in closure rules {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclosure_TRGt` in which government spending is used to stabilize the long-run budget, it is also possible that government spending is forced to be less than zero to make this happen. This would be the case if tax revenues bring in less than is needed to financed transfers and interest payments on the national debt. None of the equations we've specified above preclude that result, but it does raise conceptual difficulties. Namely, what does it mean for government spending to be negative? Is the government selling off public assets? We caution those using this budget closure rule to consider carefully how the budget is closed in the long run given their parameterization. We also note that such difficulties present themselves across all budget closure rules when analyzing tax or spending proposals that induce structural budget deficits. In particular, one probably needs a different closure instrument if government spending must be negative in the steady-state to hit your long-term debt-to-GDP target.
 
 
-[^negative_val_note]: Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period $T_{G2}$.
-
 (SecUBIfootnotes)=
 ## Footnotes
 
+[^UBIgrowthadj]: The steady-state assumption in equation {eq}`EqUBIubi_mod_NonGrwAdj_SS` implies that the UBI amount is growth adjusted for every period after the steady-state is reached.
+
 
 [^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`ogusa_default_parameters.json`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/ogusa_default_parameters.json) "validators" specification of the parameter.
+
+[^negative_val_note]: Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period $T_{G2}$.
