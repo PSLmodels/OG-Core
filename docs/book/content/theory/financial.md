@@ -3,7 +3,7 @@
 
 # Financial Intermediary
 
-Domestic household wealth, $W^d_{t}=B_{t}$ and foreign ownership of domestic assets $W^f_{t}$ are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.
+Domestic household wealth $W^d_{t}=B_{t}$ and foreign ownership of domestic assets $W^f_{t}$, both in terms of the numeraire good, are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.
 
 Foreign demand for government bonds is specified in section {ref}`SecMarkClrMktClr_G` of the {ref}`Chap_MarkClr` chapter:
 
@@ -41,7 +41,7 @@ W_{t} & = W^d_{t} + W^f_{t} \\
     & = D_t + K_t
 ```
 
-Interest rates on private capital and government bonds differ. The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return. As derived in {eq}`EqFirms_rKt` of Section {ref}`EqFirmsPosProfits`, the presence of public infrastructure in the production function means that the returns to private factors of production ($r_t$ and $w_t$) exhibit decreasing returns to scale.[^MoorePecoraro] It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders. The return on capital is therefore the sum of the (after-tax) returns to private and public capital.
+Interest rates on private capital through the financial intermediary and on government bonds differ. The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return. As derived in {eq}`EqFirms_rKt` of Section {ref}`EqFirmsPosProfits`, the presence of public infrastructure in the production function means that the returns to private factors of production ($r_t$ and $w_t$) exhibit decreasing returns to scale.[^MoorePecoraro] It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders. The return on capital is therefore the sum of the (after-tax) returns to private and public capital.
 
 ```{math}
 :label: eq_rK
