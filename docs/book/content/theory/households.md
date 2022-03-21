@@ -280,7 +280,7 @@ If `use_zeta=False`, then bequests from households of lifetime earnings type `j`
 
   [^IndSpecConsDeriv]: See section {ref}`SecAppDerivIndSpecCons` in the {ref}`Chap_Deriv` Chapter for the derivation of the household industry-specific consumption demand.
 
-  [^Numeraire]: We can normalize the model by any of the $M$ industry-specific consumption good prices $\tilde{p}_{m,t}$ or we could normalize the model by the composite good price $\tilde{p}_t$. We choose to normalize by the $M$th industry good price $\tilde{p}_{M,t}$ because that industry is the only one the output of which can be used as investment. Furthermore, this nicely nests the case of one industry in which all the other industries share in consumption is set to zero $\alpha_m=0$ for $m=1,2,...M-1$.
+  [^Numeraire]: We can normalize the model by any of the $M$ industry-specific consumption good prices $\tilde{p}_{m,t}$ or we could normalize the model by the composite good price $\tilde{p}_t$. We choose to normalize by the $M$th industry good price $\tilde{p}_{M,t}$ because that industry is the only one the output of which can be used as investment, government spending, or government debt. Furthermore, this nicely nests the case of one industry in which all the other industries share in consumption is set to zero $\alpha_m=0$ for $m=1,2,...M-1$.
 
   [^sav_util_note]: Savings enters the period utility function to provide a "warm glow" bequest motive.
 
