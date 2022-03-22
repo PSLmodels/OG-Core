@@ -80,8 +80,8 @@ In this section, we describe what is arguably the most important economic agent 
   ```
   ```{math}
   :label: EqPmPcompNormDef
-    \text{where}\quad &p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{p_{M,t}} \quad\forall m, t \quad\Rightarrow\quad p_{M,t} = 1 \quad\forall t \\
-    &\text{and}\quad p_t \equiv\frac{\tilde{p}_t}{p_{M,t}} \quad\forall t
+    \text{where}\quad &p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}} \quad\forall m, t \quad\Rightarrow\quad p_{M,t} = 1 \quad\forall t \\
+    &\text{and}\quad p_t \equiv\frac{\tilde{p}_t}{\tilde{p}_{M,t}} \quad\forall t
   ```
   where $p_{m,t}$ and $p_t$ defined in {eq}`EqPmPcompNormDef` are normalized industry prices and normalized composite goods price, respectively, with the $M$th industry good being the numeraire.
 

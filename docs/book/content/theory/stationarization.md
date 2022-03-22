@@ -3,10 +3,10 @@
 
 The previous chapters derive all the equations necessary to solve for the steady-state and nonsteady-state equilibria of this model. However, because labor productivity is growing at rate $g_y$ as can be seen in the firms' production function {eq}`EqFirmsCESprodfun` and the population is growing at rate $\tilde{g}_{n,t}$ as defined in {eq}`EqPopGrowthTil`, the model is not stationary. Different endogenous variables of the model are growing at different rates. We have already specified three potential budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` using some combination of government spending $G_t$ and transfers $TR_t$ that stationarize the debt-to-GDP ratio.
 
-{numref}`TabStnrzStatVars` lists the definitions of stationary versions of these endogenous variables. Variables with a ``$\:\,\hat{}\,\:$'' signify stationary variables. The first column of variables are growing at the productivity growth rate $g_y$. These variables are most closely associated with individual variables. The second column of variables are growing at the population growth rate $\tilde{g}_{n,t}$. These variables are most closely associated with population values. The third column of variables are growing at both the productivity growth rate $g_y$ and the population growth rate $\tilde{g}_{n,t}$. These variables are most closely associated with aggregate variables. The last column shows that the interest rates $r_t$, $r_{p,t}$ and $r_{gov,t}$, and household labor supply $n_{j,s,t}$ are already stationary.
+{numref}`TabStnrzStatVars` lists the definitions of stationary versions of all the endogenous variables. Variables with a ``$\:\,\hat{}\,\:$'' signify stationary variables. The first column of variables are growing at the productivity growth rate $g_y$. These variables are most closely associated with individual variables. The second column of variables are growing at the population growth rate $\tilde{g}_{n,t}$. These variables are most closely associated with population values. The third column of variables are growing at both the productivity growth rate $g_y$ and the population growth rate $\tilde{g}_{n,t}$. These variables are most closely associated with aggregate variables. The last column shows that the interest rates $r_t$, $r_{p,t}$ and $r_{gov,t}$, and household labor supply $n_{j,s,t}$ are already stationary.
 
 
-```{list-table} **Stationary variable definitions.** Note: The interest rate $r_t$ in firm first order condition is already stationary because $Y_t$ and $K_t$ grow at the same rate. Household labor supply $n_{j,s,t}\in[0,\tilde{l}]$ is stationary.
+```{list-table} **Stationary variable definitions.** Note: The interest rate $r_t$ in firm first order condition is already stationary because $Y_{m,t}$ and $K_{m,t}$ grow at the same rate and $p_{m,t}$ is stationary. Household labor supply $n_{j,s,t}\in[0,\tilde{l}]$ is stationary.
 :header-rows: 2
 :name: TabStnrzStatVars
 * - **Sources of growth**
@@ -17,52 +17,81 @@ The previous chapters derive all the equations necessary to solve for the steady
   - $\tilde{N}_t$
   - $e^{g_y t}\tilde{N}_t$
   - Not growing
-* - $\hat{y}_{j,s,t}\equiv \frac{c_{j,s,t}}{e^{g_y t}}$
+* - $\hat{y}_{j,s,t}\equiv \frac{y_{j,s,t}}{e^{g_y t}}$
   - $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}$
-  - $\hat{Y}_t\equiv\frac{Y_t}{e^{g_y t}\tilde{N}_t}$
+  - $\hat{Y}_{m,t}\equiv\frac{Y_{m,t}}{e^{g_y t}\tilde{N}_t}$
   - $n_{j,s,t}$
 * - $\hat{b}_{j,s,t}\equiv \frac{b_{j,s,t}}{e^{g_y t}}$
-  - $\hat{L}_t\equiv\frac{L_t}{\tilde{N}_t}$
-  - $\hat{K}_t\equiv\frac{K_t}{e^{g_y t}\tilde{N}_t}$
+  - $\hat{L}_{m,t}\equiv\frac{L_{m,t}}{\tilde{N}_t}$
+  - $\hat{K}_{m,t}\equiv\frac{K_{m,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_t$
-* - $\hat{bq}_{t,s,j}\equiv \frac{bq_{t,s,j}}{e^{g_y t}}$
+* - $\hat{bq}_{j,s,t}\equiv \frac{bq_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_{p,t}$
-* - $\hat{c}_{j,s,t}\equiv \frac{y_{j,s,t}}{e^{g_y t}}$
+* - $\hat{c}_{j,s,t}\equiv \frac{c_{j,s,t}}{e^{g_y t}}$
   -
-  - $\hat{C}_t\equiv\frac{C_t}{e^{g_y t}\tilde{N}_t}$
+  - $\hat{C}_{m,t}\equiv\frac{C_{m,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_{gov,t}$
+* - $\hat{c}_{j,m,s,t}\equiv \frac{c_{j,m,s,t}}{e^{g_y t}}$
+  -
+  - $\hat{K}_{g,m,t}\equiv\frac{K_{g,m,t}}{e^{g_y t}\tilde{N}_t}$
+  - $r_{K,t}$
 * - $\hat{tr}_{j,s,t}\equiv \frac{tr_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}$
-  - $r_{K,t}$
+  - $p_t \equiv \frac{\tilde{p}_t}{\tilde{p}_{M,t}}$
 * - $\hat{ubi}_{j,s,t}\equiv\frac{ubi_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{UBI}_t\equiv\frac{UBI_t}{e^{g_y t}\tilde{N}_t}$
-  -
+  - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
 * - $\hat{T}_{j,s,t}\equiv \frac{T_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
   -
 * - $\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}$
   -
-  - $\hat{K}_{g,t}\equiv\frac{K_{g,t}}{e^{g_y t}\tilde{N}_t}$
+  -
   -
 ```
 
-The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab`, {eq}`EqMarkClr_DtDdDf`, {eq}`EqMarkClr_KtKdKf`, {eq}`EqMarkClrGoods`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` of Chapter {ref}`Chap_Eqm` to solve for the equilibria in the steady-state and transition path equilibrium definitions.
+The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHH_cmDem2`, {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab`, {eq}`EqMarkClr_DtDdDf`, {eq}`EqMarkClr_KtKdKf`, {eq}`EqMarkClrGoods_Mm1`, {eq}`EqMarkClrGoods_M`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` of Chapter {ref}`Chap_Eqm` to solve for the equilibria in the steady-state and transition path equilibrium definitions.
 
 
 (SecStnrzHH)=
 ## Stationarized Household Equations
 
+  The stationary versions of the household industry-specific goods preferences and demand equations are obtained by dividing both sides of the equations by the productivity growth rate $e^{g_y t}$,
+
+  ```{math}
+  :label: EqHHCompCons_stnrz
+    \hat{c}_{j,s,t} \equiv \prod_{m=1}^M \left(\hat{c}_{j,m,s,t} - \hat{c}_{min,m,t}\right)^{\alpha_m} \quad\forall j,s,t \quad\text{with}\quad \sum_{m=1}^M\alpha_m=1
+  ```
+  ```{math}
+  :label: EqHH_cmDem2_stnrz
+    \hat{c}_{j,m,s,t} = \alpha_m\left(\frac{p_{m,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,m,t} \quad\forall j,m,s,t
+  ```
+  ```{math}
+  :label: EqHH_cmin_stnrz
+    \hat{c}_{min,m,t} \equiv
+    \begin{cases}
+      \frac{c_{min,m}}{e^{g_y t}} \quad\text{for}\quad t < T \\
+      \frac{c_{min,m}}{e^{g_y T}} \quad\text{for}\quad t \geq T
+    \end{cases} \quad\forall m
+  ```
+
+  where {eq}`EqHHCompCons_stnrz` is the stationarized Stone-Geary industry-specific consumption aggregator for composite consumption and  {eq}`EqHHCompCons_stnrz` is the stationarized household demand for industry-specific consumption. The composite price aggregation equation {eq}`EqCompPnorm2` is already stationary.
+
+  Note that the only way to stationarize the consumption aggregator {eq}`EqHHCompCons_stnrz` and consumption demand {eq}`EqHH_cmDem2_stnrz` is to divide $c_{min,m}$ by the growth rate $e^{g_y t}$. However, $c_{min,m}$ is already stationary. It is constant for each $m$. Therefore, the version of $\hat{c}_{min,m,t}$ divided by $e^{g_y t}$ would be changing over time (nonstationary) for $g_y\neq 0$. For this reason, we define $\hat{c}_{min,m,t}$ in {eq}`EqHH_cmin_stnrz` as being constant after the steady-state period $T$ at whatever value it reaches at that period. In most cases with $g_y>0$, that value will be close to zero. But we use $\bar{c}_{min,m} = c_{min,m}/e^{g_y T}$ from {eq}`EqHH_cmin_stnrz` as the steady-state value of $c_{min,m}$.
+
   The stationary version of the household budget constraint {eq}`EqHHBC` is found by dividing both sides of the equation by $e^{g_y t}$. For the savings term $b_{j,s+1,t+1}$, we must multiply and divide by $e^{g_y(t+1)}$, which leaves an $e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}$ in front of the stationarized variable.
 
   ```{math}
-  :label: EqStnrzHHBCstat
-    \hat{c}_{j,s,t} + e^{g_y}\hat{b}_{j,s+1,t+1} &= (1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{s,t}  \\
-    &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
+  :label: EqHHBC_stnrz
+    p_t\hat{c}_{j,s,t} + &\sum_{m=1}^M p_{m,t}\hat{c}_{min,m} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
+    &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \\
+    &\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
+    &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad \hat{b}_{j,E+1,t}=0\quad\forall j,t
   ```
 
   Because total bequests $BQ_t$ and total government transfers $TR_t$ grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population $\tilde{N}_t$. This stationarizes total bequests $\hat{BQ}_t$, total transfers $\hat{TR}_t$, and the respective population level in the denominator $\hat{\omega}_{s,t}$.
@@ -70,28 +99,29 @@ The usual definition of equilibrium would be allocations and prices such that ho
   We stationarize the Euler equations for labor supply {eq}`EqHHeul_n` by dividing both sides by $e^{g_y(1-\sigma)}$. On the left-hand-side, $e^{g_y}$ stationarizes the wage $\hat{w}_t$ and $e^{-\sigma g_y}$ goes inside the parentheses and stationarizes consumption $\hat{c}_{j,s,t}$. On the right-and-side, the $e^{g_y(1-\sigma)}$ terms cancel out.
 
   ```{math}
-  :label: EqStnrzHHeul_n
-    \hat{w}_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(\hat{c}_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
-    \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
+  :label: EqHHeul_n_stnrz
+    &\frac{\hat{w}_t e_{j,s}}{p_t}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(\hat{c}_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
+    &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
   ```
 
   We stationarize the Euler equations for savings {eq}`EqHHeul_b` and {eq}`EqHHeul_bS` by dividing both sides of the respective equations by $e^{-\sigma g_y t}$. On the right-hand-side of the equation, we then need to multiply and divide both terms by $e^{-\sigma g_y(t+1)}$, which leaves a multiplicative coefficient $e^{-\sigma g_y}$.
 
   ```{math}
-  :label: EqStnrzHHeul_b
-    (\hat{c}_{j,s,t})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(\hat{c}_{j,s+1,t+1})^{-\sigma}\biggr] \\
-    \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+  :label: EqHHeul_b_stnrz
+    \frac{(\hat{c}_{j,s,t})^{-\sigma}}{p_t} &= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \\
+    &\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
+    &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
   ```{math}
-  :label: EqStnrzHHeul_bS
-    (\hat{c}_{j,E+S,t})^{-\sigma} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t
+  :label: EqHHeul_bS_stnrz
+    \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
 
 (SecStnrzFirms)=
 ## Stationarized Firms Equations
 
-  The nonstationary production function {eq}`EqFirmsCESprodfun` can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_t$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xK_g,xL) = xF(K,K_g,L)$, which means the right-hand-side of the production function is stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
+  The nonstationary production function {eq}`EqFirmsCESprodfun` for each industry can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_{m,t}$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1---$F(xK,xK_g,xL) = xF(K,K_g,L)$---the right-hand-side of the production function is also stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzCESprodfun
