@@ -117,7 +117,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 (SecStnrzFirms)=
 ## Stationarized Firms Equations
 
-  The nonstationary production function {eq}`EqFirmsCESprodfun` for each industry can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_{m,t}$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1---$F(xK,xK_g,xL) = xF(K,K_g,L)$---the right-hand-side of the production function is also stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
+  The nonstationary production function {eq}`EqFirmsCESprodfun` for each industry can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_{m,t}$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xK_g,xL) = xF(K,K_g,L)$, the right-hand-side of the production function is also stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzCESprodfun
