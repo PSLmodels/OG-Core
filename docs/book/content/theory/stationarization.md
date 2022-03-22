@@ -17,41 +17,37 @@ The previous chapters derive all the equations necessary to solve for the steady
   - $\tilde{N}_t$
   - $e^{g_y t}\tilde{N}_t$
   - Not growing
-* - $\hat{y}_{j,s,t}\equiv \frac{y_{j,s,t}}{e^{g_y t}}$
+* - $\hat{b}_{j,s,t}\equiv \frac{b_{j,s,t}}{e^{g_y t}}$
   - $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}$
   - $\hat{Y}_{m,t}\equiv\frac{Y_{m,t}}{e^{g_y t}\tilde{N}_t}$
   - $n_{j,s,t}$
-* - $\hat{b}_{j,s,t}\equiv \frac{b_{j,s,t}}{e^{g_y t}}$
+* - $\hat{bq}_{j,s,t}\equiv \frac{bq_{j,s,t}}{e^{g_y t}}$
   - $\hat{L}_{m,t}\equiv\frac{L_{m,t}}{\tilde{N}_t}$
   - $\hat{K}_{m,t}\equiv\frac{K_{m,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_t$
-* - $\hat{bq}_{j,s,t}\equiv \frac{bq_{j,s,t}}{e^{g_y t}}$
+* - $\hat{c}_{j,s,t}\equiv \frac{c_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_{p,t}$
-* - $\hat{c}_{j,s,t}\equiv \frac{c_{j,s,t}}{e^{g_y t}}$
+* - $\hat{c}_{j,m,s,t}\equiv \frac{c_{j,m,s,t}}{e^{g_y t}}$
   -
   - $\hat{C}_{m,t}\equiv\frac{C_{m,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_{gov,t}$
-* - $\hat{c}_{j,m,s,t}\equiv \frac{c_{j,m,s,t}}{e^{g_y t}}$
+* - $\hat{tr}_{j,s,t}\equiv \frac{tr_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{K}_{g,m,t}\equiv\frac{K_{g,m,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_{K,t}$
-* - $\hat{tr}_{j,s,t}\equiv \frac{tr_{j,s,t}}{e^{g_y t}}$
+* - $\hat{ubi}_{j,s,t}\equiv\frac{ubi_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}$
   - $p_t \equiv \frac{\tilde{p}_t}{\tilde{p}_{M,t}}$
-* - $\hat{ubi}_{j,s,t}\equiv\frac{ubi_{j,s,t}}{e^{g_y t}}$
+* - $\hat{T}_{j,s,t}\equiv \frac{T_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{UBI}_t\equiv\frac{UBI_t}{e^{g_y t}\tilde{N}_t}$
   - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
-* - $\hat{T}_{j,s,t}\equiv \frac{T_{j,s,t}}{e^{g_y t}}$
-  -
-  - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
-  -
 * - $\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}$
   -
-  -
+  - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
   -
 ```
 
