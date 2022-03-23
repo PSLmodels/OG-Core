@@ -32,7 +32,7 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
   ```{math}
   :label: EqFirmsProfit
     PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
-    &\quad\quad\quad\quad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} K_{m,t} \quad\forall m,t
+    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} K_{m,t} \quad\forall m,t
   ```
 
   Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
@@ -83,7 +83,7 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
 
   ```{math}
   :label: EqFirmsMPKg_opt
-    MPK_{g,m,t} =  Z_{m,t}^{\frac{\varepsilon_m - 1}{\varepsilon_m}}\left(\gamma_{g,m}\frac{Y_{m,t}}{K_{g,m,t}}\right)^{\frac{1}{\varepsilon_m}} \quad\forall m,t
+    MPK_{g,m,t} =  \left(Z_{m,t}\right)^{\frac{\varepsilon_m - 1}{\varepsilon_m}}\left(\gamma_{g,m}\frac{Y_{m,t}}{K_{g,m,t}}\right)^{\frac{1}{\varepsilon_m}} \quad\forall m,t
   ```
 
   If we plug the expressions for $MPK_{m,t}$, $MPK_{g,m,t}$, and $MPL_{m,t}$ from {eq}`EqFirmsMPK_opt`, {eq}`EqFirmsMPKg_opt`, and {eq}`EqFirmsMPL_opt`, respectively, into the total revenue $Y_{m,t}$ decomposition in {eq}`EqFirmsMargRevEq` and then substitute that into the profit function {eq}`EqFirmsProfit`, we see that positive economic rents arise when public capital is positive $K_{g,m,t}>0$.
@@ -94,7 +94,7 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
       PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}Y_{m,t} - w_t L_{m,t}\Bigr] - \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} K_{m,t} \\
       &= (1 - \tau^{corp}_{m,t})\Biggl[\biggl(\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t}}{1 - \tau^{corp}_{m,t}}\biggr)K_{m,t} + p_{m,t}MPK_{g,m,t}K_{g,m,t} + w_t L_{m,t}\Biggr] ... \\
       &\quad\quad - (1 - \tau^{corp}_{m,t})w_t L_{m,t} - (r_t + \delta_{M,t})K_{m,t} + \tau^{corp}_{m,t}\delta^{\tau}_{m,t} K_{m,t} \\
-      &= (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t} \\
+      &= (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t} \quad\forall m,t
     \end{split}
   ```
 

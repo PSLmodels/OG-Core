@@ -60,15 +60,15 @@ The usual definition of equilibrium would be allocations and prices such that ho
   The stationary versions of the household industry-specific goods preferences and demand equations are obtained by dividing both sides of the equations by the productivity growth rate $e^{g_y t}$,
 
   ```{math}
-  :label: EqHHCompCons_stnrz
+  :label: EqStnrzCompCons
     \hat{c}_{j,s,t} \equiv \prod_{m=1}^M \left(\hat{c}_{j,m,s,t} - \hat{c}_{min,m,t}\right)^{\alpha_m} \quad\forall j,s,t \quad\text{with}\quad \sum_{m=1}^M\alpha_m=1
   ```
   ```{math}
-  :label: EqHH_cmDem2_stnrz
+  :label: EqStnrz_cmDem2
     \hat{c}_{j,m,s,t} = \alpha_m\left(\frac{p_{m,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,m,t} \quad\forall j,m,s,t
   ```
   ```{math}
-  :label: EqHH_cmin_stnrz
+  :label: EqStnrz_cmin
     \hat{c}_{min,m,t} \equiv
     \begin{cases}
       \frac{c_{min,m}}{e^{g_y t}} \quad\text{for}\quad t < T \\
@@ -76,14 +76,14 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \end{cases} \quad\forall m
   ```
 
-  where {eq}`EqHHCompCons_stnrz` is the stationarized Stone-Geary industry-specific consumption aggregator for composite consumption and  {eq}`EqHHCompCons_stnrz` is the stationarized household demand for industry-specific consumption. The composite price aggregation equation {eq}`EqCompPnorm2` is already stationary.
+  where {eq}`EqStnrzCompCons` is the stationarized Stone-Geary industry-specific consumption aggregator for composite consumption and  {eq}`EqStnrzCompCons` is the stationarized household demand for industry-specific consumption. The composite price aggregation equation {eq}`EqCompPnorm2` is already stationary.
 
-  Note that the only way to stationarize the consumption aggregator {eq}`EqHHCompCons_stnrz` and consumption demand {eq}`EqHH_cmDem2_stnrz` is to divide $c_{min,m}$ by the growth rate $e^{g_y t}$. However, $c_{min,m}$ is already stationary. It is constant for each $m$. Therefore, the version of $\hat{c}_{min,m,t}$ divided by $e^{g_y t}$ would be changing over time (nonstationary) for $g_y\neq 0$. For this reason, we define $\hat{c}_{min,m,t}$ in {eq}`EqHH_cmin_stnrz` as being constant after the steady-state period $T$ at whatever value it reaches at that period. In most cases with $g_y>0$, that value will be close to zero. But we use $\bar{c}_{min,m} = c_{min,m}/e^{g_y T}$ from {eq}`EqHH_cmin_stnrz` as the steady-state value of $c_{min,m}$.
+  Note that the only way to stationarize the consumption aggregator {eq}`EqStnrzCompCons` and consumption demand {eq}`EqStnrz_cmDem2` is to divide $c_{min,m}$ by the growth rate $e^{g_y t}$. However, $c_{min,m}$ is already stationary. It is constant for each $m$. Therefore, the version of $\hat{c}_{min,m,t}$ divided by $e^{g_y t}$ would be changing over time (nonstationary) for $g_y\neq 0$. For this reason, we define $\hat{c}_{min,m,t}$ in {eq}`EqStnrz_cmin` as being constant after the steady-state period $T$ at whatever value it reaches at that period. In most cases with $g_y>0$, that value will be close to zero. But we use $\bar{c}_{min,m} = c_{min,m}/e^{g_y T}$ from {eq}`EqStnrz_cmin` as the steady-state value of $c_{min,m}$.
 
   The stationary version of the household budget constraint {eq}`EqHHBC` is found by dividing both sides of the equation by $e^{g_y t}$. For the savings term $b_{j,s+1,t+1}$, we must multiply and divide by $e^{g_y(t+1)}$, which leaves an $e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}$ in front of the stationarized variable.
 
   ```{math}
-  :label: EqHHBC_stnrz
+  :label: EqStnrzHHBC
     p_t\hat{c}_{j,s,t} + &\sum_{m=1}^M p_{m,t}\hat{c}_{min,m} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
     &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \\
     &\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
@@ -95,7 +95,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   We stationarize the Euler equations for labor supply {eq}`EqHHeul_n` by dividing both sides by $e^{g_y(1-\sigma)}$. On the left-hand-side, $e^{g_y}$ stationarizes the wage $\hat{w}_t$ and $e^{-\sigma g_y}$ goes inside the parentheses and stationarizes consumption $\hat{c}_{j,s,t}$. On the right-and-side, the $e^{g_y(1-\sigma)}$ terms cancel out.
 
   ```{math}
-  :label: EqHHeul_n_stnrz
+  :label: EqStnrz_eul_n
     &\frac{\hat{w}_t e_{j,s}}{p_t}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(\hat{c}_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
   ```
@@ -103,14 +103,14 @@ The usual definition of equilibrium would be allocations and prices such that ho
   We stationarize the Euler equations for savings {eq}`EqHHeul_b` and {eq}`EqHHeul_bS` by dividing both sides of the respective equations by $e^{-\sigma g_y t}$. On the right-hand-side of the equation, we then need to multiply and divide both terms by $e^{-\sigma g_y(t+1)}$, which leaves a multiplicative coefficient $e^{-\sigma g_y}$.
 
   ```{math}
-  :label: EqHHeul_b_stnrz
+  :label: EqStnrz_eul_b
     \frac{(\hat{c}_{j,s,t})^{-\sigma}}{p_t} &= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \\
     &\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
   ```{math}
-  :label: EqHHeul_bS_stnrz
+  :label: EqStnrz_eul_bS
     \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
 
@@ -122,8 +122,9 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrzCESprodfun
     \begin{split}
-      \hat{Y}_t &= F(\hat{K}_t, \hat{K}_{g,t}, \hat{L}_t) \\
-      &\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t
+      \hat{Y}_{m,t} &= F(\hat{K}_{m,t}, \hat{K}_{g,m,t}, \hat{L}_{m,t}) \\
+      &\equiv Z_{m,t}\biggl[(\gamma_m)^\frac{1}{\varepsilon_m}(\hat{K}_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m} + (\gamma_{g,m})^\frac{1}{\varepsilon_m}(\hat{K}_{g,m,t})^\frac{\varepsilon_m-1}{\varepsilon_m} + ... \\
+      &\qquad\qquad\qquad (1-\gamma_m-\gamma_{g,m})^\frac{1}{\varepsilon_m}(\hat{L}_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\biggr]^\frac{\varepsilon_m}{\varepsilon_m-1} \quad\forall m,t
     \end{split}
   ```
 
@@ -131,23 +132,47 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzProfit
-    \hat{PR}_t = (1 - \tau^{corp}_t)\Bigl[F(\hat{K}_t,\hat{K}_{g,t},\hat{L}_t) - \hat{w}_t \hat{L}_t\Bigr] - \bigl(r_t + \delta\bigr)\hat{K}_t + \tau^{corp}_t\delta^\tau_t \hat{K}_t \quad\forall t
+    \hat{PR}_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[F(\hat{K}_{m,t},\hat{K}_{g,m,t},\hat{L}_{m,t}) - \hat{w}_t \hat{L}_{m,t}\Bigr] - ... \\
+    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)\hat{K}_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} \hat{K}_{m,t} \quad\forall m,t
   ```
 
-  The firms' first order equation for labor demand {eq}`EqFirmFOC_L` is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_t}{e^{g_y t}L_t}$ term on the right-hand-side by $\tilde{N}_t$.
+  The firms' first order equation for labor demand {eq}`EqFirmFOC_L` is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_{m,t}}{e^{g_y t}L_{m,t}}$ term on the right-hand-side by $\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzFOC_L
-    \hat{w}_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_g)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon} \quad\forall t
+    \hat{w}_t = p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[(1-\gamma_m-\gamma_{g,m})\frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right]^\frac{1}{\varepsilon_m} \quad\forall m,t
   ```
 
-  It can be seen from the firms' first order equation for capital demand {eq}`EqFirmFOC_K` that the interest rate is already stationary. If we multiply and divide the $\frac{Y_t}{K_t}$ term on the right-hand-side by $e^{g_y t}\tilde{N}_t$, those two aggregate variables become stationary. In other words, $Y_t$ and $K_t$ grow at the same rate and $\frac{Y_t}{K_t} = \frac{\hat{Y}_t}{\hat{K}_t}$.
+  It can be seen from the firms' first order equation for capital demand {eq}`EqFirmFOC_K` that the interest rate is already stationary. If we multiply and divide the $\frac{Y_{m,t}}{K_{m,t}}$ term on the right-hand-side by $e^{g_y t}\tilde{N}_t$, those two aggregate variables become stationary. In other words, $Y_{m,t}$ and $K_{m,t}$ grow at the same rate and $\frac{Y_{m,t}}{K_{m,t}} = \frac{\hat{Y}_{m,t}}{\hat{K}_{m,t}}$.
 
   ```{math}
   :label: EqStnrzFOC_K
-    r_t &= (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{\hat{Y}_t}{\hat{K}_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau_t \quad\forall t \\
-    &= (1 - \tau^{corp}_t)(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}_t\delta^\tau_t \quad\forall t
+    r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{\hat{Y}_{m,t}}{\hat{K}_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} \quad\forall m,t
   ```
+
+  A stationary version of the firms' gross revenue attributed to each factor of production {eq}`EqFirmsMargRevEq` is found by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.
+
+  ```{math}
+  :label: EqStnrzMargRevEq
+    \hat{Y}_{m,t} = MPK_{m,t}\hat{K}_{m,t} + MPK_{g,m,t}\hat{K}_{g,m,t} + \hat{MPL}_{m,t}\hat{L}_{m,t} \quad\forall m,t
+  ```
+
+  Note that this implies that both the marginal product of private capital $MPK_{m,t}$ and the marginal product of public capital $MPK_{g,m,t}$ are already stationary, as seen in {eq}`EqFirmsMPK_opt` and {eq}`EqFirmsMPKg_opt`. However, we see in {eq}`EqFirmsMPL_opt` that the marginal product of labor is growing at rate $e^{g_y t}$ because of its relationship to the wage $w_t$. The division of both sides of {eq}`EqFirmsMargRevEq` by $e^{g_y t}\tilde{N}_t$ gives us a stationarized marginal product of labor $\hat{MPL}_{m,t}$ and a stationarized labor demand $\hat{L}_{m,t}$.
+
+  Using the derivation of firm profits when firms are optimizing in {eq}`EqFirmsProfit_Kg` and the expressions for optimized stationary revenue {eq}`EqStnrzMargRevEq`, we can show the stationary equation for firm profits when firms are optimizing. As before, stationary profits are positive when stationary public capital is positive $\hat{K}_{g,m,t}>0$.
+  ```{math}
+  :label: EqStnrzProfit_Kg
+    \hat{PR}_{m,t} = (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}\hat{K}_{g,m,t} \quad\forall m,t
+  ```
+
+  Using the derivation from {eq}`EqFirmsPayout` and {eq}`EqFirms_rKt` in Chapter {ref}`Chap_Firms`, we can stationarize the terms in the right-hand-side of the expression for $r_{K,t}$ by multiplying and dividing the quotient in the last term by $e^{g_y t}\tilde{N}_t$. This implies that the interest rate paid out by the financial intermediary on private capital $r_{K,t}$ is stationary, whether the variables on the right-hand-side are non-stationary in {eq}`EqFirms_rKt` or stationarizy as in {eq}`EqStnrz_rKt`.
+
+  ```{math}
+  :label: EqStnrz_rKt
+    r_{K,t} =  r_t + \frac{\sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}\hat{K}_{g,m,t}}{\sum_{m=1}^M\hat{K}_{m,t}} \quad\forall t
+  ```
+
+
 
 
 (SecStnrzGovt)=
