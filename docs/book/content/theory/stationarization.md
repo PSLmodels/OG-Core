@@ -228,7 +228,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \hat{K}_{g,m,t+1} = \frac{(1 - \delta_g)\hat{K}_{g,m,t} + \hat{I}_{g,m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t
   ```
 
-  Stationary aggregate universal basic income expenditure is found in one of two ways depending on how the individual UBI payments $ubi_{j,s,t}$ are modeled. In Section {ref}`SecUBI` of Chapter {ref}`Chap_UnbalGBC`, we discuss how UBI payments to households $ubi_{j,s,t}$ can be growth adjusted so that they grow over time at the rate of productivity growth or non-growth adjusted such that they are constant overtime. In the first case, when UBI benefits are growth adjusted and growing over time, the stationary aggregate government UBI payout $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$. In the second case, when UBI benefits are constant over time and not growing with productivity, the stationary aggregate government UBI payout $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGDC_UBI` by just $\tilde{N}_t$.
+  Stationary aggregate universal basic income expenditure is found in one of two ways depending on how the individual UBI payments $ubi_{j,s,t}$ are modeled. In Section {ref}`SecUBI` of Chapter {ref}`Chap_UnbalGBC`, we discuss how UBI payments to households $ubi_{j,s,t}$ can be growth adjusted so that they grow over time at the rate of productivity growth or non-growth adjusted such that they are constant overtime. In the first case, when UBI benefits are growth adjusted and growing over time, the stationary aggregate government UBI payout $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$. In the second case, when UBI benefits are constant over time and not growing with productivity, the stationary aggregate government UBI payout $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by only $\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzGBC_UBI
@@ -305,7 +305,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzMarkClrLab
-    \hat{L}_t = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \hat{\omega}_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t
+    \sum_{m=1}^M \hat{L}_{m,t} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \hat{\omega}_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t
   ```
 
   Total savings by domestic households $B_t$ from {eq}`EqMarkClr_Bt` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$. The $\omega_{s,t-1}$ terms on the right-hand_side require multiplying and dividing by $\tilde{N}_{t-1}$, which leads to the division of $1 + \tilde{g}_{n,t}$.
@@ -322,7 +322,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \hat{K}^d_t + \hat{D}^d_t = \hat{B}_t \quad \forall t
   ```
 
-  The stationarized law of motion for foreign holdings of overnment debt {eq}`EqMarkClr_zetaD` and the government debt market clearing condition {eq}`EqMarkClr_DtDdDf`, respectively, are solved for by dividing both sides by $e^{g_y t}\tilde{N}_t$.
+  The stationarized law of motion for foreign holdings of government debt {eq}`EqMarkClr_zetaD` and the government debt market clearing condition {eq}`EqMarkClr_DtDdDf`, respectively, are solved for by dividing both sides by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrz_zetaD
@@ -338,12 +338,12 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrz_KtKdKf
-    \hat{K}_t = \hat{K}^d_t + \hat{K}^f_t \quad\forall t
+    \hat{K}_t = \hat{K}^d_t + \hat{K}^f_t \quad\forall t \quad\text{where}\quad \hat{K_t} \equiv \sum_{m=1}^M \hat{K}_{m,t}
   ```
 
   ```{math}
   :label: EqStnrz_ExDemK
-    \hat{ED}^{K,r^*}_t \equiv \hat{K}^{r^*}_t - \hat{K}^d_t \quad\forall t
+    \hat{ED}^{K,r^*}_t \equiv \hat{K}^{r^*}_t - \hat{K}^d_t \quad\forall t \quad\text{where}\quad \hat{K}^{r^*}_t \equiv \sum_{m=1}^M \hat{K}^{r^*}_{m,t}
   ```
 
   ```{math}
@@ -351,15 +351,27 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \hat{K}^{f}_t = \zeta_{K}\hat{ED}^{K,r^*}_t \quad\forall t
   ```
 
-  We stationarize the goods market clearing {eq}`EqMarkClrGoods` condition by dividing both sides by $e^{g_y t}\tilde{N}_t$. On the right-hand-side, we must multiply and divide the $K^d_{t+1}$ term and the $D^f_{t+1}$ term, respectively, by $e^{g_y(t+1)}\tilde{N}_{t+1}$ leaving the coefficient $e^{g_y}(1+\tilde{g}_{n,t+1})$.
-
+  We stationarize the goods market clearing equations for the first $M-1$ industries {eq}`EqMarkClrGoods_Mm1` and for the $M$th industry {eq}`EqMarkClrGoods_M` by dividing both sides by $e^{g_y t}\tilde{N}_t$. On the right-hand-side, we must multiply and divide the $K^d_{t+1}$ term and the $D^f_{t+1}$ term, respectively, by $e^{g_y(t+1)}\tilde{N}_{t+1}$ leaving the coefficient $e^{g_y}(1+\tilde{g}_{n,t+1})$.
   ```{math}
-  :label: EqStnrzMarkClrGoods
-    \begin{split}
-      \hat{Y}_t &= \hat{C}_t + \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} - \hat{K}^d_t\Bigr) + \delta\hat{K}_t + \hat{G}_t + \hat{I}_{g,t} + r_{p,t}\hat{K}^f_t ... \\
-      &\quad\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) + r_{p,t}\hat{D}^f_t \quad\forall t \\
-      &\quad\text{where}\quad \hat{C}_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j\hat{c}_{j,s,t}
-    \end{split}
+  :label: EqStnrzMarkClrGoods_Mm1
+    \hat{Y}_{m,t} = \hat{C}_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1
+  ```
+  ```{math}
+  :label: EqStnrzMarkClrGoods_M
+    \hat{Y}_{M,t} &= \hat{C}_{M,t} + \hat{I}_{M,t} + \hat{I}_{g,t} + \hat{G}_t + r_{p,t} \hat{K}^f_t + r_{p,t}\hat{D}^f_t ... \\
+    &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) \quad\forall t
+  ```
+  where
+  ```{math}
+  :label: EqCmt
+    \hat{C}_{m,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j \hat{c}_{j,m,s,t} \quad\forall m,t
+  ```
+  and
+  ```{math}
+  :label: EqStnrzMarkClrGoods_IMt
+    \hat{I}_{M,t} &\equiv e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\sum_{m=1}^M \hat{K}_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M \hat{K}_{m,t} \quad\forall t \\
+    &= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\hat{K}_{t+1} - (1 - \delta_{M,t})\hat{K}_t \\
+    &= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)(\hat{K}^d_{t+1} + \hat{K}^f_{t+1}) - (1 - \delta_{M,t})(\hat{K}^d_t + \hat{K}^f_t)
   ```
 
   We stationarize the law of motion for total bequests $BQ_t$ in {eq}`EqMarkClrBQ` by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the population levels in the summation are from period $t-1$, we must multiply and divide the summed term by $\tilde{N}_{t-1}$ leaving the term in the denominator of $1+\tilde{g}_{n,t}$.

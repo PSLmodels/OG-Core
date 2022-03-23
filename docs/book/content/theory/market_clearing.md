@@ -68,7 +68,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 
   ```{math}
   :label: EqMarkClr_KtKdKf
-    \sum_{m=1}^M K_{m,t} = K^d_t + K^f_t \quad\forall t
+   K_t = K^d_t + K^f_t \quad\forall t \quad\text{where}\quad K_t \equiv  \sum_{m=1}^M K_{m,t}
   ```
 
   Assume that there exists some exogenous world interest rate $r^*_t$. We assume that foreign capital supply $K^f_t$ is an exogenous percentage $\zeta_K\in[0,1]$ of the excess total domestic private capital demand $ED^{K,r^*}_t$ that would exist if domestic private capital demand were determined by the exogenous world interest rate $r^*_t$ and domestic private capital supply were determined by the model consistent return on household savings $r_{p,t}$. This percentage $\zeta_K$ is something we calibrate. Define excess total domestic capital demand at the exogenous world interest rate $r^*_t$ as $ED^{K,r^*}_t$, where $K^{r^*}_t\equiv\sum_{m=1}^M K^{r^*}_{m,t}$ is the capital demand by domestic firms at the world interest rate $r^*_t$, and $K^{d}_t$ is the domestic supply of private capital to firms, which is modeled as being a function of the actual rate faced by households $r_{p,t}$. Then our measure of excess demand at the world interest rate is the following.
