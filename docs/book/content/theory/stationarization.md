@@ -172,29 +172,27 @@ The usual definition of equilibrium would be allocations and prices such that ho
     r_{K,t} =  r_t + \frac{\sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}\hat{K}_{g,m,t}}{\sum_{m=1}^M\hat{K}_{m,t}} \quad\forall t
   ```
 
-
-
-
 (SecStnrzGovt)=
 ## Stationarized Government Equations
 
-  Each of the tax rate functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ is stationary. The total tax liability function $T_{s,t}$ is growing at the rate of labor productivity growth $g_y$ This can be see by looking at the decomposition of the total tax liability function into the effective tax rate times total income {eq}`EqTaxCalcLiabETR`. The effective tax rate function is stationary, and household income is growing at rate $g_y$. So household total tax liability is stationarized by dividing both sides of the equation by $e^{g_y t}$.
+  Each of the tax rate functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ is stationary. The total tax liability function $T_{j,s,t}$ is growing at the rate of labor productivity growth $g_y$ This can be see by looking at the decomposition of the total tax liability function into the effective tax rate times total income {eq}`EqTaxCalcLiabETR`. The effective tax rate function is stationary, and household income is growing at rate $g_y$. So household total tax liability is stationarized by dividing both sides of the equation by $e^{g_y t}$.
 
   ```{math}
   :label: EqStnrzLiabETR
-    \hat{T}_{s,t} &= \tau^{etr}_{s,t}(\hat{x}_{j,s,t}, \hat{y}_{j,s,t})\left(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\right) \qquad\qquad\qquad\qquad\forall t \quad\text{and}\quad E+1\leq s\leq E+S \\
-    &= \tau^{etr}_{s,t}(\hat{w}_t e_{j,s}n_{j,s,t}, r_{p,t}\hat{b}_{j,s,t})\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) \quad\forall t \quad\text{and}\quad E+1\leq s\leq E+S
+    \hat{T}_{js,t} &= \tau^{etr}_{s,t}(\hat{x}_{j,s,t}, \hat{y}_{j,s,t})\left(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\right) \qquad\qquad\qquad\qquad\:\:\:\forall j,t \quad\text{and}\quad s\geq E+1 \\
+    &= \tau^{etr}_{s,t}(\hat{w}_t e_{j,s}n_{j,s,t}, r_{p,t}\hat{b}_{j,s,t})\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) \quad\forall j,t \quad\text{and}\quad s\geq E+1
   ```
 
-  We can stationarize the simple expressions for total government spending on public goods $G_t$ in {eq}`EqUnbalGBC_Gt` and on household transfers $TR_t$ in {eq}`EqUnbalGBCtfer` by dividing both sides by $e^{g_y t}\tilde{N}_t$,
+  We can stationarize the simple expressions for total government spending on household transfers $TR_t$ in {eq}`EqUnbalGBCtfer` and on public goods $G_t$ in {eq}`EqUnbalGBC_Gt` by dividing both sides by $e^{g_y t}\tilde{N}_t$,
+
+   ```{math}
+  :label: EqStnrzTfer
+    \hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t \hat{Y}_t \quad\forall t \quad\text{where}\quad p_t \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t}\hat{Y}_{m,t}
+  ```
 
   ```{math}
   :label: EqStnrz_Gt
-    \hat{G}_t = g_{g,t}\:\alpha_{g}\:\hat{Y}_t \quad\forall t
-  ```
-  ```{math}
-  :label: EqStnrzTfer
-    \hat{TR}_t = g_{tr,t}\:\alpha_{tr}\:\hat{Y}_t \quad\forall t
+    \hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t \hat{Y}_t \quad\forall t \quad\text{where}\quad p_t \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t}\hat{Y}_{m,t}
   ```
 
   where the time varying multipliers $g_{g,t}$ and $g_{tr,t}$, respectively, are defined in {eq}`EqStnrzClosureRule_Gt` and {eq}`EqStnrzClosureRule_TRt` below. These multipliers $g_{g,t}$ and $g_{tr,t}$ do not have a ``$\:\,\hat{}\,\:$'' on them because their specifications {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclosure_TRt` that are functions of nonstationary variables are equivalent to {eq}`EqStnrzClosureRule_Gt` and {eq}`EqStnrzClosureRule_TRt` specified in stationary variables.
@@ -202,7 +200,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
   We can stationarize the expression for total government revenue $Rev_t$ in {eq}`EqUnbalGBCgovRev` by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.
   ```{math}
   :label: EqStnrzGovRev
-    \hat{Rev}_t = \underbrace{\tau^{corp}_t\bigl[\hat{Y}_t - \hat{w}_t\hat{L}_t\bigr] - \tau^{corp}_t\delta^\tau_t \hat{K}_t}_{\text{corporate tax revenue}} + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    \hat{Rev}_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
+    &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
   ```
 
   Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
@@ -212,37 +211,46 @@ The usual definition of equilibrium would be allocations and prices such that ho
     e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{TR}_t + \hat{UBI}_t \quad\forall t
   ```
 
-  The stationarized infrastructure investment spending rule $I_{g,t}$ in {eq}`EqUnbalGBC_Igt`, and the law of motion for the public capital stock $K_{g,t}$ in {eq}`EqUnbalGBC_Kgt` are given by:
-
+  The stationarized versions of the rule for total government infrastructure investment spending $I_{g,t}$ in {eq}`EqUnbalGBC_Igt` and the rule for government investment spending in each industry in {eq}`EqUnbalGBC_Igt` are found by dividing both sides of the respective equations by $e^{g_y t}\tilde{N}_t$.
   ```{math}
-  :label: EqStnrzGBC_Ig
-    \hat{I}_{g,t} = \alpha_{I,t} \hat{Y}_t \quad\forall t  \quad\forall t
+  :label: EqStnrz_Igt
+    \hat{I}_{g,t} = \alpha_{I,t}\: p_t\hat{Y}_t \quad\forall t
+  ```
+  ```{math}
+  :label: EqStnrz_Igmt
+    \hat{I}_{g,m,t} = \alpha_{I,m,t}\: \hat{I}_{g,t} \quad\forall m,t
   ```
 
+  The stationarized version of the law of motion for the public capital stock in each industry $K_{g,m,t}$ in {eq}`EqUnbalGBC_Kgmt` is found by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$ then multiply and divide the $K_{g,m,t+1}$ term on the left-hand-side by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$ in the denominator of the right-hand-side.
+
   ```{math}
-  :label: EqStnrzGBC_Kg
-    \hat{K}_{g,t+1} = \frac{(1 - \delta^{g})\hat{K}_{g,t} + \hat{I}_{g,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall t
+  :label: EqStnrz_Kgmt
+    \hat{K}_{g,m,t+1} = \frac{(1 - \delta_g)\hat{K}_{g,m,t} + \hat{I}_{g,m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t
   ```
 
-  Stationary aggregate universal basic income expenditure $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$.
+  Stationary aggregate universal basic income expenditure is found in one of two ways depending on how the individual UBI payments $ubi_{j,s,t}$ are modeled. In Section {ref}`SecUBI` of Chapter {ref}`Chap_UnbalGBC`, we discuss how UBI payments to households $ubi_{j,s,t}$ can be growth adjusted so that they grow over time at the rate of productivity growth or non-growth adjusted such that they are constant overtime. In the first case, when UBI benefits are growth adjusted and growing over time, the stationary aggregate government UBI payout $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$. In the second case, when UBI benefits are constant over time and not growing with productivity, the stationary aggregate government UBI payout $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGDC_UBI` by just $\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzGBC_UBI
-    \hat{UBI}_t = \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t
+    \hat{UBI}_t =
+      \begin{cases}
+        \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t \quad\text{if}\quad ubi_{j,s,t} \:\:\text{is growth adjusted} \\
+        \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} ubi_{j,s,t} \quad\forall t \quad\text{if}\quad ubi_{j,s,t} \:\:\text{is not growth adjusted}
+      \end{cases}
   ```
 
-  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The net return on capital, $r_{K,t}$ is also stationary because the marginal products private and public capital are stationary.  The expression for the return to household savings $r_{p,t}$ in {eq}`eq_portfolio_return` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
+  The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The net return on capital, $r_{K,t}$ is also stationary as shown in {eq}`EqStnrz_rKt`. The expression for the return to household savings $r_{p,t}$ in {eq}`eq_portfolio_return` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
 
   ```{math}
     :label: EqStnrz_rate_p
-    r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} = \frac{r_{gov,t}\hat{D}_{t} + r_{K,t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t
+    r_{p,t} = \frac{r_{gov,t}\hat{D}_{t} + r_{K,t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t \quad\text{where}\quad \hat{K}_t \equiv \sum_{m=1}^M \hat{K}_{m,t}
   ```
 
-  The long-run debt-to-GDP ratio condition is also the same in both the nonstationary version in {eq}`EqUnbalGBC_DY` as well as the stationary version below because the endogenous side is a ratio of macroeconomic variables that are growing at the same rate.
+  The long-run debt-to-GDP ratio condition is also the same in both the nonstationary version in {eq}`EqUnbalGBC_DY` as well as the stationary version below because the endogenous side is a ratio of macroeconomic variables that are growing at the same rate, with the exception of already stationary $p_t$.
 
   ```{math}
   :label: EqStnrz_DY
-    \frac{D_t}{Y_t} = \frac{\hat{D}_t}{\hat{Y}_t} = \alpha_D \quad\text{for}\quad t\geq T
+    \frac{\hat{D}_t}{p_t\hat{Y}_t} = \alpha_D \quad\text{for}\quad t\geq T
   ```
 
   The three potential budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` are the last government equations to stationarize. In each of the cases, we simply divide both sides by $e^{g_y t}\tilde{N}_t$.
@@ -250,12 +258,12 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrzClosureRule_Gt
   \begin{split}
-    &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
+    &\hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t\hat{Y}_t \\
     &\text{where}\quad g_{g,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}p_t\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g p_t\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}p_t\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g p_t\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -265,12 +273,12 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrzClosureRule_TRt
   \begin{split}
-    &\hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: \hat{Y}_t \\
+    &\hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t\hat{Y}_t \\
     &\text{where}\quad g_{tr,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}p_t\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} p_t\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}p_t\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} p_t\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -280,12 +288,12 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrzClosureRule_TRGt
   \begin{split}
-    &\hat{G}_t + \hat{TR}_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t \quad\Rightarrow\quad \hat{G}_t = g_{trg,t}\:\alpha_g\:\hat{Y}_t \quad\text{and}\quad \hat{TR}_t = g_{trg,t}\:\alpha_{tr}\:\hat{Y}_t \\
+    &\hat{G}_t + \hat{TR}_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)p_t\hat{Y}_t \quad\Rightarrow\quad \hat{G}_t = g_{trg,t}\:\alpha_g\:p_t\hat{Y}_t \quad\text{and}\quad \hat{TR}_t = g_{trg,t}\:\alpha_{tr}\:p_t\hat{Y}_t \\
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}p_t\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}p_t\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```

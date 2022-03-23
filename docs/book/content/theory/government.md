@@ -46,6 +46,7 @@ Government spending is comprised of government provided pension benefits, lump s
     tr_{j,s,t} = \boldsymbol{\eta}_{t} TR_{t}
   ```
 
+(SecUBI)=
 #### Universal basic income
 
 [TODO: This section is far along but needs to be updated.]
@@ -159,7 +160,7 @@ Government spending is comprised of government provided pension benefits, lump s
   The government also chooses what percent of total infrastructure investment goes to each industry $\alpha_{I,m,t}$, although these are exogenously calibrated parameters in the model.
   ```{math}
   :label: EqUnbalGBC_Igmt
-    I_{g,m,t} = \alpha_{I,m,t}\: I_{g,t} \quad\forall t
+    I_{g,m,t} = \alpha_{I,m,t}\: I_{g,t} \quad\forall m,t
   ```
 
   The stock of public capital (i.e., infrastructure) in each industry $m$ evolves according to the law of motion,
