@@ -146,8 +146,6 @@ def inner_loop(outer_loop_vars, p, client):
     # unpack variables to pass to function
     bssmat, nssmat, r_p, w, Y, BQ, TR, factor = outer_loop_vars
 
-    # print('IN inner looPPP -- r, w, Y = ', r, w, Y)
-
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
@@ -197,11 +195,13 @@ def inner_loop(outer_loop_vars, p, client):
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     # Find a intermediate Y using temp K_g, K, L
     Y = firm.get_Y(K, K_g, L, p, 'SS')
+    print('First Y = ', Y)
     # print('Inner loop get Y 1 = ', Y)
     # Now update for a final Y and K_g
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     Y = firm.get_Y(K, K_g, L, p, 'SS')
+    print('Second Y = ', Y)
     # print('Inner loop get Y 2 = ', Y)
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
@@ -573,10 +573,7 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        if p.zeta_K[-1] == 1.0:
-            rguess = p.world_int_rate[-1]
-        else:
-            rguess = p.initial_guess_r_SS
+        rguess = p.initial_guess_r_SS
         if p.use_zeta:
             b_guess = np.ones((p.S, p.J)) * 0.0055
             n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
@@ -629,10 +626,7 @@ def run_SS(p, client=None):
             else:
                 b_guess = np.ones((p.S, p.J)) * 0.07
                 n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-            if p.zeta_K[-1] == 1.0:
-                rguess = p.world_int_rate[-1]
-            else:
-                rguess = p.initial_guess_r_SS
+            rguess = p.initial_guess_r_SS
             wguess = firm.get_w_from_r(rguess, p, 'SS')
             TRguess = p.initial_guess_TR_SS
             Yguess = TRguess / p.alpha_T[-1]
