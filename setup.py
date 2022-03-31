@@ -28,8 +28,16 @@ setuptools.setup(
     },
     include_packages=True,
     install_requires=[
-        "mkl", "psutil", "scipy", "pandas", "matplotlib", "dask",
-        "distributed", "paramtools"
+        "python>=3.7.7",
+        "mkl>=2021.4.0",
+        "psutil",
+        "scipy>=1.7.1",
+        "pandas>=1.2.5",
+        "matplotlib",
+        "dask>=2.30.0",
+        "distributed>=2.30.1",
+        "paramtools>=0.15.0",
+        "requests"
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
