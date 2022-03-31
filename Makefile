@@ -28,7 +28,7 @@ clean:
 
 .PHONY=package
 package:
-	@pbrelease OG-Core ogcore 0.0.0 --local
+	@pbrelease OG-Core ogcore 0.8.0 --local
 
 .PHONY=pytest
 pytest:
