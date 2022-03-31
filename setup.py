@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="ogcore",
     version="0.8.0",
-    author="Jason DeBacker and Richard W. Evans"
+    author="Jason DeBacker and Richard W. Evans",
     license="CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
     description="A general equilibribum overlapping generations model for fiscal policy analysis",
     long_description_content_type="text/markdown",
@@ -27,8 +27,8 @@ setuptools.setup(
         ]
     },
     include_packages=True,
+    python_requires=">=3.7.7",
     install_requires=[
-        "python>=3.7.7",
         "mkl>=2021.4.0",
         "psutil",
         "scipy>=1.7.1",
