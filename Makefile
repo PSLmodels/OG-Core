@@ -26,10 +26,6 @@ clean:
 	@find . -name *cache -maxdepth 1 -exec rm -r {} \;
 	@conda uninstall ccc --yes --quiet 2>&1 > /dev/null
 
-.PHONY=package
-package:
-	@pbrelease OG-Core ogcore 0.8.1 --local
-
 .PHONY=pytest
 pytest:
 	@cd ogcore ; pytest -W ignore
