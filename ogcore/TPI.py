@@ -581,7 +581,14 @@ def run_TPI(p, client=None):
         if p.baseline:
             K_g0 = p.initial_Kg_ratio * Ynew[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, 'TPI')
+        print('K_g first = ', K_g.max())
         Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
+        if not p.baseline_spending:
+            I_g = fiscal.get_I_g(Ynew, p.alpha_I)
+        if p.baseline:
+            K_g0 = p.initial_Kg_ratio * Ynew[0]
+        K_g = fiscal.get_K_g(K_g0, I_g, p, 'TPI')
+        print('K_g second = ', K_g.max())
         rnew = r.copy()
         rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         # For case where economy is small open econ
