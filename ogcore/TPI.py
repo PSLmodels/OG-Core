@@ -502,6 +502,12 @@ def run_TPI(p, client=None):
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
 
+        # r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
+        # K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
+        # MPKg = firm.get_MPx(Y[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
+        # r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T], K_g[:p.T],
+        #                          D[:p.T], MPKg[:p.T], p, 'TPI')
+
         outer_loop_vars = (r_p, w, BQ, TR, theta)
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
