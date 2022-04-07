@@ -16,7 +16,7 @@ import pytest
 def call_run_ogcore_example():
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     path = Path(cur_path)
-    roe_fldr = os.path.join(path.parent.parent, "run_examples")
+    roe_fldr = os.path.join(path.parent, "run_examples")
     roe_file_path = os.path.join(roe_fldr, "run_ogcore_example.py")
     spec = importlib.util.spec_from_file_location(
         'run_ogcore_example.py', roe_file_path)
@@ -43,7 +43,7 @@ def test_run_ogcore_example(f=call_run_ogcore_example):
     # Delete directory created by run_ogcore_example.py
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     path = Path(cur_path)
-    roe_output_dir = os.path.join(path.parent.parent, "run_examples",
+    roe_output_dir = os.path.join(path.parent, "run_examples",
                                   "OUTPUT_BASELINE")
     shutil.rmtree(roe_output_dir)
 
@@ -59,13 +59,13 @@ def test_run_ogcore_example_output(f=call_run_ogcore_example):
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     path = Path(cur_path)
     expected_df = pd.read_csv(os.path.join(
-        path.parent.parent, "run_examples",
+        path.parent, "run_examples",
         "expected_ogcore_example_output.csv"))
     # read in output from this run
     test_df = pd.read_csv(os.path.join(
-        path.parent.parent, "run_examples", "ogcore_example_output.csv"))
+        path.parent, "run_examples", "ogcore_example_output.csv"))
     # Delete directory created by run_ogcore_example.py
-    roe_output_dir = os.path.join(path.parent.parent, "run_examples",
+    roe_output_dir = os.path.join(path.parent, "run_examples",
                                   "OUTPUT_BASELINE")
     shutil.rmtree(roe_output_dir)
 
