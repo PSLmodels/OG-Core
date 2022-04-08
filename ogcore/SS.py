@@ -195,14 +195,10 @@ def inner_loop(outer_loop_vars, p, client):
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     # Find a intermediate Y using temp K_g, K, L
     Y = firm.get_Y(K, K_g, L, p, 'SS')
-    print('First Y = ', Y)
-    # print('Inner loop get Y 1 = ', Y)
     # Now update for a final Y and K_g
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     Y = firm.get_Y(K, K_g, L, p, 'SS')
-    print('Second Y = ', Y)
-    # print('Inner loop get Y 2 = ', Y)
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
@@ -367,6 +363,7 @@ def SS_solver(bmat, nmat, r_p, w, Y, BQ, TR, factor, p, client,
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, 'SS')
     MPKg = firm.get_MPx(Yss, K_g_ss, p.gamma_g, p, 'SS')
     r_p_ss = aggr.get_r_p(rss, r_gov_ss, Kss, K_g_ss, Dss, MPKg, p, 'SS')
+    print('Diff in RP = ', r_p_ss - r_p)
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
@@ -537,7 +534,7 @@ def SS_fsolve(guesses, *args):
     error_r_p = new_r_p - r_p
     # Check and punish violations of the bounds on the interest rate
     if new_r + p.delta <= 0:
-        error_r = 1e9
+        error_r_p = 1e9
     error_w = new_w - w
     error_Y = new_Y - Y
     error_BQ = new_BQ - BQ

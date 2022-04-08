@@ -181,23 +181,23 @@ filename8 = os.path.join(
 @pytest.mark.local
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-                        #   (True, param_updates2, filename2),
-                        #   (True, {}, filename1),
-                        #   (False, {}, filename3),
-                        #   (False, param_updates4, filename4),
-                        #   (True, param_updates5, filename5),
-                        #   (True, param_updates6, filename6),
-                        #   (True, param_updates7, filename7),
+                          (True, param_updates2, filename2),
+                          (True, {}, filename1),
+                          (False, {}, filename3),
+                          (False, param_updates4, filename4),
+                          (True, param_updates5, filename5),
+                          (True, param_updates6, filename6),
+                          (True, param_updates7, filename7),
                           (True, param_updates8, filename8)
                         ],
                          ids=[
-                            #  'Baseline, balanced budget',
-                            # 'Baseline',
-                            #   'Reform',
-                            # 'Reform, baseline spending',
-                            #   'Baseline, small open',
-                            #   'Baseline, small open some periods',
-                            #   'Baseline, delta_tau = 0',
+                              'Baseline, balanced budget',
+                              'Baseline',
+                              'Reform',
+                              'Reform, baseline spending',
+                              'Baseline, small open',
+                              'Baseline, small open some periods',
+                              'Baseline, delta_tau = 0',
                               'Baseline, Kg > 0'
                               ])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,

@@ -14,6 +14,7 @@ from ogcore import firm
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
+
 @pytest.fixture(scope="module")
 def dask_client():
     cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
@@ -150,25 +151,20 @@ filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
 param_updates3 = {'baseline_spending': True}
 filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
 # Parameterize the baseline, small open econ case
-param_updates4 = {'zeta_K': [1.0]}
+param_updates4 = {'zeta_K': [1.0], 'initial_guess_r_SS': 0.10}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 
 
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates1, filename1),
-#                           (True, param_updates2, filename2),
-#                           (False, param_updates3, filename3),
-#                           (True, param_updates4, filename4)],
-#                          ids=['Baseline', 'Baseline, budget balance',
-#                               'Reform, baseline spending=True',
-#                               'Baseline, small open'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [
+                         [(True, param_updates1, filename1),
+                          (True, param_updates2, filename2),
+                          (False, param_updates3, filename3),
                           (True, param_updates4, filename4)],
-                         ids=[
+                         ids=['Baseline', 'Baseline, budget balance',
+                              'Reform, baseline spending=True',
                               'Baseline, small open'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
@@ -211,7 +207,7 @@ param_updates5 = {'zeta_K': [1.0], 'budget_balance': True,
                   'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
-                  'zeta_D': [0.0], 'initial_guess_r_SS': 0.08,
+                  'zeta_D': [0.0], 'initial_guess_r_SS': 0.02,
                   'initial_guess_TR_SS': 0.02}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 
@@ -295,13 +291,18 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
 
     # Solve for r_p because of new sol'n algo
     r_gov = fiscal.get_r_gov(r, p)
-    K = firm.get_K_from_Y(Y, r, p, 'SS')
+    D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
+        fiscal.get_D_ss(r_gov, Y, p)
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
-    D, _, _, _, _, _ = fiscal.get_D_ss(r, Y, p)
-    r_p = aggregates.get_r_p(r, r_gov, K, K_g,
-                             D, MPKg, p, 'SS')
+    K = firm.get_K_from_Y(Y, r, p, 'SS')
+    r_p = aggregates.get_r_p(r, r_gov, K, K_g, D, MPKg, p, 'SS')
+    print('RP in test = ', r_p)
+    print('D in test = ', D)
+    print('K in test = ', K)
+    print('Y in test = ', Y)
+
 
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
@@ -312,6 +313,10 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
+
+    for i, v in enumerate(expected_tuple):
+        print('Max diff = ', np.absolute(test_tuple[i] - v).max())
+        print('Checking item = ', i)
 
     for i, v in enumerate(expected_tuple):
         print('Max diff = ', np.absolute(test_tuple[i] - v).max())
