@@ -3245,6 +3245,25 @@
             }
         }
     },
+    "pop_base_yr": {
+        "title": "Base year of population data to load or download",
+        "description": "Base year of population data to load or download",
+        "section_1": "Demographic Parameters",
+        "notes": "",
+        "type": "int",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": 2018
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 2012,
+                "max": 2018
+            }
+        }
+    },
     "omega": {
         "title": "Population distribution (fraction at each age) over the time path.",
         "description": "Population distribution (fraction at each age) over the time path.",
