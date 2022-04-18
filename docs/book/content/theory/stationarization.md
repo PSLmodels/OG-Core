@@ -185,14 +185,19 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   We can stationarize the simple expressions for total government spending on household transfers $TR_t$ in {eq}`EqUnbalGBCtfer` and on public goods $G_t$ in {eq}`EqUnbalGBC_Gt` by dividing both sides by $e^{g_y t}\tilde{N}_t$,
 
-   ```{math}
+  ```{math}
+  :label: EqStnrzNomGDP
+    p_t \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t} \hat{Y}_{m,t} \quad\forall t
+  ```
+
+  ```{math}
   :label: EqStnrzTfer
-    \hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t \hat{Y}_t \quad\forall t \quad\text{where}\quad p_t \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t}\hat{Y}_{m,t}
+    \hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t \hat{Y}_t \quad\forall t
   ```
 
   ```{math}
   :label: EqStnrz_Gt
-    \hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t \hat{Y}_t \quad\forall t \quad\text{where}\quad p_t \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t}\hat{Y}_{m,t}
+    \hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t \hat{Y}_t \quad\forall t
   ```
 
   where the time varying multipliers $g_{g,t}$ and $g_{tr,t}$, respectively, are defined in {eq}`EqStnrzClosureRule_Gt` and {eq}`EqStnrzClosureRule_TRt` below. These multipliers $g_{g,t}$ and $g_{tr,t}$ do not have a ``$\:\,\hat{}\,\:$'' on them because their specifications {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclosure_TRt` that are functions of nonstationary variables are equivalent to {eq}`EqStnrzClosureRule_Gt` and {eq}`EqStnrzClosureRule_TRt` specified in stationary variables.
