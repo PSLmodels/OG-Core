@@ -22,18 +22,27 @@ Government levies taxes on households and firms, funds public pensions, and make
 
 ### Spending
 
-Government spending is comprised of government provided pension benefits, lump sum transfers, universal basic income payments, infrastructure investment, spending on public goods, and interest payments on debt.  Below, we describe the transfer spending amounts.  Spending on infrastructure, public goods, and interest are described in {ref}`SecUnbalGBCbudgConstr`.
+  Government spending is comprised of government provided pension benefits, lump sum transfers, universal basic income payments, infrastructure investment, spending on public goods, and interest payments on debt.  Below, we describe the transfer spending amounts.  Spending on infrastructure, public goods, and interest are described in {ref}`SecUnbalGBCbudgConstr`. Because government spending on lump-sum transfers to households $TR_t$, public goods $G_t$, and government infrastructure capital $I_g$ are all functions of nominal GDP, we define nominal GDP here,
+
+  ```{math}
+  :label: EqGovtNomGDP
+    p_t Y_t \equiv \sum_{m=1}^M p_{m,t} Y_{m,t} \quad\forall t
+  ```
+
+  where nominal GDP $p_t Y_t$ is in terms of the numeraire good of industry-$M$ output and $Y_t$ alone is in terms of composite consumption.
+
+
 #### Pensions
 
 [TODO: Add description of government pensions and the relevant parameters]
 
 #### Lump sum transfers:
 
- Aggregate non-pension transfers to households are assumed to be a fixed fraction $\alpha_{tr}$ of GDP each period:
+  Aggregate non-pension transfers to households are assumed to be a fixed fraction $\alpha_{tr}$ of GDP each period:
 
   ```{math}
   :label: EqUnbalGBCtfer
-    TR_t = g_{tr,t}\:\alpha_{tr}\: p_t Y_t \quad\forall t \quad\text{where}\quad p_t Y_t \equiv \sum_{m=1}^M p_{m,t}Y_{m,t}
+    TR_t = g_{tr,t}\:\alpha_{tr}\: p_t Y_t \quad\forall t
   ```
   where total government transfers to households $TR_t$ and GDP ($p_t Y_t$) are in terms of the numeraire good and the term $Y_t$ is in terms of the composite good.
 
@@ -147,7 +156,7 @@ Government spending is comprised of government provided pension benefits, lump s
 
   ```{math}
   :label: EqUnbalGBC_Gt
-    G_t = g_{g,t}\:\alpha_{g}\: p_t Y_t \quad\forall t \quad\text{where}\quad p_t Y_t \equiv \sum_{m=1}^M p_{m,t}Y_{m,t}
+    G_t = g_{g,t}\:\alpha_{g}\: p_t Y_t \quad\forall t
   ```
 
   Similar to transfers $TR_t$, the time dependent multiplier $g_{g,t}$ in front of the right-hand-side of {eq}`EqUnbalGBC_Gt` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We make this more specific in the next section.
