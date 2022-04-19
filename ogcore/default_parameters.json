@@ -3251,7 +3251,6 @@
         "section_1": "Demographic Parameters",
         "notes": "",
         "type": "int",
-        "number_dims": 1,
         "value": [
             {
                 "value": 2018
