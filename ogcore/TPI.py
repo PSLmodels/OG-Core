@@ -276,7 +276,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) =\
         initial_values
     guesses_b, guesses_n = guesses
-    r, w, r_p, BQ, TR, theta = outer_loop_vars
+    r_p, w, BQ, TR, theta = outer_loop_vars
 
     # compute bq
     bq = household.get_bq(BQ, None, p, 'TPI')
@@ -501,13 +501,8 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-        r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
-        K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
-        MPKg = firm.get_MPx(Y[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
-        r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T], K_g[:p.T],
-                                 D[:p.T], MPKg[:p.T], p, 'TPI')
 
-        outer_loop_vars = (r, w, r_p, BQ, TR, theta)
+        outer_loop_vars = (r_p, w, BQ, TR, theta)
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
@@ -586,7 +581,6 @@ def run_TPI(p, client=None):
         if p.baseline:
             K_g0 = p.initial_Kg_ratio * Ynew[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, 'TPI')
-        Ynew = firm.get_Y(K[:p.T], K_g[:p.T], L[:p.T], p, 'TPI')
         rnew = r.copy()
         rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         # For case where economy is small open econ
@@ -595,6 +589,7 @@ def run_TPI(p, client=None):
         MPKg = firm.get_MPx(Ynew[:p.T], K_g[:p.T], p.gamma_g, p, 'TPI')
         r_p_new = aggr.get_r_p(rnew[:p.T], r_gov_new[:p.T], K[:p.T], K_g[:p.T],
                                Dnew[:p.T], MPKg[:p.T], p, 'TPI')
+
         # compute w
         wnew = firm.get_w(Ynew[:p.T], L[:p.T], p, 'TPI')
 
@@ -620,6 +615,8 @@ def run_TPI(p, client=None):
         # update vars for next iteration
         w[:p.T] = utils.convex_combo(wnew[:p.T], w[:p.T], p.nu)
         r[:p.T] = utils.convex_combo(rnew[:p.T], r[:p.T], p.nu)
+        r_gov[:p.T] = utils.convex_combo(r_gov_new[:p.T], r_gov[:p.T], p.nu)
+        r_p[:p.T] = utils.convex_combo(r_p_new[:p.T], r_p[:p.T], p.nu)
         BQ[:p.T] = utils.convex_combo(BQnew[:p.T], BQ[:p.T], p.nu)
         D[:p.T] = Dnew[:p.T]
         Y[:p.T] = utils.convex_combo(Ynew[:p.T], Y[:p.T], p.nu)
@@ -629,8 +626,8 @@ def run_TPI(p, client=None):
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         print('w diff: ', (wnew[:p.T] - w[:p.T]).max(),
               (wnew[:p.T] - w[:p.T]).min())
-        print('r diff: ', (rnew[:p.T] - r[:p.T]).max(),
-              (rnew[:p.T] - r[:p.T]).min())
+        print('r_p diff: ', (r_p_new[:p.T] - r_p[:p.T]).max(),
+              (r_p_new[:p.T] - r_p[:p.T]).min())
         print('BQ diff: ', (BQnew[:p.T] - BQ[:p.T]).max(),
               (BQnew[:p.T] - BQ[:p.T]).min())
         print('TR diff: ', (TR_new[:p.T]-TR[:p.T]).max(),
@@ -639,7 +636,7 @@ def run_TPI(p, client=None):
               (Ynew[:p.T] - Y[:p.T]).min())
 
         TPIdist = np.array(
-            list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
+            list(utils.pct_diff_func(r_p_new[:p.T], r_p[:p.T])) +
             list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
             list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T])) +
             list(utils.pct_diff_func(BQnew[:p.T], BQ[:p.T]).flatten()) +
