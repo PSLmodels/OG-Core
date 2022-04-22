@@ -495,9 +495,10 @@ def get_pm(w, KL_ratio, p):
     p_m = (
         (w / (
             p.Z * (1 - p.gamma) ** (1 / p.epsilon))) * (
-                p.gamma ** (1 / p.epsilon) * KL_ratio ** ((p.epsilon -1) / p.epsilon) +
-                (1 - p.gamma) ** (1 / p.epsilon)) **
-                (1 / (1 - p.epsilon)))
+                p.gamma ** (1 / p.epsilon) * KL_ratio **
+                ((p.epsilon - 1) / p.epsilon) +
+                 (1 - p.gamma) ** (1 / p.epsilon)) **
+        (1 / (1 - p.epsilon)))
 
     return p_m
 

@@ -458,6 +458,6 @@ def get_ptilde(p_m, alpha_c):
     Returns:
         p_tilde (array_like): price of composite good
     '''
-    p_tilde = np.prod((p_m/ alpha_c) ** alpha_c)
+    p_tilde = np.prod((p_m / alpha_c) ** alpha_c)
 
     return p_tilde
