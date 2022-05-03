@@ -331,7 +331,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             payroll_tax_revenue, iit_revenue)
 
 
-def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
+def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     r'''
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
@@ -342,10 +342,11 @@ def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
     Args:
         r (array_like): the real interest rate
         r_gov (array_like): the real interest rate on government debt
-        K (array_like): aggregate private capital
+        K_vec (array_like): aggregate capital demand from each industry
         K_g (array_like): aggregate public capital
         D (array_like): aggregate government debt
-        MPKg (array_like): marginal product of government capital
+        MPKg_vec (array_like): marginal product of government capital
+            for each industry
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
@@ -356,12 +357,28 @@ def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
     '''
     if method == 'SS':
         tau_b = p.tau_b[-1]
+        T = 1
     else:
+        T = p.T
         tau_b = p.tau_b[:p.T]
-    r_K = r + (1 - tau_b) * MPKg * (K_g / K)
-    r_p = ((r_gov * D) + (r_K * K)) / (D + K)
-
-    return r_p
+        if p.M > 1:
+            tau_b = tau_b.reshape((p.T, 1))
+            K_g = K_g.reshape((p.T, 1))
+            r = r.reshape((p.T, 1))
+            r_gov = r_gov.reshape((p.T, 1))
+            D = D.reshape((p.T, 1))
+    if p.M > 1:
+        r_K = (
+            r + (
+                 ((1 - tau_b) * p_m * MPKg_vec *
+                  K_g).sum(axis=-1).reshape((T, 1)) /
+                 K_vec.sum(axis=-1).reshape((T, 1))))
+        r_p = (((r_gov * D) + (r_K * K_vec.sum(axis=-1).reshape((T, 1)))) /
+               (D + K_vec.sum(axis=-1).reshape((T, 1))))
+    else:
+        r_K = r + (((1 - tau_b) * p_m * MPKg_vec * K_g)) / K_vec
+        r_p = ((r_gov * D) + (r_K * K_vec)) / (D + K_vec)
+    return np.squeeze(r_p)
 
 
 def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,

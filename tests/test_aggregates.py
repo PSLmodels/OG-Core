@@ -422,27 +422,65 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
     assert(np.allclose(revenue, expected))
 
 
-test_data = [(0.04, 0.02, 2.0, 0.0, 4.0, 0.0, 0.026666667),
-             (np.array([0.05, 0.03]), np.array([0.02, 0.01]),
-              np.array([3.0, 4.0]), np.array([0.0, 0.0]),
-              np.array([7.0, 6.0]), np.array([0.0, 0.0]),
-              np.array([0.029, 0.018])),
-             (0.04, 0.02, 2.0, 0.0, 0.0, 0.0, 0.04),
-             (np.array([0.05, 0.03]), np.array([0.02, 0.01]),
-              np.array([3.0, 4.0]), np.array([1.0, 2.0]),
-              np.array([7.0, 6.0]), np.array([0.04, 0.2]),
-              np.array([0.029 + 0.3 * 0.038572 * 1.0 / 3.0, 0.018 + 0.4 * 0.19286 * 2.0 / 4.0]))]
+test_data = [
+    (
+        0.04, 0.02, np.array([1.0]), np.array([2.0]), 0.0, 4.0,
+        np.array([0.0]), 'SS', 0.026666667,
+    ),
+    (
+        np.array([0.05, 0.03, 0.03]), np.array([0.02, 0.01, 0.01]),
+        np.array([1.0, 1.0, 1.0]),
+        np.array([3.0, 4.0, 4.0]), np.array([0.0, 0.0, 0.0]),
+        np.array([7.0, 6.0, 6.0]), np.array([0.0, 0.0,  0.0]), 'TPI',
+        np.array([0.029, 0.018, 0.018])
+    ),
+    (
+        0.04, 0.02, np.array([1.0]), np.array([2.0]), 0.0, 0.0,
+        np.array([0.0]), 'SS', 0.04
+    ),
+    (
+        np.array([0.05, 0.03, 0.03]), np.array([0.02, 0.01, 0.01]),
+        np.array([1.0, 1.0, 1.0]),
+        np.array([3.0, 4.0, 4.0]), np.array([1.0, 2.0, 2.0]),
+        np.array([7.0, 6.0, 6.0]), np.array([0.04, 0.2, 0.2]), 'TPI',
+        np.array([
+            0.029 + 0.3 * 0.038572 * 1.0 / 3.0,
+            0.018 + 0.4 * 0.19286 * 2.0 / 4.0,
+            0.018 + 0.4 * 0.19286 * 2.0 / 4.0])
+    ),
+    (
+        0.04, 0.02, np.array([1.0, 1.0]), np.array([2.0, 2.0]), 0.0, 0.0,
+        np.array([0.0]), 'SS', np.array([0.04, 0.04])
+    ),
+    (
+        np.array([0.05, 0.03, 0.03]), np.array([0.02, 0.01, 0.01]),
+        np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]),
+        np.array([[3.0, 3.0, 3.0], [4.0, 4.0, 4.0], [4.0, 4.0, 4.0]]),
+        np.array([1.0, 2.0, 2.0]),
+        np.array([7.0, 6.0, 6.0]),
+        np.array([[0.04, 0.04, 0.04], [0.2, 0.2, 0.2], [0.2, 0.2, 0.2]]),
+        'TPI',
+        np.array([0.04410725, 0.08762, 0.08762])
+    )]
 
 
-@pytest.mark.parametrize('r,r_gov,K,K_g,D,MPKg,expected', test_data,
-                         ids=['scalar', 'vector', 'no debt', 'vector,MPKg>0'])
-def test_get_r_p(r, r_gov, K, K_g, D, MPKg, expected):
+@pytest.mark.parametrize('r,r_gov,p_m,K_vec,K_g,D,MPKg_vec,method,expected',
+                         test_data, ids=[
+                             'SS, M=1', 'TPI, M=1', 'no debt',
+                             'TPI,MPKg>0', 'SS, M>1', 'TPI, M>1'])
+def test_get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, method, expected):
     """
     Test function to compute interest rate on household portfolio.
     """
     p = Specifications()
     p.update_specifications({'T': 3})
-    r_p_test = aggr.get_r_p(r, r_gov, K, K_g, D, MPKg, p, 'SS')
+    if method == 'TPI' and p_m.ndim > 1:
+        p.M = p_m.shape[-1]
+    elif method == 'SS':
+        p.M = len(p_m)
+    else:
+        p.M = 1
+    r_p_test = aggr.get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method)
 
     assert(np.allclose(r_p_test, expected))
 
