@@ -475,7 +475,7 @@ def get_cost_of_capital(r, p, method):
     return cost_of_capital
 
 
-def get_pm(w, KL_ratio, p):
+def get_pm(w, KL_ratio, p, method):
     r'''
     Find prices for outputs from each industry.
 
@@ -485,16 +485,20 @@ def get_pm(w, KL_ratio, p):
     Args:
         w (array_like): the wage rate
         KL_ratio (array_like): ratio of capital to labor
-        Z (array_like): total factor productivity
-        gamma (array_like): capital's share of output
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
         p_m (array_like): output prices for each industry
     '''
+    if method == 'SS':
+        Z = p.Z[-1]
+    else:
+        Z = p.Z[:p.T]
     # p_m = (w / ((1 - gamma) * Z)) * (KL_ratio ** (-gamma))
     p_m = (
         (w / (
-            p.Z * (1 - p.gamma) ** (1 / p.epsilon))) * (
+            Z * (1 - p.gamma) ** (1 / p.epsilon))) * (
                 p.gamma ** (1 / p.epsilon) * KL_ratio **
                 ((p.epsilon - 1) / p.epsilon) +
                  (1 - p.gamma) ** (1 / p.epsilon)) **

@@ -35,7 +35,7 @@ guesses1 = np.array([
     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args1 = (bssmat, nssmat, None, None, p1, None)
 expected1 = np.array([
-    -0.03640424626041604, 0.2262064580426968, 1.4598033016971916,
+    -0.03640424626041604, -0.03002637958804053, 0.2262064580426968, 0.0, 1.4598033016971916,
     -0.00161369, -0.01822709, -0.01675017, 0.006676, 0.0104632,
     -0.01955018, -0.00296457, 0.13138229715274724, 0.1237126490720427])
 # Parameterize the reform, closed econ case
@@ -45,7 +45,7 @@ guesses2 = np.array([
     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
 args2 = (bssmat, nssmat, None, 0.51, p2, None)
 expected2 = np.array([
-    -0.0389819118896058, 0.253354429177328, 1.4764069856763156,
+    -0.0389819118896058, -0.03275578110093917, 0.253354429177328, 0.0, 1.4764069856763156,
     -0.00165626, -0.01503618, -0.01407456, 0.00661677, 0.01038606,
     -0.01932943, -0.00294703, 0.132876628710868])
 # Parameterize the reform, closed econ, baseline spending case
@@ -56,7 +56,7 @@ guesses3 = np.array([
     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07])
 args3 = (bssmat, nssmat, 0.13, 0.51, p3, None)
 expected3 = np.array([
-    -0.042611174492217574, 0.2942852551844308, 0.43144008183325194,
+    -0.042611174492217574,  -0.03660486260948588, 0.2942852551844308, 0.0, 0.43144008183325194,
     0.0044546, 0.00790648, 0.01043014, 0.00872496, 0.01242235,
     0.00952339, -0.00284511, 0.0])
 # Parameterize the baseline, partial open economy case (default)
@@ -65,7 +65,7 @@ guesses4 = np.array([
     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args4 = (bssmat, nssmat, None, None, p4, None)
 expected4 = np.array([
-    -0.04501723939772713, 0.32336315872334676, 1.5404736783359936,
+    -0.04501723939772713, -0.039160814474571426, 0.32336315872334676, 0.0, 1.5404736783359936,
     -0.00173474, 0.00199568, 0.00591891, 0.00653568, 0.01029101,
     0.0075058, 0.00325183, 0.13864263105023944, 0.10922623253142945])
 # Parameterize the baseline, small open econ case
@@ -75,7 +75,7 @@ guesses5 = np.array([
     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args5 = (bssmat, nssmat, None, 0.51, p5, None)
 expected5 = np.array([
-    -0.02690768327226259, 0.1376969417785776, 1.44721176202231, -0.00148021,
+    -0.02690768327226259, -0.019999999999999962, 0.1376969417785776, 0.0, 1.44721176202231, -0.00148021,
     0.00239001, 0.00638136,  0.00683071,  0.01065305, 0.00799657,
     0.00336337, 0.1302490585820079, 0.11156343085283874])
 # Parameterize the baseline closed economy, delta tau = 0 case
@@ -86,7 +86,7 @@ guesses6 = np.array([
     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args6 = (bssmat, nssmat, None, None, p6, None)
 expected6 = np.array([
-    -0.051097905293268894, 0.42739129061380643, 1.5904342991581968,
+    -0.051097905293268894,  -0.047817638192649635, 0.42739129061380643, 0.0, 1.5904342991581968,
     -0.00187832, 0.00177827,  0.00566193, 0.00637141, 0.01008918,
     0.00723656, 0.00319034, 0.1431390869242377, 0.10614753083674845])
 
@@ -115,7 +115,9 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
 
     # take old format for guesses and put in new format
     r_p = guesses[0]
+    r = guesses[0]
     w = firm.get_w_from_r(r_p, p, 'SS')
+    p_m = np.array([1.0])
 
     if p.baseline:
         BQ = guesses[3:-2]
@@ -132,11 +134,12 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
             Y = TR / p.alpha_T[-1]
 
     if p.baseline:
-        new_guesses = [r_p, w, Y, BQ, TR, factor]
+        new_guesses = [r_p, r, w, p_m, Y, BQ, TR, factor]
     else:
-        new_guesses = [r_p, w, Y, BQ, TR]
+        new_guesses = [r_p, r, w, p_m, Y, BQ, TR]
 
     test_list = SS.SS_fsolve(new_guesses, *args)
+    print('TEST LIST = ', test_list)
     assert(np.allclose(np.hstack(np.array(test_list)), np.array(expected),
                        atol=1e-5))
 
@@ -299,18 +302,12 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     K = firm.get_K_from_Y(Y, r, p, 'SS')
     p_m = np.array([1.0])
     r_p = aggregates.get_r_p(r, r_gov, p_m, K, K_g, D, MPKg, p, 'SS')
-
-    print('RP in test = ', r_p)
-    print('D in test = ', D)
-    print('K in test = ', K)
-    print('Y in test = ', Y)
-
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r, r_p, w, p_m, Y, BQ, TR, factor)
+        outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
     else:
-        outer_loop_vars = (bssmat, nssmat, r, r_p, w, p_m, Y, BQ, TR, factor)
+        outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))

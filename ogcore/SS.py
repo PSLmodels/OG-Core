@@ -144,8 +144,9 @@ def inner_loop(outer_loop_vars, p, client):
 
     '''
     # unpack variables to pass to function
-    bssmat, nssmat, r, r_p, w, p_m, Y, BQ, TR, factor = outer_loop_vars
+    bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
 
+    p_m = np.array(p_m)  #TODO: why is this a list otherwise?
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
@@ -283,7 +284,7 @@ def inner_loop(outer_loop_vars, p, client):
     tr = household.get_tr(TR, None, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
-    new_p_m = firm.get_pm(new_w, KL_ratio_vec, p)
+    new_p_m = firm.get_pm(new_w, KL_ratio_vec, p, 'SS')
     new_p_m = new_p_m / new_p_m[-1]  # normalize prices by ind M
     new_p_tilde = aggr.get_ptilde(new_p_m, p.alpha_c)
 
@@ -307,7 +308,7 @@ def inner_loop(outer_loop_vars, p, client):
 
     # print('BQ at the end of inner loop: ', new_BQ)
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
-        new_w, new_TR, Y, new_factor, new_BQ, average_income_model
+        new_w, new_p_m, new_TR, Y, new_factor, new_BQ, average_income_model
 
 
 def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,

@@ -5,6 +5,7 @@ Functions to compute economic aggregates.
 '''
 
 # Packages
+from cmath import tau
 import numpy as np
 from ogcore import tax
 
@@ -376,7 +377,7 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
         r_p = (((r_gov * D) + (r_K * K_vec.sum(axis=-1).reshape((T, 1)))) /
                (D + K_vec.sum(axis=-1).reshape((T, 1))))
     else:
-        r_K = r + (((1 - tau_b) * p_m * MPKg_vec * K_g)) / K_vec
+        r_K = r + ((1 - tau_b) * p_m * MPKg_vec * K_g) / K_vec
         r_p = ((r_gov * D) + (r_K * K_vec)) / (D + K_vec)
     return np.squeeze(r_p)
 
