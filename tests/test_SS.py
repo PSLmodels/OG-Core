@@ -297,19 +297,20 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
     K = firm.get_K_from_Y(Y, r, p, 'SS')
-    r_p = aggregates.get_r_p(r, r_gov, K, K_g, D, MPKg, p, 'SS')
+    p_m = np.array([1.0])
+    r_p = aggregates.get_r_p(r, r_gov, p_m, K, K_g, D, MPKg, p, 'SS')
+
     print('RP in test = ', r_p)
     print('D in test = ', D)
     print('K in test = ', K)
     print('Y in test = ', Y)
 
-
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r_p, w, Y, BQ, TR, factor)
+        outer_loop_vars = (bssmat, nssmat, r, r_p, w, p_m, Y, BQ, TR, factor)
     else:
-        outer_loop_vars = (bssmat, nssmat, r_p, w, Y, BQ, TR, factor)
+        outer_loop_vars = (bssmat, nssmat, r, r_p, w, p_m, Y, BQ, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
@@ -459,7 +460,7 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     guesses, r, w, bq, tr, _, factor, j = input_tuple
-    args = (r, w, bq, tr, ubi_j, factor, j, p)
+    args = (r, w, 1.0, bq, tr, ubi_j, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
     print(repr(test_list))
 

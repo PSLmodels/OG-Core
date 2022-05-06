@@ -302,7 +302,8 @@ test_data = [((r1, w1, b1, b_splus1_1, n1, bq1, net_tax1, tau_c1, p1),
 def test_get_cons(model_args, expected):
     # Test consumption calculation
     r, w, b, b_splus1, n, bq, net_tax, tau_c, p = model_args
-    test_value = household.get_cons(r, w, b, b_splus1, n, bq, net_tax,
+    p_tilde = np.ones_like(w)
+    test_value = household.get_cons(r, w, p_tilde, b, b_splus1, n, bq, net_tax,
                                     p.e, tau_c, p)
 
     assert np.allclose(test_value, expected)
@@ -436,13 +437,17 @@ def test_FOC_savings(model_vars, params, expected):
     # Test FOC condition for household's choice of savings
     (r, w, b, b_splus1, n, BQ, factor, tr, ubi, theta, tau_c, etr_params,
      mtry_params, t, j, method) = model_vars
+    if method == 'TPI':
+        p_tilde = np.ones_like(w)
+    else:
+        p_tilde = 1.0
     if j is not None:
         test_value = household.FOC_savings(
-            r, w, b, b_splus1, n, BQ, factor, tr, ubi, theta, params.e[:, j],
+            r, w, p_tilde, b, b_splus1, n, BQ, factor, tr, ubi, theta, params.e[:, j],
             params.rho, tau_c, etr_params, mtry_params, t, j, params, method)
     else:
         test_value = household.FOC_savings(
-            r, w, b, b_splus1, n, BQ, factor, tr, ubi, theta,
+            r, w, p_tilde, b, b_splus1, n, BQ, factor, tr, ubi, theta,
             np.squeeze(params.e), params.rho, tau_c, etr_params, mtry_params,
             t, j, params, method)
     assert np.allclose(test_value, expected)
@@ -569,8 +574,12 @@ def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply
     (r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, tau_c,
      etr_params, mtrx_params, t, j, method) = model_vars
+    if method == 'TPI':
+        p_tilde = np.ones_like(w)
+    else:
+        p_tilde = 1.0
     test_value = household.FOC_labor(
-        r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, params.chi_n,
+        r, w, p_tilde, b, b_splus1, n, bq, factor, tr, ubi, theta, params.chi_n,
         params.e[:, j], tau_c, etr_params, mtrx_params, t, j, params,
         method)
 

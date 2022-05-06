@@ -42,7 +42,7 @@ def euler_equation_solver(guesses, *args):
     time.
 
     Args:
-        guesses (Numpy array): initial guesses for b and n, lenth 2S
+        guesses (Numpy array): initial guesses for b and n, length 2S
         args (tuple): tuple of arguments (r, w, bq, TR, factor, j, p)
         w (scalar): real wage rate
         bq (Numpy array): bequest amounts by age, length S
@@ -91,10 +91,10 @@ def euler_equation_solver(guesses, *args):
     error1[mask5] = 1e14
     error2[mask4] = 1e14
     taxes = tax.net_taxes(
-        r, w, p_tilde, b_s, n_guess, bq, factor, tr, ubi, theta,
+        r, w, b_s, n_guess, bq, factor, tr, ubi, theta,
         None, j, False, 'SS', p.e[:, j], p.etr_params[-1, :, :], p)
-    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, bq, taxes,
-                              p_tilde, p.e[:, j], p.tau_c[-1, :, j], p)
+    cons = household.get_cons(r, w, p_tilde, b_s, b_splus1, n_guess, bq, taxes,
+                              p.e[:, j], p.tau_c[-1, :, j], p)
     mask6 = cons < 0
     error1[mask6] = 1e14
     errors = np.hstack((error1, error2))
@@ -144,13 +144,13 @@ def inner_loop(outer_loop_vars, p, client):
 
     '''
     # unpack variables to pass to function
-    bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
+    bssmat, nssmat, r, r_p, w, p_m, Y, BQ, TR, factor = outer_loop_vars
 
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
     # w = firm.get_w_from_r(r, p, 'SS')
-    p_tilde = aggr.get_p_tilde(p_m, p.alpha_c)
+    p_tilde = aggr.get_ptilde(p_m, p.alpha_c)
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
     ubi = p.ubi_nom_array[-1, :, :] / factor
@@ -181,38 +181,96 @@ def inner_loop(outer_loop_vars, p, client):
         bssmat[:, j] = result.x[:p.S]
         nssmat[:, j] = result.x[p.S:]
 
+    b_splus1 = bssmat
+    b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
+                   list(bssmat[:-1, :]))
+
+    theta = tax.replacement_rate_vals(nssmat, w, factor, None, p)
+
+    etr_params_3D = np.tile(
+        np.reshape(p.etr_params[-1, :, :],
+                   (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
+
+    net_tax = tax.net_taxes(
+        r_p, w, b_s, nssmat, bq, factor, tr, ubi, theta, None, None,
+        False, 'SS', p.e, etr_params_3D, p)
+    c_s = household.get_cons(
+        r_p, w, p_tilde, b_s, b_splus1, nssmat, bq, net_tax, p.e,
+        p.tau_c[-1, :, :], p)
+    c_m = household.get_cm(c_s, p_m, p_tilde, p.alpha_c)
+    # C_m = aggr.get_C(c_m, p, 'SS')
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
-    w_open = firm.get_w_from_r(p.world_int_rate[-1], p, 'SS')
-    K_demand_open = firm.get_K(p.world_int_rate[-1], w_open, L, p, 'SS')
+
+    # Find gov't debt
     r_gov = fiscal.get_r_gov(r, p)
     D, D_d, D_f, new_borrowing, _, new_borrowing_f =\
         fiscal.get_D_ss(r_gov, Y, p)
-    K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
+    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
+    K_g = fiscal.get_K_g(0, I_g, p, 'SS')
 
-    # Find temporary values for K_g
+    # Find wage rate consistent with open economy interest rate
+    # this is an approximation - assumes only KL in rest of world
+    # production function
+    w_open = firm.get_w_from_r(p.world_int_rate[-1], p, 'SS')
+
+    # Find output, labor demand, capital demand for M-1 industries
+    L_vec = np.zeros(p.M)
+    K_vec = np.zeros(p.M)
+    KL_ratio_vec = np.zeros(p.M)
+    Y_vec = np.zeros(p.M)
+    C_vec = np.zeros(p.M)
+    K_demand_open_vec = np.zeros(p.M)
+    for m_ind in range(p.M-1):
+        C_m = aggr.get_C(c_m[:, m_ind], p, 'SS')
+        C_vec[m_ind] = C_m
+        KLrat_m = firm.get_KLratio(r, w, p, 'SS')
+        KYrat_m = firm.get_KY_ratio(r, p_m[m_ind], p, 'SS')
+        Y_vec[m_ind] = C_m
+        K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
+        L_vec[m_ind] = KLrat_m ** -1 * K_vec[m_ind]
+        KL_ratio_vec[m_ind] = KLrat_m
+        # will have a K_demand_open from each industry
+        K_demand_open_vec[m_ind] = firm.get_K(
+            p.world_int_rate[-1], w_open, L_vec[m_ind], p, 'SS')
+
+    # Find output, labor demand, capital demand for last industry
+    L_M = L - L_vec.sum()
+    K_demand_open_vec[-1] = firm.get_K(
+            p.world_int_rate[-1], w_open, L_M, p, 'SS')
+    K, K_d, K_f = aggr.get_K_splits(B, K_demand_open_vec.sum(), D_d, p.zeta_K[-1])
+    K_M = K - K_vec.sum()
+    C_vec[-1] = aggr.get_C(c_m[:, -1].reshape(p.S, 1), p, 'SS')
+    L_vec[-1] = L_M
+    K_vec[-1] = K_M
+    Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, 'SS')
+
+
+    Y = (p_m * Y_vec).sum()
+    # # Find temporary values for K_g
+    # I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
+    # K_g = fiscal.get_K_g(0, I_g, p, 'SS')
+    # # Find a intermediate Y using temp K_g, K, L
+    # Y = firm.get_Y(K, K_g, L, p, 'SS')
+    # # Now update for a final Y and K_g
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
-    # Find a intermediate Y using temp K_g, K, L
-    Y = firm.get_Y(K, K_g, L, p, 'SS')
-    # Now update for a final Y and K_g
-    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
-    K_g = fiscal.get_K_g(0, I_g, p, 'SS')
-    Y = firm.get_Y(K, K_g, L, p, 'SS')
+    # Y = firm.get_Y(K, K_g, L, p, 'SS')
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
-        new_r = firm.get_r(Y, K, p, 'SS')
-    new_w = firm.get_w(Y, L, p, 'SS')  # does this work for the open econ case?
+        new_r = firm.get_r(Y_vec[-1], K_vec[-1], p, 'SS')
+    new_w = firm.get_w(Y_vec[-1], L_vec[-1], p, 'SS')  # does this work for the open econ case?
 
-    b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
-                   list(bssmat[:-1, :]))
+    # b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
+    #                list(bssmat[:-1, :]))
     new_r_gov = fiscal.get_r_gov(new_r, p)
     # now get accurate measure of debt service cost
     D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
         fiscal.get_D_ss(new_r_gov, Y, p)
-    MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
-    new_r_p = aggr.get_r_p(new_r, new_r_gov, K, K_g, D, MPKg, p, 'SS')
+    MPKg_vec = firm.get_MPx(Y_vec, K_g, p.gamma_g, p, 'SS')
+    new_r_p = aggr.get_r_p(
+        new_r, new_r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, 'SS')
     average_income_model = ((new_r_p * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -225,17 +283,18 @@ def inner_loop(outer_loop_vars, p, client):
     tr = household.get_tr(TR, None, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
-    new_p_m = firm.get_p_m()
-    new_p_tilde = aggr.get_p_tilde(new_p_m, p.alpha_c)
+    new_p_m = firm.get_pm(new_w, KL_ratio_vec, p)
+    new_p_m = new_p_m / new_p_m[-1]  # normalize prices by ind M
+    new_p_tilde = aggr.get_ptilde(new_p_m, p.alpha_c)
 
     etr_params_3D = np.tile(
         np.reshape(p.etr_params[-1, :, :],
                    (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
     taxss = tax.net_taxes(
-        new_r_p, new_w, new_p_tilde, b_s, nssmat, new_bq, factor, tr, ubi, theta, None,
+        new_r_p, new_w, b_s, nssmat, new_bq, factor, tr, ubi, theta, None,
         None, False, 'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(
-        new_r_p, new_w, b_s, bssmat, nssmat, new_bq, taxss, new_p_tilde,
+        new_r_p, new_w, new_p_tilde, b_s, bssmat, nssmat, new_bq, taxss,
         p.e, p.tau_c[-1, :, :], p)
     # TODO: add p_m for consumption tax below
     total_tax_revenue, _, agg_pension_outlays, UBI_outlays, _, _, _, _, _, _ =\
@@ -361,7 +420,7 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
     wss = new_w
     r_gov_ss = fiscal.get_r_gov(rss, p)
     p_m_ss = new_p_m
-    p_tilde_ss = aggr.get_p_tilde(p_m_ss, p.alpha_c)
+    p_tilde_ss = aggr.get_ptilde(p_m_ss, p.alpha_c)
     TR_ss = new_TR
     Yss = new_Y
     I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
