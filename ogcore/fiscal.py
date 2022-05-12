@@ -207,7 +207,7 @@ def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR, UBI_outlays,
         TR (scalar): steady-state transfer spending
         UBI_outlays (scalar): steady-state total UBI outlays
         I_g (scalar): steady-state public infrastructure investment
-        new_borrowing (scalar): steady-state amount of new borowing
+        new_borrowing (scalar): steady-state amount of new borrowing
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
 
