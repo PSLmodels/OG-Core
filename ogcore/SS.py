@@ -317,6 +317,8 @@ def inner_loop(outer_loop_vars, p, client):
     print('Resource Contraint error in inner loop = ', rc_error)
 
     # print('BQ at the end of inner loop: ', new_BQ)
+    print('Coming out of inner loop vars are',
+          new_r_p, new_r, new_w, new_p_m, Y, new_BQ, new_TR)
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
         new_w, new_p_m, K_vec, L_vec, Y_vec, new_TR, Y, new_factor, new_BQ,\
         average_income_model
@@ -353,14 +355,17 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
         maxiter_ss = 1
     if p.baseline_spending:
         TR_ss = TR
+    if not p.budget_balance and not p.baseline_spending:
+            Y = TR / p.alpha_T[-1]
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
         # Solve for the steady state levels of b and n, given w, r,
         # Y, BQ, TR, and factor
-        # if p.baseline_spending:
-        #     TR = TR_ss
-        # if not p.budget_balance and not p.baseline_spending:
-        #     Y = TR / p.alpha_T[-1]
+        if p.baseline_spending:
+            TR = TR_ss
+        if not p.budget_balance and not p.baseline_spending:
+            Y = TR / p.alpha_T[-1]
 
+        print('In SS solver vars are ', r_p, r, w, p_m, Y, BQ, TR)
         outer_loop_vars = (bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor)
 
         (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_p,
@@ -400,7 +405,10 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
                     [abs(new_Y - Y)] +
                     [utils.pct_diff_func(new_factor, factor)]).max()
         else:
-            TR = utils.convex_combo(new_TR, TR, nu_ss)
+            if p.baseline_spending:
+                TR = TR_ss
+            else:
+                TR = utils.convex_combo(new_TR, TR, nu_ss)
             dist = np.array(
                 [utils.pct_diff_func(new_r, r)] +
                 [utils.pct_diff_func(new_r_p, r_p)] +
@@ -729,8 +737,9 @@ def run_SS(p, client=None):
         Yss = TR_ss/p.alpha_T[-1]  # may not be right - if budget_balance
         # # = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
-        output = SS_solver(b_guess, n_guess, rss, wss, Yss, BQss, TR_ss,
-                           factor_ss, p, client, fsolve_flag)
+        output = SS_solver(
+            b_guess, n_guess, r_p_ss, rss, wss, p_m_ss,
+            Yss, BQss, TR_ss, factor_ss, p, client, fsolve_flag)
     else:
         # Use the baseline solution to get starting values for the reform
         baseline_ss_dir = os.path.join(
@@ -779,9 +788,9 @@ def run_SS(p, client=None):
             rss = sol.x[1]
             wss = sol.x[2]
             p_m_ss = sol.x[3:3 + p.M]
-            Yss = sol.x[3 + p.M + 1]
-            BQss = sol.x[3 + p.M:-1]
-            TR_ss = sol.x[-1]
+            Yss = sol.x[3 + p.M]
+            BQss = sol.x[3 + p.M + 1:-1]
+            # TR_ss = sol.x[-1]
         else:
             ss_params_reform = (b_guess, n_guess, None, factor, p, client)
             if p.use_zeta:
@@ -796,10 +805,12 @@ def run_SS(p, client=None):
                 )
             sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
                            method=p.SS_root_method, tol=p.mindist_SS)
-            rss = sol.x[0]
-            wss = sol.x[1]
-            Yss = sol.x[2]
-            BQss = sol.x[3:-1]
+            r_p_ss = sol.x[0]
+            rss = sol.x[1]
+            wss = sol.x[2]
+            p_m_ss = sol.x[3:3 + p.M]
+            Yss = sol.x[3 + p.M]
+            BQss = sol.x[3 + p.M + 1:-1]
             TR_ss = sol.x[-1]
             Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in

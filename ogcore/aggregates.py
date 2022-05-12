@@ -382,8 +382,7 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     return np.squeeze(r_p)
 
 
-def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
-                        debt_service_f, r, p):
+def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
     r'''
     Compute the error in the resource constraint.
 
@@ -391,35 +390,53 @@ def resource_constraint(Y, C, G, I_d, I_g, K_f, new_borrowing_f,
       \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
       \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
       \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
-      r_{p,t}\hat{K}^f_t ... \\
-      &\quad\quad + \Bigl(e^{g_y}\bigl[1 +
-      \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) -
-      r_{p,t}\hat{D}^f_t \quad\forall t
+      \text{net capital outflows}_t
 
     Args:
-        Y (array_like): aggregate output
-        C (array_like): aggregate consumption
-        G (array_like): aggregate government spending
+        Y (array_like): aggregate output by industry
+        C (array_like): aggregate consumption by industry
+        G (array_like): aggregate government spending by industry
         I_d (array_like): aggregate private investment from domestic households
         I_g (array_like): investment in government capital
-        K_f (array_like): aggregate capital that is foreign-owned
-        new_borrowing_f (array_like): new borrowing of government debt
-            from foreign investors
-        debt_service_f (array_like): interest payments on government
-            debt owned by foreigners
-        r (array_like): the real interest rate
-        p (OG-Core Specifications object): model parameters
+        net_capital_flows (array_like): net capital outflows
 
     Returns:
         rc_error (array_like): error in the resource constraint
 
     '''
     rc_error = (
-        Y - C - I_d - I_g - G - (r + p.delta) * K_f + new_borrowing_f -
-        debt_service_f
+        Y - C - I_d - I_g - G - net_capital_flows
         )
 
     return rc_error
+
+
+def get_capital_outflows(r, K_f, new_borrowing_f, debt_service_f, p):
+    r'''
+    Compute net capital outflows for open economy parameterizations
+
+    .. math::
+      \text{net capital flows} &= r_{p,t}\hat{K}^f_t ... \\
+      &\quad\quad + \Bigl(e^{g_y}\bigl[1 +
+      \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) -
+      r_{p,t}\hat{D}^f_t \quad\forall t
+
+    Args:
+        r (array_like): the real interest rate
+        K_f (array_like): aggregate capital that is foreign-owned
+        new_borrowing_f (array_like): new borrowing of government debt
+            from foreign investors
+        debt_service_f (array_like): interest payments on government
+            debt owned by foreigners
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        new_flow (array_like): net capital outflows
+    '''
+    net_flow = ((r + p.delta) * K_f - new_borrowing_f +
+                debt_service_f)
+
+    return net_flow
 
 
 def get_K_splits(B, K_demand_open, D_d, zeta_K):
