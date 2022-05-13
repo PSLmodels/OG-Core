@@ -389,9 +389,10 @@
         "section_2": "Production Function",
         "notes": "Historical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 0.35
+                "value": [0.35]
             }
         ],
         "validators": {
@@ -408,9 +409,10 @@
         "section_2": "Production Function",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 0.0
+                "value": [0.0]
             }
         ],
         "validators": {
@@ -429,9 +431,10 @@
         "section_2": "Production Function",
         "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 1.0
+                "value": [1.0]
             }
         ],
         "validators": {
@@ -448,12 +451,12 @@
         "section_2": "Production Function",
         "notes": "",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
-                "value": [
+                "value": [[
                     1.0
-                ]
+                ]]
             }
         ],
         "validators": {
@@ -822,11 +825,11 @@
         "section_2": "Taxes",
         "notes": "This is the top marginal corporate income tax rate.",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
                 "value": [
-                    0.21
+                    [0.21]
                 ]
             }
         ],
