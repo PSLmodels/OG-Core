@@ -179,7 +179,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
     return tau
 
 
-def get_biz_tax(w, Y, L, K, p, method):
+def get_biz_tax(w, Y, L, K, p, m, method):
     r'''
     Finds total business income tax revenue.
 
@@ -191,17 +191,27 @@ def get_biz_tax(w, Y, L, K, p, method):
         Y (array_like): aggregate output
         L (array_like): aggregate labor demand
         K (array_like): aggregate capital demand
+        p (OG-Core Specifications object): model parameters
+        m (int or None): index for production industry
 
     Returns:
         business_revenue (array_like): aggregate business tax revenue
 
     '''
-    if method == 'SS':
-        delta_tau = p.delta_tau[-1]
-        tau_b = p.tau_b[-1]
+    if m is not None:
+        if method == 'SS':
+            delta_tau = p.delta_tau[-1, m]
+            tau_b = p.tau_b[-1, m]
+        else:
+            delta_tau = p.delta_tau[:p.T, m]
+            tau_b = p.tau_b[:p.T, m]
     else:
-        delta_tau = p.delta_tau[:p.T]
-        tau_b = p.tau_b[:p.T]
+        if method == 'SS':
+            delta_tau = p.delta_tau[-1]
+            tau_b = p.tau_b[-1]
+        else:
+            delta_tau = p.delta_tau[:p.T]
+            tau_b = p.tau_b[:p.T]
     business_revenue = tau_b * (Y - w * L) - tau_b * delta_tau * K
     return business_revenue
 
