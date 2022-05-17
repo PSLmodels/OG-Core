@@ -257,10 +257,10 @@ new_param_values = {
     'h_wealth': [0.1],
     'p_wealth': [0.2],
     'm_wealth': [1.0],
-    'cit_rate': [0.2],
-    'delta_tau_annual': [float(1 - ((1 - 0.0975) **
+    'cit_rate': [[0.2]],
+    'delta_tau_annual': [[float(1 - ((1 - 0.0975) **
                                     (20 / (p.ending_age -
-                                           p.starting_age))))],
+                                           p.starting_age))))]],
     'omega': np.ones((30, 20)) / 20,
     'omega_SS': np.ones(20) / 20,
     'imm_rates': np.zeros((30, 20))
@@ -306,11 +306,11 @@ new_param_values3 = {
     'h_wealth': [0.1],
     'p_wealth': [0.2],
     'm_wealth': [1.0],
-    'cit_rate': [0.2],
+    'cit_rate': [[0.2]],
     'replacement_rate_adjust': [1.5, 1.5, 1.5, 1.6, 1.0],
-    'delta_tau_annual': [float(1 - ((1 - 0.0975) **
+    'delta_tau_annual': [[float(1 - ((1 - 0.0975) **
                                     (20 / (p3.ending_age -
-                                           p3.starting_age))))],
+                                           p3.starting_age))))]],
     'omega': np.ones((30, 20)) / 20,
     'omega_SS': np.ones(20) / 20,
     'imm_rates': np.zeros((30, 20))
@@ -332,10 +332,10 @@ new_param_values_ubi = {
     'h_wealth': [0.1],
     'p_wealth': [0.2],
     'm_wealth': [1.0],
-    'cit_rate': [0.2],
-    'delta_tau_annual': [float(1 - ((1 - 0.0975) **
+    'cit_rate': [[0.2]],
+    'delta_tau_annual': [[float(1 - ((1 - 0.0975) **
                                     (20 / (p_u.ending_age -
-                                           p_u.starting_age))))],
+                                           p_u.starting_age))))]],
     'ubi_nom_017': 1000,
     'ubi_nom_1864': 1500,
     'ubi_nom_65p': 500
@@ -416,7 +416,7 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
     print('ETR shape = ', p.etr_params.shape, etr_params.shape)
     revenue, _, _, _, _, _, _, _, _, _ = \
         aggr.revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta,
-                     etr_params, p, method)
+                     etr_params, p, None, method)
     print('REVENUE = ', revenue)
 
     assert(np.allclose(revenue, expected))
@@ -489,22 +489,35 @@ def test_resource_constraint():
     """
     Test resource constraint equation.
     """
-    p = Specifications()
-    p.delta = 0.05
     Y = np.array([48, 55, 2, 99, 8])
     C = np.array([33, 44, 0.4, 55, 6])
     G = np.array([4, 5, 0.01, 22, 0])
-    I = np.array([20, 5, 0.6, 10, 1])
-    I_g = np.zeros_like(I)
+    I_d = np.array([20, 5, 0.6, 10, 1])
+    I_g = np.zeros_like(I_d)
+    net_capital_flows = np.array([0.1, 0, 0.016, -1.67, -0.477])
+    expected = np.array([-9.1, 1, 0.974, 13.67, 1.477])
+    test_RC = aggr.resource_constraint(
+        Y, C, G, I_d, I_g, net_capital_flows)
+
+    assert(np.allclose(test_RC, expected))
+
+
+def test_get_capital_outflows():
+    '''
+    Test of the get_captial_outflows function.
+    '''
+    p = Specifications()
+    p.delta = 0.05
     K_f = np.array([0, 0, 0.2, 3, 0.05])
     new_borrowing_f = np.array([0, 0.1, 0.3, 4, 0.5])
     debt_service_f = np.array([0.1, 0.1, 0.3, 2, 0.02])
     r = np.array([0.03, 0.04, 0.03, 0.06, 0.01])
-    expected = np.array([-9.1, 1, 0.974, 13.67, 1.477])
-    test_RC = aggr.resource_constraint(Y, C, G, I, I_g, K_f, new_borrowing_f,
-                                       debt_service_f, r, p)
+    expected = np.array([0.1, 0, 0.016, -1.67, -0.477])
 
-    assert(np.allclose(test_RC, expected))
+    test_flow = aggr.get_capital_outflows(
+        r, K_f, new_borrowing_f, debt_service_f, p)
+
+    assert(np.allclose(test_flow, expected))
 
 
 def test_get_K_splits():

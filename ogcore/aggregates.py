@@ -238,7 +238,7 @@ def get_C(c, p, method):
 
 
 def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
-            p, method):
+            p, m, method):
     r'''
     Calculate aggregate tax revenue.
 
@@ -319,7 +319,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
         payroll_tax_revenue = (p.frac_tax_payroll[:p.T] *
                                iit_payroll_tax_revenue)
-    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
+    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p, m, method)
     iit_revenue = iit_payroll_tax_revenue - payroll_tax_revenue
 
     total_tax_revenue = (
