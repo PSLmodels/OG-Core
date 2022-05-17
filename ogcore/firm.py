@@ -1,21 +1,21 @@
 import numpy as np
 
-'''
+"""
 ------------------------------------------------------------------------
 Firm functions for firms in the steady state and along the transition
 path
 ------------------------------------------------------------------------
-'''
+"""
 
-'''
+"""
 ------------------------------------------------------------------------
     Functions
 ------------------------------------------------------------------------
-'''
+"""
 
 
 def get_Y(K, K_g, L, p, method):
-    r'''
+    r"""
     Generates aggregate output (GDP) from aggregate capital stock,
     aggregate labor, and CES production function parameters.
 
@@ -37,8 +37,8 @@ def get_Y(K, K_g, L, p, method):
     Returns:
         Y (array_like): aggregate output
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         Z = p.Z[-1]
         # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
         if K_g == 0 and p.epsilon <= 1:
@@ -47,7 +47,7 @@ def get_Y(K, K_g, L, p, method):
         else:
             gamma_g = p.gamma_g
     else:
-        Z = p.Z[:p.T]
+        Z = p.Z[: p.T]
         # Change values of K_g=0 to 1 when eps=1 to remove K_g from prod func
         if np.any(K_g == 0) and p.epsilon == 1:
             K_g[K_g == 0] = 1.0
@@ -56,23 +56,34 @@ def get_Y(K, K_g, L, p, method):
             gamma_g = p.gamma_g
     if p.epsilon == 1:
         # Unit elasticity, Cobb-Douglas
-        Y = (Z * (K ** p.gamma) * (K_g ** gamma_g) *
-             (L ** (1 - p.gamma - gamma_g)))
+        Y = (
+            Z
+            * (K**p.gamma)
+            * (K_g**gamma_g)
+            * (L ** (1 - p.gamma - gamma_g))
+        )
     else:
         # General CES
-        Y = (Z * (((p.gamma ** (1 / p.epsilon)) *
-                   (K ** ((p.epsilon - 1) / p.epsilon))) +
-                  ((gamma_g ** (1 / p.epsilon)) *
-                   (K_g ** ((p.epsilon - 1) / p.epsilon))) +
-                  (((1 - p.gamma - gamma_g) ** (1 / p.epsilon)) *
-                   (L ** ((p.epsilon - 1) / p.epsilon)))) **
-             (p.epsilon / (p.epsilon - 1)))
+        Y = Z * (
+            (
+                (p.gamma ** (1 / p.epsilon))
+                * (K ** ((p.epsilon - 1) / p.epsilon))
+            )
+            + (
+                (gamma_g ** (1 / p.epsilon))
+                * (K_g ** ((p.epsilon - 1) / p.epsilon))
+            )
+            + (
+                ((1 - p.gamma - gamma_g) ** (1 / p.epsilon))
+                * (L ** ((p.epsilon - 1) / p.epsilon))
+            )
+        ) ** (p.epsilon / (p.epsilon - 1))
 
     return Y
 
 
 def get_r(Y, K, p, method):
-    r'''
+    r"""
     This function computes the interest rate as a function of Y, K, and
     parameters using the firm's first order condition for capital
     demand.
@@ -92,13 +103,13 @@ def get_r(Y, K, p, method):
     Returns:
         r (array_like): the real interest rate
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         delta_tau = p.delta_tau[-1]
         tau_b = p.tau_b[-1]
     else:
-        delta_tau = p.delta_tau[:p.T]
-        tau_b = p.tau_b[:p.T]
+        delta_tau = p.delta_tau[: p.T]
+        tau_b = p.tau_b[: p.T]
     MPK = get_MPx(Y, K, p.gamma, p, method)
     r = (1 - tau_b) * MPK - p.delta + tau_b * delta_tau
 
@@ -106,7 +117,7 @@ def get_r(Y, K, p, method):
 
 
 def get_w(Y, L, p, method):
-    r'''
+    r"""
     This function computes the wage as a function of Y, L, and
     parameters using the firm's first order condition for labor demand.
 
@@ -124,14 +135,14 @@ def get_w(Y, L, p, method):
     Returns:
         w (array_like): the real wage rate
 
-    '''
+    """
     w = get_MPx(Y, L, 1 - p.gamma - p.gamma_g, p, method)
 
     return w
 
 
 def get_KLratio_KLonly(r, p, method):
-    r'''
+    r"""
     This function solves for the capital-labor ratio given the interest
     rate, r, and parameters when the production function is only a
     function of K and L.  This is used in the get_w_from_r function.
@@ -152,8 +163,8 @@ def get_KLratio_KLonly(r, p, method):
     Returns:
         KLratio (array_like): the capital-labor ratio
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         Z = p.Z[-1]
         delta_tau = p.delta_tau[-1]
         tau_b = p.tau_b[-1]
@@ -164,24 +175,25 @@ def get_KLratio_KLonly(r, p, method):
         tau_b = p.tau_b[:length]
     if p.epsilon == 1:
         # Cobb-Douglas case
-        bracket = (((1 - tau_b) * p.gamma * Z) /
-                   (r + p.delta - tau_b * delta_tau))
+        bracket = ((1 - tau_b) * p.gamma * Z) / (
+            r + p.delta - tau_b * delta_tau
+        )
         KLratio = bracket ** (1 / (1 - p.gamma))
     else:
         # General CES case
-        bracket = ((r + p.delta - (delta_tau * tau_b)) /
-                   ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
-        KLratio = \
-            ((((1 - p.gamma) ** (1 / p.epsilon)) /
-              ((bracket ** (p.epsilon - 1)) -
-               (p.gamma ** (1 / p.epsilon)))) ** (p.epsilon /
-                                                  (p.epsilon - 1)))
+        bracket = (r + p.delta - (delta_tau * tau_b)) / (
+            (1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))
+        )
+        KLratio = (
+            ((1 - p.gamma) ** (1 / p.epsilon))
+            / ((bracket ** (p.epsilon - 1)) - (p.gamma ** (1 / p.epsilon)))
+        ) ** (p.epsilon / (p.epsilon - 1))
 
     return KLratio
 
 
 def get_KLratio(r, w, p, method):
-    r'''
+    r"""
     This function solves for the capital-labor ratio given the interest
     rate r wage w and parameters.
 
@@ -201,22 +213,22 @@ def get_KLratio(r, w, p, method):
     Returns:
         KLratio (array_like): the capital-labor ratio
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         tau_b = p.tau_b[-1]
         delta_tau = p.delta_tau[-1]
     else:
-        tau_b = p.tau_b[:p.T]
-        delta_tau = p.delta_tau[:p.T]
+        tau_b = p.tau_b[: p.T]
+        delta_tau = p.delta_tau[: p.T]
     cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
-    KLratio = (
-        (p.gamma / (1 - p.gamma - p.gamma_g)) *
-        (w / cost_of_capital) ** p.epsilon)
+    KLratio = (p.gamma / (1 - p.gamma - p.gamma_g)) * (
+        w / cost_of_capital
+    ) ** p.epsilon
     return KLratio
 
 
 def get_MPx(Y, x, share, p, method):
-    r'''
+    r"""
     Compute the marginal product of x (where x is K, L, or K_g)
 
     .. math::
@@ -233,24 +245,23 @@ def get_MPx(Y, x, share, p, method):
 
     Returns:
         MPx (array_like): the marginal product of x
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         Z = p.Z[-1]
     else:
-        Z = p.Z[:p.T]
+        Z = p.Z[: p.T]
     if np.any(x) == 0:
         MPx = np.zeros_like(Y)
     else:
-        MPx = (
-            Z ** ((p.epsilon - 1) / p.epsilon) * ((share * Y) / x)
-            ** (1 / p.epsilon)
+        MPx = Z ** ((p.epsilon - 1) / p.epsilon) * ((share * Y) / x) ** (
+            1 / p.epsilon
         )
 
     return MPx
 
 
 def get_w_from_r(r, p, method):
-    r'''
+    r"""
     Solve for a wage rate from a given interest rate.  N.B. this is only
     appropriate if the production function only uses capital and labor
     as inputs.  As such, this is not used for determining the domestic
@@ -275,27 +286,34 @@ def get_w_from_r(r, p, method):
     Returns:
         w (array_like): the real wage rate
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         Z = p.Z[-1]
     else:
-        Z = p.Z[:p.T]
+        Z = p.Z[: p.T]
     KLratio = get_KLratio_KLonly(r, p, method)
     if p.epsilon == 1:
         # Cobb-Douglas case
-        w = (1 - p.gamma) * Z * (KLratio ** p.gamma)
+        w = (1 - p.gamma) * Z * (KLratio**p.gamma)
     else:
         # General CES case
-        w = (((1 - p.gamma) ** (1 / p.epsilon)) * Z *
-             (((p.gamma ** (1 / p.epsilon)) *
-               (KLratio ** ((p.epsilon - 1) / p.epsilon)) +
-               ((1 - p.gamma) ** (1 / p.epsilon))) **
-              (1 / (p.epsilon - 1))))
+        w = (
+            ((1 - p.gamma) ** (1 / p.epsilon))
+            * Z
+            * (
+                (
+                    (p.gamma ** (1 / p.epsilon))
+                    * (KLratio ** ((p.epsilon - 1) / p.epsilon))
+                    + ((1 - p.gamma) ** (1 / p.epsilon))
+                )
+                ** (1 / (p.epsilon - 1))
+            )
+        )
     return w
 
 
 def get_K_KLonly(L, r, p, method):
-    r'''
+    r"""
     Generates vector of aggregate capital when the production function
     uses only K and L as inputs. Use with the open economy options.
 
@@ -312,7 +330,7 @@ def get_K_KLonly(L, r, p, method):
     Returns:
         K (array_like): aggregate capital demand
 
-    '''
+    """
     KLratio = get_KLratio_KLonly(r, p, method)
     K = KLratio * L
 
@@ -320,7 +338,7 @@ def get_K_KLonly(L, r, p, method):
 
 
 def get_K_from_Y(Y, r, p, method):
-    r'''
+    r"""
     Generates vector of aggregate capital. Use with the open economy
     options.
 
@@ -340,26 +358,26 @@ def get_K_from_Y(Y, r, p, method):
     Returns:
         r (array_like): the real interest rate
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         Z = p.Z[-1]
         tau_b = p.tau_b[-1]
         delta_tau = p.delta_tau[-1]
     else:
-        Z = p.Z[:p.T]
-        tau_b = p.tau_b[:p.T]
-        delta_tau = p.delta_tau[:p.T]
+        Z = p.Z[: p.T]
+        tau_b = p.tau_b[: p.T]
+        delta_tau = p.delta_tau[: p.T]
     numerator = p.gamma * Z ** (p.epsilon - 1) * Y
     denominator = (
-        ((r + p.delta - tau_b * delta_tau) / (1 - tau_b)) ** p.epsilon
-        )
+        (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
+    ) ** p.epsilon
     K = numerator / denominator
 
     return K
 
 
 def get_L_from_Y(w, Y, p, method):
-    r'''
+    r"""
     Find aggregate labor L from output Y and wages w
 
     .. math::
@@ -376,21 +394,20 @@ def get_L_from_Y(w, Y, p, method):
     Returns:
         L (array_like): firm labor demand
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         Z = p.Z[-1]
     else:
-        Z = p.Z[:p.T]
-    L = (
-        ((1 - p.gamma - p.gamma_g) * Z ** (p.epsilon - 1) * Y) /
-        (w ** p.epsilon)
-        )
+        Z = p.Z[: p.T]
+    L = ((1 - p.gamma - p.gamma_g) * Z ** (p.epsilon - 1) * Y) / (
+        w**p.epsilon
+    )
 
     return L
 
 
 def get_K_from_Y_and_L(Y, L, K_g, p, method):
-    r'''
+    r"""
     Find aggregate private capital K from output Y, aggregate labor L,
     and public capital K_g
 
@@ -413,24 +430,26 @@ def get_K_from_Y_and_L(Y, L, K_g, p, method):
     Returns:
         K (array_like): firm capital demand
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         Z = p.Z[-1]
     else:
-        Z = p.Z[:p.T]
+        Z = p.Z[: p.T]
     K = (
-        (((Y / Z) ** ((p.epsilon - 1) / p.epsilon) -
-            (1 - p.gamma - p.gamma_g) *
-            L ** ((p.epsilon - 1) / p.epsilon) -
-            (p.gamma_g ** (1 / p.epsilon)) *
-            (K_g ** ((p.epsilon - 1) / p.epsilon))) /
-            (p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (p.epsilon - 1)))
+        (
+            (Y / Z) ** ((p.epsilon - 1) / p.epsilon)
+            - (1 - p.gamma - p.gamma_g) * L ** ((p.epsilon - 1) / p.epsilon)
+            - (p.gamma_g ** (1 / p.epsilon))
+            * (K_g ** ((p.epsilon - 1) / p.epsilon))
+        )
+        / (p.gamma ** (1 / p.epsilon))
+    ) ** (p.epsilon / (p.epsilon - 1))
 
     return K
 
 
 def get_K(r, w, L, p, method):
-    r'''
+    r"""
     Get K from r, w, L.  For determining capital demand for open
     economy case.
 
@@ -448,7 +467,7 @@ def get_K(r, w, L, p, method):
     Returns:
         K (array_like): aggregate capital demand
 
-    '''
+    """
     KLratio = get_KLratio(r, w, p, method)
     K = KLratio * L
 

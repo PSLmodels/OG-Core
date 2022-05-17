@@ -23,7 +23,7 @@ setuptools.setup(
             "data/ability/*",
             "data/demographic/*",
             "data/labor/*",
-            "data/wealth/*"
+            "data/wealth/*",
         ]
     },
     include_packages=True,
@@ -37,7 +37,7 @@ setuptools.setup(
         "dask>=2.30.0",
         "distributed>=2.30.1",
         "paramtools>=0.15.0",
-        "requests"
+        "requests",
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
@@ -50,7 +50,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
-        "Topic :: Software Development :: Libraries :: Python Modules"
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    tests_require=["pytest"]
+    tests_require=["pytest"],
 )
