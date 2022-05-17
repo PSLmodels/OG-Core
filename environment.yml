@@ -20,3 +20,4 @@ dependencies:
 - coverage
 - requests
 - openpyxl
+- black

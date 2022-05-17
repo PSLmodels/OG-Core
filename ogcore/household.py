@@ -1,22 +1,22 @@
-'''
+"""
 ------------------------------------------------------------------------
 Household functions.
 ------------------------------------------------------------------------
-'''
+"""
 
 # Packages
 import numpy as np
 from ogcore import tax, utils
 
-'''
+"""
 ------------------------------------------------------------------------
     Functions
 ------------------------------------------------------------------------
-'''
+"""
 
 
 def marg_ut_cons(c, sigma):
-    r'''
+    r"""
     Compute the marginal utility of consumption.
 
     .. math::
@@ -29,7 +29,7 @@ def marg_ut_cons(c, sigma):
     Returns:
         output (array_like): marginal utility of consumption
 
-    '''
+    """
     if np.ndim(c) == 0:
         c = np.array([c])
     epsilon = 0.003
@@ -46,7 +46,7 @@ def marg_ut_cons(c, sigma):
 
 
 def marg_ut_labor(n, chi_n, p):
-    r'''
+    r"""
     Compute the marginal disutility of labor.
 
     .. math::
@@ -63,7 +63,7 @@ def marg_ut_labor(n, chi_n, p):
     Returns:
         output (array_like): marginal disutility of labor supply
 
-    '''
+    """
     nvec = n
     if np.ndim(nvec) == 0:
         nvec = np.array([nvec])
@@ -74,30 +74,62 @@ def marg_ut_labor(n, chi_n, p):
     nvec_uncstr = np.logical_and(~nvec_low, ~nvec_high)
     MDU_n = np.zeros(nvec.shape)
     MDU_n[nvec_uncstr] = (
-        (p.b_ellipse / p.ltilde) *
-        ((nvec[nvec_uncstr] / p.ltilde) ** (p.upsilon - 1)) *
-        ((1 - ((nvec[nvec_uncstr] / p.ltilde) ** p.upsilon)) **
-         ((1 - p.upsilon) / p.upsilon)))
-    b2 = (0.5 * p.b_ellipse * (p.ltilde ** (-p.upsilon)) * (p.upsilon - 1) *
-          (eps_low ** (p.upsilon - 2)) *
-          ((1 - ((eps_low / p.ltilde) ** p.upsilon)) **
-          ((1 - p.upsilon) / p.upsilon)) *
-          (1 + ((eps_low / p.ltilde) ** p.upsilon) *
-          ((1 - ((eps_low / p.ltilde) ** p.upsilon)) ** (-1))))
-    b1 = ((p.b_ellipse / p.ltilde) * ((eps_low / p.ltilde) **
-                                      (p.upsilon - 1)) *
-          ((1 - ((eps_low / p.ltilde) ** p.upsilon)) **
-          ((1 - p.upsilon) / p.upsilon)) - (2 * b2 * eps_low))
+        (p.b_ellipse / p.ltilde)
+        * ((nvec[nvec_uncstr] / p.ltilde) ** (p.upsilon - 1))
+        * (
+            (1 - ((nvec[nvec_uncstr] / p.ltilde) ** p.upsilon))
+            ** ((1 - p.upsilon) / p.upsilon)
+        )
+    )
+    b2 = (
+        0.5
+        * p.b_ellipse
+        * (p.ltilde ** (-p.upsilon))
+        * (p.upsilon - 1)
+        * (eps_low ** (p.upsilon - 2))
+        * (
+            (1 - ((eps_low / p.ltilde) ** p.upsilon))
+            ** ((1 - p.upsilon) / p.upsilon)
+        )
+        * (
+            1
+            + ((eps_low / p.ltilde) ** p.upsilon)
+            * ((1 - ((eps_low / p.ltilde) ** p.upsilon)) ** (-1))
+        )
+    )
+    b1 = (p.b_ellipse / p.ltilde) * (
+        (eps_low / p.ltilde) ** (p.upsilon - 1)
+    ) * (
+        (1 - ((eps_low / p.ltilde) ** p.upsilon))
+        ** ((1 - p.upsilon) / p.upsilon)
+    ) - (
+        2 * b2 * eps_low
+    )
     MDU_n[nvec_low] = 2 * b2 * nvec[nvec_low] + b1
-    d2 = (0.5 * p.b_ellipse * (p.ltilde ** (-p.upsilon)) * (p.upsilon - 1) *
-          (eps_high ** (p.upsilon - 2)) *
-          ((1 - ((eps_high / p.ltilde) ** p.upsilon)) **
-          ((1 - p.upsilon) / p.upsilon)) *
-          (1 + ((eps_high / p.ltilde) ** p.upsilon) *
-          ((1 - ((eps_high / p.ltilde) ** p.upsilon)) ** (-1))))
-    d1 = ((p.b_ellipse / p.ltilde) * ((eps_high / p.ltilde) **
-          (p.upsilon - 1)) * ((1 - ((eps_high / p.ltilde) ** p.upsilon)) **
-          ((1 - p.upsilon) / p.upsilon)) - (2 * d2 * eps_high))
+    d2 = (
+        0.5
+        * p.b_ellipse
+        * (p.ltilde ** (-p.upsilon))
+        * (p.upsilon - 1)
+        * (eps_high ** (p.upsilon - 2))
+        * (
+            (1 - ((eps_high / p.ltilde) ** p.upsilon))
+            ** ((1 - p.upsilon) / p.upsilon)
+        )
+        * (
+            1
+            + ((eps_high / p.ltilde) ** p.upsilon)
+            * ((1 - ((eps_high / p.ltilde) ** p.upsilon)) ** (-1))
+        )
+    )
+    d1 = (p.b_ellipse / p.ltilde) * (
+        (eps_high / p.ltilde) ** (p.upsilon - 1)
+    ) * (
+        (1 - ((eps_high / p.ltilde) ** p.upsilon))
+        ** ((1 - p.upsilon) / p.upsilon)
+    ) - (
+        2 * d2 * eps_high
+    )
     MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
     output = MDU_n * np.squeeze(chi_n)
     output = np.squeeze(output)
@@ -105,7 +137,7 @@ def marg_ut_labor(n, chi_n, p):
 
 
 def get_bq(BQ, j, p, method):
-    r'''
+    r"""
     Calculate bequests to each household.
 
     .. math::
@@ -121,48 +153,52 @@ def get_bq(BQ, j, p, method):
     Returns:
         bq (array_like): bequests received by each household
 
-    '''
+    """
     if p.use_zeta:
         if j is not None:
-            if method == 'SS':
+            if method == "SS":
                 bq = (p.zeta[:, j] * BQ) / (p.lambdas[j] * p.omega_SS)
             else:
                 len_T = BQ.shape[0]
-                bq = ((np.reshape(p.zeta[:, j], (1, p.S)) *
-                      BQ.reshape((len_T, 1))) /
-                      (p.lambdas[j] * p.omega[:len_T, :]))
+                bq = (
+                    np.reshape(p.zeta[:, j], (1, p.S)) * BQ.reshape((len_T, 1))
+                ) / (p.lambdas[j] * p.omega[:len_T, :])
         else:
-            if method == 'SS':
-                bq = ((p.zeta * BQ) / (p.lambdas.reshape((1, p.J)) *
-                                       p.omega_SS.reshape((p.S, 1))))
+            if method == "SS":
+                bq = (p.zeta * BQ) / (
+                    p.lambdas.reshape((1, p.J)) * p.omega_SS.reshape((p.S, 1))
+                )
             else:
                 len_T = BQ.shape[0]
-                bq = ((np.reshape(p.zeta, (1, p.S, p.J)) *
-                      utils.to_timepath_shape(BQ)) /
-                      (p.lambdas.reshape((1, 1, p.J)) *
-                       p.omega[:len_T, :].reshape((len_T, p.S, 1))))
+                bq = (
+                    np.reshape(p.zeta, (1, p.S, p.J))
+                    * utils.to_timepath_shape(BQ)
+                ) / (
+                    p.lambdas.reshape((1, 1, p.J))
+                    * p.omega[:len_T, :].reshape((len_T, p.S, 1))
+                )
     else:
         if j is not None:
-            if method == 'SS':
+            if method == "SS":
                 bq = np.tile(BQ[j], p.S) / p.lambdas[j]
-            if method == 'TPI':
+            if method == "TPI":
                 len_T = BQ.shape[0]
-                bq = np.tile(np.reshape(BQ[:, j] / p.lambdas[j],
-                                        (len_T, 1)), (1, p.S))
+                bq = np.tile(
+                    np.reshape(BQ[:, j] / p.lambdas[j], (len_T, 1)), (1, p.S)
+                )
         else:
-            if method == 'SS':
+            if method == "SS":
                 BQ_per = BQ / np.squeeze(p.lambdas)
                 bq = np.tile(np.reshape(BQ_per, (1, p.J)), (p.S, 1))
-            if method == 'TPI':
+            if method == "TPI":
                 len_T = BQ.shape[0]
                 BQ_per = BQ / p.lambdas.reshape(1, p.J)
-                bq = np.tile(np.reshape(BQ_per, (len_T, 1, p.J)),
-                             (1, p.S, 1))
+                bq = np.tile(np.reshape(BQ_per, (len_T, 1, p.J)), (1, p.S, 1))
     return bq
 
 
 def get_tr(TR, j, p, method):
-    r'''
+    r"""
     Calculate transfers to each household.
 
     .. math::
@@ -178,32 +214,32 @@ def get_tr(TR, j, p, method):
     Returns:
         tr (array_like): transfers received by each household
 
-    '''
+    """
     if j is not None:
-        if method == 'SS':
+        if method == "SS":
             tr = (p.eta[-1, :, j] * TR) / (p.lambdas[j] * p.omega_SS)
         else:
             len_T = TR.shape[0]
-            tr = ((p.eta[:len_T, :, j] *
-                  TR.reshape((len_T, 1))) /
-                  (p.lambdas[j] * p.omega[:len_T, :]))
+            tr = (p.eta[:len_T, :, j] * TR.reshape((len_T, 1))) / (
+                p.lambdas[j] * p.omega[:len_T, :]
+            )
     else:
-        if method == 'SS':
-            tr = ((p.eta[-1, :, :] * TR) /
-                  (p.lambdas.reshape((1, p.J)) *
-                   p.omega_SS.reshape((p.S, 1))))
+        if method == "SS":
+            tr = (p.eta[-1, :, :] * TR) / (
+                p.lambdas.reshape((1, p.J)) * p.omega_SS.reshape((p.S, 1))
+            )
         else:
             len_T = TR.shape[0]
-            tr = ((p.eta[:len_T, :, :] *
-                   utils.to_timepath_shape(TR)) /
-                  (p.lambdas.reshape((1, 1, p.J)) *
-                   p.omega[:len_T, :].reshape((len_T, p.S, 1))))
+            tr = (p.eta[:len_T, :, :] * utils.to_timepath_shape(TR)) / (
+                p.lambdas.reshape((1, 1, p.J))
+                * p.omega[:len_T, :].reshape((len_T, p.S, 1))
+            )
 
     return tr
 
 
 def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
-    r'''
+    r"""
     Calculate household consumption.
 
     .. math::
@@ -226,15 +262,35 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     Returns:
         cons (Numpy array): household consumption
 
-    '''
-    cons = ((1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) -
-            net_tax) / (1 + tau_c)
+    """
+    cons = (
+        (1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) - net_tax
+    ) / (1 + tau_c)
     return cons
 
 
-def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, e, rho,
-                tau_c, etr_params, mtry_params, t, j, p, method):
-    r'''
+def FOC_savings(
+    r,
+    w,
+    b,
+    b_splus1,
+    n,
+    bq,
+    factor,
+    tr,
+    ubi,
+    theta,
+    e,
+    rho,
+    tau_c,
+    etr_params,
+    mtry_params,
+    t,
+    j,
+    p,
+    method,
+):
+    r"""
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
     lifetime income group at a time.
@@ -275,14 +331,14 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, e, rho,
     Returns:
         euler (Numpy array): Euler error from FOC for savings
 
-    '''
+    """
     if j is not None:
         chi_b = p.chi_b[j]
         beta = p.beta[j]
     else:
         chi_b = p.chi_b
         beta = p.beta
-    if method == 'SS':
+    if method == "SS":
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
         p_wealth = p.p_wealth[-1]
@@ -291,35 +347,85 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, e, rho,
         m_wealth = p.m_wealth[t]
         p_wealth = p.p_wealth[t]
 
-    taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t, j,
-                          False, method, e, etr_params, p)
+    taxes = tax.net_taxes(
+        r,
+        w,
+        b,
+        n,
+        bq,
+        factor,
+        tr,
+        ubi,
+        theta,
+        t,
+        j,
+        False,
+        method,
+        e,
+        etr_params,
+        p,
+    )
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
-    deriv = ((1 + r) - (
-        r * tax.MTR_income(r, w, b, n, factor, True, e, etr_params,
-                           mtry_params, p)) -
-             tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth))
-    savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
-                  b_splus1 ** (-p.sigma))
+    deriv = (
+        (1 + r)
+        - (
+            r
+            * tax.MTR_income(
+                r, w, b, n, factor, True, e, etr_params, mtry_params, p
+            )
+        )
+        - tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth)
+    )
+    savings_ut = (
+        rho * np.exp(-p.sigma * p.g_y) * chi_b * b_splus1 ** (-p.sigma)
+    )
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
-        euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) *
-                            (1 / (1 + tau_c[:-1])) - beta *
-                            (1 - rho[:-1]) * deriv[1:] *
-                            marg_ut_cons(cons[1:], p.sigma) *
-                            (1 / (1 + tau_c[1:])) * np.exp(-p.sigma * p.g_y)
-                            - savings_ut[:-1])
-        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) *
-                           (1 / (1 + tau_c[-1])) - savings_ut[-1])
+        euler_error[:-1] = (
+            marg_ut_cons(cons[:-1], p.sigma) * (1 / (1 + tau_c[:-1]))
+            - beta
+            * (1 - rho[:-1])
+            * deriv[1:]
+            * marg_ut_cons(cons[1:], p.sigma)
+            * (1 / (1 + tau_c[1:]))
+            * np.exp(-p.sigma * p.g_y)
+            - savings_ut[:-1]
+        )
+        euler_error[-1] = (
+            marg_ut_cons(cons[-1], p.sigma) * (1 / (1 + tau_c[-1]))
+            - savings_ut[-1]
+        )
     else:
-        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) *
-                           (1 / (1 + tau_c[-1])) - savings_ut[-1])
+        euler_error[-1] = (
+            marg_ut_cons(cons[-1], p.sigma) * (1 / (1 + tau_c[-1]))
+            - savings_ut[-1]
+        )
 
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, chi_n, e,
-              tau_c, etr_params, mtrx_params, t, j, p, method):
-    r'''
+def FOC_labor(
+    r,
+    w,
+    b,
+    b_splus1,
+    n,
+    bq,
+    factor,
+    tr,
+    ubi,
+    theta,
+    chi_n,
+    e,
+    tau_c,
+    etr_params,
+    mtrx_params,
+    t,
+    j,
+    p,
+    method,
+):
+    r"""
     Computes errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
     one lifetime income group at a time.
@@ -361,34 +467,55 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, ubi, theta, chi_n, e,
     Returns:
         FOC_error (Numpy array): error from FOC for labor supply
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         tau_payroll = p.tau_payroll[-1]
-    elif method == 'TPI_scalar':  # for 1st donut ring only
+    elif method == "TPI_scalar":  # for 1st donut ring only
         tau_payroll = p.tau_payroll[0]
     else:
         length = r.shape[0]
-        tau_payroll = p.tau_payroll[t:t + length]
-    if method == 'TPI':
+        tau_payroll = p.tau_payroll[t : t + length]
+    if method == "TPI":
         if b.ndim == 2:
             r = r.reshape(r.shape[0], 1)
             w = w.reshape(w.shape[0], 1)
             tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
 
-    taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, ubi, theta, t, j,
-                          False, method, e, etr_params, p)
+    taxes = tax.net_taxes(
+        r,
+        w,
+        b,
+        n,
+        bq,
+        factor,
+        tr,
+        ubi,
+        theta,
+        t,
+        j,
+        False,
+        method,
+        e,
+        etr_params,
+        p,
+    )
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
-    deriv = (1 - tau_payroll -
-             tax.MTR_income(r, w, b, n, factor, False, e, etr_params,
-                            mtrx_params, p))
-    FOC_error = (marg_ut_cons(cons, p.sigma) * (1 / (1 + tau_c)) * w *
-                 deriv * e - marg_ut_labor(n, chi_n, p))
+    deriv = (
+        1
+        - tau_payroll
+        - tax.MTR_income(
+            r, w, b, n, factor, False, e, etr_params, mtrx_params, p
+        )
+    )
+    FOC_error = marg_ut_cons(cons, p.sigma) * (
+        1 / (1 + tau_c)
+    ) * w * deriv * e - marg_ut_labor(n, chi_n, p)
 
     return FOC_error
 
 
 def get_y(r_p, w, b_s, n, p):
-    '''
+    """
     Compute household income before taxes.
 
     ..math::
@@ -400,7 +527,7 @@ def get_y(r_p, w, b_s, n, p):
         b_s (Numpy array): household savings coming into the period
         n (Numpy array): household labor supply
         p (OG-Core Specifications object): model parameters
-    '''
+    """
 
     y = r_p * b_s + w * p.e * n
 
@@ -408,7 +535,7 @@ def get_y(r_p, w, b_s, n, p):
 
 
 def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
-    '''
+    """
     Checks constraints on consumption, savings, and labor supply in the
     steady state.
 
@@ -424,32 +551,35 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
     Raises:
         Warnings: if constraints are violated, warnings printed
 
-    '''
-    print('Checking constraints on capital, labor, and consumption.')
+    """
+    print("Checking constraints on capital, labor, and consumption.")
 
     if (bssmat < 0).any():
-        print('\tWARNING: There is negative capital stock')
+        print("\tWARNING: There is negative capital stock")
     flag2 = False
     if (nssmat < 0).any():
-        print('\tWARNING: Labor supply violates nonnegativity ',
-              'constraints.')
+        print(
+            "\tWARNING: Labor supply violates nonnegativity ", "constraints."
+        )
         flag2 = True
     if (nssmat > ltilde).any():
-        print('\tWARNING: Labor supply violates the ltilde constraint.')
+        print("\tWARNING: Labor supply violates the ltilde constraint.")
         flag2 = True
     if flag2 is False:
-        print('\tThere were no violations of the constraints on labor',
-              ' supply.')
+        print(
+            "\tThere were no violations of the constraints on labor",
+            " supply.",
+        )
     if (cssmat < 0).any():
-        print('\tWARNING: Consumption violates nonnegativity',
-              ' constraints.')
+        print("\tWARNING: Consumption violates nonnegativity", " constraints.")
     else:
-        print('\tThere were no violations of the constraints on',
-              ' consumption.')
+        print(
+            "\tThere were no violations of the constraints on", " consumption."
+        )
 
 
 def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
-    '''
+    """
     Checks constraints on consumption, savings, and labor supply along
     the transition path. Does this for each period t separately.
 
@@ -466,16 +596,24 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
     Raises:
         Warnings: if constraints are violated, warnings printed
 
-    '''
+    """
     if (b_dist <= 0).any():
-        print('\tWARNING: Aggregate capital is less than or equal to ',
-              'zero in period %.f.' % t)
+        print(
+            "\tWARNING: Aggregate capital is less than or equal to ",
+            "zero in period %.f." % t,
+        )
     if (n_dist < 0).any():
-        print('\tWARNING: Labor supply violates nonnegativity',
-              ' constraints in period %.f.' % t)
+        print(
+            "\tWARNING: Labor supply violates nonnegativity",
+            " constraints in period %.f." % t,
+        )
     if (n_dist > ltilde).any():
-        print('\tWARNING: Labor suppy violates the ltilde constraint',
-              ' in period %.f.' % t)
+        print(
+            "\tWARNING: Labor suppy violates the ltilde constraint",
+            " in period %.f." % t,
+        )
     if (c_dist < 0).any():
-        print('\tWARNING: Consumption violates nonnegativity',
-              ' constraints in period %.f.' % t)
+        print(
+            "\tWARNING: Consumption violates nonnegativity",
+            " constraints in period %.f." % t,
+        )
