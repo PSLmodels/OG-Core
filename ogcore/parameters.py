@@ -1,3 +1,4 @@
+from inspect import Parameter
 import os
 import numpy as np
 import scipy.interpolate as si
@@ -113,9 +114,10 @@ class Specifications(paramtools.Parameters):
                     * self.frac_tax_payroll[-1])
 
         # Extend parameters that may vary over the time path
+        # those that vary over m: 'Z', 'cit_rate',
         tp_param_list = [
-            'alpha_G', 'alpha_T', 'Z', 'world_int_rate_annual',
-            'delta_tau_annual', 'cit_rate',
+            'alpha_G', 'alpha_T', 'world_int_rate_annual',
+            'delta_tau_annual',
             'adjustment_factor_for_cit_receipts', 'tau_bq',
             'tau_payroll', 'h_wealth', 'm_wealth', 'p_wealth',
             'retirement_age', 'replacement_rate_adjust', 'zeta_D',
@@ -134,6 +136,51 @@ class Specifications(paramtools.Parameters):
             this_attr = np.concatenate((
                 this_attr, np.ones((self.T + self.S - this_attr.size)) *
                 this_attr[-1]))
+            setattr(self, item, this_attr)
+        # Deal with parameters that vary across industry and over time
+        tp_param_list2 = ['Z', 'cit_rate']
+        for item in tp_param_list2:
+            this_attr = getattr(self, item)
+            print('Parameter ', item, 'has shape', this_attr.shape)
+            if this_attr.ndim == 1:
+                print('We here')
+                # case where enter single number, so assume constant
+                # across years and industries
+                if this_attr.shape[0] == 1:
+                    this_attr = np.ones((self.T + self.S, self.M)) * \
+                        this_attr[0]
+                # case where user enters just one year for all industries
+                if this_attr.shape[0] == self.M:
+                    this_attr = np.tile(this_attr.reshape(1, self.M), (self.T + self.S, 1))
+                else:
+                    # case where user enters multiple years for one industry
+                    # will assume they implied values the same across industries
+                    this_attr = np.concatenate((
+                        this_attr, np.ones((
+                            self.T + self.S - this_attr.size)) *
+                        this_attr[-1]))
+                    this_attr = np.tile(
+                        this_attr.reshape(self.T + self.S, 1),
+                        (1, self.M))
+                this_attr = np.squeeze(this_attr, axis=2)
+            elif this_attr.ndim == 2:
+                print('Two off bat')
+                if this_attr.shape[1] > 1 and this_attr.shape[1] != self.M:
+                    print(
+                        'please provide values of ' + item +
+                        ' for each industry (or one if common across ' +
+                        'industries')
+                    assert False
+                if this_attr.shape[1] == 1:
+                    this_attr = np.tile(
+                        this_attr.reshape(
+                            this_attr.shape[0], 1), (1, self.M))
+                if this_attr.shape[0] > self.T + self.S:
+                    this_attr = this_attr[:self.T + self.S, :]
+                this_attr = np.concatenate((
+                    this_attr, np.ones(
+                        (self.T + self.S - this_attr.shape[0],
+                         this_attr.shape[1])) * this_attr[-1, :]))
             setattr(self, item, this_attr)
         # Deal with tax parameters that maybe age and time specific
         tax_params_to_TP = [
@@ -227,7 +274,7 @@ class Specifications(paramtools.Parameters):
         # model with baseline parameterization and no adjustment to the
         # CIT_rate
         self.tau_b = (self.cit_rate * self.c_corp_share_of_assets *
-                      self.adjustment_factor_for_cit_receipts)
+                      self.adjustment_factor_for_cit_receipts.reshape(self.adjustment_factor_for_cit_receipts.shape[0], 1))
         self.delta_tau = (
             -1 * rate_conversion(-1 * self.delta_tau_annual,
                                  self.starting_age, self.ending_age,

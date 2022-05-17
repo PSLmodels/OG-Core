@@ -80,6 +80,44 @@ p6.update_specifications(new_param_values6)
 K_g6 = np.array([1.2, 3.0, 0.9]).reshape(3, 1)
 expected6 = np.array([7.07402777, 14.16131267, 2.671400509]).reshape(3, 1)
 
+# update parameters instance with new values for test
+p7 = Specifications()
+new_param_values7 = {
+    'Z': [[2.0, 1.5]],
+    'gamma': [0.5, 0.3],
+    'gamma_g': [0.2, 0.1],
+    'epsilon': [1.0, 1.0],
+    'T': 3,
+    'S': 3,
+    'M': 2,
+    'eta': (np.ones((3, p4.J)) / (3 * p4.J)),
+    'initial_Kg_ratio': 0.01
+}
+# update parameters instance with new values for test
+p7.update_specifications(new_param_values7)
+L7 = np.array([4.0, 4.0])
+K7 = np.array([9.0, 9.0])
+K_g7 = np.array([0.3])
+expected7 = np.array([7.148147389, 5.906254166])
+
+# update parameters instance with new values for test
+p8 = Specifications()
+new_param_values8 = {
+    'Z': [[2.0, 1.5]],
+    'gamma': [0.5, 0.3],
+    'gamma_g': [0.2, 0.1],
+    'epsilon': [0.6, 0.7],
+    'T': 3,
+    'S': 3,
+    'M': 2,
+    'eta': (np.ones((3, p4.J)) / (3 * p4.J)),
+    'initial_Kg_ratio': 0.01
+}
+# update parameters instance with new values for test
+p8.update_specifications(new_param_values8)
+expected8 = np.array([13.58741333, 12.8445788])
+
+
 p9 = Specifications()
 new_param_values9 = {
     'Z': [[1.5, 1.5, 1.5], [2.5, 2.5, 2.5], [0.6, 0.6, 0.6]],
@@ -94,8 +132,10 @@ new_param_values9 = {
 }
 # update parameters instance with new values for test
 p9.update_specifications(new_param_values9)
+L9 = np.tile(np.array([4.0, 4.0, 4.0]).reshape(3, 1), (1, 3))
+K9 = np.tile(np.array([9.0, 9.0, 9.0]).reshape(3, 1), (1, 3))
 expected9 = np.array([
-        [7.07402777,6.784504444, 6.141925883],
+        [7.07402777, 6.784504444, 6.141925883],
         [14.16131267, 12.39255576, 12.87177155],
         [2.671400509, 2.636842858, 2.286282428]])
 
@@ -108,43 +148,65 @@ new_param_values9 = {
     'S': 3,
     'M': 3,
     'eta': (np.ones((3, p5.J)) / (3 * p5.J)),
-    'gamma_g': [0.1, 0.2, 0.25],
+    'gamma_g': [0.2, 0.1, 0.25],
     'initial_Kg_ratio': 0.01
 }
 # update parameters instance with new values for test
 p10.update_specifications(new_param_values9)
-expected10 = np.tile(
-    np.array([7.07402777, 14.16131267, 2.671400509]).reshape(3, 1),
-    (1, 3))
+expected10 = np.array([
+    [15.41106022, 38.83464768, 4.946631616],
+    [13.02348889, 22.39766006, 5.097163565],
+    [14.31423941, 35.75229301, 4.789115236]]).T
 
 
-@pytest.mark.parametrize('K,K_g,L,p,method,expected',
-                         [(K1, K_g1, L1, p1, 'SS', expected1),
-                          (K1, K_g1, L1, p2, 'SS', expected2),
-                          (K3, K_g3, L3, p3, 'SS', expected3),
-                          (K4, K_g4, L4, p4, 'TPI', expected4),
-                          (K4, K_g4, L4, p5, 'TPI', expected5),
-                          (K4, K_g6, L4, p6, 'TPI', expected6),
-                        #   (K4, K_g6, L4, p7, 'TPI', expected7),
-                        #   (K4, K_g6, L4, p8, 'TPI', expected8),
-                          (K4, K_g6, L4, p9, 'TPI', expected9),
-                        #   (K4, K_g6, L4, p10, 'TPI', expected10)
+# TODO: finish the below, then need to add tests of m not None
+# for both SS and TPI...
+@pytest.mark.parametrize('K,K_g,L,p,m,method,expected',
+                         [(K1, K_g1, L1, p1, None, 'SS', expected1),
+                          (K1, K_g1, L1, p2, None, 'SS', expected2),
+                          (K3, K_g3, L3, p3, None, 'SS', expected3),
+                          (K4, K_g4, L4, p4, None, 'TPI', expected4),
+                          (K4, K_g4, L4, p5, None, 'TPI', expected5),
+                          (K4, K_g6, L4, p6, None, 'TPI', expected6),
+                          (K7, K_g7, L7, p7, None, 'SS', expected7),
+                          (K7, K_g7, L7, p8, None, 'SS', expected8),
+                          (K9, K_g6, L9, p9, None, 'TPI', expected9),
+                          (K9, K_g6, L9, p10, None, 'TPI', expected10),
+                          (K7[0], K_g7, L7[0], p7, 0, 'SS', expected7[0]),
+                          (K7[0], K_g7, L7[0], p8, 0, 'SS', expected8[0]),
+                          (K9[:, 0], np.squeeze(K_g6), L9[:, 0], p9, 0, 'TPI', expected9[:, 0]),
+                          (K9[:, 0], np.squeeze(K_g6), L9[:, 0], p10, 0, 'TPI', expected10[:, 0])
                           ],
                          ids=['epsilon=1.0,SS', 'epsilon=0.2,SS',
                               'epsilon=1.2,SS', 'epsilon=1.0,TP',
                               'epsilon=1.0,TP,varyZ',
                               'epsilon=1.0,TP,varyZ,non-zeroKg',
-                            #   'M>1, SS, eps=1',
-                            #   'M>1, SS, eps<1',
+                              'M>1, SS, eps=1',
+                              'M>1, SS, eps<1',
                               'M>1, TPI, eps=1',
-                            #   'M>1, TPI, eps<1'
+                              'M>1, TPI, eps<1',
+                              'M>1, SS, eps=1, m not None',
+                              'M>1, SS, eps<1, m not None',
+                              'M>1, TPI, eps=1, m not None',
+                              'M>1, TPI, eps<1, m not None',
+
                               ])
-def test_get_Y(K, K_g, L, p, method, expected):
+def test_get_Y(K, K_g, L, p, m, method, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
-    Y = firm.get_Y(K, K_g, L, p, None, method)
+    Y = firm.get_Y(K, K_g, L, p, m, method)
+    print(expected)
+    # print('Epislon = ', p.epsilon)
+    # print('Gamma = ', p.gamma)
+    # print('Gamma g = ', p.gamma_g)
+    # print('K = ', K)
+    # print('Z = ', p.Z)
+    # if method == 'TPI' and p.M > 1:
+    #     # print('K = ', K)
+    #     print('Z12 = ', p.Z[1, 2])
+
     assert (np.allclose(Y, expected, atol=1e-6))
 
 

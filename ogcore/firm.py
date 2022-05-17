@@ -55,8 +55,8 @@ def get_Y(K, K_g, L, p, m, method):
             epsilon = p.epsilon[m]
             Z = p.Z[-1, m]
             if epsilon == 1:
-               Y = (Z * (K ** p.gamma) * (K_g ** gamma_g) *
-                    (L ** (1 - p.gamma - gamma_g)))
+                Y = (Z * (K ** gamma) * (K_g ** gamma_g) *
+                      (L ** (1 -  gamma - gamma_g)))
             else:
                 Y = (Z * (((gamma ** (1 / epsilon)) *
                     (K ** ((epsilon - 1) / epsilon))) +
@@ -68,7 +68,6 @@ def get_Y(K, K_g, L, p, m, method):
         else:
             # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
             if K_g == 0 and np.any(p.epsilon) <= 1:
-                #TODO: check if above or below should be == 1 or <= 1
                 gamma_g = p.gamma_g
                 gamma_g[p.epsilon <= 1] = 0
                 K_g = 1.0
@@ -84,8 +83,8 @@ def get_Y(K, K_g, L, p, m, method):
                 (((1 - gamma - gamma_g) ** (1 / epsilon)) *
                 (L ** ((epsilon - 1) / epsilon)))) **
                 (epsilon / (epsilon - 1)))
-            Y2 = (Z * (K ** p.gamma) * (K_g ** gamma_g) *
-                (L ** (1 - p.gamma - gamma_g)))
+            Y2 = (Z * (K ** gamma) * (K_g ** gamma_g) *
+                (L ** (1 - gamma - gamma_g)))
             Y[epsilon == 1] = Y2[epsilon == 1]
     else: #TPI case
         if m is not None:
@@ -97,10 +96,11 @@ def get_Y(K, K_g, L, p, m, method):
                 gamma_g = p.gamma_g[m]
             gamma = p.gamma[m]
             epsilon = p.epsilon[m]
-            Z = p.Z[-1, m]
+            Z = p.Z[:p.T, m]
             if epsilon == 1:
-               Y = (Z * (K ** p.gamma) * (K_g ** gamma_g) *
-                    (L ** (1 - p.gamma - gamma_g)))
+                print('Shapes = ', Z.shape, K.shape, K_g.shape, L.shape)
+                Y = (Z * (K ** gamma) * (K_g ** gamma_g) *
+                     (L ** (1 - gamma - gamma_g)))
             else:
                 Y = (Z * (((gamma ** (1 / epsilon)) *
                     (K ** ((epsilon - 1) / epsilon))) +
@@ -113,9 +113,7 @@ def get_Y(K, K_g, L, p, m, method):
             # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
             if np.any(K_g == 0) and np.any(p.epsilon) == 1:
                 gamma_g = p.gamma_g
-                # gamma_g[p.epsilon <= 1] = 0
                 K_g[K_g == 0] = 1.0
-                # gamma_g[p.epsilon <= 1] = 0
             else:
                 gamma_g = p.gamma_g
             gamma = p.gamma
@@ -129,48 +127,9 @@ def get_Y(K, K_g, L, p, m, method):
                 (((1 - gamma - gamma_g) ** (1 / epsilon)) *
                 (L ** ((epsilon - 1) / epsilon)))) **
                 (epsilon / (epsilon - 1)))
-            Y2 = (Z * (K ** p.gamma) * (K_g ** gamma_g) *
-                (L ** (1 - p.gamma - gamma_g)))
-            # print('Z = ', p.Z.shape, p.gamma.shape, p.tau_b.shape, p.cit_rate.shape)
-            # print('Y = ', Y,Y2, epsilon)
-            print('Shapes: ', Y.shape, Y2.shape, Z.shape, K_g.shape, K.shape)
+            Y2 = (Z * (K ** gamma) * (K_g ** gamma_g) *
+                (L ** (1 - gamma - gamma_g)))
             Y[:, epsilon == 1] = Y2[:, epsilon == 1]
-    # print('Z = ', p.Z.shape, p.gamma.shape, p.tau_b.shape, p.cit_rate.shape)
-    # print('Y = ', Y,Y2, epsilon)
-    # print('Shapes: ', Y.shape, Y2.shape)
-    # Y[:, epsilon == 1] = Y2
-
-
-
-    # if method == 'SS':
-    #     Z = p.Z[-1]
-    #     # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
-    #     if K_g == 0 and p.epsilon <= 1:
-    #         gamma_g = 0
-    #         K_g = 1
-    #     else:
-    #         gamma_g = p.gamma_g
-    # else:
-    #     Z = p.Z[:p.T]
-    #     # Change values of K_g=0 to 1 when eps=1 to remove K_g from prod func
-    #     if np.any(K_g == 0) and p.epsilon == 1:
-    #         K_g[K_g == 0] = 1.0
-    #         gamma_g = 0
-    #     else:
-    #         gamma_g = p.gamma_g
-    # if p.epsilon == 1:
-    #     # Unit elasticity, Cobb-Douglas
-    #     Y = (Z * (K ** p.gamma) * (K_g ** gamma_g) *
-    #          (L ** (1 - p.gamma - gamma_g)))
-    # else:
-    #     # General CES
-    #     Y = (Z * (((p.gamma ** (1 / p.epsilon)) *
-    #                (K ** ((p.epsilon - 1) / p.epsilon))) +
-    #               ((gamma_g ** (1 / p.epsilon)) *
-    #                (K_g ** ((p.epsilon - 1) / p.epsilon))) +
-    #               (((1 - p.gamma - gamma_g) ** (1 / p.epsilon)) *
-    #                (L ** ((p.epsilon - 1) / p.epsilon)))) **
-    #          (p.epsilon / (p.epsilon - 1)))
 
     return Y
 
