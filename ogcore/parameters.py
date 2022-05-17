@@ -117,7 +117,6 @@ class Specifications(paramtools.Parameters):
         # those that vary over m: 'Z', 'cit_rate',
         tp_param_list = [
             'alpha_G', 'alpha_T', 'world_int_rate_annual',
-            'delta_tau_annual',
             'adjustment_factor_for_cit_receipts', 'tau_bq',
             'tau_payroll', 'h_wealth', 'm_wealth', 'p_wealth',
             'retirement_age', 'replacement_rate_adjust', 'zeta_D',
@@ -138,7 +137,7 @@ class Specifications(paramtools.Parameters):
                 this_attr[-1]))
             setattr(self, item, this_attr)
         # Deal with parameters that vary across industry and over time
-        tp_param_list2 = ['Z', 'cit_rate']
+        tp_param_list2 = ['Z', 'delta_tau_annual', 'cit_rate']
         for item in tp_param_list2:
             this_attr = getattr(self, item)
             print('Parameter ', item, 'has shape', this_attr.shape)

@@ -908,11 +908,11 @@
         "section_2": "Taxes",
         "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter.",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
                 "value": [
-                    0.027
+                    [0.027]
                 ]
             }
         ],
