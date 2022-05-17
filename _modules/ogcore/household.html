@@ -378,25 +378,25 @@ const thebe_selector_output = ".output, .cell_output"
               <div>
                 
   <h1>Source code for ogcore.household</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">Household functions.</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Packages</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">tax</span><span class="p">,</span> <span class="n">utils</span>
 
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">    Functions</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="marg_ut_cons"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.marg_ut_cons">[docs]</a><span class="k">def</span> <span class="nf">marg_ut_cons</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the marginal utility of consumption.</span>
 
 <span class="sd">    .. math::</span>
@@ -409,7 +409,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        output (array_like): marginal utility of consumption</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span><span class="p">])</span>
     <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.003</span>
@@ -426,7 +426,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="marg_ut_labor"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.marg_ut_labor">[docs]</a><span class="k">def</span> <span class="nf">marg_ut_labor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">chi_n</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the marginal disutility of labor.</span>
 
 <span class="sd">    .. math::</span>
@@ -443,7 +443,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        output (array_like): marginal disutility of labor supply</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nvec</span> <span class="o">=</span> <span class="n">n</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">nvec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">nvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">nvec</span><span class="p">])</span>
@@ -454,30 +454,62 @@ const thebe_selector_output = ".output, .cell_output"
     <span class="n">nvec_uncstr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="o">~</span><span class="n">nvec_low</span><span class="p">,</span> <span class="o">~</span><span class="n">nvec_high</span><span class="p">)</span>
     <span class="n">MDU_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nvec</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">MDU_n</span><span class="p">[</span><span class="n">nvec_uncstr</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">*</span>
-        <span class="p">((</span><span class="n">nvec</span><span class="p">[</span><span class="n">nvec_uncstr</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span>
-        <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">nvec</span><span class="p">[</span><span class="n">nvec_uncstr</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span>
-         <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)))</span>
-    <span class="n">b2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">ltilde</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
-          <span class="p">(</span><span class="n">eps_low</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">*</span>
-          <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">*</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))))</span>
-    <span class="n">b1</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span>
-                                      <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">b2</span> <span class="o">*</span> <span class="n">eps_low</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span>
+        <span class="o">*</span> <span class="p">((</span><span class="n">nvec</span><span class="p">[</span><span class="n">nvec_uncstr</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="o">*</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">nvec</span><span class="p">[</span><span class="n">nvec_uncstr</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span>
+            <span class="o">**</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">b2</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mf">0.5</span>
+        <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span>
+        <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">ltilde</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span>
+        <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">*</span> <span class="p">(</span><span class="n">eps_low</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="o">*</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span>
+            <span class="o">**</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="o">*</span> <span class="p">(</span>
+            <span class="mi">1</span>
+            <span class="o">+</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">b1</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_low</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span>
+        <span class="o">**</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-</span> <span class="p">(</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="n">b2</span> <span class="o">*</span> <span class="n">eps_low</span>
+    <span class="p">)</span>
     <span class="n">MDU_n</span><span class="p">[</span><span class="n">nvec_low</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">b2</span> <span class="o">*</span> <span class="n">nvec</span><span class="p">[</span><span class="n">nvec_low</span><span class="p">]</span> <span class="o">+</span> <span class="n">b1</span>
-    <span class="n">d2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">ltilde</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
-          <span class="p">(</span><span class="n">eps_high</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">*</span>
-          <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">*</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))))</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span>
-          <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span>
-          <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">*</span> <span class="n">eps_high</span><span class="p">))</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mf">0.5</span>
+        <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span>
+        <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">ltilde</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span>
+        <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">*</span> <span class="p">(</span><span class="n">eps_high</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="o">*</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span>
+            <span class="o">**</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="o">*</span> <span class="p">(</span>
+            <span class="mi">1</span>
+            <span class="o">+</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">b_ellipse</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">eps_high</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">))</span>
+        <span class="o">**</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">upsilon</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-</span> <span class="p">(</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">*</span> <span class="n">eps_high</span>
+    <span class="p">)</span>
     <span class="n">MDU_n</span><span class="p">[</span><span class="n">nvec_high</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">*</span> <span class="n">nvec</span><span class="p">[</span><span class="n">nvec_high</span><span class="p">]</span> <span class="o">+</span> <span class="n">d1</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">MDU_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">chi_n</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
@@ -485,7 +517,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="get_bq"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_bq">[docs]</a><span class="k">def</span> <span class="nf">get_bq</span><span class="p">(</span><span class="n">BQ</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate bequests to each household.</span>
 
 <span class="sd">    .. math::</span>
@@ -501,48 +533,52 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        bq (array_like): bequests received by each household</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">use_zeta</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
                 <span class="n">bq</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">BQ</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">len_T</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">bq</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))</span> <span class="o">*</span>
-                      <span class="n">BQ</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">/</span>
-                      <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]))</span>
+                <span class="n">bq</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))</span> <span class="o">*</span> <span class="n">BQ</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
-                <span class="n">bq</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span> <span class="o">*</span> <span class="n">BQ</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span>
-                                       <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+                <span class="n">bq</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span> <span class="o">*</span> <span class="n">BQ</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">len_T</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">bq</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span>
-                      <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">BQ</span><span class="p">))</span> <span class="o">/</span>
-                      <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span>
-                       <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span>
+                <span class="n">bq</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+                    <span class="o">*</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">BQ</span><span class="p">)</span>
+                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+                    <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
                 <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">BQ</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
                 <span class="n">len_T</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BQ</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">],</span>
-                                        <span class="p">(</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))</span>
+                <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BQ</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="p">(</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
                 <span class="n">BQ_per</span> <span class="o">=</span> <span class="n">BQ</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span>
                 <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BQ_per</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
                 <span class="n">len_T</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">BQ_per</span> <span class="o">=</span> <span class="n">BQ</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
-                <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BQ_per</span><span class="p">,</span> <span class="p">(</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span>
-                             <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BQ_per</span><span class="p">,</span> <span class="p">(</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">bq</span></div>
 
 
 <div class="viewcode-block" id="get_tr"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_tr">[docs]</a><span class="k">def</span> <span class="nf">get_tr</span><span class="p">(</span><span class="n">TR</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate transfers to each household.</span>
 
 <span class="sd">    .. math::</span>
@@ -558,32 +594,32 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        tr (array_like): transfers received by each household</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
             <span class="n">tr</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">TR</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">len_T</span> <span class="o">=</span> <span class="n">TR</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">tr</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span>
-                  <span class="n">TR</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">/</span>
-                  <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]))</span>
+            <span class="n">tr</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">TR</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
-            <span class="n">tr</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">TR</span><span class="p">)</span> <span class="o">/</span>
-                  <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span>
-                   <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">tr</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">TR</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">len_T</span> <span class="o">=</span> <span class="n">TR</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">tr</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span>
-                   <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">TR</span><span class="p">))</span> <span class="o">/</span>
-                  <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span>
-                   <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span>
+            <span class="n">tr</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">TR</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+                <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">tr</span></div>
 
 
 <div class="viewcode-block" id="get_cons"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_cons">[docs]</a><span class="k">def</span> <span class="nf">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">net_tax</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate household consumption.</span>
 
 <span class="sd">    .. math::</span>
@@ -606,15 +642,35 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        cons (Numpy array): household consumption</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">cons</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="n">bq</span> <span class="o">-</span> <span class="n">b_splus1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">-</span>
-            <span class="n">net_tax</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cons</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="n">bq</span> <span class="o">-</span> <span class="n">b_splus1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">-</span> <span class="n">net_tax</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cons</span></div>
 
 
-<div class="viewcode-block" id="FOC_savings"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.FOC_savings">[docs]</a><span class="k">def</span> <span class="nf">FOC_savings</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ubi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span>
-                <span class="n">tau_c</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtry_params</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="FOC_savings"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.FOC_savings">[docs]</a><span class="k">def</span> <span class="nf">FOC_savings</span><span class="p">(</span>
+    <span class="n">r</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">b_splus1</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">bq</span><span class="p">,</span>
+    <span class="n">factor</span><span class="p">,</span>
+    <span class="n">tr</span><span class="p">,</span>
+    <span class="n">ubi</span><span class="p">,</span>
+    <span class="n">theta</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">rho</span><span class="p">,</span>
+    <span class="n">tau_c</span><span class="p">,</span>
+    <span class="n">etr_params</span><span class="p">,</span>
+    <span class="n">mtry_params</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">,</span>
+    <span class="n">j</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes Euler errors for the FOC for savings in the steady state.</span>
 <span class="sd">    This function is usually looped through over J, so it does one</span>
 <span class="sd">    lifetime income group at a time.</span>
@@ -655,14 +711,14 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        euler (Numpy array): Euler error from FOC for savings</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">chi_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">chi_b</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">chi_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">chi_b</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -671,35 +727,85 @@ const thebe_selector_output = ".output, .cell_output"
         <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
         <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
 
-    <span class="n">taxes</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">net_taxes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ubi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span>
-                          <span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">taxes</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">net_taxes</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">,</span>
+        <span class="n">w</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">,</span>
+        <span class="n">bq</span><span class="p">,</span>
+        <span class="n">factor</span><span class="p">,</span>
+        <span class="n">tr</span><span class="p">,</span>
+        <span class="n">ubi</span><span class="p">,</span>
+        <span class="n">theta</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">,</span>
+        <span class="n">j</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="n">e</span><span class="p">,</span>
+        <span class="n">etr_params</span><span class="p">,</span>
+        <span class="n">p</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-    <span class="n">deriv</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span>
-        <span class="n">r</span> <span class="o">*</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span>
-                           <span class="n">mtry_params</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span> <span class="o">-</span>
-             <span class="n">tax</span><span class="o">.</span><span class="n">MTR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">))</span>
-    <span class="n">savings_ut</span> <span class="o">=</span> <span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">chi_b</span> <span class="o">*</span>
-                  <span class="n">b_splus1</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">))</span>
+    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span>
+        <span class="o">-</span> <span class="p">(</span>
+            <span class="n">r</span>
+            <span class="o">*</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_income</span><span class="p">(</span>
+                <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtry_params</span><span class="p">,</span> <span class="n">p</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="o">-</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">savings_ut</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">rho</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">chi_b</span> <span class="o">*</span> <span class="n">b_splus1</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">euler_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">euler_error</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span>
-                            <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span> <span class="o">-</span> <span class="n">beta</span> <span class="o">*</span>
-                            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">deriv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">*</span>
-                            <span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span>
-                            <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span>
-                            <span class="o">-</span> <span class="n">savings_ut</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">euler_error</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span>
-                           <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span> <span class="o">-</span> <span class="n">savings_ut</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">euler_error</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="o">-</span> <span class="n">beta</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="o">*</span> <span class="n">deriv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="o">*</span> <span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">savings_ut</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">euler_error</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="o">-</span> <span class="n">savings_ut</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">euler_error</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span>
-                           <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span> <span class="o">-</span> <span class="n">savings_ut</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">euler_error</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="o">-</span> <span class="n">savings_ut</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">euler_error</span></div>
 
 
-<div class="viewcode-block" id="FOC_labor"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.FOC_labor">[docs]</a><span class="k">def</span> <span class="nf">FOC_labor</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ubi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">chi_n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span>
-              <span class="n">tau_c</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtrx_params</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="FOC_labor"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.FOC_labor">[docs]</a><span class="k">def</span> <span class="nf">FOC_labor</span><span class="p">(</span>
+    <span class="n">r</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">b_splus1</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">bq</span><span class="p">,</span>
+    <span class="n">factor</span><span class="p">,</span>
+    <span class="n">tr</span><span class="p">,</span>
+    <span class="n">ubi</span><span class="p">,</span>
+    <span class="n">theta</span><span class="p">,</span>
+    <span class="n">chi_n</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">tau_c</span><span class="p">,</span>
+    <span class="n">etr_params</span><span class="p">,</span>
+    <span class="n">mtrx_params</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">,</span>
+    <span class="n">j</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes errors for the FOC for labor supply in the steady</span>
 <span class="sd">    state.  This function is usually looped through over J, so it does</span>
 <span class="sd">    one lifetime income group at a time.</span>
@@ -741,34 +847,55 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        FOC_error (Numpy array): error from FOC for labor supply</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>  <span class="c1"># for 1st donut ring only</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>  <span class="c1"># for 1st donut ring only</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">tau_payroll</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tau_payroll</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">taxes</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">net_taxes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ubi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span>
-                          <span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">taxes</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">net_taxes</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">,</span>
+        <span class="n">w</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">,</span>
+        <span class="n">bq</span><span class="p">,</span>
+        <span class="n">factor</span><span class="p">,</span>
+        <span class="n">tr</span><span class="p">,</span>
+        <span class="n">ubi</span><span class="p">,</span>
+        <span class="n">theta</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">,</span>
+        <span class="n">j</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="n">e</span><span class="p">,</span>
+        <span class="n">etr_params</span><span class="p">,</span>
+        <span class="n">p</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_payroll</span> <span class="o">-</span>
-             <span class="n">tax</span><span class="o">.</span><span class="n">MTR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span>
-                            <span class="n">mtrx_params</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
-    <span class="n">FOC_error</span> <span class="o">=</span> <span class="p">(</span><span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">))</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span>
-                 <span class="n">deriv</span> <span class="o">*</span> <span class="n">e</span> <span class="o">-</span> <span class="n">marg_ut_labor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">chi_n</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">1</span>
+        <span class="o">-</span> <span class="n">tau_payroll</span>
+        <span class="o">-</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_income</span><span class="p">(</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtrx_params</span><span class="p">,</span> <span class="n">p</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">FOC_error</span> <span class="o">=</span> <span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">deriv</span> <span class="o">*</span> <span class="n">e</span> <span class="o">-</span> <span class="n">marg_ut_labor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">chi_n</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">FOC_error</span></div>
 
 
 <div class="viewcode-block" id="get_y"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_y">[docs]</a><span class="k">def</span> <span class="nf">get_y</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b_s</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute household income before taxes.</span>
 
 <span class="sd">    ..math::</span>
@@ -780,7 +907,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">        b_s (Numpy array): household savings coming into the period</span>
 <span class="sd">        n (Numpy array): household labor supply</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">y</span> <span class="o">=</span> <span class="n">r_p</span> <span class="o">*</span> <span class="n">b_s</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
 
@@ -788,7 +915,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="constraint_checker_SS"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.constraint_checker_SS">[docs]</a><span class="k">def</span> <span class="nf">constraint_checker_SS</span><span class="p">(</span><span class="n">bssmat</span><span class="p">,</span> <span class="n">nssmat</span><span class="p">,</span> <span class="n">cssmat</span><span class="p">,</span> <span class="n">ltilde</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks constraints on consumption, savings, and labor supply in the</span>
 <span class="sd">    steady state.</span>
 
@@ -804,32 +931,35 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Raises:</span>
 <span class="sd">        Warnings: if constraints are violated, warnings printed</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Checking constraints on capital, labor, and consumption.&#39;</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking constraints on capital, labor, and consumption.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">bssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: There is negative capital stock&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: There is negative capital stock&quot;</span><span class="p">)</span>
     <span class="n">flag2</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">nssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Labor supply violates nonnegativity &#39;</span><span class="p">,</span>
-              <span class="s1">&#39;constraints.&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Labor supply violates nonnegativity &quot;</span><span class="p">,</span> <span class="s2">&quot;constraints.&quot;</span>
+        <span class="p">)</span>
         <span class="n">flag2</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">nssmat</span> <span class="o">&gt;</span> <span class="n">ltilde</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Labor supply violates the ltilde constraint.&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Labor supply violates the ltilde constraint.&quot;</span><span class="p">)</span>
         <span class="n">flag2</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">flag2</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">There were no violations of the constraints on labor&#39;</span><span class="p">,</span>
-              <span class="s1">&#39; supply.&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">There were no violations of the constraints on labor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot; supply.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">cssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Consumption violates nonnegativity&#39;</span><span class="p">,</span>
-              <span class="s1">&#39; constraints.&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Consumption violates nonnegativity&quot;</span><span class="p">,</span> <span class="s2">&quot; constraints.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">There were no violations of the constraints on&#39;</span><span class="p">,</span>
-              <span class="s1">&#39; consumption.&#39;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">There were no violations of the constraints on&quot;</span><span class="p">,</span> <span class="s2">&quot; consumption.&quot;</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="constraint_checker_TPI"><a class="viewcode-back" href="../../content/api/household.html#ogcore.household.constraint_checker_TPI">[docs]</a><span class="k">def</span> <span class="nf">constraint_checker_TPI</span><span class="p">(</span><span class="n">b_dist</span><span class="p">,</span> <span class="n">n_dist</span><span class="p">,</span> <span class="n">c_dist</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">ltilde</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks constraints on consumption, savings, and labor supply along</span>
 <span class="sd">    the transition path. Does this for each period t separately.</span>
 
@@ -846,19 +976,27 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Raises:</span>
 <span class="sd">        Warnings: if constraints are violated, warnings printed</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">b_dist</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Aggregate capital is less than or equal to &#39;</span><span class="p">,</span>
-              <span class="s1">&#39;zero in period %.f.&#39;</span> <span class="o">%</span> <span class="n">t</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Aggregate capital is less than or equal to &quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zero in period %.f.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Labor supply violates nonnegativity&#39;</span><span class="p">,</span>
-              <span class="s1">&#39; constraints in period %.f.&#39;</span> <span class="o">%</span> <span class="n">t</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Labor supply violates nonnegativity&quot;</span><span class="p">,</span>
+            <span class="s2">&quot; constraints in period %.f.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_dist</span> <span class="o">&gt;</span> <span class="n">ltilde</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Labor suppy violates the ltilde constraint&#39;</span><span class="p">,</span>
-              <span class="s1">&#39; in period %.f.&#39;</span> <span class="o">%</span> <span class="n">t</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Labor suppy violates the ltilde constraint&quot;</span><span class="p">,</span>
+            <span class="s2">&quot; in period %.f.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">c_dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: Consumption violates nonnegativity&#39;</span><span class="p">,</span>
-              <span class="s1">&#39; constraints in period %.f.&#39;</span> <span class="o">%</span> <span class="n">t</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Consumption violates nonnegativity&quot;</span><span class="p">,</span>
+            <span class="s2">&quot; constraints in period %.f.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </pre></div>
 
               </div>

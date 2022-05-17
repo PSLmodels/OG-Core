@@ -378,9 +378,9 @@ const thebe_selector_output = ".output, .cell_output"
               <div>
                 
   <h1>Source code for ogcore.execute</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This module defines the runner() function, which is used to run OG-Core</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">cloudpickle</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -389,7 +389,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="runner"><a class="viewcode-back" href="../../content/api/execute.html#ogcore.execute.runner">[docs]</a><span class="k">def</span> <span class="nf">runner</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">time_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function runs the OG-Core model, solving for the steady-state</span>
 <span class="sd">    and (optionally) the time path equilibrium.</span>
 
@@ -401,7 +401,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">tick</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="c1"># Create output directory structure</span>
@@ -415,43 +415,43 @@ const thebe_selector_output = ".output, .cell_output"
         <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
             <span class="k">pass</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In runner, baseline is &#39;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In runner, baseline is &quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">)</span>
 
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">        Run SS</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ss_outputs</span> <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">run_SS</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
 
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">        Pickle SS results</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">))</span>
     <span class="n">ss_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;SS&quot;</span><span class="p">,</span> <span class="s2">&quot;SS_vars.pkl&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ss_dir</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ss_outputs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;JUST SAVED SS output to &#39;</span><span class="p">,</span> <span class="n">ss_dir</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JUST SAVED SS output to &quot;</span><span class="p">,</span> <span class="n">ss_dir</span><span class="p">)</span>
     <span class="c1"># Save pickle with parameter values for the run</span>
     <span class="n">param_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;model_params.pkl&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">param_dir</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">p</span><span class="p">),</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">time_path</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
 <span class="sd">            Run the TPI simulation</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tpi_output</span> <span class="o">=</span> <span class="n">TPI</span><span class="o">.</span><span class="n">run_TPI</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
 <span class="sd">            Pickle TPI results</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tpi_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">output_base</span><span class="p">,</span> <span class="s2">&quot;TPI&quot;</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">tpi_dir</span><span class="p">)</span>
         <span class="n">tpi_vars</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tpi_dir</span><span class="p">,</span> <span class="s2">&quot;TPI_vars.pkl&quot;</span><span class="p">)</span>
@@ -459,8 +459,9 @@ const thebe_selector_output = ".output, .cell_output"
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">tpi_output</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time path iteration complete.&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;It took </span><span class="si">{0}</span><span class="s2"> seconds to get that part done.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">tick</span><span class="p">))</span></div>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;It took </span><span class="si">{0}</span><span class="s2"> seconds to get that part done.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">tick</span><span class="p">)</span>
+    <span class="p">)</span></div>
 </pre></div>
 
               </div>

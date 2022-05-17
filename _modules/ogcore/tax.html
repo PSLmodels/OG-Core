@@ -378,26 +378,26 @@ const thebe_selector_output = ".output, .cell_output"
               <div>
                 
   <h1>Source code for ogcore.tax</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">Functions for taxes in the steady state and along the transition path.</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Packages</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">ogcore.txfunc</span> <span class="kn">import</span> <span class="n">get_tax_rates</span>
 
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">    Functions</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="replacement_rate_vals"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.replacement_rate_vals">[docs]</a><span class="k">def</span> <span class="nf">replacement_rate_vals</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">wss</span><span class="p">,</span> <span class="n">factor_ss</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates replacement rate values for the social security system.</span>
 
 <span class="sd">    Args:</span>
@@ -412,7 +412,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">        theta (Numpy array): social security replacement rate value for</span>
 <span class="sd">            lifetime income group j</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -425,9 +425,9 @@ const thebe_selector_output = ".output, .cell_output"
         <span class="n">dim2</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">earnings</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">*</span> <span class="p">(</span><span class="n">wss</span> <span class="o">*</span> <span class="n">nssmat</span> <span class="o">*</span> <span class="n">factor_ss</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">dim2</span><span class="p">)</span>
     <span class="c1"># get highest earning years for number of years AIME computed from</span>
-    <span class="n">highest_earn</span> <span class="o">=</span>\
-        <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">earnings</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span>
-                        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[:</span><span class="n">equiv_periods</span><span class="p">]</span>
+    <span class="n">highest_earn</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">earnings</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">)[:</span><span class="n">equiv_periods</span><span class="p">]</span>
     <span class="n">AIME</span> <span class="o">=</span> <span class="n">highest_earn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mf">12.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">))</span> <span class="o">*</span> <span class="n">equiv_periods</span><span class="p">)</span>
     <span class="n">PIA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dim2</span><span class="p">)</span>
     <span class="c1"># Compute level of replacement using AIME brackets and PIA rates</span>
@@ -435,12 +435,15 @@ const thebe_selector_output = ".output, .cell_output"
         <span class="k">if</span> <span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span><span class="p">:</span>
             <span class="n">PIA</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_1</span> <span class="o">*</span> <span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_2</span><span class="p">:</span>
-            <span class="n">PIA</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_1</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span> <span class="o">+</span>
-                      <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_2</span> <span class="o">*</span> <span class="p">(</span><span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span><span class="p">))</span>
+            <span class="n">PIA</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_1</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_2</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">PIA</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_1</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span> <span class="o">+</span>
-                      <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_2</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_2</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span><span class="p">)</span> <span class="o">+</span>
-                      <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_3</span> <span class="o">*</span> <span class="p">(</span><span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_2</span><span class="p">))</span>
+            <span class="n">PIA</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_1</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span>
+                <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_2</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_2</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_1</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_rate_bkt_3</span> <span class="o">*</span> <span class="p">(</span><span class="n">AIME</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">AIME_bkt_2</span><span class="p">)</span>
+            <span class="p">)</span>
     <span class="c1"># Set the maximum monthly replacment rate from SS benefits tables</span>
     <span class="n">PIA</span><span class="p">[</span><span class="n">PIA</span> <span class="o">&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_maxpayment</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_maxpayment</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">PIA_minpayment</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
@@ -450,7 +453,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="ETR_wealth"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.ETR_wealth">[docs]</a><span class="k">def</span> <span class="nf">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the effective tax rate on wealth.</span>
 
 <span class="sd">    .. math::</span>
@@ -465,13 +468,13 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        tau_w (Numpy array): effective tax rate on wealth, size = SxJ</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tau_w</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_wealth</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h_wealth</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">m_wealth</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tau_w</span></div>
 
 
 <div class="viewcode-block" id="MTR_wealth"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.MTR_wealth">[docs]</a><span class="k">def</span> <span class="nf">MTR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the marginal tax rate on wealth from the wealth tax.</span>
 
 <span class="sd">    .. math::</span>
@@ -487,15 +490,15 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">tau_prime</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">*</span> <span class="n">m_wealth</span> <span class="o">*</span> <span class="n">p_wealth</span><span class="p">)</span> <span class="o">/</span>
-                 <span class="p">((</span><span class="n">b</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">+</span> <span class="n">m_wealth</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
-                 <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tau_prime</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">*</span> <span class="n">m_wealth</span> <span class="o">*</span> <span class="n">p_wealth</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">+</span> <span class="n">m_wealth</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="p">)</span> <span class="o">+</span> <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tau_prime</span></div>
 
 
 <div class="viewcode-block" id="ETR_income"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.ETR_income">[docs]</a><span class="k">def</span> <span class="nf">ETR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates effective personal income tax rate.</span>
 
 <span class="sd">    Args:</span>
@@ -512,19 +515,19 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        tau (Numpy array): effective tax rate on total income</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
     <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
 
-    <span class="n">tau</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span><span class="n">etr_params</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span><span class="p">,</span> <span class="s1">&#39;etr&#39;</span><span class="p">,</span>
-                        <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span>
+        <span class="n">etr_params</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span><span class="p">,</span> <span class="s2">&quot;etr&quot;</span><span class="p">,</span> <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">tau</span></div>
 
 
-<div class="viewcode-block" id="MTR_income"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.MTR_income">[docs]</a><span class="k">def</span> <span class="nf">MTR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">mtr_capital</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span>
-               <span class="n">mtr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="MTR_income"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.MTR_income">[docs]</a><span class="k">def</span> <span class="nf">MTR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">mtr_capital</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates the marginal tax rate on labor income for households.</span>
 
 <span class="sd">    Args:</span>
@@ -543,24 +546,40 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        tau (Numpy array): marginal tax rate on income source</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
     <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
 
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">analytical_mtrs</span><span class="p">:</span>
         <span class="n">tau</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span>
-            <span class="n">etr_params</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span><span class="p">,</span> <span class="s1">&#39;mtr&#39;</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">analytical_mtrs</span><span class="p">,</span> <span class="n">mtr_capital</span><span class="p">,</span> <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">etr_params</span><span class="p">,</span>
+            <span class="n">X</span><span class="p">,</span>
+            <span class="n">Y</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span><span class="p">,</span>
+            <span class="s2">&quot;mtr&quot;</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">analytical_mtrs</span><span class="p">,</span>
+            <span class="n">mtr_capital</span><span class="p">,</span>
+            <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">tau</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span>
-            <span class="n">mtr_params</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span><span class="p">,</span> <span class="s1">&#39;mtr&#39;</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">analytical_mtrs</span><span class="p">,</span> <span class="n">mtr_capital</span><span class="p">,</span> <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">mtr_params</span><span class="p">,</span>
+            <span class="n">X</span><span class="p">,</span>
+            <span class="n">Y</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span><span class="p">,</span>
+            <span class="s2">&quot;mtr&quot;</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">analytical_mtrs</span><span class="p">,</span>
+            <span class="n">mtr_capital</span><span class="p">,</span>
+            <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">tau</span></div>
 
 
 <div class="viewcode-block" id="get_biz_tax"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.get_biz_tax">[docs]</a><span class="k">def</span> <span class="nf">get_biz_tax</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds total business income tax revenue.</span>
 
 <span class="sd">    .. math::</span>
@@ -575,20 +594,36 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        business_revenue (array_like): aggregate business tax revenue</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="n">business_revenue</span> <span class="o">=</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">w</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span> <span class="o">*</span> <span class="n">K</span>
     <span class="k">return</span> <span class="n">business_revenue</span></div>
 
 
-<div class="viewcode-block" id="net_taxes"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.net_taxes">[docs]</a><span class="k">def</span> <span class="nf">net_taxes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ubi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span>
-              <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="net_taxes"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.net_taxes">[docs]</a><span class="k">def</span> <span class="nf">net_taxes</span><span class="p">(</span>
+    <span class="n">r</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">bq</span><span class="p">,</span>
+    <span class="n">factor</span><span class="p">,</span>
+    <span class="n">tr</span><span class="p">,</span>
+    <span class="n">ubi</span><span class="p">,</span>
+    <span class="n">theta</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">,</span>
+    <span class="n">j</span><span class="p">,</span>
+    <span class="n">shift</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">etr_params</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate net taxes paid for each household.</span>
 
 <span class="sd">    Args:</span>
@@ -616,7 +651,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        net_tax (Numpy array): net taxes paid for each household</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T_I</span> <span class="o">=</span> <span class="n">income_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">pension</span> <span class="o">=</span> <span class="n">pension_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
@@ -628,7 +663,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="income_tax_liab"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.income_tax_liab">[docs]</a><span class="k">def</span> <span class="nf">income_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate income and payroll tax liability for each household</span>
 
 <span class="sd">    Args:</span>
@@ -650,33 +685,36 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">        T_I (Numpy array): total income and payroll taxes paid for each</span>
 <span class="sd">            household</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
 
     <span class="n">income</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
     <span class="n">labor_income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
     <span class="n">T_I</span> <span class="o">=</span> <span class="n">ETR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">income</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
+            <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">T_P</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
-                   <span class="n">labor_income</span><span class="p">)</span>
+            <span class="n">T_P</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">labor_income</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">T_P</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
-                   <span class="n">labor_income</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>
+            <span class="n">T_P</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">labor_income</span>
+            <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
         <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
 
     <span class="n">income_payroll_tax_liab</span> <span class="o">=</span> <span class="n">T_I</span> <span class="o">+</span> <span class="n">T_P</span>
@@ -685,7 +723,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="pension_amount"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.pension_amount">[docs]</a><span class="k">def</span> <span class="nf">pension_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate public pension benefit amounts for each household.</span>
 
 <span class="sd">    Args:</span>
@@ -705,52 +743,56 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        pension (Numpy array): pension amount for each household</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
 
     <span class="n">pension</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="c1"># Depending on if we are looking at b_s or b_s+1, the</span>
         <span class="c1"># entry for retirement will change (it shifts back one).</span>
         <span class="c1"># The shift boolean makes sure we start replacement rates</span>
         <span class="c1"># at the correct age.</span>
         <span class="k">if</span> <span class="n">shift</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
+            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">shift</span><span class="p">:</span>
             <span class="c1"># retireTPI is different from retire, because in TP income</span>
             <span class="c1"># we are counting backwards with different length lists.</span>
             <span class="c1"># This will always be the correct location of retirement,</span>
             <span class="c1"># depending on the shape of the lists.</span>
-            <span class="n">retireTPI</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+            <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">retireTPI</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+            <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">shift</span><span class="p">:</span>
                 <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
             <span class="n">pension</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">theta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:])</span>
+                <span class="n">theta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:]</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">tt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pension</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="n">pension</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">retireTPI</span><span class="p">[</span><span class="n">tt</span><span class="p">]:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">theta</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="n">tt</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">tt</span><span class="p">])</span>
+                <span class="n">pension</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">retireTPI</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">theta</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="n">tt</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">tt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pension</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="n">pension</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">retireTPI</span><span class="p">[</span><span class="n">tt</span><span class="p">]:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">theta</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span> <span class="o">*</span>
-                    <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="n">tt</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">tt</span><span class="p">])</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>
+                <span class="n">pension</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">retireTPI</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">theta</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="n">tt</span><span class="p">]</span>
+                    <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span>
+                <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
         <span class="c1"># The above methods won&#39;t work if scalars are used.  This option</span>
         <span class="c1"># is only called by the SS_TPI_firstdoughnutring function in TPI.</span>
         <span class="n">pension</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span>
@@ -759,7 +801,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="wealth_tax_liab"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.wealth_tax_liab">[docs]</a><span class="k">def</span> <span class="nf">wealth_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate wealth tax liability for each household.</span>
 
 <span class="sd">    Args:</span>
@@ -774,42 +816,57 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        T_W (Numpy array): wealth tax liability for each household</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
-        <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                          <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="n">T_W</span> <span class="o">=</span> <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
-                              <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
-                              <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">ETR_wealth</span><span class="p">(</span>
+                    <span class="n">b</span><span class="p">,</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="o">*</span> <span class="n">b</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
-                              <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
-                              <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">ETR_wealth</span><span class="p">(</span>
+                    <span class="n">b</span><span class="p">,</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="o">*</span> <span class="n">b</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span>
-                <span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>
-        <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span><span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                          <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+            <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">ETR_wealth</span><span class="p">(</span>
+                    <span class="n">b</span><span class="p">,</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="o">*</span> <span class="n">b</span>
+            <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+        <span class="n">T_W</span> <span class="o">=</span> <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span>
 
     <span class="k">return</span> <span class="n">T_W</span></div>
 
 
 <div class="viewcode-block" id="bequest_tax_liab"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.bequest_tax_liab">[docs]</a><span class="k">def</span> <span class="nf">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate liability due from taxes on bequests for each household.</span>
 
 <span class="sd">    Args:</span>
@@ -825,28 +882,28 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        T_BQ (Numpy array): bequest tax liability for each household</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">lambdas</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">lambdas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">bq</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">*</span> <span class="n">bq</span>
+            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">*</span> <span class="n">bq</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">bq</span> <span class="o">/</span> <span class="n">lambdas</span>
+            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">bq</span> <span class="o">/</span> <span class="n">lambdas</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">bq</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;TPI_scalar&#39;</span><span class="p">:</span>
+            <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">bq</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
         <span class="c1"># The above methods won&#39;t work if scalars are used.  This option</span>
         <span class="c1"># is only called by the SS_TPI_firstdoughnutring function in TPI.</span>
         <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_bq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">bq</span>

@@ -386,9 +386,10 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="n">CUR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="get_wealth_data"><a class="viewcode-back" href="../../content/api/wealth.html#ogcore.wealth.get_wealth_data">[docs]</a><span class="k">def</span> <span class="nf">get_wealth_data</span><span class="p">(</span><span class="n">scf_yrs_list</span><span class="o">=</span><span class="p">[</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">2016</span><span class="p">,</span> <span class="mi">2013</span><span class="p">,</span> <span class="mi">2010</span><span class="p">,</span> <span class="mi">2007</span><span class="p">],</span> <span class="n">web</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="get_wealth_data"><a class="viewcode-back" href="../../content/api/wealth.html#ogcore.wealth.get_wealth_data">[docs]</a><span class="k">def</span> <span class="nf">get_wealth_data</span><span class="p">(</span>
+    <span class="n">scf_yrs_list</span><span class="o">=</span><span class="p">[</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">2016</span><span class="p">,</span> <span class="mi">2013</span><span class="p">,</span> <span class="mi">2010</span><span class="p">,</span> <span class="mi">2007</span><span class="p">],</span> <span class="n">web</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads wealth data from the 2007, 2010, 2013, 2016, and 2019 Survey of</span>
 <span class="sd">    Consumer Finances (SCF) files.</span>
 
@@ -404,7 +405,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        df_scf (Pandas DataFrame): pooled cross-sectional data from SCFs</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Hard code cpi list for given years. Index values are annual average index</span>
     <span class="c1"># values from monthly FRED Consumer Price Index for All Urban Consumers:</span>
     <span class="c1"># All Items Less Food and Energy in U.S. City Average (CPILFESL,</span>
@@ -412,31 +413,41 @@ const thebe_selector_output = ".output, .cell_output"
     <span class="c1"># Values are [263.209, 247.585, 233.810, 221.336, 210.725].</span>
     <span class="c1"># We then reset the base year to 2019 by dividing each annual average by</span>
     <span class="c1"># the 2019 annual average and multiply by 100. Base year is 2019=100</span>
-    <span class="n">cpi_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cpi2019&#39;</span><span class="p">:</span> <span class="mf">100.000</span><span class="p">,</span>
-                <span class="s1">&#39;cpi2016&#39;</span><span class="p">:</span> <span class="mf">94.06403464</span><span class="p">,</span>
-                <span class="s1">&#39;cpi2013&#39;</span><span class="p">:</span> <span class="mf">88.83067929</span><span class="p">,</span>
-                <span class="s1">&#39;cpi2010&#39;</span><span class="p">:</span> <span class="mf">84.09125952</span><span class="p">,</span>
-                <span class="s1">&#39;cpi2007&#39;</span><span class="p">:</span> <span class="mf">80.05995867</span><span class="p">}</span>
+    <span class="n">cpi_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;cpi2019&quot;</span><span class="p">:</span> <span class="mf">100.000</span><span class="p">,</span>
+        <span class="s2">&quot;cpi2016&quot;</span><span class="p">:</span> <span class="mf">94.06403464</span><span class="p">,</span>
+        <span class="s2">&quot;cpi2013&quot;</span><span class="p">:</span> <span class="mf">88.83067929</span><span class="p">,</span>
+        <span class="s2">&quot;cpi2010&quot;</span><span class="p">:</span> <span class="mf">84.09125952</span><span class="p">,</span>
+        <span class="s2">&quot;cpi2007&quot;</span><span class="p">:</span> <span class="mf">80.05995867</span><span class="p">,</span>
+    <span class="p">}</span>
     <span class="k">if</span> <span class="n">web</span><span class="p">:</span>
         <span class="c1"># Throw an error if the machine is not connected to the internet</span>
         <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">not_connected</span><span class="p">():</span>
-            <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;SCF DATA ERROR: The local machine is not &#39;</span> <span class="o">+</span>
-                       <span class="s1">&#39;connected to the internet and web=True was &#39;</span> <span class="o">+</span>
-                       <span class="s1">&#39;selected.&#39;</span><span class="p">)</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;SCF DATA ERROR: The local machine is not &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;connected to the internet and web=True was &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;selected.&quot;</span>
+            <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 
         <span class="n">file_urls</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">yr</span> <span class="ow">in</span> <span class="n">scf_yrs_list</span><span class="p">:</span>
-            <span class="n">zipfilename</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;https://www.federalreserve.gov/econres/&#39;</span> <span class="o">+</span>
-                           <span class="s1">&#39;files/scfp&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;s.zip&#39;</span><span class="p">)</span>
+            <span class="n">zipfilename</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;https://www.federalreserve.gov/econres/&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;files/scfp&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;s.zip&quot;</span>
+            <span class="p">)</span>
             <span class="n">file_urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zipfilename</span><span class="p">)</span>
 
         <span class="n">file_paths</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">fetch_files_from_web</span><span class="p">(</span><span class="n">file_urls</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">web</span> <span class="ow">and</span> <span class="n">directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Thow an error if web=False no source of files is given</span>
-        <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;SCF DATA ERROR: No local directory was &#39;</span> <span class="o">+</span>
-                   <span class="s1">&#39;specified as the source for the data.&#39;</span><span class="p">)</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;SCF DATA ERROR: No local directory was &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;specified as the source for the data.&quot;</span>
+        <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">web</span> <span class="ow">and</span> <span class="n">directory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -444,15 +455,17 @@ const thebe_selector_output = ".output, .cell_output"
         <span class="n">full_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
         <span class="n">filename_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">yr</span> <span class="ow">in</span> <span class="n">scf_yrs_list</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;rscfp&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.dta&#39;</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;rscfp&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.dta&quot;</span>
             <span class="n">filename_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">filename_list</span><span class="p">:</span>
             <span class="n">file_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_directory</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
         <span class="c1"># Check to make sure the necessary files are present in the</span>
         <span class="c1"># local directory</span>
-        <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;hrs_by_age() ERROR: The file </span><span class="si">%s</span><span class="s1"> was not found in &#39;</span> <span class="o">+</span>
-                   <span class="s1">&#39;the directory </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;hrs_by_age() ERROR: The file </span><span class="si">%s</span><span class="s2"> was not found in &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;the directory </span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">full_directory</span><span class="p">))</span>
@@ -460,24 +473,23 @@ const thebe_selector_output = ".output, .cell_output"
     <span class="c1"># read in raw SCF data to calculate moments</span>
     <span class="n">scf_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">file_paths</span><span class="p">,</span> <span class="n">scf_yrs_list</span><span class="p">):</span>
-        <span class="n">df_yr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;networth&#39;</span><span class="p">,</span> <span class="s1">&#39;wgt&#39;</span><span class="p">])</span>
+        <span class="n">df_yr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;networth&quot;</span><span class="p">,</span> <span class="s2">&quot;wgt&quot;</span><span class="p">])</span>
         <span class="c1"># Add inflation adjusted net worth</span>
-        <span class="n">cpi</span> <span class="o">=</span> <span class="n">cpi_dict</span><span class="p">[</span><span class="s1">&#39;cpi&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)]</span>
-        <span class="n">df_yr</span><span class="p">[</span><span class="s1">&#39;networth_infadj&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_yr</span><span class="p">[</span><span class="s1">&#39;networth&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">cpi</span>
+        <span class="n">cpi</span> <span class="o">=</span> <span class="n">cpi_dict</span><span class="p">[</span><span class="s2">&quot;cpi&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)]</span>
+        <span class="n">df_yr</span><span class="p">[</span><span class="s2">&quot;networth_infadj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_yr</span><span class="p">[</span><span class="s2">&quot;networth&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">cpi</span>
         <span class="n">scf_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_yr</span>
 
     <span class="n">df_scf</span> <span class="o">=</span> <span class="n">scf_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">scf_yrs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
     <span class="n">num_yrs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scf_yrs_list</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num_yrs</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">scf_yrs_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">df_scf</span> <span class="o">=</span> <span class="n">df_scf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scf_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)],</span>
-                                   <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">df_scf</span> <span class="o">=</span> <span class="n">df_scf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scf_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">df_scf</span></div>
 
 
 <div class="viewcode-block" id="compute_wealth_moments"><a class="viewcode-back" href="../../content/api/wealth.html#ogcore.wealth.compute_wealth_moments">[docs]</a><span class="k">def</span> <span class="nf">compute_wealth_moments</span><span class="p">(</span><span class="n">scf</span><span class="p">,</span> <span class="n">bin_weights</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function computes moments (wealth shares, Gini coefficient,</span>
 <span class="sd">    var[ln(wealth)]) from the distribution of wealth using SCF data.</span>
 
@@ -489,10 +501,10 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        wealth_moments (Numpy Array): array of wealth moments</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># calculate percentile shares (percentiles based on lambdas input)</span>
-    <span class="n">scf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;networth_infadj&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">scf</span><span class="p">[</span><span class="s1">&#39;weight_networth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scf</span><span class="p">[</span><span class="s1">&#39;wgt&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">scf</span><span class="p">[</span><span class="s1">&#39;networth_infadj&#39;</span><span class="p">]</span>
+    <span class="n">scf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;networth_infadj&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">scf</span><span class="p">[</span><span class="s2">&quot;weight_networth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scf</span><span class="p">[</span><span class="s2">&quot;wgt&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">scf</span><span class="p">[</span><span class="s2">&quot;networth_infadj&quot;</span><span class="p">]</span>
     <span class="n">total_weight_wealth</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">weight_networth</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">cumsum</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
     <span class="n">J</span> <span class="o">=</span> <span class="n">bin_weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -501,32 +513,31 @@ const thebe_selector_output = ".output, .cell_output"
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">):</span>
         <span class="c1"># Get number of individuals at top of percentile bin</span>
         <span class="n">cutoff</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">cum_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">wealth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span>
-            <span class="n">scf</span><span class="o">.</span><span class="n">weight_networth</span><span class="p">[</span><span class="n">cumsum</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span>
-            <span class="n">total_weight_wealth</span><span class="p">)</span>
+        <span class="n">wealth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">scf</span><span class="o">.</span><span class="n">weight_networth</span><span class="p">[</span><span class="n">cumsum</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="n">total_weight_wealth</span>
 
     <span class="n">wealth_share</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
     <span class="n">wealth_share</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">wealth_share</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">wealth</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="c1"># compute gini coeff</span>
-    <span class="n">scf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;networth_infadj&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">scf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;networth_infadj&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">scf</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">/</span> <span class="n">scf</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">.</span><span class="n">values</span>
     <span class="n">nu</span> <span class="o">=</span> <span class="p">((</span><span class="n">scf</span><span class="o">.</span><span class="n">wgt</span> <span class="o">*</span> <span class="n">scf</span><span class="o">.</span><span class="n">networth_infadj</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">())</span><span class="o">.</span><span class="n">values</span>
     <span class="n">nu</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">/</span> <span class="n">nu</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">gini_coeff</span> <span class="o">=</span> <span class="p">(</span><span class="n">nu</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="n">nu</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
     <span class="c1"># compute variance in logs</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">scf</span><span class="p">[</span><span class="n">scf</span><span class="p">[</span><span class="s1">&#39;networth_infadj&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;ln_networth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;networth_infadj&#39;</span><span class="p">])</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;ln_networth&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">scf</span><span class="p">[</span><span class="n">scf</span><span class="p">[</span><span class="s2">&quot;networth_infadj&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ln_networth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;networth_infadj&quot;</span><span class="p">])</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;ln_networth&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">weight_mean</span> <span class="o">=</span> <span class="p">((</span><span class="n">df</span><span class="o">.</span><span class="n">ln_networth</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">wgt</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-    <span class="n">var_ln_wealth</span> <span class="o">=</span> <span class="p">(((</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">wgt</span> <span class="o">*</span> <span class="p">((</span><span class="n">df</span><span class="o">.</span><span class="n">ln_networth</span> <span class="o">-</span> <span class="n">weight_mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">*</span>
-        <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>
+    <span class="n">var_ln_wealth</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">wgt</span> <span class="o">*</span> <span class="p">((</span><span class="n">df</span><span class="o">.</span><span class="n">ln_networth</span> <span class="o">-</span> <span class="n">weight_mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">wgt</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 
-    <span class="n">wealth_moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">wealth_share</span><span class="p">],</span> <span class="p">[</span><span class="n">gini_coeff</span><span class="p">,</span> <span class="n">var_ln_wealth</span><span class="p">])</span>
+    <span class="n">wealth_moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">wealth_share</span><span class="p">],</span> <span class="p">[</span><span class="n">gini_coeff</span><span class="p">,</span> <span class="n">var_ln_wealth</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">wealth_moments</span></div>
 </pre></div>

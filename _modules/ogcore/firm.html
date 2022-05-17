@@ -380,22 +380,22 @@ const thebe_selector_output = ".output, .cell_output"
   <h1>Source code for ogcore.firm</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">Firm functions for firms in the steady state and along the transition</span>
 <span class="sd">path</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">    Functions</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="get_Y"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_Y">[docs]</a><span class="k">def</span> <span class="nf">get_Y</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates aggregate output (GDP) from aggregate capital stock,</span>
 <span class="sd">    aggregate labor, and CES production function parameters.</span>
 
@@ -417,8 +417,8 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="c1"># Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func</span>
         <span class="k">if</span> <span class="n">K_g</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
@@ -427,7 +427,7 @@ const thebe_selector_output = ".output, .cell_output"
         <span class="k">else</span><span class="p">:</span>
             <span class="n">gamma_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
         <span class="c1"># Change values of K_g=0 to 1 when eps=1 to remove K_g from prod func</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">K_g</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">K_g</span><span class="p">[</span><span class="n">K_g</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
@@ -436,23 +436,34 @@ const thebe_selector_output = ".output, .cell_output"
             <span class="n">gamma_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># Unit elasticity, Cobb-Douglas</span>
-        <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z</span> <span class="o">*</span> <span class="p">(</span><span class="n">K</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">K_g</span> <span class="o">**</span> <span class="n">gamma_g</span><span class="p">)</span> <span class="o">*</span>
-             <span class="p">(</span><span class="n">L</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">gamma_g</span><span class="p">)))</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Z</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">K</span><span class="o">**</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">K_g</span><span class="o">**</span><span class="n">gamma_g</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">L</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">gamma_g</span><span class="p">))</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># General CES</span>
-        <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z</span> <span class="o">*</span> <span class="p">(((</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span> <span class="o">*</span>
-                   <span class="p">(</span><span class="n">K</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)))</span> <span class="o">+</span>
-                  <span class="p">((</span><span class="n">gamma_g</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span> <span class="o">*</span>
-                   <span class="p">(</span><span class="n">K_g</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)))</span> <span class="o">+</span>
-                  <span class="p">(((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">gamma_g</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span> <span class="o">*</span>
-                   <span class="p">(</span><span class="n">L</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))))</span> <span class="o">**</span>
-             <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">K</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">gamma_g</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">K_g</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="p">(</span>
+                <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">gamma_g</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">L</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">Y</span></div>
 
 
 <div class="viewcode-block" id="get_r"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_r">[docs]</a><span class="k">def</span> <span class="nf">get_r</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function computes the interest rate as a function of Y, K, and</span>
 <span class="sd">    parameters using the firm&#39;s first order condition for capital</span>
 <span class="sd">    demand.</span>
@@ -472,13 +483,13 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="n">MPK</span> <span class="o">=</span> <span class="n">get_MPx</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">MPK</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">+</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span>
 
@@ -486,7 +497,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="get_w"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_w">[docs]</a><span class="k">def</span> <span class="nf">get_w</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function computes the wage as a function of Y, L, and</span>
 <span class="sd">    parameters using the firm&#39;s first order condition for labor demand.</span>
 
@@ -504,14 +515,14 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        w (array_like): the real wage rate</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">w</span> <span class="o">=</span> <span class="n">get_MPx</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">w</span></div>
 
 
 <span class="k">def</span> <span class="nf">get_KLratio_KLonly</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function solves for the capital-labor ratio given the interest</span>
 <span class="sd">    rate, r, and parameters when the production function is only a</span>
 <span class="sd">    function of K and L.  This is used in the get_w_from_r function.</span>
@@ -532,8 +543,8 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        KLratio (array_like): the capital-labor ratio</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -544,24 +555,25 @@ const thebe_selector_output = ".output, .cell_output"
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span><span class="n">length</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># Cobb-Douglas case</span>
-        <span class="n">bracket</span> <span class="o">=</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">Z</span><span class="p">)</span> <span class="o">/</span>
-                   <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span><span class="p">))</span>
+        <span class="n">bracket</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">Z</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span>
+        <span class="p">)</span>
         <span class="n">KLratio</span> <span class="o">=</span> <span class="n">bracket</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># General CES case</span>
-        <span class="n">bracket</span> <span class="o">=</span> <span class="p">((</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="p">(</span><span class="n">delta_tau</span> <span class="o">*</span> <span class="n">tau_b</span><span class="p">))</span> <span class="o">/</span>
-                   <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))))</span>
-        <span class="n">KLratio</span> <span class="o">=</span> \
-            <span class="p">((((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span> <span class="o">/</span>
-              <span class="p">((</span><span class="n">bracket</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span>
-               <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))))</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">/</span>
-                                                  <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="n">bracket</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="p">(</span><span class="n">delta_tau</span> <span class="o">*</span> <span class="n">tau_b</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">KLratio</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+            <span class="o">/</span> <span class="p">((</span><span class="n">bracket</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)))</span>
+        <span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">KLratio</span>
 
 
 <div class="viewcode-block" id="get_KLratio"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_KLratio">[docs]</a><span class="k">def</span> <span class="nf">get_KLratio</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function solves for the capital-labor ratio given the interest</span>
 <span class="sd">    rate r wage w and parameters.</span>
 
@@ -581,22 +593,22 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        KLratio (array_like): the capital-labor ratio</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="n">cost_of_capital</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span>
-    <span class="n">KLratio</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">))</span> <span class="o">*</span>
-        <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="n">cost_of_capital</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+    <span class="n">KLratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">w</span> <span class="o">/</span> <span class="n">cost_of_capital</span>
+    <span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span>
     <span class="k">return</span> <span class="n">KLratio</span></div>
 
 
 <div class="viewcode-block" id="get_MPx"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_MPx">[docs]</a><span class="k">def</span> <span class="nf">get_MPx</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">share</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the marginal product of x (where x is K, L, or K_g)</span>
 
 <span class="sd">    .. math::</span>
@@ -613,24 +625,23 @@ const thebe_selector_output = ".output, .cell_output"
 
 <span class="sd">    Returns:</span>
 <span class="sd">        MPx (array_like): the marginal product of x</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">MPx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">MPx</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">Z</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">share</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span> <span class="o">/</span> <span class="n">x</span><span class="p">)</span>
-            <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="n">MPx</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">share</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span> <span class="o">/</span> <span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">MPx</span></div>
 
 
 <div class="viewcode-block" id="get_w_from_r"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_w_from_r">[docs]</a><span class="k">def</span> <span class="nf">get_w_from_r</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solve for a wage rate from a given interest rate.  N.B. this is only</span>
 <span class="sd">    appropriate if the production function only uses capital and labor</span>
 <span class="sd">    as inputs.  As such, this is not used for determining the domestic</span>
@@ -655,27 +666,34 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        w (array_like): the real wage rate</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="n">KLratio</span> <span class="o">=</span> <span class="n">get_KLratio_KLonly</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># Cobb-Douglas case</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">*</span> <span class="p">(</span><span class="n">KLratio</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">*</span> <span class="p">(</span><span class="n">KLratio</span><span class="o">**</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># General CES case</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">*</span>
-             <span class="p">(((</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span> <span class="o">*</span>
-               <span class="p">(</span><span class="n">KLratio</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span> <span class="o">+</span>
-               <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)))</span> <span class="o">**</span>
-              <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))))</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+            <span class="o">*</span> <span class="n">Z</span>
+            <span class="o">*</span> <span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">KLratio</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+                    <span class="o">+</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+                <span class="p">)</span>
+                <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">w</span></div>
 
 
 <span class="k">def</span> <span class="nf">get_K_KLonly</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates vector of aggregate capital when the production function</span>
 <span class="sd">    uses only K and L as inputs. Use with the open economy options.</span>
 
@@ -692,7 +710,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        K (array_like): aggregate capital demand</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">KLratio</span> <span class="o">=</span> <span class="n">get_KLratio_KLonly</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">KLratio</span> <span class="o">*</span> <span class="n">L</span>
 
@@ -700,7 +718,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 <div class="viewcode-block" id="get_K_from_Y"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K_from_Y">[docs]</a><span class="k">def</span> <span class="nf">get_K_from_Y</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates vector of aggregate capital. Use with the open economy</span>
 <span class="sd">    options.</span>
 
@@ -720,26 +738,26 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="n">numerator</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span>
     <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">((</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">))</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span>
-        <span class="p">)</span>
+        <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
 
     <span class="k">return</span> <span class="n">K</span></div>
 
 
 <div class="viewcode-block" id="get_L_from_Y"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_L_from_Y">[docs]</a><span class="k">def</span> <span class="nf">get_L_from_Y</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find aggregate labor L from output Y and wages w</span>
 
 <span class="sd">    .. math::</span>
@@ -756,21 +774,20 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        L (array_like): firm labor demand</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-    <span class="n">L</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span> <span class="o">/</span>
-        <span class="p">(</span><span class="n">w</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="n">w</span><span class="o">**</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">L</span></div>
 
 
 <div class="viewcode-block" id="get_K_from_Y_and_L"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K_from_Y_and_L">[docs]</a><span class="k">def</span> <span class="nf">get_K_from_Y_and_L</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find aggregate private capital K from output Y, aggregate labor L,</span>
 <span class="sd">    and public capital K_g</span>
 
@@ -793,24 +810,26 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        K (array_like): firm capital demand</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="n">K</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(((</span><span class="n">Y</span> <span class="o">/</span> <span class="n">Z</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span> <span class="o">-</span>
-            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">)</span> <span class="o">*</span>
-            <span class="n">L</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span> <span class="o">-</span>
-            <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span> <span class="o">*</span>
-            <span class="p">(</span><span class="n">K_g</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)))</span> <span class="o">/</span>
-            <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)))</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="p">(</span>
+            <span class="p">(</span><span class="n">Y</span> <span class="o">/</span> <span class="n">Z</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+            <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">)</span> <span class="o">*</span> <span class="n">L</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+            <span class="o">-</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">K_g</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+    <span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">K</span></div>
 
 
 <div class="viewcode-block" id="get_K"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K">[docs]</a><span class="k">def</span> <span class="nf">get_K</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get K from r, w, L.  For determining capital demand for open</span>
 <span class="sd">    economy case.</span>
 
@@ -828,7 +847,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="sd">    Returns:</span>
 <span class="sd">        K (array_like): aggregate capital demand</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">KLratio</span> <span class="o">=</span> <span class="n">get_KLratio</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">KLratio</span> <span class="o">*</span> <span class="n">L</span>
 
