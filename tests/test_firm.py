@@ -410,10 +410,25 @@ expected4 = np.array([0.465031434, -0.045936078, 0.575172024])
 
 
 @pytest.mark.parametrize('r,p,method,expected',
+                         [(r1, p1, 'SS', 0.049263715),
+                          (r4, p4, 'TPI', np.array([0.746281397, 0.777392047, 1.3062731]))],
+                         ids=['SS', 'TP'])
+def test_get_cost_of_capital(r, p, method, expected):
+    """
+        choose values that simplify the calculations and are similar to
+        observed values
+    """
+    coc = firm.get_cost_of_capital(r, p, method)
+    assert (np.allclose(coc, expected, atol=1e-6))
+
+
+expected4 = np.array([0.465031434, 0.045936078, 0.575172024])
+
+@pytest.mark.parametrize('r,p,method,expected',
                          [(r1, p1, 'SS', expected1),
                           (r1, p2, 'SS', expected2),
                           (r1, p3, 'SS', expected3),
-                          (r4.reshape(3, 1), p4, 'TPI', expected4.reshape(3, 1))],
+                          (r4, p4, 'TPI', expected4)],
                          ids=['epsilon=0.8,SS', 'epsilon=1.2,SS',
                               'epsilon=1.0,SS', 'epsilon=0.5,TP'])
 def test_get_KLratio_from_r(r, p, method, expected):
@@ -440,7 +455,7 @@ def test_get_KLratio(r, p, method, expected):
         choose values that simplify the calculations and are similar to
         observed values
     """
-    w = firm.get_w_from_r(r, p, method)
+    w = firm.get_w_from_r(r, p, None, method)
     KLratio = firm.get_KLratio(r, w, p, method)
     assert (np.allclose(KLratio, expected, atol=1e-6))
 
@@ -500,19 +515,19 @@ r4 = np.array([0.04, 0.04, 0.04])
 expected4 = np.array([0.380178134, 1.19149279, 17.8375083])
 
 
-@pytest.mark.parametrize('r,p,method,expected',
-                         [(r1, p1, 'SS', expected1),
-                          (r1, p2, 'SS', expected2),
-                          (r1, p3, 'SS', expected3),
-                          (r4.reshape(3, 1), p4, 'TPI', expected4.reshape(3, 1))],
+@pytest.mark.parametrize('r,p,m,method,expected',
+                         [(r1, p1, None, 'SS', expected1),
+                          (r1, p2, None, 'SS', expected2),
+                          (r1, p3, None, 'SS', expected3),
+                          (r4.reshape(3, 1), p4, None, 'TPI', expected4.reshape(3, 1))],
                          ids=['epsilon=0.8,SS', 'epsilon=1.0,SS',
                               'epsilon=1.2,SS', 'epsilon=1.2,TP'])
-def test_get_w_from_r(r, p, method, expected):
+def test_get_w_from_r(r, p, method, m, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
-    w = firm.get_w_from_r(r, p, method)
+    w = firm.get_w_from_r(r, p, m, method)
     assert (np.allclose(w, expected, atol=1e-6))
 
 
