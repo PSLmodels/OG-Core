@@ -193,7 +193,7 @@ def get_w(Y, L, p, method):
     return w
 
 
-def get_KLratio_KLonly(r, p, method):
+def get_KLratio_KLonly(r, p, method, m=-1):
     r'''
     This function solves for the capital-labor ratio given the interest
     rate, r, and parameters when the production function is only a
@@ -211,39 +211,36 @@ def get_KLratio_KLonly(r, p, method):
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int): production industry index
 
     Returns:
         KLratio (array_like): the capital-labor ratio
 
     '''
     if method == 'SS':
-        Z = p.Z[-1]
-        delta_tau = p.delta_tau[-1]
-        tau_b = p.tau_b[-1]
+        Z = p.Z[-1, m]
     else:
         length = r.shape[0]
-        Z = p.Z[:length]
-        delta_tau = p.delta_tau[:length]
-        tau_b = p.tau_b[:length]
-    if p.epsilon == 1:
+        Z = p.Z[:length, m]
+    gamma = p.gamma[m]
+    epsilon = p.epsilon[m]
+    if epsilon == 1:
         # Cobb-Douglas case
-        bracket = (((1 - tau_b) * p.gamma * Z) /
-                   (r + p.delta - tau_b * delta_tau))
-        KLratio = bracket ** (1 / (1 - p.gamma))
+        cost_of_capital = get_cost_of_capital(r, p, method, m)
+        KLratio = ((gamma * Z) / cost_of_capital) ** (1 / (1 - gamma))
     else:
         # General CES case
-        bracket = ((r + p.delta - (delta_tau * tau_b)) /
-                   ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
-        KLratio = \
-            ((((1 - p.gamma) ** (1 / p.epsilon)) /
-              ((bracket ** (p.epsilon - 1)) -
-               (p.gamma ** (1 / p.epsilon)))) ** (p.epsilon /
-                                                  (p.epsilon - 1)))
+        cost_of_capital = get_cost_of_capital(r, p, method, m)
+        bracket = cost_of_capital * (Z * (gamma ** (1 / epsilon))) ** -1
+        KLratio = (
+            ((1 - gamma) ** (1 / epsilon))
+            / ((bracket ** (epsilon - 1)) - (gamma ** (1 / epsilon)))
+        ) ** (epsilon / (epsilon - 1))
 
     return KLratio
 
 
-def get_KLratio(r, w, p, method):
+def get_KLratio(r, w, p, method, m=-1):
     r'''
     This function solves for the capital-labor ratio given the interest
     rate r wage w and parameters.
@@ -260,15 +257,16 @@ def get_KLratio(r, w, p, method):
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int): production industry index
 
     Returns:
         KLratio (array_like): the capital-labor ratio
 
     '''
-    cost_of_capital = get_cost_of_capital(r, p, method)
+    cost_of_capital = get_cost_of_capital(r, p, method, m)
     KLratio = (
-        (p.gamma / (1 - p.gamma - p.gamma_g)) *
-        (w / cost_of_capital) ** p.epsilon)
+        (p.gamma / (1 - p.gamma[m] - p.gamma_g[m])) *
+        (w / cost_of_capital) ** p.epsilon[m])
     return KLratio
 
 
@@ -306,7 +304,7 @@ def get_MPx(Y, x, share, p, method):
     return MPx
 
 
-def get_w_from_r(r, p, method):
+def get_w_from_r(r, p, method, m=-1):
     r'''
     Solve for a wage rate from a given interest rate.  N.B. this is only
     appropriate if the production function only uses capital and labor
@@ -328,30 +326,32 @@ def get_w_from_r(r, p, method):
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int or None): production industry index
 
     Returns:
         w (array_like): the real wage rate
 
     '''
-    if method == 'SS':
-        Z = p.Z[-1]
-    else:
-        Z = p.Z[:p.T]
-    KLratio = get_KLratio_KLonly(r, p, method)
-    if p.epsilon == 1:
+    KLratio = get_KLratio_KLonly(r, p, method, m)
+
+    Z = p.Z[:p.T, m]
+    gamma = p.gamma[m]
+    epsilon = p.epsilon[m]
+    if epsilon == 1:
         # Cobb-Douglas case
-        w = (1 - p.gamma) * Z * (KLratio ** p.gamma)
+        w = (1 - gamma) * Z * (KLratio ** gamma)
     else:
         # General CES case
-        w = (((1 - p.gamma) ** (1 / p.epsilon)) * Z *
-             (((p.gamma ** (1 / p.epsilon)) *
-               (KLratio ** ((p.epsilon - 1) / p.epsilon)) +
-               ((1 - p.gamma) ** (1 / p.epsilon))) **
-              (1 / (p.epsilon - 1))))
+        w = (((1 - gamma) ** (1 / epsilon)) * Z *
+            (((gamma ** (1 / epsilon)) *
+            (KLratio ** ((epsilon - 1) / epsilon)) +
+            ((1 - gamma) ** (1 / epsilon))) **
+            (1 / (epsilon - 1))))
+
     return w
 
 
-def get_K_KLonly(L, r, p, method):
+def get_K_KLonly(L, r, p, method, m=-1):
     r'''
     Generates vector of aggregate capital when the production function
     uses only K and L as inputs. Use with the open economy options.
@@ -365,12 +365,13 @@ def get_K_KLonly(L, r, p, method):
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int or None): production industry index
 
     Returns:
         K (array_like): aggregate capital demand
 
     '''
-    KLratio = get_KLratio_KLonly(r, p, method)
+    KLratio = get_KLratio_KLonly(r, p, method, m)
     K = KLratio * L
 
     return K
@@ -486,7 +487,7 @@ def get_K_from_Y_and_L(Y, L, K_g, p, method):
     return K
 
 
-def get_K(r, w, L, p, method):
+def get_K(r, w, L, p, method, m=-1):
     r'''
     Get K from r, w, L.  For determining capital demand for open
     economy case.
@@ -501,18 +502,19 @@ def get_K(r, w, L, p, method):
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int or None): production industry index
 
     Returns:
         K (array_like): aggregate capital demand
 
     '''
-    KLratio = get_KLratio(r, w, p, method)
+    KLratio = get_KLratio(r, w, p, method, m)
     K = KLratio * L
 
     return K
 
 
-def get_cost_of_capital(r, p, method):
+def get_cost_of_capital(r, p, method, m=-1):
     r'''
     Compute the cost of capital.
 
@@ -523,16 +525,25 @@ def get_cost_of_capital(r, p, method):
         r (array_like): the real interest rate
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+        m (int or None): production industry index
 
     Returns:
         cost_of_capital (array_like): cost of capital
     '''
-    if method == 'SS':
-        tau_b = p.tau_b[-1]
-        delta_tau = p.delta_tau[-1]
+    if m is None:
+        if method == 'SS':
+            tau_b = p.tau_b[-1, :]
+            delta_tau = p.delta_tau[-1, :]
+        else:
+            tau_b = p.tau_b[:p.T, :]
+            delta_tau = p.delta_tau[:p.T, :]
     else:
-        tau_b = p.tau_b[:p.T]
-        delta_tau = p.delta_tau[:p.T]
+        if method == 'SS':
+            tau_b = p.tau_b[-1, m]
+            delta_tau = p.delta_tau[-1, m]
+        else:
+            tau_b = p.tau_b[:p.T, m]
+            delta_tau = p.delta_tau[:p.T, m]
     cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
 
     return cost_of_capital
