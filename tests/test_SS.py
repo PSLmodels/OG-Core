@@ -81,7 +81,7 @@ expected5 = np.array([
 # Parameterize the baseline closed economy, delta tau = 0 case
 p6 = Specifications(baseline=True)
 p6.update_specifications({'zeta_D': [0.0], 'zeta_K': [0.0],
-                          'delta_tau_annual': [0.0]})
+                          'delta_tau_annual': [[0.0]]})
 guesses6 = np.array([
     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args6 = (bssmat, nssmat, None, None, p6, None)
@@ -213,7 +213,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
 param_updates5 = {'zeta_K': [1.0], 'budget_balance': True,
                   'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
-param_updates6 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+param_updates6 = {'delta_tau_annual': [[0.0]], 'zeta_K': [0.0],
                   'zeta_D': [0.0], 'initial_guess_r_SS': 0.02,
                   'initial_guess_TR_SS': 0.02}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
@@ -346,13 +346,25 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
+    bssmat = np.ones((p.S, p.J)) * 0.07
+    nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
     r = 0.05
     w = firm.get_w_from_r(r, p, 'SS')
     TR = 0.12
     Y = 1.3
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
-    outer_loop_vars = (bssmat, nssmat, r, w, Y, BQ, TR, factor)
+    # Solve for r_p because of new sol'n algo
+    r_gov = fiscal.get_r_gov(r, p)
+    D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
+        fiscal.get_D_ss(r_gov, Y, p)
+    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
+    K_g = fiscal.get_K_g(0, I_g, p, 'SS')
+    MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
+    K = firm.get_K_from_Y(Y, r, p, 'SS')
+    p_m = np.array([1.0])
+    r_p = aggregates.get_r_p(r, r_gov, p_m, K, K_g, D, MPKg, p, 'SS')
+    outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
@@ -476,7 +488,7 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
 
 param_updates1 = {}
 filename1 = 'run_SS_baseline_outputs.pkl'
-param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.08,
+param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.06,
                   'initial_guess_TR_SS': 0.03}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
 param_updates3 = {'zeta_K': [1.0], 'initial_guess_r_SS': 0.10}
@@ -493,51 +505,70 @@ filename6 = 'run_SS_reform_use_zeta.pkl'
 param_updates7 = {'zeta_K': [1.0], 'initial_guess_r_SS': 0.10}
 filename7 = 'run_SS_reform_small_open.pkl'
 param_updates8 = {'zeta_K': [1.0], 'use_zeta': True,
-                  'initial_guess_r_SS': 0.12, 'initial_guess_TR_SS': 0.07}
+                  'initial_guess_r_SS': 0.04, 'initial_guess_TR_SS': 0.07}
 filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
 param_updates9 = {'baseline_spending': True}
 filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'baseline_spending': True, 'use_zeta': True,
                    'initial_guess_r_SS': 0.04}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
-param_updates11 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+param_updates11 = {'delta_tau_annual': [[0.0]], 'zeta_K': [0.0],
                    'zeta_D': [0.0], 'initial_guess_r_SS': 0.01}
 filename11 = 'run_SS_baseline_delta_tau0.pkl'
 param_updates12 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
-                   'gamma_g': 0.07, 'initial_guess_r_SS': 0.06,
+                   'gamma_g': [0.07], 'initial_guess_r_SS': 0.06,
                    'initial_guess_TR_SS': 0.03, 'initial_Kg_ratio': 0.01}
 filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
+param_updates13 = {'M': 3, 'epsilon': [0.6, 0.5, 0.55],
+                   'gamma': [0.3, 0.35, 0.4],
+                   'gamma_g': [0.1, 0.05, 0.15],
+                   'alpha_c': [0.5, 0.4, 0.1],
+                   'initial_guess_r_SS': 0.06,
+                   'initial_guess_TR_SS': 0.03,
+                   'initial_Kg_ratio': 0.01}
+filename13 = 'run_SS_baseline_M3_Kg_nonzero.pkl'
 
 
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [
+#                           (True, param_updates1, filename1),
+#                           (False, param_updates9, filename9),
+#                           (True, param_updates2, filename2),
+#                           (False, param_updates10, filename10),
+#                           (True, param_updates3, filename3),
+#                           (True, param_updates4, filename4),
+#                           (False, param_updates5, filename5),
+#                           (False, param_updates6, filename6),
+#                           (False, param_updates7, filename7),
+#                           (False, param_updates8, filename8),
+#                           (False, param_updates11, filename11),
+#                           (True, param_updates12, filename12),
+#                           (True, param_updates13, filename13)
+#                           ],
+#                          ids=[
+#                               'Baseline', 'Reform, baseline spending',
+#                               'Baseline, use zeta',
+#                               'Reform, baseline spending, use zeta',
+#                               'Baseline, small open',
+#                               'Baseline, small open use zeta',
+#                               'Reform', 'Reform, use zeta',
+#                               'Reform, small open',
+#                               'Reform, small open use zeta',
+#                               'Reform, delta_tau=0',
+#                               'Baseline, non-zero Kg',
+                                # 'Baseline, M=3m non-zero Kg'
+#                               ])
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-                          (True, param_updates1, filename1),
-                          (False, param_updates9, filename9),
-                          (True, param_updates2, filename2),
-                          (False, param_updates10, filename10),
-                          (True, param_updates3, filename3),
-                          (True, param_updates4, filename4),
-                          (False, param_updates5, filename5),
-                          (False, param_updates6, filename6),
-                          (False, param_updates7, filename7),
-                          (False, param_updates8, filename8),
-                          (False, param_updates11, filename11),
-                          (True, param_updates12, filename12)
+                          (True, param_updates13, filename13)
                           ],
                          ids=[
-                              'Baseline', 'Reform, baseline spending',
-                              'Baseline, use zeta',
-                              'Reform, baseline spending, use zeta',
-                              'Baseline, small open',
-                              'Baseline, small open use zeta',
-                              'Reform', 'Reform, use zeta',
-                              'Reform, small open',
-                              'Reform, small open use zeta',
-                              'Reform, delta_tau=0',
-                              'Baseline, non-zero Kg'
+
+                              'Baseline, M=3, non-zero Kg',
+
                               ])
 @pytest.mark.local
 def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):

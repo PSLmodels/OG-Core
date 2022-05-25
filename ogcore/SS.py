@@ -244,7 +244,7 @@ def inner_loop(outer_loop_vars, p, client):
     C_vec[-1] = aggr.get_C(c_m[:, -1].reshape(p.S, 1), p, 'SS')
     L_vec[-1] = L_M
     K_vec[-1] = K_M
-    Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, 'SS')
+    Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, None, 'SS')
     KL_ratio_vec[-1] = K_vec[-1] / L_vec[-1]
 
 
@@ -287,7 +287,7 @@ def inner_loop(outer_loop_vars, p, client):
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
     new_p_m = firm.get_pm(new_w, KL_ratio_vec, p, 'SS')
-    new_p_m = new_p_m / new_p_m[-1]  # normalize prices by ind M
+    new_p_m = new_p_m / new_p_m[-1]  # normalize prices by industry M
     new_p_tilde = aggr.get_ptilde(new_p_m, p.alpha_c)
 
     etr_params_3D = np.tile(
@@ -301,20 +301,20 @@ def inner_loop(outer_loop_vars, p, client):
         p.e, p.tau_c[-1, :, :], p)
     # TODO: add p_m for consumption tax below
     total_tax_revenue, _, agg_pension_outlays, UBI_outlays, _, _, _, _, _, _ =\
-        aggr.revenue(new_r_p, new_w, b_s, nssmat, new_bq, cssmat, Y, L,
-                     K, factor, ubi, theta, etr_params_3D, p, 'SS')
+        aggr.revenue(new_r_p, new_w, b_s, nssmat, new_bq, cssmat, Y_vec, L_vec,
+                     K_vec, factor, ubi, theta, etr_params_3D, p, None, 'SS')
     G = fiscal.get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
                         UBI_outlays, I_g, new_borrowing, debt_service, p)
     new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays,
                            UBI_outlays, I_g, p, 'SS')
 
-    C = aggr.get_C(cssmat, p, 'SS')
-    I_d = aggr.get_I(b_splus1, K_d, K_d, p, 'SS')
-    debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
-    net_capital_outflows = aggr.get_capital_outflows(
-        r_p, K_f, new_borrowing_f, debt_service_f, p)
-    rc_error = Y - C - G - I_d - net_capital_outflows
-    print('Resource Contraint error in inner loop = ', rc_error)
+    # C = aggr.get_C(cssmat, p, 'SS')
+    # I_d = aggr.get_I(b_splus1, K_d, K_d, p, 'SS')
+    # debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
+    # net_capital_outflows = aggr.get_capital_outflows(
+    #     r_p, K_f, new_borrowing_f, debt_service_f, p)
+    # # rc_error = Y - C - G - I_d - net_capital_outflows
+    # # print('Resource Contraint error in inner loop = ', rc_error)
 
     # print('BQ at the end of inner loop: ', new_BQ)
     print('Coming out of inner loop vars are',
@@ -508,8 +508,8 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
      UBI_outlays, bequest_tax_revenue, wealth_tax_revenue, cons_tax_revenue,
      business_tax_revenue, payroll_tax_revenue, iit_revenue
      ) = aggr.revenue(
-         r_p_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss, Lss, Kss,
-         factor, ubissmat, theta, etr_params_3D, p, 'SS')
+         r_p_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Y_vec_ss, L_vec_ss, K_vec_ss,
+         factor, ubissmat, theta, etr_params_3D, p, None, 'SS')
     Gss = fiscal.get_G_ss(
         Yss, total_tax_revenue, agg_pension_outlays, TR_ss, UBI_outlays,
         I_g_ss, new_borrowing, debt_service, p)
@@ -649,18 +649,18 @@ def SS_fsolve(guesses, *args):
         inner_loop(outer_loop_vars, p, client)
 
     # Create list of errors in general equilibrium variables
-    error_r_p = new_r_p - r_p
+    error_r_p = float(new_r_p - r_p)
     # Check and punish violations of the bounds on the interest rate
     if new_r + p.delta <= 0:
         error_r_p = 1e9
-    error_r = new_r - r
-    error_w = new_w - w
+    error_r = float(new_r - r)
+    error_w = float(new_w - w)
     error_p_m = new_p_m - p_m
-    error_Y = new_Y - Y
+    error_Y = float(new_Y - Y)
     error_BQ = new_BQ - BQ
-    error_TR = new_TR - TR
+    error_TR = float(new_TR - TR)
     # divide factor by 1000000 to put on similar scale
-    error_factor = new_factor / 1000000 - factor / 1000000
+    error_factor = float(new_factor / 1000000 - factor / 1000000)
     # Check and punish violations of the factor
     if new_factor <= 0:
         error_factor = 1e9
@@ -670,6 +670,8 @@ def SS_fsolve(guesses, *args):
             [error_Y] + list(error_BQ) + [error_TR, error_factor]
         )
     else:
+        print('Errors = ', type(error_r_p), type(error_r), type(error_w),
+            type(error_p_m), type(error_Y))
         errors = (
             [error_r_p, error_r, error_w] + list(error_p_m) +
             [error_Y] + list(error_BQ) + [error_TR]
@@ -718,10 +720,13 @@ def run_SS(p, client=None):
                 [Yguess, BQguess, TRguess, factorguess]
             )
         else:
+            print('TYPES = ', type(r_p_guess), type(rguess), type(wguess),
+                    type(p_m_guess), type(BQguess))
             guesses = (
                 [r_p_guess, rguess, wguess] + list(p_m_guess) + [Yguess]
                 + list(BQguess) + [TRguess, factorguess]
             )
+            print('GUESSES = ', guesses)
         sol = opt.root(SS_fsolve, guesses, args=ss_params_baseline,
                        method=p.SS_root_method, tol=p.mindist_SS)
         if ENFORCE_SOLUTION_CHECKS and not sol.success:
@@ -750,10 +755,11 @@ def run_SS(p, client=None):
             (b_guess, n_guess, r_p_guess, rguess, wguess, p_m_guess,
              BQguess, TRguess, Yguess, factor) =\
                 (ss_solutions['bssmat_splus1'], ss_solutions['nssmat'],
-                 ss_solutions['r_p_ss'], ss_solutions['rss'],
-                 ss_solutions['wss'], ss_solutions['p_m_ss'],
-                 ss_solutions['BQss'], ss_solutions['TR_ss'],
-                 ss_solutions['Yss'], ss_solutions['factor_ss'])
+                 float(ss_solutions['r_p_ss']),
+                 float(ss_solutions['rss']),
+                 float(ss_solutions['wss']), ss_solutions['p_m_ss'],
+                 ss_solutions['BQss'], float(ss_solutions['TR_ss']),
+                 float(ss_solutions['Yss']), ss_solutions['factor_ss'])
         else:
             if p.use_zeta:
                 b_guess = np.ones((p.S, p.J)) * 0.0055
@@ -782,6 +788,9 @@ def run_SS(p, client=None):
                     [r_p_guess, rguess, wguess] + list(p_m_guess) +
                     [Yguess] + list(BQguess) + [TR_ss]
                 )
+            print('GUESSES = ', guesses)
+            print('TYPES = ', type(r_p_guess), type(rguess), type(wguess),
+                    type(p_m_guess), type(BQguess), type(TR_ss))
             sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
                            method=p.SS_root_method, tol=p.mindist_SS)
             r_p_ss = sol.x[0]
