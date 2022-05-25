@@ -220,6 +220,7 @@ def get_KLratio_KLonly(r, p, method, m=-1):
     if method == 'SS':
         Z = p.Z[-1, m]
     else:
+        print('R = ', r)
         length = r.shape[0]
         Z = p.Z[:length, m]
     gamma = p.gamma[m]
@@ -265,7 +266,7 @@ def get_KLratio(r, w, p, method, m=-1):
     '''
     cost_of_capital = get_cost_of_capital(r, p, method, m)
     KLratio = (
-        (p.gamma / (1 - p.gamma[m] - p.gamma_g[m])) *
+        (p.gamma[m] / (1 - p.gamma[m] - p.gamma_g[m])) *
         (w / cost_of_capital) ** p.epsilon[m])
     return KLratio
 
@@ -334,7 +335,10 @@ def get_w_from_r(r, p, method, m=-1):
     '''
     KLratio = get_KLratio_KLonly(r, p, method, m)
 
-    Z = p.Z[:p.T, m]
+    if method == 'TPI':
+        Z = p.Z[:p.T, m]
+    else:
+        Z = p.Z[-1, m]
     gamma = p.gamma[m]
     epsilon = p.epsilon[m]
     if epsilon == 1:
