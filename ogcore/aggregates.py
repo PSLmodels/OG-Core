@@ -229,15 +229,15 @@ def get_C(c, p, method):
     '''
 
     if method == 'SS':
-        aggC = (c * np.transpose(p.omega_SS * p.lambdas)).sum()
+        aggC = (c * np.transpose(p.omega_SS * p.lambdas).reshape(1, p.S, p.J)).sum()
     elif method == 'TPI':
         aggC = ((c * np.squeeze(p.lambdas)) *
-                np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
-                        (1, 1, p.J))).sum(1).sum(1)
+                np.tile(np.reshape(p.omega[:p.T, :], (p.T, 1, p.S, 1)),
+                        (1, c.shape[0], 1, p.J))).sum(-1).sum(-1)
     return aggC
 
 
-def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
+def revenue(r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta, etr_params,
             p, m, method):
     r'''
     Calculate aggregate tax revenue.
@@ -259,12 +259,13 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
         Y (array_like): aggregate output
         L (array_like): aggregate labor
         K (array_like): aggregate capital
+        p_m (array_like): output prices
         factor (scalar): scaling factor converting model units to
             dollars
         ubi (array_like): universal basic income household distributions
         theta (Numpy array): social security replacement rate for each
             lifetime income group
-        etr_params (Numpy array): paramters of the effective tax rate
+        etr_params (Numpy array): parameters of the effective tax rate
             functions
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
@@ -319,7 +320,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
             p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
         payroll_tax_revenue = (p.frac_tax_payroll[:p.T] *
                                iit_payroll_tax_revenue)
-    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p, m, method)
+    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum()
     iit_revenue = iit_payroll_tax_revenue - payroll_tax_revenue
 
     total_tax_revenue = (

@@ -210,6 +210,7 @@ new_param_values = {
     'T': 160,
     'S': 40,
     'J': 2,
+    'M': 3,
     'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
     'omega': np.ones((160, 40)) / 40,
@@ -219,12 +220,11 @@ new_param_values = {
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
 # make up some consumption values for testing
-c = 0.1 + 0.5 * np.random.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
+c = 0.1 + 0.5 * np.random.rand(p.T * p.M * p.S * p.J).reshape(p.T, p.M, p.S, p.J)
 aggC_presum = ((c * np.squeeze(p.lambdas)) *
-               np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
-                       (1, 1, p.J)))
-expected1 = aggC_presum[-1, :, :].sum()
-expected2 = aggC_presum.sum(1).sum(1)
+               np.tile(np.reshape(p.omega[:p.T, :], (p.T, 1, p.S, 1)),
+                       (1, p.M, 1, p.J)))
+expected1 = aggC_presum[-1, :, :, :].sum()
 test_data = [(c[-1, :, :], p, 'SS', expected1),
              (c, p, 'TPI', expected2)]
 

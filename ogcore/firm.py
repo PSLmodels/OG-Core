@@ -14,7 +14,7 @@ path
 '''
 
 
-def get_Y(K, K_g, L, p, m, method):
+def get_Y(K, K_g, L, p, method, m=-1):
     r'''
     Generates aggregate output (GDP) from aggregate capital stock,
     aggregate labor, and CES production function parameters.
@@ -31,9 +31,9 @@ def get_Y(K, K_g, L, p, m, method):
         K_g (array_like): aggregate government capital
         L (array_like): aggregate labor
         p (OG-Core Specifications object): model parameters
-        m (int or None): industry index
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int or None): industry index
 
     Returns:
         Y (array_like): aggregate output
@@ -134,7 +134,7 @@ def get_Y(K, K_g, L, p, m, method):
     return Y
 
 
-def get_r(Y, K, p, method):
+def get_r(Y, K, p_m, p, method, m=-1):
     r'''
     This function computes the interest rate as a function of Y, K, and
     parameters using the firm's first order condition for capital
@@ -148,27 +148,29 @@ def get_r(Y, K, p, method):
     Args:
         Y (array_like): aggregate output
         K (array_like): aggregate capital
+        p_m (array_like): output prices
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int): index of the production industry
 
     Returns:
         r (array_like): the real interest rate
 
     '''
     if method == 'SS':
-        delta_tau = p.delta_tau[-1]
-        tau_b = p.tau_b[-1]
+        delta_tau = p.delta_tau[-1, m]
+        tau_b = p.tau_b[-1, m]
     else:
-        delta_tau = p.delta_tau[:p.T]
-        tau_b = p.tau_b[:p.T]
-    MPK = get_MPx(Y, K, p.gamma, p, method)
-    r = (1 - tau_b) * MPK - p.delta + tau_b * delta_tau
+        delta_tau = p.delta_tau[:p.T, m]
+        tau_b = p.tau_b[:p.T, m]
+    MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
+    r = max((1 - tau_b) * p_m[m] * MPK - p.delta + tau_b * delta_tau, 0.001)
 
     return r
 
 
-def get_w(Y, L, p, method):
+def get_w(Y, L, p_m, p, method, m=-1):
     r'''
     This function computes the wage as a function of Y, L, and
     parameters using the firm's first order condition for labor demand.
@@ -180,15 +182,17 @@ def get_w(Y, L, p, method):
     Args:
         Y (array_like): aggregate output
         L (array_like): aggregate labor
+        p_m (array_like): output prices
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int): index of the production industry
 
     Returns:
         w (array_like): the real wage rate
 
     '''
-    w = get_MPx(Y, L, 1 - p.gamma - p.gamma_g, p, method)
+    w = p_m[m] * get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
 
     return w
 
@@ -271,7 +275,7 @@ def get_KLratio(r, w, p, method, m=-1):
     return KLratio
 
 
-def get_MPx(Y, x, share, p, method):
+def get_MPx(Y, x, share, p, method, m=-1):
     r'''
     Compute the marginal product of x (where x is K, L, or K_g)
 
@@ -286,20 +290,21 @@ def get_MPx(Y, x, share, p, method):
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        m (int): production industry index
 
     Returns:
         MPx (array_like): the marginal product of x
     '''
     if method == 'SS':
-        Z = p.Z[-1]
+        Z = p.Z[-1, m]
     else:
-        Z = p.Z[:p.T]
+        Z = p.Z[:p.T, m]
     if np.any(x) == 0:
         MPx = np.zeros_like(Y)
     else:
         MPx = (
-            Z ** ((p.epsilon - 1) / p.epsilon) * ((share * Y) / x)
-            ** (1 / p.epsilon)
+            Z ** ((p.epsilon[m] - 1) / p.epsilon[m]) * ((share * Y) / x)
+            ** (1 / p.epsilon[m])
         )
 
     return MPx
@@ -585,7 +590,7 @@ def get_pm(w, KL_ratio, p, method):
     return p_m
 
 
-def get_KY_ratio(r, p_m, p, method):
+def get_KY_ratio(r, p_m, p, method, m=-1):
     r'''
     Get capital output ratio from FOC for interest rate.
 
@@ -600,7 +605,7 @@ def get_KY_ratio(r, p_m, p, method):
     Returns:
         KY_ratio (array_like): capital output ratio
     '''
-    cost_of_capital = get_cost_of_capital(r, p, method)
-    KY_ratio = (p_m * p.gamma) / cost_of_capital
+    cost_of_capital = get_cost_of_capital(r, p, method, m)
+    KY_ratio = (p_m[m] * p.gamma[m]) / cost_of_capital
 
     return KY_ratio

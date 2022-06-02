@@ -223,28 +223,35 @@ def inner_loop(outer_loop_vars, p, client):
     C_vec = np.zeros(p.M)
     K_demand_open_vec = np.zeros(p.M)
     for m_ind in range(p.M-1):
-        C_m = aggr.get_C(c_m[:, m_ind], p, 'SS')
+        C_m = aggr.get_C(c_m[m_ind, :, :], p, 'SS')
         C_vec[m_ind] = C_m
-        KLrat_m = firm.get_KLratio(r, w, p, 'SS')
-        KYrat_m = firm.get_KY_ratio(r, p_m[m_ind], p, 'SS')
+        KLrat_m = firm.get_KLratio(r, w, p, 'SS', m_ind)
+        KYrat_m = firm.get_KY_ratio(r, p_m, p, 'SS', m_ind)
         Y_vec[m_ind] = C_m
         K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
         L_vec[m_ind] = KLrat_m ** -1 * K_vec[m_ind]
         KL_ratio_vec[m_ind] = KLrat_m
         # will have a K_demand_open from each industry
+        # print('K, K for m = ', m_ind, ' is ', L_vec[m_ind], K_vec[m_ind], Y_vec[m_ind])
         K_demand_open_vec[m_ind] = firm.get_K(
-            p.world_int_rate[-1], w_open, L_vec[m_ind], p, 'SS')
+            p.world_int_rate[-1], w_open, L_vec[m_ind], p, 'SS', m_ind)
 
     # Find output, labor demand, capital demand for last industry
-    L_M = L - L_vec.sum()
+    L_M = max(0.001, L - L_vec.sum())  # make sure L_M > 0
     K_demand_open_vec[-1] = firm.get_K(
-            p.world_int_rate[-1], w_open, L_M, p, 'SS')
+            p.world_int_rate[-1], w_open, L_M, p, 'SS', -1)
+    # print('K values = ', K_demand_open_vec.sum(), B, K_vec.sum(), K_vec)
+    # print('L_M = ', L_M)
+    # print('r = ', r)
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open_vec.sum(), D_d, p.zeta_K[-1])
-    K_M = K - K_vec.sum()
-    C_vec[-1] = aggr.get_C(c_m[:, -1].reshape(p.S, 1), p, 'SS')
+    K_M = max(0.001, K - K_vec.sum())  # make sure K_M > 0
+    C_vec[-1] = aggr.get_C(c_m[-1, :], p, 'SS')
     L_vec[-1] = L_M
     K_vec[-1] = K_M
-    Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, None, 'SS')
+    # print('Check K in inner loop = ', K_vec.sum() - K, K - K_d - K_f)
+    # print('K demand open inner loop = ', K_demand_open_vec)
+    # print("Inner loop Kvec and Lvec = ", K_vec, L_vec)
+    Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, 'SS', -1)
     KL_ratio_vec[-1] = K_vec[-1] / L_vec[-1]
 
 
@@ -261,19 +268,29 @@ def inner_loop(outer_loop_vars, p, client):
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
-        new_r = firm.get_r(Y_vec[-1], K_vec[-1], p, 'SS')
-    new_w = firm.get_w(Y_vec[-1], L_vec[-1], p, 'SS')  # does this work for the open econ case?
+        print('Get r inputs = ', Y_vec[-1], K_vec[-1])
+        new_r = firm.get_r(Y_vec[-1], K_vec[-1], p_m, p, 'SS', -1)
+        print('new_r = ', new_r)
+    new_w = firm.get_w(Y_vec[-1], L_vec[-1], p_m, p, 'SS')  # does this work for the open econ case?
 
+    check_r_vec = np.zeros(p.M)
+    for m in range(p.M):
+        check_r_vec[m] = firm.get_r(Y_vec[m], K_vec[m], p_m, p, 'SS', m)
+    print('Check r = ', check_r_vec)
     # b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
     #                list(bssmat[:-1, :]))
     new_r_gov = fiscal.get_r_gov(new_r, p)
     # now get accurate measure of debt service cost
     D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
         fiscal.get_D_ss(new_r_gov, Y, p)
-    print('Inner loop debt = ', D, new_borrowing_f)
-    MPKg_vec = firm.get_MPx(Y_vec, K_g, p.gamma_g, p, 'SS')
+    # print('Inner loop debt = ', D, new_borrowing_f)
+    MPKg_vec = np.zeros(p.M)
+    for m in range(p.M):
+        MPKg_vec[m] = firm.get_MPx(Y_vec[m], K_g, p.gamma_g[m], p, 'SS', m)
     new_r_p = aggr.get_r_p(
         new_r, new_r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, 'SS')
+    # print('New r_p = ', new_r_p, new_r, new_r_gov, new_w)
+    # print('Checking in: ', Y, K_g, new_r, Y_vec[-1], K_vec[-1])
     average_income_model = ((new_r_p * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -302,23 +319,33 @@ def inner_loop(outer_loop_vars, p, client):
     # TODO: add p_m for consumption tax below
     total_tax_revenue, _, agg_pension_outlays, UBI_outlays, _, _, _, _, _, _ =\
         aggr.revenue(new_r_p, new_w, b_s, nssmat, new_bq, cssmat, Y_vec, L_vec,
-                     K_vec, factor, ubi, theta, etr_params_3D, p, None, 'SS')
+                     K_vec, new_p_m, factor, ubi, theta, etr_params_3D, p, None, 'SS')
     G = fiscal.get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
                         UBI_outlays, I_g, new_borrowing, debt_service, p)
     new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays,
                            UBI_outlays, I_g, p, 'SS')
 
-    # C = aggr.get_C(cssmat, p, 'SS')
-    # I_d = aggr.get_I(b_splus1, K_d, K_d, p, 'SS')
-    # debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
-    # net_capital_outflows = aggr.get_capital_outflows(
-    #     r_p, K_f, new_borrowing_f, debt_service_f, p)
-    # # rc_error = Y - C - G - I_d - net_capital_outflows
-    # # print('Resource Contraint error in inner loop = ', rc_error)
+    # C_vec = np.zeros(p.M)
+    # C = aggr.get_C(cssmat[:, :], p, 'SS')
+    # C_vec[-1] = C
+    G_vec = np.zeros(p.M)
+    G_vec[-1] = G
+    I_d_vec = np.zeros(p.M)
+    I_d = aggr.get_I(b_splus1, K_d, K_d, p, 'SS')
+    I_d_vec[-1] = I_d
+    I_g_vec = np.zeros(p.M)
+    I_g_vec[-1] = I_g
+    debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
+    net_capital_outflows = aggr.get_capital_outflows(
+        r_p, K_f, new_borrowing_f, debt_service_f, p)
+    net_capital_outflows_vec = np.zeros(p.M)
+    net_capital_outflows_vec[-1] = net_capital_outflows
+    rc_error = Y_vec - C_vec - G_vec - I_d_vec - I_g_vec - net_capital_outflows_vec
+    print('Resource Constraint error in inner loop = ', rc_error)
 
     # print('BQ at the end of inner loop: ', new_BQ)
-    print('Coming out of inner loop vars are',
-          new_r_p, new_r, new_w, new_p_m, Y, new_BQ, new_TR)
+    # print('Coming out of inner loop vars are',
+        #   new_r_p, new_r, new_w, new_p_m, Y, new_BQ, new_TR)
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
         new_w, new_p_m, K_vec, L_vec, Y_vec, new_TR, Y, new_factor, new_BQ,\
         average_income_model
@@ -389,7 +416,7 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
                     [utils.pct_diff_func(new_r, r)] +
                     [utils.pct_diff_func(new_r_p, r_p)] +
                     [utils.pct_diff_func(new_w, w)] +
-                    [utils.pct_diff_func(new_p_m, p_m)] +
+                    list(utils.pct_diff_func(new_p_m, p_m)) +
                     list(utils.pct_diff_func(new_BQ, BQ)) +
                     [utils.pct_diff_func(new_Y, Y)] +
                     [utils.pct_diff_func(new_factor, factor)]).max()
@@ -400,7 +427,7 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
                     [utils.pct_diff_func(new_r, r)] +
                     [utils.pct_diff_func(new_r_p, r_p)] +
                     [utils.pct_diff_func(new_w, w)] +
-                    [utils.pct_diff_func(new_p_m, p_m)] +
+                    list(utils.pct_diff_func(new_p_m, p_m)) +
                     list(utils.pct_diff_func(new_BQ, BQ)) +
                     [abs(new_Y - Y)] +
                     [utils.pct_diff_func(new_factor, factor)]).max()
@@ -410,13 +437,13 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
             else:
                 TR = utils.convex_combo(new_TR, TR, nu_ss)
             dist = np.array(
-                [utils.pct_diff_func(new_r, r)] +
-                [utils.pct_diff_func(new_r_p, r_p)] +
-                [utils.pct_diff_func(new_w, w)] +
-                [utils.pct_diff_func(new_p_m, p_m)] +
+                [float(utils.pct_diff_func(new_r, r))] +
+                [float(utils.pct_diff_func(new_r_p, r_p))] +
+                [float(utils.pct_diff_func(new_w, w))] +
+                list(utils.pct_diff_func(new_p_m, p_m)) +
                 list(utils.pct_diff_func(new_BQ, BQ)) +
-                [utils.pct_diff_func(new_TR, TR)] +
-                [utils.pct_diff_func(new_factor, factor)]).max()
+                [float(utils.pct_diff_func(new_TR, TR))] +
+                [float(utils.pct_diff_func(new_factor, factor))]).max()
 
         dist_vec[iteration] = dist
         # Similar to TPI: if the distance between iterations increases, then
@@ -440,6 +467,7 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
     K_vec_ss = new_K_vec
     L_vec_ss = new_L_vec
     Y_vec_ss = new_Y_vec
+    print("Outer loop Kvec and Lvec = ", K_vec_ss, L_vec_ss)
     r_gov_ss = fiscal.get_r_gov(rss, p)
     p_m_ss = new_p_m
     p_tilde_ss = aggr.get_ptilde(p_m_ss, p.alpha_c)
@@ -453,14 +481,20 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
      new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Yss, p)
     print('SS debt = ', Dss, new_borrowing_f)
     w_open = firm.get_w_from_r(p.world_int_rate[-1], p, 'SS')
-    K_demand_open_ss = firm.get_K(p.world_int_rate[-1], w_open, Lss, p, 'SS')
+    K_demand_open_ss = np.zeros(p.M)
+    for m in range(p.M):
+        K_demand_open_ss[m] = firm.get_K(
+            p.world_int_rate[-1], w_open, L_vec_ss[m], p, 'SS', m)
+    print('K_demand_open_ss = ', K_demand_open_ss, L_vec_ss)
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
-        Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
+        Bss, K_demand_open_ss.sum(), D_d_ss, p.zeta_K[-1])
     # Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
     I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, 'SS')
-    MPKg = firm.get_MPx(Y_vec_ss, K_g_ss, p.gamma_g, p, 'SS')
-    r_p_ss = aggr.get_r_p(rss, r_gov_ss, p_m_ss, K_vec_ss, K_g_ss, Dss, MPKg, p, 'SS')
+    MPKg_vec = np.zeros(p.M)
+    for m in range(p.M):
+        MPKg_vec[m] = firm.get_MPx(Y_vec_ss[m], K_g_ss, p.gamma_g[m], p, 'SS', m)
+    r_p_ss = aggr.get_r_p(rss, r_gov_ss, p_m_ss, K_vec_ss, K_g_ss, Dss, MPKg_vec, p, 'SS')
     print('Diff in RP = ', r_p_ss - r_p)
     print('Diff in RP2 = ', r_p_ss - new_r_p)
     print("Diff r and r_p = ", rss - r_p_ss)
@@ -501,7 +535,9 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
         r_p_ss, wss, bssmat_s, nssmat, p)
     Css = aggr.get_C(cssmat, p, 'SS')
     c_m_ss_mat = household.get_cm(cssmat, p_m_ss, p_tilde_ss, p.alpha_c)
-    C_vec_ss = aggr.get_C(c_m_ss_mat, p, 'SS')
+    C_vec_ss = np.zeros(p.M)
+    for m_ind in range(p.M):  # To do, update aggr.get_C to take full MxSxJ array
+        C_vec_ss[m_ind] = aggr.get_C(c_m_ss_mat[m_ind, :, :], p, 'SS',)
 
     # TODO: will need to add p_m for cons taxes in line below
     (total_tax_revenue, iit_payroll_tax_revenue, agg_pension_outlays,
@@ -509,7 +545,7 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
      business_tax_revenue, payroll_tax_revenue, iit_revenue
      ) = aggr.revenue(
          r_p_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Y_vec_ss, L_vec_ss, K_vec_ss,
-         factor, ubissmat, theta, etr_params_3D, p, None, 'SS')
+         p_m, factor, ubissmat, theta, etr_params_3D, p, None, 'SS')
     Gss = fiscal.get_G_ss(
         Yss, total_tax_revenue, agg_pension_outlays, TR_ss, UBI_outlays,
         I_g_ss, new_borrowing, debt_service, p)
@@ -538,13 +574,15 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
     if VERBOSE:
         print('Foreign debt holdings = ', D_f_ss)
         print('Foreign capital holdings = ', K_f_ss)
+        print('Net capital flows = ', net_capital_outflows, K_f_ss * (r_p_ss + p.delta), new_borrowing_f, debt_service_f)
         print('resource constraint: ', RC)
+        print('Checks of K = ', K_vec_ss.sum()-Kss, Kss-K_d_ss-K_f_ss, (K_vec_ss.sum()-Kss) * p.delta)
 
     if Gss < 0:
         print('Steady state government spending is negative to satisfy'
               + ' budget')
 
-    if ENFORCE_SOLUTION_CHECKS and (np.absolute(RC) >
+    if ENFORCE_SOLUTION_CHECKS and (max(np.absolute(RC)) >
                                     p.mindist_SS):
         print('Resource Constraint Difference:', RC)
         err = 'Steady state aggregate resource constraint not satisfied'
@@ -651,11 +689,15 @@ def SS_fsolve(guesses, *args):
     # Create list of errors in general equilibrium variables
     error_r_p = float(new_r_p - r_p)
     # Check and punish violations of the bounds on the interest rate
-    if new_r + p.delta <= 0:
-        error_r_p = 1e9
     error_r = float(new_r - r)
     error_w = float(new_w - w)
+    if new_r + p.delta <= 0:
+        error_r_p = 1e9
+        error_r = 1e9
+    if new_w < 0:
+        error_w = 1e9
     error_p_m = new_p_m - p_m
+    error_p_m[new_p_m < 0] = 1e9
     error_Y = float(new_Y - Y)
     error_BQ = new_BQ - BQ
     error_TR = float(new_TR - TR)
@@ -670,8 +712,6 @@ def SS_fsolve(guesses, *args):
             [error_Y] + list(error_BQ) + [error_TR, error_factor]
         )
     else:
-        print('Errors = ', type(error_r_p), type(error_r), type(error_w),
-            type(error_p_m), type(error_Y))
         errors = (
             [error_r_p, error_r, error_w] + list(error_p_m) +
             [error_Y] + list(error_BQ) + [error_TR]
