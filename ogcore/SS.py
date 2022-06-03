@@ -44,7 +44,9 @@ def euler_equation_solver(guesses, *args):
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2S
         args (tuple): tuple of arguments (r, w, bq, TR, factor, j, p)
+        r (scalar): real interest rate
         w (scalar): real wage rate
+        p_tilde (scalar): composite good price
         bq (Numpy array): bequest amounts by age, length S
         tr (scalar): government transfer amount by age, length S
         ubi (vector): universal basic income (UBI) payment, length S
@@ -241,57 +243,38 @@ def inner_loop(outer_loop_vars, p, client):
     L_M = max(0.001, L - L_vec.sum())  # make sure L_M > 0
     K_demand_open_vec[-1] = firm.get_K(
             p.world_int_rate[-1], w_open, L_M, p, 'SS', -1)
-    # print('K values = ', K_demand_open_vec.sum(), B, K_vec.sum(), K_vec)
-    # print('L_M = ', L_M)
-    # print('r = ', r)
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open_vec.sum(), D_d, p.zeta_K[-1])
     K_M = max(0.001, K - K_vec.sum())  # make sure K_M > 0
     C_vec[-1] = np.squeeze(aggr.get_C(c_m[-1, :], p, 'SS'))
     L_vec[-1] = L_M
     K_vec[-1] = K_M
-    # print('Check K in inner loop = ', K_vec.sum() - K, K - K_d - K_f)
-    # print('K demand open inner loop = ', K_demand_open_vec)
-    # print("Inner loop Kvec and Lvec = ", K_vec, L_vec)
     Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, 'SS', -1)
     KL_ratio_vec[-1] = K_vec[-1] / L_vec[-1]
 
 
     Y = (p_m * Y_vec).sum()
-    # # Find temporary values for K_g
-    # I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
-    # K_g = fiscal.get_K_g(0, I_g, p, 'SS')
-    # # Find a intermediate Y using temp K_g, K, L
-    # Y = firm.get_Y(K, K_g, L, p, 'SS')
-    # # Now update for a final Y and K_g
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
-    # Y = firm.get_Y(K, K_g, L, p, 'SS')
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
-        print('Get r inputs = ', Y_vec[-1], K_vec[-1])
         new_r = firm.get_r(Y_vec[-1], K_vec[-1], p_m, p, 'SS', -1)
-        print('new_r = ', new_r)
     new_w = firm.get_w(Y_vec[-1], L_vec[-1], p_m, p, 'SS')  # does this work for the open econ case?
 
-    check_r_vec = np.zeros(p.M)
-    for m in range(p.M):
-        check_r_vec[m] = firm.get_r(Y_vec[m], K_vec[m], p_m, p, 'SS', m)
-    print('Check r = ', check_r_vec)
-    # b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
-    #                list(bssmat[:-1, :]))
+    # check_r_vec = np.zeros(p.M)
+    # for m in range(p.M):
+    #     check_r_vec[m] = firm.get_r(Y_vec[m], K_vec[m], p_m, p, 'SS', m)
+    # print('Check r = ', check_r_vec)
+
     new_r_gov = fiscal.get_r_gov(new_r, p)
     # now get accurate measure of debt service cost
     D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
         fiscal.get_D_ss(new_r_gov, Y, p)
-    # print('Inner loop debt = ', D, new_borrowing_f)
     MPKg_vec = np.zeros(p.M)
     for m in range(p.M):
         MPKg_vec[m] = firm.get_MPx(Y_vec[m], K_g, p.gamma_g[m], p, 'SS', m)
     new_r_p = aggr.get_r_p(
         new_r, new_r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, 'SS')
-    # print('New r_p = ', new_r_p, new_r, new_r_gov, new_w)
-    # print('Checking in: ', Y, K_g, new_r, Y_vec[-1], K_vec[-1])
     average_income_model = ((new_r_p * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -326,9 +309,6 @@ def inner_loop(outer_loop_vars, p, client):
     new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays,
                            UBI_outlays, I_g, p, 'SS')
 
-    # C_vec = np.zeros(p.M)
-    # C = aggr.get_C(cssmat[:, :], p, 'SS')
-    # C_vec[-1] = C
     G_vec = np.zeros(p.M)
     G_vec[-1] = G
     I_d_vec = np.zeros(p.M)
@@ -568,7 +548,6 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
     I_g_vec_ss[-1] = I_g_ss
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
-    print('C, G, Y, I = ', C_vec_ss, G_vec_ss, Y_vec_ss, Yss, I_d_vec_ss, I_g_vec_ss)
     RC = aggr.resource_constraint(
         Y_vec_ss, C_vec_ss, G_vec_ss, I_d_vec_ss, I_g_vec_ss,
         net_capital_outflows_vec)
@@ -604,6 +583,8 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
     output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
               'K_g_ss': K_g_ss, 'I_g_ss': I_g_ss,
               'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
+            #   'K_vec_ss': K_vec_ss, 'L_vec_ss': L_vec_ss,
+            #   'C_vec_ss': C_vec_ss, 'Y_vec_ss': Y_vec_ss,
               'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
               'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
               'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss, 'p_m_ss': p_m_ss,

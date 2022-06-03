@@ -98,7 +98,6 @@ def get_Y(K, K_g, L, p, method, m=-1):
             epsilon = p.epsilon[m]
             Z = p.Z[:p.T, m]
             if epsilon == 1:
-                print('Shapes = ', Z.shape, K.shape, K_g.shape, L.shape)
                 Y = (Z * (K ** gamma) * (K_g ** gamma_g) *
                      (L ** (1 - gamma - gamma_g)))
             else:
@@ -119,7 +118,6 @@ def get_Y(K, K_g, L, p, method, m=-1):
             gamma = p.gamma
             epsilon = p.epsilon
             Z = p.Z[:p.T, :]
-            print(Z)
             Y = (Z * (((gamma ** (1 / epsilon)) *
                 (K ** ((epsilon - 1) / epsilon))) +
                 ((gamma_g ** (1 / epsilon)) *
@@ -166,7 +164,6 @@ def get_r(Y, K, p_m, p, method, m=-1):
         tau_b = p.tau_b[:p.T, m].reshape(p.T, 1)
     MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
     r = (1 - tau_b) * p_m[m] * MPK - p.delta + tau_b * delta_tau
-    print('Shapes in r = ', MPK.shape, tau_b.shape, delta_tau.shape)
 
     return r
 
@@ -194,7 +191,6 @@ def get_w(Y, L, p_m, p, method, m=-1):
 
     '''
     mp = get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
-    print('Shape of mp = ', mp.shape)
     w = p_m[m] * get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
 
     return w
@@ -227,7 +223,6 @@ def get_KLratio_KLonly(r, p, method, m=-1):
     if method == 'SS':
         Z = p.Z[-1, m]
     else:
-        print('R = ', r)
         length = r.shape[0]
         Z = p.Z[:length, m]
     gamma = p.gamma[m]
