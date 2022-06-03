@@ -162,10 +162,11 @@ def get_r(Y, K, p_m, p, method, m=-1):
         delta_tau = p.delta_tau[-1, m]
         tau_b = p.tau_b[-1, m]
     else:
-        delta_tau = p.delta_tau[:p.T, m]
-        tau_b = p.tau_b[:p.T, m]
+        delta_tau = p.delta_tau[:p.T, m].reshape(p.T, 1)
+        tau_b = p.tau_b[:p.T, m].reshape(p.T, 1)
     MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
-    r = max((1 - tau_b) * p_m[m] * MPK - p.delta + tau_b * delta_tau, 0.001)
+    r = (1 - tau_b) * p_m[m] * MPK - p.delta + tau_b * delta_tau
+    print('Shapes in r = ', MPK.shape, tau_b.shape, delta_tau.shape)
 
     return r
 
@@ -192,6 +193,8 @@ def get_w(Y, L, p_m, p, method, m=-1):
         w (array_like): the real wage rate
 
     '''
+    mp = get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
+    print('Shape of mp = ', mp.shape)
     w = p_m[m] * get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
 
     return w
@@ -298,7 +301,7 @@ def get_MPx(Y, x, share, p, method, m=-1):
     if method == 'SS':
         Z = p.Z[-1, m]
     else:
-        Z = p.Z[:p.T, m]
+        Z = p.Z[:p.T, m].reshape(p.T, 1)
     if np.any(x) == 0:
         MPx = np.zeros_like(Y)
     else:

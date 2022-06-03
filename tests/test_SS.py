@@ -519,57 +519,59 @@ param_updates12 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
                    'gamma_g': [0.07], 'initial_guess_r_SS': 0.06,
                    'initial_guess_TR_SS': 0.03, 'initial_Kg_ratio': 0.01}
 filename12 = 'run_SS_baseline_Kg_nonzero.pkl'
-param_updates13 = {'M': 3, 'epsilon': [0.6, 0.5, 0.55],
+param_updates13 = {'M': 3, 'epsilon': [1.0, 1.0, 1.0],
                    'gamma': [0.3, 0.35, 0.4],
                    'gamma_g': [0.1, 0.05, 0.15],
-                   'alpha_c': [0.5, 0.4, 0.1],
-                   'initial_guess_r_SS': 0.06,
-                   'initial_guess_TR_SS': 0.03,
-                   'initial_Kg_ratio': 0.01}
+                   'alpha_c': [0.2, 0.4, 0.4],
+                   'initial_guess_r_SS': 0.16,
+                   'initial_guess_TR_SS': 0.09,
+                   'alpha_I': [0.01],
+                   'initial_Kg_ratio': 0.01,
+                   }
 filename13 = 'run_SS_baseline_M3_Kg_nonzero.pkl'
 
 
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [
-#                           (True, param_updates1, filename1),
-#                           (False, param_updates9, filename9),
-#                           (True, param_updates2, filename2),
-#                           (False, param_updates10, filename10),
-#                           (True, param_updates3, filename3),
-#                           (True, param_updates4, filename4),
-#                           (False, param_updates5, filename5),
-#                           (False, param_updates6, filename6),
-#                           (False, param_updates7, filename7),
-#                           (False, param_updates8, filename8),
-#                           (False, param_updates11, filename11),
-#                           (True, param_updates12, filename12),
-#                           (True, param_updates13, filename13)
-#                           ],
-#                          ids=[
-#                               'Baseline', 'Reform, baseline spending',
-#                               'Baseline, use zeta',
-#                               'Reform, baseline spending, use zeta',
-#                               'Baseline, small open',
-#                               'Baseline, small open use zeta',
-#                               'Reform', 'Reform, use zeta',
-#                               'Reform, small open',
-#                               'Reform, small open use zeta',
-#                               'Reform, delta_tau=0',
-#                               'Baseline, non-zero Kg',
-                                # 'Baseline, M=3m non-zero Kg'
-#                               ])
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
+                          (True, param_updates1, filename1),
+                          (False, param_updates9, filename9),
+                          (True, param_updates2, filename2),
+                          (False, param_updates10, filename10),
+                          (True, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6),
+                          (False, param_updates7, filename7),
+                          (False, param_updates8, filename8),
+                          (False, param_updates11, filename11),
+                          (True, param_updates12, filename12),
                           (True, param_updates13, filename13)
                           ],
                          ids=[
-
-                              'Baseline, M=3, non-zero Kg',
-
+                              'Baseline', 'Reform, baseline spending',
+                              'Baseline, use zeta',
+                              'Reform, baseline spending, use zeta',
+                              'Baseline, small open',
+                              'Baseline, small open use zeta',
+                              'Reform', 'Reform, use zeta',
+                              'Reform, small open',
+                              'Reform, small open use zeta',
+                              'Reform, delta_tau=0',
+                              'Baseline, non-zero Kg',
+                              'Baseline, M=3m non-zero Kg'
                               ])
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [
+
+#                           (True, param_updates13, filename13)
+#                           ],
+#                          ids=[
+
+#                               'Baseline, M=3m non-zero Kg'
+#                               ])
 @pytest.mark.local
 def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and

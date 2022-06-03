@@ -224,6 +224,7 @@ def inner_loop(outer_loop_vars, p, client):
     K_demand_open_vec = np.zeros(p.M)
     for m_ind in range(p.M-1):
         C_m = aggr.get_C(c_m[m_ind, :, :], p, 'SS')
+        print('C_m = ', C_m)
         C_vec[m_ind] = C_m
         KLrat_m = firm.get_KLratio(r, w, p, 'SS', m_ind)
         KYrat_m = firm.get_KY_ratio(r, p_m, p, 'SS', m_ind)
@@ -245,7 +246,7 @@ def inner_loop(outer_loop_vars, p, client):
     # print('r = ', r)
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open_vec.sum(), D_d, p.zeta_K[-1])
     K_M = max(0.001, K - K_vec.sum())  # make sure K_M > 0
-    C_vec[-1] = aggr.get_C(c_m[-1, :], p, 'SS')
+    C_vec[-1] = np.squeeze(aggr.get_C(c_m[-1, :], p, 'SS'))
     L_vec[-1] = L_M
     K_vec[-1] = K_M
     # print('Check K in inner loop = ', K_vec.sum() - K, K - K_d - K_f)

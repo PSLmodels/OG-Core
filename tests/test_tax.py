@@ -366,16 +366,17 @@ new_param_values1 = {
 p1.update_specifications(new_param_values1)
 w = np.array([1.2, 1.1, 1.2])
 Y = np.array([[3.0], [7.0], [3.0]])
+p_m = np.ones((p1.T, 1))
 L = np.array([[2.0], [3.0], [2.0]])
 K = np.array([[5.0], [6.0], [5.0]])
 expected1 = np.array([[0.0102], [0.11356], [0.0102]])
 
 
-@pytest.mark.parametrize('w,Y,L,K,p,m,method,expected',
-                         [(w.reshape(3, 1), Y, L, K, p1, None, 'TPI', expected1),
-                          (w, Y[:, 0], L[:, 0], K[:, 0], p1, 0, 'TPI', expected1[:, 0]),
-                          (w[-1], Y[-1, :], L[-1, :], K[-1, :], p1, None, 'SS', expected1[-1, :]),
-                          (w[-1], Y[-1, 0], L[-1, 0], K[-1, 0], p1, 0, 'SS', expected1[-1, 0])
+@pytest.mark.parametrize('w,Y,L,K,p_m,p,m,method,expected',
+                         [(w.reshape(3, 1), Y, L, K, p_m, p1, None, 'TPI', expected1),
+                          (w, Y[:, 0], L[:, 0], K[:, 0], p_m, p1, 0, 'TPI', expected1[:, 0]),
+                          (w[-1], Y[-1, :], L[-1, :], K[-1, :], p_m[-1, :], p1, None, 'SS', expected1[-1, :]),
+                          (w[-1], Y[-1, 0], L[-1, 0], K[-1, 0], p_m[-1, :], p1, 0, 'SS', expected1[-1, 0])
                           ],
                          ids=[
                             'TPI, m is None',
@@ -383,9 +384,9 @@ expected1 = np.array([[0.0102], [0.11356], [0.0102]])
                             'SS, m is None',
                             'SS, m is not None',
                          ])
-def test_get_biz_tax(w, Y, L, K, p, m, method, expected):
+def test_get_biz_tax(w, Y, L, K, p_m, p, m, method, expected):
     # Test function for business tax receipts
-    biz_tax = tax.get_biz_tax(w, Y, L, K, p, m, method)
+    biz_tax = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method)
     assert np.allclose(biz_tax, expected)
 
 

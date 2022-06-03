@@ -161,21 +161,21 @@ expected10 = np.array([
 
 # TODO: finish the below, then need to add tests of m not None
 # for both SS and TPI...
-@pytest.mark.parametrize('K,K_g,L,p,m,method,expected',
-                         [(K1, K_g1, L1, p1, None, 'SS', expected1),
-                          (K1, K_g1, L1, p2, None, 'SS', expected2),
-                          (K3, K_g3, L3, p3, None, 'SS', expected3),
-                          (K4, K_g4, L4, p4, None, 'TPI', expected4),
-                          (K4, K_g4, L4, p5, None, 'TPI', expected5),
-                          (K4, K_g6, L4, p6, None, 'TPI', expected6),
-                          (K7, K_g7, L7, p7, None, 'SS', expected7),
-                          (K7, K_g7, L7, p8, None, 'SS', expected8),
-                          (K9, K_g6, L9, p9, None, 'TPI', expected9),
-                          (K9, K_g6, L9, p10, None, 'TPI', expected10),
-                          (K7[0], K_g7, L7[0], p7, 0, 'SS', expected7[0]),
-                          (K7[0], K_g7, L7[0], p8, 0, 'SS', expected8[0]),
-                          (K9[:, 0], np.squeeze(K_g6), L9[:, 0], p9, 0, 'TPI', expected9[:, 0]),
-                          (K9[:, 0], np.squeeze(K_g6), L9[:, 0], p10, 0, 'TPI', expected10[:, 0])
+@pytest.mark.parametrize('K,K_g,L,p,method, m, expected',
+                         [(K1, K_g1, L1, p1, 'SS', None, expected1),
+                          (K1, K_g1, L1, p2, 'SS', None, expected2),
+                          (K3, K_g3, L3, p3, 'SS', None, expected3),
+                          (K4, K_g4, L4, p4, 'TPI', None, expected4),
+                          (K4, K_g4, L4, p5, 'TPI', None, expected5),
+                          (K4, K_g6, L4, p6, 'TPI', None, expected6),
+                          (K7, K_g7, L7, p7, 'SS', None, expected7),
+                          (K7, K_g7, L7, p8, 'SS', None, expected8),
+                          (K9, K_g6, L9, p9, 'TPI', None, expected9),
+                          (K9, K_g6, L9, p10, 'TPI', None, expected10),
+                          (K7[0], K_g7, L7[0], p7, 'SS', 0, expected7[0]),
+                          (K7[0], K_g7, L7[0], p8, 'SS', 0, expected8[0]),
+                          (K9[:, 0], np.squeeze(K_g6), L9[:, 0], p9, 'TPI', 0, expected9[:, 0]),
+                          (K9[:, 0], np.squeeze(K_g6), L9[:, 0], p10, 'TPI', 0, expected10[:, 0])
                           ],
                          ids=['epsilon=1.0,SS', 'epsilon=0.2,SS',
                               'epsilon=1.2,SS', 'epsilon=1.0,TP',
@@ -191,12 +191,12 @@ expected10 = np.array([
                               'M>1, TPI, eps<1, m not None',
 
                               ])
-def test_get_Y(K, K_g, L, p, m, method, expected):
+def test_get_Y(K, K_g, L, p, method, m, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
-    Y = firm.get_Y(K, K_g, L, p, m, method)
+    Y = firm.get_Y(K, K_g, L, p, method, m)
 
     assert (np.allclose(Y, expected, atol=1e-6))
 
@@ -273,23 +273,24 @@ new_param_values5 = {
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
 expected5 = np.array([-0.07814687, 0.48060411, 0.51451412])
+p_m = np.ones((p5.T, p5.M))
 
-
-@pytest.mark.parametrize('Y,K,p,method,expected',
-                         [(Y1, K1, p1, 'SS', expected1),
-                          (Y1, K1, p2, 'SS', expected2),
-                          (Y1, K1, p3, 'SS', expected3),
-                          (Y4.reshape(3, 1), K4.reshape(3, 1), p4, 'TPI', expected4.reshape(3, 1)),
-                          (Y4.reshape(3, 1), K4.reshape(3, 1), p5, 'TPI', expected5.reshape(3, 1))],
+@pytest.mark.parametrize('Y,K,p_m,p,method,expected',
+                         [(Y1, K1, p_m[-1, :], p1, 'SS', expected1),
+                          (Y1, K1, p_m[-1, :], p2, 'SS', expected2),
+                          (Y1, K1, p_m[-1, :], p3, 'SS', expected3),
+                          (Y4.reshape(3, 1), K4.reshape(3, 1), p_m, p4, 'TPI', expected4.reshape(3, 1)),
+                          (Y4.reshape(3, 1), K4.reshape(3, 1), p_m, p5, 'TPI', expected5.reshape(3, 1))],
                          ids=['epsilon=1.2,SS', 'epsilon=0.5,SS',
                               'epsilon=1.0,SS', 'epsilon=1.2,TP',
                               'epsilon=1.2,TP,varyParams'])
-def test_get_r(Y, K, p, method, expected):
+def test_get_r(Y, K, p_m, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
-    r = firm.get_r(Y, K, p, method)
+    r = firm.get_r(Y, K, p_m, p, method)
+    print('R shapes = ', r.shape, expected.shape)
     assert (np.allclose(r, expected))
 
 
@@ -336,21 +337,21 @@ p4.update_specifications(new_param_values4)
 Y4 = np.array([2.0, 2.0, 2.0])
 L4 = np.array([1.0, 1.0, 1.0])
 expected4 = np.array([0.890898718, 0.881758476, 0.881758476])
+p_m = np.ones((p4.T, p4.M))
 
-
-@pytest.mark.parametrize('Y,L,p,method,expected',
-                         [(Y1, L1, p1, 'SS', expected1),
-                          (Y1, L1, p2, 'SS', expected2),
-                          (Y1, L1, p3, 'SS', expected3),
-                          (Y4.reshape(3, 1), L4.reshape(3, 1), p4, 'TPI', expected4.reshape(3, 1))],
+@pytest.mark.parametrize('Y,L,p_m,p,method,expected',
+                         [(Y1, L1, p_m[-1,:], p1, 'SS', expected1),
+                          (Y1, L1, p_m[-1,:], p2, 'SS', expected2),
+                          (Y1, L1, p_m[-1,:], p3, 'SS', expected3),
+                          (Y4.reshape(3, 1), L4.reshape(3, 1), p_m, p4, 'TPI', expected4.reshape(3, 1))],
                          ids=['epsilon=0.2,SS', 'epsilon=1.5,SS',
                               'epsilon=1.0,SS', 'epsilon=1.2,TP'])
-def test_get_w(Y, L, p, method, expected):
+def test_get_w(Y, L, p_m, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
-    w = firm.get_w(Y, L, p, method)
+    w = firm.get_w(Y, L, p_m, p, method)
     assert (np.allclose(w, expected, atol=1e-6))
 
 
@@ -638,6 +639,7 @@ def test_get_MPx(Y, x, share, method, expected):
     Test of the marginal product function
     """
     p = Specifications()
+    p.T = 2
     p.Z = np.ones((2, 1))
     mpx = firm.get_MPx(Y, x, share, p, method)
 

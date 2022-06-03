@@ -224,9 +224,10 @@ c = 0.1 + 0.5 * np.random.rand(p.T * p.M * p.S * p.J).reshape(p.T, p.M, p.S, p.J
 aggC_presum = ((c * np.squeeze(p.lambdas)) *
                np.tile(np.reshape(p.omega[:p.T, :], (p.T, 1, p.S, 1)),
                        (1, p.M, 1, p.J)))
-expected1 = aggC_presum[-1, :, :, :].sum()
-test_data = [(c[-1, :, :], p, 'SS', expected1),
-             (c, p, 'TPI', expected2)]
+expected1 = aggC_presum[-1, -1, :, :].sum(-1).sum(-1)
+expected2 = aggC_presum[:, -1, :, :].sum(-1).sum(-1)
+test_data = [(c[-1, -1, :, :], p, 'SS', expected1),
+             (c[:, -1, :, :], p, 'TPI', expected2)]
 
 
 @pytest.mark.parametrize('c,p,method,expected', test_data,
@@ -278,9 +279,9 @@ n = (0.191 + (0.503 - 0.191) *
 BQ = (0.032 + (0.055 - 0.032) *
       random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J))
 bq = BQ / p.lambdas.reshape(1, 1, p.J)
-Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T)
-L = 0.416 + (0.423 - 0.416) * random_state.rand(p.T).reshape(p.T)
-K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T)
+Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T, 1)
+L = 0.416 + (0.423 - 0.416) * random_state.rand(p.T).reshape(p.T, 1)
+K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T, 1)
 ubi = np.zeros((p.T, p.S, p.J))
 factor = 140000.0
 # update parameters instance with new values for test
@@ -354,9 +355,9 @@ n_u = (0.191 + (0.503 - 0.191) *
 BQ_u = (0.032 + (0.055 - 0.032) *
         random_state.rand(p_u.T * p_u.S * p_u.J).reshape(p_u.T, p_u.S, p_u.J))
 bq_u = BQ_u / p_u.lambdas.reshape(1, 1, p_u.J)
-Y_u = 0.561 + (0.602 - 0.561) * random_state.rand(p_u.T).reshape(p_u.T)
-L_u = 0.416 + (0.423 - 0.416) * random_state.rand(p_u.T).reshape(p_u.T)
-K_u = 0.957 + (1.163 - 0.957) * random_state.rand(p_u.T).reshape(p_u.T)
+Y_u = 0.561 + (0.602 - 0.561) * random_state.rand(p_u.T).reshape(p_u.T, 1)
+L_u = 0.416 + (0.423 - 0.416) * random_state.rand(p_u.T).reshape(p_u.T, 1)
+K_u = 0.957 + (1.163 - 0.957) * random_state.rand(p_u.T).reshape(p_u.T, 1)
 factor_u = 140000.0
 ubi_u = p_u.ubi_nom_array / factor_u
 # update parameters instance with new values for test
@@ -369,6 +370,8 @@ etr_params_u = (
     0.22 * random_state.rand(p_u.T * p_u.S * p_u.J * num_tax_params).reshape(
         p_u.T, p_u.S, p_u.J, num_tax_params))
 theta_u = 0.101 + (0.156 - 0.101) * random_state.rand(p_u.J)
+# vector of output prices
+p_m = np.ones((p.T, p.M))
 
 expected1 = 0.5688319028341413
 expected2 = np.array(
@@ -391,34 +394,33 @@ expected5 = np.array(
      0.72066489, 0.64096484, 0.61899218, 0.58806093, 0.54783766, 0.5393597,
      0.55685316, 0.65395071, 0.58946501, 0.64129696, 0.58759922, 0.5580478])
 test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :],
-              c[0, :, :], Y[0], L[0], K[0], factor, ubi[0, :, :], theta,
-              etr_params[-1, :, :, :], p, 'SS', expected1),
-             (r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params, p,
-              'TPI', expected2),
-             (r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params, p3,
-              'TPI', expected3),
+              c[0, :, :], Y[0], L[0], K[0], p_m[-1, :], factor, ubi[0, :, :], theta,
+              etr_params[-1, :, :, :], p, None, 'SS', expected1),
+             (r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta, etr_params, p,
+              None, 'TPI', expected2),
+             (r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta, etr_params, p3,
+              None, 'TPI', expected3),
              (r_u[0], w_u[0], b_u[0, :, :], n_u[0, :, :], bq_u[0, :, :],
-              c_u[0, :, :], Y_u[0], L_u[0], K_u[0], factor_u, ubi_u[0, :, :],
-              theta_u, etr_params_u[-1, :, :, :], p_u, 'SS', expected4),
-             (r_u, w_u, b_u, n_u, bq_u, c_u, Y_u, L_u, K_u, factor_u, ubi_u,
-              theta_u, etr_params_u, p_u, 'TPI', expected5)]
+              c_u[0, :, :], Y_u[0], L_u[0], K_u[0], p_m[-1, :], factor_u, ubi_u[0, :, :],
+              theta_u, etr_params_u[-1, :, :, :], p_u, None, 'SS', expected4),
+             (r_u, w_u, b_u, n_u, bq_u, c_u, Y_u, L_u, K_u, p_m, factor_u, ubi_u,
+              theta_u, etr_params_u, p_u, None, 'TPI', expected5)]
 
 
 @pytest.mark.parametrize(
-    'r,w,b,n,bq,c,Y,L,K,factor,ubi,theta,etr_params,p,method,expected',
+    'r,w,b,n,bq,c,Y,L,K,p_m,factor,ubi,theta,etr_params,p,m,method,expected',
     test_data, ids=['SS', 'TPI', 'TPI, replace rate adjust', 'SS UBI>0',
                     'TPI UBI>0'])
-def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params,
-                 p, method, expected):
+def test_revenue(r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta, etr_params,
+                 p, m, method, expected):
     """
     Test aggregate revenue function.
     """
-    print('ETR shape = ', p.etr_params.shape, etr_params.shape)
     revenue, _, _, _, _, _, _, _, _, _ = \
-        aggr.revenue(r, w, b, n, bq, c, Y, L, K, factor, ubi, theta,
-                     etr_params, p, None, method)
-    print('REVENUE = ', revenue)
-
+        aggr.revenue(r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta,
+                     etr_params, p, m, method)
+    print('Rev: ', revenue)
+    print('Exp: ', expected)
     assert(np.allclose(revenue, expected))
 
 

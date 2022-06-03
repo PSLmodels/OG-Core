@@ -213,6 +213,9 @@ def get_C(c, p, method):
     r'''
     Calculation of aggregate consumption.
 
+    Set up to only take one consumption good at a time. This
+    function is called in a loop to get consumption for all goods.
+
     .. math::
         C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}
         \lambda_{j}c_{j,s,t}
@@ -229,11 +232,11 @@ def get_C(c, p, method):
     '''
 
     if method == 'SS':
-        aggC = (c * np.transpose(p.omega_SS * p.lambdas).reshape(1, p.S, p.J)).sum()
+        aggC = (c * np.transpose(p.omega_SS * p.lambdas).reshape(1, p.S, p.J)).sum(-1).sum(-1)
     elif method == 'TPI':
         aggC = ((c * np.squeeze(p.lambdas)) *
-                np.tile(np.reshape(p.omega[:p.T, :], (p.T, 1, p.S, 1)),
-                        (1, c.shape[0], 1, p.J))).sum(-1).sum(-1)
+                np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
+                        (1, 1, p.J))).sum(-1).sum(-1)
     return aggC
 
 
@@ -320,7 +323,8 @@ def revenue(r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta, etr_params,
             p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
         payroll_tax_revenue = (p.frac_tax_payroll[:p.T] *
                                iit_payroll_tax_revenue)
-    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum()
+    print('Biz tax revenue shape = ', tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).shape)
+    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum(-1)
     iit_revenue = iit_payroll_tax_revenue - payroll_tax_revenue
 
     total_tax_revenue = (
