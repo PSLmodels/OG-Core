@@ -149,6 +149,7 @@ def inner_loop(outer_loop_vars, p, client):
     bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
 
     p_m = np.array(p_m)  #TODO: why is this a list otherwise?
+    BQ = np.array(BQ)
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
@@ -583,8 +584,8 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
     output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
               'K_g_ss': K_g_ss, 'I_g_ss': I_g_ss,
               'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
-            #   'K_vec_ss': K_vec_ss, 'L_vec_ss': L_vec_ss,
-            #   'C_vec_ss': C_vec_ss, 'Y_vec_ss': Y_vec_ss,
+              'K_vec_ss': K_vec_ss, 'L_vec_ss': L_vec_ss,
+              'C_vec_ss': C_vec_ss, 'Y_vec_ss': Y_vec_ss,
               'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
               'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
               'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss, 'p_m_ss': p_m_ss,

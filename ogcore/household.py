@@ -250,6 +250,7 @@ def get_cm(c_s, p_m, p_tilde, alpha_c):
     Returns:
         c_sm (array_like): consumption of good m
     '''
+    print('Shape of p_m: ', p_m.shape)
     c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))).reshape(p_m.shape[0], 1, 1) * c_s.reshape(1, c_s.shape[0], c_s.shape[1])
 
     return c_sm

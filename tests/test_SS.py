@@ -89,6 +89,22 @@ expected6 = np.array([
     -0.051097905293268894,  -0.047817638192649635, 0.42739129061380643, 0.0, 1.5904342991581968,
     -0.00187832, 0.00177827,  0.00566193, 0.00637141, 0.01008918,
     0.00723656, 0.00319034, 0.1431390869242377, 0.10614753083674845])
+p7 = Specifications(baseline=True)
+p7.update_specifications(
+    {'M': 4, 'alpha_c': [0.1, 0.5, 0.3, 0.1],
+     'epsilon': [1.0, 1.0, 1.0, 1.0],
+     'gamma': [0.3, 0.4, 0.35, 0.45],
+     'gamma_g': [0.0, 0.0, 0.0, 0.0]})
+guesses7 = np.array([
+     0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
+args7 = (bssmat, nssmat, None, None, p7, None)
+expected7 = np.array([
+    0.237038505763581, 0.24502657394405003, -1.053158969524058,
+    -0.2142857142857142, -0.08333333333333326, -0.15384615384615385,
+    0.0, 1.9206976288444166, -0.0028214477644809364,
+    9.07440791252899e-05, 0.003936974793378959, 0.005388486211583041,
+    0.009003171733055674, 0.004570091616271612, 0.0025566917524589283,
+    0.1728627865959975, 0.06382495910757571])
 
 
 @pytest.mark.parametrize(
@@ -98,11 +114,13 @@ expected6 = np.array([
      (guesses3, args3, expected3),
      (guesses4, args4, expected4),
      (guesses5, args5, expected5),
-     (guesses6, args6, expected6)],
+     (guesses6, args6, expected6),
+     (guesses7, args7, expected7)],
     ids=['Baseline, Closed', 'Reform, Closed',
          'Reform, Baseline spending=True, Closed',
          'Baseline, Partial Open', 'Baseline, Small Open',
-         'Baseline, Closed, delta_tau = 0'])
+         'Baseline, Closed, delta_tau = 0',
+         'Baseline, M=4'])
 def test_SS_fsolve(tmpdir, guesses, args, expected):
     '''
     Test SS.SS_fsolve function.  Provide inputs to function and
@@ -117,7 +135,7 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     r_p = guesses[0]
     r = guesses[0]
     w = firm.get_w_from_r(r_p, p, 'SS')
-    p_m = np.array([1.0])
+    p_m = np.ones(p.M)
 
     if p.baseline:
         BQ = guesses[3:-2]
@@ -132,14 +150,13 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
             Y = guesses[2]
         else:
             Y = TR / p.alpha_T[-1]
-
     if p.baseline:
-        new_guesses = [r_p, r, w, p_m, Y, BQ, TR, factor]
+        new_guesses = [r_p, r, w] + list(p_m) + [Y] + list(BQ) + [TR, factor]
     else:
-        new_guesses = [r_p, r, w, p_m, Y, BQ, TR]
+        new_guesses = [r_p, r, w] + list(p_m) + [Y] + list(BQ) + [TR]
 
     test_list = SS.SS_fsolve(new_guesses, *args)
-    print('TEST LIST = ', test_list)
+
     assert(np.allclose(np.hstack(np.array(test_list)), np.array(expected),
                        atol=1e-5))
 
@@ -217,13 +234,28 @@ param_updates6 = {'delta_tau_annual': [[0.0]], 'zeta_K': [0.0],
                   'zeta_D': [0.0], 'initial_guess_r_SS': 0.02,
                   'initial_guess_TR_SS': 0.02}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
+param_updates7 = {
+    'M': 4, 'alpha_c': [0.1, 0.5, 0.3, 0.1],
+    'epsilon': [1.0, 1.0, 1.0, 1.0],
+    'gamma': [0.3, 0.4, 0.35, 0.45],
+    'gamma_g': [0.0, 0.0, 0.0, 0.0],
+    'initial_guess_r_SS': 0.15,
+    'initial_guess_TR_SS': 0.06}
+filename7 = 'SS_solver_outputs_baseline_M4.pkl'
 
 
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates5, filename5),
+#                           (True, param_updates6, filename6),
+#                           (True, param_updates7, filename7)],
+#                          ids=['Baseline, small open, budget balance',
+#                               'Baseline, delta_tau = 0',
+#                               'M=4'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates5, filename5),
-                          (True, param_updates6, filename6)],
-                         ids=['Baseline, small open, budget balance',
-                              'Baseline, delta_tau = 0'])
+                         [
+                          (True, param_updates7, filename7)],
+                         ids=[
+                              'M=4'])
 @pytest.mark.local
 def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
@@ -242,16 +274,20 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     factorguess = 139355.1547340256
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = 0.6376591201150815
+    p_m_guess = np.ones(p.M)
 
     test_dict = SS.SS_solver(
-        b_guess, n_guess, rguess, wguess, Yguess, BQguess, TRguess,
+        b_guess, n_guess, rguess, rguess, wguess, p_m_guess, Yguess, BQguess, TRguess,
         factorguess, p, dask_client, False)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
-    expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
-    del test_dict['K_g_ss']
-    del test_dict['I_g_ss']
-
+    try:
+        expected_dict['r_p_ss'] = expected_dict.pop('r_hh_ss')
+        del test_dict['K_g_ss']
+        del test_dict['I_g_ss']
+        del test_dict['L_vec_ss'], test_dict['K_vec_ss'], test_dict['Y_vec_ss']
+    except KeyError:
+        pass
     for k, v in expected_dict.items():
         print('Testing ', k)
         assert(np.allclose(test_dict[k], v, atol=1e-05, equal_nan=True))
@@ -268,18 +304,24 @@ param_updates4 = {}
 filename4 = 'inner_loop_outputs_reform.pkl'
 param_updates5 = {'baseline_spending': True}
 filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
-
+param_updates7 = {'M': 4, 'alpha_c':[0.1, 0.5, 0.3, 0.1],
+                  'epsilon': [1.0, 1.0, 1.0, 1.0],
+                  'gamma': [0.3, 0.4, 0.35, 0.45],
+                  'gamma_g': [0.0, 0.0, 0.0, 0.0]}
+filename7 = 'inner_loop_outputs_reform_M4.pkl'
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
                           (True, param_updates3, filename3),
                           (False, param_updates4, filename4),
-                          (False, param_updates5, filename5)],
+                          (False, param_updates5, filename5),
+                          (False, param_updates7, filename7)],
                          ids=['Baseline, Small Open',
                               'Baseline, Balanced Budget',
                               'Baseline', 'Reform',
-                              'Reform, baseline spending'])
+                              'Reform, baseline spending',
+                              'Reform, M>1'])
 def test_inner_loop(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -304,7 +346,7 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     K_g = fiscal.get_K_g(0, I_g, p, 'SS')
     MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, 'SS')
     K = firm.get_K_from_Y(Y, r, p, 'SS')
-    p_m = np.array([1.0])
+    p_m = np.ones(p.M)
     r_p = aggregates.get_r_p(r, r_gov, p_m, K, K_g, D, MPKg, p, 'SS')
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
@@ -313,14 +355,19 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     else:
         outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
-    (euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
-        new_w, new_TR, Y, new_factor, new_BQ, average_income_model) = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', filename))
-    (_, _, _, _, _, _, _, _, K_vec, L_vec, Y_vec, _, _, _, _, _) = test_tuple
-    expected_tuple = (
-        euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p,
-        new_w, 1.0, K_vec, L_vec, Y_vec, new_TR, Y, new_factor,
-        new_BQ, average_income_model)
+
+    try:
+        (euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
+            new_w, new_TR, Y, new_factor, new_BQ, average_income_model) = utils.safe_read_pickle(
+            os.path.join(CUR_PATH, 'test_io_data', filename))
+        (_, _, _, _, _, _, _, _, K_vec, L_vec, Y_vec, _, _, _, _, _) = test_tuple
+        expected_tuple = (
+            euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p,
+            new_w, 1.0, K_vec, L_vec, Y_vec, new_TR, Y, new_factor,
+            new_BQ, average_income_model)
+    except ValueError:
+        expected_tuple = utils.safe_read_pickle(
+            os.path.join(CUR_PATH, 'test_io_data', filename))
 
     for i, v in enumerate(expected_tuple):
         print('Max diff = ', np.absolute(test_tuple[i] - v).max())
@@ -488,8 +535,8 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
 
 param_updates1 = {}
 filename1 = 'run_SS_baseline_outputs.pkl'
-param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.06,
-                  'initial_guess_TR_SS': 0.03}
+param_updates2 = {'use_zeta': True, 'initial_guess_r_SS': 0.065,
+                  'initial_guess_TR_SS': 0.06}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
 param_updates3 = {'zeta_K': [1.0], 'initial_guess_r_SS': 0.10}
 filename3 = 'run_SS_baseline_small_open.pkl'
@@ -499,8 +546,8 @@ param_updates4 = {'zeta_K': [1.0], 'use_zeta': True,
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
 param_updates5 = {}
 filename5 = 'run_SS_reform.pkl'
-param_updates6 = {'use_zeta': True, 'initial_guess_r_SS': 0.08,
-                  'initial_guess_TR_SS': 0.03}
+param_updates6 = {'use_zeta': True, 'initial_guess_r_SS': 0.065,
+                  'initial_guess_TR_SS': 0.06}
 filename6 = 'run_SS_reform_use_zeta.pkl'
 param_updates7 = {'zeta_K': [1.0], 'initial_guess_r_SS': 0.10}
 filename7 = 'run_SS_reform_small_open.pkl'
@@ -510,7 +557,7 @@ filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
 param_updates9 = {'baseline_spending': True}
 filename9 = 'run_SS_reform_baseline_spend.pkl'
 param_updates10 = {'baseline_spending': True, 'use_zeta': True,
-                   'initial_guess_r_SS': 0.04}
+                   'initial_guess_r_SS': 0.065, 'initial_guess_TR_SS': 0.06}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 param_updates11 = {'delta_tau_annual': [[0.0]], 'zeta_K': [0.0],
                    'zeta_D': [0.0], 'initial_guess_r_SS': 0.01}
@@ -563,15 +610,6 @@ filename13 = 'run_SS_baseline_M3_Kg_nonzero.pkl'
                               'Baseline, non-zero Kg',
                               'Baseline, M=3m non-zero Kg'
                               ])
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [
-
-#                           (True, param_updates13, filename13)
-#                           ],
-#                          ids=[
-
-#                               'Baseline, M=3m non-zero Kg'
-#                               ])
 @pytest.mark.local
 def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
