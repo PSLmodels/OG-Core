@@ -483,7 +483,7 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
     return K, K_d, K_f
 
 
-def get_ptilde(p_m, alpha_c):
+def get_ptilde(p_m, alpha_c, method='SS'):
     r'''
     Calculate price of composite good.
 
@@ -497,6 +497,10 @@ def get_ptilde(p_m, alpha_c):
     Returns:
         p_tilde (array_like): price of composite good
     '''
-    p_tilde = np.prod((p_m / alpha_c) ** alpha_c)
+    if method == 'SS':
+        p_tilde = np.prod((p_m / alpha_c) ** alpha_c)
+    else:  # TPI case
+        alpha_c = alpha_c.reshape(alpha_c.shape[0], 1)
+        p_tilde = np.prod((p_m / alpha_c) ** alpha_c, axis=1)
 
     return p_tilde
