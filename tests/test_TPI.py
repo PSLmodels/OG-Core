@@ -81,8 +81,9 @@ def test_firstdoughnutring():
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'firstdoughnutring_inputs.pkl'))
     guesses, r, w, bq, tr, theta, factor, ubi, j, initial_b = input_tuple
+    p_tilde = 1.0  # needed for multi-industry version
     p = Specifications()
-    test_list = TPI.firstdoughnutring(guesses, r, w, bq, tr, theta,
+    test_list = TPI.firstdoughnutring(guesses, r, w, p_tilde, bq, tr, theta,
                                       factor, ubi, j, initial_b, p)
 
     expected_list = utils.safe_read_pickle(
@@ -113,9 +114,10 @@ def test_twist_doughnut(file_inputs, file_outputs):
     input_tuple = utils.safe_read_pickle(file_inputs)
     (guesses, r, w, bq, tr, theta, factor, ubi, j, s, t, tau_c,
      etr_params, mtrx_params, mtry_params, initial_b) = input_tuple
+    p_tilde = np.ones_like(r)  # needed for multi-industry version
     p = Specifications()
     input_tuple = (
-        guesses, r, w, bq, tr, theta, factor, ubi, j, s, t, tau_c,
+        guesses, r, w, p_tilde, bq, tr, theta, factor, ubi, j, s, t, tau_c,
         etr_params, mtrx_params, mtry_params, initial_b, p)
     test_list = TPI.twist_doughnut(*input_tuple)
     expected_list = utils.safe_read_pickle(file_outputs)
@@ -128,14 +130,18 @@ def test_inner_loop():
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'tpi_inner_loop_inputs.pkl'))
     guesses, outer_loop_vars_old, initial_values, ubi, j, ind = input_tuple
-    outer_loop_vars = (
-        outer_loop_vars_old[2], outer_loop_vars_old[1],
-        outer_loop_vars_old[3], outer_loop_vars_old[4],
-        outer_loop_vars_old[5])
     p = Specifications()
+    r = outer_loop_vars_old[0]
+    r_p = outer_loop_vars_old[2]
+    w = outer_loop_vars_old[1]
+    BQ = outer_loop_vars_old[3]
+    TR = outer_loop_vars_old[4]
+    theta = outer_loop_vars_old[5]
+    p_m = np.ones((p.T + p.S, p.M))
+    outer_loop_vars = (
+        r_p, r, w, p_m, BQ, TR, theta)
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars,
                                 initial_values, ubi, j, ind, p)
-
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tpi_inner_loop_outputs.pkl'))

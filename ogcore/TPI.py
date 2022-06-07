@@ -253,9 +253,10 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         outer_loop_vars (tuple): values for factor prices and economic
             aggregates used in household problem (r, w, r_p, BQ, TR,
             theta)
+        r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital
         w (Numpy array): real wage rate
-        r (Numpy array): real interest rate on household portfolio
+        p_m (Numpy array): output goods prices
         BQ (array_like): aggregate bequest amounts
         TR (Numpy array): lump sum transfer amount
         theta (Numpy array): retirement replacement rates, length J
@@ -282,7 +283,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars #TODO: might need Y here
 
     # compute composite good price
-    p_tilde = aggr.get_ptilde(p_m, p.alpha_c)
+    p_tilde = aggr.get_ptilde(p_m, p.alpha_c, 'TPI')
     # compute bq
     bq = household.get_bq(BQ, None, p, 'TPI')
     # compute tr
