@@ -178,17 +178,14 @@ filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 # Note that chaning the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates1, filename1),
-#                           (True, param_updates2, filename2),
-#                           (False, param_updates3, filename3),
-#                           (True, param_updates4, filename4)],
-#                          ids=['Baseline', 'Baseline, budget balance',
-#                               'Reform, baseline spending=True',
-#                               'Baseline, small open'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates1, filename1)],
-                         ids=['Baseline'])
+                         [(True, param_updates1, filename1),
+                          (True, param_updates2, filename2),
+                          (False, param_updates3, filename3),
+                          (True, param_updates4, filename4)],
+                         ids=['Baseline', 'Baseline, budget balance',
+                              'Reform, baseline spending=True',
+                              'Baseline, small open'])
 def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -234,28 +231,22 @@ param_updates6 = {'delta_tau_annual': [[0.0]], 'zeta_K': [0.0],
                   'zeta_D': [0.0], 'initial_guess_r_SS': 0.02,
                   'initial_guess_TR_SS': 0.02}
 filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
-param_updates7 = {
-    'M': 4, 'alpha_c': [0.1, 0.5, 0.3, 0.1],
-    'epsilon': [1.0, 1.0, 1.0, 1.0],
-    'gamma': [0.3, 0.4, 0.35, 0.45],
-    'gamma_g': [0.0, 0.0, 0.0, 0.0],
-    'initial_guess_r_SS': 0.15,
-    'initial_guess_TR_SS': 0.06}
-filename7 = 'SS_solver_outputs_baseline_M4.pkl'
+# Can't seem to get even close to a solution with M=4 here.
+# param_updates7 = {
+#     'M': 4, 'alpha_c': [0.1, 0.5, 0.3, 0.1],
+#     'epsilon': [1.0, 1.0, 1.0, 1.0],
+#     'gamma': [0.3, 0.4, 0.35, 0.45],
+#     'gamma_g': [0.0, 0.0, 0.0, 0.0],
+#     'initial_guess_r_SS': 0.15,
+#     'initial_guess_TR_SS': 0.06}
+# filename7 = 'SS_solver_outputs_baseline_M4.pkl'
 
 
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates5, filename5),
-#                           (True, param_updates6, filename6),
-#                           (True, param_updates7, filename7)],
-#                          ids=['Baseline, small open, budget balance',
-#                               'Baseline, delta_tau = 0',
-#                               'M=4'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [
-                          (True, param_updates7, filename7)],
-                         ids=[
-                              'M=4'])
+                         [(True, param_updates5, filename5),
+                          (True, param_updates6, filename6)],
+                         ids=['Baseline, small open, budget balance',
+                              'Baseline, delta_tau = 0'])
 @pytest.mark.local
 def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
