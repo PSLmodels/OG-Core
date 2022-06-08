@@ -282,10 +282,14 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_baseline_spend_2.pkl')
 
 
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, {}, filename1),
+#                           (False, {}, filename3)],
+#                          ids=['Baseline', 'Reform'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, {}, filename1),
+                         [
                           (False, {}, filename3)],
-                         ids=['Baseline', 'Reform'])
+                         ids=['Reform'])
 def test_run_TPI(baseline, param_updates, filename, tmpdir,
                  dask_client):
     '''
@@ -314,6 +318,7 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir,
         ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
         with open(ss_dir, "wb") as f:
             pickle.dump(ss_outputs, f)
+        # pickle.dump(ss_outputs, open(os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT2', 'SS', 'SS_vars.pkl'), 'wb'))
     else:
         utils.mkdirs(os.path.join(p.output_base, "SS"))
         ss_dir = os.path.join(p.output_base, "SS", "SS_vars.pkl")

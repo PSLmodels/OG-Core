@@ -446,32 +446,30 @@ def run_TPI(p, client=None):
     K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars['K_vec_ss'].reshape(1, p.M)
     L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars['L_vec_ss'].reshape(1, p.M)
     Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars['Y_vec_ss'].reshape(1, p.M)
-    # path for prices
+    # compute w
+    w = np.ones_like(K) * ss_vars['wss']
+    # compute goods prices
+    KL_ratio_init = K_vec_init / L_vec_init
+    print('Shape = ', KL_ratio_init.shape, w.shape, p.T)
+    p_m = np.ones((p.T + p.S, p.M)) * ss_vars['p_m_ss'].reshape(1, p.M)
+    p_m[:p.T, :] = firm.get_pm(w[:p.T], KL_ratio_init[:p.T, :], p, 'TPI')
+    print('Pm shape =', p_m.shape)
+    p_m = p_m / p_m[:, -1].reshape(p.T + p.S, 1)  # normalize prices by industry M
+    p_tilde = aggr.get_ptilde(p_m, p.alpha_c, 'TPI')
+    print('Pm shape =', p_m.shape)
+    if not any(p.zeta_K == 1):
+        w[:p.T] = np.squeeze(firm.get_w(Y[:p.T], L[:p.T], p_m[:p.T, :], p, 'TPI'))
+    # repeat with updated w
+    KL_ratio_init = K_vec_init / L_vec_init
+    p_m[:p.T, :] = firm.get_pm(w[:p.T], KL_ratio_init[:p.T, :], p, 'TPI')
+    p_m = p_m / p_m[:, -1].reshape(p.T + p.S, 1)  # normalize prices by industry M
+    p_tilde = aggr.get_ptilde(p_m, p.alpha_c, 'TPI')
+    # path for interest rates
     r = np.zeros_like(Y)
-    r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
+    r[:p.T] = np.squeeze(firm.get_r(Y[:p.T], K[:p.T], p_m[:p.T, :], p, 'TPI'))
     r[p.T:] = ss_vars['rss']
     # For case where economy is small open econ
     r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
-    # Compute other interest rates
-    r_gov = fiscal.get_r_gov(r, p)
-    r_p = np.ones_like(r) * ss_vars['r_p_ss']
-    MPKg = np.zeros((p.T, p.M))
-    for m in range(p.M):
-        MPKg[m] = firm.get_MPx(
-            Y_vec_init[:p.T, m], K_g[:p.T], p.gamma_g[m], p, 'TPI', m)
-    r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], K[:p.T], K_g[:p.T],
-                             ss_vars['Dss'], MPKg, p, 'TPI')
-
-    # compute w
-    w = np.ones_like(r) * ss_vars['wss']
-    if not any(p.zeta_K == 1):
-        w[:p.T] = firm.get_w(Y[:p.T], L[:p.T], p, 'TPI')
-
-    # compute goods prices
-    KL_ratio_init = K_vec_init / L_vec_init
-    p_m = firm.get_pm(w, KL_ratio_init[:p.T, :], p, 'TPI')
-    p_m = p_m / p_m[:, -1]  # normalize prices by industry M
-    p_tilde = aggr.get_ptilde(p_m, p.alpha_c)
 
     # initial guesses at fiscal vars
     if p.budget_balance:
@@ -499,6 +497,17 @@ def run_TPI(p, client=None):
         D_d = D * ss_vars['D_d_ss'] / ss_vars['Dss']
         D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
     total_tax_revenue = np.ones(p.T + p.S) * ss_vars['total_tax_revenue']
+
+        # Compute other interest rates
+    r_gov = fiscal.get_r_gov(r, p)
+    r_p = np.ones_like(r) * ss_vars['r_p_ss']
+    MPKg = np.zeros((p.T, p.M))
+    for m in range(p.M):
+        MPKg[:, m] = np.squeeze(firm.get_MPx(
+            Y_vec_init[:p.T, m], K_g[:p.T], p.gamma_g[m], p, 'TPI', m))
+    r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], p_m[:p.T, :], K_vec_init[:p.T, :], K_g[:p.T],
+                             D[:p.T], MPKg, p, 'TPI')
+    print('RP shape = ', r_p.shape)
 
     # Initialize bequests
     BQ0 = aggr.get_BQ(r_p[0], initial_b, None, p, 'SS', True)
@@ -570,7 +579,8 @@ def run_TPI(p, client=None):
                                    p_tilde_path[:p.T, :, :], bmat_s, bmat_splus1,
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
                                    tax_mat, p.e, p.tau_c[:p.T, :, :], p)
-        c_m = household.get_cm(c_mat, p_m, p_tilde, p.alpha_c)
+        C = aggr.get_C(c_mat, p, 'TPI')
+        c_m = household.get_cm(c_mat[:p.T, :, :], p_m[:p.T, :], p_tilde[:p.T], p.alpha_c, 'TPI')
         y_before_tax_mat = household.get_y(
             r_p_path[:p.T, :, :], wpath[:p.T, :, :],
             bmat_s[:p.T, :, :], n_mat[:p.T, :, :], p)
@@ -581,12 +591,12 @@ def run_TPI(p, client=None):
         w_open = firm.get_w_from_r(p.world_int_rate[:p.T], p, 'TPI')
 
         # Find output, labor demand, capital demand for M-1 industries
-        L_vec = np.zeros(p.T, p.M)
-        K_vec = np.zeros(p.T, p.M)
-        KL_ratio_vec = np.zeros(p.T, p.M)
-        Y_vec = np.zeros(p.T, p.M)
-        C_vec = np.zeros(p.T, p.M)
-        K_demand_open_vec = np.zeros(p.T, p.M)
+        L_vec = np.zeros((p.T, p.M))
+        K_vec = np.zeros((p.T, p.M))
+        KL_ratio_vec = np.zeros((p.T, p.M))
+        Y_vec = np.zeros((p.T, p.M))
+        C_vec = np.zeros((p.T, p.M))
+        K_demand_open_vec = np.zeros((p.T, p.M))
         for m_ind in range(p.M-1):
             C_m = aggr.get_C(c_m[:p.T, m_ind, :, :], p, 'TPI')
             C_vec[:, m_ind] = C_m
@@ -597,18 +607,19 @@ def run_TPI(p, client=None):
             L_vec[:, m_ind] = KLrat_m ** -1 * K_vec[:, m_ind]
             KL_ratio_vec[:, m_ind] = KLrat_m
             K_demand_open_vec[m_ind] = firm.get_K(
-                p.world_int_rate[-1], w_open, L_vec[m_ind], p, 'TPI', m_ind)
+                p.world_int_rate[:p.T], w_open[:p.T], L_vec[:p.T, m_ind], p, 'TPI', m_ind)
 
         # Find output, labor demand, capital demand for last industry
-        L_M = max(0.001, L[:p.T] - L_vec[:p.T, :].sum(0))  # make sure L_M > 0
+        print('L_vec shape = ', L_vec.shape)
+        L_M = np.maximum(np.ones(p.T) * 0.001, L[:p.T] - L_vec[:p.T, :].sum(-1))  # make sure L_M > 0
         K_demand_open_vec[:, -1] = firm.get_K(
-                p.world_int_rate[-1], w_open, L_M, p, 'TPI', -1)
-        K, K_d, K_f = aggr.get_K_splits(B[:p.T], K_demand_open_vec[:p.T, :].sum(-1), D_d, p.zeta_K[:p.T])
-        K_M = max(0.001, K[:p.T] - K_vec[:p.T, :].sum(0))  # make sure K_M > 0
+                p.world_int_rate[:p.T], w_open[:p.T], L_M[:p.T], p, 'TPI', -1)
+        K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(B[:p.T], K_demand_open_vec[:p.T, :].sum(-1), D_d[:p.T], p.zeta_K[:p.T])
+        K_M = np.maximum(np.ones(p.T) * 0.001, K[:p.T] - K_vec[:p.T, :].sum(-1))  # make sure K_M > 0
         C_vec[:, -1] = np.squeeze(aggr.get_C(c_m[:p.T, -1, :], p, 'TPI'))
         L_vec[:, -1] = L_M
         K_vec[:, -1] = K_M
-        Y_vec[:, -1] = firm.get_Y(K_vec[:, -1], K_g, L_vec[:, -1], p, 'TPI', -1)
+        Y_vec[:, -1] = firm.get_Y(K_vec[:p.T, -1], K_g[:p.T], L_vec[:p.T, -1], p, 'TPI', -1)
         KL_ratio_vec[:, -1] = K_vec[:, -1] / L_vec[:, -1]
 
         Y = (p_m[:p.T, :] * Y_vec[:p.T, :]).sum(-1)
@@ -619,7 +630,7 @@ def run_TPI(p, client=None):
          payroll_tax_revenue, iit_revenue) = aggr.revenue(
                 r_p[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y_vec[:p.T, :], L_vec[:p.T, :],
-                K_vec[:p.T, :], p_m[:p.T, :], factor, ubi[:p.T, :, :], theta, etr_params_4D, p,
+                K_vec[:p.T, :], p_m[:p.T, :], factor, ubi[:p.T, :, :], theta, etr_params_4D, p, None,
                 'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         dg_fixed_values = (Y, total_tax_revenue, agg_pension_outlays,
@@ -635,22 +646,22 @@ def run_TPI(p, client=None):
             K_g0 = p.initial_Kg_ratio * Y[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, 'TPI')
         rnew = r.copy()
-        rnew[:p.T] = firm.get_r(Y_vec[:p.T, -1], K[:p.T], p_m, p, 'TPI', -1)
+        rnew[:p.T] = np.squeeze(firm.get_r(Y_vec[:p.T, -1], K_vec[:p.T, -1], p_m[:p.T, :], p, 'TPI', -1))
         # For case where economy is small open econ
         rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
-        MPKg_vec = np.zeros(p.T, p.M)
+        MPKg_vec = np.zeros((p.T, p.M))
         for m in range(p.M):
-            MPKg_vec[:, m] = firm.get_MPx(Y_vec[:, m], K_g[:p.T], p.gamma_g[m], p, 'TPI', m)
-        r_p_new = aggr.get_r_p(rnew[:p.T], r_gov_new[:p.T], p_m[:p.T, :], K[:p.T], K_g[:p.T],
+            MPKg_vec[:, m] = np.squeeze(firm.get_MPx(Y_vec[:p.T, m], K_g[:p.T], p.gamma_g[m], p, 'TPI', m))
+        r_p_new = aggr.get_r_p(rnew[:p.T], r_gov_new[:p.T], p_m[:p.T, :], K_vec[:p.T, :], K_g[:p.T],
                                Dnew[:p.T], MPKg_vec, p, 'TPI')
 
         # compute w
-        wnew = firm.get_w(Y[:p.T, -1], L[:p.T, -1], p_m, p, 'TPI', -1)
+        wnew = np.squeeze(firm.get_w(Y_vec[:p.T, -1], L_vec[:p.T, -1], p_m[:p.T, :], p, 'TPI', -1))
 
         # compute new prices
         new_p_m = firm.get_pm(wnew, KL_ratio_vec, p, 'TPI')
-        new_p_m = new_p_m / new_p_m[:, -1]  # normalize prices by industry M
+        new_p_m = new_p_m / new_p_m[:, -1].reshape(p.T, 1)  # normalize prices by industry M
 
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
@@ -663,8 +674,8 @@ def run_TPI(p, client=None):
          payroll_tax_revenue, iit_revenue) = aggr.revenue(
                 r_p_new[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Y_vec[:p.T, :],
-                L_vec[:p.T, :], K_vec[:p.T, :], new_p_m, factor, ubi[:p.T, :, :], theta,
-                etr_params_4D, p, 'TPI')
+                L_vec[:p.T, :], K_vec[:p.T, :], new_p_m[:p.T, :], factor, ubi[:p.T, :, :], theta,
+                etr_params_4D, p, None, 'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
             Y[:p.T], TR[:p.T], G[:p.T], total_tax_revenue[:p.T],
@@ -751,15 +762,15 @@ def run_TPI(p, client=None):
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
     net_capital_outflows = aggr.get_capital_outflows(
-        r_p, K_f, new_borrowing_f, debt_service_f, p)
+        r_p[:p.T], K_f[:p.T], new_borrowing_f[:p.T], debt_service_f[:p.T], p)
     # Fill in arrays, noting that M-1 industries only produce consumption goods
-    G_vec = np.zeros(p.T, p.M)
+    G_vec = np.zeros((p.T, p.M))
     G_vec[:, -1] = G[:p.T]
-    I_d_vec = np.zeros(p.T, p.M)
+    I_d_vec = np.zeros((p.T, p.M))
     I_d_vec[:, -1] = I_d
-    I_g_vec = np.zeros(p.T, p.M)
-    I_g_vec[-1] = I_g
-    net_capital_outflows_vec = np.zeros(p.T, p.M)
+    I_g_vec = np.zeros((p.T, p.M))
+    I_g_vec[:, -1] = I_g
+    net_capital_outflows_vec = np.zeros((p.T, p.M))
     net_capital_outflows_vec[:, -1] = net_capital_outflows
     RC_error = aggr.resource_constraint(
         Y_vec, C_vec, G_vec, I_d_vec, I_g_vec,
@@ -790,6 +801,7 @@ def run_TPI(p, client=None):
 
     output = {'Y': Y[:p.T], 'B': B, 'K': K, 'K_f': K_f, 'K_d': K_d,
               'L': L, 'C': C, 'I': I, 'K_g': K_g, 'I_g': I_g,
+              'Y_vec': Y_vec, 'K_vec': K_vec, 'L_vec': L_vec, 'C_vec': C_vec,
               'I_total': I_total, 'I_d': I_d, 'BQ': BQ,
               'total_tax_revenue': total_tax_revenue,
               'business_tax_revenue': business_tax_revenue,
