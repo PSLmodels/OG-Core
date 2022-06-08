@@ -590,6 +590,7 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
               'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
               'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss, 'p_m_ss': p_m_ss,
               'total_taxes_ss': taxss, 'ubissmat': ubissmat,
+              'p_m_ss': p_m_ss, 'p_tilde_ss': p_tilde_ss,
               'r_gov_ss': r_gov_ss, 'r_p_ss': r_p_ss, 'theta': theta,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
@@ -681,6 +682,9 @@ def SS_fsolve(guesses, *args):
         error_w = 1e9
     error_p_m = new_p_m - p_m
     error_p_m[new_p_m < 0] = 1e9
+    print('Final PM types = ', type(p_m), type(new_p_m), type(error_p_m))
+    print('Final PM = ', p_m, new_p_m, error_p_m)
+    print('Final PM shapes = ', p_m.shape, new_p_m.shape, error_p_m.shape)
     error_Y = float(new_Y - Y)
     error_BQ = new_BQ - BQ
     error_TR = float(new_TR - TR)
@@ -743,13 +747,10 @@ def run_SS(p, client=None):
                 [Yguess, BQguess, TRguess, factorguess]
             )
         else:
-            print('TYPES = ', type(r_p_guess), type(rguess), type(wguess),
-                    type(p_m_guess), type(BQguess))
             guesses = (
                 [r_p_guess, rguess, wguess] + list(p_m_guess) + [Yguess]
                 + list(BQguess) + [TRguess, factorguess]
             )
-            print('GUESSES = ', guesses)
         sol = opt.root(SS_fsolve, guesses, args=ss_params_baseline,
                        method=p.SS_root_method, tol=p.mindist_SS)
         if ENFORCE_SOLUTION_CHECKS and not sol.success:
@@ -775,12 +776,13 @@ def run_SS(p, client=None):
         ss_solutions = utils.safe_read_pickle(baseline_ss_dir)
         # use baseline solution as starting values if dimensions match
         if ss_solutions['bssmat_splus1'].shape == (p.S, p.J):
+            print('Using previous solutions for SS')
             (b_guess, n_guess, r_p_guess, rguess, wguess, p_m_guess,
              BQguess, TRguess, Yguess, factor) =\
                 (ss_solutions['bssmat_splus1'], ss_solutions['nssmat'],
                  float(ss_solutions['r_p_ss']),
                  float(ss_solutions['rss']),
-                 float(ss_solutions['wss']), ss_solutions['p_m_ss'],
+                 float(ss_solutions['wss']), ss_solutions['p_m_ss'],  # Not sure why need to index p_m,but otherwise its shape is off..
                  ss_solutions['BQss'], float(ss_solutions['TR_ss']),
                  float(ss_solutions['Yss']), ss_solutions['factor_ss'])
         else:
@@ -811,9 +813,6 @@ def run_SS(p, client=None):
                     [r_p_guess, rguess, wguess] + list(p_m_guess) +
                     [Yguess] + list(BQguess) + [TR_ss]
                 )
-            print('GUESSES = ', guesses)
-            print('TYPES = ', type(r_p_guess), type(rguess), type(wguess),
-                    type(p_m_guess), type(BQguess), type(TR_ss))
             sol = opt.root(SS_fsolve, guesses, args=ss_params_reform,
                            method=p.SS_root_method, tol=p.mindist_SS)
             r_p_ss = sol.x[0]

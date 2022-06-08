@@ -445,10 +445,7 @@ test_data = [
         np.array([1.0, 1.0, 1.0]),
         np.array([3.0, 4.0, 4.0]), np.array([1.0, 2.0, 2.0]),
         np.array([7.0, 6.0, 6.0]), np.array([0.04, 0.2, 0.2]), 'TPI',
-        np.array([
-            0.029 + 0.3 * 0.038572 * 1.0 / 3.0,
-            0.018 + 0.4 * 0.19286 * 2.0 / 4.0,
-            0.018 + 0.4 * 0.19286 * 2.0 / 4.0])
+        np.array([0.0328572, 0.056572, 0.056572])
     ),
     (
         0.04, 0.02, np.array([1.0, 1.0]), np.array([2.0, 2.0]), 0.0, 0.0,
@@ -475,13 +472,14 @@ def test_get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, method, expected):
     Test function to compute interest rate on household portfolio.
     """
     p = Specifications()
-    p.update_specifications({'T': 3})
     if method == 'TPI' and p_m.ndim > 1:
-        p.M = p_m.shape[-1]
+        M = p_m.shape[-1]
     elif method == 'SS':
-        p.M = len(p_m)
+        M = len(p_m)
     else:
-        p.M = 1
+        M = 1
+    p.update_specifications({'T': 3, 'M': M})
+
     r_p_test = aggr.get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method)
 
     assert(np.allclose(r_p_test, expected))

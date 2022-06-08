@@ -159,11 +159,13 @@ def get_r(Y, K, p_m, p, method, m=-1):
     if method == 'SS':
         delta_tau = p.delta_tau[-1, m]
         tau_b = p.tau_b[-1, m]
+        p_mm = p_m[m]
     else:
         delta_tau = p.delta_tau[:p.T, m].reshape(p.T, 1)
         tau_b = p.tau_b[:p.T, m].reshape(p.T, 1)
+        p_mm = p_m[:, m].reshape(p.T, 1)
     MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
-    r = (1 - tau_b) * p_m[m] * MPK - p.delta + tau_b * delta_tau
+    r = (1 - tau_b) * p_mm * MPK - p.delta + tau_b * delta_tau
 
     return r
 
@@ -190,8 +192,13 @@ def get_w(Y, L, p_m, p, method, m=-1):
         w (array_like): the real wage rate
 
     '''
-    mp = get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
-    w = p_m[m] * get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
+    # mp = get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
+    # print('MPx size = ', mp.shape)
+    if method == 'SS':
+        p_mm = p_m[m]
+    else:
+        p_mm = p_m[:, m].reshape(p.T, 1)
+    w = p_mm * get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
 
     return w
 
@@ -297,6 +304,8 @@ def get_MPx(Y, x, share, p, method, m=-1):
         Z = p.Z[-1, m]
     else:
         Z = p.Z[:p.T, m].reshape(p.T, 1)
+        Y = Y[:p.T].reshape(p.T, 1)
+        x = x[:p.T].reshape(p.T, 1)
     if np.any(x) == 0:
         MPx = np.zeros_like(Y)
     else:
@@ -573,17 +582,24 @@ def get_pm(w, KL_ratio, p, method):
         p_m (array_like): output prices for each industry
     '''
     if method == 'SS':
-        Z = p.Z[-1]
+        Z = p.Z[-1, :].reshape(p.M)
+        gamma = p.gamma
+        epsilon = p.epsilon
     else:
-        Z = p.Z[:p.T]
+        Z = p.Z[:p.T, :].reshape((p.T, p.M))
+        gamma = p.gamma.reshape((1, p.M))
+        epsilon = p.epsilon.reshape((1, p.M))
+        w = w.reshape((p.T, 1))
+        KL_ratio = KL_ratio.reshape((p.T, p.M))
     # p_m = (w / ((1 - gamma) * Z)) * (KL_ratio ** (-gamma))
     p_m = (
         (w / (
-            Z * (1 - p.gamma) ** (1 / p.epsilon))) * (
-                p.gamma ** (1 / p.epsilon) * KL_ratio **
-                ((p.epsilon - 1) / p.epsilon) +
-                 (1 - p.gamma) ** (1 / p.epsilon)) **
-        (1 / (1 - p.epsilon)))
+            Z * (1 - gamma) ** (1 / epsilon))) * (
+                gamma ** (1 / epsilon) * KL_ratio **
+                ((epsilon - 1) / epsilon) +
+                 (1 - gamma) ** (1 / epsilon)) **
+        (1 / (1 - epsilon)))
+    print('Shapes in get_pm:', p_m.shape, w.shape, Z.shape, gamma.shape, epsilon.shape, KL_ratio.shape)
 
     return p_m
 

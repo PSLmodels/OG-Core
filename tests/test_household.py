@@ -638,7 +638,7 @@ def test_get_cm():
     '''
     c_s = np.array([2.0, 3.0, 5.0, 7.0]).reshape(4, 1)
     p_m = np.array([1.1, 0.8, 1.0])
-    p_tilde = 2.3
+    p_tilde = np.array([2.3])
     alpha_c = np.array([0.5, 0.3, 0.2])
     expected_cm = np.array([
         [2.090909091, 3.136363636, 5.227272727, 7.318181818],

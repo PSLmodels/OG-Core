@@ -361,28 +361,26 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
 
     '''
     if method == 'SS':
-        tau_b = p.tau_b[-1]
+        tau_b = p.tau_b[-1, :]
         T = 1
     else:
         T = p.T
-        tau_b = p.tau_b[:p.T]
-        if p.M > 1:
-            tau_b = tau_b.reshape((p.T, 1))
-            K_g = K_g.reshape((p.T, 1))
-            r = r.reshape((p.T, 1))
-            r_gov = r_gov.reshape((p.T, 1))
-            D = D.reshape((p.T, 1))
-    if p.M > 1:
-        r_K = (
-            r + (
-                 ((1 - tau_b) * p_m * MPKg_vec *
-                  K_g).sum(axis=-1).reshape((T, 1)) /
-                 K_vec.sum(axis=-1).reshape((T, 1))))
-        r_p = (((r_gov * D) + (r_K * K_vec.sum(axis=-1).reshape((T, 1)))) /
-               (D + K_vec.sum(axis=-1).reshape((T, 1))))
-    else:
-        r_K = r + ((1 - tau_b) * p_m * MPKg_vec * K_g) / K_vec
-        r_p = ((r_gov * D) + (r_K * K_vec)) / (D + K_vec)
+        tau_b = p.tau_b[:p.T, :].reshape((p.T, p.M))
+        K_g = K_g.reshape((p.T, 1))
+        r = r.reshape((p.T, 1))
+        r_gov = r_gov.reshape((p.T, 1))
+        D = D.reshape((p.T, 1))
+        p_m = p_m.reshape((p.T, p.M))
+        MPKg_vec = MPKg_vec.reshape((p.T, p.M))
+        K_vec = K_vec.reshape((p.T, p.M))
+    r_K = (
+        r + (
+                ((1 - tau_b) * p_m * MPKg_vec *
+                K_g).sum(axis=-1).reshape((T, 1)) /
+                K_vec.sum(axis=-1).reshape((T, 1))))
+    r_p = (((r_gov * D) + (r_K * K_vec.sum(axis=-1).reshape((T, 1)))) /
+            (D + K_vec.sum(axis=-1).reshape((T, 1))))
+
     return np.squeeze(r_p)
 
 

@@ -233,7 +233,7 @@ def get_cons(r, w, p_tilde, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     return cons
 
 
-def get_cm(c_s, p_m, p_tilde, alpha_c):
+def get_cm(c_s, p_m, p_tilde, alpha_c, method='SS'):
     r'''
     Compute consumption of good m given amount of composite consumption
     and prices.
@@ -246,13 +246,34 @@ def get_cm(c_s, p_m, p_tilde, alpha_c):
         p_m (array_like): prices for consumption good m
         p_tilde (array_like): composite good price
         alpha_c (array_like): consumption share parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
         c_sm (array_like): consumption of good m
     '''
     print('Shape of p_m: ', p_m.shape)
-    c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))).reshape(p_m.shape[0], 1, 1) * c_s.reshape(1, c_s.shape[0], c_s.shape[1])
-
+    if method == 'SS':
+        M = alpha_c.shape[0]
+        print("cs shape = ", c_s.shape)
+        S = c_s.shape[0]
+        J = c_s.shape[1]
+        alpha_c = alpha_c.reshape(M, 1, 1)
+        p_tilde.reshape(1, 1, 1)
+        p_m = p_m.reshape(M, 1, 1)
+        c_s = c_s.reshape(1, S, J)
+        # c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))).reshape(p_m.shape[0], 1, 1) * c_s.reshape(1, c_s.shape[0], c_s.shape[1])
+        c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))) * c_s
+    else:  # Time path case
+        M = alpha_c.shape[0]
+        T = p_m.shape[0]
+        S = c_s.shape[1]
+        J = c_s.shape[2]
+        alpha_c = alpha_c.reshape(1, M, 1, 1)
+        p_tilde = p_tilde.reshape(T, 1, 1, 1)
+        p_m = p_m.reshape(T, M, 1, 1)
+        c_s = c_s.reshape(T, 1, S, J)
+        print('Shapes in get cm: ', c_s.shape, alpha_c.shape, p_m.shape, p_tilde.shape, (alpha_c * ((p_m / p_tilde) ** (-1))).shape)
+        c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))) * c_s
     return c_sm
 
 
