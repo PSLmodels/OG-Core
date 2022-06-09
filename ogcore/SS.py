@@ -682,9 +682,9 @@ def SS_fsolve(guesses, *args):
         error_w = 1e9
     error_p_m = new_p_m - p_m
     error_p_m[new_p_m < 0] = 1e9
-    print('Final PM types = ', type(p_m), type(new_p_m), type(error_p_m))
-    print('Final PM = ', p_m, new_p_m, error_p_m)
-    print('Final PM shapes = ', p_m.shape, new_p_m.shape, error_p_m.shape)
+    # print('Final PM types = ', type(p_m), type(new_p_m), type(error_p_m))
+    # print('Final PM = ', p_m, new_p_m, error_p_m)
+    # print('Final PM shapes = ', p_m.shape, new_p_m.shape, error_p_m.shape)
     error_Y = float(new_Y - Y)
     error_BQ = new_BQ - BQ
     error_TR = float(new_TR - TR)

@@ -599,7 +599,7 @@ def get_pm(w, KL_ratio, p, method):
                 ((epsilon - 1) / epsilon) +
                  (1 - gamma) ** (1 / epsilon)) **
         (1 / (1 - epsilon)))
-    print('Shapes in get_pm:', p_m.shape, w.shape, Z.shape, gamma.shape, epsilon.shape, KL_ratio.shape)
+    # print('Shapes in get_pm:', p_m.shape, w.shape, Z.shape, gamma.shape, epsilon.shape, KL_ratio.shape)
 
     return p_m
 
