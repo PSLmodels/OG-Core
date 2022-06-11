@@ -606,7 +606,7 @@ def run_TPI(p, client=None):
             K_vec[:, m_ind] = KYrat_m * Y_vec[:, m_ind]
             L_vec[:, m_ind] = KLrat_m ** -1 * K_vec[:, m_ind]
             KL_ratio_vec[:, m_ind] = KLrat_m
-            K_demand_open_vec[m_ind] = firm.get_K(
+            K_demand_open_vec[:, m_ind] = firm.get_K(
                 p.world_int_rate[:p.T], w_open[:p.T], L_vec[:p.T, m_ind], p, 'TPI', m_ind)
 
         # Find output, labor demand, capital demand for last industry
@@ -814,6 +814,7 @@ def run_TPI(p, client=None):
               'cons_tax_revenue': cons_tax_revenue, 'G': G, 'D': D,
               'D_f': D_f, 'D_d': D_d, 'r': r, 'r_gov': r_gov,
               'r_p': r_p, 'w': w, 'bmat_splus1': bmat_splus1,
+              'p_m': p_m, 'p_tilde': p_tilde,
               'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
               'c_path': c_mat, 'bq_path': bqmat, 'tr_path': trmat,
               'y_before_tax_mat': y_before_tax_mat,

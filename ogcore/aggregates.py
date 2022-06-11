@@ -498,7 +498,7 @@ def get_ptilde(p_m, alpha_c, method='SS'):
     if method == 'SS':
         p_tilde = np.prod((p_m / alpha_c) ** alpha_c)
     else:  # TPI case
-        alpha_c = alpha_c.reshape(alpha_c.shape[0], 1)
+        alpha_c = alpha_c.reshape(1, alpha_c.shape[0])
         p_tilde = np.prod((p_m / alpha_c) ** alpha_c, axis=1)
 
     return p_tilde

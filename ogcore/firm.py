@@ -620,6 +620,9 @@ def get_KY_ratio(r, p_m, p, method, m=-1):
         KY_ratio (array_like): capital output ratio
     '''
     cost_of_capital = get_cost_of_capital(r, p, method, m)
-    KY_ratio = (p_m[m] * p.gamma[m]) / cost_of_capital
+    if method == 'SS':
+        KY_ratio = (p_m[m] * p.gamma[m]) / cost_of_capital
+    else:
+        KY_ratio = (p_m[:, m] * p.gamma[m]) / cost_of_capital
 
     return KY_ratio
