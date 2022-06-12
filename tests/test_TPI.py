@@ -170,41 +170,66 @@ param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2],
 filename6 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_small_open_some_periods.pkl')
-param_updates7 = {'delta_tau_annual': [0.0], 'zeta_K': [0.0],
+param_updates7 = {'delta_tau_annual': [[0.0]], 'zeta_K': [0.0],
                   'zeta_D': [0.0], 'initial_guess_r_SS': 0.03,
                   'initial_guess_TR_SS': 0.02}
 filename7 = os.path.join(
     CUR_PATH, 'test_io_data',
     'run_TPI_outputs_baseline_delta_tau0.pkl')
 param_updates8 = {'delta_g_annual': 0.02, 'alpha_I': [0.01],
-                  'gamma_g': 0.07, 'initial_Kg_ratio': 0.15,
+                  'gamma_g': [0.07], 'initial_Kg_ratio': 0.15,
                   'initial_guess_r_SS': 0.06,
                   'initial_guess_TR_SS': 0.03}
 filename8 = os.path.join(
     CUR_PATH, 'test_io_data', 'run_TPI_outputs_baseline_Kg_nonzero.pkl')
+param_updates9 = {'M': 3, 'epsilon': [1.0, 1.0, 1.0],
+                   'gamma': [0.3, 0.35, 0.4],
+                   'gamma_g': [0.1, 0.05, 0.15],
+                   'alpha_c': [0.2, 0.4, 0.4],
+                   'initial_guess_r_SS': 0.16,
+                   'initial_guess_TR_SS': 0.09,
+                   'alpha_I': [0.01],
+                   'initial_Kg_ratio': 0.01,
+                   }
+filename9 = os.path.join(
+    CUR_PATH, 'test_io_data', 'run_TPI_baseline_M3_Kg_nonzero.pkl')
 
-
+# @pytest.mark.local
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [
+#                           (True, param_updates2, filename2),
+#                           (True, {}, filename1),
+#                           (False, {}, filename3),
+#                           (False, param_updates4, filename4),
+#                           (True, param_updates5, filename5),
+#                           (True, param_updates6, filename6),
+#                           (True, param_updates7, filename7),
+#                           (True, param_updates8, filename8),
+#                           (True, param_updates9, filename9)
+#                         ],
+#                          ids=[
+#                               'Baseline, balanced budget',
+#                               'Baseline',
+#                               'Reform',
+#                               'Reform, baseline spending',
+#                               'Baseline, small open',
+#                               'Baseline, small open some periods',
+#                               'Baseline, delta_tau = 0',
+#                               'Baseline, Kg > 0',
+#                               'Baseline, M=3m non-zero Kg'
+#                               ])
 @pytest.mark.local
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-                          (True, param_updates2, filename2),
                           (True, {}, filename1),
-                          (False, {}, filename3),
-                          (False, param_updates4, filename4),
-                          (True, param_updates5, filename5),
-                          (True, param_updates6, filename6),
                           (True, param_updates7, filename7),
-                          (True, param_updates8, filename8)
+                          (True, param_updates8, filename8),
+
                         ],
                          ids=[
-                              'Baseline, balanced budget',
                               'Baseline',
-                              'Reform',
-                              'Reform, baseline spending',
-                              'Baseline, small open',
-                              'Baseline, small open some periods',
                               'Baseline, delta_tau = 0',
-                              'Baseline, Kg > 0'
+                              'Baseline, Kg > 0',
                               ])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
                           dask_client):
@@ -238,6 +263,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
+    # pickle.dump(test_dict, open(filename, 'wb'))
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict['r_p'] = expected_dict.pop('r_hh')
@@ -282,14 +308,10 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_baseline_spend_2.pkl')
 
 
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, {}, filename1),
-#                           (False, {}, filename3)],
-#                          ids=['Baseline', 'Reform'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [
+                         [(True, {}, filename1),
                           (False, {}, filename3)],
-                         ids=['Reform'])
+                         ids=['Baseline', 'Reform'])
 def test_run_TPI(baseline, param_updates, filename, tmpdir,
                  dask_client):
     '''
