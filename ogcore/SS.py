@@ -227,7 +227,6 @@ def inner_loop(outer_loop_vars, p, client):
     K_demand_open_vec = np.zeros(p.M)
     for m_ind in range(p.M-1):
         C_m = aggr.get_C(c_m[m_ind, :, :], p, 'SS')
-        print('C_m = ', C_m)
         C_vec[m_ind] = C_m
         KLrat_m = firm.get_KLratio(r, w, p, 'SS', m_ind)
         KYrat_m = firm.get_KY_ratio(r, p_m, p, 'SS', m_ind)
@@ -326,8 +325,8 @@ def inner_loop(outer_loop_vars, p, client):
     print('Resource Constraint error in inner loop = ', rc_error)
 
     # print('BQ at the end of inner loop: ', new_BQ)
-    # print('Coming out of inner loop vars are',
-        #   new_r_p, new_r, new_w, new_p_m, Y, new_BQ, new_TR)
+    print('Coming out of inner loop vars are',
+          new_r_p, new_r, new_w, new_BQ, new_TR)
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
         new_w, new_p_m, K_vec, L_vec, Y_vec, new_TR, Y, new_factor, new_BQ,\
         average_income_model

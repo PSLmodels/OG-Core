@@ -222,14 +222,14 @@ filename9 = os.path.join(
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
                           (True, {}, filename1),
-                          (True, param_updates7, filename7),
-                          (True, param_updates8, filename8),
+                        #   (True, param_updates7, filename7),
+                        #   (True, param_updates8, filename8),
 
                         ],
                          ids=[
                               'Baseline',
-                              'Baseline, delta_tau = 0',
-                              'Baseline, Kg > 0',
+                            #   'Baseline, delta_tau = 0',
+                            #   'Baseline, Kg > 0',
                               ])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
                           dask_client):
@@ -263,7 +263,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
-    # pickle.dump(test_dict, open(filename, 'wb'))
+    pickle.dump(test_dict, open("test_TPI_kg_gt_0", 'wb'))
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict['r_p'] = expected_dict.pop('r_hh')

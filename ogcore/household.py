@@ -251,10 +251,8 @@ def get_cm(c_s, p_m, p_tilde, alpha_c, method='SS'):
     Returns:
         c_sm (array_like): consumption of good m
     '''
-    print('Shape of p_m: ', p_m.shape)
     if method == 'SS':
         M = alpha_c.shape[0]
-        print("cs shape = ", c_s.shape)
         S = c_s.shape[0]
         J = c_s.shape[1]
         alpha_c = alpha_c.reshape(M, 1, 1)
