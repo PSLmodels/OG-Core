@@ -1,3 +1,4 @@
+from curses.ascii import SP
 import pytest
 from ogcore import firm
 import numpy as np
@@ -410,17 +411,17 @@ r4 = np.array([0.01, 0.04, 0.55])
 expected4 = np.array([0.465031434, -0.045936078, 0.575172024])
 
 
-@pytest.mark.parametrize('r,p,method,expected',
-                         [(r1, p1, 'SS', 0.049263715),
-                          (r4, p4, 'TPI', np.array([0.746281397, 0.777392047, 1.3062731]))],
-                         ids=['SS', 'TP'])
-def test_get_cost_of_capital(r, p, method, expected):
-    """
-        choose values that simplify the calculations and are similar to
-        observed values
-    """
-    coc = firm.get_cost_of_capital(r, p, method)
-    assert (np.allclose(coc, expected, atol=1e-6))
+# @pytest.mark.parametrize('r,p,method,expected',
+#                          [(r1, p1, 'SS', 0.049263715),
+#                           (r4, p4, 'TPI', np.array([0.746281397, 0.777392047, 1.3062731]))],
+#                          ids=['SS', 'TP'])
+# def test_get_cost_of_capital(r, p, method, expected):
+#     """
+#         choose values that simplify the calculations and are similar to
+#         observed values
+#     """
+#     coc = firm.get_cost_of_capital(r, p, method)
+#     assert (np.allclose(coc, expected, atol=1e-6))
 
 
 @pytest.mark.parametrize('r,p,method,expected',
@@ -644,3 +645,118 @@ def test_get_MPx(Y, x, share, method, expected):
     mpx = firm.get_MPx(Y, x, share, p, method)
 
     assert (np.allclose(mpx, expected, atol=1e-6))
+
+
+r1 = 0.05
+r2 = np.array([0.05, 0.05, 0.05])
+pm1 = np.array([1.2])
+pm2 = np.array([[1.2], [1.2], [1.2]])
+p1 = Specifications()
+new_param_values1 = {
+    'gamma': [0.5],
+    'epsilon': [0.2],
+    'Z': [[2.0]],
+    'delta_tau_annual': [[0.35]],
+    'delta_annual': 0.5,
+    'cit_rate': [[0.5]],
+    'adjustment_factor_for_cit_receipts': [1.0],
+    'c_corp_share_of_assets': 1.0,
+    'T': 3,
+}
+# update parameters instance with new values for test
+p1.update_specifications(new_param_values1)
+p2 = Specifications()
+new_param_values2 = {
+    'gamma': [0.5],
+    'epsilon': [1.0],
+    'Z': [[2.0]],
+    'delta_tau_annual': [[0.35]],
+    'delta_annual': 0.25,
+    'cit_rate': [[0.5]],
+    'adjustment_factor_for_cit_receipts': [1.0],
+    'c_corp_share_of_assets': 1.0,
+    'T': 3,
+}
+# update parameters instance with new values for test
+p2.update_specifications(new_param_values2)
+p3 = Specifications()
+new_param_values3 = {
+    'gamma': [0.5, 0.5],
+    'epsilon': [1.0, 1.0],
+    'Z': [[2.0]],
+    'delta_tau_annual': [[0.35]],
+    'delta_annual': 0.25,
+    'cit_rate': [[0.5]],
+    'adjustment_factor_for_cit_receipts': [1.0],
+    'c_corp_share_of_assets': 1.0,
+    'T': 3,
+    'M': 2,
+}
+# update parameters instance with new values for test
+p3.update_specifications(new_param_values3)
+
+coc_expected1 = np.array([0.75])
+coc_expected2 = np.array([0.75, 0.75, 0.75])
+coc_expected3 = np.array([0.25, 0.25])
+coc_expected4 = np.array([[0.25, 0.25], [0.25, 0.25], [0.25, 0.25]])
+
+ky_expected1 = np.array([0.315478672])
+ky_expected2 = np.array([2.4, 2.4, 2.4])
+ky_expected3 = np.array([2.4])
+
+
+@pytest.mark.parametrize('r,p,method,m,expected',
+                         [(r1, p1, 'SS', -1, coc_expected1),
+                          (r2, p1, 'TPI', -1, coc_expected2),
+                          (r1, p3, 'SS', None, coc_expected3),
+                          (r2, p3, 'TPI', None, coc_expected4)],
+                         ids=['SS', 'TPI', 'SS, m=None', 'TPI, m=None'])
+def test_get_cost_of_capital(r, p, method, m, expected):
+    """
+    Test of the cost of capital function
+    """
+    coc = firm.get_cost_of_capital(r, p, method, m)
+    assert (np.allclose(coc, expected, atol=1e-6))
+
+
+@pytest.mark.parametrize('r,p_m,p,method,m,expected',
+                         [(r1, pm1, p1, 'SS', -1, ky_expected1),
+                          (r2, pm2, p2, 'TPI', -1, ky_expected2),
+                          (r1, pm1, p2, 'SS', -1, ky_expected3)],
+                         ids=['SS', 'TPI', 'SS, epsilon=1.0'])
+def test_get_KY_ratio(r, p_m, p, method, m, expected):
+    """
+    Test of the ratio of KY function
+    """
+    KY_ratio = firm.get_KY_ratio(r, p_m, p, method, m)
+    assert (np.allclose(KY_ratio, expected, atol=1e-6))
+
+
+w1 = 1.3
+w2 = np.array([1.3, 1.3, 1.3])
+KL1 = 1.356239389
+KL2 = np.array([1.356239389, 1.356239389, 1.356239389])
+KL3 = 16.0
+KL4 = np.array([16, 16])
+KL5 = np.array([[16, 16], [16, 16], [16, 16]])
+pm_expected1 = np.array([0.377746389])
+pm_expected2 = np.array([0.377746389, 0.377746389, 0.377746389])
+pm_expected3 = np.array([0.65])
+pm_expected4 = np.array([0.65, 0.65])
+pm_expected5 = np.array([[0.65, 0.65], [0.65, 0.65], [0.65, 0.65]])
+
+
+#TODO: add case for Kg>0? can you even solve for price in this way in that case?
+@pytest.mark.parametrize('w,KL_ratio,p,method,expected',
+                         [(w1, KL1, p1, 'SS', pm_expected1),
+                          (w2, KL2, p1, 'TPI', pm_expected2),
+                          (w1, KL3, p2, 'SS', pm_expected3),
+                          (w1, KL4, p3, 'SS', pm_expected4),
+                          (w2, KL5, p3, 'TPI', pm_expected5)],
+                         ids=['SS', 'TPI', 'SS, epsilon=1.0', 'SS, M>1', 'TPI, M>1'])
+def test_get_pm(w, KL_ratio, p, method, expected):
+    """
+    Test of the function that computes goods prices
+    """
+    pm = firm.get_pm(w, KL_ratio, p, method)
+    assert (np.allclose(pm, expected, atol=1e-6))
