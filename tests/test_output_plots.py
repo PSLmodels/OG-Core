@@ -65,6 +65,24 @@ def test_plot_aggregates(base_tpi, base_params, reform_tpi,
     assert fig
 
 
+@pytest.mark.parametrize(
+    'base_tpi,base_params,reform_tpi,reform_parms,plot_type,' +
+    'vertical_line_years,plot_title',
+    test_data, ids=['Pct Diff', 'Diff', 'Forecast', 'Levels w reform',
+                    'Levels w/o reform', 'Vertical line included',
+                    'Plot title included'])
+def test_plot_industry_aggregates(base_tpi, base_params, reform_tpi,
+                         reform_parms, plot_type, vertical_line_years,
+                         plot_title):
+    fig = output_plots.plot_industry_aggregates(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, var_list=['Y_vec'],
+        plot_type=plot_type, num_years_to_plot=20,
+        forecast_data=np.ones(20), forecast_units='ones',
+        vertical_line_years=vertical_line_years, plot_title=plot_title)
+    assert fig
+
+
 test_data = [(base_tpi, base_params, None, None, None, None),
              (base_tpi, base_params, reform_tpi, reform_params, None,
               None),
