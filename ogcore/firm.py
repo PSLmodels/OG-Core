@@ -553,6 +553,7 @@ def get_cost_of_capital(r, p, method, m=-1):
         else:
             tau_b = p.tau_b[:p.T, :]
             delta_tau = p.delta_tau[:p.T, :]
+            r = r.reshape(p.T, 1)
     else:
         if method == 'SS':
             tau_b = p.tau_b[-1, m]
@@ -560,6 +561,8 @@ def get_cost_of_capital(r, p, method, m=-1):
         else:
             tau_b = p.tau_b[:p.T, m]
             delta_tau = p.delta_tau[:p.T, m]
+            r = r.reshape(p.T)
+
     cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
 
     return cost_of_capital
@@ -591,15 +594,23 @@ def get_pm(w, KL_ratio, p, method):
         epsilon = p.epsilon.reshape((1, p.M))
         w = w.reshape((p.T, 1))
         KL_ratio = KL_ratio.reshape((p.T, p.M))
-    # p_m = (w / ((1 - gamma) * Z)) * (KL_ratio ** (-gamma))
-    p_m = (
+    p_m1 = w / ((1 - gamma) * (KL_ratio ** gamma))
+    p_m2 = (
         (w / (
             Z * (1 - gamma) ** (1 / epsilon))) * (
                 gamma ** (1 / epsilon) * KL_ratio **
                 ((epsilon - 1) / epsilon) +
                  (1 - gamma) ** (1 / epsilon)) **
         (1 / (1 - epsilon)))
-    # print('Shapes in get_pm:', p_m.shape, w.shape, Z.shape, gamma.shape, epsilon.shape, KL_ratio.shape)
+    p_m = p_m1
+    # TODO: find way to do this without for loop
+    for m in range(p.M):
+        if method == 'SS':
+            if epsilon[m] != 1.0:
+                p_m[m] = p_m2[m]
+        else:
+            if p.epsilon[m] != 1.0:
+                p_m[:, m] = p_m2[:, m]
 
     return p_m
 
@@ -621,8 +632,8 @@ def get_KY_ratio(r, p_m, p, method, m=-1):
     '''
     cost_of_capital = get_cost_of_capital(r, p, method, m)
     if method == 'SS':
-        KY_ratio = (p_m[m] * p.gamma[m]) / cost_of_capital
+        KY_ratio = p.gamma[m] * ((p_m[m] * p.Z[-1, m] ** ((p.epsilon[m] - 1) / p.epsilon[m])) / cost_of_capital) ** p.epsilon[m]
     else:
-        KY_ratio = (p_m[:, m] * p.gamma[m]) / cost_of_capital
+        KY_ratio = p.gamma[m] * ((p_m[:, m] * p.Z[:p.T, m] ** ((p.epsilon[m] - 1) / p.epsilon[m])) / cost_of_capital) ** p.epsilon[m]
 
     return KY_ratio
