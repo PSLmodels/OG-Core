@@ -908,22 +908,64 @@ Y1 = np.array([18.84610765])
 Y2 = np.array([12])
 K1 = np.array([4])
 Kg = 0
+Kg2 = np.zeros(3)
 Y3 = np.array([18.84610765, 18.84610765, 18.84610765])
 Y4 = np.array([12, 12, 12])
 K2 = np.array([4, 4, 4])
 L_expected1 = 9.0
 L_expected2 = np.array([9.0, 9.0, 9.0])
+Y5 = np.array([7.07402777, 14.16131267, 2.671400509])
+K5 = np.array([9.0, 9.0, 9.0])
+Kg5 = np.array([1.2, 3, 0.9])
+L_expected5 = np.array([4.0, 4.0, 4.0])
+p5 = Specifications()
+new_param_values5 = {
+    "gamma": [0.5],
+    "gamma_g": [0.2],
+    "epsilon": [1.0],
+    "Z": [[1.5], [2.5],	[0.6]],
+    "delta_tau_annual": [[0.35]],
+    "delta_annual": 0.05,
+    "cit_rate": [[0.3]],
+    "adjustment_factor_for_cit_receipts": [1.0],
+    "c_corp_share_of_assets": 1.0,
+    "initial_Kg_ratio": 0.01,
+    "T": 3,
+}
+# update parameters instance with new values for test
+p5.update_specifications(new_param_values5)
 
+p6 = Specifications()
+new_param_values6 = {
+    "gamma": [0.4],
+    "gamma_g": [0.25],
+    "epsilon": [0.3],
+    "Z": [[0.6]],
+    "delta_tau_annual": [[0.35]],
+    "delta_annual": 0.05,
+    "cit_rate": [[0.3]],
+    "adjustment_factor_for_cit_receipts": [1.0],
+    "c_corp_share_of_assets": 1.0,
+    "initial_Kg_ratio": 0.01,
+    "T": 3,
+}
+# update parameters instance with new values for test
+p6.update_specifications(new_param_values6)
+Y6 = np.ones(3) * 3.731865484
+K6 = np.ones(3) * 9.0
+Kg6 = np.ones(3) * 0.9
 
 @pytest.mark.parametrize(
     "Y,K,Kg,p,method,expected",
     [
         (Y1, K1, Kg, p1, "SS", L_expected1),
-        (Y3, K2, Kg, p1, "TPI", L_expected2),
+        (Y3, K2, Kg2, p1, "TPI", L_expected2),
         (Y2, K1, Kg, p2, "SS", L_expected1),
-        (Y4, K2, Kg, p2, "TPI", L_expected2),
+        (Y4, K2, Kg2, p2, "TPI", L_expected2),
+        (Y5, K5, Kg5, p5, "TPI", L_expected5),
+        (Y6, K6, Kg6, p6, "TPI", L_expected5)
     ],
-    ids=["SS", "TPI", "SS, epsilon=1.0", "TPI, epsilon=1.0"],
+    ids=["SS", "TPI", "SS, epsilon=1.0", "TPI, epsilon=1.0", "TPI, eps=1, Kg>0", "TPI, eps!=1, Kg>0"],
 )
 def test_solve_L(Y, K, Kg, p, method, expected):
     """
