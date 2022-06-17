@@ -101,7 +101,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
   where
   ```{math}
   :label: EqCmt
-    C_{m,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{j,m,s,t} \quad\forall m,t
+    C_{m,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{m,j,s,t} \quad\forall m,t
   ```
 
   The output of the $M$th industry can be used for private investment, infrastructure investment, government spending, and government debt.[^M_ind] As such, the market clearing condition in the $M$th industry will look more like the traditional $Y=C+I+G+NX$ expression.[^RCrates_note]
