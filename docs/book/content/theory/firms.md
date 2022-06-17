@@ -1,7 +1,7 @@
 (Chap_Firms)=
 # Firms
 
-The production side of the `OG-Core` model is populated by $M$ industries indexed by $m=1,2,...M$, each of which industry has a unit measure of identical perfectly competitive firms that rent private capital $K_{m,t}$ and public capital $K_{g,m,t}$ and hire labor $L_{m,t}$ to produce output $Y_{m,t}$. Firms also face a flat corporate income tax $\tau^{corp}_{m,t}$ as well as a tax on the amount of capital they depreciate $\delta^\tau_{m,t}$, each of which parameter can vary by industry $m$.
+The production side of the `OG-Core` model is populated by $M$ industries indexed by $m=1,2,...M$, each of which industry has a unit measure of identical perfectly competitive firms that rent private capital $K_{m,t}$ and public capital $K_{g,m,t}$ and hire labor $L_{m,t}$ to produce output $Y_{m,t}$. Firms face a flat corporate income tax $\tau^{corp}_{m,t}$ and can deduct capital expenses for tax purposes at a rate $\delta^\tau_{m,t}$. Tax parameters can vary by industry $m$ and over time, $t$.
 
 (EqFirmsProdFunc)=
 ## Production Function
@@ -24,6 +24,8 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
     Y_{m,t} = Z_{m,t} (K_{m,t})^{\gamma_m} (K_{g,m,t})^{\gamma_{g,m}}(e^{g_y t}L_{m,t})^{1-\gamma_m-\gamma_{g,m}} \quad\forall m,t \quad\text{for}\quad \varepsilon_m=1
   ```
 
+Industry $M$ in the model is unique in two respects.  First, we will define industry $M$ goods as the numeraire in OG_Core.  Therefore, all quantities are in terms of industry $M$ goods and all prices are relative to the price of a unit of industry $M$ goods.  Second, the model solution is greatly simplified if just one production industry produces capital goods.  The assumption in OG-Core is that industry $M$ is the only industry producing capital goods (though industry $M$ goods can also be used for consumption).
+
 (EqFirmsFOC)=
 ## Optimality Conditions
 
@@ -37,7 +39,7 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
 
   Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
 
-  Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_{m,t}$, which is a flat tax on corporate income that can vary by industry $m$. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only distort the firms' capital demand decision.
+  Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_{m,t}$, which is a flat tax on corporate income that can vary by industry $m$. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only have a direct effect on the firms' capital demand decision.
 
   The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_{m,t}$, which then lower corporate tax liability. When $\delta^\tau_{m,t}=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_{m,t}=\delta_{M,t}$, all economic depreciation is deducted from corporate income.
 
@@ -53,7 +55,7 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
     r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{Y_{m,t}}{K_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} \quad\forall m,t
   ```
 
-  Note that the presence of the public capital good creates economic rents. However, given perfect competition, any economic profits will be competed away. For this reason, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,m,t}$ through the $Y_{m,t}$ term.
+  Note that the presence of the public capital good creates economic rents. These rents will accrue to the owners of capital via the financial intermediary. See Section Chapter {ref}`Chap_FinInt` for more details on the determination of the return to the household's portfolio. Because public capital is exogenous to the firm's decisions, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,m,t}$ through the $Y_{m,t}$ term.
 
 (EqFirmsPosProfits)=
 ## Positive Profits from Government Infrastructure Investment
@@ -65,7 +67,7 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
     Y_{m,t} = MPK_{m,t} K_{m,t} + MPK_{g,m,t} K_{g,m,t} + MPL_{m,t} L_{m,t} \quad\forall m,t
   ```
 
-  where $MPK_{m,t}$ is the marginal product of private capital in industry $m$, $MPK_{g,m,t}$ is the marginal product of public capital, and $MPL_{m,t}$ is the marginal product of labor.[^MPfactors] Each of the terms in {eq}`EqFirmsMargRevEq` is growing at the macroeconomic variable rate of $e^{g_y t}\tilde{N_t}$ (see the third column of {numref}`TabStnrzStatVars`). Firm profit maximization for private capital demand from equation {eq}`EqFirmFOC_K` implies that the marginal product of private capital is the following.
+  where $MPK_{m,t}$ is the marginal product of private capital in industry $m$, $MPK_{g,m,t}$ is the marginal product of public capital, and $MPL_{m,t}$ is the marginal product of labor.[^MPfactors] Each of the terms in {eq}`EqFirmsMargRevEq` is growing at the macroeconomic variable rate of $e^{g_y t}\tilde{N_t}$ (see the third column of {numref}`TabStnrzStatVars`). Firm profit maximization for private capital demand from equation {eq}`EqFirmFOC_K` implies that the marginal product of private capital is equal to the real cost of capital:
 
   ```{math}
   :label: EqFirmsMPK_opt
