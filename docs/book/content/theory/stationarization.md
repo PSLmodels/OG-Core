@@ -29,7 +29,7 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_{p,t}$
-* - $\hat{c}_{j,m,s,t}\equiv \frac{c_{j,m,s,t}}{e^{g_y t}}$
+* - $\hat{c}_{m,j,s,t}\equiv \frac{c_{m,j,s,t}}{e^{g_y t}}$
   -
   - $\hat{C}_{m,t}\equiv\frac{C_{m,t}}{e^{g_y t}\tilde{N}_t}$
   - $r_{gov,t}$
@@ -61,11 +61,11 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzCompCons
-    \hat{c}_{j,s,t} \equiv \prod_{m=1}^M \left(\hat{c}_{j,m,s,t} - \hat{c}_{min,m,t}\right)^{\alpha_m} \quad\forall j,s,t \quad\text{with}\quad \sum_{m=1}^M\alpha_m=1
+    \hat{c}_{j,s,t} \equiv \prod_{m=1}^M \left(\hat{c}_{m,j,s,t} - \hat{c}_{min,m,t}\right)^{\alpha_m} \quad\forall j,s,t \quad\text{with}\quad \sum_{m=1}^M\alpha_m=1
   ```
   ```{math}
   :label: EqStnrz_cmDem2
-    \hat{c}_{j,m,s,t} = \alpha_m\left(\frac{p_{m,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,m,t} \quad\forall j,m,s,t
+    \hat{c}_{m,j,s,t} = \alpha_m\left(\frac{p_{m,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,m,t} \quad\forall m,j,s,t
   ```
   ```{math}
   :label: EqStnrz_cmin
@@ -369,7 +369,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   where
   ```{math}
   :label: EqCmt
-    \hat{C}_{m,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j \hat{c}_{j,m,s,t} \quad\forall m,t
+    \hat{C}_{m,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j \hat{c}_{m,j,s,t} \quad\forall m,t
   ```
   and
   ```{math}
