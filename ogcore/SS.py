@@ -232,7 +232,11 @@ def inner_loop(outer_loop_vars, p, client):
         KYrat_m = firm.get_KY_ratio(r, p_m, p, 'SS', m_ind)
         Y_vec[m_ind] = C_m
         K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
+        L_alt = firm.solve_L(Y_vec[m_ind], K_vec[m_ind], K_g, p, 'SS', m_ind)
+        # print('L, K, Kg, Y = ', L_vec[m_ind], K_vec[m_ind], K_g, Y_vec[m_ind])
         L_vec[m_ind] = KLrat_m ** -1 * K_vec[m_ind]
+        # L_vec[m_ind] = L_alt
+        # print('L vs L alt = ', L_vec[m_ind] - L_alt)
         KL_ratio_vec[m_ind] = KLrat_m
         # will have a K_demand_open from each industry
         # print('K, K for m = ', m_ind, ' is ', L_vec[m_ind], K_vec[m_ind], Y_vec[m_ind])
@@ -250,7 +254,6 @@ def inner_loop(outer_loop_vars, p, client):
     K_vec[-1] = K_M
     Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, 'SS', -1)
     KL_ratio_vec[-1] = K_vec[-1] / L_vec[-1]
-
 
     Y = (p_m * Y_vec).sum()
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
@@ -287,7 +290,13 @@ def inner_loop(outer_loop_vars, p, client):
     tr = household.get_tr(TR, None, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
+    KL_ratio_vec_alt = K_vec / L_vec
     new_p_m = firm.get_pm(new_w, KL_ratio_vec, p, 'SS')
+    new_p_m_alt = firm.get_pm(new_w, KL_ratio_vec_alt, p, 'SS')
+    p_m_alt = firm.get_pm2(new_w, Y_vec, L_vec, p, 'SS')
+    # print('Prices vs alt prices = ', new_p_m - p_m_alt, new_p_m - new_p_m_alt)
+    # new_p_m = p_m_alt
+    # new_p_m = firm.get_pm2(new_w, Y_vec, L_vec, p, 'SS')
     new_p_m = new_p_m / new_p_m[-1]  # normalize prices by industry M
     new_p_tilde = aggr.get_ptilde(new_p_m, p.alpha_c)
 
@@ -322,11 +331,11 @@ def inner_loop(outer_loop_vars, p, client):
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
     rc_error = Y_vec - C_vec - G_vec - I_d_vec - I_g_vec - net_capital_outflows_vec
-    print('Resource Constraint error in inner loop = ', rc_error)
+    # print('Resource Constraint error in inner loop = ', rc_error)
 
     # print('BQ at the end of inner loop: ', new_BQ)
-    print('Coming out of inner loop vars are',
-          new_r_p, new_r, new_w, new_BQ, new_TR)
+    # print('Coming out of inner loop vars are',
+    #       new_r_p, new_r, new_w, new_BQ, new_TR)
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_p, \
         new_w, new_p_m, K_vec, L_vec, Y_vec, new_TR, Y, new_factor, new_BQ,\
         average_income_model
@@ -476,9 +485,9 @@ def SS_solver(bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client,
     for m in range(p.M):
         MPKg_vec[m] = firm.get_MPx(Y_vec_ss[m], K_g_ss, p.gamma_g[m], p, 'SS', m)
     r_p_ss = aggr.get_r_p(rss, r_gov_ss, p_m_ss, K_vec_ss, K_g_ss, Dss, MPKg_vec, p, 'SS')
-    print('Diff in RP = ', r_p_ss - r_p)
-    print('Diff in RP2 = ', r_p_ss - new_r_p)
-    print("Diff r and r_p = ", rss - r_p_ss)
+    # print('Diff in RP = ', r_p_ss - r_p)
+    # print('Diff in RP2 = ', r_p_ss - new_r_p)
+    # print("Diff r and r_p = ", rss - r_p_ss)
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')

@@ -450,13 +450,13 @@ def run_TPI(p, client=None):
     w = np.ones_like(K) * ss_vars['wss']
     # compute goods prices
     KL_ratio_init = K_vec_init / L_vec_init
-    print('Shape = ', KL_ratio_init.shape, w.shape, p.T)
+    # print('Shape = ', KL_ratio_init.shape, w.shape, p.T)
     p_m = np.ones((p.T + p.S, p.M)) * ss_vars['p_m_ss'].reshape(1, p.M)
     p_m[:p.T, :] = firm.get_pm(w[:p.T], KL_ratio_init[:p.T, :], p, 'TPI')
-    print('Pm shape =', p_m.shape)
+    # print('Pm shape =', p_m.shape)
     p_m = p_m / p_m[:, -1].reshape(p.T + p.S, 1)  # normalize prices by industry M
     p_tilde = aggr.get_ptilde(p_m, p.alpha_c, 'TPI')
-    print('Pm shape =', p_m.shape)
+    # print('Pm shape =', p_m.shape)
     if not any(p.zeta_K == 1):
         w[:p.T] = np.squeeze(firm.get_w(Y[:p.T], L[:p.T], p_m[:p.T, :], p, 'TPI'))
     # repeat with updated w
@@ -498,7 +498,7 @@ def run_TPI(p, client=None):
         D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
     total_tax_revenue = np.ones(p.T + p.S) * ss_vars['total_tax_revenue']
 
-        # Compute other interest rates
+    # Compute other interest rates
     r_gov = fiscal.get_r_gov(r, p)
     r_p = np.ones_like(r) * ss_vars['r_p_ss']
     MPKg = np.zeros((p.T, p.M))
@@ -507,7 +507,7 @@ def run_TPI(p, client=None):
             Y_vec_init[:p.T, m], K_g[:p.T], p.gamma_g[m], p, 'TPI', m))
     r_p[:p.T] = aggr.get_r_p(r[:p.T], r_gov[:p.T], p_m[:p.T, :], K_vec_init[:p.T, :], K_g[:p.T],
                              D[:p.T], MPKg, p, 'TPI')
-    print('RP shape = ', r_p.shape)
+    # print('RP shape = ', r_p.shape)
 
     # Initialize bequests
     BQ0 = aggr.get_BQ(r_p[0], initial_b, None, p, 'SS', True)
@@ -605,6 +605,11 @@ def run_TPI(p, client=None):
             Y_vec[:, m_ind] = C_m
             K_vec[:, m_ind] = KYrat_m * Y_vec[:, m_ind]
             L_vec[:, m_ind] = KLrat_m ** -1 * K_vec[:, m_ind]
+            print('Up to finding L alt')
+            L_alt = firm.solve_L(Y_vec[:, m_ind], K_vec[:, m_ind],
+                                 K_g, p, 'TPI', m_ind)
+            # L_vec[:, m_ind] = L_alt
+            print('L vs L alt = ', L_vec[:10, m_ind] - L_alt[:10])
             KL_ratio_vec[:, m_ind] = KLrat_m
             K_demand_open_vec[:, m_ind] = firm.get_K(
                 p.world_int_rate[:p.T], w_open[:p.T], L_vec[:p.T, m_ind], p, 'TPI', m_ind)
@@ -661,6 +666,13 @@ def run_TPI(p, client=None):
 
         # compute new prices
         new_p_m = firm.get_pm(wnew, KL_ratio_vec, p, 'TPI')
+        KL_ratio_vec_alt = K_vec / L_vec
+        new_p_m_alt = firm.get_pm(wnew, KL_ratio_vec_alt, p, 'TPI')
+        p_m_alt = firm.get_pm2(wnew, Y_vec, L_vec, p, 'TPI')
+        print('Prices vs alt prices = ',
+             new_p_m[:10, :] - p_m_alt[:10, :], new_p_m[:10, :]
+             - new_p_m_alt[:10, :])
+        # new_p_m = p_m_alt
         new_p_m = new_p_m / new_p_m[:, -1].reshape(p.T, 1)  # normalize prices by industry M
 
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
