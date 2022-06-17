@@ -74,7 +74,7 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
     MPK_{m,t} =  \frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^\tau_{m,t}}{p_{m,t}(1 - \tau^{corp}_{m,t})} \quad\forall m,t
   ```
 
-  Firm profit maximization for labor demand from equation {eq}`EqFirmFOC_L` implies that the marginal product of labor is the following.
+  Firm profit maximization for labor demand from equation {eq}`EqFirmFOC_L` implies that the marginal product of labor is equal to the real wage rate:
 
   ```{math}
   :label: EqFirmsMPL_opt

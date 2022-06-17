@@ -42,7 +42,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
   (SecMarkClrMktClr_G)=
   ### Government bond market clearing
 
-  The government in `OG-Core` can run deficits or surplusses each period, as shown in equation {eq}`EqUnbalGBCbudgConstr` in Section {ref}`SecUnbalGBCbudgConstr`. Because the government can borrow or save on net each period $D_t$, someone must lend or borrow those assets on the supply side.
+  The government in `OG-Core` can run deficits or surpluses each period, as shown in equation {eq}`EqUnbalGBCbudgConstr` in Section {ref}`SecUnbalGBCbudgConstr`. Because the government can borrow or save on net each period $D_t$, someone must lend or borrow those assets on the supply side.
 
   We assume that foreigners hold a fixed percentage of new domestic government debt issuance. Let $D_{t+1} - D_t$ be the total new issuance government debt, and let $D^f_{t+1} - D^f_t$ be the amount of those new issuances held by foreigners. We assume that foreign holdings of new government issuances of debt $D^f_{t+1}-D^f_t$ are an exogenous percentage $\zeta_D\in[0,1]$ of total new government debt issuances. This percentage $\zeta_D$ is something we calibrate.
 
