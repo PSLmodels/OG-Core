@@ -313,9 +313,13 @@ And finally, in closure rules {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclos
 (SecUBIfootnotes)=
 ## Footnotes
 
+<<<<<<< HEAD
 [^UBIgrowthadj]: The steady-state assumption in equation {eq}`EqUBIubi_mod_NonGrwAdj_SS` implies that the UBI amount is growth adjusted for every period after the steady-state is reached.
 
 
 [^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`ogusa_default_parameters.json`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/ogusa_default_parameters.json) "validators" specification of the parameter.
 
 [^negative_val_note]: Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period $T_{G2}$.
+=======
+[^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`default_parameters.json`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json) "validators" specification of the parameter.
+>>>>>>> upstream/master

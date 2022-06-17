@@ -23,6 +23,6 @@ ignore:
   - "setup.py"
   - "./ogcore/_version.py"
   - "./cs-config/**/*"  # ignore folders and all its contents
+  - "./tests/"  # ignore folders and all its contents
   - "./ogcore/tests/"  # ignore folders and all its contents
   - "./regression/**/*"  # ignore folders and all its contents
-

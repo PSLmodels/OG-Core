@@ -25,7 +25,7 @@ The model output focuses changes in macroeconomic aggregates (GDP, investment, c
 The model is continuously under development. Users will be notified through [closed PR threads](https://github.com/PSLmodels/OG-Core/pulls?q=is%3Apr+is%3Aclosed) and through the [release notes](https://github.com/PSLmodels/OG-Core/releases) what changes have been implemented. The package will have released versions, which will be checked against existing code prior to release. Stay tuned for an upcoming release!
 
 
-(Sec_CitingOGUSA)=
+(Sec_CitingOGCore)=
 ## Citing OG-Core
 
 `OG-Core` (Version #.#.#)[Source code], https://github.com/PSLmodels/OG-Core.

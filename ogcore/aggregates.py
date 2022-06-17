@@ -1,23 +1,23 @@
-'''
+"""
 -------------------------------------------------------------------------------
 Functions to compute economic aggregates.
 -------------------------------------------------------------------------------
-'''
+"""
 
 # Packages
 from cmath import tau
 import numpy as np
 from ogcore import tax
 
-'''
+"""
 -------------------------------------------------------------------------------
     Functions
 -------------------------------------------------------------------------------
-'''
+"""
 
 
 def get_L(n, p, method):
-    r'''
+    r"""
     Calculate aggregate labor supply.
 
     .. math::
@@ -32,20 +32,20 @@ def get_L(n, p, method):
     Returns:
         L (array_like): aggregate labor supply
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         L_presum = p.e * np.transpose(p.omega_SS * p.lambdas) * n
         L = L_presum.sum()
-    elif method == 'TPI':
-        L_presum = ((n * (p.e * np.squeeze(p.lambdas))) *
-                    np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
-                            (1, 1, p.J)))
+    elif method == "TPI":
+        L_presum = (n * (p.e * np.squeeze(p.lambdas))) * np.tile(
+            np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
+        )
         L = L_presum.sum(1).sum(1)
     return L
 
 
 def get_I(b_splus1, K_p1, K, p, method):
-    r'''
+    r"""
     Calculate aggregate investment.
 
     .. math::
@@ -64,38 +64,50 @@ def get_I(b_splus1, K_p1, K, p, method):
     Returns:
         aggI (array_like): aggregate investment
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         omega_extended = np.append(p.omega_SS[1:], [0.0])
         imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
-        part2 = (((b_splus1 *
-                   np.transpose((omega_extended * imm_extended) *
-                                p.lambdas)).sum()) / (1 + p.g_n_ss))
-        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) -
-                (1.0 - p.delta) * K)
-    elif method == 'TPI':
-        omega_shift = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
-                                axis=1)
-        imm_shift = np.append(p.imm_rates[:p.T, 1:], np.zeros((p.T, 1)),
-                              axis=1)
-        part2 = ((((b_splus1 * np.squeeze(p.lambdas)) *
-                   np.tile(np.reshape(imm_shift * omega_shift,
-                                      (p.T, p.S, 1)),
-                           (1, 1, p.J))).sum(1).sum(1)) /
-                 (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
-        aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
-                np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K)
-    elif method == 'total_ss':
+        part2 = (
+            (
+                b_splus1
+                * np.transpose((omega_extended * imm_extended) * p.lambdas)
+            ).sum()
+        ) / (1 + p.g_n_ss)
+        aggI = (1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) - (
+            1.0 - p.delta
+        ) * K
+    elif method == "TPI":
+        omega_shift = np.append(p.omega[: p.T, 1:], np.zeros((p.T, 1)), axis=1)
+        imm_shift = np.append(
+            p.imm_rates[: p.T, 1:], np.zeros((p.T, 1)), axis=1
+        )
+        part2 = (
+            (
+                (b_splus1 * np.squeeze(p.lambdas))
+                * np.tile(
+                    np.reshape(imm_shift * omega_shift, (p.T, p.S, 1)),
+                    (1, 1, p.J),
+                )
+            )
+            .sum(1)
+            .sum(1)
+        ) / (1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss))))
+        aggI = (
+            1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss)))
+        ) * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K
+    elif method == "total_ss":
         aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * K
-    elif method == 'total_tpi':
-        aggI = ((1 + p.g_n[1:p.T+1]) * np.exp(p.g_y) * K_p1 -
-                (1.0 - p.delta) * K)
+    elif method == "total_tpi":
+        aggI = (1 + p.g_n[1 : p.T + 1]) * np.exp(p.g_y) * K_p1 - (
+            1.0 - p.delta
+        ) * K
 
     return aggI
 
 
 def get_B(b, p, method, preTP):
-    r'''
+    r"""
     Calculate aggregate savings
 
     .. math::
@@ -113,8 +125,8 @@ def get_B(b, p, method, preTP):
     Returns:
         B (array_like): aggregate supply of savings
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         if preTP:
             part1 = b * np.transpose(p.omega_S_preTP * p.lambdas)
             omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
@@ -128,26 +140,26 @@ def get_B(b, p, method, preTP):
         part2 = b * np.transpose(omega_extended * imm_extended * p.lambdas)
         B_presum = part1 + part2
         B = B_presum.sum()
-        B /= (1.0 + pop_growth_rate)
-    elif method == 'TPI':
-        part1 = ((b * np.squeeze(p.lambdas)) *
-                 np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
-                         (1, 1, p.J)))
-        omega_shift = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
-                                axis=1)
-        imm_shift = np.append(p.imm_rates[:p.T, 1:], np.zeros((p.T, 1)),
-                              axis=1)
-        part2 = ((b * np.squeeze(p.lambdas)) *
-                 np.tile(np.reshape(imm_shift * omega_shift,
-                                    (p.T, p.S, 1)), (1, 1, p.J)))
+        B /= 1.0 + pop_growth_rate
+    elif method == "TPI":
+        part1 = (b * np.squeeze(p.lambdas)) * np.tile(
+            np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
+        )
+        omega_shift = np.append(p.omega[: p.T, 1:], np.zeros((p.T, 1)), axis=1)
+        imm_shift = np.append(
+            p.imm_rates[: p.T, 1:], np.zeros((p.T, 1)), axis=1
+        )
+        part2 = (b * np.squeeze(p.lambdas)) * np.tile(
+            np.reshape(imm_shift * omega_shift, (p.T, p.S, 1)), (1, 1, p.J)
+        )
         B_presum = part1 + part2
         B = B_presum.sum(1).sum(1)
-        B /= (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
+        B /= 1.0 + np.hstack((p.g_n[1 : p.T], p.g_n_ss))
     return B
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):
-    r'''
+    r"""
     Calculation of aggregate bequests.  If `use_zeta` is False, then
     computes aggregate bequests within each lifetime income group.
 
@@ -170,8 +182,8 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         BQ (array_like): aggregate bequests, overall or by lifetime
             income group, depending on `use_zeta` value.
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         if preTP:
             omega = p.omega_S_preTP
             pop_growth_rate = p.g_n[0]
@@ -181,27 +193,28 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         if j is not None:
             BQ_presum = omega * p.rho * b_splus1 * p.lambdas[j]
         else:
-            BQ_presum = (np.transpose(omega * (p.rho * p.lambdas)) *
-                         b_splus1)
+            BQ_presum = np.transpose(omega * (p.rho * p.lambdas)) * b_splus1
         BQ = BQ_presum.sum(0)
         BQ *= (1.0 + r) / (1.0 + pop_growth_rate)
-    elif method == 'TPI':
-        pop = np.append(p.omega_S_preTP.reshape(1, p.S),
-                        p.omega[:p.T - 1, :], axis=0)
+    elif method == "TPI":
+        pop = np.append(
+            p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0
+        )
         if j is not None:
-            BQ_presum = ((b_splus1 * p.lambdas[j]) *
-                         (pop * p.rho))
+            BQ_presum = (b_splus1 * p.lambdas[j]) * (pop * p.rho)
             BQ = BQ_presum.sum(1)
-            BQ *= (1.0 + r) / (1.0 + p.g_n[:p.T])
+            BQ *= (1.0 + r) / (1.0 + p.g_n[: p.T])
         else:
-            BQ_presum = ((b_splus1 * np.squeeze(p.lambdas)) *
-                         np.tile(np.reshape(pop * p.rho, (p.T, p.S, 1)),
-                                 (1, 1, p.J)))
+            BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
+                np.reshape(pop * p.rho, (p.T, p.S, 1)), (1, 1, p.J)
+            )
             BQ = BQ_presum.sum(1)
-            BQ *= np.tile(np.reshape((1.0 + r) / (1.0 + p.g_n[:p.T]),
-                                     (p.T, 1)), (1, p.J))
+            BQ *= np.tile(
+                np.reshape((1.0 + r) / (1.0 + p.g_n[: p.T]), (p.T, 1)),
+                (1, p.J),
+            )
     if p.use_zeta:
-        if method == 'SS':
+        if method == "SS":
             BQ = BQ.sum()
         else:
             if not j:
@@ -210,7 +223,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
 
 
 def get_C(c, p, method):
-    r'''
+    r"""
     Calculation of aggregate consumption.
 
     Set up to only take one consumption good at a time. This
@@ -229,20 +242,48 @@ def get_C(c, p, method):
     Returns:
         C (array_like): aggregate consumption
 
-    '''
+    """
 
-    if method == 'SS':
-        aggC = (c * np.transpose(p.omega_SS * p.lambdas).reshape(1, p.S, p.J)).sum(-1).sum(-1)
-    elif method == 'TPI':
-        aggC = ((c * np.squeeze(p.lambdas)) *
-                np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
-                        (1, 1, p.J))).sum(-1).sum(-1)
+    if method == "SS":
+        aggC = (
+            (c * np.transpose(p.omega_SS * p.lambdas).reshape(1, p.S, p.J))
+            .sum(-1)
+            .sum(-1)
+        )
+    elif method == "TPI":
+        aggC = (
+            (
+                (c * np.squeeze(p.lambdas))
+                * np.tile(
+                    np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
+                )
+            )
+            .sum(-1)
+            .sum(-1)
+        )
     return aggC
 
 
-def revenue(r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta, etr_params,
-            p, m, method):
-    r'''
+def revenue(
+    r,
+    w,
+    b,
+    n,
+    bq,
+    c,
+    Y,
+    L,
+    K,
+    p_m,
+    factor,
+    ubi,
+    theta,
+    etr_params,
+    p,
+    m,
+    method,
+):
+    r"""
     Calculate aggregate tax revenue.
 
     .. math::
@@ -290,14 +331,16 @@ def revenue(r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta, etr_params,
         payroll_tax_revenue (array_like): aggregate payroll tax revenue
         iit_tax_revenue (array_like): aggregate income tax revenue
 
-    '''
+    """
     inc_pay_tax_liab = tax.income_tax_liab(
-        r, w, b, n, factor, 0, None, method, p.e, etr_params, p)
+        r, w, b, n, factor, 0, None, method, p.e, etr_params, p
+    )
     pension_benefits = tax.pension_amount(
-        w, n, theta, 0, None, False, method, p.e, p)
+        w, n, theta, 0, None, False, method, p.e, p
+    )
     bq_tax_liab = tax.bequest_tax_liab(r, b, bq, 0, None, method, p)
     w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)
-    if method == 'SS':
+    if method == "SS":
         pop_weights = np.transpose(p.omega_SS * p.lambdas)
         iit_payroll_tax_revenue = (inc_pay_tax_liab * pop_weights).sum()
         agg_pension_outlays = (pension_benefits * pop_weights).sum()
@@ -305,39 +348,53 @@ def revenue(r, w, b, n, bq, c, Y, L, K, p_m, factor, ubi, theta, etr_params,
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum()
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum()
         cons_tax_revenue = (p.tau_c[-1, :, :] * c * pop_weights).sum()
-        payroll_tax_revenue = (p.frac_tax_payroll[-1] *
-                               iit_payroll_tax_revenue)
-    elif method == 'TPI':
-        pop_weights = (
-            np.squeeze(p.lambdas) *
-            np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
-                    (1, 1, p.J)))
+        payroll_tax_revenue = p.frac_tax_payroll[-1] * iit_payroll_tax_revenue
+    elif method == "TPI":
+        pop_weights = np.squeeze(p.lambdas) * np.tile(
+            np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
+        )
         iit_payroll_tax_revenue = (
-            inc_pay_tax_liab * pop_weights).sum(1).sum(1)
-        agg_pension_outlays = (
-            pension_benefits * pop_weights).sum(1).sum(1)
-        UBI_outlays = (ubi[:p.T, :, :] * pop_weights).sum(1).sum(1)
+            (inc_pay_tax_liab * pop_weights).sum(1).sum(1)
+        )
+        agg_pension_outlays = (pension_benefits * pop_weights).sum(1).sum(1)
+        UBI_outlays = (ubi[: p.T, :, :] * pop_weights).sum(1).sum(1)
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum(1).sum(1)
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
-            p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
-        payroll_tax_revenue = (p.frac_tax_payroll[:p.T] *
-                               iit_payroll_tax_revenue)
-    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum(-1)
+            (p.tau_c[: p.T, :, :] * c * pop_weights).sum(1).sum(1)
+        )
+        payroll_tax_revenue = (
+            p.frac_tax_payroll[: p.T] * iit_payroll_tax_revenue
+        )
+    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum(
+        -1
+    )
     iit_revenue = iit_payroll_tax_revenue - payroll_tax_revenue
 
     total_tax_revenue = (
-        iit_payroll_tax_revenue + wealth_tax_revenue +
-        bequest_tax_revenue + cons_tax_revenue + business_tax_revenue)
+        iit_payroll_tax_revenue
+        + wealth_tax_revenue
+        + bequest_tax_revenue
+        + cons_tax_revenue
+        + business_tax_revenue
+    )
 
-    return (total_tax_revenue, iit_payroll_tax_revenue,
-            agg_pension_outlays, UBI_outlays, bequest_tax_revenue,
-            wealth_tax_revenue, cons_tax_revenue, business_tax_revenue,
-            payroll_tax_revenue, iit_revenue)
+    return (
+        total_tax_revenue,
+        iit_payroll_tax_revenue,
+        agg_pension_outlays,
+        UBI_outlays,
+        bequest_tax_revenue,
+        wealth_tax_revenue,
+        cons_tax_revenue,
+        business_tax_revenue,
+        payroll_tax_revenue,
+        iit_revenue,
+    )
 
 
 def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
-    r'''
+    r"""
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
 
@@ -359,13 +416,13 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     Returns:
         r_p (array_like): the real interest rate on the household portfolio
 
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         tau_b = p.tau_b[-1, :]
         T = 1
     else:
         T = p.T
-        tau_b = p.tau_b[:p.T, :].reshape((p.T, p.M))
+        tau_b = p.tau_b[: p.T, :].reshape((p.T, p.M))
         K_g = K_g.reshape((p.T, 1))
         r = r.reshape((p.T, 1))
         r_gov = r_gov.reshape((p.T, 1))
@@ -373,19 +430,19 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
         p_m = p_m.reshape((p.T, p.M))
         MPKg_vec = MPKg_vec.reshape((p.T, p.M))
         K_vec = K_vec.reshape((p.T, p.M))
-    r_K = (
-        r + (
-                ((1 - tau_b) * p_m * MPKg_vec *
-                K_g).sum(axis=-1).reshape((T, 1)) /
-                K_vec.sum(axis=-1).reshape((T, 1))))
-    r_p = (((r_gov * D) + (r_K * K_vec.sum(axis=-1).reshape((T, 1)))) /
-            (D + K_vec.sum(axis=-1).reshape((T, 1))))
+    r_K = r + (
+        ((1 - tau_b) * p_m * MPKg_vec * K_g).sum(axis=-1).reshape((T, 1))
+        / K_vec.sum(axis=-1).reshape((T, 1))
+    )
+    r_p = ((r_gov * D) + (r_K * K_vec.sum(axis=-1).reshape((T, 1)))) / (
+        D + K_vec.sum(axis=-1).reshape((T, 1))
+    )
 
     return np.squeeze(r_p)
 
 
 def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
-    r'''
+    r"""
     Compute the error in the resource constraint.
 
     .. math::
@@ -405,16 +462,14 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
     Returns:
         rc_error (array_like): error in the resource constraint
 
-    '''
-    rc_error = (
-        Y - C - I_d - I_g - G - net_capital_flows
-        )
+    """
+    rc_error = Y - C - I_d - I_g - G - net_capital_flows
 
     return rc_error
 
 
 def get_capital_outflows(r, K_f, new_borrowing_f, debt_service_f, p):
-    r'''
+    r"""
     Compute net capital outflows for open economy parameterizations
 
     .. math::
@@ -434,15 +489,14 @@ def get_capital_outflows(r, K_f, new_borrowing_f, debt_service_f, p):
 
     Returns:
         new_flow (array_like): net capital outflows
-    '''
-    net_flow = ((r + p.delta) * K_f - new_borrowing_f +
-                debt_service_f)
+    """
+    net_flow = (r + p.delta) * K_f - new_borrowing_f + debt_service_f
 
     return net_flow
 
 
 def get_K_splits(B, K_demand_open, D_d, zeta_K):
-    r'''
+    r"""
     Returns total domestic capital as well as amounts of domestic
     capital held by domestic and foreign investors separately.
 
@@ -469,11 +523,13 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
             * K_d (array_like): capital held by domestic households
             * K_f (array_like): capital held by foreign households
 
-    '''
+    """
     K_d = B - D_d
     if np.any(K_d < 0):
-        print('K_d has negative elements. Setting them ' +
-              'positive to prevent NAN.')
+        print(
+            "K_d has negative elements. Setting them "
+            + "positive to prevent NAN."
+        )
         K_d = np.fmax(K_d, 0.05 * B)
     K_f = zeta_K * (K_demand_open - B + D_d)
     K = K_f + K_d
@@ -481,8 +537,8 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
     return K, K_d, K_f
 
 
-def get_ptilde(p_m, alpha_c, method='SS'):
-    r'''
+def get_ptilde(p_m, alpha_c, method="SS"):
+    r"""
     Calculate price of composite good.
 
     .. math::
@@ -494,8 +550,8 @@ def get_ptilde(p_m, alpha_c, method='SS'):
 
     Returns:
         p_tilde (array_like): price of composite good
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         p_tilde = np.prod((p_m / alpha_c) ** alpha_c)
     else:  # TPI case
         alpha_c = alpha_c.reshape(1, alpha_c.shape[0])
