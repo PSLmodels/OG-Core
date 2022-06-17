@@ -10,6 +10,7 @@ import ogcore.aggregates as aggr
 from ogcore.parameters import Specifications
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+SS.VERBOSE = False
 
 TEST_PARAM_DICT = json.load(
     open(os.path.join(CUR_PATH, 'testing_params.json')))
@@ -186,13 +187,24 @@ param_updates9 = {'M': 3, 'epsilon': [1.0, 1.0, 1.0],
                    'gamma': [0.3, 0.35, 0.4],
                    'gamma_g': [0.1, 0.05, 0.15],
                    'alpha_c': [0.2, 0.4, 0.4],
-                   'initial_guess_r_SS': 0.16,
-                   'initial_guess_TR_SS': 0.09,
+                   'initial_guess_r_SS': 0.16, #.10,
+                   'initial_guess_TR_SS': 0.05,
                    'alpha_I': [0.01],
                    'initial_Kg_ratio': 0.01,
                    }
 filename9 = os.path.join(
     CUR_PATH, 'test_io_data', 'run_TPI_baseline_M3_Kg_nonzero.pkl')
+param_updates10 = {'M': 3, 'epsilon': [1.0, 1.0, 1.0],
+                   'gamma': [0.3, 0.35, 0.4],
+                   'gamma_g': [0.0, 0.0, 0.0],
+                   'alpha_c': [0.2, 0.4, 0.4],
+                   'initial_guess_r_SS': 0.04,
+                   'initial_guess_TR_SS': 0.05,
+                   'alpha_I': [0.0],
+                   'initial_Kg_ratio': 0.0,
+                   }
+filename10 = os.path.join(
+    CUR_PATH, 'test_io_data', 'run_TPI_baseline_M3_Kg_zero.pkl')
 
 # @pytest.mark.local
 # @pytest.mark.parametrize('baseline,param_updates,filename',
@@ -205,7 +217,8 @@ filename9 = os.path.join(
 #                           (True, param_updates6, filename6),
 #                           (True, param_updates7, filename7),
 #                           (True, param_updates8, filename8),
-#                           (True, param_updates9, filename9)
+#                           (True, param_updates9, filename9),
+#                           (True, param_updates10, filename10)
 #                         ],
 #                          ids=[
 #                               'Baseline, balanced budget',
@@ -216,20 +229,19 @@ filename9 = os.path.join(
 #                               'Baseline, small open some periods',
 #                               'Baseline, delta_tau = 0',
 #                               'Baseline, Kg > 0',
-#                               'Baseline, M=3m non-zero Kg'
+#                               'Baseline, M=3 non-zero Kg',
+                            #   'Baseline, M=3 zero Kg'
 #                               ])
 @pytest.mark.local
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-                          (True, {}, filename1),
-                        #   (True, param_updates7, filename7),
-                        #   (True, param_updates8, filename8),
+                          (True, param_updates9, filename9),
+                        #   (True, param_updates10, filename10),
 
                         ],
                          ids=[
-                              'Baseline',
-                            #   'Baseline, delta_tau = 0',
-                            #   'Baseline, Kg > 0',
+                            'Baseline, M=3 non-zero Kg',
+                            # 'Baseline, M=3 zero Kg'
                               ])
 def test_run_TPI_full_run(baseline, param_updates, filename, tmpdir,
                           dask_client):

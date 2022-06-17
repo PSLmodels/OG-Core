@@ -99,7 +99,12 @@ guesses7 = np.array([
      0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051])
 args7 = (bssmat, nssmat, None, None, p7, None)
 expected7 = np.array([
-    6.122502156365741, 6.130121521923937, -1.6406481082831204, -0.9492881793005619, -0.9588547209394217, -0.9540688852413565, 0.0, 1.878268586536519, -0.004084703113392865, -0.01142235033602952, -0.013027789141608327, -0.006500594195555716, -0.00489811365296336, 0.11605975091085062, -0.0027514983024590108, 0.1690441727882867, 0.01394190214302167])
+    -0.008448847313951888, -0.0009211082424301492, 0.011860194953432046,
+    0.6123388845094864, 0.23087697388219008, 0.4355732756059083, 0.0,
+    1.7940767556619188, -0.005315720595484515, -0.003711782648821809,
+    -0.0005935187552692546, 0.002475944501244479, 0.005406487202800136,
+    -8.023042809984782e-05, 0.0015049900920091177, 0.1614669080095727,
+    0.061413881709093815])
 
 
 @pytest.mark.parametrize(
@@ -239,9 +244,11 @@ filename6 = 'SS_solver_outputs_baseline_delta_tau0.pkl'
 
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates5, filename5),
+                         [
+                            (True, param_updates5, filename5),
                           (True, param_updates6, filename6)],
-                         ids=['Baseline, small open, budget balance',
+                         ids=[
+                            'Baseline, small open, budget balance',
                               'Baseline, delta_tau = 0'])
 @pytest.mark.local
 def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
@@ -298,13 +305,15 @@ param_updates7 = {'M': 4, 'alpha_c': [0.1, 0.5, 0.3, 0.1],
 filename7 = 'inner_loop_outputs_reform_M4.pkl'
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates1, filename1),
+                         [
+                            (True, param_updates1, filename1),
                           (True, param_updates2, filename2),
                           (True, param_updates3, filename3),
                           (False, param_updates4, filename4),
                           (False, param_updates5, filename5),
                           (False, param_updates7, filename7)],
-                         ids=['Baseline, Small Open',
+                         ids=[
+                            'Baseline, Small Open',
                               'Baseline, Balanced Budget',
                               'Baseline', 'Reform',
                               'Reform, baseline spending',
@@ -557,8 +566,8 @@ param_updates13 = {'M': 3, 'epsilon': [1.0, 1.0, 1.0],
                    'gamma': [0.3, 0.35, 0.4],
                    'gamma_g': [0.1, 0.05, 0.15],
                    'alpha_c': [0.2, 0.4, 0.4],
-                   'initial_guess_r_SS': 0.16,
-                   'initial_guess_TR_SS': 0.09,
+                   'initial_guess_r_SS': 0.10,
+                   'initial_guess_TR_SS': 0.05,
                    'alpha_I': [0.01],
                    'initial_Kg_ratio': 0.01,
                    }
@@ -567,9 +576,9 @@ param_updates14 = {'M': 3, 'epsilon': [1.0, 1.0, 1.0],
                    'gamma': [0.3, 0.35, 0.4],
                    'gamma_g': [0.0, 0.0, 0.0],
                    'alpha_c': [0.2, 0.4, 0.4],
-                   'initial_guess_r_SS': 0.16,
-                   'initial_guess_TR_SS': 0.09,
-                   'alpha_I': [0.01],
+                   'initial_guess_r_SS': 0.04,
+                   'initial_guess_TR_SS': 0.05,
+                   'alpha_I': [0.0],
                    'initial_Kg_ratio': 0.0,
                    }
 filename14 = 'run_SS_baseline_M3_Kg_zero.pkl'
@@ -580,32 +589,32 @@ filename14 = 'run_SS_baseline_M3_Kg_zero.pkl'
 # output of the baseline run just prior
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [
-                        #   (True, param_updates1, filename1),
-                        #   (False, param_updates9, filename9),
-                        #   (True, param_updates2, filename2),
-                        #   (False, param_updates10, filename10),
-                        #   (True, param_updates3, filename3),
-                        #   (True, param_updates4, filename4),
-                        #   (False, param_updates5, filename5),
-                        #   (False, param_updates6, filename6),
-                        #   (False, param_updates7, filename7),
-                        #   (False, param_updates8, filename8),
-                        #   (False, param_updates11, filename11),
-                        #   (True, param_updates12, filename12),
+                          (True, param_updates1, filename1),
+                          (False, param_updates9, filename9),
+                          (True, param_updates2, filename2),
+                          (False, param_updates10, filename10),
+                          (True, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6),
+                          (False, param_updates7, filename7),
+                          (False, param_updates8, filename8),
+                          (False, param_updates11, filename11),
+                          (True, param_updates12, filename12),
                           (True, param_updates13, filename13),
                           (True, param_updates14, filename14)
                           ],
                          ids=[
-                            #   'Baseline', 'Reform, baseline spending',
-                            #   'Baseline, use zeta',
-                            #   'Reform, baseline spending, use zeta',
-                            #   'Baseline, small open',
-                            #   'Baseline, small open use zeta',
-                            #   'Reform', 'Reform, use zeta',
-                            #   'Reform, small open',
-                            #   'Reform, small open use zeta',
-                            #   'Reform, delta_tau=0',
-                            #   'Baseline, non-zero Kg',
+                              'Baseline', 'Reform, baseline spending',
+                              'Baseline, use zeta',
+                              'Reform, baseline spending, use zeta',
+                              'Baseline, small open',
+                              'Baseline, small open use zeta',
+                              'Reform', 'Reform, use zeta',
+                              'Reform, small open',
+                              'Reform, small open use zeta',
+                              'Reform, delta_tau=0',
+                              'Baseline, non-zero Kg',
                               'Baseline, M=3, non-zero Kg',
                               'Baseline, M=3, zero Kg'
                               ])
