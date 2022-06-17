@@ -224,10 +224,10 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
             tau_b = p.tau_b[-1, m]
             price = p_m[m]
         else:
-            delta_tau = p.delta_tau[: p.T, m].reshape(p.T, 1)
-            tau_b = p.tau_b[: p.T, m].reshape(p.T, 1)
-            price = p_m[: p.T, m].reshape(p.T, 1)
-            w = w.reshape(p.T, 1)
+            delta_tau = p.delta_tau[: p.T, m].reshape(p.T)
+            tau_b = p.tau_b[: p.T, m].reshape(p.T)
+            price = p_m[: p.T, m].reshape(p.T)
+            w = w.reshape(p.T)
     else:
         if method == "SS":
             delta_tau = p.delta_tau[-1, :]
