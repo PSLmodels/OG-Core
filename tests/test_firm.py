@@ -1,4 +1,5 @@
 from curses.ascii import SP
+from math import exp
 import pytest
 from ogcore import firm
 import numpy as np
@@ -620,28 +621,48 @@ def test_get_K(L, r, p, method, expected):
     K = firm.get_K(r, w, L, p, method)
     assert (np.allclose(K, expected, atol=1e-6))
 
+Y1 = np.array([18.84610765])
+Y2 = np.array([12.0])
+Y3 = np.array([18.84610765, 18.84610765, 18.84610765])
+Y4 = np.array([12.0, 12.0, 12.0])
+x1 = np.array([9.0])
+x2 = np.array([9.0, 9.0, 9.0])
+p1 = Specifications()
+new_param_values1 = {
+    'gamma': [0.5],
+    'epsilon': [0.2],
+    'Z': [[2.0]],
+    'T': 3,
+}
+# update parameters instance with new values for test
+p1.update_specifications(new_param_values1)
+p2 = Specifications()
+new_param_values2 = {
+    'gamma': [0.5],
+    'epsilon': [1.0],
+    'Z': [[2.0]],
+    'T': 3,
+}
+# update parameters instance with new values for test
+p2.update_specifications(new_param_values2)
+expected1 = np.array([0.078636799])
+expected2 = np.array([0.666666667])
+expected3 = np.array([0.078636799, 0.078636799, 0.078636799])
+expected4 = np.array([0.666666667, 0.666666667, 0.666666667])
 
-Y1 = 2.0
-x1 = 1.0
-expected1 = 1.0
-Y2 = np.array([2.0, 1.0])
-x2 = np.array([1.0, 0.5])
-expected2 = np.array([0.6, 0.6])
 
-
-@pytest.mark.parametrize('Y,x,share,method,expected',
-                         [(Y1, x1, 0.5, 'SS', expected1),
-                          (Y2, x2, 0.3, 'TPI', expected2),
-                          (Y2, np.zeros_like(Y2), 0.5, 'TPI', np.zeros_like(Y2)),
-                          (Y1, np.zeros_like(Y1), 0.5, 'SS', np.zeros_like(Y1))],
-                         ids=['SS', 'TPI', 'x=0, TPI', 'x=0,SS'])
-def test_get_MPx(Y, x, share, method, expected):
+@pytest.mark.parametrize('Y,x,share,p,method,expected',
+                         [(Y1, x1, 1 - p1.gamma[-1] - p1.gamma_g[-1], p1, 'SS', expected1),
+                          (Y3, x2, 1 - p1.gamma[-1] - p1.gamma_g[-1], p1, 'TPI', expected3),
+                          (Y2, x1, 1 - p2.gamma[-1] - p2.gamma_g[-1], p2, 'SS', expected2),
+                          (Y4, x2, 1 - p1.gamma[-1] - p2.gamma_g[-1], p2, 'TPI', expected4),
+                          (Y2, np.zeros_like(Y2), 0.5, p1, 'SS', np.zeros_like(Y2)),
+                          (Y3, np.zeros_like(Y3), 0.5, p1, 'TPI', np.zeros_like(Y3))],
+                         ids=['SS', 'TPI', 'SS, eps=1', 'TPI, eps=1', 'x=0, SS', 'x=0,TPI'])
+def test_get_MPx(Y, x, share, p, method, expected):
     """
     Test of the marginal product function
     """
-    p = Specifications()
-    p.T = 2
-    p.Z = np.ones((2, 1))
     mpx = firm.get_MPx(Y, x, share, p, method)
 
     assert (np.allclose(mpx, expected, atol=1e-6))
@@ -741,9 +762,9 @@ KL4 = np.array([16, 16])
 KL5 = np.array([[16, 16], [16, 16], [16, 16]])
 pm_expected1 = np.array([0.377746389])
 pm_expected2 = np.array([0.377746389, 0.377746389, 0.377746389])
-pm_expected3 = np.array([0.65])
-pm_expected4 = np.array([0.65, 0.65])
-pm_expected5 = np.array([[0.65, 0.65], [0.65, 0.65], [0.65, 0.65]])
+pm_expected3 = np.array([0.325])
+pm_expected4 = np.array([0.325, 0.325])
+pm_expected5 = np.array([[0.325, 0.325], [0.325, 0.325], [0.325, 0.325]])
 
 
 #TODO: add case for Kg>0? can you even solve for price in this way in that case?
@@ -760,3 +781,53 @@ def test_get_pm(w, KL_ratio, p, method, expected):
     """
     pm = firm.get_pm(w, KL_ratio, p, method)
     assert (np.allclose(pm, expected, atol=1e-6))
+
+
+Y1 = np.array([18.84610765])
+Y2 = np.array([12])
+Y3 = np.array([18.84610765, 18.84610765, 18.84610765])
+Y4 = np.array([12, 12, 12])
+L1 = np.array([9.0])
+L2 = np.array([9.0, 9.0, 9.0])
+pm2_expected1 = np.array([16.53170028])
+pm2_expected2 = np.array([16.53170028, 16.53170028, 16.53170028])
+pm2_expected3 = np.array([1.95])
+pm2_expected4 = np.array([1.95, 1.95, 1.95])
+
+@pytest.mark.parametrize('w,Y,L,p,method,expected',
+                         [(w1, Y1, L1, p1, 'SS', pm2_expected1),
+                          (w2, Y3, L2, p1, 'TPI', pm2_expected2),
+                          (w1, Y2, L1, p2, 'SS', pm2_expected3),
+                          (w2, Y4, L2, p2, 'TPI', pm2_expected4)],
+                         ids=['SS', 'TPI', 'SS, epsilon=1.0', 'TPI, epsilon=1.0'])
+def test_get_pm2(w, Y, L, p, method, expected):
+    """
+    Test of the function that computes goods prices
+    """
+    pm = firm.get_pm2(w, Y, L, p, method)
+    assert (np.allclose(pm, expected, atol=1e-6))
+
+
+Y1 = np.array([18.84610765])
+Y2 =  np.array([12])
+K1 =  np.array([4])
+Kg = 0
+Y3 = np.array([18.84610765, 18.84610765, 18.84610765])
+Y4 = np.array([12, 12, 12])
+K2 = np.array([4, 4, 4])
+L_expected1 = 9.0
+L_expected2 = np.array([9.0, 9.0, 9.0])
+
+
+@pytest.mark.parametrize('Y,K,Kg,p,method,expected',
+                         [(Y1, K1, Kg, p1, 'SS', L_expected1),
+                          (Y3, K2, Kg, p1, 'TPI', L_expected2),
+                          (Y2, K1, Kg, p2, 'SS', L_expected1),
+                          (Y4, K2, Kg, p2, 'TPI', L_expected2)],
+                         ids=['SS', 'TPI', 'SS, epsilon=1.0', 'TPI, epsilon=1.0'])
+def test_solve_L(Y, K, Kg, p, method, expected):
+    """
+    Test of the function that solves for labor supply
+    """
+    L = firm.solve_L(Y, K, Kg, p, method)
+    assert (np.allclose(L, expected, atol=1e-6))
