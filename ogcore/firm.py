@@ -594,7 +594,7 @@ def get_pm(w, KL_ratio, p, method):
         epsilon = p.epsilon.reshape((1, p.M))
         w = w.reshape((p.T, 1))
         KL_ratio = KL_ratio.reshape((p.T, p.M))
-    p_m1 = w / ((1 - gamma) * (KL_ratio ** gamma))
+    p_m1 = w / (Z * (1 - gamma) * (KL_ratio ** gamma))
     p_m2 = (
         (w / (
             Z * (1 - gamma) ** (1 / epsilon))) * (
@@ -612,6 +612,40 @@ def get_pm(w, KL_ratio, p, method):
             if p.epsilon[m] != 1.0:
                 p_m[:, m] = p_m2[:, m]
 
+    return p_m
+
+
+def get_pm2(w, Y_vec, L_vec, p, method):
+    r'''
+    Find prices for outputs from each industry.
+
+    .. math::
+        p_{m,t} = \frac{w_{t}^{\varepsilon}}{K_{t}L_{t}}
+
+    Args:
+        w (array_like): the wage rate
+        KL_ratio (array_like): ratio of capital to labor
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+
+    Returns:
+        p_m (array_like): output prices for each industry
+    '''
+    if method == 'SS':
+        Y = Y_vec.reshape(1, p.M)
+        L = L_vec.reshape(1, p.M)
+        T = 1
+    else:
+        Y = Y_vec.reshape((p.T, p.M))
+        L = L_vec.reshape((p.T, p.M))
+        # w = w.reshape((p.T, 1))
+        T = p.T
+    p_m = np.zeros((T, p.M))
+    for m in range(p.M):  # TODO: try to get rid of this loop
+        MPL = get_MPx(Y[:, m], L[:, m], 1-p.gamma[m]-p.gamma_g[m], p, method, m).reshape(T)
+        p_m[:, m] = w / MPL
+    if method == 'SS':
+        p_m = p_m.reshape(p.M)
     return p_m
 
 
@@ -637,3 +671,36 @@ def get_KY_ratio(r, p_m, p, method, m=-1):
         KY_ratio = p.gamma[m] * ((p_m[:, m] * p.Z[:p.T, m] ** ((p.epsilon[m] - 1) / p.epsilon[m])) / cost_of_capital) ** p.epsilon[m]
 
     return KY_ratio
+
+
+def solve_L(Y, K, K_g, p, method, m=-1):
+    r'''
+    Solve for labor supply from the production function
+
+    .. math::
+        L_{m,t} = \frac{Y_{t} - K_{t} - K_{t}^{g}}{p_{m,t}}
+    '''
+    gamma = p.gamma[m]
+    gamma_g = p.gamma_g[m]
+    epsilon = p.epsilon[m]
+    if method == 'SS':
+        Z = p.Z[-1, m]
+    else:
+        Z = p.Z[:p.T, m]
+    try:
+        if K_g == 0:
+            K_g = 1.0
+            gamma_g = 0
+    except:
+        if np.any(K_g == 0):
+            K_g[K_g == 0] = 1.0
+            gamma_g = 0
+    if epsilon == 1.0:
+        L = (Y / (Z * K ** gamma * K_g ** gamma_g)) ** (1 / (1 - gamma - gamma_g))
+    else:
+        L = (((Y / Z) ** ((epsilon - 1) / epsilon) -
+             gamma ** (1 / epsilon) * K ** ((epsilon - 1) / epsilon) -
+             gamma_g ** (1 / epsilon) * K_g ** ((epsilon - 1) / epsilon)) /
+             ((1 - gamma - gamma_g) ** (1 / epsilon))) ** (epsilon / (epsilon - 1))
+
+    return L
