@@ -823,11 +823,10 @@ def run_TPI(p, client=None):
             Y_vec[:, m_ind] = C_m
             K_vec[:, m_ind] = KYrat_m * Y_vec[:, m_ind]
             L_vec[:, m_ind] = KLrat_m**-1 * K_vec[:, m_ind]
-            print("Up to finding L alt")
             L_alt = firm.solve_L(
                 Y_vec[:, m_ind], K_vec[:, m_ind], K_g, p, "TPI", m_ind
             )
-            # L_vec[:, m_ind] = L_alt
+            L_vec[:, m_ind] = L_alt
             print("L vs L alt = ", L_vec[:10, m_ind] - L_alt[:10])
             KL_ratio_vec[:, m_ind] = KLrat_m
             K_demand_open_vec[:, m_ind] = firm.get_K(
@@ -840,7 +839,6 @@ def run_TPI(p, client=None):
             )
 
         # Find output, labor demand, capital demand for last industry
-        print("L_vec shape = ", L_vec.shape)
         L_M = np.maximum(
             np.ones(p.T) * 0.001, L[: p.T] - L_vec[: p.T, :].sum(-1)
         )  # make sure L_M > 0
@@ -856,6 +854,9 @@ def run_TPI(p, client=None):
         K_M = np.maximum(
             np.ones(p.T) * 0.001, K[: p.T] - K_vec[: p.T, :].sum(-1)
         )  # make sure K_M > 0
+        # print('K_M = ', K_M[:10])
+        # print('L_M = ', L_M[:10])
+
         C_vec[:, -1] = np.squeeze(aggr.get_C(c_m[: p.T, -1, :], p, "TPI"))
         L_vec[:, -1] = L_M
         K_vec[:, -1] = K_M
@@ -932,6 +933,10 @@ def run_TPI(p, client=None):
         )
         # For case where economy is small open econ
         rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
+        # print("r = ", r[:10])
+        # print("rnew = ", rnew[:10])
+        # if TPIiter == 2:
+        #     assert False
         r_gov_new = fiscal.get_r_gov(rnew, p)
         MPKg_vec = np.zeros((p.T, p.M))
         for m in range(p.M):
@@ -969,7 +974,7 @@ def run_TPI(p, client=None):
             new_p_m[:10, :] - p_m_alt[:10, :],
             new_p_m[:10, :] - new_p_m_alt[:10, :],
         )
-        # new_p_m = p_m_alt
+        new_p_m = p_m_alt
         new_p_m = new_p_m / new_p_m[:, -1].reshape(
             p.T, 1
         )  # normalize prices by industry M

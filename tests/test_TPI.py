@@ -11,7 +11,7 @@ from ogcore.parameters import Specifications
 
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-SS.VERBOSE = False
+# SS.VERBOSE = False
 
 TEST_PARAM_DICT = json.load(
     open(os.path.join(CUR_PATH, "testing_params.json"))
@@ -273,7 +273,7 @@ param_updates9 = {
     "gamma_g": [0.1, 0.05, 0.15],
     "alpha_c": [0.2, 0.4, 0.4],
     "initial_guess_r_SS": 0.16,  # .10,
-    "initial_guess_TR_SS": 0.05,
+    "initial_guess_TR_SS": 0.07, # 0.05,
     "alpha_I": [0.01],
     "initial_Kg_ratio": 0.01,
 }
@@ -286,8 +286,8 @@ param_updates10 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
-    "initial_guess_r_SS": 0.04,
-    "initial_guess_TR_SS": 0.05,
+    "initial_guess_r_SS": 0.10, # 0.04,
+    "initial_guess_TR_SS": 0.05, #0.05,
     "alpha_I": [0.0],
     "initial_Kg_ratio": 0.0,
 }
@@ -325,12 +325,16 @@ filename10 = os.path.join(
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        (True, param_updates9, filename9),
-        #   (True, param_updates10, filename10),
+        # (True, {}, filename1),
+        #  (True, param_updates2, filename2),
+        # (True, param_updates9, filename9),
+          (True, param_updates10, filename10),
     ],
     ids=[
-        "Baseline, M=3 non-zero Kg",
-        # 'Baseline, M=3 zero Kg'
+    #    'Baseline',
+        # 'Baseline balanced budget',
+        # "Baseline, M=3 non-zero Kg",
+        'Baseline, M=3 zero Kg'
     ],
 )
 def test_run_TPI_full_run(
@@ -370,7 +374,6 @@ def test_run_TPI_full_run(
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
-    pickle.dump(test_dict, open("test_TPI_kg_gt_0", "wb"))
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict["r_p"] = expected_dict.pop("r_hh")

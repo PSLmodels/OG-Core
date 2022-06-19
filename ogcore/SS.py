@@ -337,7 +337,7 @@ def inner_loop(outer_loop_vars, p, client):
         L_alt = firm.solve_L(Y_vec[m_ind], K_vec[m_ind], K_g, p, "SS", m_ind)
         # print('L, K, Kg, Y = ', L_vec[m_ind], K_vec[m_ind], K_g, Y_vec[m_ind])
         L_vec[m_ind] = KLrat_m**-1 * K_vec[m_ind]
-        # L_vec[m_ind] = L_alt
+        L_vec[m_ind] = L_alt
         # print('L vs L alt = ', L_vec[m_ind] - L_alt)
         KL_ratio_vec[m_ind] = KLrat_m
         # will have a K_demand_open from each industry
@@ -345,7 +345,8 @@ def inner_loop(outer_loop_vars, p, client):
         K_demand_open_vec[m_ind] = firm.get_K(
             p.world_int_rate[-1], w_open, L_vec[m_ind], p, "SS", m_ind
         )
-
+        print("C - Y are end of M-1 loop: ", C_vec[m_ind] - Y_vec[m_ind])
+        print("C = ", C_m)
     # Find output, labor demand, capital demand for last industry
     L_M = max(0.001, L - L_vec.sum())  # make sure L_M > 0
     K_demand_open_vec[-1] = firm.get_K(
@@ -387,12 +388,17 @@ def inner_loop(outer_loop_vars, p, client):
         debt_service,
         new_borrowing_f,
     ) = fiscal.get_D_ss(new_r_gov, Y, p)
+
     MPKg_vec = np.zeros(p.M)
     for m in range(p.M):
         MPKg_vec[m] = firm.get_MPx(Y_vec[m], K_g, p.gamma_g[m], p, "SS", m)
     new_r_p = aggr.get_r_p(
         new_r, new_r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, "SS"
     )
+    print('MPKG from inner = ', MPKg_vec)
+    print('K_vec in inner = ', K_vec)
+    print("D in inner = ", D)
+    print('r and r_gov in inner = ', new_r, new_r_gov)
     average_income_model = (
         (new_r_p * b_s + new_w * p.e * nssmat)
         * p.omega_SS.reshape(p.S, 1)
@@ -412,7 +418,7 @@ def inner_loop(outer_loop_vars, p, client):
     new_p_m_alt = firm.get_pm(new_w, KL_ratio_vec_alt, p, "SS")
     p_m_alt = firm.get_pm2(new_w, Y_vec, L_vec, p, "SS")
     # print('Prices vs alt prices = ', new_p_m - p_m_alt, new_p_m - new_p_m_alt)
-    # new_p_m = p_m_alt
+    new_p_m = p_m_alt
     # new_p_m = firm.get_pm2(new_w, Y_vec, L_vec, p, 'SS')
     new_p_m = new_p_m / new_p_m[-1]  # normalize prices by industry M
     new_p_tilde = aggr.get_ptilde(new_p_m, p.alpha_c)
@@ -519,14 +525,18 @@ def inner_loop(outer_loop_vars, p, client):
     )
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
+    print("check C and Y = ", C_vec, Y_vec)
     rc_error = (
         Y_vec - C_vec - G_vec - I_d_vec - I_g_vec - net_capital_outflows_vec
     )
-    # print('Resource Constraint error in inner loop = ', rc_error)
+    print('Resource Constraint error in inner loop = ', rc_error)
 
     # print('BQ at the end of inner loop: ', new_BQ)
-    # print('Coming out of inner loop vars are',
-    #       new_r_p, new_r, new_w, new_BQ, new_TR)
+    print('Coming out of inner loop vars are',
+          new_r_p, new_r, new_w, new_BQ, new_TR)
+    print('inner loop prices = ', p_m, p_tilde)
+    print('NEW inner loop prices = ', new_p_m, new_p_tilde)
+
     return (
         euler_errors,
         bssmat,
@@ -718,11 +728,16 @@ def SS_solver(
         MPKg_vec[m] = firm.get_MPx(
             Y_vec_ss[m], K_g_ss, p.gamma_g[m], p, "SS", m
         )
-    r_p_ss = aggr.get_r_p(
-        rss, r_gov_ss, p_m_ss, K_vec_ss, K_g_ss, Dss, MPKg_vec, p, "SS"
-    )
-    # print('Diff in RP = ', r_p_ss - r_p)
-    # print('Diff in RP2 = ', r_p_ss - new_r_p)
+    print('MPKG from SS solver = ', MPKg_vec)
+    print('K_vec in SS solver = ', K_vec_ss)
+    print("D in SS solver = ", Dss)
+    print('r and r_gov in SS solver = ', rss, r_gov_ss)
+    # r_p_ss = aggr.get_r_p(
+    #     rss, r_gov_ss, p_m_ss, K_vec_ss, K_g_ss, Dss, MPKg_vec, p, "SS"
+    # )
+    r_p_ss = new_r_p
+    print('Diff in RP = ', r_p_ss - r_p)
+    print('Diff in RP2 = ', r_p_ss - new_r_p)
     # print("Diff r and r_p = ", rss - r_p_ss)
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
@@ -819,6 +834,7 @@ def SS_solver(
             p,
             "SS",
         )
+    print('SS solver prices = ', p_m_ss, p_tilde_ss)
 
     # TODO: will need to add p_m for cons taxes in line below
     (
@@ -906,6 +922,10 @@ def SS_solver(
             Kss - K_d_ss - K_f_ss,
             (K_vec_ss.sum() - Kss) * p.delta,
         )
+
+    print("C and Y in SS solver = ", C_vec_ss, Y_vec_ss)
+    print('Coming out of SS solver are',
+          r_p_ss, rss, wss, BQss, TR_ss)
 
     if Gss < 0:
         print(
