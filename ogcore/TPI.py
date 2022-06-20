@@ -366,7 +366,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
     guesses_b, guesses_n = guesses
-    r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars  # TODO: might need Y here
+    r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars
 
     # compute composite good price
     p_tilde = aggr.get_ptilde(p_m, p.alpha_c, "TPI")
@@ -603,23 +603,22 @@ def run_TPI(p, client=None):
     # compute w
     w = np.ones_like(K) * ss_vars["wss"]
     # compute goods prices
-    KL_ratio_init = K_vec_init / L_vec_init
-    # print('Shape = ', KL_ratio_init.shape, w.shape, p.T)
     p_m = np.ones((p.T + p.S, p.M)) * ss_vars["p_m_ss"].reshape(1, p.M)
-    p_m[: p.T, :] = firm.get_pm(w[: p.T], KL_ratio_init[: p.T, :], p, "TPI")
-    # print('Pm shape =', p_m.shape)
+    p_m[: p.T, :] = firm.get_pm(
+        w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI"
+    )
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
     p_tilde = aggr.get_ptilde(p_m, p.alpha_c, "TPI")
-    # print('Pm shape =', p_m.shape)
     if not any(p.zeta_K == 1):
         w[: p.T] = np.squeeze(
             firm.get_w(Y[: p.T], L[: p.T], p_m[: p.T, :], p, "TPI")
         )
     # repeat with updated w
-    KL_ratio_init = K_vec_init / L_vec_init
-    p_m[: p.T, :] = firm.get_pm(w[: p.T], KL_ratio_init[: p.T, :], p, "TPI")
+    p_m[: p.T, :] = firm.get_pm(
+        w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI"
+    )
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
@@ -681,7 +680,6 @@ def run_TPI(p, client=None):
         p,
         "TPI",
     )
-    # print('RP shape = ', r_p.shape)
 
     # Initialize bequests
     BQ0 = aggr.get_BQ(r_p[0], initial_b, None, p, "SS", True)
@@ -809,26 +807,20 @@ def run_TPI(p, client=None):
         # Find output, labor demand, capital demand for M-1 industries
         L_vec = np.zeros((p.T, p.M))
         K_vec = np.zeros((p.T, p.M))
-        KL_ratio_vec = np.zeros((p.T, p.M))
         Y_vec = np.zeros((p.T, p.M))
         C_vec = np.zeros((p.T, p.M))
         K_demand_open_vec = np.zeros((p.T, p.M))
         for m_ind in range(p.M - 1):
             C_m = aggr.get_C(c_m[: p.T, m_ind, :, :], p, "TPI")
             C_vec[:, m_ind] = C_m
-            KLrat_m = firm.get_KLratio(r[: p.T], w[: p.T], p, "TPI", m_ind)
             KYrat_m = firm.get_KY_ratio(
                 r[: p.T], p_m[: p.T, :], p, "TPI", m_ind
             )
             Y_vec[:, m_ind] = C_m
             K_vec[:, m_ind] = KYrat_m * Y_vec[:, m_ind]
-            L_vec[:, m_ind] = KLrat_m**-1 * K_vec[:, m_ind]
-            L_alt = firm.solve_L(
+            L_vec[:, m_ind] = firm.solve_L(
                 Y_vec[:, m_ind], K_vec[:, m_ind], K_g, p, "TPI", m_ind
             )
-            L_vec[:, m_ind] = L_alt
-            print("L vs L alt = ", L_vec[:10, m_ind] - L_alt[:10])
-            KL_ratio_vec[:, m_ind] = KLrat_m
             K_demand_open_vec[:, m_ind] = firm.get_K(
                 p.world_int_rate[: p.T],
                 w_open[: p.T],
@@ -854,8 +846,6 @@ def run_TPI(p, client=None):
         K_M = np.maximum(
             np.ones(p.T) * 0.001, K[: p.T] - K_vec[: p.T, :].sum(-1)
         )  # make sure K_M > 0
-        # print('K_M = ', K_M[:10])
-        # print('L_M = ', L_M[:10])
 
         C_vec[:, -1] = np.squeeze(aggr.get_C(c_m[: p.T, -1, :], p, "TPI"))
         L_vec[:, -1] = L_M
@@ -863,7 +853,6 @@ def run_TPI(p, client=None):
         Y_vec[:, -1] = firm.get_Y(
             K_vec[: p.T, -1], K_g[: p.T], L_vec[: p.T, -1], p, "TPI", -1
         )
-        KL_ratio_vec[:, -1] = K_vec[:, -1] / L_vec[:, -1]
 
         Y = (p_m[: p.T, :] * Y_vec[: p.T, :]).sum(-1)
 
@@ -933,10 +922,6 @@ def run_TPI(p, client=None):
         )
         # For case where economy is small open econ
         rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
-        # print("r = ", r[:10])
-        # print("rnew = ", rnew[:10])
-        # if TPIiter == 2:
-        #     assert False
         r_gov_new = fiscal.get_r_gov(rnew, p)
         MPKg_vec = np.zeros((p.T, p.M))
         for m in range(p.M):
@@ -965,16 +950,7 @@ def run_TPI(p, client=None):
         )
 
         # compute new prices
-        new_p_m = firm.get_pm(wnew, KL_ratio_vec, p, "TPI")
-        KL_ratio_vec_alt = K_vec / L_vec
-        new_p_m_alt = firm.get_pm(wnew, KL_ratio_vec_alt, p, "TPI")
-        p_m_alt = firm.get_pm2(wnew, Y_vec, L_vec, p, "TPI")
-        print(
-            "Prices vs alt prices = ",
-            new_p_m[:10, :] - p_m_alt[:10, :],
-            new_p_m[:10, :] - new_p_m_alt[:10, :],
-        )
-        new_p_m = p_m_alt
+        new_p_m = firm.get_pm(wnew, Y_vec, L_vec, p, "TPI")
         new_p_m = new_p_m / new_p_m[:, -1].reshape(
             p.T, 1
         )  # normalize prices by industry M
@@ -1039,7 +1015,6 @@ def run_TPI(p, client=None):
         )
         BQ[: p.T] = utils.convex_combo(BQnew[: p.T], BQ[: p.T], p.nu)
         D[: p.T] = Dnew[: p.T]
-        # Y[:p.T] = utils.convex_combo(Ynew[:p.T], Y[:p.T], p.nu)
         if not p.baseline_spending:
             TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
@@ -1074,8 +1049,6 @@ def run_TPI(p, client=None):
             (TR_new[: p.T] - TR[: p.T]).max(),
             (TR_new[: p.T] - TR[: p.T]).min(),
         )
-        # print('Y diff: ', (Ynew[:p.T]-Y[:p.T]).max(),
-        #       (Ynew[:p.T] - Y[:p.T]).min())
 
         TPIdist = np.array(
             list(utils.pct_diff_func(r_p_new[: p.T], r_p[: p.T]))
@@ -1084,9 +1057,7 @@ def run_TPI(p, client=None):
             + list(
                 utils.pct_diff_func(new_p_m[: p.T, :], p_m[: p.T, :]).flatten()
             )
-            +
-            # list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T])) +
-            list(utils.pct_diff_func(BQnew[: p.T], BQ[: p.T]).flatten())
+            + list(utils.pct_diff_func(BQnew[: p.T], BQ[: p.T]).flatten())
             + list(utils.pct_diff_func(TR_new[: p.T], TR[: p.T]))
         ).max()
 

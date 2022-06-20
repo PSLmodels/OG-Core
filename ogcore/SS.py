@@ -331,7 +331,9 @@ def inner_loop(outer_loop_vars, p, client):
         KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
         Y_vec[m_ind] = C_m
         K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
-        L_vec[m_ind] = firm.solve_L(Y_vec[m_ind], K_vec[m_ind], K_g, p, "SS", m_ind)
+        L_vec[m_ind] = firm.solve_L(
+            Y_vec[m_ind], K_vec[m_ind], K_g, p, "SS", m_ind
+        )
         K_demand_open_vec[m_ind] = firm.get_K(
             p.world_int_rate[-1], w_open, L_vec[m_ind], p, "SS", m_ind
         )
@@ -356,9 +358,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r = p.world_int_rate[-1]
     else:
         new_r = firm.get_r(Y_vec[-1], K_vec[-1], p_m, p, "SS", -1)
-    new_w = firm.get_w(
-        Y_vec[-1], L_vec[-1], p_m, p, "SS"
-    )
+    new_w = firm.get_w(Y_vec[-1], L_vec[-1], p_m, p, "SS")
 
     new_r_gov = fiscal.get_r_gov(new_r, p)
     # now get accurate measure of debt service cost
