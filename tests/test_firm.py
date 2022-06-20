@@ -446,19 +446,6 @@ r4 = np.array([0.01, 0.04, 0.55])
 expected4 = np.array([0.465031434, -0.045936078, 0.575172024])
 
 
-# @pytest.mark.parametrize('r,p,method,expected',
-#                          [(r1, p1, 'SS', 0.049263715),
-#                           (r4, p4, 'TPI', np.array([0.746281397, 0.777392047, 1.3062731]))],
-#                          ids=['SS', 'TP'])
-# def test_get_cost_of_capital(r, p, method, expected):
-#     """
-#         choose values that simplify the calculations and are similar to
-#         observed values
-#     """
-#     coc = firm.get_cost_of_capital(r, p, method)
-#     assert (np.allclose(coc, expected, atol=1e-6))
-
-
 @pytest.mark.parametrize(
     "r,p,method,expected",
     [
@@ -840,67 +827,33 @@ def test_get_KY_ratio(r, p_m, p, method, m, expected):
     assert np.allclose(KY_ratio, expected, atol=1e-6)
 
 
-w1 = 1.3
-w2 = np.array([1.3, 1.3, 1.3])
-KL1 = 1.356239389
-KL2 = np.array([1.356239389, 1.356239389, 1.356239389])
-KL3 = 16.0
-KL4 = np.array([16, 16])
-KL5 = np.array([[16, 16], [16, 16], [16, 16]])
-pm_expected1 = np.array([0.377746389])
-pm_expected2 = np.array([0.377746389, 0.377746389, 0.377746389])
-pm_expected3 = np.array([0.325])
-pm_expected4 = np.array([0.325, 0.325])
-pm_expected5 = np.array([[0.325, 0.325], [0.325, 0.325], [0.325, 0.325]])
-
-
-# TODO: add case for Kg>0? can you even solve for price in this way in that case?
-@pytest.mark.parametrize(
-    "w,KL_ratio,p,method,expected",
-    [
-        (w1, KL1, p1, "SS", pm_expected1),
-        (w2, KL2, p1, "TPI", pm_expected2),
-        (w1, KL3, p2, "SS", pm_expected3),
-        (w1, KL4, p3, "SS", pm_expected4),
-        (w2, KL5, p3, "TPI", pm_expected5),
-    ],
-    ids=["SS", "TPI", "SS, epsilon=1.0", "SS, M>1", "TPI, M>1"],
-)
-def test_get_pm(w, KL_ratio, p, method, expected):
-    """
-    Test of the function that computes goods prices
-    """
-    pm = firm.get_pm(w, KL_ratio, p, method)
-    assert np.allclose(pm, expected, atol=1e-6)
-
-
 Y1 = np.array([18.84610765])
 Y2 = np.array([12])
 Y3 = np.array([18.84610765, 18.84610765, 18.84610765])
 Y4 = np.array([12, 12, 12])
 L1 = np.array([9.0])
 L2 = np.array([9.0, 9.0, 9.0])
-pm2_expected1 = np.array([16.53170028])
-pm2_expected2 = np.array([16.53170028, 16.53170028, 16.53170028])
-pm2_expected3 = np.array([1.95])
-pm2_expected4 = np.array([1.95, 1.95, 1.95])
+pm_expected1 = np.array([16.53170028])
+pm_expected2 = np.array([16.53170028, 16.53170028, 16.53170028])
+pm_expected3 = np.array([1.95])
+pm_expected4 = np.array([1.95, 1.95, 1.95])
 
 
 @pytest.mark.parametrize(
     "w,Y,L,p,method,expected",
     [
-        (w1, Y1, L1, p1, "SS", pm2_expected1),
-        (w2, Y3, L2, p1, "TPI", pm2_expected2),
-        (w1, Y2, L1, p2, "SS", pm2_expected3),
-        (w2, Y4, L2, p2, "TPI", pm2_expected4),
+        (w1, Y1, L1, p1, "SS", pm_expected1),
+        (w2, Y3, L2, p1, "TPI", pm_expected2),
+        (w1, Y2, L1, p2, "SS", pm_expected3),
+        (w2, Y4, L2, p2, "TPI", pm_expected4),
     ],
     ids=["SS", "TPI", "SS, epsilon=1.0", "TPI, epsilon=1.0"],
 )
-def test_get_pm2(w, Y, L, p, method, expected):
+def test_get_pm(w, Y, L, p, method, expected):
     """
     Test of the function that computes goods prices
     """
-    pm = firm.get_pm2(w, Y, L, p, method)
+    pm = firm.get_pm(w, Y, L, p, method)
     assert np.allclose(pm, expected, atol=1e-6)
 
 

@@ -613,51 +613,7 @@ def get_cost_of_capital(r, p, method, m=-1):
     return cost_of_capital
 
 
-def get_pm(w, KL_ratio, p, method):
-    r"""
-    Find prices for outputs from each industry.
-
-    .. math::
-        p_{m,t} = \frac{w_{t}^{\varepsilon}}{K_{t}L_{t}}
-
-    Args:
-        w (array_like): the wage rate
-        KL_ratio (array_like): ratio of capital to labor
-        p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
-
-    Returns:
-        p_m (array_like): output prices for each industry
-    """
-    if method == "SS":
-        Z = p.Z[-1, :].reshape(p.M)
-        gamma = p.gamma
-        epsilon = p.epsilon
-    else:
-        Z = p.Z[: p.T, :].reshape((p.T, p.M))
-        gamma = p.gamma.reshape((1, p.M))
-        epsilon = p.epsilon.reshape((1, p.M))
-        w = w.reshape((p.T, 1))
-        KL_ratio = KL_ratio.reshape((p.T, p.M))
-    p_m1 = w / (Z * (1 - gamma) * (KL_ratio**gamma))
-    p_m2 = (w / (Z * (1 - gamma) ** (1 / epsilon))) * (
-        gamma ** (1 / epsilon) * KL_ratio ** ((epsilon - 1) / epsilon)
-        + (1 - gamma) ** (1 / epsilon)
-    ) ** (1 / (1 - epsilon))
-    p_m = p_m1
-    # TODO: find way to do this without for loop
-    for m in range(p.M):
-        if method == "SS":
-            if epsilon[m] != 1.0:
-                p_m[m] = p_m2[m]
-        else:
-            if p.epsilon[m] != 1.0:
-                p_m[:, m] = p_m2[:, m]
-
-    return p_m
-
-
-def get_pm2(w, Y_vec, L_vec, p, method):
+def get_pm(w, Y_vec, L_vec, p, method):
     r"""
     Find prices for outputs from each industry.
 
