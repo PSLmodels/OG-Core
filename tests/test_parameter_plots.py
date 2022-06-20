@@ -51,7 +51,9 @@ def test_plot_mort_rates_save_fig(tmpdir):
 
 
 def test_plot_pop_growth():
-    fig = parameter_plots.plot_pop_growth(base_params, start_year=2023, include_title=True)
+    fig = parameter_plots.plot_pop_growth(
+        base_params, start_year=2023, include_title=True
+    )
     assert fig
 
 

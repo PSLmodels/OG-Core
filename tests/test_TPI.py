@@ -36,11 +36,15 @@ filename3 = "intial_SS_values_reform_base_spend.pkl"
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        (True, {}, filename1),
-        (False, {}, filename2),
+        # (True, {}, filename1),
+        # (False, {}, filename2),
         (False, {"baseline_spending": True}, filename3),
     ],
-    ids=["Baseline", "Reform", "Reform, baseline_spending"],
+    ids=[
+        #     "Baseline",
+        #  "Reform",
+        "Reform, baseline_spending"
+    ],
 )
 def test_get_initial_SS_values(baseline, param_updates, filename, dask_client):
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
