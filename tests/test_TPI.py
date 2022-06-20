@@ -39,11 +39,7 @@ filename3 = "intial_SS_values_reform_base_spend.pkl"
         (False, {}, filename2),
         (False, {"baseline_spending": True}, filename3),
     ],
-    ids=[
-            "Baseline",
-         "Reform",
-        "Reform, baseline_spending"
-    ],
+    ids=["Baseline", "Reform", "Reform, baseline_spending"],
 )
 def test_get_initial_SS_values(baseline, param_updates, filename, dask_client):
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
@@ -315,31 +311,33 @@ filename10 = os.path.join(
 
 
 @pytest.mark.local
-@pytest.mark.parametrize('baseline,param_updates,filename',
-                         [
-                          (True, param_updates2, filename2),
-                          (True, {}, filename1),
-                          (False, {}, filename3),
-                          (False, param_updates4, filename4),
-                          (True, param_updates5, filename5),
-                          (True, param_updates6, filename6),
-                          (True, param_updates7, filename7),
-                          (True, param_updates8, filename8),
-                          (True, param_updates9, filename9),
-                          (True, param_updates10, filename10)
-                        ],
-                         ids=[
-                              'Baseline, balanced budget',
-                              'Baseline',
-                              'Reform',
-                              'Reform, baseline spending',
-                              'Baseline, small open',
-                              'Baseline, small open some periods',
-                              'Baseline, delta_tau = 0',
-                              'Baseline, Kg > 0',
-                              'Baseline, M=3 non-zero Kg',
-                              'Baseline, M=3 zero Kg'
-                              ])
+@pytest.mark.parametrize(
+    "baseline,param_updates,filename",
+    [
+        (True, param_updates2, filename2),
+        (True, {}, filename1),
+        (False, {}, filename3),
+        (False, param_updates4, filename4),
+        (True, param_updates5, filename5),
+        (True, param_updates6, filename6),
+        (True, param_updates7, filename7),
+        (True, param_updates8, filename8),
+        (True, param_updates9, filename9),
+        (True, param_updates10, filename10),
+    ],
+    ids=[
+        "Baseline, balanced budget",
+        "Baseline",
+        "Reform",
+        "Reform, baseline spending",
+        "Baseline, small open",
+        "Baseline, small open some periods",
+        "Baseline, delta_tau = 0",
+        "Baseline, Kg > 0",
+        "Baseline, M=3 non-zero Kg",
+        "Baseline, M=3 zero Kg",
+    ],
+)
 def test_run_TPI_full_run(
     baseline, param_updates, filename, tmpdir, dask_client
 ):
