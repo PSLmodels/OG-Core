@@ -2,6 +2,7 @@
 Tests of parameter_plots.py module
 """
 
+from tracemalloc import start
 import pytest
 import os
 import numpy as np
@@ -58,7 +59,7 @@ def test_plot_pop_growth():
 
 
 def test_plot_pop_growth_rates_save_fig(tmpdir):
-    parameter_plots.plot_pop_growth(base_params, path=tmpdir)
+    parameter_plots.plot_pop_growth(base_params, start_year=2023, path=tmpdir)
     img = mpimg.imread(os.path.join(tmpdir, "pop_growth_rates.png"))
 
     assert isinstance(img, np.ndarray)
