@@ -636,7 +636,6 @@ def get_pm(w, Y_vec, L_vec, p, method):
     else:
         Y = Y_vec.reshape((p.T, p.M))
         L = L_vec.reshape((p.T, p.M))
-        # w = w.reshape((p.T, 1))
         T = p.T
     p_m = np.zeros((T, p.M))
     for m in range(p.M):  # TODO: try to get rid of this loop

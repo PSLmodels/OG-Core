@@ -296,7 +296,6 @@ def get_cm(c_s, p_m, p_tilde, alpha_c, method="SS"):
         p_tilde.reshape(1, 1, 1)
         p_m = p_m.reshape(M, 1, 1)
         c_s = c_s.reshape(1, S, J)
-        # c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))).reshape(p_m.shape[0], 1, 1) * c_s.reshape(1, c_s.shape[0], c_s.shape[1])
         c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))) * c_s
     else:  # Time path case
         M = alpha_c.shape[0]
@@ -307,7 +306,6 @@ def get_cm(c_s, p_m, p_tilde, alpha_c, method="SS"):
         p_tilde = p_tilde.reshape(T, 1, 1, 1)
         p_m = p_m.reshape(T, M, 1, 1)
         c_s = c_s.reshape(T, 1, S, J)
-        # print('Shapes in get cm: ', c_s.shape, alpha_c.shape, p_m.shape, p_tilde.shape, (alpha_c * ((p_m / p_tilde) ** (-1))).shape)
         c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))) * c_s
     return c_sm
 

@@ -5,7 +5,6 @@ Functions to compute economic aggregates.
 """
 
 # Packages
-from cmath import tau
 import numpy as np
 from ogcore import tax
 
