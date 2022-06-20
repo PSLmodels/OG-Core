@@ -169,9 +169,7 @@ class Specifications(paramtools.Parameters):
         tp_param_list2 = ["Z", "delta_tau_annual", "cit_rate"]
         for item in tp_param_list2:
             this_attr = getattr(self, item)
-            print("Parameter ", item, "has shape", this_attr.shape)
             if this_attr.ndim == 1:
-                print("We here")
                 # case where enter single number, so assume constant
                 # across years and industries
                 if this_attr.shape[0] == 1:
@@ -198,7 +196,6 @@ class Specifications(paramtools.Parameters):
                     )
                 this_attr = np.squeeze(this_attr, axis=2)
             elif this_attr.ndim == 2:
-                print("Two off bat")
                 if this_attr.shape[1] > 1 and this_attr.shape[1] != self.M:
                     print(
                         "please provide values of "
