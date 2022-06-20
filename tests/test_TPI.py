@@ -11,7 +11,6 @@ from ogcore.parameters import Specifications
 
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-# SS.VERBOSE = False
 
 TEST_PARAM_DICT = json.load(
     open(os.path.join(CUR_PATH, "testing_params.json"))
@@ -36,13 +35,13 @@ filename3 = "intial_SS_values_reform_base_spend.pkl"
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        # (True, {}, filename1),
-        # (False, {}, filename2),
+        (True, {}, filename1),
+        (False, {}, filename2),
         (False, {"baseline_spending": True}, filename3),
     ],
     ids=[
-        #     "Baseline",
-        #  "Reform",
+            "Baseline",
+         "Reform",
         "Reform, baseline_spending"
     ],
 )
@@ -316,58 +315,31 @@ filename10 = os.path.join(
 
 
 @pytest.mark.local
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [
-#                           (True, param_updates2, filename2),
-#                           (True, {}, filename1),
-#                           (False, {}, filename3),
-#                           (False, param_updates4, filename4),
-#                           (True, param_updates5, filename5),
-#                           (True, param_updates6, filename6),
-#                           (True, param_updates7, filename7),
-#                           (True, param_updates8, filename8),
-#                           (True, param_updates9, filename9),
-#                           (True, param_updates10, filename10)
-#                         ],
-#                          ids=[
-#                               'Baseline, balanced budget',
-#                               'Baseline',
-#                               'Reform',
-#                               'Reform, baseline spending',
-#                               'Baseline, small open',
-#                               'Baseline, small open some periods',
-#                               'Baseline, delta_tau = 0',
-#                               'Baseline, Kg > 0',
-#                               'Baseline, M=3 non-zero Kg',
-#                               'Baseline, M=3 zero Kg'
-#                               ])
-@pytest.mark.parametrize(
-    "baseline,param_updates,filename",
-    [
-        #   (True, param_updates2, filename2),
-        #   (True, {}, filename1),
-        (False, {}, filename3),
-        #   (False, param_updates4, filename4),
-        #   (True, param_updates5, filename5),
-        #   (True, param_updates6, filename6),
-        #   (True, param_updates7, filename7),
-        #   (True, param_updates8, filename8),
-        #   (True, param_updates9, filename9),
-        #   (True, param_updates10, filename10)
-    ],
-    ids=[
-        #   'Baseline, balanced budget',
-        #   'Baseline',
-        "Reform",
-        #   'Reform, baseline spending',
-        #   'Baseline, small open',
-        #   'Baseline, small open some periods',
-        #   'Baseline, delta_tau = 0',
-        #   'Baseline, Kg > 0',
-        #   'Baseline, M=3 non-zero Kg',
-        #   'Baseline, M=3 zero Kg'
-    ],
-)
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [
+                          (True, param_updates2, filename2),
+                          (True, {}, filename1),
+                          (False, {}, filename3),
+                          (False, param_updates4, filename4),
+                          (True, param_updates5, filename5),
+                          (True, param_updates6, filename6),
+                          (True, param_updates7, filename7),
+                          (True, param_updates8, filename8),
+                          (True, param_updates9, filename9),
+                          (True, param_updates10, filename10)
+                        ],
+                         ids=[
+                              'Baseline, balanced budget',
+                              'Baseline',
+                              'Reform',
+                              'Reform, baseline spending',
+                              'Baseline, small open',
+                              'Baseline, small open some periods',
+                              'Baseline, delta_tau = 0',
+                              'Baseline, Kg > 0',
+                              'Baseline, M=3 non-zero Kg',
+                              'Baseline, M=3 zero Kg'
+                              ])
 def test_run_TPI_full_run(
     baseline, param_updates, filename, tmpdir, dask_client
 ):
@@ -405,7 +377,6 @@ def test_run_TPI_full_run(
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
-    pickle.dump(test_dict, open(filename, "wb"))
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict["r_p"] = expected_dict.pop("r_hh")
@@ -500,7 +471,6 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
         ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
         with open(ss_dir, "wb") as f:
             pickle.dump(ss_outputs, f)
-        # pickle.dump(ss_outputs, open(os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT2', 'SS', 'SS_vars.pkl'), 'wb'))
     else:
         utils.mkdirs(os.path.join(p.output_base, "SS"))
         ss_dir = os.path.join(p.output_base, "SS", "SS_vars.pkl")
