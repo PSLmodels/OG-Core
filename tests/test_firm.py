@@ -827,6 +827,8 @@ def test_get_KY_ratio(r, p_m, p, method, m, expected):
     assert np.allclose(KY_ratio, expected, atol=1e-6)
 
 
+w1 = 1.3
+w2 = np.array([1.3, 1.3, 1.3])
 Y1 = np.array([18.84610765])
 Y2 = np.array([12])
 Y3 = np.array([18.84610765, 18.84610765, 18.84610765])
