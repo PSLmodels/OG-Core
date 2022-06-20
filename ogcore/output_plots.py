@@ -234,7 +234,7 @@ def plot_industry_aggregates(
                 plt.plot(
                     year_vec,
                     plot_var[start_index : start_index + num_years_to_plot],
-                    label=VAR_LABELS[v + "for industry " + str(m)],
+                    label=VAR_LABELS[v] + "for industry " + str(m),
                 )
             elif plot_type == "levels":
                 plt.plot(
