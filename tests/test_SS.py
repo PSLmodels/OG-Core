@@ -326,6 +326,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         rguess = p.world_int_rate[-1]
     else:
         rguess = 0.06483431412921253
+    r_p_guess = rguess
     wguess = firm.get_w_from_r(rguess, p, "SS")
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
@@ -336,7 +337,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     test_dict = SS.SS_solver(
         b_guess,
         n_guess,
-        rguess,
+        r_p_guess,
         rguess,
         wguess,
         p_m_guess,
@@ -352,7 +353,6 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
-    expected_dict["r_p_ss"] = expected_dict.pop("r_hh_ss")
 
     for k, v in expected_dict.items():
         print("Testing ", k)
@@ -403,6 +403,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         rguess = p.world_int_rate[-1]
     else:
         rguess = 0.06483431412921253
+    r_p_guess = rguess
     wguess = firm.get_w_from_r(rguess, p, "SS")
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
@@ -413,7 +414,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     test_dict = SS.SS_solver(
         b_guess,
         n_guess,
-        rguess,
+        r_p_guess,
         rguess,
         wguess,
         p_m_guess,
@@ -425,16 +426,11 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         dask_client,
         False,
     )
+
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
-    try:
-        expected_dict["r_p_ss"] = expected_dict.pop("r_hh_ss")
-        del test_dict["K_g_ss"]
-        del test_dict["I_g_ss"]
-        del test_dict["L_vec_ss"], test_dict["K_vec_ss"], test_dict["Y_vec_ss"]
-    except KeyError:
-        pass
+
     for k, v in expected_dict.items():
         print("Testing ", k)
         assert np.allclose(test_dict[k], v, atol=1e-05, equal_nan=True)

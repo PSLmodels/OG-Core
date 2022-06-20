@@ -395,10 +395,10 @@ def inner_loop(outer_loop_vars, p, client):
     new_r_p = aggr.get_r_p(
         new_r, new_r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, "SS"
     )
-    print('MPKG from inner = ', MPKg_vec)
-    print('K_vec in inner = ', K_vec)
+    print("MPKG from inner = ", MPKg_vec)
+    print("K_vec in inner = ", K_vec)
     print("D in inner = ", D)
-    print('r and r_gov in inner = ', new_r, new_r_gov)
+    print("r and r_gov in inner = ", new_r, new_r_gov)
     average_income_model = (
         (new_r_p * b_s + new_w * p.e * nssmat)
         * p.omega_SS.reshape(p.S, 1)
@@ -529,13 +529,19 @@ def inner_loop(outer_loop_vars, p, client):
     rc_error = (
         Y_vec - C_vec - G_vec - I_d_vec - I_g_vec - net_capital_outflows_vec
     )
-    print('Resource Constraint error in inner loop = ', rc_error)
+    print("Resource Constraint error in inner loop = ", rc_error)
 
     # print('BQ at the end of inner loop: ', new_BQ)
-    print('Coming out of inner loop vars are',
-          new_r_p, new_r, new_w, new_BQ, new_TR)
-    print('inner loop prices = ', p_m, p_tilde)
-    print('NEW inner loop prices = ', new_p_m, new_p_tilde)
+    print(
+        "Coming out of inner loop vars are",
+        new_r_p,
+        new_r,
+        new_w,
+        new_BQ,
+        new_TR,
+    )
+    print("inner loop prices = ", p_m, p_tilde)
+    print("NEW inner loop prices = ", new_p_m, new_p_tilde)
 
     return (
         euler_errors,
@@ -728,16 +734,16 @@ def SS_solver(
         MPKg_vec[m] = firm.get_MPx(
             Y_vec_ss[m], K_g_ss, p.gamma_g[m], p, "SS", m
         )
-    print('MPKG from SS solver = ', MPKg_vec)
-    print('K_vec in SS solver = ', K_vec_ss)
+    print("MPKG from SS solver = ", MPKg_vec)
+    print("K_vec in SS solver = ", K_vec_ss)
     print("D in SS solver = ", Dss)
-    print('r and r_gov in SS solver = ', rss, r_gov_ss)
+    print("r and r_gov in SS solver = ", rss, r_gov_ss)
     # r_p_ss = aggr.get_r_p(
     #     rss, r_gov_ss, p_m_ss, K_vec_ss, K_g_ss, Dss, MPKg_vec, p, "SS"
     # )
     r_p_ss = new_r_p
-    print('Diff in RP = ', r_p_ss - r_p)
-    print('Diff in RP2 = ', r_p_ss - new_r_p)
+    print("Diff in RP = ", r_p_ss - r_p)
+    print("Diff in RP2 = ", r_p_ss - new_r_p)
     # print("Diff r and r_p = ", rss - r_p_ss)
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
@@ -834,7 +840,7 @@ def SS_solver(
             p,
             "SS",
         )
-    print('SS solver prices = ', p_m_ss, p_tilde_ss)
+    print("SS solver prices = ", p_m_ss, p_tilde_ss)
 
     # TODO: will need to add p_m for cons taxes in line below
     (
@@ -924,8 +930,7 @@ def SS_solver(
         )
 
     print("C and Y in SS solver = ", C_vec_ss, Y_vec_ss)
-    print('Coming out of SS solver are',
-          r_p_ss, rss, wss, BQss, TR_ss)
+    print("Coming out of SS solver are", r_p_ss, rss, wss, BQss, TR_ss)
 
     if Gss < 0:
         print(
@@ -1216,40 +1221,49 @@ def run_SS(p, client=None):
         baseline_ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
         ss_solutions = utils.safe_read_pickle(baseline_ss_dir)
         # use baseline solution as starting values if dimensions match
-        if ss_solutions["bssmat_splus1"].shape == (p.S, p.J):
-            print("Using previous solutions for SS")
-            (
-                b_guess,
-                n_guess,
-                r_p_guess,
-                rguess,
-                wguess,
-                p_m_guess,
-                BQguess,
-                TRguess,
-                Yguess,
-                factor,
-            ) = (
-                ss_solutions["bssmat_splus1"],
-                ss_solutions["nssmat"],
-                float(ss_solutions["r_p_ss"]),
-                float(ss_solutions["rss"]),
-                float(ss_solutions["wss"]),
-                ss_solutions[
-                    "p_m_ss"
-                ],  # Not sure why need to index p_m,but otherwise its shape is off..
-                ss_solutions["BQss"],
-                float(ss_solutions["TR_ss"]),
-                float(ss_solutions["Yss"]),
-                ss_solutions["factor_ss"],
-            )
-        else:
+        try:
+            if ss_solutions["bssmat_splus1"].shape == (
+                p.S,
+                p.J,
+            ) and ss_solutions["Y_vec_ss"].shape == (p.M):
+                print("Using previous solutions for SS")
+                (
+                    b_guess,
+                    n_guess,
+                    r_p_guess,
+                    rguess,
+                    wguess,
+                    p_m_guess,
+                    BQguess,
+                    TRguess,
+                    Yguess,
+                    factor,
+                ) = (
+                    ss_solutions["bssmat_splus1"],
+                    ss_solutions["nssmat"],
+                    float(ss_solutions["r_p_ss"]),
+                    float(ss_solutions["rss"]),
+                    float(ss_solutions["wss"]),
+                    ss_solutions[
+                        "p_m_ss"
+                    ],  # Not sure why need to index p_m,but otherwise its shape is off..
+                    ss_solutions["BQss"],
+                    float(ss_solutions["TR_ss"]),
+                    float(ss_solutions["Yss"]),
+                    ss_solutions["factor_ss"],
+                )
+                use_new_guesses = False
+            else:
+                use_new_guesses = True
+        except KeyError:
+            use_new_guesses = True
+        if use_new_guesses:
             if p.use_zeta:
                 b_guess = np.ones((p.S, p.J)) * 0.0055
                 n_guess = np.ones((p.S, p.J)) * 0.4 * p.ltilde
             else:
                 b_guess = np.ones((p.S, p.J)) * 0.07
-                n_guess = np.ones((p.S, p.J)) * 0.4 * p.ltilde
+                n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
             r_p_guess = p.initial_guess_r_SS
             rguess = p.initial_guess_r_SS
             wguess = firm.get_w_from_r(rguess, p, "SS")
@@ -1258,6 +1272,8 @@ def run_SS(p, client=None):
             Yguess = TRguess / p.alpha_T[-1]
             factor = p.initial_guess_factor_SS
             BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
+            if p.use_zeta:
+                BQguess = 0.12231465279007188
         if p.baseline_spending:
             TR_ss = TRguess
             ss_params_reform = (b_guess, n_guess, TR_ss, factor, p, client)

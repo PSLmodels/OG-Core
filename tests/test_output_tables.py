@@ -89,7 +89,11 @@ def test_wealth_moments_table():
     Need SCF data which is too large to check into repo so this will
     be flagged so as to not run on TravisCI.
     """
-    df = output_tables.wealth_moments_table(base_ss, base_params, data_moments=np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.6, 1.0, 2.0]))
+    df = output_tables.wealth_moments_table(
+        base_ss,
+        base_params,
+        data_moments=np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.6, 1.0, 2.0]),
+    )
     assert isinstance(df, pd.DataFrame)
 
 

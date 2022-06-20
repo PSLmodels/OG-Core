@@ -136,7 +136,7 @@ test_data = [
 def test_plot_aggregates_save_fig(tmpdir):
     path = os.path.join(tmpdir, "test_plot.png")
     output_plots.plot_aggregates(
-        base_tpi, base_params,start_year=2023,  plot_type="levels", path=path
+        base_tpi, base_params, start_year=2023, plot_type="levels", path=path
     )
     img = mpimg.imread(path)
 
@@ -231,7 +231,12 @@ def test_ability_bar():
 def test_ability_bar_save_fig(tmpdir):
     path = os.path.join(tmpdir, "test_plot.png")
     output_plots.ability_bar(
-        base_tpi, base_params, reform_tpi, reform_params, start_year=2023, path=path
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        start_year=2023,
+        path=path,
     )
     img = mpimg.imread(path)
 
@@ -313,7 +318,12 @@ test_data = [
 def test_tpi_profiles_save_fig(tmpdir):
     path = os.path.join(tmpdir, "test_plot.png")
     output_plots.tpi_profiles(
-        base_tpi, base_params, reform_tpi, reform_params, start_year=2023, path=path
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        start_year=2023,
+        path=path,
     )
     img = mpimg.imread(path)
 

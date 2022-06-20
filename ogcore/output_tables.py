@@ -375,7 +375,9 @@ def gini_table(
     return table
 
 
-def wealth_moments_table(base_ss, base_params, data_moments=None, table_format=None, path=None):
+def wealth_moments_table(
+    base_ss, base_params, data_moments=None, table_format=None, path=None
+):
     """
     Creates table with moments of the wealth distribution from the model
     and SCF data.

@@ -1172,11 +1172,11 @@ def run_TPI(p, client=None):
     G_vec = np.zeros((p.T, p.M))
     G_vec[:, -1] = G[: p.T]
     I_d_vec = np.zeros((p.T, p.M))
-    I_d_vec[:, -1] = I_d
+    I_d_vec[:, -1] = I_d[: p.T]
     I_g_vec = np.zeros((p.T, p.M))
-    I_g_vec[:, -1] = I_g
+    I_g_vec[:, -1] = I_g[: p.T]
     net_capital_outflows_vec = np.zeros((p.T, p.M))
-    net_capital_outflows_vec[:, -1] = net_capital_outflows
+    net_capital_outflows_vec[:, -1] = net_capital_outflows[: p.T]
     RC_error = aggr.resource_constraint(
         Y_vec, C_vec, G_vec, I_d_vec, I_g_vec, net_capital_outflows_vec
     )

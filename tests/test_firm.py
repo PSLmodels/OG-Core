@@ -923,7 +923,7 @@ new_param_values5 = {
     "gamma": [0.5],
     "gamma_g": [0.2],
     "epsilon": [1.0],
-    "Z": [[1.5], [2.5],	[0.6]],
+    "Z": [[1.5], [2.5], [0.6]],
     "delta_tau_annual": [[0.35]],
     "delta_annual": 0.05,
     "cit_rate": [[0.3]],
@@ -955,6 +955,7 @@ Y6 = np.ones(3) * 3.731865484
 K6 = np.ones(3) * 9.0
 Kg6 = np.ones(3) * 0.9
 
+
 @pytest.mark.parametrize(
     "Y,K,Kg,p,method,expected",
     [
@@ -963,9 +964,16 @@ Kg6 = np.ones(3) * 0.9
         (Y2, K1, Kg, p2, "SS", L_expected1),
         (Y4, K2, Kg2, p2, "TPI", L_expected2),
         (Y5, K5, Kg5, p5, "TPI", L_expected5),
-        (Y6, K6, Kg6, p6, "TPI", L_expected5)
+        (Y6, K6, Kg6, p6, "TPI", L_expected5),
     ],
-    ids=["SS", "TPI", "SS, epsilon=1.0", "TPI, epsilon=1.0", "TPI, eps=1, Kg>0", "TPI, eps!=1, Kg>0"],
+    ids=[
+        "SS",
+        "TPI",
+        "SS, epsilon=1.0",
+        "TPI, epsilon=1.0",
+        "TPI, eps=1, Kg>0",
+        "TPI, eps!=1, Kg>0",
+    ],
 )
 def test_solve_L(Y, K, Kg, p, method, expected):
     """

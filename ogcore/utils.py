@@ -713,7 +713,7 @@ def fetch_files_from_web(file_urls):
 
     for file_url in file_urls:
         request = urllib.request.Request(file_url)
-        request.add_header('User-Agent', 'Mozilla/5.0')
+        request.add_header("User-Agent", "Mozilla/5.0")
         url = urllib.request.urlopen(request)
 
         f = NamedTemporaryFile(delete=False)

@@ -237,8 +237,7 @@ filename5 = os.path.join(
 )
 param_updates6 = {
     "zeta_K": [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2],
-    "initial_guess_r_SS": 0.08,
-    "initial_guess_TR_SS": 0.02,
+    "initial_guess_r_SS": 0.10,
 }
 filename6 = os.path.join(
     CUR_PATH,
@@ -249,8 +248,7 @@ param_updates7 = {
     "delta_tau_annual": [[0.0]],
     "zeta_K": [0.0],
     "zeta_D": [0.0],
-    "initial_guess_r_SS": 0.03,
-    "initial_guess_TR_SS": 0.02,
+    "initial_guess_r_SS": 0.01,
 }
 filename7 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_delta_tau0.pkl"
@@ -267,35 +265,53 @@ filename8 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_Kg_nonzero.pkl"
 )
 param_updates9 = {
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
     "alpha_c": [0.2, 0.4, 0.4],
-    "initial_guess_r_SS": 0.16,  # .10,
-    "initial_guess_TR_SS": 0.07, # 0.05,
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
     "alpha_I": [0.01],
     "initial_Kg_ratio": 0.01,
+    "debt_ratio_ss": 1.5,
 }
 filename9 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_baseline_M3_Kg_nonzero.pkl"
 )
+alpha_T = np.zeros(50)  # Adjusting the path of transfer spending
+alpha_T[0:2] = 0.09
+alpha_T[2:10] = 0.09 + 0.01
+alpha_T[10:40] = 0.09 - 0.01
+alpha_T[40:] = 0.09
+alpha_G = np.zeros(7)  # Adjusting the path of non-transfer spending
+alpha_G[0:3] = 0.05 - 0.01
+alpha_G[3:6] = 0.05 - 0.005
+alpha_G[6:] = 0.05
 param_updates10 = {
+    "start_year": 2023,
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
-    "initial_guess_r_SS": 0.10, # 0.04,
-    "initial_guess_TR_SS": 0.05, #0.05,
-    "alpha_I": [0.0],
-    "initial_Kg_ratio": 0.0,
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "debt_ratio_ss": 1.5,
+    "alpha_T": alpha_T.tolist(),
+    "alpha_G": alpha_G.tolist(),
 }
 filename10 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_baseline_M3_Kg_zero.pkl"
 )
 
-# @pytest.mark.local
+
+@pytest.mark.local
 # @pytest.mark.parametrize('baseline,param_updates,filename',
 #                          [
 #                           (True, param_updates2, filename2),
@@ -319,22 +335,33 @@ filename10 = os.path.join(
 #                               'Baseline, delta_tau = 0',
 #                               'Baseline, Kg > 0',
 #                               'Baseline, M=3 non-zero Kg',
-#   'Baseline, M=3 zero Kg'
+#                               'Baseline, M=3 zero Kg'
 #                               ])
-@pytest.mark.local
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        # (True, {}, filename1),
-        #  (True, param_updates2, filename2),
-        # (True, param_updates9, filename9),
-          (True, param_updates10, filename10),
+        #   (True, param_updates2, filename2),
+        #   (True, {}, filename1),
+        (False, {}, filename3),
+        #   (False, param_updates4, filename4),
+        #   (True, param_updates5, filename5),
+        #   (True, param_updates6, filename6),
+        #   (True, param_updates7, filename7),
+        #   (True, param_updates8, filename8),
+        #   (True, param_updates9, filename9),
+        #   (True, param_updates10, filename10)
     ],
     ids=[
-    #    'Baseline',
-        # 'Baseline balanced budget',
-        # "Baseline, M=3 non-zero Kg",
-        'Baseline, M=3 zero Kg'
+        #   'Baseline, balanced budget',
+        #   'Baseline',
+        "Reform",
+        #   'Reform, baseline spending',
+        #   'Baseline, small open',
+        #   'Baseline, small open some periods',
+        #   'Baseline, delta_tau = 0',
+        #   'Baseline, Kg > 0',
+        #   'Baseline, M=3 non-zero Kg',
+        #   'Baseline, M=3 zero Kg'
     ],
 )
 def test_run_TPI_full_run(
@@ -374,6 +401,7 @@ def test_run_TPI_full_run(
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
+    pickle.dump(test_dict, open(filename, "wb"))
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict["r_p"] = expected_dict.pop("r_hh")
@@ -506,20 +534,28 @@ param_updates5 = {"zeta_K": [1.0]}
 filename5 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_small_open_2.pkl"
 )
-param_updates6 = {"zeta_K": [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
+param_updates6 = {
+    "zeta_K": [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2],
+    "initial_guess_r_SS": 0.10,
+}
 filename6 = filename = os.path.join(
     CUR_PATH,
     "test_io_data",
     "run_TPI_outputs_baseline_small_open_some_periods_2.pkl",
 )
-param_updates7 = {"delta_tau_annual": [0.0], "zeta_K": [0.0], "zeta_D": [0.0]}
+param_updates7 = {
+    "delta_tau_annual": [[0.0]],
+    "zeta_K": [0.0],
+    "zeta_D": [0.0],
+    "initial_guess_r_SS": 0.01,
+}
 filename7 = filename = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_delta_tau0_2.pkl"
 )
 param_updates8 = {
     "delta_g_annual": 0.02,
     "alpha_I": [0.01],
-    "gamma_g": 0.07,
+    "gamma_g": [0.07],
     "initial_Kg_ratio": 0.15,
     "initial_guess_r_SS": 0.06,
     "initial_guess_TR_SS": 0.03,
