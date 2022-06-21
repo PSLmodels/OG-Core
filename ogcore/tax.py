@@ -203,17 +203,17 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
     Finds total business income tax revenue.
 
     .. math::
-        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) -
-        \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}
+        R_{t}^{b} = \sum_{m=1}^{M}\tau_{m,t}^{b}(Y_{m,t} - w_{t}L_{m,t}) -
+        \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau}
     Args:
         r (array_like): real interest rate
-        Y (array_like): aggregate output
-        L (array_like): aggregate labor demand
-        K (array_like): aggregate capital demand
+        Y (array_like): aggregate output for each industry
+        L (array_like): aggregate labor demand for each industry
+        K (array_like): aggregate capital demand for each industry
         p_m (array_like): output prices
         p (OG-Core Specifications object): model parameters
-        m (int or None): index for production industry
-
+        m (int or None): index for production industry, if None, then
+            compute for all industries
     Returns:
         business_revenue (array_like): aggregate business tax revenue
 

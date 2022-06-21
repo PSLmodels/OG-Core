@@ -338,7 +338,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         guesses (tuple): initial guesses for b and n, (guesses_b,
             guesses_n)
         outer_loop_vars (tuple): values for factor prices and economic
-            aggregates used in household problem (r, w, r_p, BQ, TR,
+            aggregates used in household problem (r_p, r, w, p+m, BQ, TR,
             theta)
         r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital

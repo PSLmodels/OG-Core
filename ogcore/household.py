@@ -338,11 +338,11 @@ def FOC_savings(
     lifetime income group at a time.
 
     .. math::
-        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}
+        \tilde{p}_{t}c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}
         \biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} +
         \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}
         \bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)
-        (c_{j,s+1,t+1})^{-\sigma}\biggr]
+        \tilde{p}_{t+1}(c_{j,s+1,t+1})^{-\sigma}\biggr]
 
     Args:
         r (array_like): the real interest rate
@@ -476,7 +476,7 @@ def FOC_labor(
 
     .. math::
         w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)
-        (c_{j,s,t})^{-\sigma} = \chi^n_{s}
+        \tilde{p}_{t}(c_{j,s,t})^{-\sigma} = \chi^n_{s}
         \biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}
         {\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 -
         \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]

@@ -289,8 +289,9 @@ def revenue(
         R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
         (T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}
         w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +
-        \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) -
-        \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}
+        \tau^{w}_{t}b_{j,s,t}) +
+        \sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -
+        \tau^{b}_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t}
 
     Args:
         r (array_like): the real interest rate
@@ -403,6 +404,7 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     Args:
         r (array_like): the real interest rate
         r_gov (array_like): the real interest rate on government debt
+        p_m (array_like): good prices
         K_vec (array_like): aggregate capital demand from each industry
         K_g (array_like): aggregate public capital
         D (array_like): aggregate government debt

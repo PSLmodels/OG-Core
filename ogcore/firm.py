@@ -580,7 +580,7 @@ def get_cost_of_capital(r, p, method, m=-1):
     Compute the cost of capital.
 
     .. math::
-        \rho = \frac{r + delta - \tau^{b} delta_tau}{1 - \tau^{b}}
+        \rho_{m,t} = \frac{r_{t} + delta_{M,t} - \tau^{b}_{m,t} delta^{\tau}_{m,t}}{1 - \tau^{b}_{m,t}}
 
     Args:
         r (array_like): the real interest rate
@@ -618,11 +618,13 @@ def get_pm(w, Y_vec, L_vec, p, method):
     Find prices for outputs from each industry.
 
     .. math::
-        p_{m,t} = \frac{w_{t}^{\varepsilon}}{K_{t}L_{t}}
+         p_{m,t}=\frac{w_{t}}{\left((1-\gamma_m-\gamma_{g,m})
+        \frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right)^{\varepsilon_m}}
 
     Args:
         w (array_like): the wage rate
-        KL_ratio (array_like): ratio of capital to labor
+        Y_vec (array_like): output for each industry
+        L_vec (array_like): labor demand for each industry
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
@@ -653,6 +655,9 @@ def get_KY_ratio(r, p_m, p, method, m=-1):
     Get capital output ratio from FOC for interest rate.
 
     .. math::
+        \frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}}=\gamma_{m}
+        \left(\frac{p_{m,t}Z_{m,t}^{\frac{\varepsilon_m-1}
+        {\varepsilon_m}}}{\rho_{m,t}}\right)^{\varepsilon_m}
 
     Args:
         r (array_like): the real interest rate
@@ -694,7 +699,27 @@ def solve_L(Y, K, K_g, p, method, m=-1):
     Solve for labor supply from the production function
 
     .. math::
-        L_{m,t} = \frac{Y_{t} - K_{t} - K_{t}^{g}}{p_{m,t}}
+         \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}
+            {Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} -
+            \gamma_{m}^{\frac{1}{\varepsilon_m}}\hat{K}_{m,t}^
+            {\frac{\varepsilon_m-1}{\varepsilon_m}} -
+            \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^
+            {\frac{\varepsilon_m-1}{\varepsilon_m}}}
+            {(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}
+            \right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
+
+    Args:
+        Y (array_like): output for each industry
+        K_vec (array_like): capital demand for each industry
+        K_g (array_like): public capital stock
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+        m (int or None): index of industry to compute L for (None will
+            compute L for all industries)
+
+    Returns:
+        L (array_like): labor demand each industry
+
     """
     gamma = p.gamma[m]
     gamma_g = p.gamma_g[m]

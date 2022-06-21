@@ -43,7 +43,7 @@ def euler_equation_solver(guesses, *args):
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2S
-        args (tuple): tuple of arguments (r, w, bq, TR, factor, j, p)
+        args (tuple): tuple of arguments (r, w, p_tilde, bq, TR, factor, j, p)
         r (scalar): real interest rate
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
@@ -172,15 +172,18 @@ def inner_loop(outer_loop_vars, p, client):
 
     Args:
         outer_loop_vars (tuple): tuple of outer loop variables,
-            (bssmat, nssmat, r, w, BQ, TR, factor) or
-            (bssmat, nssmat, r, w, BQ, Y, TR, factor)
+            (bssmat, nssmat, r_p, r, w, p_m, BQ, TR, factor) or
+            (bssmat, nssmat, r_p, r, w, p_m, BQ, Y, TR, factor)
         bssmat (Numpy array): initial guess at savings, size = SxJ
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
-        BQ (array_like): aggregate bequest amount(s)
-        Y (scalar): real GDP
-        TR (scalar): lump sum transfer amount
-        factor (scalar): scaling factor converting model units to dollars
+        r_p (scalar): return on household investment portfolio
+        r (scalar): real interest rate
         w (scalar): real wage rate
+        p_m (array_like): good prices
+        BQ (array_like): aggregate bequest amount(s)
+        TR (scalar): lump sum transfer amount
+        Y (scalar): real GDP
+        factor (scalar): scaling factor converting model units to dollars
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
 
@@ -196,6 +199,10 @@ def inner_loop(outer_loop_vars, p, client):
             * new_r_p (scalar): real interest rate on household
                 portfolio
             * new_w (scalar): real wage rate
+            * new_p_m (array_like): good prices
+            * K_vec (array_like): capital demand for each industry
+            * L_vec (array_like): labor demand for each industry
+            * Y_vec (array_like): output from each industry
             * new_TR (scalar): lump sum transfer amount
             * new_Y (scalar): real GDP
             * new_factor (scalar): scaling factor converting model
@@ -531,11 +538,14 @@ def SS_solver(
     Args:
         bmat (Numpy array): initial guess at savings, size = SxJ
         nmat (Numpy array): initial guess at labor supply, size = SxJ
+        r_p (scalar): return on household investment portfolio
         r (scalar): real interest rate
+        w (scalar): real wage rate
+        p_m (array_like): good prices
+        Y (scalar): real GDP
         BQ (array_like): aggregate bequest amount(s)
         TR (scalar): lump sum transfer amount
         factor (scalar): scaling factor converting model units to dollars
-        Y (scalar): real GDP
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
 
@@ -961,8 +971,8 @@ def SS_fsolve(guesses, *args):
     as w, r, TR and the scaling factor, using a root finder.
 
     Args:
-        guesses (list): initial guesses outer loop variables (r, BQ,
-            TR, factor)
+        guesses (list): initial guesses outer loop variables (r_p, r,
+            w, p_m, BQ, TR (or Y), factor)
         args (tuple): tuple of arguments (bssmat, nssmat, TR_ss,
             factor_ss, p, client)
         bssmat (Numpy array): initial guess at savings, size = SxJ
