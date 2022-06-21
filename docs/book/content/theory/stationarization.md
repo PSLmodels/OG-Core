@@ -165,7 +165,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \hat{PR}_{m,t} = (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}\hat{K}_{g,m,t} \quad\forall m,t
   ```
 
-  Using the derivation from {eq}`EqFirmsPayout` and {eq}`EqFirms_rKt` in Chapter {ref}`Chap_Firms`, we can stationarize the terms in the right-hand-side of the expression for $r_{K,t}$ by multiplying and dividing the quotient in the last term by $e^{g_y t}\tilde{N}_t$. This implies that the interest rate paid out by the financial intermediary on private capital $r_{K,t}$ is stationary, whether the variables on the right-hand-side are non-stationary in {eq}`EqFirms_rKt` or stationarizy as in {eq}`EqStnrz_rKt`.
+  Using the derivation from {eq}`EqFirmsPayout` and {eq}`EqFirms_rKt` in Chapter {ref}`Chap_Firms`, we can stationarize the terms in the right-hand-side of the expression for $r_{K,t}$ by multiplying and dividing the quotient in the last term by $e^{g_y t}\tilde{N}_t$. This implies that the interest rate paid out by the financial intermediary on private capital $r_{K,t}$ is stationary, whether the variables on the right-hand-side are non-stationary in {eq}`EqFirms_rKt` or stationarized as in {eq}`EqStnrz_rKt`.
 
   ```{math}
   :label: EqStnrz_rKt
