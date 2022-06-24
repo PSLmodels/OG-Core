@@ -308,7 +308,7 @@ def inner_loop(outer_loop_vars, p, client):
         p.tau_c[-1, :, :],
         p,
     )
-    c_m = household.get_cm(c_s, p_m, p_tilde, p.alpha_c)
+    c_m = household.get_cm(c_s, p_m, p_tilde, p.tau_c[-1, :], p.alpha_c)
     L = aggr.get_L(nssmat, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
 
@@ -455,7 +455,7 @@ def inner_loop(outer_loop_vars, p, client):
         b_s,
         nssmat,
         new_bq,
-        cssmat,
+        c_m,
         Y_vec,
         L_vec,
         K_vec,
@@ -788,7 +788,7 @@ def SS_solver(
     )
     yss_before_tax_mat = household.get_y(r_p_ss, wss, bssmat_s, nssmat, p)
     Css = aggr.get_C(cssmat, p, "SS")
-    c_m_ss_mat = household.get_cm(cssmat, p_m_ss, p_tilde_ss, p.alpha_c)
+    c_m_ss_mat = household.get_cm(cssmat, p_m_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c)
     C_vec_ss = np.zeros(p.M)
     for m_ind in range(
         p.M
@@ -799,7 +799,6 @@ def SS_solver(
             "SS",
         )
 
-    # TODO: will need to add p_m for cons taxes in line below
     (
         total_tax_revenue,
         iit_payroll_tax_revenue,
@@ -817,7 +816,7 @@ def SS_solver(
         bssmat_s,
         nssmat,
         bqssmat,
-        cssmat,
+        c_m_ss_mat,
         Y_vec_ss,
         L_vec_ss,
         K_vec_ss,

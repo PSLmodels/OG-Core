@@ -270,7 +270,7 @@ def get_cons(r, w, p_tilde, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     return cons
 
 
-def get_cm(c_s, p_m, p_tilde, alpha_c, method="SS"):
+def get_cm(c_s, p_m, p_tilde, tau_c, alpha_c, method="SS"):
     r"""
     Compute consumption of good m given amount of composite consumption
     and prices.
@@ -282,6 +282,7 @@ def get_cm(c_s, p_m, p_tilde, alpha_c, method="SS"):
         c_s (array_like): composite consumption
         p_m (array_like): prices for consumption good m
         p_tilde (array_like): composite good price
+        tau_c (array_like): consumption tax rate
         alpha_c (array_like): consumption share parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
@@ -292,6 +293,7 @@ def get_cm(c_s, p_m, p_tilde, alpha_c, method="SS"):
         M = alpha_c.shape[0]
         S = c_s.shape[0]
         J = c_s.shape[1]
+        tau_c = tau_c.reshape(M, 1, 1)
         alpha_c = alpha_c.reshape(M, 1, 1)
         p_tilde.reshape(1, 1, 1)
         p_m = p_m.reshape(M, 1, 1)
@@ -302,11 +304,12 @@ def get_cm(c_s, p_m, p_tilde, alpha_c, method="SS"):
         T = p_m.shape[0]
         S = c_s.shape[1]
         J = c_s.shape[2]
+        tau_c = tau_c.reshape(1, M, 1, 1)
         alpha_c = alpha_c.reshape(1, M, 1, 1)
         p_tilde = p_tilde.reshape(T, 1, 1, 1)
         p_m = p_m.reshape(T, M, 1, 1)
         c_s = c_s.reshape(T, 1, S, J)
-        c_sm = (alpha_c * ((p_m / p_tilde) ** (-1))) * c_s
+        c_sm = (alpha_c * ((((1 + tau_c) * p_m) / p_tilde) ** (-1))) * c_s
     return c_sm
 
 

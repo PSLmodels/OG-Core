@@ -347,7 +347,7 @@ def revenue(
         UBI_outlays = (ubi * pop_weights).sum()
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum()
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum()
-        cons_tax_revenue = (p.tau_c[-1, :, :] * c * pop_weights).sum()
+        cons_tax_revenue = (((p.tau_c[-1, :] * p_m).reshape(p.M, 1, 1) * c).sum(axis=0) * pop_weights).sum()
         payroll_tax_revenue = p.frac_tax_payroll[-1] * iit_payroll_tax_revenue
     elif method == "TPI":
         pop_weights = np.squeeze(p.lambdas) * np.tile(
@@ -361,7 +361,7 @@ def revenue(
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum(1).sum(1)
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
-            (p.tau_c[: p.T, :, :] * c * pop_weights).sum(1).sum(1)
+            (((p.tau_c[: p.T, :] * p_m ).reshape(p.T, p.M, 1, 1) * c).sum(axis=1) * pop_weights).sum(1).sum(1)
         )
         payroll_tax_revenue = (
             p.frac_tax_payroll[: p.T] * iit_payroll_tax_revenue
