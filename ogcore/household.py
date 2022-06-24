@@ -338,11 +338,11 @@ def FOC_savings(
     lifetime income group at a time.
 
     .. math::
-        \tilde{p}_{t}c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}
+        \frac{c_{j,s,t}^{-\sigma}}{\tilde{p}_{t}} = e^{-\sigma g_y}
         \biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} +
-        \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}
-        \bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)
-        \tilde{p}_{t+1}(c_{j,s+1,t+1})^{-\sigma}\biggr]
+        \beta_j\bigl(1 - \rho_s\bigr)\Bigl(\frac{1 + r_{t+1}
+        \bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{\tilde{p}_{t+1}}\Bigr)
+        (c_{j,s+1,t+1})^{-\sigma}\biggr]
 
     Args:
         r (array_like): the real interest rate
@@ -425,22 +425,22 @@ def FOC_savings(
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
         euler_error[:-1] = (
-            marg_ut_cons(cons[:-1], p.sigma) * (1 / (1 + tau_c[:-1]))
+            marg_ut_cons(cons[:-1], p.sigma) * (1 / p_tilde[:-1])
             - beta
             * (1 - rho[:-1])
             * deriv[1:]
             * marg_ut_cons(cons[1:], p.sigma)
-            * (1 / (1 + tau_c[1:]))
+            * (1 / p_tilde[1:])
             * np.exp(-p.sigma * p.g_y)
             - savings_ut[:-1]
         )
         euler_error[-1] = (
-            marg_ut_cons(cons[-1], p.sigma) * (1 / (1 + tau_c[-1]))
+            marg_ut_cons(cons[-1], p.sigma) * (1 / p_tilde[-1])
             - savings_ut[-1]
         )
     else:
         euler_error[-1] = (
-            marg_ut_cons(cons[-1], p.sigma) * (1 / (1 + tau_c[-1]))
+            marg_ut_cons(cons[-1], p.sigma) * (1 / p_tilde[-1])
             - savings_ut[-1]
         )
 
@@ -476,7 +476,7 @@ def FOC_labor(
 
     .. math::
         w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)
-        \tilde{p}_{t}(c_{j,s,t})^{-\sigma} = \chi^n_{s}
+       \frac{(c_{j,s,t})^{-\sigma}}{ \tilde{p}_{t}} = \chi^n_{s}
         \biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}
         {\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 -
         \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]
@@ -553,7 +553,7 @@ def FOC_labor(
         )
     )
     FOC_error = marg_ut_cons(cons, p.sigma) * (
-        1 / (1 + tau_c)
+        1 / p_tilde
     ) * w * deriv * e - marg_ut_labor(n, chi_n, p)
 
     return FOC_error
