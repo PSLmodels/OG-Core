@@ -361,7 +361,7 @@ def revenue(
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum(1).sum(1)
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
-            (((p.tau_c[: p.T, :] * p_m ).reshape(p.T, p.M, 1, 1) * c).sum(axis=1) * pop_weights).sum(1).sum(1)
+            (((p.tau_c[: p.T, :] * p_m).reshape(p.T, p.M, 1, 1) * c).sum(axis=1) * pop_weights).sum(1).sum(1)
         )
         payroll_tax_revenue = (
             p.frac_tax_payroll[: p.T] * iit_payroll_tax_revenue

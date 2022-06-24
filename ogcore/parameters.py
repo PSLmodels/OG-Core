@@ -225,7 +225,6 @@ class Specifications(paramtools.Parameters):
             setattr(self, item, this_attr)
         # Deal with tax parameters that maybe age and time specific
         tax_params_to_TP = [
-            "tau_c",
             "etr_params",
             "mtrx_params",
             "mtry_params",
