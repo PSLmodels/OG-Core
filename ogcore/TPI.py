@@ -369,7 +369,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars
 
     # compute composite good price
-    p_tilde = aggr.get_ptilde(p_m, p.alpha_c, "TPI")
+    p_tilde = aggr.get_ptilde(p_m, p.tau_c, p.alpha_c, "TPI")
     # compute bq
     bq = household.get_bq(BQ, None, p, "TPI")
     # compute tr

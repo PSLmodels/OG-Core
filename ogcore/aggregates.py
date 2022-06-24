@@ -538,24 +538,25 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
     return K, K_d, K_f
 
 
-def get_ptilde(p_m, alpha_c, method="SS"):
+def get_ptilde(p_m, alpha_c, tau_c, method="SS"):
     r"""
     Calculate price of composite good.
 
     .. math::
-        \tilde{p}_{t} = \prod_{m=1}^{M} \frac{p_{m,j}}{\alpha_{m,j}} ^{\alpha_{m,j}}
+        \tilde{p}_{t} = \prod_{m=1}^{M} \left(\frac{(1 + \tau^{c}_{m,t})p_{m,j}}{\alpha_{m,j}}\right)^{\alpha_{m,j}}
 
     Args:
         p_m (array_like): prices for consumption good m
+        tau_c (array_like): consumption taxes on good m
         alpha_c (array_like): consumption share parameters
 
     Returns:
-        p_tilde (array_like): price of composite good
+        p_tilde (array_like): tax-inclusive price of composite good
     """
     if method == "SS":
-        p_tilde = np.prod((p_m / alpha_c) ** alpha_c)
+        p_tilde = np.prod((((1 + tau_c) * p_m) / alpha_c) ** alpha_c)
     else:  # TPI case
         alpha_c = alpha_c.reshape(1, alpha_c.shape[0])
-        p_tilde = np.prod((p_m / alpha_c) ** alpha_c, axis=1)
+        p_tilde = np.prod((((1 + tau_c) * p_m) / alpha_c) ** alpha_c, axis=1)
 
     return p_tilde

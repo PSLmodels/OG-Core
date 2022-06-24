@@ -220,7 +220,7 @@ def inner_loop(outer_loop_vars, p, client):
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
-    p_tilde = aggr.get_ptilde(p_m, p.alpha_c)
+    p_tilde = aggr.get_ptilde(p_m, p.tau_c[-1, :], p.alpha_c)
     bq = household.get_bq(BQ, None, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
     ubi = p.ubi_nom_array[-1, :, :] / factor
@@ -401,7 +401,7 @@ def inner_loop(outer_loop_vars, p, client):
     # Find updated goods prices
     new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS")
     new_p_m = new_p_m / new_p_m[-1]  # normalize prices by industry M
-    new_p_tilde = aggr.get_ptilde(new_p_m, p.alpha_c)
+    new_p_tilde = aggr.get_ptilde(new_p_m, p.tau_c[-1, :], p.alpha_c)
 
     etr_params_3D = np.tile(
         np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
@@ -665,7 +665,7 @@ def SS_solver(
     Y_vec_ss = new_Y_vec
     r_gov_ss = fiscal.get_r_gov(rss, p)
     p_m_ss = new_p_m
-    p_tilde_ss = aggr.get_ptilde(p_m_ss, p.alpha_c)
+    p_tilde_ss = aggr.get_ptilde(p_m_ss, p.tau_c[-1, :], p.alpha_c)
     TR_ss = new_TR
     Yss = new_Y
     I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
