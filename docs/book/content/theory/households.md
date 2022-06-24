@@ -34,49 +34,49 @@ In this section, we describe what is arguably the most important economic agent 
   ```
   where $c_{min,m}$ is the minimum consumption of good $m$ allowed.[^StoneGeary]
 
-  Assume that the non-normalized price of each individual consumption good is $\tilde{p}_{m,t}$. We can solve for the optimal good-$m$ consumption demands $c_{m,j,s,t}$ as a function of composite consumption $c_{j,s,t}$ by minimizing the total expenditure on consumption given that individual consumption adds up to composite consumption according to {eq}`EqHHCompCons`. The Lagrangian for this expenditure minimization problem is the following.
+  Assume that the non-normalized price of each individual consumption good is $\tilde{p}_{m,t}$. We can solve for the optimal good-$m$ consumption demands $c_{m,j,s,t}$ as a function of composite consumption $c_{j,s,t}$ by minimizing the total after-tax expenditure on consumption given that individual consumption adds up to composite consumption according to {eq}`EqHHCompCons`. Letting $\tau^{c}_{m,t}$ represent the consumption tax rate on goods of type $m$, the Lagrangian for this expenditure minimization problem is the following.
   ```{math}
   :label: EqHHCostMinLagr}
-    \mathcal{L} = \sum_{m=1}^M \tilde{p}_{m,t}c_{m,j,s,t} + \lambda_{j,s,t}\Bigl[c_{j,s,t} - \prod_{m=1}^M \left(c_{m,j,s,t} - c_{min,m}\right)^{\alpha_m}\Bigr] \quad\forall j,s,t
+    \mathcal{L} = \sum_{m=1}^M (1 + \tau^{c}_{m,t})\tilde{p}_{m,t}c_{m,j,s,t} + \lambda_{j,s,t}\Bigl[c_{j,s,t} - \prod_{m=1}^M \left(c_{m,j,s,t} - c_{min,m}\right)^{\alpha_m}\Bigr] \quad\forall j,s,t
   ```
   Because the Lagrangian multiplier on the constraint $\lambda_{j,s,t}$ represents the shadow price of an extra unit of composite consumption, we can relabel it as the price of composite consumption $\tilde{p}_{j,s,t}$.
   ```{math}
   :label: EqHHCostMinLagr2
-    \mathcal{L} = \sum_{m=1}^M \tilde{p}_{m,t}c_{m,j,s,t} + \tilde{p}_{j,s,t}\Bigl[c_{j,s,t} - \prod_{m=1}^M \left(c_{m,j,s,t} - c_{min,m}\right)^{\alpha_m}\Bigr] \quad\forall j,s,t
+    \mathcal{L} = \sum_{m=1}^M(1 + \tau^{c}_{m,t}) \tilde{p}_{m,t}c_{m,j,s,t} + \tilde{p}_{j,s,t}\Bigl[c_{j,s,t} - \prod_{m=1}^M \left(c_{m,j,s,t} - c_{min,m}\right)^{\alpha_m}\Bigr] \quad\forall j,s,t
   ```
   Note that the price of composite consumption in period $t$ can be different for each ability-$j$ and age-$s$ individual at this point.
 
   The $M+1$ first order conditions of this constrained minimization problem are the following $M$ first order conditions {eq}`EqHHFOCcm` plus the composite consumption aggregator {eq}`EqHHCompCons`.[^IndSpecConsDeriv]
   ```{math}
   :label: EqHHFOCcm
-    \tilde{p}_{m,t} = \alpha_m \tilde{p}_{j,s,t}\left(\frac{c_{j,s,t}}{c_{m,j,s,t} - c_{min,m}}\right) \quad\forall m,j,s,t
+    (1 + \tau^{c}_{m,t})\tilde{p}_{m,t} = \alpha_m \tilde{p}_{j,s,t}\left(\frac{c_{j,s,t}}{c_{m,j,s,t} - c_{min,m}}\right) \quad\forall m,j,s,t
   ```
   Solving {eq}`EqHHFOCcm` for $c_{m,j,s,t}$ gives the optimal demand function for consumption of good $m$ by ability-$j$ and age-$s$ individual in period $t$.
   ```{math}
   :label: EqHH_cmDem
-    c_{m,j,s,t} = \alpha_m\left(\frac{\tilde{p}_{m,t}}{\tilde{p}_{j,s,t}}\right)^{-1}c_{j,s,t} + c_{min,m} \quad\forall m,j,s,t
+    c_{m,j,s,t} = \alpha_m\left(\frac{(1 + \tau^{c}_{m,t})\tilde{p}_{m,t}}{\tilde{p}_{j,s,t}}\right)^{-1}c_{j,s,t} + c_{min,m} \quad\forall m,j,s,t
   ```
   This household demand function for good-$m$ shows that $c_{m,j,s,t}$ is a fraction of total composite consumption $c_{j,s,t}$, and that fraction is negatively correlated with the relative price of good-$m$ to the composite good price.
 
   Substituting the demand equations {eq}`EqHH_cmDem` back into the composite consumption definition {eq}`EqHHCompCons` gives us the expression for the non-normalized composite price $\tilde{p}_{j,s,t}$ as a function of each non-normalized industry-$m$ good price $\tilde{p}_{m,t}$.
   ```{math}
   :label: EqCompPnonnorm
-    \tilde{p}_{j,s,t} = \prod_{m=1}^M\left(\frac{\tilde{p}_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall j,s,t
+    \tilde{p}_{j,s,t} = \prod_{m=1}^M\left(\frac{(1 + \tau^{c}_{m,t})\tilde{p}_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall j,s,t
   ```
   Because nothing on the right-hand-side of {eq}`EqCompPnonnorm` is a function of $j$ or $s$, then $\tilde{p}_{j,s,t}=\tilde{p}_t$ for all $j$ and $s$.
   ```{math}
   :label: EqCompPnonnorm2
-    \tilde{p}_{t} = \prod_{m=1}^M\left(\frac{\tilde{p}_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall t
+    \tilde{p}_{t} = \prod_{m=1}^M\left(\frac{(1 + \tau^{c}_{m,t})\tilde{p}_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall t
   ```
 
   Finally, we assume that the consumption good in industry $M$ is the numeraire.[^Numeraire] We can normalize the composite consumption price $\tilde{p}_t$ and the remaining $M-1$ prices $\tilde{p}_{m,t}$ for $m=1,2,...M-1$ in every period $t$ by dividing all the equations with prices by the industry-$M$ price $\tilde{p}_{M,t}$. Then we can rewrite the optimal consumption demand {eq}`EqHH_cmDem` and composite price index {eq}`EqCompPnonnorm2` equations as the following functions of normalized prices,
   ```{math}
   :label: EqHH_cmDem2
-    c_{m,j,s,t} = \alpha_m\left(\frac{p_{m,t}}{p_t}\right)^{-1}c_{j,s,t} + c_{min,m} \quad\forall m,j,s,t
+    c_{m,j,s,t} = \alpha_m\left(\frac{(1 + \tau^{c}_{m,t})p_{m,t}}{p_t}\right)^{-1}c_{j,s,t} + c_{min,m} \quad\forall m,j,s,t
   ```
   ```{math}
   :label: EqCompPnorm2
-    p_t = \prod_{m=1}^M\left(\frac{p_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall t
+    p_t = \prod_{m=1}^M\left(\frac{(1 + \tau^{c}_{m,t})p_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall t
   ```
   ```{math}
   :label: EqPmPcompNormDef
@@ -93,7 +93,7 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHBC
-    p_t c_{j,s,t} + &\sum_{m=1}^M p_{m,t}c_{min,m} + b_{j,s+1,t+1} = \\
+    p_t c_{j,s,t} + &\sum_{m=1}^M (1 + \tau^{c}_{m,t})p_{m,t}c_{min,m} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
     &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
@@ -194,7 +194,7 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHBC2
-    \text{s.t.}\quad &p_t c_{j,s,t} + \sum_{m-1}^M p_{m,t}c_{min,m} + b_{j,s+1,t+1} = \\
+    \text{s.t.}\quad &p_t c_{j,s,t} + \sum_{m=1}^M (1 + \tau^{c}_{m,t})p_{m,t}c_{min,m} + b_{j,s+1,t+1} = \\
     &\quad (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t} \\
     &\qquad\text{and}\quad c_{j,s,t}\geq 0,\: n_{j,s,t} \in[0,\tilde{l}],\:\text{and}\: b_{j,1,t}=0 \quad\forall j, t, \:\text{and}\: E+1\leq s\leq E+S \nonumber
   ```
