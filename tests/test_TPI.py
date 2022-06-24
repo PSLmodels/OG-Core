@@ -177,7 +177,6 @@ def test_twist_doughnut(file_inputs, file_outputs):
         j,
         s,
         t,
-        tau_c,
         etr_params,
         mtrx_params,
         mtry_params,
