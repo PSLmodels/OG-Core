@@ -781,7 +781,9 @@ def SS_solver(
     )
     yss_before_tax_mat = household.get_y(r_p_ss, wss, bssmat_s, nssmat, p)
     Css = aggr.get_C(cssmat, p, "SS")
-    c_m_ss_mat = household.get_cm(cssmat, p_m_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c)
+    c_m_ss_mat = household.get_cm(
+        cssmat, p_m_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c
+    )
     C_vec_ss = np.zeros(p.M)
     for m_ind in range(
         p.M

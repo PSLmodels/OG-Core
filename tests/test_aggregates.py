@@ -868,19 +868,23 @@ p_m_ss = np.array([1.2, 1.3, 2.5])
 p_m_tpi = np.tile(p_m_ss.reshape(1, 3), (3, 1))
 expected_ss = 4.367191169
 expected_tpi = np.array([4.367191169, 4.367191169, 4.367191169])
+
+
 @pytest.mark.parametrize(
     "p_m,alpha_c,tau_c,method,expected",
-    [(p_m_ss, alpha_c, tau_c, "SS", expected_ss),
-     (p_m_tpi, alpha_c, tau_c, "TPI", expected_tpi)],
+    [
+        (p_m_ss, alpha_c, tau_c, "SS", expected_ss),
+        (p_m_tpi, alpha_c, tau_c, "TPI", expected_tpi),
+    ],
     ids=[
         "SS",
         "TPI",
     ],
 )
 def test_get_ptilde(p_m, alpha_c, tau_c, method, expected):
-    '''
+    """
     Test of the get_ptilde function.
-    '''
+    """
 
     test_vals = aggr.get_ptilde(p_m, alpha_c, tau_c, method)
 
