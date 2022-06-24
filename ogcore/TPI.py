@@ -156,7 +156,6 @@ def firstdoughnutring(
         theta[j],
         p.e[-1, j],
         p.rho[-1],
-        p.tau_c[0, :],
         p.etr_params[0, -1, :],
         p.mtry_params[0, -1, :],
         None,
@@ -179,7 +178,6 @@ def firstdoughnutring(
         theta[j],
         p.chi_n[-1],
         p.e[-1, j],
-        p.tau_c[0, :],
         p.etr_params[0, -1, :],
         p.mtrx_params[0, -1, :],
         None,
@@ -265,7 +263,6 @@ def twist_doughnut(
     chi_n_s = p.chi_n[-length:]
     e_s = p.e[-length:, j]
     rho_s = p.rho[-length:]
-    tau_c = p.tau_c[t : t + length, :]
 
     error1 = household.FOC_savings(
         r_s,
@@ -281,7 +278,6 @@ def twist_doughnut(
         theta,
         e_s,
         rho_s,
-        tau_c,
         etr_params,
         mtry_params,
         t,
@@ -304,7 +300,6 @@ def twist_doughnut(
         theta,
         chi_n_s,
         e_s,
-        tau_c,
         etr_params,
         mtrx_params,
         t,
@@ -780,7 +775,6 @@ def run_TPI(p, client=None):
             bqmat[: p.T, :, :],
             tax_mat,
             p.e,
-            p.tau_c[: p.T, :, :],
             p,
         )
         C = aggr.get_C(c_mat, p, "TPI")
