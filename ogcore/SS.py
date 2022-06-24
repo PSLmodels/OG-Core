@@ -80,7 +80,6 @@ def euler_equation_solver(guesses, *args):
         theta,
         p.e[:, j],
         p.rho,
-        p.tau_c[-1, :, j],
         p.etr_params[-1, :, :],
         p.mtry_params[-1, :, :],
         None,
@@ -102,7 +101,6 @@ def euler_equation_solver(guesses, *args):
         theta,
         p.chi_n,
         p.e[:, j],
-        p.tau_c[-1, :, j],
         p.etr_params[-1, :, :],
         p.mtrx_params[-1, :, :],
         None,
@@ -154,7 +152,6 @@ def euler_equation_solver(guesses, *args):
         bq,
         taxes,
         p.e[:, j],
-        p.tau_c[-1, :, j],
         p,
     )
     mask6 = cons < 0
@@ -305,7 +302,6 @@ def inner_loop(outer_loop_vars, p, client):
         bq,
         net_tax,
         p.e,
-        p.tau_c[-1, :, :],
         p,
     )
     c_m = household.get_cm(c_s, p_m, p_tilde, p.tau_c[-1, :], p.alpha_c)
@@ -334,7 +330,6 @@ def inner_loop(outer_loop_vars, p, client):
     for m_ind in range(p.M - 1):
         C_m = aggr.get_C(c_m[m_ind, :, :], p, "SS")
         C_vec[m_ind] = C_m
-        KLrat_m = firm.get_KLratio(r, w, p, "SS", m_ind)
         KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
         Y_vec[m_ind] = C_m
         K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
@@ -435,7 +430,6 @@ def inner_loop(outer_loop_vars, p, client):
         new_bq,
         taxss,
         p.e,
-        p.tau_c[-1, :, :],
         p,
     )
     (
@@ -783,7 +777,6 @@ def SS_solver(
         bqssmat,
         taxss,
         p.e,
-        p.tau_c[-1, :, :],
         p,
     )
     yss_before_tax_mat = household.get_y(r_p_ss, wss, bssmat_s, nssmat, p)

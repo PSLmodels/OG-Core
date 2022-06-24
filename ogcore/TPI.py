@@ -156,7 +156,7 @@ def firstdoughnutring(
         theta[j],
         p.e[-1, j],
         p.rho[-1],
-        np.array([p.tau_c[0, -1, j]]),
+        p.tau_c[0, :],
         p.etr_params[0, -1, :],
         p.mtry_params[0, -1, :],
         None,
@@ -179,7 +179,7 @@ def firstdoughnutring(
         theta[j],
         p.chi_n[-1],
         p.e[-1, j],
-        np.array([p.tau_c[0, -1, j]]),
+        p.tau_c[0, :],
         p.etr_params[0, -1, :],
         p.mtrx_params[0, -1, :],
         None,
@@ -209,7 +209,6 @@ def twist_doughnut(
     j,
     s,
     t,
-    tau_c,
     etr_params,
     mtrx_params,
     mtry_params,
@@ -234,7 +233,6 @@ def twist_doughnut(
         j (int): index of ability type
         s (int): years of life remaining
         t (int): model period
-        tau_c (Numpy array): consumption tax rates, size = sxJ
         etr_params (Numpy array): ETR function parameters,
             size = sxsxnum_params
         mtrx_params (Numpy array): labor income MTR function parameters,
@@ -267,6 +265,7 @@ def twist_doughnut(
     chi_n_s = p.chi_n[-length:]
     e_s = p.e[-length:, j]
     rho_s = p.rho[-length:]
+    tau_c = p.tau_c[t : t + length, :]
 
     error1 = household.FOC_savings(
         r_s,
@@ -369,7 +368,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars
 
     # compute composite good price
-    p_tilde = aggr.get_ptilde(p_m, p.tau_c,[:p.T, :], p.alpha_c, "TPI")
+    p_tilde = aggr.get_ptilde(p_m, p.tau_c[:p.T, :], p.alpha_c, "TPI")
     # compute bq
     bq = household.get_bq(BQ, None, p, "TPI")
     # compute tr
@@ -408,7 +407,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S]
         bq_to_use = np.diag(bq[: p.S, :, j], p.S - (s + 2))
         tr_to_use = np.diag(tr[: p.S, :, j], p.S - (s + 2))
-        tau_c_to_use = np.diag(p.tau_c[: p.S, :, j], p.S - (s + 2))
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
         length_diag = np.diag(p.etr_params[: p.S, :, 0], p.S - (s + 2)).shape[
@@ -442,7 +440,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 j,
                 s,
                 0,
-                tau_c_to_use,
                 etr_params_to_use,
                 mtrx_params_to_use,
                 mtry_params_to_use,
@@ -464,7 +461,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         theta_to_use = theta[j] * p.replacement_rate_adjust[t : t + p.S]
         bq_to_use = np.diag(bq[t : t + p.S, :, j])
         tr_to_use = np.diag(tr[t : t + p.S, :, j])
-        tau_c_to_use = np.diag(p.tau_c[t : t + p.S, :, j])
         ubi_to_use = np.diag(ubi[t : t + p.S, :, j])
 
         # initialize array of diagonal elements
@@ -497,7 +493,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 j,
                 None,
                 t,
-                tau_c_to_use,
                 etr_params_to_use,
                 mtrx_params_to_use,
                 mtry_params_to_use,
@@ -610,7 +605,7 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
-    p_tilde = aggr.get_ptilde(p_m, p.tau_c,[:p.T, :], p.alpha_c, "TPI")
+    p_tilde = aggr.get_ptilde(p_m, p.tau_c[:p.T, :], p.alpha_c, "TPI")
     if not any(p.zeta_K == 1):
         w[: p.T] = np.squeeze(
             firm.get_w(Y[: p.T], L[: p.T], p_m[: p.T, :], p, "TPI")
@@ -622,7 +617,7 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
-    p_tilde = aggr.get_ptilde(p_m, p.tau_c,[:p.T, :], p.alpha_c, "TPI")
+    p_tilde = aggr.get_ptilde(p_m, p.tau_c[:p.T, :], p.alpha_c, "TPI")
     # path for interest rates
     r = np.zeros_like(Y)
     r[: p.T] = np.squeeze(
