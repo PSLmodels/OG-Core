@@ -871,21 +871,21 @@ expected_tpi = np.array([4.367191169, 4.367191169, 4.367191169])
 
 
 @pytest.mark.parametrize(
-    "p_m,alpha_c,tau_c,method,expected",
+    "p_m,tau_c,alpha_c,method,expected",
     [
-        (p_m_ss, alpha_c, tau_c, "SS", expected_ss),
-        (p_m_tpi, alpha_c, tau_c, "TPI", expected_tpi),
+        (p_m_ss, tau_c, alpha_c, "SS", expected_ss),
+        (p_m_tpi, tau_c, alpha_c, "TPI", expected_tpi),
     ],
     ids=[
         "SS",
         "TPI",
     ],
 )
-def test_get_ptilde(p_m, alpha_c, tau_c, method, expected):
+def test_get_ptilde(p_m, tau_c, alpha_c, method, expected):
     """
     Test of the get_ptilde function.
     """
 
-    test_vals = aggr.get_ptilde(p_m, alpha_c, tau_c, method)
+    test_vals = aggr.get_ptilde(p_m, tau_c, alpha_c, method)
 
     assert np.allclose(test_vals, expected)

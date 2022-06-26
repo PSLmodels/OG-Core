@@ -314,7 +314,7 @@ filename10 = os.path.join(
     "baseline,param_updates,filename",
     [
         (True, param_updates2, filename2),
-        (True, {}, filename1),
+        (True, {"initial_guess_r_SS": 0.03}, filename1),
         (False, {}, filename3),
         (False, param_updates4, filename4),
         (True, param_updates5, filename5),

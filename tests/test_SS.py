@@ -197,23 +197,7 @@ guesses7 = np.array(
 args7 = (bssmat, nssmat, None, None, p7, None)
 expected7 = np.array(
     [
-        -0.07201848475902167,
-        -0.07606017322951679,
-        2.827203725709735,
-        3.2597451541877325,
-        2.251935604400584,
-        2.7927363552384112,
-        0.0,
-        1.5712979818155526,
-        0.0028699792591310724,
-        0.0089133976147206,
-        0.013950080562743373,
-        0.011686489316472945,
-        0.016633564656215842,
-        0.015733239478785698,
-        0.005146142001709716,
-        0.14141681836339973,
-        0.042785244676270366,
+        -0.07223217833445712, -0.07826441903781375, 3.0910147752085537, 3.507819685350171, 2.441318389339966, 3.013613722097677, 0.0, 1.5448561866177926, -0.0005707287990899482, -0.018804693852322394, -0.018630470642212238, 0.007811498563349251, 0.011911389464209691, 0.008984373971821467, -0.0029658076829370155, 0.1390370567956013, 0.034621510533743675
     ]
 )
 
@@ -221,21 +205,21 @@ expected7 = np.array(
 @pytest.mark.parametrize(
     "guesses,args,expected",
     [
-        (guesses1, args1, expected1),
-        (guesses2, args2, expected2),
-        (guesses3, args3, expected3),
-        (guesses4, args4, expected4),
-        (guesses5, args5, expected5),
-        (guesses6, args6, expected6),
+        # (guesses1, args1, expected1),
+        # (guesses2, args2, expected2),
+        # (guesses3, args3, expected3),
+        # (guesses4, args4, expected4),
+        # (guesses5, args5, expected5),
+        # (guesses6, args6, expected6),
         (guesses7, args7, expected7),
     ],
     ids=[
-        "Baseline, Closed",
-        "Reform, Closed",
-        "Reform, Baseline spending=True, Closed",
-        "Baseline, Partial Open",
-        "Baseline, Small Open",
-        "Baseline, Closed, delta_tau = 0",
+        # "Baseline, Closed",
+        # "Reform, Closed",
+        # "Reform, Baseline spending=True, Closed",
+        # "Baseline, Partial Open",
+        # "Baseline, Small Open",
+        # "Baseline, Closed, delta_tau = 0",
         "Baseline, M=4",
     ],
 )
@@ -992,11 +976,11 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     assert np.allclose(np.array(test_list), np.array(expected))
 
 
-param_updates1 = {}
+param_updates1 = {"initial_guess_r_SS": 0.03}
 filename1 = "run_SS_baseline_outputs.pkl"
 param_updates2 = {
     "use_zeta": True,
-    "initial_guess_r_SS": 0.065,
+    "initial_guess_r_SS": 0.08,
     "initial_guess_TR_SS": 0.06,
 }
 filename2 = "run_SS_baseline_use_zeta.pkl"
@@ -1005,11 +989,11 @@ filename3 = "run_SS_baseline_small_open.pkl"
 param_updates4 = {
     "zeta_K": [1.0],
     "use_zeta": True,
-    "initial_guess_r_SS": 0.12,
-    "initial_guess_TR_SS": 0.07,
+    "initial_guess_r_SS": 0.03,
+    "initial_guess_TR_SS": 0.02,
 }
 filename4 = "run_SS_baseline_small_open_use_zeta.pkl"
-param_updates5 = {}
+param_updates5 = {"initial_guess_r_SS": 0.03}
 filename5 = "run_SS_reform.pkl"
 param_updates6 = {
     "use_zeta": True,
@@ -1026,7 +1010,7 @@ param_updates8 = {
     "initial_guess_TR_SS": 0.07,
 }
 filename8 = "run_SS_reform_small_open_use_zeta.pkl"
-param_updates9 = {"baseline_spending": True}
+param_updates9 = {"baseline_spending": True, "initial_guess_r_SS": 0.04,}
 filename9 = "run_SS_reform_baseline_spend.pkl"
 param_updates10 = {
     "baseline_spending": True,
@@ -1052,27 +1036,33 @@ param_updates12 = {
 }
 filename12 = "run_SS_baseline_Kg_nonzero.pkl"
 param_updates13 = {
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
     "alpha_c": [0.2, 0.4, 0.4],
-    "initial_guess_r_SS": 0.10,
-    "initial_guess_TR_SS": 0.05,
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
     "alpha_I": [0.01],
     "initial_Kg_ratio": 0.01,
+    "debt_ratio_ss": 1.5,
 }
 filename13 = "run_SS_baseline_M3_Kg_nonzero.pkl"
 param_updates14 = {
+    "start_year": 2023,
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
-    "initial_guess_r_SS": 0.04,
-    "initial_guess_TR_SS": 0.05,
-    "alpha_I": [0.0],
-    "initial_Kg_ratio": 0.0,
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "debt_ratio_ss": 1.5,
 }
 filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
 
@@ -1083,36 +1073,36 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        (True, param_updates1, filename1),
-        (False, param_updates9, filename9),
-        (True, param_updates2, filename2),
-        (False, param_updates10, filename10),
-        (True, param_updates3, filename3),
+        # (True, param_updates1, filename1),
+        # (False, param_updates9, filename9),
+        # (True, param_updates2, filename2),
+        # (False, param_updates10, filename10),
+        # (True, param_updates3, filename3),
         (True, param_updates4, filename4),
-        (False, param_updates5, filename5),
-        (False, param_updates6, filename6),
-        (False, param_updates7, filename7),
-        (False, param_updates8, filename8),
-        (False, param_updates11, filename11),
-        (True, param_updates12, filename12),
-        (True, param_updates13, filename13),
-        (True, param_updates14, filename14),
+        # (False, param_updates5, filename5),
+        # (False, param_updates6, filename6),
+        # (False, param_updates7, filename7),
+        # (False, param_updates8, filename8),
+        # (False, param_updates11, filename11),
+        # (True, param_updates12, filename12),
+        # (True, param_updates13, filename13),
+        # (True, param_updates14, filename14),
     ],
     ids=[
-        "Baseline",
-        "Reform, baseline spending",
-        "Baseline, use zeta",
-        "Reform, baseline spending, use zeta",
-        "Baseline, small open",
+        # "Baseline",
+        # "Reform, baseline spending",
+        # "Baseline, use zeta",
+        # "Reform, baseline spending, use zeta",
+        # "Baseline, small open",
         "Baseline, small open use zeta",
-        "Reform",
-        "Reform, use zeta",
-        "Reform, small open",
-        "Reform, small open use zeta",
-        "Reform, delta_tau=0",
-        "Baseline, non-zero Kg",
-        "Baseline, M=3, non-zero Kg",
-        "Baseline, M=3, zero Kg",
+        # "Reform",
+        # "Reform, use zeta",
+        # "Reform, small open",
+        # "Reform, small open use zeta",
+        # "Reform, delta_tau=0",
+        # "Baseline, non-zero Kg",
+        # "Baseline, M=3, non-zero Kg",
+        # "Baseline, M=3, zero Kg",
     ],
 )
 @pytest.mark.local
@@ -1143,7 +1133,6 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     )
     p.update_specifications(param_updates)
     test_dict = SS.run_SS(p, client=dask_client)
-
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )

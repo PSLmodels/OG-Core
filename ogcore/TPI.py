@@ -363,7 +363,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars
 
     # compute composite good price
-    p_tilde = aggr.get_ptilde(p_m, p.tau_c[: p.T, :], p.alpha_c, "TPI")
+    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # compute bq
     bq = household.get_bq(BQ, None, p, "TPI")
     # compute tr
@@ -600,7 +600,7 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
-    p_tilde = aggr.get_ptilde(p_m, p.tau_c[: p.T, :], p.alpha_c, "TPI")
+    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     if not any(p.zeta_K == 1):
         w[: p.T] = np.squeeze(
             firm.get_w(Y[: p.T], L[: p.T], p_m[: p.T, :], p, "TPI")
@@ -612,7 +612,7 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
-    p_tilde = aggr.get_ptilde(p_m, p.tau_c[: p.T, :], p.alpha_c, "TPI")
+    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # path for interest rates
     r = np.zeros_like(Y)
     r[: p.T] = np.squeeze(
@@ -867,7 +867,7 @@ def run_TPI(p, client=None):
             bmat_s,
             n_mat[: p.T, :, :],
             bqmat[: p.T, :, :],
-            c_mat[: p.T, :, :],
+            c_m[: p.T, :, :, :],
             Y_vec[: p.T, :],
             L_vec[: p.T, :],
             K_vec[: p.T, :],
@@ -973,7 +973,7 @@ def run_TPI(p, client=None):
             bmat_s,
             n_mat[: p.T, :, :],
             bqmat_new[: p.T, :, :],
-            c_mat[: p.T, :, :],
+            c_m[: p.T, :, :, :],
             Y_vec[: p.T, :],
             L_vec[: p.T, :],
             K_vec[: p.T, :],

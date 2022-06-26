@@ -548,7 +548,7 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
     return K, K_d, K_f
 
 
-def get_ptilde(p_m, alpha_c, tau_c, method="SS"):
+def get_ptilde(p_m, tau_c, alpha_c, method="SS"):
     r"""
     Calculate price of composite good.
 
