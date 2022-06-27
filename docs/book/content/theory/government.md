@@ -260,14 +260,6 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   We do not know the steady-state wage, interest rate, household labor supply, and savings *ex ante*. So the income $factor$ is an endogenous variable in the steady-state equilibrium computational solution. We hold the factor constant throughout the nonsteady-state equilibrium solution.
 
-(SecTaxfootnotes)=
-## Footnotes
-
-  [^taxcalc_note]:`Tax-Calculator` is available through an open source repository [https://github.com/PSLmodels/Tax-Calculator](https://github.com/PSLmodels/Tax-Calculator) as well as through a web application [Tax-Brain](https://compute.studio/PSLmodels/Tax-Brain/), hosted by [Compute.Studio](https://about.compute.studio/). Documentation for `Tax-Calculator` is available at [https://taxcalc.pslmodels.org/](https://taxcalc.pslmodels.org/).
-
-  [^interpolation_note]: We use two criterion to determine whether the function should be interpolated. First, we require a minimum number of observations of filers of that age and in that tax year. Second, we require that that sum of squared errors meet a predefined threshold.
-
-  [^param_note]: We assume that whatever parameters the tax functions have in year 10 persist forever.
 
 #### Consumption taxes
 
@@ -575,16 +567,16 @@ There is no guarantee that any of our stated closure rules {eq}`EqUnbalGBCclosur
 And finally, in closure rules {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclosure_TRGt` in which government spending is used to stabilize the long-run budget, it is also possible that government spending is forced to be less than zero to make this happen. This would be the case if tax revenues bring in less than is needed to financed transfers and interest payments on the national debt. None of the equations we've specified above preclude that result, but it does raise conceptual difficulties. Namely, what does it mean for government spending to be negative? Is the government selling off public assets? We caution those using this budget closure rule to consider carefully how the budget is closed in the long run given their parameterization. We also note that such difficulties present themselves across all budget closure rules when analyzing tax or spending proposals that induce structural budget deficits. In particular, one probably needs a different closure instrument if government spending must be negative in the steady-state to hit your long-term debt-to-GDP target.
 
 
-(SecUBIfootnotes)=
+(SecGovfootnotes)=
 ## Footnotes
 
-<<<<<<< HEAD
+
+[^interpolation_note]: We use two criterion to determine whether the function should be interpolated. First, we require a minimum number of observations of filers of that age and in that tax year. Second, we require that that sum of squared errors meet a predefined threshold.
+
+[^param_note]: We assume that whatever parameters the tax functions have in the last year of the budget window persist forever.
+
 [^UBIgrowthadj]: The steady-state assumption in equation {eq}`EqUBIubi_mod_NonGrwAdj_SS` implies that the UBI amount is growth adjusted for every period after the steady-state is reached.
 
-
-[^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`ogusa_default_parameters.json`](https://github.com/PSLmodels/OG-USA/blob/master/ogusa/ogusa_default_parameters.json) "validators" specification of the parameter.
+[^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`default_parameters.json`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json) "validators" specification of the parameter.
 
 [^negative_val_note]: Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period $T_{G2}$.
-=======
-[^GrowthAdj_note]: We impose this requirement of `ubi_growthadj = False` when `g_y_annual < 0` in the [`default_parameters.json`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json) "validators" specification of the parameter.
->>>>>>> upstream/master
