@@ -197,7 +197,23 @@ guesses7 = np.array(
 args7 = (bssmat, nssmat, None, None, p7, None)
 expected7 = np.array(
     [
-        -0.07223217833445712, -0.07826441903781375, 3.0910147752085537, 3.507819685350171, 2.441318389339966, 3.013613722097677, 0.0, 1.5448561866177926, -0.0005707287990899482, -0.018804693852322394, -0.018630470642212238, 0.007811498563349251, 0.011911389464209691, 0.008984373971821467, -0.0029658076829370155, 0.1390370567956013, 0.034621510533743675
+        -0.07223217833445712,
+        -0.07826441903781375,
+        3.0910147752085537,
+        3.507819685350171,
+        2.441318389339966,
+        3.013613722097677,
+        0.0,
+        1.5448561866177926,
+        -0.0005707287990899482,
+        -0.018804693852322394,
+        -0.018630470642212238,
+        0.007811498563349251,
+        0.011911389464209691,
+        0.008984373971821467,
+        -0.0029658076829370155,
+        0.1390370567956013,
+        0.034621510533743675,
     ]
 )
 
@@ -989,8 +1005,8 @@ filename3 = "run_SS_baseline_small_open.pkl"
 param_updates4 = {
     "zeta_K": [1.0],
     "use_zeta": True,
-     "initial_guess_r_SS": 0.12,
-     "initial_guess_TR_SS": 0.04,
+    "initial_guess_r_SS": 0.12,
+    "initial_guess_TR_SS": 0.04,
     # "initial_guess_r_SS": 0.033092316727737416,
     # "initial_guess_TR_SS": 0.06323878350496814,
     # "initial_guess_w_SS": 1.3320748594894016,
@@ -1014,7 +1030,10 @@ param_updates8 = {
     "initial_guess_TR_SS": 0.07,
 }
 filename8 = "run_SS_reform_small_open_use_zeta.pkl"
-param_updates9 = {"baseline_spending": True, "initial_guess_r_SS": 0.04,}
+param_updates9 = {
+    "baseline_spending": True,
+    "initial_guess_r_SS": 0.04,
+}
 filename9 = "run_SS_reform_baseline_spend.pkl"
 param_updates10 = {
     "baseline_spending": True,
