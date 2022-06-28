@@ -996,7 +996,7 @@ param_updates1 = {"initial_guess_r_SS": 0.03}
 filename1 = "run_SS_baseline_outputs.pkl"
 param_updates2 = {
     "use_zeta": True,
-    "initial_guess_r_SS": 0.08,
+    "initial_guess_r_SS": 0.065,
     "initial_guess_TR_SS": 0.06,
 }
 filename2 = "run_SS_baseline_use_zeta.pkl"
