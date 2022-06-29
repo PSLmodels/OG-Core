@@ -288,11 +288,11 @@ Under alternative model configurations, the solution algorithm changes slightly.
 
   1. Households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings as characterized in {eq}`EqBeliefs`, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
 
-  $$
-    \boldsymbol{\hat{\Gamma}}_{t+u} = \boldsymbol{\hat{\Gamma}}^e_{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
-  $$
+    $$
+      \boldsymbol{\hat{\Gamma}}_{t+u} = \boldsymbol{\hat{\Gamma}}^e_{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
+    $$
 
-  2. Households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS`,
+  2. Households optimize according to {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS`,
   3. Firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
   4. Government activity behaves according to {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrzGovBC`, {eq}`EqStnrz_rate_p`, and {eq}`EqStnrzClosureRule_Gt`, and
   5. Markets clear according to {eq}`EqStnrzMarkClrGoods_Mm1`, {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrz_DtDdDf`, {eq}`EqStnrz_KtKdKf`, and {eq}`EqStnrzMarkClrBQ`.
