@@ -65,7 +65,7 @@ The computational algorithm for solving for the steady-state follows the steps b
     3. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
     4. Given values $\bar{p}$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}^i$, $\overline{tr}_{j,s}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
-        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` simultaneously for each $j$.
+        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` simultaneously for each $j$.
 
         ```{math}
         :label: EqSS_HHBC
