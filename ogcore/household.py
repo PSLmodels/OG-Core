@@ -559,7 +559,7 @@ def FOC_labor(
 
 
 def get_y(r_p, w, b_s, n, p):
-    """
+    r"""
     Compute household income before taxes.
 
     ..math::
