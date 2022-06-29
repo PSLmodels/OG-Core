@@ -136,13 +136,13 @@ The computational algorithm for solving for the steady-state follows the steps b
         4.  $\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}$
         5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M
     17. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m
-    18. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrzGBC_Ig` and {eq}`EqStnrzGBC_Kg`
+    18. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
 
     1. Use $\bar{Y}_M^{i'}$ and $\bar{K}_M^{i'}$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
     2. Use $\bar{Y}_M^{i'}$ and $\bar{L}_M^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
     3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
-    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in in {eq}`EqStnrzFOC_Kg` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
+    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in {eq}`EqStnrzFOC_Kg` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
     5. Use $\boldsymbol{\overline{MPK}}_g^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{K}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
     6. Use $\bar{Y}_m$, $\bar{L}_m$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{\bar{p}}^{i'}$
     7. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
@@ -165,7 +165,7 @@ The computational algorithm for solving for the steady-state follows the steps b
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
-	      1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
+	      1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
 	      2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
 	      3. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
