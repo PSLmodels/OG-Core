@@ -288,9 +288,9 @@ Under alternative model configurations, the solution algorithm changes slightly.
 
   1. Households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings as characterized in {eq}`EqBeliefs`, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
 
-    $$
-      \boldsymbol{\hat{\Gamma}}_{t+u} = \boldsymbol{\hat{\Gamma}}^e_{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
-    $$
+  $$
+    \boldsymbol{\hat{\Gamma}}_{t+u} = \boldsymbol{\hat{\Gamma}}^e_{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
+  $$
 
   2. Households optimize according to {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS`,
   3. Firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
@@ -305,7 +305,7 @@ Under alternative model configurations, the solution algorithm changes slightly.
 
 This section describes the computational algorithm for the solution method for the stationary non-steady-state equilibrium described in the {ref}`SecEqlbNSSdef`. The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surpluses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending $G_t$ and transfers $TR_t$ are not held constant until the closure rule (`baseline_spending = False`). We describe the algorithm for this model configuration below and follow that with a description of how it is modified for alternative configurations.
 
-The computational algorithm for the non-steady-state solution follows similar steps to the steady-state solution described in Section {ref}`SecEqlbSSsoln`. There is an outer-loop of guessed values of macroeconomic variables $\{r_p_t, r_t, w_t, \boldsymbol{p}_t, BQ_t, TR_t\}$, but in this case, we guess the entire transition path of those variables. Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.
+The computational algorithm for the non-steady-state solution follows similar steps to the steady-state solution described in Section {ref}`SecEqlbSSsoln`. There is an outer-loop of guessed values of macroeconomic variables $\{r_{p,t}, r_t, w_t, \boldsymbol{p}_t, BQ_t, TR_t\}$, but in this case, we guess the entire transition path of those variables. Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.
 
 We call this solution algorithm the time path iteration (TPI) method or transition path iteration. This method was originally outlined in a series of papers between 1981 and 1985 [^citation_note] and in the seminal book {cite}`AuerbachKotlikoff:1987` [Chapter 4] for the perfect foresight case and in {cite}`NishiyamaSmetters:2007` Appendix II and {cite}`EvansPhillips:2014`[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see {cite}`StokeyLucas1989` [Chapter 17]).
 
