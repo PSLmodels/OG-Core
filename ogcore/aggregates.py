@@ -457,7 +457,7 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
     Compute the error in the resource constraint.
 
     .. math::
-      \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
+      \text{rc_error} = \hat{Y}_t - \hat{C}_t -
       \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
       \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
       \text{net capital outflows}_t
