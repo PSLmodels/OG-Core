@@ -108,8 +108,8 @@ The computational algorithm for solving for the steady-state follows the steps b
     9. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\overline{TR}^i$
     10. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
     11. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
-    12. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrzGBC_Ig`
-    13. Using the law of motion of the stock of infrastructure, {eq}`EqStnrzGBC_Kg`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
+    12. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
+    13. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
     14. Find output and factor demands for M-1 industries:
         1.  By {eq}`EqMarkClrGoods_Mm1`, $\bar{Y}_{m}=\bar{C}_{m}$
         2.  The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \frac{\bar{r} + \bar{\delta}_{M} -\bar{\delta}^{\tau}\bar{\tau}^{corp}_{m}}{\bar{p}_m(1-\bar{\tau}^{corp}_{m})\bar{Z}_m^{\frac{\varepsilon_m -1}{\varepsilon_m}}}^{-\varepsilon_m} \gamma_{m}$
