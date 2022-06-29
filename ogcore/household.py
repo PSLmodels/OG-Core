@@ -562,7 +562,7 @@ def get_y(r_p, w, b_s, n, p):
     r"""
     Compute household income before taxes.
 
-    ..math::
+    .. math::
         y_{j,s,t} = r_{p,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}
 
     Args:
