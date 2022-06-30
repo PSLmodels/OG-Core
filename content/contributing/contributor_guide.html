@@ -4,11 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Contributor Guide &#8212; OG-Core</title>
     
-  <link href="../../_static/css/theme.css" rel="stylesheet">
-  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -18,20 +20,16 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -39,12 +37,13 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -62,7 +61,21 @@ const thebe_selector_output = ".output, .cell_output"
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
     
     <div class="container-fluid" id="banner"></div>
 
@@ -71,9 +84,10 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="container-xl">
       <div class="row">
           
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
-    
-        <div class="navbar-brand-box">
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
       
         <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
@@ -91,14 +105,15 @@ const thebe_selector_output = ".output, .cell_output"
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../intro/intro.html">
-   OG-Core
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro/intro.html">
+                    OG-Core
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Contributing to OG-Core
  </span>
@@ -194,11 +209,6 @@ const thebe_selector_output = ".output, .cell_output"
    <li class="toctree-l2">
     <a class="reference internal" href="../api/utils.html">
      Utilities Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/wealth.html">
-     Wealth Functions
     </a>
    </li>
   </ul>
@@ -299,90 +309,180 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 
     </div>
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-</div>
-
-</div>
-
-
-          
-
-
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
             
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../../_sources/content/contributing/contributor_guide.md"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.md</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
-</div>
-
-            <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/PSLmodels/OG-Core"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        <a class="issues-button"
-            href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/contributing/contributor_guide.html&body=Your%20issue%20content%20here."><button
-                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
-                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        
-    </div>
-</div>
-
-            <!-- Full screen (wrap in <a> to have style consistency -->
-
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
-
-            <!-- Launch buttons -->
-
-        </div>
-
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
-            
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
             </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/PSLmodels/OG-Core"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/contributing/contributor_guide.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../../_sources/content/contributing/contributor_guide.md"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.md</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#setup-python">
    Setup Python
@@ -422,12 +522,11 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
 </ul>
 
-            </nav>
-        </div>
-    </div>
+    </nav>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
                 <h1>Contributor Guide</h1>
@@ -483,20 +582,21 @@ const thebe_selector_output = ".output, .cell_output"
                     </div>
                 </div>
             </div>
-            
+            <main id="main-content" role="main">
+                
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="contributor-guide">
-<span id="chap-contribguide"></span><h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="contributor-guide">
+<span id="chap-contribguide"></span><h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Permalink to this headline">#</a></h1>
 <p>The purpose of this guide is to provide the necessary background such that you can make improvements to the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> and share them with others working on the model.</p>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> code is tracked by using <a class="reference external" href="https://help.github.com/articles/github-glossary/#git"><code class="docutils literal notranslate"><span class="pre">Git</span></code></a> version control software along with the <a class="reference external" href="https://github.com/">GitHub.com</a> web platform for <code class="docutils literal notranslate"><span class="pre">Git</span></code> workflow and collaboration. Following the next steps will get you up and running and contributing to the model even if you’ve never used <code class="docutils literal notranslate"><span class="pre">Git</span></code> or other version control software.</p>
 <p>If you have already completed the <a class="reference internal" href="#sec-setuppython"><span class="std std-ref">Setup Python</span></a> and <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> sections, you can skip to the <a class="reference internal" href="#sec-workflow"><span class="std std-ref">Workflow</span></a> section.</p>
-<div class="section" id="setup-python">
-<span id="sec-setuppython"></span><h2>Setup Python<a class="headerlink" href="#setup-python" title="Permalink to this headline">¶</a></h2>
+<section id="setup-python">
+<span id="sec-setuppython"></span><h2>Setup Python<a class="headerlink" href="#setup-python" title="Permalink to this headline">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is written in the Python programming language. Download and install the free and most recent Anaconda distribution of Python and associated libraries from <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda.com</a>.<a class="footnote-reference brackets" href="#recent-python" id="id1">1</a> You should do this even if you already have Python installed on your computer because the Anaconda distribution contains additional Python packages that are used by <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> (many of which are not included in other Python installations). You can install the Anaconda distribution without having administrative privileges on your computer and the Anaconda distribution will not interfere with any Python installation that came as part of your computer’s operating system.</p>
-</div>
-<div class="section" id="setup-git">
-<span id="sec-setupgit"></span><h2>Setup Git<a class="headerlink" href="#setup-git" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="setup-git">
+<span id="sec-setupgit"></span><h2>Setup Git<a class="headerlink" href="#setup-git" title="Permalink to this headline">#</a></h2>
 <ol>
 <li><p>Create a <a class="reference external" href="https://github.com/">GitHub</a> user account.</p></li>
 <li><p>Install Git on your local machine by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/set-up-git/">Git setup</a>.</p></li>
@@ -544,15 +644,15 @@ with the team.</p>
 <p>Don’t be alarmed if the above paragraph is confusing. The following
 section introduces some standard Git practices and guides you through
 the contribution process.</p>
-</div>
-<div class="section" id="workflow">
-<span id="sec-workflow"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="submitting-a-github-issue">
-<span id="sec-githubissue"></span><h3>Submitting a GitHub Issue<a class="headerlink" href="#submitting-a-github-issue" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="workflow">
+<span id="sec-workflow"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">#</a></h2>
+<section id="submitting-a-github-issue">
+<span id="sec-githubissue"></span><h3>Submitting a GitHub Issue<a class="headerlink" href="#submitting-a-github-issue" title="Permalink to this headline">#</a></h3>
 <p>GitHub “issues” are an excellent way to ask questions, include code examples, and tag specific GitHub users.</p>
-</div>
-<div class="section" id="submitting-a-github-pull-request">
-<span id="sec-githubpr"></span><h3>Submitting a GitHub Pull Request<a class="headerlink" href="#submitting-a-github-pull-request" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="submitting-a-github-pull-request">
+<span id="sec-githubpr"></span><h3>Submitting a GitHub Pull Request<a class="headerlink" href="#submitting-a-github-pull-request" title="Permalink to this headline">#</a></h3>
 <p>The following text describes a typical workflow for changing
 <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>.  Different workflows may be necessary in some
 situations, in which case other contributors are here to help.</p>
@@ -621,10 +721,10 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
 <li><p>From the <a class="reference external" href="http://GitHub.com">GitHub.com</a> user interface, <a class="reference external" href="https://help.github.com/articles/creating-a-pull-request/#creating-the-pull-request">open a pull request</a>.</p></li>
 <li><p>When you open a GitHub pull request, a code coverage report will be automatically generated. If your branch adds new code that is not tested, the code coverage percent will decline and the number of untested statements (“misses” in the report) will increase. If this happens, you need to add to your branch one or more tests of your newly added code. Add tests so that the number of untested statements is the same as it is on the master branch.</p></li>
 </ol>
-</div>
-</div>
-<div class="section" id="simple-usage">
-<span id="sec-simpleusage"></span><h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="simple-usage">
+<span id="sec-simpleusage"></span><h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Permalink to this headline">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> comes with an example run script <a class="reference external" href="https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py"><code class="docutils literal notranslate"><span class="pre">OG-Core/run_examples/run_ogcore_example.py</span></code></a>. Running this script will solve for the current-law baseline steady state and transition path solution of a calibrated version of an economy as well as a simple reform (increasing the corporate income tax rate) version of the model with its corresponding steady-state and transition path solution. This example script saves the full set of model output from both baseline and reform runs of the model. It also creates a large number of commonly used analytical figures and tables. This example run script is a nice foundation for using the model to run your own customized simulations. Below are the steps to running the example script.</p>
 <ol>
 <li><p>Navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository in the terminal of your local machine and activate the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment. If you have not created the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment, follow steps 1-11 in Section <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> above.</p>
@@ -641,20 +741,20 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
 <p>This might take more than an hour to run despite being optimized to use up to seven cores on your machine for parallel processing. The full set of model input objects for the baseline simulation of the model are stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">./OG-Core/run_examples/OUTPUT_BASELINE/model_params.pkl</span></code>. The baseline steady-state model output is stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/OUTPUT_BASELINE/SS/SS_vars.pkl</span></code>. The baseline transition path model output is stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/OUTPUT_BASELINE/TPI/TPI_vars.pkl</span></code>.</p>
 <p>The full set of model input objects for the reform simulation of the model are stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">./OG-Core/run_examples/OUTPUT_REFORM/model_params.pkl</span></code>. The reform steady-state model output is stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/OUTPUT_REFORM/SS/SS_vars.pkl</span></code>. The reform transition path model output is stored in a newly created Python pickle file at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/OUTPUT_REFORM/TPI/TPI_vars.pkl</span></code>.</p>
 <p>A large set of plots that compare the changes among key variables from the baseline simulation to the reform simulation are saved in the <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/run_example_plots</span></code> directory. And a <code class="docutils literal notranslate"><span class="pre">.csv</span></code>-file table of key macroeconomic variable changes over the budget window (10 years) and in the long-run steady state is saved at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/ogcore_example_output.csv</span></code>.</p>
-</div>
-<div class="section" id="footnotes">
-<span id="sec-contribfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="footnotes">
+<span id="sec-contribfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
 <hr class="footnotes docutils" />
 <dl class="footnote brackets">
 <dt class="label" id="recent-python"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>The most recent version of Python from Anaconda is Python 3.8. <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is currently tested to run on Python 3.7 through 3.9.</p>
+<dd><p>The most recent version of Python from Anaconda is Python 3.8. <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is currently tested to run on Python 3.7 through 3.10.</p>
 </dd>
 <dt class="label" id="commandline-note"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
 <dd><p>The dollar sign is the end of the command prompt on a Mac. If you are using the Windows operating system, this is usually the right angle bracket (&gt;). No matter the symbol, you don’t need to type it (or anything to its left, which shows the current working directory) at the command line before you enter a command; the prompt symbol and preceding characters should already be there.</p>
 </dd>
 </dl>
-</div>
-</div>
+</section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -678,9 +778,11 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
 
               </div>
               
-            
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
     <a class='left-prev' id="prev-link" href="../intro/intro.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
@@ -696,24 +798,28 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-            
+            </footer>
         </div>
     </div>
-    <footer class="footer">
-  <p>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Jason DeBacker and Richard W. Evans<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
     
-      By Jason DeBacker and Richard W. Evans<br/>
-    
-        &copy; Copyright 2022.<br/>
-  </p>
-</footer>
-</main>
+</div>
 
 
       </div>
     </div>
   
-  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
 
   </body>
 </html>

@@ -4,11 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Derivations &#8212; OG-Core</title>
     
-  <link href="../../_static/css/theme.css" rel="stylesheet">
-  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -18,20 +20,16 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -39,12 +37,13 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -64,7 +63,21 @@ const thebe_selector_output = ".output, .cell_output"
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
     
     <div class="container-fluid" id="banner"></div>
 
@@ -73,9 +86,10 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="container-xl">
       <div class="row">
           
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
-    
-        <div class="navbar-brand-box">
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
       
         <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
@@ -93,14 +107,15 @@ const thebe_selector_output = ".output, .cell_output"
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../intro/intro.html">
-   OG-Core
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro/intro.html">
+                    OG-Core
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Contributing to OG-Core
  </span>
@@ -196,11 +211,6 @@ const thebe_selector_output = ".output, .cell_output"
    <li class="toctree-l2">
     <a class="reference internal" href="../api/utils.html">
      Utilities Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/wealth.html">
-     Wealth Functions
     </a>
    </li>
   </ul>
@@ -301,90 +311,185 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 
     </div>
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-</div>
-
-</div>
-
-
-          
-
-
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
             
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../../_sources/content/theory/derivations.md"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.md</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
-</div>
-
-            <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/PSLmodels/OG-Core"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        <a class="issues-button"
-            href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/derivations.html&body=Your%20issue%20content%20here."><button
-                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
-                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        
-    </div>
-</div>
-
-            <!-- Full screen (wrap in <a> to have style consistency -->
-
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
-
-            <!-- Launch buttons -->
-
-        </div>
-
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
-            
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
             </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/PSLmodels/OG-Core"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/derivations.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../../_sources/content/theory/derivations.md"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.md</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#household-first-order-condition-for-industry-specific-consumption-demand">
+   Household first order condition for industry-specific consumption demand
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#properties-of-the-ces-production-function">
    Properties of the CES Production Function
@@ -399,12 +504,11 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
 </ul>
 
-            </nav>
-        </div>
-    </div>
+    </nav>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
                 <h1>Derivations</h1>
@@ -417,6 +521,11 @@ const thebe_selector_output = ".output, .cell_output"
                         </div>
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#household-first-order-condition-for-industry-specific-consumption-demand">
+   Household first order condition for industry-specific consumption demand
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#properties-of-the-ces-production-function">
    Properties of the CES Production Function
@@ -435,28 +544,51 @@ const thebe_selector_output = ".output, .cell_output"
                     </div>
                 </div>
             </div>
-            
+            <main id="main-content" role="main">
+                
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="derivations">
-<span id="chap-deriv"></span><h1>Derivations<a class="headerlink" href="#derivations" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="derivations">
+<span id="chap-deriv"></span><h1>Derivations<a class="headerlink" href="#derivations" title="Permalink to this headline">#</a></h1>
 <p>This appendix contains derivations from the theory in the body of this book.</p>
-<div class="section" id="properties-of-the-ces-production-function">
-<span id="secappderivces"></span><h2>Properties of the CES Production Function<a class="headerlink" href="#properties-of-the-ces-production-function" title="Permalink to this headline">¶</a></h2>
-<p>The constant elasticity of substitution (CES) production function of capital and labor was introduced by <span id="id1">[<a class="reference internal" href="../OGCore_references.html#id20" title="Robert M. Solow. A contribution to the theory of economic growth. Quarterly Journal of Economics, 70(1):65-94, February 1956.">Solow, 1956</a>]</span> and further extended to a consumption aggregator by <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id2" title="Paul S. Armington. A theory of demand for products distinguished by place of production. Staff Papers, International Monetary Fund, 16(1):159-178, March 1969.">Armington, 1969</a>]</span>. The CES production function of aggregate capital <span class="math notranslate nohighlight">\(K_t\)</span> and aggregate labor <span class="math notranslate nohighlight">\(L_t\)</span> we use in Chapter <a class="reference internal" href="firms.html#chap-firms"><span class="std std-ref">Firms</span></a> is the following,</p>
-<div class="math notranslate nohighlight" id="equation-eqfirmscesprodfun">
-<span class="eqno">(123)<a class="headerlink" href="#equation-eqfirmscesprodfun" title="Permalink to this equation">¶</a></span>\[  Y_t = F(K_t, K_{g,t}, L_t) \equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(K_t)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g,t})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(e^{g_y t}L_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t\]</div>
-<p>where <span class="math notranslate nohighlight">\(Y_t\)</span> is aggregate output (GDP), <span class="math notranslate nohighlight">\(Z_t\)</span> is total factor productivity, <span class="math notranslate nohighlight">\(\gamma\)</span> is a share parameter that represents private capital’s share of income in the Cobb-Douglas case (<span class="math notranslate nohighlight">\(\varepsilon=1\)</span>), <span class="math notranslate nohighlight">\(\gamma_{g}\)</span> is public capita’s share of income, and <span class="math notranslate nohighlight">\(\varepsilon\)</span> is the elasticity of substitution between capital and labor. The stationary version of this production function is given in Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>. We drop the <span class="math notranslate nohighlight">\(t\)</span> subscripts, the ``<span class="math notranslate nohighlight">\(\:\,\hat{}\,\:\)</span>’’ stationary notation, and use the stationarized version of the production function <a class="reference internal" href="stationarization.html#equation-eqstnrzcesprodfun">(82)</a> for simplicity.</p>
-<div class="math notranslate nohighlight" id="equation-eqstnrzcesprodfun">
-<span class="eqno">(124)<a class="headerlink" href="#equation-eqstnrzcesprodfun" title="Permalink to this equation">¶</a></span>\[  Y= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \quad\forall t\]</div>
+<section id="household-first-order-condition-for-industry-specific-consumption-demand">
+<span id="secappderivindspeccons"></span><h2>Household first order condition for industry-specific consumption demand<a class="headerlink" href="#household-first-order-condition-for-industry-specific-consumption-demand" title="Permalink to this headline">#</a></h2>
+<p>The derivation for the household first order condition for industry-specific consumption demand <a class="reference internal" href="households.html#equation-eqhhfoccm">(13)</a> is the following:</p>
+<div class="math notranslate nohighlight" id="equation-eqappderivhhindspecconsfoc">
+<span class="eqno">(162)<a class="headerlink" href="#equation-eqappderivhhindspecconsfoc" title="Permalink to this equation">#</a></span>\[\begin{split}  \tilde{p}_{m,t} = \tilde{p}_{j,s,t}\alpha_m(c_{j,m,s,t} - c_{min,m})^{\alpha_m-1}\prod_{u\neq m}^M\left(c_{j,u,s,t} - c_{min,u}\right)^{\alpha_u} \\
+  \tilde{p}_{m,t}(c_{j,m,s,t} - c_{min,m}) = \tilde{p}_{j,s,t}\alpha_m(c_{j,m,s,t} - c_{min,m})^{\alpha_m}\prod_{u\neq m}^M\left(c_{j,u,s,t} - c_{min,u}\right)^{\alpha_u} \\
+  \tilde{p}_{m,t}(c_{j,m,s,t} - c_{min,m}) = \tilde{p}_{j,s,t}\alpha_m\prod_{m=1}^M\left(c_{j,m,s,t} - c_{min,m}\right)^{\alpha_m} = \alpha_m \tilde{p}_{j,s,t}c_{j,s,t}\end{split}\]</div>
+</section>
+<section id="properties-of-the-ces-production-function">
+<span id="secappderivces"></span><h2>Properties of the CES Production Function<a class="headerlink" href="#properties-of-the-ces-production-function" title="Permalink to this headline">#</a></h2>
+<p>The constant elasticity of substitution (CES) production function of capital and labor was introduced by <span id="id1">[<a class="reference internal" href="../OGCore_references.html#id21" title="Robert M. Solow. A contribution to the theory of economic growth. Quarterly Journal of Economics, 70(1):65-94, February 1956.">Solow, 1956</a>]</span> and further extended to a consumption aggregator by <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id2" title="Paul S. Armington. A theory of demand for products distinguished by place of production. Staff Papers, International Monetary Fund, 16(1):159-178, March 1969.">Armington, 1969</a>]</span>. The CES production function of private capital <span class="math notranslate nohighlight">\(K\)</span>, public capital <span class="math notranslate nohighlight">\(K_g\)</span> and labor <span class="math notranslate nohighlight">\(L\)</span> we use in Chapter <a class="reference internal" href="firms.html#chap-firms"><span class="std std-ref">Firms</span></a> is the following,</p>
+<div class="math notranslate nohighlight" id="equation-eqappderivcesprodfun">
+<span class="eqno">(163)<a class="headerlink" href="#equation-eqappderivcesprodfun" title="Permalink to this equation">#</a></span>\[\begin{split}  Y &amp;= F(K, K_g, L) \\
+  &amp;\equiv Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_g)^\frac{1}{\varepsilon}(K_g)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_g)^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(Y\)</span> is aggregate output (GDP), <span class="math notranslate nohighlight">\(Z\)</span> is total factor productivity, <span class="math notranslate nohighlight">\(\gamma\)</span> is a share parameter that represents private capital’s share of income in the Cobb-Douglas case (<span class="math notranslate nohighlight">\(\varepsilon=1\)</span>), <span class="math notranslate nohighlight">\(\gamma_g\)</span> is public capital’s share of income, and <span class="math notranslate nohighlight">\(\varepsilon\)</span> is the elasticity of substitution between capital and labor. The stationary version of this production function is given in Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>. We drop the <span class="math notranslate nohighlight">\(m\)</span> and <span class="math notranslate nohighlight">\(t\)</span> subscripts, the ``<span class="math notranslate nohighlight">\(\:\,\hat{}\,\:\)</span>’’ stationary notation, and use the stationarized version of the production function for simplicity.</p>
 <p>The Cobb-Douglas production function is a nested case of the general CES production function with unit elasticity <span class="math notranslate nohighlight">\(\varepsilon=1\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-cobbdoug">
-<span class="eqno">(125)<a class="headerlink" href="#equation-eqappderivces-cobbdoug" title="Permalink to this equation">¶</a></span>\[  Y = Z(K)^\gamma(K_{g})^{\gamma_{g}}(L)^{1-\gamma-\gamma_{g}}\]</div>
-<div class="section" id="wages-as-a-function-of-interest-rates">
-<span id="secappderivceswr"></span><h3>Wages as a function of interest rates<a class="headerlink" href="#wages-as-a-function-of-interest-rates" title="Permalink to this headline">¶</a></h3>
+<span class="eqno">(164)<a class="headerlink" href="#equation-eqappderivces-cobbdoug" title="Permalink to this equation">#</a></span>\[  Y = Z(K)^\gamma(K_{g})^{\gamma_{g}}(L)^{1-\gamma-\gamma_{g}}\]</div>
+<p>The marginal productivity of private capital <span class="math notranslate nohighlight">\(MPK\)</span> is the derivative of the production function with respect to private capital <span class="math notranslate nohighlight">\(K\)</span>. Let the variable <span class="math notranslate nohighlight">\(\Omega\)</span> represent the expression inside the square brackets in the production function <a class="reference internal" href="#equation-eqappderivcesprodfun">(163)</a>.</p>
+<div class="math notranslate nohighlight" id="equation-eqappderivces-mpk">
+<span class="eqno">(165)<a class="headerlink" href="#equation-eqappderivces-mpk" title="Permalink to this equation">#</a></span>\[\begin{split}  MPK &amp;\equiv \frac{\partial F}{\partial K} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\gamma^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(K)^{-\frac{1}{\varepsilon}} \\
+  &amp;= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{\gamma}{K}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{\gamma}{K}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
+  &amp;= (Z)^\frac{\varepsilon-1}{\varepsilon}\left(\gamma\frac{Y}{K}\right)^\frac{1}{\varepsilon}\end{split}\]</div>
+<p>The marginal productivity of public capital <span class="math notranslate nohighlight">\(MPK_g\)</span> is the derivative of the production function with respect to public capital <span class="math notranslate nohighlight">\(K_g\)</span>.</p>
+<div class="math notranslate nohighlight" id="equation-eqappderivces-mpkg">
+<span class="eqno">(166)<a class="headerlink" href="#equation-eqappderivces-mpkg" title="Permalink to this equation">#</a></span>\[\begin{split}  MPK_g &amp;\equiv \frac{\partial F}{\partial K_g} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\gamma_g^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(K_g)^{-\frac{1}{\varepsilon}} \\
+  &amp;= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{\gamma_g}{K_g}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{\gamma_g}{K_g}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
+  &amp;= (Z)^\frac{\varepsilon-1}{\varepsilon}\left(\gamma_g\frac{Y}{K_g}\right)^\frac{1}{\varepsilon}\end{split}\]</div>
+<p>The marginal productivity of labor <span class="math notranslate nohighlight">\(MPL\)</span> is the derivative of the production function with respect to labor <span class="math notranslate nohighlight">\(L\)</span>.</p>
+<div class="math notranslate nohighlight" id="equation-eqappderivces-mpl">
+<span class="eqno">(167)<a class="headerlink" href="#equation-eqappderivces-mpl" title="Permalink to this equation">#</a></span>\[\begin{split}  MPL &amp;\equiv \frac{\partial F}{\partial L} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}(1-\gamma-\gamma_g)^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(L)^{-\frac{1}{\varepsilon}} \\
+  &amp;= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{1-\gamma-\gamma_g}{L}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{1-\gamma-\gamma_g}{L}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
+  &amp;= (Z)^\frac{\varepsilon-1}{\varepsilon}\left([1-\gamma-\gamma_g]\frac{Y}{L}\right)^\frac{1}{\varepsilon}\end{split}\]</div>
+<section id="wages-as-a-function-of-interest-rates">
+<span id="secappderivceswr"></span><h3>Wages as a function of interest rates<a class="headerlink" href="#wages-as-a-function-of-interest-rates" title="Permalink to this headline">#</a></h3>
 <p>The below shows that with the addition of public capital as a third factor of production, wages and interest rates are more than a function of the capital labor ratio.  This means that in the solution method for <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> we will need to guess both the interest rate <span class="math notranslate nohighlight">\(r_t\)</span> and wage <span class="math notranslate nohighlight">\(w_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-yl">
-<span class="eqno">(126)<a class="headerlink" href="#equation-eqappderivces-yl" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{split}
+<span class="eqno">(168)<a class="headerlink" href="#equation-eqappderivces-yl" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{split}
     Y &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
     &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon}\left(\frac{L^\frac{\varepsilon-1}{\varepsilon}}{L^\frac{\varepsilon-1}{\varepsilon}}\right) + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon}\left(\frac{L^\frac{\varepsilon-1}{\varepsilon}}{L^\frac{\varepsilon-1}{\varepsilon}}\right) + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
     \\
@@ -464,27 +596,27 @@ const thebe_selector_output = ".output, .cell_output"
     \Rightarrow\quad \frac{Y}{L} &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}\left(\frac{K}{L}\right)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{L}\right)^\frac{\varepsilon-1}{\varepsilon}+ (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
 \end{split}\end{split}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-yk">
-<span class="eqno">(127)<a class="headerlink" href="#equation-eqappderivces-yk" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{split}
+<span class="eqno">(169)<a class="headerlink" href="#equation-eqappderivces-yk" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{split}
     Y &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
     &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon}\left(\frac{K^\frac{\varepsilon-1}{\varepsilon}}{K^\frac{\varepsilon-1}{\varepsilon}}\right) + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\left(\frac{K^\frac{\varepsilon-1}{\varepsilon}}{K^\frac{\varepsilon-1}{\varepsilon}}\right)\biggr]^\frac{\varepsilon}{\varepsilon-1}\\
     &amp;= ZK\biggl[(\gamma)^\frac{1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{K}\right)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{L}{K}\right)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
     \Rightarrow\quad \frac{Y}{K} &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{K}\right)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{L}{K}\right)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
 \end{split}\end{split}\]</div>
-<p>Solving for the firm’s first order conditions for capital and labor demand from profit maximization <a class="reference internal" href="stationarization.html#equation-eqstnrzprofit">(83)</a> gives the following equations in their respective stationarized forms from Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>.</p>
+<p>Solving for the firm’s first order conditions for capital and labor demand from profit maximization <a class="reference internal" href="stationarization.html#equation-eqstnrzprofit">(114)</a> gives the following equations in their respective stationarized forms from Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>.</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmfoc-l-der">
-<span class="eqno">(128)<a class="headerlink" href="#equation-eqfirmfoc-l-der" title="Permalink to this equation">¶</a></span>\[    w = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y}{L}\right]^\frac{1}{\varepsilon}\]</div>
+<span class="eqno">(170)<a class="headerlink" href="#equation-eqfirmfoc-l-der" title="Permalink to this equation">#</a></span>\[    w = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y}{L}\right]^\frac{1}{\varepsilon}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqfirmfoc-k-der">
-<span class="eqno">(129)<a class="headerlink" href="#equation-eqfirmfoc-k-der" title="Permalink to this equation">¶</a></span>\[    r = (1 - \tau^{corp})(Z)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y}{K}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau\]</div>
-<p>As can be seen from <a class="reference internal" href="#equation-eqfirmfoc-l-der">(128)</a> and <a class="reference internal" href="#equation-eqfirmfoc-k-der">(129)</a>, the wage <span class="math notranslate nohighlight">\(w\)</span> and interest rate <span class="math notranslate nohighlight">\(r\)</span> are functions of <span class="math notranslate nohighlight">\(Y/L\)</span> and <span class="math notranslate nohighlight">\(Y/K\)</span>, respectively. Equations <a class="reference internal" href="#equation-eqappderivces-yl">(126)</a> and <a class="reference internal" href="#equation-eqappderivces-yk">(127)</a> show that both <span class="math notranslate nohighlight">\(Y/L\)</span> and <span class="math notranslate nohighlight">\(Y/K\)</span> are functions of the capital-labor ratio <span class="math notranslate nohighlight">\(K/L\)</span>, the public-capital-labor ratio, <span class="math notranslate nohighlight">\(K_{g}/L\)</span>, and the public-private capital ratio, <span class="math notranslate nohighlight">\(K/K_{g}\)</span>. We cannot solve these equations for <span class="math notranslate nohighlight">\(r\)</span> and <span class="math notranslate nohighlight">\(w\)</span> solely as functions of the same ratios.</p>
+<span class="eqno">(171)<a class="headerlink" href="#equation-eqfirmfoc-k-der" title="Permalink to this equation">#</a></span>\[    r = (1 - \tau^{corp})(Z)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y}{K}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau\]</div>
+<p>As can be seen from <a class="reference internal" href="#equation-eqfirmfoc-l-der">(170)</a> and <a class="reference internal" href="#equation-eqfirmfoc-k-der">(171)</a>, the wage <span class="math notranslate nohighlight">\(w\)</span> and interest rate <span class="math notranslate nohighlight">\(r\)</span> are functions of <span class="math notranslate nohighlight">\(Y/L\)</span> and <span class="math notranslate nohighlight">\(Y/K\)</span>, respectively. Equations <a class="reference internal" href="#equation-eqappderivces-yl">(168)</a> and <a class="reference internal" href="#equation-eqappderivces-yk">(169)</a> show that both <span class="math notranslate nohighlight">\(Y/L\)</span> and <span class="math notranslate nohighlight">\(Y/K\)</span> are functions of the capital-labor ratio <span class="math notranslate nohighlight">\(K/L\)</span>, the public-capital-labor ratio, <span class="math notranslate nohighlight">\(K_{g}/L\)</span>, and the public-private capital ratio, <span class="math notranslate nohighlight">\(K/K_{g}\)</span>. We cannot solve these equations for <span class="math notranslate nohighlight">\(r\)</span> and <span class="math notranslate nohighlight">\(w\)</span> solely as functions of the same ratios.</p>
 <p>In the Cobb-Douglas unit elasticity case (<span class="math notranslate nohighlight">\(\varepsilon=1\)</span>) of the CES production function, the first order conditions are:</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-cdfocl">
-<span class="eqno">(130)<a class="headerlink" href="#equation-eqappderivces-cdfocl" title="Permalink to this equation">¶</a></span>\[  \text{if}\:\:\,\varepsilon=1:\quad w = (1-\gamma-\gamma_g)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}}\]</div>
+<span class="eqno">(172)<a class="headerlink" href="#equation-eqappderivces-cdfocl" title="Permalink to this equation">#</a></span>\[  \text{if}\:\:\,\varepsilon=1:\quad w = (1-\gamma-\gamma_g)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-cdfock">
-<span class="eqno">(131)<a class="headerlink" href="#equation-eqappderivces-cdfock" title="Permalink to this equation">¶</a></span>\[ \text{if}\:\:\:\varepsilon=1:\quad r = (1 - \tau^{corp})\gamma Z\left(\frac{K_{g}}{K}\right)^{\gamma_{g}}\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}} - \delta + \tau^{corp}\delta^\tau\]</div>
+<span class="eqno">(173)<a class="headerlink" href="#equation-eqappderivces-cdfock" title="Permalink to this equation">#</a></span>\[ \text{if}\:\:\:\varepsilon=1:\quad r = (1 - \tau^{corp})\gamma Z\left(\frac{K_{g}}{K}\right)^{\gamma_{g}}\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}} - \delta + \tau^{corp}\delta^\tau\]</div>
 <p>Again, even if this simple case, we cannot solve for <span class="math notranslate nohighlight">\(r\)</span> as a function of <span class="math notranslate nohighlight">\(w\)</span> for the reasons above.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -508,9 +640,11 @@ const thebe_selector_output = ".output, .cell_output"
 
               </div>
               
-            
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
     <a class='left-prev' id="prev-link" href="equilibrium.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
@@ -526,24 +660,28 @@ const thebe_selector_output = ".output, .cell_output"
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-            
+            </footer>
         </div>
     </div>
-    <footer class="footer">
-  <p>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Jason DeBacker and Richard W. Evans<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
     
-      By Jason DeBacker and Richard W. Evans<br/>
-    
-        &copy; Copyright 2022.<br/>
-  </p>
-</footer>
-</main>
+</div>
 
 
       </div>
     </div>
   
-  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
 
   </body>
 </html>

@@ -1,11 +1,11 @@
 (Chap_SmOpEcn)=
 # Open Economy Options
 
-`OG-Core` offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by {cite}`BenzellEtAl:2017` and others. However, one of the findings of {cite}`BenzellEtAl:2017` is that a full multi-country model is closely approximated by the types of large partial open economy specifications we use in `OG-Core`. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discussed some of these specifications in the previous chapter {ref}`Chap_MarkClr`. But the open economy assumptions only refer to how foreign capital can flow into the private capital market $K_t$ and into the government bond market $D_t$. The labor market and goods market are closed.
+`OG-Core` offers a wide range of specifications regarding the type and degree of openness assumed in the economy. In none of our specifications do we fully model foreign economies as is done by {cite}`BenzellEtAl:2017` and others. However, one of the findings of {cite}`BenzellEtAl:2017` is that a full multi-country model is closely approximated by the types of large partial open economy specifications we use in `OG-Core`. Our specifications range from fully closed, to partially closed, to small open economy, to large open economy. We discuss some of these specifications in Chapter {ref}`Chap_MarkClr`. But the open economy assumptions only refer to how foreign capital can flow into the private capital market $K_t\equiv\sum_{m=1}^M K_{m,t}$ and into the government bond market $D_t$. The labor market and goods markets are closed.
 
 (SecSmallOpen)=
 ## Small Open Economy
-In the small open economy version of `OG-Core`, the economy faces an exogenous world interest rate on capital $r^{*}_{t}$. The parameterization for this setting is $\zeta_K=1$. This implies that foreign capital flows into (out of) the country to take up all the excess demand (excess supply) and that households face the world interest rate $r^{*}_{t}$ on their private savings and that firms pay the world interest rate to rent capital. The world interest rate then determines the interest rate paid by the government $r_{gov,t}$ through equation {eq}`EqUnbalGBC_rate_wedge`. In this case, the rate of return on capital inside the country is exogenously fixed at $r^{*}_{t}$ {eq}`EqSmOpen_rstar_r`, and foreign private capital inflows $K^f_t$ are just the difference between total private capital demand $K_t$ by firms at the world interest rate and total domestic private capital supply by domestic households $K^d_t$ at the world interest rate.
+In the small open economy version of `OG-Core`, the economy faces an exogenous world interest rate on capital $r^{*}_{t}$. The parameterization for this setting is $\zeta_K=1$. This implies that foreign capital flows freely into (out of) the country to take up all the excess demand (excess supply) and that firms face the world interest rate $r^{*}_{t}$ as the competitive, zero-profit rate of return on capital as the interest rate analogous to $r_t$ that goes into the profit function {eq}`EqFirmsProfit` of each firm in each industry, $r_{K,t}$ in {eq}`EqFirmsPayout` and {eq}`eq_rK`, $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge`, and $r_{p,t}$ in {eq}`eq_portfolio_return`. In this case, the rate of return on capital inside the country is exogenously fixed at $r^{*}_{t}$ {eq}`EqSmOpen_rstar_r`, and foreign private capital inflows $K^f_t$ are just the difference between total private capital demand $K_t\equiv\sum_{m=1}^M K_{m,t}$ by firms at the world interest rate and total domestic private capital supply by domestic households $K^d_t$ at the world interest rate.
 
 ```{math}
 :label: EqSmOpen_rstar_r
@@ -14,7 +14,7 @@ In the small open economy version of `OG-Core`, the economy faces an exogenous w
 
 ```{math}
 :label: EqSmOpen_Kft
-  K^{f}_{t} = K_{t} - K^{d}_{t} \quad\forall t
+  K^f_t = K_t - K^d_t \quad\forall t \quad\text{where}\quad K_t\equiv\sum_{m=1}^M K_{m,t}
 ```
 
 

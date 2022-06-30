@@ -4,11 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Firm Functions &#8212; OG-Core</title>
     
-  <link href="../../_static/css/theme.css" rel="stylesheet">
-  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -18,20 +20,16 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -39,12 +37,13 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -64,7 +63,21 @@ const thebe_selector_output = ".output, .cell_output"
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
     
     <div class="container-fluid" id="banner"></div>
 
@@ -73,9 +86,10 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="container-xl">
       <div class="row">
           
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
-    
-        <div class="navbar-brand-box">
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
       
         <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
@@ -93,14 +107,15 @@ const thebe_selector_output = ".output, .cell_output"
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../intro/intro.html">
-   OG-Core
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro/intro.html">
+                    OG-Core
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Contributing to OG-Core
  </span>
@@ -196,11 +211,6 @@ const thebe_selector_output = ".output, .cell_output"
    <li class="toctree-l2">
     <a class="reference internal" href="utils.html">
      Utilities Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="wealth.html">
-     Wealth Functions
     </a>
    </li>
   </ul>
@@ -301,90 +311,180 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 
     </div>
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-</div>
-
-</div>
-
-
-          
-
-
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
             
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../../_sources/content/api/firm.rst"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.rst</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
-</div>
-
-            <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/PSLmodels/OG-Core"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        <a class="issues-button"
-            href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/api/firm.html&body=Your%20issue%20content%20here."><button
-                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
-                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        
-    </div>
-</div>
-
-            <!-- Full screen (wrap in <a> to have style consistency -->
-
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
-
-            <!-- Launch buttons -->
-
-        </div>
-
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
-            
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
             </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/PSLmodels/OG-Core"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/api/firm.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../../_sources/content/api/firm.rst"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.rst</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#module-ogcore.firm">
    ogcore.firm
@@ -392,12 +492,11 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
 </ul>
 
-            </nav>
-        </div>
-    </div>
+    </nav>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
                 <h1>Firm Functions</h1>
@@ -421,17 +520,18 @@ const thebe_selector_output = ".output, .cell_output"
                     </div>
                 </div>
             </div>
-            
+            <main id="main-content" role="main">
+                
               <div>
                 
-  <div class="section" id="firm-functions">
-<span id="firm"></span><h1>Firm Functions<a class="headerlink" href="#firm-functions" title="Permalink to this headline">¶</a></h1>
+  <section id="firm-functions">
+<span id="firm"></span><h1>Firm Functions<a class="headerlink" href="#firm-functions" title="Permalink to this headline">#</a></h1>
 <p><strong>firm.py modules</strong></p>
-<div class="section" id="module-ogcore.firm">
-<span id="ogcore-firm"></span><h2>ogcore.firm<a class="headerlink" href="#module-ogcore.firm" title="Permalink to this headline">¶</a></h2>
+<section id="module-ogcore.firm">
+<span id="ogcore-firm"></span><h2>ogcore.firm<a class="headerlink" href="#module-ogcore.firm" title="Permalink to this headline">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_K">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K" title="Permalink to this definition">#</a></dt>
 <dd><p>Get K from r, w, L.  For determining capital demand for open
 economy case.</p>
 <div class="math notranslate nohighlight">
@@ -445,6 +545,7 @@ economy case.</p>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
 ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em><em> or </em><em>None</em>) – production industry index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -458,7 +559,7 @@ economy case.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_KLratio">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_KLratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_KLratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_KLratio" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_KLratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_KLratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_KLratio" title="Permalink to this definition">#</a></dt>
 <dd><p>This function solves for the capital-labor ratio given the interest
 rate r wage w and parameters.</p>
 <div class="math notranslate nohighlight">
@@ -474,6 +575,7 @@ rate r wage w and parameters.</p>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
 ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – production industry index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -487,7 +589,7 @@ rate r wage w and parameters.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_K_from_Y">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K_from_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K_from_Y" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K_from_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K_from_Y" title="Permalink to this definition">#</a></dt>
 <dd><p>Generates vector of aggregate capital. Use with the open economy
 options.</p>
 <div class="math notranslate nohighlight">
@@ -516,7 +618,7 @@ K_{t} = \frac{\gamma Z_t^{\varepsilon -1} Y_t}{
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_K_from_Y_and_L">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K_from_Y_and_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K_from_Y_and_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K_from_Y_and_L" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K_from_Y_and_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K_from_Y_and_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K_from_Y_and_L" title="Permalink to this definition">#</a></dt>
 <dd><p>Find aggregate private capital K from output Y, aggregate labor L,
 and public capital K_g</p>
 <div class="math notranslate nohighlight">
@@ -548,7 +650,7 @@ and public capital K_g</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_L_from_Y">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_L_from_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_L_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_L_from_Y" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_L_from_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_L_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_L_from_Y" title="Permalink to this definition">#</a></dt>
 <dd><p>Find aggregate labor L from output Y and wages w</p>
 <div class="math notranslate nohighlight">
 \[L_{t} = \frac{(1 - \gamma - \gamma_g) Z_{t}^{\varepsilon-1}
@@ -574,7 +676,7 @@ Y_{t}}{w_{t}^{\varepsilon}}\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_MPx">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_MPx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">share</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_MPx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_MPx" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_MPx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">share</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_MPx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_MPx" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the marginal product of x (where x is K, L, or K_g)</p>
 <div class="math notranslate nohighlight">
 \[MPx = Z_t^\frac{\varepsilon-1}{\varepsilon}\left[(share)
@@ -588,6 +690,7 @@ Y_{t}}{w_{t}^{\varepsilon}}\]</div>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
 ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – production industry index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -601,7 +704,7 @@ Y_{t}}{w_{t}^{\varepsilon}}\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_Y">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_Y" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_Y" title="Permalink to this definition">#</a></dt>
 <dd><p>Generates aggregate output (GDP) from aggregate capital stock,
 aggregate labor, and CES production function parameters.</p>
 <div class="math notranslate nohighlight">
@@ -619,6 +722,7 @@ aggregate labor, and CES production function parameters.</p>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
 ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em><em> or </em><em>None</em>) – industry index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -631,8 +735,58 @@ aggregate labor, and CES production function parameters.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.firm.get_cost_of_capital">
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_cost_of_capital</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_cost_of_capital"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_cost_of_capital" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the cost of capital.</p>
+<div class="math notranslate nohighlight">
+\[\rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t}}{1 - \tau^{b}_{m,t}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em><em> or </em><em>None</em>) – production industry index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>cost of capital</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cost_of_capital (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.firm.get_pm">
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_pm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_pm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_pm" title="Permalink to this definition">#</a></dt>
+<dd><p>Find prices for outputs from each industry.</p>
+<div class="math notranslate nohighlight">
+\[p_{m,t}=\frac{w_{t}}{\left((1-\gamma_m-\gamma_{g,m})
+\frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right)^{\varepsilon_m}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>w</strong> (<em>array_like</em>) – the wage rate</p></li>
+<li><p><strong>Y_vec</strong> (<em>array_like</em>) – output for each industry</p></li>
+<li><p><strong>L_vec</strong> (<em>array_like</em>) – labor demand for each industry</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or ‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>output prices for each industry</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>p_m (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_r">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_r" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_r" title="Permalink to this definition">#</a></dt>
 <dd><p>This function computes the interest rate as a function of Y, K, and
 parameters using the firm’s first order condition for capital
 demand.</p>
@@ -645,9 +799,11 @@ demand.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
 <li><p><strong>K</strong> (<em>array_like</em>) – aggregate capital</p></li>
+<li><p><strong>p_m</strong> (<em>array_like</em>) – output prices</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
 ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – index of the production industry</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -661,7 +817,7 @@ demand.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_w">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_w</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_w"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_w" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_w</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_w"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_w" title="Permalink to this definition">#</a></dt>
 <dd><p>This function computes the wage as a function of Y, L, and
 parameters using the firm’s first order condition for labor demand.</p>
 <div class="math notranslate nohighlight">
@@ -672,9 +828,11 @@ parameters using the firm’s first order condition for labor demand.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
 <li><p><strong>L</strong> (<em>array_like</em>) – aggregate labor</p></li>
+<li><p><strong>p_m</strong> (<em>array_like</em>) – output prices</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
 ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – index of the production industry</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -688,7 +846,7 @@ parameters using the firm’s first order condition for labor demand.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_w_from_r">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_w_from_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_w_from_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_w_from_r" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_w_from_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_w_from_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_w_from_r" title="Permalink to this definition">#</a></dt>
 <dd><p>Solve for a wage rate from a given interest rate.  N.B. this is only
 appropriate if the production function only uses capital and labor
 as inputs.  As such, this is not used for determining the domestic
@@ -709,6 +867,7 @@ the open economy demand for capital.</p>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
 ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em><em> or </em><em>None</em>) – production industry index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -720,8 +879,42 @@ the open economy demand for capital.</p>
 </dl>
 </dd></dl>
 
-</div>
-</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.firm.solve_L">
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">solve_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#solve_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.solve_L" title="Permalink to this definition">#</a></dt>
+<dd><p>Solve for labor supply from the production function</p>
+<div class="math notranslate nohighlight">
+\[\hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}
+   {Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} -
+   \gamma_{m}^{\frac{1}{\varepsilon_m}}\hat{K}_{m,t}^
+   {\frac{\varepsilon_m-1}{\varepsilon_m}} -
+   \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^
+   {\frac{\varepsilon_m-1}{\varepsilon_m}}}
+   {(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}
+   \right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>array_like</em>) – output for each industry</p></li>
+<li><p><strong>K_vec</strong> (<em>array_like</em>) – capital demand for each industry</p></li>
+<li><p><strong>K_g</strong> (<em>array_like</em>) – public capital stock</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or ‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em><em> or </em><em>None</em>) – index of industry to compute L for (None will
+compute L for all industries)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>labor demand each industry</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>L (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -745,9 +938,11 @@ the open economy demand for capital.</p>
 
               </div>
               
-            
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
     <a class='left-prev' id="prev-link" href="execute.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
@@ -763,24 +958,28 @@ the open economy demand for capital.</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-            
+            </footer>
         </div>
     </div>
-    <footer class="footer">
-  <p>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Jason DeBacker and Richard W. Evans<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
     
-      By Jason DeBacker and Richard W. Evans<br/>
-    
-        &copy; Copyright 2022.<br/>
-  </p>
-</footer>
-</main>
+</div>
 
 
       </div>
     </div>
   
-  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
 
   </body>
 </html>
