@@ -65,7 +65,7 @@ The computational algorithm for solving for the steady-state follows the steps b
     3. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
     4. Given values $\bar{p}$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}^i$, $\overline{tr}_{j,s}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
-        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` simultaneously for each $j$.
+        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` simultaneously for each $j$.
 
         ```{math}
         :label: EqSS_HHBC
@@ -108,8 +108,8 @@ The computational algorithm for solving for the steady-state follows the steps b
     9. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\overline{TR}^i$
     10. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
     11. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
-    12. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrzGBC_Ig`
-    13. Using the law of motion of the stock of infrastructure, {eq}`EqStnrzGBC_Kg`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
+    12. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
+    13. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
     14. Find output and factor demands for M-1 industries:
         1.  By {eq}`EqMarkClrGoods_Mm1`, $\bar{Y}_{m}=\bar{C}_{m}$
         2.  The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \frac{\bar{r} + \bar{\delta}_{M} -\bar{\delta}^{\tau}\bar{\tau}^{corp}_{m}}{\bar{p}_m(1-\bar{\tau}^{corp}_{m})\bar{Z}_m^{\frac{\varepsilon_m -1}{\varepsilon_m}}}^{-\varepsilon_m} \gamma_{m}$
@@ -119,16 +119,16 @@ The computational algorithm for solving for the steady-state follows the steps b
            :label: EqSS_solveL
              \bar{L}_{m} = \left(\frac{\left(\frac{\bar{Y}_m}{\bar{Z}_m}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\bar{K}_m^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\bar{K}_{g,m}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
            ```
-          5\.  Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for private capital demand at the world interest rate $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqStnrzFOC_K2`
+          5\.  Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for private capital demand at the world interest rate $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
 
            ```{math}
-           :label: EqSS_FOC_K2
+           :label: EqSS_MPKg
              \bar{K}_m^{r^*} = \bar{L}_m\left(\frac{\bar{w}}{\frac{\bar{r} + \bar{\delta}_M - \bar{\tau}^b_m\bar{\delta}^{\tau}_m}{1 - \bar{\tau}_m^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
            ```
 
     16. Determine factor demands and output for industry $M$:
         1.  $\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}$
-        2.  Find $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqStnrzFOC_K2`
+        2.  Find $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
         3.  Find total capital supply, and the split between that from domestic and foreign households: $\bar{K}^{i'}$, $\bar{K}^d$, $\bar{K}^f$:
             1.  We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: $\bar{K}^{f} = \bar{\zeta}_{K}\sum_{m=1}^{M}\bar{K}_m^{r^*}$
             2.  Using $\bar{D}^{d,i}$ we can then find domestic investors' holdings of private capital as the residual from their total asset holdings: , $\bar{K}^{d,i} = \bar{B}^i - \bar{D}^{d,i}$
@@ -136,13 +136,13 @@ The computational algorithm for solving for the steady-state follows the steps b
         4.  $\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}$
         5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M
     17. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m
-    18. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrzGBC_Ig` and {eq}`EqStnrzGBC_Kg`
+    18. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
 
     1. Use $\bar{Y}_M^{i'}$ and $\bar{K}_M^{i'}$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
     2. Use $\bar{Y}_M^{i'}$ and $\bar{L}_M^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
     3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
-    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in in {eq}`EqStnrzFOC_Kg` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
+    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
     5. Use $\boldsymbol{\overline{MPK}}_g^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{K}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
     6. Use $\bar{Y}_m$, $\bar{L}_m$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{\bar{p}}^{i'}$
     7. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
@@ -165,7 +165,7 @@ The computational algorithm for solving for the steady-state follows the steps b
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
-	      1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
+	      1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
 	      2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
 	      3. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
@@ -292,7 +292,7 @@ Under alternative model configurations, the solution algorithm changes slightly.
     \boldsymbol{\hat{\Gamma}}_{t+u} = \boldsymbol{\hat{\Gamma}}^e_{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
   $$
 
-  2. Households optimize according to {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS`,
+  2. Households optimize according to {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS`,
   3. Firms optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
   4. Government activity behaves according to {eq}`EqUnbalGBC_rate_wedge`, {eq}`EqStnrzGovBC`, {eq}`EqStnrz_rate_p`, and {eq}`EqStnrzClosureRule_Gt`, and
   5. Markets clear according to {eq}`EqStnrzMarkClrGoods_Mm1`, {eq}`EqStnrzMarkClrLab`, {eq}`EqStnrz_DtDdDf`, {eq}`EqStnrz_KtKdKf`, and {eq}`EqStnrzMarkClrBQ`.
@@ -305,7 +305,7 @@ Under alternative model configurations, the solution algorithm changes slightly.
 
 This section describes the computational algorithm for the solution method for the stationary non-steady-state equilibrium described in the {ref}`SecEqlbNSSdef`. The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surpluses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending $G_t$ and transfers $TR_t$ are not held constant until the closure rule (`baseline_spending = False`). We describe the algorithm for this model configuration below and follow that with a description of how it is modified for alternative configurations.
 
-The computational algorithm for the non-steady-state solution follows similar steps to the steady-state solution described in Section {ref}`SecEqlbSSsoln`. There is an outer-loop of guessed values of macroeconomic variables $\{r_p_t, r_t, w_t, \boldsymbol{p}_t, BQ_t, TR_t\}$, but in this case, we guess the entire transition path of those variables. Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.
+The computational algorithm for the non-steady-state solution follows similar steps to the steady-state solution described in Section {ref}`SecEqlbSSsoln`. There is an outer-loop of guessed values of macroeconomic variables $\{r_{p,t}, r_t, w_t, \boldsymbol{p}_t, BQ_t, TR_t\}$, but in this case, we guess the entire transition path of those variables. Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.
 
 We call this solution algorithm the time path iteration (TPI) method or transition path iteration. This method was originally outlined in a series of papers between 1981 and 1985 [^citation_note] and in the seminal book {cite}`AuerbachKotlikoff:1987` [Chapter 4] for the perfect foresight case and in {cite}`NishiyamaSmetters:2007` Appendix II and {cite}`EvansPhillips:2014`[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see {cite}`StokeyLucas1989` [Chapter 17]).
 
@@ -323,7 +323,7 @@ The stationary non-steady state (transition path) solution algorithm has followi
 4. Using {eq}`Eq_tr` with $\boldsymbol{\hat{TR}}^{\,i}$, find transfers to each household, $\boldsymbol{\hat{tr}}_{j,s}^i$
 5. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\boldsymbol{\hat{BQ}}^{\,i}$, find $\boldsymbol{\hat{bq}}_{j,s}^i$
 6. Given time path guesses $\{\boldsymbol{r}_p^i, \boldsymbol{\hat{w}}^i, \boldsymbol{p}^i, \boldsymbol{\hat{bq}}^i, \boldsymbol{\hat{tr}}^i\}$, we can solve for each household's lifetime decisions $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$, $E+1\leq s \leq E+S$, and $1\leq t\leq T_2+S-1$.
-   1. The household problem can be solved with a multivariate root finder solving the $2S$ equations and unknowns at once for each $j$ and $1\leq t\leq T+S-1$. The root finder uses $2S$ household Euler equations {eq}`EqStnrzHHeul_n`, {eq}`EqStnrzHHeul_b`, and {eq}`EqStnrzHHeul_bS` to solve for each household's $2S$ lifetime decisions. The household decision rules for each type and birth cohort are solved separately.
+   1. The household problem can be solved with a multivariate root finder solving the $2S$ equations and unknowns at once for each $j$ and $1\leq t\leq T+S-1$. The root finder uses $2S$ household Euler equations  {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` to solve for each household's $2S$ lifetime decisions. The household decision rules for each type and birth cohort are solved separately.
    2. After solving the first iteration of time path iteration, subsequent initial values for the $J$, $2S$ root finding problems are based on the solution in the prior iteration. This speeds up computation further and makes the initial guess for the highly nonlinear system of equations start closer to the solution value.
 7. Determine from the quantity of the composite consumption good consumed by each household, $\hat{c}_{j,s,t}$, use equation {eq}`EqHH_cmDem` to determine consumption of each output good, $\hat{c}_{m,j,s,t}$
 8. Using $\hat{c}_{m,j,s,t}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\hat{C}_{m,t}$
@@ -335,8 +335,8 @@ The stationary non-steady state (transition path) solution algorithm has followi
 12. Using the path of output from each industry, $\hat{Y}_{m,t}$, and the household savings and labor supply decisions, $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$, compute the path of stationarizaed total tax revenue, $\hat{Revenue}_{t}^{i}$.
 13. Using the long-run debt-to-GDP ratio, the path of GDP, $\hat{Y}_t^i$, the path of total tax revenue, $\hat{Revenue}_{t}^{i}$, government transfers, $\hat{TR}_t^i$, infrastructure investment, $\hat{I}_{g,t}^i$, and Equation {eq}`EqUnbalGBCclosure_Gt`, find the path of stationarized government debt, $\hat{D}_{t}^{i'}$ for all $t$.
 14. Using $\hat{D}_t^i$, we can find foreign investor holdings of debt, $\hat{D}_t^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\hat{D}_t^{d,i} = \bar{D}_t^i - \bar{D}_t^{f,i}$
-15. Using $\hat{Y}_t^i$, find government infrastructure investment, $\hat{I}_{g,t}$ from {eq}`EqStnrzGBC_Ig`
-16. Using the law of motion of the stock of infrastructure, {eq}`EqStnrzGBC_Kg`, and $\hat{I}_{g,t}$, solve for $\hat{K}_{g,t}^{i}$
+15. Using $\hat{Y}_t^i$, find government infrastructure investment, $\hat{I}_{g,t}$ from {eq}`EqStnrz_Igt`
+16. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\hat{I}_{g,t}$, solve for $\hat{K}_{g,t}^{i}$
 17. Find output and factor demands for M-1 industries:
     1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$
     2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \frac{r_t + \delta_{M,t} -\delta_t^{\tau}\tau^{corp}_{m,t}}{p_{m,t}(1-\tau^{corp}_{m,t}){Z}_{m,t}^{\frac{\varepsilon_m -1}{\varepsilon_m}}}^{-\varepsilon_m} \gamma_{m}$
@@ -346,15 +346,15 @@ The stationary non-steady state (transition path) solution algorithm has followi
       :label: EqTPI_solveL
         \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}{Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\hat{K}_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
       ```
-    5\. Use the interest rate $r_t^*$ and labor demand $\hat{L}_{m,t}$ to solve for private capital demand at the world interest rate $\hat{K}_{m,t}^{r^*}$ using {eq}`EqStnrzFOC_K2`
+    5\. Use the interest rate $r_t^*$ and labor demand $\hat{L}_{m,t}$ to solve for private capital demand at the world interest rate $\hat{K}_{m,t}^{r^*}$ using {eq}`EqFirmsMPKg_opt`
       ```{math}
-      :label: EqTP_FOC_K2
+      :label: EqTP_MPKg
         \hat{K}_{m,t}^{r^*} = \hat{L}_{m,t}\left(\frac{\hat{w}_t}{\frac{r_t + \delta_{M,t} - \tau^b_{m,t}\delta^{\tau}_{m,t}}{1 - \bar{\tau}_{m,t}^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
       ```
 
 18.  Determine factor demands and output for industry $M$:
      1. $\hat{L}_{M,t} = \hat{L}_t - \sum_{m=1}^{M-1}\hat{L}_{m,t}$
-     2. Find $\hat{K}_{m,t}^{r^*}$ using {eq}`EqStnrzFOC_K2`
+     2. Find $\hat{K}_{m,t}^{r^*}$ using {eq}`EqFirmsMPKg_opt`
      3. Find total capital supply, and the split between that from domestic and foreign households: $\hat{K}_t^{i'}$, $\hat{K}_t^d$, $\hat{K}_t^f$:
      4. We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: $\hat{K}_t^{f} = \zeta_{K,t}\sum_{m=1}^{M}\hat{K}_{m,t}^{r^*}$
      5. Using $\hat{D}_t^{d,i}$ we can then find domestic investors' holdings of private capital as the residual from their total asset holdings: , $\hat{K}_t^{d,i} = \hat{B}_t^i - \hat{D}_t^{d,i}$
@@ -362,13 +362,13 @@ The stationary non-steady state (transition path) solution algorithm has followi
      7. $\hat{K}_{M,t} = \hat{K}_t^{i'} - \sum_{m=1}^{M-1}\hat{K}_{m,t}$
      8. Use the factor demands and $\hat{K}_{g,t}$ in the production function for industry $M$ to find $\hat{Y}_{M,t}$
 19. Find an updated path for GDP, $\hat{Y}_t^{i'} = \sum_{m=1}^{M} p_{m,t} \hat{Y}_{m,t}$
-20. Find a updated path for $\hat{I}_{g,t}$ and $\hat{K}_{g,t}$ using  $\hat{Y}_t^{i'}$, equations {eq}`EqStnrzGBC_Ig` and {eq}`EqStnrzGBC_Kg`
+20. Find a updated path for $\hat{I}_{g,t}$ and $\hat{K}_{g,t}$ using  $\hat{Y}_t^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 21. Given updated inner-loop values based on initial guesses for outer-loop variables $\{r_{p,t}^i, r_t^i, \hat{w}_t^i, \boldsymbol{p}_t, \hat{BQ}_t^i, \hat{TR}_t^i\}$, solve for updated values of outer-loop variables $\{r_{p,t}^{i'}, r_t^{i'}, \hat{w}_t^{i'}, \boldsymbol{p}_t^{i'}, \hat{BQ}_t^{i'}, \hat{TR}_t^{i'}\}$ using the remaining equations (for all periods $t$ in the transition path):
 
     1. Use $\hat{Y}_{M,t}^{i'}$ and $\hat{K}_{M,t}^{i'}$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $r_t^{i'}$.
     2. Use $\hat{Y}_{M,t}^{i'}$ and $\hat{L}_{M,t}^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\hat{w}_t^{i'}$.
     3. Use $r_t^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $r_{gov,t}^{i'}$
-    4. Use $\hat{K}_{g,t}^{i'}$ and $\hat{Y}_t^{i''}$ in in {eq}`EqStnrzFOC_Kg` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $MPK_{g,m,t}^{i'}$
+    4. Use $\hat{K}_{g,t}^{i'}$ and $\hat{Y}_t^{i''}$ in in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $MPK_{g,m,t}^{i'}$
     5. Use $\boldsymbol{MPK}_{g,t}^{i'}$, $r_t^{i'}$, $r_{gov,t}^{i'}$, $\hat{D}_t^{i'}$, and $\hat{K}_t^{i'}$ to find the return on the households' investment portfolio, $r_{p,t}^{i'}$
     6. Use $\hat{Y}_{m,t}$, $\hat{L}_{m,t}$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{p}_t^{i'}$
     7. Use $r_{p,t}^{i'}$ and $\hat{b}_{j,s,t}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\hat{BQ}_t^{i'}$.
@@ -392,7 +392,7 @@ The stationary non-steady state (transition path) solution algorithm has followi
 
 24. If the maximum absolute error among the M-1+5 outer loop error terms is less-than-or-equal-to some small positive tolerance $toler_{tpi,out}$ in each period along the transition path, $\max\big|\left(error_{r_p}, error_r, error_w, error_p, error_{bq},error_{tr}\right)\bigr| \leq toler_{tpi,out}$ then the non-steady-state equilibrium has been found.
 
-	1. Make sure that the resource constraint for industry $M$ (goods market clearing) {eq}`EqStnrzMarkClrGoods` is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
+	1. Make sure that the resource constraint for industry $M$ (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
 	2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
 	3. Make sure that all the $(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance.
 

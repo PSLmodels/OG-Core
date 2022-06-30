@@ -141,7 +141,7 @@ def get_bq(BQ, j, p, method):
     Calculate bequests to each household.
 
     .. math::
-        bq_{j,s,t} = zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}
+        bq_{j,s,t} = \zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}
 
     Args:
         BQ (array_like): aggregate bequests
@@ -202,7 +202,7 @@ def get_tr(TR, j, p, method):
     Calculate transfers to each household.
 
     .. math::
-        tr_{j,s,t} = zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}
+        tr_{j,s,t} = \zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}
 
     Args:
         TR (array_like): aggregate transfers
@@ -559,10 +559,10 @@ def FOC_labor(
 
 
 def get_y(r_p, w, b_s, n, p):
-    """
+    r"""
     Compute household income before taxes.
 
-    ..math::
+    .. math::
         y_{j,s,t} = r_{p,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}
 
     Args:
