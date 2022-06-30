@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 from ogcore.constants import VAR_LABELS, DEFAULT_START_YEAR
-from ogcore import wealth, tax
+from ogcore import tax
 from ogcore.utils import save_return_table, Inequality
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
@@ -375,7 +375,9 @@ def gini_table(
     return table
 
 
-def wealth_moments_table(base_ss, base_params, table_format=None, path=None):
+def wealth_moments_table(
+    base_ss, base_params, data_moments=None, table_format=None, path=None
+):
     """
     Creates table with moments of the wealth distribution from the model
     and SCF data.
@@ -427,11 +429,9 @@ def wealth_moments_table(base_ss, base_params, table_format=None, path=None):
         base_ineq.var_of_logs(),
     ]
     table_dict["Model"].extend(base_values)
-    # get moments from Survey of Consumer Finances data
-    scf = wealth.get_wealth_data()
-    table_dict["Data"] = wealth.compute_wealth_moments(
-        scf, np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
-    )
+    # Add moments from the data
+    if data_moments is not None:
+        table_dict["Data"] = data_moments
     # Make df with dict so can use pandas functions
     table_df = pd.DataFrame.from_dict(table_dict)
     table = save_return_table(table_df, table_format, path, precision=3)
@@ -680,41 +680,49 @@ def dynamic_revenue_decomposition(
     # Business tax revenue from the baseline simulation
     tax_rev_dict["biz"]["A"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        base_tpi["Y"][:T],
-        base_tpi["L"][:T],
-        base_tpi["K"][:T],
+        base_tpi["Y_vec"][:T, :],
+        base_tpi["L_vec"][:T, :],
+        base_tpi["K_vec"][:T, :],
+        base_tpi["p_m"][:T],
         base_params,
+        None,
         "TPI",
-    )
+    ).sum(axis=-1)
     # Business tax revenue found using baseline behavior and macros with
     # the reform tax rates
     tax_rev_dict["biz"]["B"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        base_tpi["Y"][:T],
-        base_tpi["L"][:T],
-        base_tpi["K"][:T],
+        base_tpi["Y_vec"][:T, :],
+        base_tpi["L_vec"][:T, :],
+        base_tpi["K_vec"][:T, :],
+        base_tpi["p_m"][:T],
         reform_params,
+        None,
         "TPI",
-    )
+    ).sum(axis=-1)
     # Business tax revenue found using the reform behavior and baseline
     # macros with the reform tax rates
     tax_rev_dict["biz"]["C"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        reform_tpi["Y"][:T],
-        reform_tpi["L"][:T],
-        reform_tpi["K"][:T],
+        reform_tpi["Y_vec"][:T, :],
+        reform_tpi["L_vec"][:T, :],
+        reform_tpi["K_vec"][:T, :],
+        reform_tpi["p_m"][:T],
         reform_params,
+        None,
         "TPI",
-    )
+    ).sum(axis=-1)
     # Business tax revenue from the reform
     tax_rev_dict["biz"]["D"] = tax.get_biz_tax(
         reform_tpi["w"][:T],
-        reform_tpi["Y"][:T],
-        reform_tpi["L"][:T],
-        reform_tpi["K"][:T],
+        reform_tpi["Y_vec"][:T, :],
+        reform_tpi["L_vec"][:T, :],
+        reform_tpi["K_vec"][:T, :],
+        reform_tpi["p_m"][:T],
         reform_params,
+        None,
         "TPI",
-    )
+    ).sum(axis=-1)
     pop_weights = np.squeeze(base_params.lambdas) * np.tile(
         np.reshape(base_params.omega[:T, :], (T, S, 1)), (1, 1, J)
     )

@@ -9,7 +9,6 @@ functions require time-path calculation.
 
 # Packages
 import numpy as np
-from ogcore.aggregates import get_I
 
 """
 ------------------------------------------------------------------------
@@ -258,7 +257,7 @@ def get_G_ss(
         TR (scalar): steady-state transfer spending
         UBI_outlays (scalar): steady-state total UBI outlays
         I_g (scalar): steady-state public infrastructure investment
-        new_borrowing (scalar): steady-state amount of new borowing
+        new_borrowing (scalar): steady-state amount of new borrowing
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
 

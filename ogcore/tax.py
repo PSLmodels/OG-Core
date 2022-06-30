@@ -198,30 +198,48 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params, mtr_params, p):
     return tau
 
 
-def get_biz_tax(w, Y, L, K, p, method):
+def get_biz_tax(w, Y, L, K, p_m, p, m, method):
     r"""
     Finds total business income tax revenue.
 
     .. math::
-        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) -
-        \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}
+        R_{t}^{b} = \sum_{m=1}^{M}\tau_{m,t}^{b}(Y_{m,t} - w_{t}L_{m,t}) -
+        \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau}
     Args:
         r (array_like): real interest rate
-        Y (array_like): aggregate output
-        L (array_like): aggregate labor demand
-        K (array_like): aggregate capital demand
-
+        Y (array_like): aggregate output for each industry
+        L (array_like): aggregate labor demand for each industry
+        K (array_like): aggregate capital demand for each industry
+        p_m (array_like): output prices
+        p (OG-Core Specifications object): model parameters
+        m (int or None): index for production industry, if None, then
+            compute for all industries
     Returns:
         business_revenue (array_like): aggregate business tax revenue
 
     """
-    if method == "SS":
-        delta_tau = p.delta_tau[-1]
-        tau_b = p.tau_b[-1]
+    if m is not None:
+        if method == "SS":
+            delta_tau = p.delta_tau[-1, m]
+            tau_b = p.tau_b[-1, m]
+            price = p_m[m]
+        else:
+            delta_tau = p.delta_tau[: p.T, m].reshape(p.T)
+            tau_b = p.tau_b[: p.T, m].reshape(p.T)
+            price = p_m[: p.T, m].reshape(p.T)
+            w = w.reshape(p.T)
     else:
-        delta_tau = p.delta_tau[: p.T]
-        tau_b = p.tau_b[: p.T]
-    business_revenue = tau_b * (Y - w * L) - tau_b * delta_tau * K
+        if method == "SS":
+            delta_tau = p.delta_tau[-1, :]
+            tau_b = p.tau_b[-1, :]
+            price = p_m
+        else:
+            delta_tau = p.delta_tau[: p.T, :].reshape(p.T, p.M)
+            tau_b = p.tau_b[: p.T, :].reshape(p.T, p.M)
+            price = p_m[: p.T, :].reshape(p.T, p.M)
+            w = w.reshape(p.T, 1)
+
+    business_revenue = tau_b * (price * Y - w * L) - tau_b * delta_tau * K
     return business_revenue
 
 

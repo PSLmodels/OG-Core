@@ -3,7 +3,7 @@ import os
 import sys
 import requests
 from zipfile import ZipFile
-import urllib.request
+import urllib
 from tempfile import NamedTemporaryFile
 from io import BytesIO, StringIO
 import numpy as np
@@ -712,8 +712,9 @@ def fetch_files_from_web(file_urls):
     _ = print_progress(iteration, total, source_name="SCF")
 
     for file_url in file_urls:
-        # url = requests.get(file_url) (if using reuests package)
-        url = urllib.request.urlopen(file_url)
+        request = urllib.request.Request(file_url)
+        request.add_header("User-Agent", "Mozilla/5.0")
+        url = urllib.request.urlopen(request)
 
         f = NamedTemporaryFile(delete=False)
         path = f.name

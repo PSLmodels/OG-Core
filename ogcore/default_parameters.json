@@ -100,6 +100,25 @@
             }
         }
     },
+    "M": {
+        "title": "Number of different production industries",
+        "description": "Number of different production industries.",
+        "section_1": "Firm Parameters",
+        "section_2": "Model Dimensions",
+        "notes": "",
+        "type": "int",
+        "value": [
+            {
+                "value": 1
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": 50
+            }
+        }
+    },
     "lambdas": {
         "title": "Fraction of population of each labor productivity type",
         "description": "Fraction of population of each labor productivity type.",
@@ -343,6 +362,26 @@
             }
         }
     },
+    "alpha_c": {
+        "title": "Share parameters for each good in the composite consumption good",
+        "description": "Share parameters for each good in the composite consumption good.",
+        "section_1": "Household Parameters",
+        "section_2": "Behavioral Assumptions",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [1.0]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
     "gamma": {
         "title": "Capital's share of output in firm production function",
         "description": "Capital's share of output in firm production function.",
@@ -350,9 +389,10 @@
         "section_2": "Production Function",
         "notes": "Historical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 0.35
+                "value": [0.35]
             }
         ],
         "validators": {
@@ -369,9 +409,10 @@
         "section_2": "Production Function",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 0.0
+                "value": [0.0]
             }
         ],
         "validators": {
@@ -390,9 +431,10 @@
         "section_2": "Production Function",
         "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 1.0
+                "value": [1.0]
             }
         ],
         "validators": {
@@ -409,12 +451,12 @@
         "section_2": "Production Function",
         "notes": "",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
-                "value": [
+                "value": [[
                     1.0
-                ]
+                ]]
             }
         ],
         "validators": {
@@ -783,11 +825,11 @@
         "section_2": "Taxes",
         "notes": "This is the top marginal corporate income tax rate.",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
                 "value": [
-                    0.21
+                    [0.21]
                 ]
             }
         ],
@@ -813,7 +855,7 @@
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": 0.99
+                "max": 1.0
             }
         }
     },
@@ -833,7 +875,7 @@
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": 0.99
+                "max": 2.0
             }
         }
     },
@@ -844,18 +886,18 @@
         "section_2": "Taxes",
         "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a SxJ matrix.",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
                 "value": [
-                    0.0
+                    [0.0]
                 ]
             }
         ],
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": 0.9
+                "max": 5.0
             }
         }
     },
@@ -866,11 +908,11 @@
         "section_2": "Taxes",
         "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter.",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
                 "value": [
-                    0.027
+                    [0.027]
                 ]
             }
         ],
@@ -3187,7 +3229,7 @@
         "validators": {
             "range": {
                 "min": 0.01,
-                "max": 0.15
+                "max": 0.25
             }
         }
     },

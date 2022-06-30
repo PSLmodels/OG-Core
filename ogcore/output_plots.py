@@ -157,6 +157,171 @@ def plot_aggregates(
     plt.close()
 
 
+def plot_industry_aggregates(
+    base_tpi,
+    base_params,
+    reform_tpi=None,
+    reform_params=None,
+    var_list=["Y_vec"],
+    plot_type="pct_diff",
+    num_years_to_plot=50,
+    start_year=DEFAULT_START_YEAR,
+    forecast_data=None,
+    forecast_units=None,
+    vertical_line_years=None,
+    plot_title=None,
+    path=None,
+):
+    """
+    Create a plot of macro aggregates by industry.
+
+    Args:
+        base_tpi (dictionary): TPI output from baseline run
+        base_params (OG-Core Specifications class): baseline parameters
+            object
+        reform_tpi (dictionary): TPI output from reform run
+        reform_params (OG-Core Specifications class): reform parameters
+            object
+        var_list (list): names of variable to plot
+        plot_type (string): type of plot, can be:
+            'pct_diff': plots percentage difference between baselien
+                and reform ((reform-base)/base)
+            'diff': plots difference between baseline and reform
+                (reform-base)
+            'levels': plot variables in model units
+            'forecast': plots variables in levels relative to baseline
+                economic forecast
+        num_years_to_plot (integer): number of years to include in plot
+        start_year (integer): year to start plot
+        forecast_data (array_like): baseline economic forecast series,
+            must have length = num_year_to_plot
+        forecast_units (str): units that baseline economic forecast is in
+        vertical_line_years (list): list of integers for years want
+            vertical lines at
+        plot_title (string): title for plot
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of macro aggregates
+
+    """
+    assert isinstance(start_year, (int, np.integer))
+    assert isinstance(num_years_to_plot, int)
+    # Make sure both runs cover same time period
+    if reform_tpi:
+        assert base_params.start_year == reform_params.start_year
+    year_vec = np.arange(start_year, start_year + num_years_to_plot)
+    start_index = start_year - base_params.start_year
+    # Check that reform included if doing pct_diff or diff plot
+    if plot_type == "pct_diff" or plot_type == "diff":
+        assert reform_tpi is not None
+    fig1, ax1 = plt.subplots()
+    for i, v in enumerate(var_list):
+        for m in range(base_params.M):
+            if plot_type == "pct_diff":
+                plot_var = (
+                    reform_tpi[v][:, m] - base_tpi[v][:, m]
+                ) / base_tpi[v][:, m]
+                ylabel = r"Pct. change"
+                plt.plot(
+                    year_vec,
+                    plot_var[start_index : start_index + num_years_to_plot],
+                    label=VAR_LABELS[v] + "for industry " + str(m),
+                )
+            elif plot_type == "diff":
+                plot_var = reform_tpi[v][:, m] - base_tpi[v][:, m]
+                ylabel = r"Difference (Model Units)"
+                plt.plot(
+                    year_vec,
+                    plot_var[start_index : start_index + num_years_to_plot],
+                    label=VAR_LABELS[v] + "for industry " + str(m),
+                )
+            elif plot_type == "levels":
+                plt.plot(
+                    year_vec,
+                    base_tpi[v][
+                        start_index : start_index + num_years_to_plot, m
+                    ],
+                    label="Baseline "
+                    + VAR_LABELS[v]
+                    + "for industry "
+                    + str(m),
+                )
+                if reform_tpi:
+                    plt.plot(
+                        year_vec,
+                        reform_tpi[v][
+                            start_index : start_index + num_years_to_plot, m
+                        ],
+                        label="Reform "
+                        + VAR_LABELS[v]
+                        + "for industry "
+                        + str(m),
+                    )
+                ylabel = r"Model Units"
+            elif plot_type == "forecast":
+                # Need reform and baseline to ensure plot makes sense
+                assert reform_tpi is not None
+                # Plot forecast of baseline
+                plot_var_base = forecast_data
+                plt.plot(
+                    year_vec,
+                    plot_var_base,
+                    label="Baseline "
+                    + VAR_LABELS[v]
+                    + "for industry "
+                    + str(m),
+                )
+                # Plot change from baseline forecast
+                pct_change = (
+                    reform_tpi[v][
+                        start_index : start_index + num_years_to_plot, m
+                    ]
+                    - base_tpi[v][
+                        start_index : start_index + num_years_to_plot, m
+                    ]
+                ) / base_tpi[v][
+                    start_index : start_index + num_years_to_plot, m
+                ]
+                plot_var_reform = (1 + pct_change) * forecast_data
+                plt.plot(
+                    year_vec,
+                    plot_var_reform,
+                    label="Reform " + VAR_LABELS[v] + "for industry " + str(m),
+                )
+                # making units labels will not work if multiple variables
+                # and they are in different units
+                ylabel = forecast_units
+            else:
+                print("Please enter a valid plot type")
+                assert False
+    # vertical markers at certain years
+    if vertical_line_years:
+        for yr in vertical_line_years:
+            plt.axvline(x=yr, linewidth=0.5, linestyle="--", color="k")
+    plt.xlabel(r"Year $t$")
+    plt.ylabel(ylabel)
+    if plot_title:
+        plt.title(plot_title, fontsize=15)
+    ax1.set_yticks(ax1.get_yticks().tolist())
+    vals = ax1.get_yticks()
+    if plot_type == "pct_diff":
+        ax1.set_yticklabels(["{:,.2%}".format(x) for x in vals])
+    plt.xlim(
+        (
+            base_params.start_year - 1,
+            base_params.start_year + num_years_to_plot,
+        )
+    )
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
+    if path:
+        fig_path1 = os.path.join(path)
+        plt.savefig(fig_path1, bbox_inches="tight")
+    else:
+        return fig1
+    plt.close()
+
+
 def ss_3Dplot(
     base_params,
     base_ss,

@@ -225,6 +225,9 @@ def get_C(c, p, method):
     r"""
     Calculation of aggregate consumption.
 
+    Set up to only take one consumption good at a time. This
+    function is called in a loop to get consumption for all goods.
+
     .. math::
         C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}
         \lambda_{j}c_{j,s,t}
@@ -241,7 +244,11 @@ def get_C(c, p, method):
     """
 
     if method == "SS":
-        aggC = (c * np.transpose(p.omega_SS * p.lambdas)).sum()
+        aggC = (
+            (c * np.transpose(p.omega_SS * p.lambdas).reshape(1, p.S, p.J))
+            .sum(-1)
+            .sum(-1)
+        )
     elif method == "TPI":
         aggC = (
             (
@@ -250,14 +257,30 @@ def get_C(c, p, method):
                     np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
                 )
             )
-            .sum(1)
-            .sum(1)
+            .sum(-1)
+            .sum(-1)
         )
     return aggC
 
 
 def revenue(
-    r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params, p, method
+    r,
+    w,
+    b,
+    n,
+    bq,
+    c,
+    Y,
+    L,
+    K,
+    p_m,
+    factor,
+    ubi,
+    theta,
+    etr_params,
+    p,
+    m,
+    method,
 ):
     r"""
     Calculate aggregate tax revenue.
@@ -266,8 +289,9 @@ def revenue(
         R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
         (T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}
         w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +
-        \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) -
-        \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}
+        \tau^{w}_{t}b_{j,s,t}) +
+        \sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -
+        \tau^{b}_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t}
 
     Args:
         r (array_like): the real interest rate
@@ -279,12 +303,13 @@ def revenue(
         Y (array_like): aggregate output
         L (array_like): aggregate labor
         K (array_like): aggregate capital
+        p_m (array_like): output prices
         factor (scalar): scaling factor converting model units to
             dollars
         ubi (array_like): universal basic income household distributions
         theta (Numpy array): social security replacement rate for each
             lifetime income group
-        etr_params (Numpy array): paramters of the effective tax rate
+        etr_params (Numpy array): parameters of the effective tax rate
             functions
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
@@ -322,7 +347,10 @@ def revenue(
         UBI_outlays = (ubi * pop_weights).sum()
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum()
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum()
-        cons_tax_revenue = (p.tau_c[-1, :, :] * c * pop_weights).sum()
+        cons_tax_revenue = (
+            ((p.tau_c[-1, :] * p_m).reshape(p.M, 1, 1) * c).sum(axis=0)
+            * pop_weights
+        ).sum()
         payroll_tax_revenue = p.frac_tax_payroll[-1] * iit_payroll_tax_revenue
     elif method == "TPI":
         pop_weights = np.squeeze(p.lambdas) * np.tile(
@@ -336,12 +364,21 @@ def revenue(
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum(1).sum(1)
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
-            (p.tau_c[: p.T, :, :] * c * pop_weights).sum(1).sum(1)
+            (
+                ((p.tau_c[: p.T, :] * p_m).reshape(p.T, p.M, 1, 1) * c).sum(
+                    axis=1
+                )
+                * pop_weights
+            )
+            .sum(1)
+            .sum(1)
         )
         payroll_tax_revenue = (
             p.frac_tax_payroll[: p.T] * iit_payroll_tax_revenue
         )
-    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
+    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum(
+        -1
+    )
     iit_revenue = iit_payroll_tax_revenue - payroll_tax_revenue
 
     total_tax_revenue = (
@@ -366,7 +403,7 @@ def revenue(
     )
 
 
-def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
+def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     r"""
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
@@ -377,10 +414,12 @@ def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
     Args:
         r (array_like): the real interest rate
         r_gov (array_like): the real interest rate on government debt
-        K (array_like): aggregate private capital
+        p_m (array_like): good prices
+        K_vec (array_like): aggregate capital demand from each industry
         K_g (array_like): aggregate public capital
         D (array_like): aggregate government debt
-        MPKg (array_like): marginal product of government capital
+        MPKg_vec (array_like): marginal product of government capital
+            for each industry
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
@@ -390,60 +429,81 @@ def get_r_p(r, r_gov, K, K_g, D, MPKg, p, method):
 
     """
     if method == "SS":
-        tau_b = p.tau_b[-1]
+        tau_b = p.tau_b[-1, :]
+        T = 1
     else:
-        tau_b = p.tau_b[: p.T]
-    r_K = r + (1 - tau_b) * MPKg * (K_g / K)
-    r_p = ((r_gov * D) + (r_K * K)) / (D + K)
+        T = p.T
+        tau_b = p.tau_b[: p.T, :].reshape((p.T, p.M))
+        K_g = K_g.reshape((p.T, 1))
+        r = r.reshape((p.T, 1))
+        r_gov = r_gov.reshape((p.T, 1))
+        D = D.reshape((p.T, 1))
+        p_m = p_m.reshape((p.T, p.M))
+        MPKg_vec = MPKg_vec.reshape((p.T, p.M))
+        K_vec = K_vec.reshape((p.T, p.M))
+    r_K = r + (
+        ((1 - tau_b) * p_m * MPKg_vec * K_g).sum(axis=-1).reshape((T, 1))
+        / K_vec.sum(axis=-1).reshape((T, 1))
+    )
+    r_p = ((r_gov * D) + (r_K * K_vec.sum(axis=-1).reshape((T, 1)))) / (
+        D + K_vec.sum(axis=-1).reshape((T, 1))
+    )
 
-    return r_p
+    return np.squeeze(r_p)
 
 
-def resource_constraint(
-    Y, C, G, I_d, I_g, K_f, new_borrowing_f, debt_service_f, r, p
-):
+def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
     r"""
     Compute the error in the resource constraint.
 
     .. math::
-      \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
+      \text{rc_error} = \hat{Y}_t - \hat{C}_t -
       \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
       \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
-      r_{p,t}\hat{K}^f_t ... \\
-      &\quad\quad + \Bigl(e^{g_y}\bigl[1 +
-      \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) -
-      r_{p,t}\hat{D}^f_t \quad\forall t
+      \text{net capital outflows}_t
 
     Args:
-        Y (array_like): aggregate output
-        C (array_like): aggregate consumption
-        G (array_like): aggregate government spending
+        Y (array_like): aggregate output by industry
+        C (array_like): aggregate consumption by industry
+        G (array_like): aggregate government spending by industry
         I_d (array_like): aggregate private investment from domestic households
         I_g (array_like): investment in government capital
-        K_f (array_like): aggregate capital that is foreign-owned
-        new_borrowing_f (array_like): new borrowing of government debt
-            from foreign investors
-        debt_service_f (array_like): interest payments on government
-            debt owned by foreigners
-        r (array_like): the real interest rate
-        p (OG-Core Specifications object): model parameters
+        net_capital_flows (array_like): net capital outflows
 
     Returns:
         rc_error (array_like): error in the resource constraint
 
     """
-    rc_error = (
-        Y
-        - C
-        - I_d
-        - I_g
-        - G
-        - (r + p.delta) * K_f
-        + new_borrowing_f
-        - debt_service_f
-    )
+    rc_error = Y - C - I_d - I_g - G - net_capital_flows
 
     return rc_error
+
+
+def get_capital_outflows(r, K_f, new_borrowing_f, debt_service_f, p):
+    r"""
+    Compute net capital outflows for open economy parameterizations
+
+    .. math::
+      \text{net capital flows} &= r_{p,t}\hat{K}^f_t ... \\
+      &\quad\quad + \Bigl(e^{g_y}\bigl[1 +
+      \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) -
+      r_{p,t}\hat{D}^f_t \quad\forall t
+
+    Args:
+        r (array_like): the real interest rate
+        K_f (array_like): aggregate capital that is foreign-owned
+        new_borrowing_f (array_like): new borrowing of government debt
+            from foreign investors
+        debt_service_f (array_like): interest payments on government
+            debt owned by foreigners
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        new_flow (array_like): net capital outflows
+    """
+    net_flow = (r + p.delta) * K_f - new_borrowing_f + debt_service_f
+
+    return net_flow
 
 
 def get_K_splits(B, K_demand_open, D_d, zeta_K):
@@ -486,3 +546,27 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
     K = K_f + K_d
 
     return K, K_d, K_f
+
+
+def get_ptilde(p_m, tau_c, alpha_c, method="SS"):
+    r"""
+    Calculate price of composite good.
+
+    .. math::
+        \tilde{p}_{t} = \prod_{m=1}^{M} \left(\frac{(1 + \tau^{c}_{m,t})p_{m,j}}{\alpha_{m,j}}\right)^{\alpha_{m,j}}
+
+    Args:
+        p_m (array_like): prices for consumption good m
+        tau_c (array_like): consumption taxes on good m
+        alpha_c (array_like): consumption share parameters
+
+    Returns:
+        p_tilde (array_like): tax-inclusive price of composite good
+    """
+    if method == "SS":
+        p_tilde = np.prod((((1 + tau_c) * p_m) / alpha_c) ** alpha_c)
+    else:  # TPI case
+        alpha_c = alpha_c.reshape(1, alpha_c.shape[0])
+        p_tilde = np.prod((((1 + tau_c) * p_m) / alpha_c) ** alpha_c, axis=1)
+
+    return p_tilde

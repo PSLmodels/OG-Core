@@ -5,6 +5,7 @@ Tests of output_tables.py module
 import pytest
 import os
 import pandas as pd
+import numpy as np
 from ogcore import utils, output_tables
 
 
@@ -13,22 +14,18 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 base_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "SS_vars_baseline.pkl")
 )
-base_ss["r_p_ss"] = base_ss.pop("r_hh_ss")
 base_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TPI_vars_baseline.pkl")
 )
-base_tpi["r_p"] = base_tpi.pop("r_hh")
 base_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
 )
 reform_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "SS_vars_reform.pkl")
 )
-reform_ss["r_p_ss"] = reform_ss.pop("r_hh_ss")
 reform_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TPI_vars_reform.pkl")
 )
-reform_tpi["r_p"] = reform_tpi.pop("r_hh")
 reform_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "model_params_reform.pkl")
 )
@@ -54,6 +51,7 @@ def test_macro_table(
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
+        start_year=2023,
         output_type=output_type,
         include_SS=True,
         include_overall=True,
@@ -91,7 +89,11 @@ def test_wealth_moments_table():
     Need SCF data which is too large to check into repo so this will
     be flagged so as to not run on TravisCI.
     """
-    df = output_tables.wealth_moments_table(base_ss, base_params)
+    df = output_tables.wealth_moments_table(
+        base_ss,
+        base_params,
+        data_moments=np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.6, 1.0, 2.0]),
+    )
     assert isinstance(df, pd.DataFrame)
 
 
@@ -123,6 +125,7 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
         reform_params,
         reform_tpi,
         reform_ss,
+        start_year=2023,
         include_business_tax=include_business_tax,
         full_break_out=full_break_out,
     )

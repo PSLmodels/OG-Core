@@ -792,18 +792,63 @@ def test_MTR_income(etr_params, mtr_params, params, mtr_capital, expected):
     assert np.allclose(test_mtr, expected)
 
 
-def test_get_biz_tax():
+p1 = Specifications()
+new_param_values1 = {
+    "cit_rate": [[0.20]],
+    "delta_tau_annual": [[0.0023176377601205056]],
+    "T": 3,
+    "S": 3,
+    "eta": (np.ones((3, p1.J)) / (3 * p1.J)),
+}
+# update parameters instance with new values for test
+p1.update_specifications(new_param_values1)
+w = np.array([1.2, 1.1, 1.2])
+Y = np.array([[3.0], [7.0], [3.0]])
+p_m = np.ones((p1.T, 1))
+L = np.array([[2.0], [3.0], [2.0]])
+K = np.array([[5.0], [6.0], [5.0]])
+expected1 = np.array([[0.0102], [0.11356], [0.0102]])
+
+
+@pytest.mark.parametrize(
+    "w,Y,L,K,p_m,p,m,method,expected",
+    [
+        (w.reshape(3, 1), Y, L, K, p_m, p1, None, "TPI", expected1),
+        (w, Y[:, 0], L[:, 0], K[:, 0], p_m, p1, 0, "TPI", expected1[:, 0]),
+        (
+            w[-1],
+            Y[-1, :],
+            L[-1, :],
+            K[-1, :],
+            p_m[-1, :],
+            p1,
+            None,
+            "SS",
+            expected1[-1, :],
+        ),
+        (
+            w[-1],
+            Y[-1, 0],
+            L[-1, 0],
+            K[-1, 0],
+            p_m[-1, :],
+            p1,
+            0,
+            "SS",
+            expected1[-1, 0],
+        ),
+    ],
+    ids=[
+        "TPI, m is None",
+        "TPI, m is not None",
+        "SS, m is None",
+        "SS, m is not None",
+    ],
+)
+def test_get_biz_tax(w, Y, L, K, p_m, p, m, method, expected):
     # Test function for business tax receipts
-    p = Specifications()
-    new_param_values = {"cit_rate": [0.20], "delta_tau_annual": [0.06]}
-    p.update_specifications(new_param_values)
-    p.T = 3
-    w = np.array([1.2, 1.1, 1.2])
-    Y = np.array([3.0, 7.0, 3.0])
-    L = np.array([2.0, 3.0, 2.0])
-    K = np.array([5.0, 6.0, 5.0])
-    biz_tax = tax.get_biz_tax(w, Y, L, K, p, "TPI")
-    assert np.allclose(biz_tax, np.array([0.0102, 0.11356, 0.0102]))
+    biz_tax = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method)
+    assert np.allclose(biz_tax, expected)
 
 
 """

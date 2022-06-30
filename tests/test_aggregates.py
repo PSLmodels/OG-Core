@@ -247,6 +247,7 @@ new_param_values = {
     "T": 160,
     "S": 40,
     "J": 2,
+    "M": 3,
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -256,13 +257,18 @@ new_param_values = {
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
 # make up some consumption values for testing
-c = 0.1 + 0.5 * np.random.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
-aggC_presum = (c * np.squeeze(p.lambdas)) * np.tile(
-    np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
+c = 0.1 + 0.5 * np.random.rand(p.T * p.M * p.S * p.J).reshape(
+    p.T, p.M, p.S, p.J
 )
-expected1 = aggC_presum[-1, :, :].sum()
-expected2 = aggC_presum.sum(1).sum(1)
-test_data = [(c[-1, :, :], p, "SS", expected1), (c, p, "TPI", expected2)]
+aggC_presum = (c * np.squeeze(p.lambdas)) * np.tile(
+    np.reshape(p.omega[: p.T, :], (p.T, 1, p.S, 1)), (1, p.M, 1, p.J)
+)
+expected1 = aggC_presum[-1, -1, :, :].sum(-1).sum(-1)
+expected2 = aggC_presum[:, -1, :, :].sum(-1).sum(-1)
+test_data = [
+    (c[-1, -1, :, :], p, "SS", expected1),
+    (c[:, -1, :, :], p, "TPI", expected2),
+]
 
 
 @pytest.mark.parametrize("c,p,method,expected", test_data, ids=["SS", "TPI"])
@@ -292,9 +298,9 @@ new_param_values = {
     "h_wealth": [0.1],
     "p_wealth": [0.2],
     "m_wealth": [1.0],
-    "cit_rate": [0.2],
+    "cit_rate": [[0.2]],
     "delta_tau_annual": [
-        float(1 - ((1 - 0.0975) ** (20 / (p.ending_age - p.starting_age))))
+        [float(1 - ((1 - 0.0975) ** (20 / (p.ending_age - p.starting_age))))]
     ],
     "omega": np.ones((30, 20)) / 20,
     "omega_SS": np.ones(20) / 20,
@@ -315,9 +321,9 @@ BQ = 0.032 + (0.055 - 0.032) * random_state.rand(p.T * p.S * p.J).reshape(
     p.T, p.S, p.J
 )
 bq = BQ / p.lambdas.reshape(1, 1, p.J)
-Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T)
-L = 0.416 + (0.423 - 0.416) * random_state.rand(p.T).reshape(p.T)
-K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T)
+Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T, 1)
+L = 0.416 + (0.423 - 0.416) * random_state.rand(p.T).reshape(p.T, 1)
+K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T, 1)
 ubi = np.zeros((p.T, p.S, p.J))
 factor = 140000.0
 # update parameters instance with new values for test
@@ -342,10 +348,10 @@ new_param_values3 = {
     "h_wealth": [0.1],
     "p_wealth": [0.2],
     "m_wealth": [1.0],
-    "cit_rate": [0.2],
+    "cit_rate": [[0.2]],
     "replacement_rate_adjust": [1.5, 1.5, 1.5, 1.6, 1.0],
     "delta_tau_annual": [
-        float(1 - ((1 - 0.0975) ** (20 / (p3.ending_age - p3.starting_age))))
+        [float(1 - ((1 - 0.0975) ** (20 / (p3.ending_age - p3.starting_age))))]
     ],
     "omega": np.ones((30, 20)) / 20,
     "omega_SS": np.ones(20) / 20,
@@ -368,9 +374,14 @@ new_param_values_ubi = {
     "h_wealth": [0.1],
     "p_wealth": [0.2],
     "m_wealth": [1.0],
-    "cit_rate": [0.2],
+    "cit_rate": [[0.2]],
     "delta_tau_annual": [
-        float(1 - ((1 - 0.0975) ** (20 / (p_u.ending_age - p_u.starting_age))))
+        [
+            float(
+                1
+                - ((1 - 0.0975) ** (20 / (p_u.ending_age - p_u.starting_age)))
+            )
+        ]
     ],
     "ubi_nom_017": 1000,
     "ubi_nom_1864": 1500,
@@ -393,9 +404,9 @@ BQ_u = 0.032 + (0.055 - 0.032) * random_state.rand(
     p_u.T * p_u.S * p_u.J
 ).reshape(p_u.T, p_u.S, p_u.J)
 bq_u = BQ_u / p_u.lambdas.reshape(1, 1, p_u.J)
-Y_u = 0.561 + (0.602 - 0.561) * random_state.rand(p_u.T).reshape(p_u.T)
-L_u = 0.416 + (0.423 - 0.416) * random_state.rand(p_u.T).reshape(p_u.T)
-K_u = 0.957 + (1.163 - 0.957) * random_state.rand(p_u.T).reshape(p_u.T)
+Y_u = 0.561 + (0.602 - 0.561) * random_state.rand(p_u.T).reshape(p_u.T, 1)
+L_u = 0.416 + (0.423 - 0.416) * random_state.rand(p_u.T).reshape(p_u.T, 1)
+K_u = 0.957 + (1.163 - 0.957) * random_state.rand(p_u.T).reshape(p_u.T, 1)
 factor_u = 140000.0
 ubi_u = p_u.ubi_nom_array / factor_u
 # update parameters instance with new values for test
@@ -409,6 +420,8 @@ etr_params_u = 0.22 * random_state.rand(
     p_u.T * p_u.S * p_u.J * num_tax_params
 ).reshape(p_u.T, p_u.S, p_u.J, num_tax_params)
 theta_u = 0.101 + (0.156 - 0.101) * random_state.rand(p_u.J)
+# vector of output prices
+p_m = np.ones((p.T, p.M))
 
 expected1 = 0.5688319028341413
 expected2 = np.array(
@@ -525,11 +538,13 @@ test_data = [
         Y[0],
         L[0],
         K[0],
+        p_m[-1, :],
         factor,
         ubi[0, :, :],
         theta,
         etr_params[-1, :, :, :],
         p,
+        None,
         "SS",
         expected1,
     ),
@@ -543,11 +558,13 @@ test_data = [
         Y,
         L,
         K,
+        p_m,
         factor,
         ubi,
         theta,
         etr_params,
         p,
+        None,
         "TPI",
         expected2,
     ),
@@ -561,11 +578,13 @@ test_data = [
         Y,
         L,
         K,
+        p_m,
         factor,
         ubi,
         theta,
         etr_params,
         p3,
+        None,
         "TPI",
         expected3,
     ),
@@ -579,11 +598,13 @@ test_data = [
         Y_u[0],
         L_u[0],
         K_u[0],
+        p_m[-1, :],
         factor_u,
         ubi_u[0, :, :],
         theta_u,
         etr_params_u[-1, :, :, :],
         p_u,
+        None,
         "SS",
         expected4,
     ),
@@ -597,11 +618,13 @@ test_data = [
         Y_u,
         L_u,
         K_u,
+        p_m,
         factor_u,
         ubi_u,
         theta_u,
         etr_params_u,
         p_u,
+        None,
         "TPI",
         expected5,
     ),
@@ -609,7 +632,7 @@ test_data = [
 
 
 @pytest.mark.parametrize(
-    "r,w,b,n,bq,c,Y,L,K,factor,ubi,theta,etr_params,p,method,expected",
+    "r,w,b,n,bq,c,Y,L,K,p_m,factor,ubi,theta,etr_params,p,m,method,expected",
     test_data,
     ids=["SS", "TPI", "TPI, replace rate adjust", "SS UBI>0", "TPI UBI>0"],
 )
@@ -623,67 +646,139 @@ def test_revenue(
     Y,
     L,
     K,
+    p_m,
     factor,
     ubi,
     theta,
     etr_params,
     p,
+    m,
     method,
     expected,
 ):
     """
     Test aggregate revenue function.
     """
-    print("ETR shape = ", p.etr_params.shape, etr_params.shape)
     revenue, _, _, _, _, _, _, _, _, _ = aggr.revenue(
-        r, w, b, n, bq, c, Y, L, K, factor, ubi, theta, etr_params, p, method
+        r,
+        w,
+        b,
+        n,
+        bq,
+        c,
+        Y,
+        L,
+        K,
+        p_m,
+        factor,
+        ubi,
+        theta,
+        etr_params,
+        p,
+        m,
+        method,
     )
-    print("REVENUE = ", revenue)
-
+    print("Rev: ", revenue)
+    print("Exp: ", expected)
     assert np.allclose(revenue, expected)
 
 
 test_data = [
-    (0.04, 0.02, 2.0, 0.0, 4.0, 0.0, 0.026666667),
     (
-        np.array([0.05, 0.03]),
-        np.array([0.02, 0.01]),
-        np.array([3.0, 4.0]),
-        np.array([0.0, 0.0]),
-        np.array([7.0, 6.0]),
-        np.array([0.0, 0.0]),
-        np.array([0.029, 0.018]),
+        0.04,
+        0.02,
+        np.array([1.0]),
+        np.array([2.0]),
+        0.0,
+        4.0,
+        np.array([0.0]),
+        "SS",
+        0.026666667,
     ),
-    (0.04, 0.02, 2.0, 0.0, 0.0, 0.0, 0.04),
     (
-        np.array([0.05, 0.03]),
-        np.array([0.02, 0.01]),
-        np.array([3.0, 4.0]),
-        np.array([1.0, 2.0]),
-        np.array([7.0, 6.0]),
-        np.array([0.04, 0.2]),
-        np.array(
-            [
-                0.029 + 0.3 * 0.038572 * 1.0 / 3.0,
-                0.018 + 0.4 * 0.19286 * 2.0 / 4.0,
-            ]
-        ),
+        np.array([0.05, 0.03, 0.03]),
+        np.array([0.02, 0.01, 0.01]),
+        np.array([1.0, 1.0, 1.0]),
+        np.array([3.0, 4.0, 4.0]),
+        np.array([0.0, 0.0, 0.0]),
+        np.array([7.0, 6.0, 6.0]),
+        np.array([0.0, 0.0, 0.0]),
+        "TPI",
+        np.array([0.029, 0.018, 0.018]),
+    ),
+    (
+        0.04,
+        0.02,
+        np.array([1.0]),
+        np.array([2.0]),
+        0.0,
+        0.0,
+        np.array([0.0]),
+        "SS",
+        0.04,
+    ),
+    (
+        np.array([0.05, 0.03, 0.03]),
+        np.array([0.02, 0.01, 0.01]),
+        np.array([1.0, 1.0, 1.0]),
+        np.array([3.0, 4.0, 4.0]),
+        np.array([1.0, 2.0, 2.0]),
+        np.array([7.0, 6.0, 6.0]),
+        np.array([0.04, 0.2, 0.2]),
+        "TPI",
+        np.array([0.0328572, 0.056572, 0.056572]),
+    ),
+    (
+        0.04,
+        0.02,
+        np.array([1.0, 1.0]),
+        np.array([2.0, 2.0]),
+        0.0,
+        0.0,
+        np.array([0.0]),
+        "SS",
+        np.array([0.04, 0.04]),
+    ),
+    (
+        np.array([0.05, 0.03, 0.03]),
+        np.array([0.02, 0.01, 0.01]),
+        np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]),
+        np.array([[3.0, 3.0, 3.0], [4.0, 4.0, 4.0], [4.0, 4.0, 4.0]]),
+        np.array([1.0, 2.0, 2.0]),
+        np.array([7.0, 6.0, 6.0]),
+        np.array([[0.04, 0.04, 0.04], [0.2, 0.2, 0.2], [0.2, 0.2, 0.2]]),
+        "TPI",
+        np.array([0.04410725, 0.08762, 0.08762]),
     ),
 ]
 
 
 @pytest.mark.parametrize(
-    "r,r_gov,K,K_g,D,MPKg,expected",
+    "r,r_gov,p_m,K_vec,K_g,D,MPKg_vec,method,expected",
     test_data,
-    ids=["scalar", "vector", "no debt", "vector,MPKg>0"],
+    ids=[
+        "SS, M=1",
+        "TPI, M=1",
+        "no debt",
+        "TPI,MPKg>0",
+        "SS, M>1",
+        "TPI, M>1",
+    ],
 )
-def test_get_r_p(r, r_gov, K, K_g, D, MPKg, expected):
+def test_get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, method, expected):
     """
     Test function to compute interest rate on household portfolio.
     """
     p = Specifications()
-    p.update_specifications({"T": 3})
-    r_p_test = aggr.get_r_p(r, r_gov, K, K_g, D, MPKg, p, "SS")
+    if method == "TPI" and p_m.ndim > 1:
+        M = p_m.shape[-1]
+    elif method == "SS":
+        M = len(p_m)
+    else:
+        M = 1
+    p.update_specifications({"T": 3, "M": M})
+
+    r_p_test = aggr.get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method)
 
     assert np.allclose(r_p_test, expected)
 
@@ -692,23 +787,35 @@ def test_resource_constraint():
     """
     Test resource constraint equation.
     """
-    p = Specifications()
-    p.delta = 0.05
     Y = np.array([48, 55, 2, 99, 8])
     C = np.array([33, 44, 0.4, 55, 6])
     G = np.array([4, 5, 0.01, 22, 0])
-    I = np.array([20, 5, 0.6, 10, 1])
-    I_g = np.zeros_like(I)
+    I_d = np.array([20, 5, 0.6, 10, 1])
+    I_g = np.zeros_like(I_d)
+    net_capital_flows = np.array([0.1, 0, 0.016, -1.67, -0.477])
+    expected = np.array([-9.1, 1, 0.974, 13.67, 1.477])
+    test_RC = aggr.resource_constraint(Y, C, G, I_d, I_g, net_capital_flows)
+
+    assert np.allclose(test_RC, expected)
+
+
+def test_get_capital_outflows():
+    """
+    Test of the get_captial_outflows function.
+    """
+    p = Specifications()
+    p.delta = 0.05
     K_f = np.array([0, 0, 0.2, 3, 0.05])
     new_borrowing_f = np.array([0, 0.1, 0.3, 4, 0.5])
     debt_service_f = np.array([0.1, 0.1, 0.3, 2, 0.02])
     r = np.array([0.03, 0.04, 0.03, 0.06, 0.01])
-    expected = np.array([-9.1, 1, 0.974, 13.67, 1.477])
-    test_RC = aggr.resource_constraint(
-        Y, C, G, I, I_g, K_f, new_borrowing_f, debt_service_f, r, p
+    expected = np.array([0.1, 0, 0.016, -1.67, -0.477])
+
+    test_flow = aggr.get_capital_outflows(
+        r, K_f, new_borrowing_f, debt_service_f, p
     )
 
-    assert np.allclose(test_RC, expected)
+    assert np.allclose(test_flow, expected)
 
 
 def test_get_K_splits():
@@ -753,3 +860,32 @@ def test_get_K_splits_negative_K_d():
     np.allclose(test_K, expected_K)
     np.allclose(test_K_d, expected_K_d)
     np.allclose(test_K_f, expected_K_f)
+
+
+alpha_c = np.array([0.5, 0.3, 0.2])
+tau_c = np.array([0.09, 0.07, 0.15])
+p_m_ss = np.array([1.2, 1.3, 2.5])
+p_m_tpi = np.tile(p_m_ss.reshape(1, 3), (3, 1))
+expected_ss = 4.367191169
+expected_tpi = np.array([4.367191169, 4.367191169, 4.367191169])
+
+
+@pytest.mark.parametrize(
+    "p_m,tau_c,alpha_c,method,expected",
+    [
+        (p_m_ss, tau_c, alpha_c, "SS", expected_ss),
+        (p_m_tpi, tau_c, alpha_c, "TPI", expected_tpi),
+    ],
+    ids=[
+        "SS",
+        "TPI",
+    ],
+)
+def test_get_ptilde(p_m, tau_c, alpha_c, method, expected):
+    """
+    Test of the get_ptilde function.
+    """
+
+    test_vals = aggr.get_ptilde(p_m, tau_c, alpha_c, method)
+
+    assert np.allclose(test_vals, expected)

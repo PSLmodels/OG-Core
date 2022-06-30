@@ -330,26 +330,25 @@ j4 = None
 
 test_data = [
     (
-        (r1, w1, b1, b_splus1_1, n1, bq1, net_tax1, tau_c1, p1),
-        1.288650006 / (1 + tau_c1),
+        (r1, w1, b1, b_splus1_1, n1, bq1, net_tax1, p1),
+        1.288650006,
     ),
     (
-        (r2, w2, b2, b_splus1_2, n2, bq2, net_tax2, tau_c2, p2),
-        np.array([1.288650006, 13.76350909, 5.188181864]) / (1 + tau_c2),
+        (r2, w2, b2, b_splus1_2, n2, bq2, net_tax2, p2),
+        np.array([1.288650006, 13.76350909, 5.188181864]),
     ),
     (
-        (r3, w3, b3, b_splus1_3, n3, bq3, net_tax3, tau_c3, p3),
+        (r3, w3, b3, b_splus1_3, n3, bq3, net_tax3, p3),
         np.array(
             [
                 [4.042579933, 0.3584699],
                 [3.200683445, -0.442597826],
                 [3.320519733, -1.520385451],
             ]
-        )
-        / (1 + tau_c3),
+        ),
     ),
     (
-        (r4, w4, b4, b_splus1_4, n4, bq4, net_tax4, tau_c4, p4),
+        (r4, w4, b4, b_splus1_4, n4, bq4, net_tax4, p4),
         np.array(
             [
                 np.array(
@@ -381,8 +380,7 @@ test_data = [
                     ]
                 ),
             ]
-        )
-        / (1 + tau_c4),
+        ),
     ),
 ]
 
@@ -394,9 +392,10 @@ test_data = [
 )
 def test_get_cons(model_args, expected):
     # Test consumption calculation
-    r, w, b, b_splus1, n, bq, net_tax, tau_c, p = model_args
+    r, w, b, b_splus1, n, bq, net_tax, p = model_args
+    p_tilde = np.ones_like(w)
     test_value = household.get_cons(
-        r, w, b, b_splus1, n, bq, net_tax, p.e, tau_c, p
+        r, w, p_tilde, b, b_splus1, n, bq, net_tax, p.e, p
     )
 
     assert np.allclose(test_value, expected)
@@ -483,7 +482,6 @@ w = 1.2
 b = np.array([0.0, 0.8, 0.5])
 b_splus1 = np.array([0.8, 0.5, 0.1])
 n = np.array([0.9, 0.8, 0.5])
-tau_c = np.array([0.09, 0.08, 0.05])
 bq = 0.1
 factor = 120000
 tr = 0.22
@@ -502,7 +500,6 @@ test_vars_ss = (
     tr,
     ubi_ss,
     theta,
-    tau_c,
     etr_params[-1, :, :],
     mtry_params[-1, :, :],
     None,
@@ -520,14 +517,13 @@ test_vars_ss0 = (
     tr,
     ubi_ss,
     theta,
-    tau_c,
     etr_params[-1, :, :],
     mtry_params[-1, :, :],
     None,
     0,
     method,
 )
-expected_ss = np.array([10.86024358, -0.979114982, -140.5190831])
+expected_ss = np.array([9.9403099, -1.00478079, -140.55458776])
 
 # Define variables/params for test of TPI version
 method_tpi = "TPI"
@@ -546,8 +542,6 @@ b_splus1_path = np.tile(np.reshape(np.array([0.8, 0.5, 0.1]), (1, 3)), (3, 1))
 n_path = np.tile(np.reshape(np.array([0.9, 0.8, 0.5]), (1, 3)), (3, 1))
 bq_vec = np.array([0.1, 0.05, 0.15])
 tr_vec = np.array([0.22, 0.15, 0.0])
-tau_c_mat = np.tile(np.reshape(np.array([0.09, 0.08, 0.05]), (1, 3)), (3, 1))
-tau_c_tpi = np.diag(tau_c_mat)
 etr_params_tpi = np.empty((p1.S, etr_params.shape[2]))
 mtry_params_tpi = np.empty((p1.S, mtry_params.shape[2]))
 for i in range(etr_params.shape[2]):
@@ -564,14 +558,13 @@ test_vars_tpi = (
     tr_vec,
     ubi_ss,
     theta,
-    tau_c_tpi,
     etr_params_tpi,
     mtry_params_tpi,
     0,
     j,
     method_tpi,
 )
-expected_tpi = np.array([328.1253524, 3.057420747, -139.8514249])
+expected_tpi = np.array([300.97703103, 2.71986664, -139.91872277])
 
 
 # Define variables for test of SS and TPI with non-zero wealth tax
@@ -579,13 +572,13 @@ test_params_ss_tau_w = copy.deepcopy(p1)
 test_params_ss_tau_w.h_wealth = np.array([0.305509])
 test_params_ss_tau_w.m_wealth = np.array([2.16051])
 test_params_ss_tau_w.p_wealth = np.array([0.025])
-expected_ss_tau_w = np.array([10.8610679, -0.975864602, -140.5180448])
+expected_ss_tau_w = np.array([9.94107316, -1.00174574, -140.5535989])
 
 test_params_tpi_tau_w = copy.deepcopy(test_params_tpi)
 test_params_tpi_tau_w.h_wealth = np.array([0.305509, 0.305509, 0.305509])
 test_params_tpi_tau_w.m_wealth = np.array([2.16051, 2.16051, 2.16051])
 test_params_tpi_tau_w.p_wealth = np.array([0.025, 0.025, 0.025])
-expected_tpi_tau_w = np.array([328.1066462, 3.105699478, -139.8487143])
+expected_tpi_tau_w = np.array([300.95971044, 2.76460318, -139.91614123])
 
 test_data = [
     (test_vars_ss, test_params_ss, expected_ss),
@@ -614,17 +607,21 @@ def test_FOC_savings(model_vars, params, expected):
         tr,
         ubi,
         theta,
-        tau_c,
         etr_params,
         mtry_params,
         t,
         j,
         method,
     ) = model_vars
+    if method == "TPI":
+        p_tilde = np.ones_like(w)
+    else:
+        p_tilde = np.array([1.0])
     if j is not None:
         test_value = household.FOC_savings(
             r,
             w,
+            p_tilde,
             b,
             b_splus1,
             n,
@@ -635,7 +632,6 @@ def test_FOC_savings(model_vars, params, expected):
             theta,
             params.e[:, j],
             params.rho,
-            tau_c,
             etr_params,
             mtry_params,
             t,
@@ -647,6 +643,7 @@ def test_FOC_savings(model_vars, params, expected):
         test_value = household.FOC_savings(
             r,
             w,
+            p_tilde,
             b,
             b_splus1,
             n,
@@ -657,7 +654,6 @@ def test_FOC_savings(model_vars, params, expected):
             theta,
             np.squeeze(params.e),
             params.rho,
-            tau_c,
             etr_params,
             mtry_params,
             t,
@@ -665,6 +661,7 @@ def test_FOC_savings(model_vars, params, expected):
             params,
             method,
         )
+    print(test_value)
     assert np.allclose(test_value, expected)
 
 
@@ -753,7 +750,6 @@ b = np.array([0.0, 0.8, 0.5])
 b_splus1 = np.array([0.8, 0.5, 0.1])
 n = np.array([0.9, 0.8, 0.5])
 bq = 0.1
-tau_c = np.array([0.09, 0.08, 0.05])
 factor = 120000
 tr = 0.22
 ubi_ss = np.zeros(p1.S)
@@ -769,14 +765,13 @@ test_vars_ss = (
     tr,
     ubi_ss,
     theta,
-    tau_c,
     etr_params[-1, :, :],
     mtrx_params[-1, :, :],
     None,
     j,
     method,
 )
-expected_ss = np.array([5.004572473, 0.160123869, -0.139397744])
+expected_ss = np.array([4.77647028, 0.14075522, -0.14196852])
 
 # Define variables/params for test of TPI version
 method_tpi = "TPI"
@@ -795,7 +790,6 @@ b_splus1_path = np.tile(np.reshape(np.array([0.8, 0.5, 0.1]), (1, 3)), (3, 1))
 n_path = np.tile(np.reshape(np.array([0.9, 0.8, 0.5]), (1, 3)), (3, 1))
 bq_vec = np.tile(np.array([0.1, 0.05, 0.15]).reshape(3, 1), (1, 3))
 tr_vec = np.tile(np.array([0.22, 0.15, 0.0]).reshape(3, 1), (1, 3))
-tau_c_tpi = np.tile(np.reshape(np.array([0.09, 0.08, 0.05]), (1, 3)), (3, 1))
 etr_params_tpi = np.empty((p1.S, etr_params.shape[2]))
 mtrx_params_tpi = np.empty((p1.S, mtrx_params.shape[2]))
 etr_params_tpi = etr_params
@@ -811,7 +805,6 @@ test_vars_tpi = (
     tr_vec,
     ubi_ss,
     theta,
-    tau_c_tpi,
     etr_params_tpi,
     mtrx_params_tpi,
     0,
@@ -820,9 +813,9 @@ test_vars_tpi = (
 )
 expected_tpi = np.array(
     [
-        [72.47245852, 0.021159855, 0.448785988],
-        [52.98670445, 2.020513233, -0.319957296],
-        [2.12409207e05, 0.238114178, -0.131132485],
+        [6.93989849e01, 7.03703184e-03, 4.32040026e-01],
+        [5.07350175e01, 1.93091572e00, -3.18176601e-01],
+        [2.51596643e05, 2.15801427e-01, -1.33902455e-01],
     ]
 )
 
@@ -837,9 +830,9 @@ test_params_tau_pay.tau_payroll = np.array([0.11, 0.05, 0.33])
 test_params_tau_pay.tau_bq = np.array([0.0, 0.0, 0.0])
 expected_tau_pay = np.array(
     [
-        [29.60252043, 0.039791027, 0.464569438],
-        [15.37208418, 1.814624637, -0.179212251],
-        [2.95870445e05, 0.158962139, -0.41924639],
+        [2.83370314e01, 2.49648863e-02, 4.47443095e-01],
+        [1.47067455e01, 1.73279932e00, -1.80823501e-01],
+        [3.50954120e05, 1.39637342e-01, -4.15072835e-01],
     ]
 )
 
@@ -868,16 +861,20 @@ def test_FOC_labor(model_vars, params, expected):
         tr,
         ubi,
         theta,
-        tau_c,
         etr_params,
         mtrx_params,
         t,
         j,
         method,
     ) = model_vars
+    if method == "TPI":
+        p_tilde = np.ones_like(w)
+    else:
+        p_tilde = np.array([1.0])
     test_value = household.FOC_labor(
         r,
         w,
+        p_tilde,
         b,
         b_splus1,
         n,
@@ -888,7 +885,6 @@ def test_FOC_labor(model_vars, params, expected):
         theta,
         params.chi_n,
         params.e[:, j],
-        tau_c,
         etr_params,
         mtrx_params,
         t,
@@ -948,3 +944,25 @@ def test_constraint_checker_TPI(bssmat, nssmat, cssmat, ltilde):
 
     household.constraint_checker_TPI(bssmat, nssmat, cssmat, 10, ltilde)
     assert True
+
+
+def test_get_cm():
+    """
+    Test of the get_cm function
+    """
+    c_s = np.array([2.0, 3.0, 5.0, 7.0]).reshape(4, 1)
+    p_m = np.array([1.1, 0.8, 1.0])
+    p_tilde = np.array([2.3])
+    tau_c = np.array([0.2, 0.3, 0.5])
+    alpha_c = np.array([0.5, 0.3, 0.2])
+    expected_cm = np.array(
+        [
+            [1.742424242, 2.613636364, 4.356060606, 6.098484848],
+            [1.326923077, 1.990384615, 3.317307692, 4.644230769],
+            [0.613333333, 0.92, 1.533333333, 2.146666667],
+        ]
+    ).reshape(3, 4, 1)
+
+    test_cm = household.get_cm(c_s, p_m, p_tilde, tau_c, alpha_c)
+
+    assert np.allclose(test_cm, expected_cm)

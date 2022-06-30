@@ -141,7 +141,7 @@ def get_bq(BQ, j, p, method):
     Calculate bequests to each household.
 
     .. math::
-        bq_{j,s,t} = zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}
+        bq_{j,s,t} = \zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}
 
     Args:
         BQ (array_like): aggregate bequests
@@ -202,7 +202,7 @@ def get_tr(TR, j, p, method):
     Calculate transfers to each household.
 
     .. math::
-        tr_{j,s,t} = zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}
+        tr_{j,s,t} = \zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}
 
     Args:
         TR (array_like): aggregate transfers
@@ -238,7 +238,7 @@ def get_tr(TR, j, p, method):
     return tr
 
 
-def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
+def get_cons(r, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
     r"""
     Calculate household consumption.
 
@@ -250,13 +250,13 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     Args:
         r (array_like): the real interest rate
         w (array_like): the real wage rate
+        p_tilde (array_like): the ratio of real GDP to nominal GDP
         b (Numpy array): household savings
         b_splus1 (Numpy array): household savings one period ahead
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
         net_tax (Numpy array): household net taxes paid
         e (Numpy array): effective labor units
-        tau_c (array_like): consumption tax rates
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -265,13 +265,57 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     """
     cons = (
         (1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) - net_tax
-    ) / (1 + tau_c)
+    ) / p_tilde
     return cons
+
+
+def get_cm(c_s, p_m, p_tilde, tau_c, alpha_c, method="SS"):
+    r"""
+    Compute consumption of good m given amount of composite consumption
+    and prices.
+
+    .. math::
+        c_{m,j,s,t} = \frac{c_{s,j,t}}{\alpha_{m,j}p_{m,j}}
+
+    Args:
+        c_s (array_like): composite consumption
+        p_m (array_like): prices for consumption good m
+        p_tilde (array_like): composite good price
+        tau_c (array_like): consumption tax rate
+        alpha_c (array_like): consumption share parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+
+    Returns:
+        c_sm (array_like): consumption of good m
+    """
+    if method == "SS":
+        M = alpha_c.shape[0]
+        S = c_s.shape[0]
+        J = c_s.shape[1]
+        tau_c = tau_c.reshape(M, 1, 1)
+        alpha_c = alpha_c.reshape(M, 1, 1)
+        p_tilde.reshape(1, 1, 1)
+        p_m = p_m.reshape(M, 1, 1)
+        c_s = c_s.reshape(1, S, J)
+        c_sm = alpha_c * (((1 + tau_c) * p_m) / p_tilde) ** (-1) * c_s
+    else:  # Time path case
+        M = alpha_c.shape[0]
+        T = p_m.shape[0]
+        S = c_s.shape[1]
+        J = c_s.shape[2]
+        tau_c = tau_c.reshape(T, M, 1, 1)
+        alpha_c = alpha_c.reshape(1, M, 1, 1)
+        p_tilde = p_tilde.reshape(T, 1, 1, 1)
+        p_m = p_m.reshape(T, M, 1, 1)
+        c_s = c_s.reshape(T, 1, S, J)
+        c_sm = alpha_c * (((1 + tau_c) * p_m) / p_tilde) ** (-1) * c_s
+    return c_sm
 
 
 def FOC_savings(
     r,
     w,
+    p_tilde,
     b,
     b_splus1,
     n,
@@ -282,7 +326,6 @@ def FOC_savings(
     theta,
     e,
     rho,
-    tau_c,
     etr_params,
     mtry_params,
     t,
@@ -296,15 +339,16 @@ def FOC_savings(
     lifetime income group at a time.
 
     .. math::
-        c_{j,s,t}^{-\sigma} = e^{-\sigma g_y}
+        \frac{c_{j,s,t}^{-\sigma}}{\tilde{p}_{t}} = e^{-\sigma g_y}
         \biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} +
-        \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{t+1}
-        \bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)
+        \beta_j\bigl(1 - \rho_s\bigr)\Bigl(\frac{1 + r_{t+1}
+        \bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{\tilde{p}_{t+1}}\Bigr)
         (c_{j,s+1,t+1})^{-\sigma}\biggr]
 
     Args:
         r (array_like): the real interest rate
         w (array_like): the real wage rate
+        p_tilde (array_like): composite good price
         b (Numpy array): household savings
         b_splus1 (Numpy array): household savings one period ahead
         b_splus2 (Numpy array): household savings two periods ahead
@@ -317,7 +361,6 @@ def FOC_savings(
             lifetime income group
         e (Numpy array): effective labor units
         rho (Numpy array): mortality rates
-        tau_c (array_like): consumption tax rates
         etr_params (Numpy array): parameters of the effective tax rate
             functions
         mtry_params (Numpy array): parameters of the marginal tax rate
@@ -342,6 +385,7 @@ def FOC_savings(
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
         p_wealth = p.p_wealth[-1]
+        p_tilde = np.ones_like(p.rho) * p_tilde
     else:
         h_wealth = p.h_wealth[t]
         m_wealth = p.m_wealth[t]
@@ -365,7 +409,7 @@ def FOC_savings(
         etr_params,
         p,
     )
-    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
+    cons = get_cons(r, w, p_tilde, b, b_splus1, n, bq, taxes, e, p)
     deriv = (
         (1 + r)
         - (
@@ -382,22 +426,22 @@ def FOC_savings(
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
         euler_error[:-1] = (
-            marg_ut_cons(cons[:-1], p.sigma) * (1 / (1 + tau_c[:-1]))
+            marg_ut_cons(cons[:-1], p.sigma) * (1 / p_tilde[:-1])
             - beta
             * (1 - rho[:-1])
             * deriv[1:]
             * marg_ut_cons(cons[1:], p.sigma)
-            * (1 / (1 + tau_c[1:]))
+            * (1 / p_tilde[1:])
             * np.exp(-p.sigma * p.g_y)
             - savings_ut[:-1]
         )
         euler_error[-1] = (
-            marg_ut_cons(cons[-1], p.sigma) * (1 / (1 + tau_c[-1]))
+            marg_ut_cons(cons[-1], p.sigma) * (1 / p_tilde[-1])
             - savings_ut[-1]
         )
     else:
         euler_error[-1] = (
-            marg_ut_cons(cons[-1], p.sigma) * (1 / (1 + tau_c[-1]))
+            marg_ut_cons(cons[-1], p.sigma) * (1 / p_tilde[-1])
             - savings_ut[-1]
         )
 
@@ -407,6 +451,7 @@ def FOC_savings(
 def FOC_labor(
     r,
     w,
+    p_tilde,
     b,
     b_splus1,
     n,
@@ -417,7 +462,6 @@ def FOC_labor(
     theta,
     chi_n,
     e,
-    tau_c,
     etr_params,
     mtrx_params,
     t,
@@ -432,7 +476,7 @@ def FOC_labor(
 
     .. math::
         w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)
-        (c_{j,s,t})^{-\sigma} = \chi^n_{s}
+       \frac{(c_{j,s,t})^{-\sigma}}{ \tilde{p}_{t}} = \chi^n_{s}
         \biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}
         {\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 -
         \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]
@@ -441,6 +485,7 @@ def FOC_labor(
     Args:
         r (array_like): the real interest rate
         w (array_like): the real wage rate
+        p_tilde (array_like): composite good price
         b (Numpy array): household savings
         b_splus1 (Numpy array): household savings one period ahead
         n (Numpy array): household labor supply
@@ -453,7 +498,6 @@ def FOC_labor(
         chi_n (Numpy array): utility weight on the disutility of labor
             supply
         e (Numpy array): effective labor units
-        tau_c (array_like): consumption tax rates
         etr_params (Numpy array): parameters of the effective tax rate
             functions
         mtrx_params (Numpy array): parameters of the marginal tax rate
@@ -499,7 +543,7 @@ def FOC_labor(
         etr_params,
         p,
     )
-    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
+    cons = get_cons(r, w, p_tilde, b, b_splus1, n, bq, taxes, e, p)
     deriv = (
         1
         - tau_payroll
@@ -508,17 +552,17 @@ def FOC_labor(
         )
     )
     FOC_error = marg_ut_cons(cons, p.sigma) * (
-        1 / (1 + tau_c)
+        1 / p_tilde
     ) * w * deriv * e - marg_ut_labor(n, chi_n, p)
 
     return FOC_error
 
 
 def get_y(r_p, w, b_s, n, p):
-    """
+    r"""
     Compute household income before taxes.
 
-    ..math::
+    .. math::
         y_{j,s,t} = r_{p,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}
 
     Args:

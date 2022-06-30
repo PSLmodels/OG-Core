@@ -110,7 +110,7 @@ def get_initial_SS_values(p):
 
 
 def firstdoughnutring(
-    guesses, r, w, bq, tr, theta, factor, ubi, j, initial_b, p
+    guesses, r, w, p_tilde, bq, tr, theta, factor, ubi, j, initial_b, p
 ):
     """
     Solves the first entries of the upper triangle of the twist doughnut. This
@@ -121,6 +121,7 @@ def firstdoughnutring(
         guesses (Numpy array): initial guesses for b and n, length 2
         r (scalar): real interest rate
         w (scalar): real wage rate
+        p_tilde (scalar): composite good price
         bq (scalar): bequest amounts by age
         tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
@@ -144,6 +145,7 @@ def firstdoughnutring(
     error1 = household.FOC_savings(
         np.array([r]),
         np.array([w]),
+        np.array([p_tilde]),
         b_s,
         np.array([b_splus1]),
         np.array([n]),
@@ -154,7 +156,6 @@ def firstdoughnutring(
         theta[j],
         p.e[-1, j],
         p.rho[-1],
-        np.array([p.tau_c[0, -1, j]]),
         p.etr_params[0, -1, :],
         p.mtry_params[0, -1, :],
         None,
@@ -166,6 +167,7 @@ def firstdoughnutring(
     error2 = household.FOC_labor(
         np.array([r]),
         np.array([w]),
+        np.array([p_tilde]),
         b_s,
         b_splus1,
         np.array([n]),
@@ -176,7 +178,6 @@ def firstdoughnutring(
         theta[j],
         p.chi_n[-1],
         p.e[-1, j],
-        np.array([p.tau_c[0, -1, j]]),
         p.etr_params[0, -1, :],
         p.mtrx_params[0, -1, :],
         None,
@@ -197,6 +198,7 @@ def twist_doughnut(
     guesses,
     r,
     w,
+    p_tilde,
     bq,
     tr,
     theta,
@@ -205,7 +207,6 @@ def twist_doughnut(
     j,
     s,
     t,
-    tau_c,
     etr_params,
     mtrx_params,
     mtry_params,
@@ -218,18 +219,18 @@ def twist_doughnut(
     of their life was before the model begins).
 
     Args:
-        guesses (Numpy array): initial guesses for b and n, length 2s
-        r (scalar): real interest rate
-        w (scalar): real wage rate
+        guesses (list): initial guesses for b and n, length 2s
+        r (Numpy array): real interest rate
+        w (Numpy array): real wage rate
+        p_tilde (Numpy array): composite good price
         bq (Numpy array): bequest amounts by age, length s
-        tr (scalar): government transfer amount
+        tr (Numpy array): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
-        ubi (array): length remaining periods of life UBI payout to household
+        ubi (Numpy array): length remaining periods of life UBI payout to household
         j (int): index of ability type
         s (int): years of life remaining
         t (int): model period
-        tau_c (Numpy array): consumption tax rates, size = sxJ
         etr_params (Numpy array): ETR function parameters,
             size = sxsxnum_params
         mtrx_params (Numpy array): labor income MTR function parameters,
@@ -257,6 +258,7 @@ def twist_doughnut(
     b_splus1 = b_guess
     w_s = w[t : t + length]
     r_s = r[t : t + length]
+    p_tilde_s = p_tilde[t : t + length]
     n_s = n_guess
     chi_n_s = p.chi_n[-length:]
     e_s = p.e[-length:, j]
@@ -265,6 +267,7 @@ def twist_doughnut(
     error1 = household.FOC_savings(
         r_s,
         w_s,
+        p_tilde_s,
         b_s,
         b_splus1,
         n_s,
@@ -275,7 +278,6 @@ def twist_doughnut(
         theta,
         e_s,
         rho_s,
-        tau_c,
         etr_params,
         mtry_params,
         t,
@@ -287,6 +289,7 @@ def twist_doughnut(
     error2 = household.FOC_labor(
         r_s,
         w_s,
+        p_tilde_s,
         b_s,
         b_splus1,
         n_s,
@@ -297,7 +300,6 @@ def twist_doughnut(
         theta,
         chi_n_s,
         e_s,
-        tau_c,
         etr_params,
         mtrx_params,
         t,
@@ -330,11 +332,12 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         guesses (tuple): initial guesses for b and n, (guesses_b,
             guesses_n)
         outer_loop_vars (tuple): values for factor prices and economic
-            aggregates used in household problem (r, w, r_p, BQ, TR,
+            aggregates used in household problem (r_p, r, w, p+m, BQ, TR,
             theta)
+        r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital
         w (Numpy array): real wage rate
-        r (Numpy array): real interest rate on household portfolio
+        p_m (Numpy array): output goods prices
         BQ (array_like): aggregate bequest amounts
         TR (Numpy array): lump sum transfer amount
         theta (Numpy array): retirement replacement rates, length J
@@ -357,8 +360,10 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
     guesses_b, guesses_n = guesses
-    r, w, r_p, BQ, TR, theta = outer_loop_vars
+    r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars
 
+    # compute composite good price
+    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # compute bq
     bq = household.get_bq(BQ, None, p, "TPI")
     # compute tr
@@ -375,6 +380,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         args=(
             r_p[0],
             w[0],
+            p_tilde[0],
             bq[0, -1, j],
             tr[0, -1, j],
             theta * p.replacement_rate_adjust[0],
@@ -396,7 +402,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S]
         bq_to_use = np.diag(bq[: p.S, :, j], p.S - (s + 2))
         tr_to_use = np.diag(tr[: p.S, :, j], p.S - (s + 2))
-        tau_c_to_use = np.diag(p.tau_c[: p.S, :, j], p.S - (s + 2))
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
         length_diag = np.diag(p.etr_params[: p.S, :, 0], p.S - (s + 2)).shape[
@@ -421,6 +426,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             args=(
                 r_p,
                 w,
+                p_tilde,
                 bq_to_use,
                 tr_to_use,
                 theta_to_use,
@@ -429,7 +435,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 j,
                 s,
                 0,
-                tau_c_to_use,
                 etr_params_to_use,
                 mtrx_params_to_use,
                 mtry_params_to_use,
@@ -451,7 +456,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         theta_to_use = theta[j] * p.replacement_rate_adjust[t : t + p.S]
         bq_to_use = np.diag(bq[t : t + p.S, :, j])
         tr_to_use = np.diag(tr[t : t + p.S, :, j])
-        tau_c_to_use = np.diag(p.tau_c[t : t + p.S, :, j])
         ubi_to_use = np.diag(ubi[t : t + p.S, :, j])
 
         # initialize array of diagonal elements
@@ -475,6 +479,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             args=(
                 r_p,
                 w,
+                p_tilde,
                 bq_to_use,
                 tr_to_use,
                 theta_to_use,
@@ -483,7 +488,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 j,
                 None,
                 t,
-                tau_c_to_use,
                 etr_params_to_use,
                 mtrx_params_to_use,
                 mtry_params_to_use,
@@ -576,30 +580,47 @@ def run_TPI(p, client=None):
     else:
         K_g0 = Kg0_baseline
     K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
+    # path for industry specific aggregates
+    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_vec_ss"].reshape(
+        1, p.M
+    )
+    L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_vec_ss"].reshape(
+        1, p.M
+    )
+    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_vec_ss"].reshape(
+        1, p.M
+    )
+    # compute w
+    w = np.ones_like(K) * ss_vars["wss"]
+    # compute goods prices
+    p_m = np.ones((p.T + p.S, p.M)) * ss_vars["p_m_ss"].reshape(1, p.M)
+    p_m[: p.T, :] = firm.get_pm(
+        w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI"
+    )
+    p_m = p_m / p_m[:, -1].reshape(
+        p.T + p.S, 1
+    )  # normalize prices by industry M
+    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
+    if not any(p.zeta_K == 1):
+        w[: p.T] = np.squeeze(
+            firm.get_w(Y[: p.T], L[: p.T], p_m[: p.T, :], p, "TPI")
+        )
+    # repeat with updated w
+    p_m[: p.T, :] = firm.get_pm(
+        w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI"
+    )
+    p_m = p_m / p_m[:, -1].reshape(
+        p.T + p.S, 1
+    )  # normalize prices by industry M
+    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
+    # path for interest rates
     r = np.zeros_like(Y)
-    r[: p.T] = firm.get_r(Y[: p.T], K[: p.T], p, "TPI")
+    r[: p.T] = np.squeeze(
+        firm.get_r(Y[: p.T], K[: p.T], p_m[: p.T, :], p, "TPI")
+    )
     r[p.T :] = ss_vars["rss"]
     # For case where economy is small open econ
     r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
-    # Compute other interest rates
-    r_gov = fiscal.get_r_gov(r, p)
-    r_p = np.ones_like(r) * ss_vars["r_p_ss"]
-    MPKg = firm.get_MPx(Y[: p.T], K_g[: p.T], p.gamma_g, p, "TPI")
-    r_p[: p.T] = aggr.get_r_p(
-        r[: p.T],
-        r_gov[: p.T],
-        K[: p.T],
-        K_g[: p.T],
-        ss_vars["Dss"],
-        MPKg,
-        p,
-        "TPI",
-    )
-
-    # compute w
-    w = np.ones_like(r) * ss_vars["wss"]
-    if not any(p.zeta_K == 1):
-        w[: p.T] = firm.get_w(Y[: p.T], L[: p.T], p, "TPI")
 
     # initial guesses at fiscal vars
     if p.budget_balance:
@@ -628,6 +649,28 @@ def run_TPI(p, client=None):
         D_f = D * ss_vars["D_f_ss"] / ss_vars["Dss"]
     total_tax_revenue = np.ones(p.T + p.S) * ss_vars["total_tax_revenue"]
 
+    # Compute other interest rates
+    r_gov = fiscal.get_r_gov(r, p)
+    r_p = np.ones_like(r) * ss_vars["r_p_ss"]
+    MPKg = np.zeros((p.T, p.M))
+    for m in range(p.M):
+        MPKg[:, m] = np.squeeze(
+            firm.get_MPx(
+                Y_vec_init[: p.T, m], K_g[: p.T], p.gamma_g[m], p, "TPI", m
+            )
+        )
+    r_p[: p.T] = aggr.get_r_p(
+        r[: p.T],
+        r_gov[: p.T],
+        p_m[: p.T, :],
+        K_vec_init[: p.T, :],
+        K_g[: p.T],
+        D[: p.T],
+        MPKg,
+        p,
+        "TPI",
+    )
+
     # Initialize bequests
     BQ0 = aggr.get_BQ(r_p[0], initial_b, None, p, "SS", True)
     if not p.use_zeta:
@@ -652,21 +695,8 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-        r_gov[: p.T] = fiscal.get_r_gov(r[: p.T], p)
-        K[: p.T] = firm.get_K_from_Y(Y[: p.T], r[: p.T], p, "TPI")
-        MPKg = firm.get_MPx(Y[: p.T], K_g[: p.T], p.gamma_g, p, "TPI")
-        r_p[: p.T] = aggr.get_r_p(
-            r[: p.T],
-            r_gov[: p.T],
-            K[: p.T],
-            K_g[: p.T],
-            D[: p.T],
-            MPKg[: p.T],
-            p,
-            "TPI",
-        )
 
-        outer_loop_vars = (r, w, r_p, BQ, TR, theta)
+        outer_loop_vars = (r_p, r, w, p_m, BQ, TR, theta)
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
@@ -733,18 +763,28 @@ def run_TPI(p, client=None):
             p,
         )
         r_p_path = utils.to_timepath_shape(r_p)
+        p_tilde_path = utils.to_timepath_shape(p_tilde)
         wpath = utils.to_timepath_shape(w)
         c_mat = household.get_cons(
             r_p_path[: p.T, :, :],
             wpath[: p.T, :, :],
+            p_tilde_path[: p.T, :, :],
             bmat_s,
             bmat_splus1,
             n_mat[: p.T, :, :],
             bqmat[: p.T, :, :],
             tax_mat,
             p.e,
-            p.tau_c[: p.T, :, :],
             p,
+        )
+        C = aggr.get_C(c_mat, p, "TPI")
+        c_m = household.get_cm(
+            c_mat[: p.T, :, :],
+            p_m[: p.T, :],
+            p_tilde[: p.T],
+            p.tau_c[: p.T, :],
+            p.alpha_c,
+            "TPI",
         )
         y_before_tax_mat = household.get_y(
             r_p_path[: p.T, :, :],
@@ -753,6 +793,62 @@ def run_TPI(p, client=None):
             n_mat[: p.T, :, :],
             p,
         )
+
+        L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
+        B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
+        w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
+
+        # Find output, labor demand, capital demand for M-1 industries
+        L_vec = np.zeros((p.T, p.M))
+        K_vec = np.zeros((p.T, p.M))
+        Y_vec = np.zeros((p.T, p.M))
+        C_vec = np.zeros((p.T, p.M))
+        K_demand_open_vec = np.zeros((p.T, p.M))
+        for m_ind in range(p.M - 1):
+            C_m = aggr.get_C(c_m[: p.T, m_ind, :, :], p, "TPI")
+            C_vec[:, m_ind] = C_m
+            KYrat_m = firm.get_KY_ratio(
+                r[: p.T], p_m[: p.T, :], p, "TPI", m_ind
+            )
+            Y_vec[:, m_ind] = C_m
+            K_vec[:, m_ind] = KYrat_m * Y_vec[:, m_ind]
+            L_vec[:, m_ind] = firm.solve_L(
+                Y_vec[:, m_ind], K_vec[:, m_ind], K_g, p, "TPI", m_ind
+            )
+            K_demand_open_vec[:, m_ind] = firm.get_K(
+                p.world_int_rate[: p.T],
+                w_open[: p.T],
+                L_vec[: p.T, m_ind],
+                p,
+                "TPI",
+                m_ind,
+            )
+
+        # Find output, labor demand, capital demand for last industry
+        L_M = np.maximum(
+            np.ones(p.T) * 0.001, L[: p.T] - L_vec[: p.T, :].sum(-1)
+        )  # make sure L_M > 0
+        K_demand_open_vec[:, -1] = firm.get_K(
+            p.world_int_rate[: p.T], w_open[: p.T], L_M[: p.T], p, "TPI", -1
+        )
+        K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
+            B[: p.T],
+            K_demand_open_vec[: p.T, :].sum(-1),
+            D_d[: p.T],
+            p.zeta_K[: p.T],
+        )
+        K_M = np.maximum(
+            np.ones(p.T) * 0.001, K[: p.T] - K_vec[: p.T, :].sum(-1)
+        )  # make sure K_M > 0
+
+        C_vec[:, -1] = np.squeeze(aggr.get_C(c_m[: p.T, -1, :], p, "TPI"))
+        L_vec[:, -1] = L_M
+        K_vec[:, -1] = K_M
+        Y_vec[:, -1] = firm.get_Y(
+            K_vec[: p.T, -1], K_g[: p.T], L_vec[: p.T, -1], p, "TPI", -1
+        )
+
+        Y = (p_m[: p.T, :] * Y_vec[: p.T, :]).sum(-1)
 
         (
             total_tax_rev,
@@ -771,15 +867,17 @@ def run_TPI(p, client=None):
             bmat_s,
             n_mat[: p.T, :, :],
             bqmat[: p.T, :, :],
-            c_mat[: p.T, :, :],
-            Y[: p.T],
-            L[: p.T],
-            K[: p.T],
+            c_m[: p.T, :, :, :],
+            Y_vec[: p.T, :],
+            L_vec[: p.T, :],
+            K_vec[: p.T, :],
+            p_m[: p.T, :],
             factor,
             ubi[: p.T, :, :],
             theta,
             etr_params_4D,
             p,
+            None,
             "TPI",
         )
         total_tax_revenue[: p.T] = total_tax_rev
@@ -802,40 +900,54 @@ def run_TPI(p, client=None):
             debt_service,
             new_borrowing_f,
         ) = fiscal.D_G_path(r_gov, dg_fixed_values, p)
-        L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
-        B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
-        w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
-        K_demand_open = firm.get_K(
-            p.world_int_rate[: p.T], w_open, L[: p.T], p, "TPI"
-        )
         K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
-            B[: p.T], K_demand_open, D_d[: p.T], p.zeta_K[: p.T]
+            B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
         )
-        Ynew = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
         if not p.baseline_spending:
-            I_g = fiscal.get_I_g(Ynew, p.alpha_I)
+            I_g = fiscal.get_I_g(Y, p.alpha_I)
         if p.baseline:
-            K_g0 = p.initial_Kg_ratio * Ynew[0]
+            K_g0 = p.initial_Kg_ratio * Y[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
-        Ynew = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
         rnew = r.copy()
-        rnew[: p.T] = firm.get_r(Ynew[: p.T], K[: p.T], p, "TPI")
+        rnew[: p.T] = np.squeeze(
+            firm.get_r(
+                Y_vec[: p.T, -1], K_vec[: p.T, -1], p_m[: p.T, :], p, "TPI", -1
+            )
+        )
         # For case where economy is small open econ
         rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
-        MPKg = firm.get_MPx(Ynew[: p.T], K_g[: p.T], p.gamma_g, p, "TPI")
+        MPKg_vec = np.zeros((p.T, p.M))
+        for m in range(p.M):
+            MPKg_vec[:, m] = np.squeeze(
+                firm.get_MPx(
+                    Y_vec[: p.T, m], K_g[: p.T], p.gamma_g[m], p, "TPI", m
+                )
+            )
         r_p_new = aggr.get_r_p(
             rnew[: p.T],
             r_gov_new[: p.T],
-            K[: p.T],
+            p_m[: p.T, :],
+            K_vec[: p.T, :],
             K_g[: p.T],
             Dnew[: p.T],
-            MPKg[: p.T],
+            MPKg_vec,
             p,
             "TPI",
         )
+
         # compute w
-        wnew = firm.get_w(Ynew[: p.T], L[: p.T], p, "TPI")
+        wnew = np.squeeze(
+            firm.get_w(
+                Y_vec[: p.T, -1], L_vec[: p.T, -1], p_m[: p.T, :], p, "TPI", -1
+            )
+        )
+
+        # compute new prices
+        new_p_m = firm.get_pm(wnew, Y_vec, L_vec, p, "TPI")
+        new_p_m = new_p_m / new_p_m[:, -1].reshape(
+            p.T, 1
+        )  # normalize prices by industry M
 
         b_mat_shift = np.append(
             np.reshape(initial_b, (1, p.S, p.J)),
@@ -861,20 +973,22 @@ def run_TPI(p, client=None):
             bmat_s,
             n_mat[: p.T, :, :],
             bqmat_new[: p.T, :, :],
-            c_mat[: p.T, :, :],
-            Ynew[: p.T],
-            L[: p.T],
-            K[: p.T],
+            c_m[: p.T, :, :, :],
+            Y_vec[: p.T, :],
+            L_vec[: p.T, :],
+            K_vec[: p.T, :],
+            new_p_m[: p.T, :],
             factor,
             ubi[: p.T, :, :],
             theta,
             etr_params_4D,
             p,
+            None,
             "TPI",
         )
         total_tax_revenue[: p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
-            Ynew[: p.T],
+            Y[: p.T],
             TR[: p.T],
             G[: p.T],
             total_tax_revenue[: p.T],
@@ -888,9 +1002,13 @@ def run_TPI(p, client=None):
         # update vars for next iteration
         w[: p.T] = utils.convex_combo(wnew[: p.T], w[: p.T], p.nu)
         r[: p.T] = utils.convex_combo(rnew[: p.T], r[: p.T], p.nu)
+        r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
+        r_p[: p.T] = utils.convex_combo(r_p_new[: p.T], r_p[: p.T], p.nu)
+        p_m[: p.T, :] = utils.convex_combo(
+            new_p_m[: p.T, :], p_m[: p.T, :], p.nu
+        )
         BQ[: p.T] = utils.convex_combo(BQnew[: p.T], BQ[: p.T], p.nu)
         D[: p.T] = Dnew[: p.T]
-        Y[: p.T] = utils.convex_combo(Ynew[: p.T], Y[: p.T], p.nu)
         if not p.baseline_spending:
             TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
@@ -906,6 +1024,16 @@ def run_TPI(p, client=None):
             (rnew[: p.T] - r[: p.T]).min(),
         )
         print(
+            "r_p diff: ",
+            (r_p_new[: p.T] - r_p[: p.T]).max(),
+            (r_p_new[: p.T] - r_p[: p.T]).min(),
+        )
+        print(
+            "p_m diff: ",
+            (new_p_m[: p.T, :] - p_m[: p.T, :]).max(),
+            (new_p_m[: p.T, :] - p_m[: p.T, :]).min(),
+        )
+        print(
             "BQ diff: ",
             (BQnew[: p.T] - BQ[: p.T]).max(),
             (BQnew[: p.T] - BQ[: p.T]).min(),
@@ -915,16 +1043,14 @@ def run_TPI(p, client=None):
             (TR_new[: p.T] - TR[: p.T]).max(),
             (TR_new[: p.T] - TR[: p.T]).min(),
         )
-        print(
-            "Y diff: ",
-            (Ynew[: p.T] - Y[: p.T]).max(),
-            (Ynew[: p.T] - Y[: p.T]).min(),
-        )
 
         TPIdist = np.array(
-            list(utils.pct_diff_func(rnew[: p.T], r[: p.T]))
+            list(utils.pct_diff_func(r_p_new[: p.T], r_p[: p.T]))
+            + list(utils.pct_diff_func(rnew[: p.T], r[: p.T]))
             + list(utils.pct_diff_func(wnew[: p.T], w[: p.T]))
-            + list(utils.pct_diff_func(Ynew[: p.T], Y[: p.T]))
+            + list(
+                utils.pct_diff_func(new_p_m[: p.T, :], p_m[: p.T, :]).flatten()
+            )
             + list(utils.pct_diff_func(BQnew[: p.T], BQ[: p.T]).flatten())
             + list(utils.pct_diff_func(TR_new[: p.T], TR[: p.T]))
         ).max()
@@ -991,7 +1117,6 @@ def run_TPI(p, client=None):
         p,
     )
 
-    C = aggr.get_C(c_mat, p, "TPI")
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d = aggr.get_I(
@@ -1001,17 +1126,24 @@ def run_TPI(p, client=None):
     # solve resource constraint
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
-    RC_error = aggr.resource_constraint(
-        Y[: p.T - 1],
-        C[: p.T - 1],
-        G[: p.T - 1],
-        I_d[: p.T - 1],
-        I_g[: p.T - 1],
-        K_f[: p.T - 1],
-        new_borrowing_f[: p.T - 1],
-        debt_service_f[: p.T - 1],
-        r_p[: p.T - 1],
+    net_capital_outflows = aggr.get_capital_outflows(
+        r_p[: p.T],
+        K_f[: p.T],
+        new_borrowing_f[: p.T],
+        debt_service_f[: p.T],
         p,
+    )
+    # Fill in arrays, noting that M-1 industries only produce consumption goods
+    G_vec = np.zeros((p.T, p.M))
+    G_vec[:, -1] = G[: p.T]
+    I_d_vec = np.zeros((p.T, p.M))
+    I_d_vec[:, -1] = I_d[: p.T]
+    I_g_vec = np.zeros((p.T, p.M))
+    I_g_vec[:, -1] = I_g[: p.T]
+    net_capital_outflows_vec = np.zeros((p.T, p.M))
+    net_capital_outflows_vec[:, -1] = net_capital_outflows[: p.T]
+    RC_error = aggr.resource_constraint(
+        Y_vec, C_vec, G_vec, I_d_vec, I_g_vec, net_capital_outflows_vec
     )
     # Compute total investment (not just domestic)
     I_total = aggr.get_I(None, K[1 : p.T + 1], K[: p.T], p, "total_tpi")
@@ -1049,6 +1181,10 @@ def run_TPI(p, client=None):
         "I": I,
         "K_g": K_g,
         "I_g": I_g,
+        "Y_vec": Y_vec,
+        "K_vec": K_vec,
+        "L_vec": L_vec,
+        "C_vec": C_vec,
         "I_total": I_total,
         "I_d": I_d,
         "BQ": BQ,
@@ -1071,6 +1207,8 @@ def run_TPI(p, client=None):
         "r_p": r_p,
         "w": w,
         "bmat_splus1": bmat_splus1,
+        "p_m": p_m,
+        "p_tilde": p_tilde,
         "bmat_s": bmat_s[: p.T, :, :],
         "n_mat": n_mat[: p.T, :, :],
         "c_path": c_mat,

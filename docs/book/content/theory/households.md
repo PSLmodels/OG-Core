@@ -18,38 +18,104 @@ kernelspec:
 
 In this section, we describe what is arguably the most important economic agent in the `OG-Core` model: the household. We model households in `OG-Core` rather than individuals, because we want to abstract from the concepts of gender, marital status, and number of children. Furthermore, the household is the usual unit of account in tax data. Because `OG-Core` is primarily a fiscal policy model, it is advantageous to have the most granular unit of account be the household.
 
+<!-- This last sentence will not be true once we start carefully modeling government benefit programs, which focus on individual members of the household. -->
+
+(SecHH_IndSpecCons)=
+## Household Industry-specific Consumption
+
+  We describe the derivation and dynamics of the population distribution in the {ref}`Chap_Demog` chapter in this documentation and in more detail in the calibration chapter on demographics in the country-specific repository documentation. A measure $\omega_{1,t}$ of households is born each period, become economically relevant at age $s=E+1$ if they survive to that age, and live for up to $E+S$ periods ($S$ economically active periods), with the population of age-$s$ individuals in period $t$ being $\omega_{s,t}$. Let the age of a household be indexed by $s = \{1,2,...E+S\}$.
+
+  At birth, each household age $s=1$ is randomly assigned one of $J$ ability groups, indexed by $j$. Let $\lambda_j$ represent the fraction of individuals in each ability group, such that $\sum_j\lambda_j=1$. Note that this implies that the distribution across ability types in each age is given by $\boldsymbol{\lambda}=[\lambda_1,\lambda_2,...\lambda_J]$. Once an household is born and assigned to an ability type, it remains that ability type for its entire lifetime. This is deterministic ability heterogeneity as described in the calibration chapter on the lifetime earnings process in the country-specific repository documentation. Let $e_{j,s}>0$ be a matrix of ability-levels such that an individual of ability type $j$ will have lifetime abilities of $[e_{j,1},e_{j,2},...e_{j,E+S}]$.
+
+  Individuals in this economy choose how much to work each period $n_{j,s,t}$ and how much to consume among $M$ different industry-specific consumption goods $c_{m,j,s,t}$. We assume that households aggregate these industry-specific consumption goods in their preferences into a composite consumption good $c_{j,s,t}$ every period in every individual's preferences according to the following Stone-Geary version of a Cobb-Douglas consumption aggregator,
+  ```{math}
+  :label: EqHHCompCons
+    c_{j,s,t} \equiv \prod_{m=1}^M \left(c_{m,j,s,t} - c_{min,m}\right)^{\alpha_m} \quad\forall j,s,t \quad\text{with}\quad \sum_{m=1}^M\alpha_m=1
+  ```
+  where $c_{min,m}$ is the minimum consumption of good $m$ allowed.[^StoneGeary]
+
+  Assume that the non-normalized price of each individual consumption good is $\tilde{p}_{m,t}$. We can solve for the optimal good-$m$ consumption demands $c_{m,j,s,t}$ as a function of composite consumption $c_{j,s,t}$ by minimizing the total after-tax expenditure on consumption given that individual consumption adds up to composite consumption according to {eq}`EqHHCompCons`. Letting $\tau^{c}_{m,t}$ represent the consumption tax rate on goods of type $m$, the Lagrangian for this expenditure minimization problem is the following.
+  ```{math}
+  :label: EqHHCostMinLagr}
+    \mathcal{L} = \sum_{m=1}^M (1 + \tau^{c}_{m,t})\tilde{p}_{m,t}c_{m,j,s,t} + \lambda_{j,s,t}\Bigl[c_{j,s,t} - \prod_{m=1}^M \left(c_{m,j,s,t} - c_{min,m}\right)^{\alpha_m}\Bigr] \quad\forall j,s,t
+  ```
+  Because the Lagrangian multiplier on the constraint $\lambda_{j,s,t}$ represents the shadow price of an extra unit of composite consumption, we can relabel it as the price of composite consumption $\tilde{p}_{j,s,t}$.
+  ```{math}
+  :label: EqHHCostMinLagr2
+    \mathcal{L} = \sum_{m=1}^M(1 + \tau^{c}_{m,t}) \tilde{p}_{m,t}c_{m,j,s,t} + \tilde{p}_{j,s,t}\Bigl[c_{j,s,t} - \prod_{m=1}^M \left(c_{m,j,s,t} - c_{min,m}\right)^{\alpha_m}\Bigr] \quad\forall j,s,t
+  ```
+  Note that the price of composite consumption in period $t$ can be different for each ability-$j$ and age-$s$ individual at this point.
+
+  The $M+1$ first order conditions of this constrained minimization problem are the following $M$ first order conditions {eq}`EqHHFOCcm` plus the composite consumption aggregator {eq}`EqHHCompCons`.[^IndSpecConsDeriv]
+  ```{math}
+  :label: EqHHFOCcm
+    (1 + \tau^{c}_{m,t})\tilde{p}_{m,t} = \alpha_m \tilde{p}_{j,s,t}\left(\frac{c_{j,s,t}}{c_{m,j,s,t} - c_{min,m}}\right) \quad\forall m,j,s,t
+  ```
+  Solving {eq}`EqHHFOCcm` for $c_{m,j,s,t}$ gives the optimal demand function for consumption of good $m$ by ability-$j$ and age-$s$ individual in period $t$.
+  ```{math}
+  :label: EqHH_cmDem
+    c_{m,j,s,t} = \alpha_m\left(\frac{(1 + \tau^{c}_{m,t})\tilde{p}_{m,t}}{\tilde{p}_{j,s,t}}\right)^{-1}c_{j,s,t} + c_{min,m} \quad\forall m,j,s,t
+  ```
+  This household demand function for good-$m$ shows that $c_{m,j,s,t}$ is a fraction of total composite consumption $c_{j,s,t}$, and that fraction is negatively correlated with the relative price of good-$m$ to the composite good price.
+
+  Substituting the demand equations {eq}`EqHH_cmDem` back into the composite consumption definition {eq}`EqHHCompCons` gives us the expression for the non-normalized composite price $\tilde{p}_{j,s,t}$ as a function of each non-normalized industry-$m$ good price $\tilde{p}_{m,t}$.
+  ```{math}
+  :label: EqCompPnonnorm
+    \tilde{p}_{j,s,t} = \prod_{m=1}^M\left(\frac{(1 + \tau^{c}_{m,t})\tilde{p}_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall j,s,t
+  ```
+  Because nothing on the right-hand-side of {eq}`EqCompPnonnorm` is a function of $j$ or $s$, then $\tilde{p}_{j,s,t}=\tilde{p}_t$ for all $j$ and $s$.
+  ```{math}
+  :label: EqCompPnonnorm2
+    \tilde{p}_{t} = \prod_{m=1}^M\left(\frac{(1 + \tau^{c}_{m,t})\tilde{p}_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall t
+  ```
+
+  Finally, we assume that the consumption good in industry $M$ is the numeraire.[^Numeraire] We can normalize the composite consumption price $\tilde{p}_t$ and the remaining $M-1$ prices $\tilde{p}_{m,t}$ for $m=1,2,...M-1$ in every period $t$ by dividing all the equations with prices by the industry-$M$ price $\tilde{p}_{M,t}$. Then we can rewrite the optimal consumption demand {eq}`EqHH_cmDem` and composite price index {eq}`EqCompPnonnorm2` equations as the following functions of normalized prices,
+  ```{math}
+  :label: EqHH_cmDem2
+    c_{m,j,s,t} = \alpha_m\left(\frac{(1 + \tau^{c}_{m,t})p_{m,t}}{p_t}\right)^{-1}c_{j,s,t} + c_{min,m} \quad\forall m,j,s,t
+  ```
+  ```{math}
+  :label: EqCompPnorm2
+    p_t = \prod_{m=1}^M\left(\frac{(1 + \tau^{c}_{m,t})p_{m,t}}{\alpha_m}\right)^{\alpha_m} \quad\forall t
+  ```
+  ```{math}
+  :label: EqPmPcompNormDef
+    \text{where}\quad &p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}} \quad\forall m, t \quad\Rightarrow\quad p_{M,t} = 1 \quad\forall t \\
+    &\text{and}\quad p_t \equiv\frac{\tilde{p}_t}{\tilde{p}_{M,t}} \quad\forall t
+  ```
+  where $p_{m,t}$ and $p_t$ defined in {eq}`EqPmPcompNormDef` are normalized industry prices and normalized composite goods price, respectively, with the $M$th industry good being the numeraire.
+
+
 (SecHHBC)=
 ## Budget Constraint
 
-  We describe the derivation and dynamics of the population distribution in the calibration chapter on demographics in the country-specific repository documentation. A measure $\omega_{1,t}$ of households is born each period, become economically relevant at age $s=E+1$ if they survive to that age, and live for up to $E+S$ periods ($S$ economically active periods), with the population of age-$s$ individuals in period $t$ being $\omega_{s,t}$. Let the age of a household be indexed by $s = \{1,2,...E+S\}$.
-
-  At birth, each household age $s=1$ is randomly assigned one of $J$ ability groups, indexed by $j$. Let $\lambda_j$ represent the fraction of individuals in each ability group, such that $\sum_j\lambda_j=1$. Note that this implies that the distribution across ability types in each age is given by $\boldsymbol{\lambda}=[\lambda_1,\lambda_2,...\lambda_J]$. Once an household is born and assigned to an ability type, it remains that ability type for its entire lifetime. This is deterministic ability heterogeneity as described in the calibration chapter on the lifetime earnings process in the country-specific repository documentation. Let $e_{j,s}>0$ be a matrix of ability-levels such that an individual of ability type $j$ will have lifetime abilities of $[e_{j,1},e_{j,2},...e_{j,E+S}]$. The budget constraint for the age-$s$ household in lifetime income group $j$ at time $t$ is the following,
+  Because the household's industry-specific demand problem from Section {ref}`SecHH_IndSpecCons` is characterized by equations {eq}`EqHHCompCons`, {eq}`EqHH_cmDem2`, and {eq}`EqCompPnorm2` is determined by functions of composite consumption $c_{j,s,t}$ and normalized industry prices $p_t$ and $p_{m,t}$, we can write the individual's utility maximization in terms of composite consumption $c_{j,s,t}$. An ability-$j$ and age-$s$ individual faces the following per-period budget constraint.
 
   ```{math}
   :label: EqHHBC
-    c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
-    &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
+    p_t c_{j,s,t} + &\sum_{m=1}^M (1 + \tau^{c}_{m,t})p_{m,t}c_{min,m} + b_{j,s+1,t+1} = \\
+    &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
+    &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
   ```
 
-  where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the wage, and $n_{j,s,t}$ is labor supply. Equations {eq}`eq_rK` and {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` show how the rate of return from the financial intermediary $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$.
+  where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the normalized interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the normalized wage, and $n_{j,s,t}$ is labor supply. Equations {eq}`eq_rK` and {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` show how the rate of return from the financial intermediary $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$. Note that we must add in the cost of minimum consumption $c_{min,m}$ for all $m$ because that amount is subtracted out of composite consumption in {eq}`EqHHCompCons`.
 
-  The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. The calibration chapter on beqests in the country-specific repository documentation details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
+  The third term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. The calibration chapter on beqests in the country-specific repository documentation details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
 
-  The last three terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with government transfers, universal basic income transfer, and taxes, respectively. $TR_{t}$ is total government transfers to households in period $t$ and $\eta_{j,s,t}$ is the percent of those transfers that go to households of age $s$ and lifetime income group $j$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. This term is divided by the population of type $(j,s)$ households. We assume government transfers to be lump sum, so they do not create any direct distortions to household decisions.
+  The last three terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with government transfers, universal basic income transfer, and taxes, respectively. $TR_{t}$ is total government transfers to households in period $t$ and $\eta_{j,s,t}$ is the percent of those transfers that go to households of age $s$ and lifetime income group $j$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. This term is divided by the population of type $(j,s)$ households. We assume government transfers to be lump sum, so they do not create any direct distortions to household decisions. Total government transfers $TR_t$ is in terms of the numeraire good, as shown in equation {eq}`EqUnbalGBCtfer` in Chapter {ref}`Chap_UnbalGBC`.
 
   The term $ubi_{j,s,t}$ the time series of a matrix of universal basic income (UBI) transfers by lifetime income group $j$ and age group $s$ in each period $t$. There is a specification where the time series of this matrix is stationary (growth adjusted) and a specification in which it's stationary value is going to zero in the limit (non-growth-adjusted). The calibration chapter on UBI in the country-specific repository documentation describes the exact way in which this matrix is calibrated from the values of five parameters, household composition data, and OG-Core's demographics. Similar to the transfers term $TR_{t}$, the UBI transfers will not be distortionary.
 
-  The term $T_{s,t}$ is the total tax liability of the household. In contrast to government transfers $tr_{j,s,t}$, tax liability can be a function of labor income $(x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t})$ and capital income $(y_{j,s,t}\equiv r_{p,t} b_{j,s,t})$. The tax liability can, therefore, be a distortionary influence on household decisions. It becomes valuable to represent total tax liability as an effective tax rate $\tau^{etr}$ multiplied by total income,
+  The term $T_{j,s,t}$ is the total tax liability of the household in terms of the numeraire good. In contrast to government transfers $tr_{j,s,t}$, tax liability can be a function of labor income $(x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t})$ and capital income $(y_{j,s,t}\equiv r_{p,t} b_{j,s,t})$. The tax liability can, therefore, be a distortionary influence on household decisions. It becomes valuable to represent total tax liability as an effective tax rate $\tau^{etr}_{s,t}$ function multiplied by total income,
 
   ```{math}
   :label: EqTaxCalcLiabETR
-  T_{s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right)
+    T_{j,s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) \quad\forall j,s,t
   ```
 
-  where the effective tax rate can be a function of both labor income and capital income $\tau^{etr}(x,y)$. The calibration chapter on the microsimulation model and tax function estimation in the country-specific repository documentation details exactly how the model estimates these tax functions from microsimulation model data.
+  where the effective tax rate can be a function of both labor income and capital income $\tau^{etr}_{s,t}(x_{j,s,t},y_{j,s,t})$. The calibration chapter on the microsimulation model and tax function estimation in the country-specific repository documentation details exactly how the model estimates these tax functions from microsimulation model data.
 
-  where many of the variables now have $j$ subscripts. The variables with three subscripts $(j,s,t)$ tell you to which ability type $j$ and age $s$ individual the variable belongs and in which period $t$.
 
 (SecHHellipUtil)=
 ## Elliptical Disutility of Labor Supply
@@ -128,7 +194,8 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHBC2
-    &\quad\text{s.t.}\quad c_{j,s,t} + b_{j,s+1,t+1} = (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t} \\
+    \text{s.t.}\quad &p_t c_{j,s,t} + \sum_{m=1}^M (1 + \tau^{c}_{m,t})p_{m,t}c_{min,m} + b_{j,s+1,t+1} = \\
+    &\quad (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t} \\
     &\qquad\text{and}\quad c_{j,s,t}\geq 0,\: n_{j,s,t} \in[0,\tilde{l}],\:\text{and}\: b_{j,1,t}=0 \quad\forall j, t, \:\text{and}\: E+1\leq s\leq E+S \nonumber
   ```
 
@@ -138,19 +205,19 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHeul_n
-  &w_t e_{j,s}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = e^{g_y(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
-  &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
+    &\frac{w_t e_{j,s}}{p_t}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = e^{g_y(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
+    &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
   ```
 
   ```{math}
   :label: EqHHeul_b
-    &(c_{j,s,t})^{-\sigma} = \chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]\Bigr)(c_{j,s+1,t+1})^{-\sigma} \\
+    &\frac{(c_{j,s,t})^{-\sigma}}{p_t} = \chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{p_{t+1}}\right)(c_{j,s+1,t+1})^{-\sigma} \\
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
   ```{math}
   :label: EqHHeul_bS
-    (c_{j,E+S,t})^{-\sigma} = \chi^b_j(b_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
+    \frac{(c_{j,E+S,t})^{-\sigma}}{p_t} = \chi^b_j(b_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
 
   The distortion of taxation on household decisions can be seen in Euler equations {eq}`EqHHeul_n` and {eq}`EqHHeul_b` in the terms that have a marginal tax rate $(1-\tau^{mtr})$. This comes from the expression for total tax liabilities as a function of the effective tax rate and total income as expressed in Equation {eq}`EqTaxCalcLiabETR`. Using the chain rule, we can break up the derivatives of total tax liability with respect to $n_{j,s,t}$ and $b_{j,s,t}$, respectively, into simpler functions of marginal tax rates. We discuss this in more detail in the calibration chapter on the microsimulation model and tax function estimation in the country-specific repository.
@@ -164,6 +231,22 @@ In this section, we describe what is arguably the most important economic agent 
   :label: EqMTRy_derive
     \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t} b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t} b_{j,s,t}}r_{p,t} = \tau^{mtry}_{s,t}r_{p,t}
   ```
+
+
+(SecHHincFactor)=
+## Factor Transforming Income Units
+
+  The tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are estimated in each country calibration model based on the currency units of the corresponding income data. However, the consumption units of the `OG-Core` model or any of its country calibrations are not in the same units as income data. For this reason, we have to transform the model income units $x$ and $y$ by a $factor$ so that they are in the same units as the income data on which the tax functions were estimated.
+
+  The tax rate functions are each functions of capital income and labor income $\tau(x,y)$. In order to make the tax functions return accurate tax rates associated with the correct levels of income, we multiply the model income $x^m$ and $y^m$ by a $factor$ so that they are in the same units as the real-world income data $\tau(factor\times x^m, factor\times y^m)$. We define the $factor$ such that average steady-state household total income in the model times the $factor$ equals the U.S. data average total income.
+
+  ```{math}
+  :label: EqIncFactor
+    factor \times \Biggl[\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\bar{\omega}_s\left(\bar{w}e_{j,s}\bar{n}_{j,s} + \bar{r}_{hh}\bar{b}_{j,s}\right)\Biggr] = \text{Avg. household inc. in data}
+  ```
+
+  We do not know the steady-state wage, interest rate, household labor supply, and savings *ex ante*. So the income $factor$ is an endogenous variable in the steady-state equilibrium computational solution. We hold the factor constant throughout the nonsteady-state equilibrium solution.
+
 
 (SecHHbequests)=
 ## The Distribution of Bequests
@@ -209,9 +292,15 @@ If `use_zeta=False`, then bequests from households of lifetime earnings type `j`
 (SecHHfootnotes)=
 ## Footnotes
 
+  [^StoneGeary]: This functional form was originally proposed as a utility function by in a short comment by {cite}`Geary:1950` that aggregates differentiated goods into a scalar utility value. It is differentiated from Cobb-Douglas utility by the subsistence consumption amount in each term of the product. This function was further developed and operationalized by {cite}`Stone:1954`.
+
+  [^IndSpecConsDeriv]: See section {ref}`SecAppDerivIndSpecCons` in the {ref}`Chap_Deriv` Chapter for the derivation of the household industry-specific consumption demand.
+
+  [^Numeraire]: We can normalize the model by any of the $M$ industry-specific consumption good prices $\tilde{p}_{m,t}$ or we could normalize the model by the composite good price $\tilde{p}_t$. We choose to normalize by the $M$th industry good price $\tilde{p}_{M,t}$ because that industry is the only one the output of which can be used as investment, government spending, or government debt. Furthermore, this nicely nests the case of one industry in which all the other industries share in consumption is set to zero $\alpha_m=0$ for $m=1,2,...M-1$.
+
   [^sav_util_note]: Savings enters the period utility function to provide a "warm glow" bequest motive.
 
-  [^frisch_note]: {cite}`Peterman:2016` shows that in a macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor---such as `OG-Core`---a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates---which include both extensive and intensive margin agents---are observed.
+  [^frisch_note]: {cite}`Peterman:2016` shows that in a U.S. macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor---such as `OG-Core`---a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates---which include both extensive and intensive margin agents---are observed.
 
   [^mort_rates_note]: See Section the mortality rate section of the calibration chapter on demographics in the country-specific repository documentation for a detailed discussion of mortality rates for the specific country calibration interfacing with `OG-Core`.
 
