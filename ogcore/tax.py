@@ -233,7 +233,7 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
             w = w.reshape(p.T)
             print('K = ', K.shape)
             Inv = np.append(
-                K[1:] - K[:-1].reshape(p.T - 1),
+                K[1:] - K[:-1] + p.delta * K[:-1],
                 np.array([p.delta * K[-1]]), axis=0)
     else:
         if method == "SS":
@@ -249,7 +249,7 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
             price = p_m[: p.T, :].reshape(p.T, p.M)
             w = w.reshape(p.T, 1)
             print('K = ', K.shape)
-            Inv = np.append(K[1:, :] - K[:-1, :], p.delta * K[-1, :].reshape(1, p.M), axis=0)
+            Inv = np.append(K[1:, :] - K[:-1, :] + p.delta * K[:-1, :], p.delta * K[-1, :].reshape(1, p.M), axis=0)
 
     business_revenue = (
         tau_b * (price * Y - w * L) - tau_b * delta_tau * K - tau_inv * Inv
