@@ -439,45 +439,6 @@ def get_K_KLonly(L, r, p, method, m=-1):
     return K
 
 
-def get_K_from_Y(Y, r, p, method):
-    r"""
-    Generates vector of aggregate capital. Use with the open economy
-    options.
-
-    .. math::
-        K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}} \\
-        K_{t} = \frac{\gamma Z_t^{\varepsilon -1} Y_t}{
-            \left(\frac{r_t + \delta - \tau_t^{corp}\delta_t^\tau}
-            {1 - \tau_{t}^{corp}}\right)^\varepsilon}
-
-    Args:
-        Y (array_like): aggregate output
-        r (array_like): the real interest rate
-        p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
-
-    Returns:
-        r (array_like): the real interest rate
-
-    """
-    if method == "SS":
-        Z = p.Z[-1]
-        tau_b = p.tau_b[-1]
-        delta_tau = p.delta_tau[-1]
-    else:
-        Z = p.Z[: p.T]
-        tau_b = p.tau_b[: p.T]
-        delta_tau = p.delta_tau[: p.T]
-    numerator = p.gamma * Z ** (p.epsilon - 1) * Y
-    denominator = (
-        (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
-    ) ** p.epsilon
-    K = numerator / denominator
-
-    return K
-
-
 def get_L_from_Y(w, Y, p, method):
     r"""
     Find aggregate labor L from output Y and wages w
@@ -506,48 +467,6 @@ def get_L_from_Y(w, Y, p, method):
     )
 
     return L
-
-
-def get_K_from_Y_and_L(Y, L, K_g, p, method):
-    r"""
-    Find aggregate private capital K from output Y, aggregate labor L,
-    and public capital K_g
-
-    .. math::
-        K_{t} = \left(\frac{\left(\frac{Y_t}{Z_t}\right)^{\frac{\varepsilon-1}
-        {\varepsilon}} -
-        (1-\gamma-\gamma_g)L_t^{\frac{\varepsilon-1}{\varepsilon}} -
-        \gamma_g^{\frac{1}{\varepsilon}}K_{g,t}^{\frac{\varepsilon-1}{\varepsilon}}}
-        {\gamma^{\frac{1}{\varepsilon}}}\right)^{\frac{\varepsilon}{\varepsilon-1}}
-
-    Args:
-        w (array_like): the wage rate
-        Y (array_like): aggregate output
-        L (array_like): aggregate labor
-        K_g (array_like): aggregate public capital
-        p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
-
-    Returns:
-        K (array_like): firm capital demand
-
-    """
-    if method == "SS":
-        Z = p.Z[-1]
-    else:
-        Z = p.Z[: p.T]
-    K = (
-        (
-            (Y / Z) ** ((p.epsilon - 1) / p.epsilon)
-            - (1 - p.gamma - p.gamma_g) * L ** ((p.epsilon - 1) / p.epsilon)
-            - (p.gamma_g ** (1 / p.epsilon))
-            * (K_g ** ((p.epsilon - 1) / p.epsilon))
-        )
-        / (p.gamma ** (1 / p.epsilon))
-    ) ** (p.epsilon / (p.epsilon - 1))
-
-    return K
 
 
 def get_K(r, w, L, p, method, m=-1):
