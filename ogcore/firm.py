@@ -179,7 +179,7 @@ def get_r(Y, K, p_m, p, method, m=-1):
     .. math::
         r_{t} = (1 - \tau^{corp}_t)Z_t^\frac{\varepsilon-1}{\varepsilon}
         \left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -
-        \delta + \tau^{corp}_t\delta^\tau_t
+        \delta + \tau^{corp}_t\delta^\tau_t + \tau^{inv}_{m,t}
 
     Args:
         Y (array_like): aggregate output
@@ -197,13 +197,15 @@ def get_r(Y, K, p_m, p, method, m=-1):
     if method == "SS":
         delta_tau = p.delta_tau[-1, m]
         tau_b = p.tau_b[-1, m]
+        tau_inv = p.inv_tax_credit[-1, m]
         p_mm = p_m[m]
     else:
         delta_tau = p.delta_tau[: p.T, m].reshape(p.T, 1)
         tau_b = p.tau_b[: p.T, m].reshape(p.T, 1)
+        tau_inv = p.inv_tax_credit[: p.T, m].reshape(p.T, 1)
         p_mm = p_m[:, m].reshape(p.T, 1)
     MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
-    r = (1 - tau_b) * p_mm * MPK - p.delta + tau_b * delta_tau
+    r = (1 - tau_b) * p_mm * MPK - p.delta + tau_b * delta_tau + tau_inv
 
     return r
 
@@ -580,7 +582,7 @@ def get_cost_of_capital(r, p, method, m=-1):
     Compute the cost of capital.
 
     .. math::
-        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t}}{1 - \tau^{b}_{m,t}}
+        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{b}_{m,t}}
 
     Args:
         r (array_like): the real interest rate
@@ -595,24 +597,24 @@ def get_cost_of_capital(r, p, method, m=-1):
         if method == "SS":
             tau_b = p.tau_b[-1, :]
             delta_tau = p.delta_tau[-1, :]
-            k = p.inv_tax_credit[-1, :]
+            tau_inv = p.inv_tax_credit[-1, :]
         else:
             tau_b = p.tau_b[: p.T, :]
             delta_tau = p.delta_tau[: p.T, :]
-            k = p.inv_tax_credit[: p.T, :]
+            tau_inv = p.inv_tax_credit[: p.T, :]
             r = r.reshape(p.T, 1)
     else:
         if method == "SS":
             tau_b = p.tau_b[-1, m]
             delta_tau = p.delta_tau[-1, m]
-            k = p.inv_tax_credit[-1, m]
+            tau_inv = p.inv_tax_credit[-1, m]
         else:
             tau_b = p.tau_b[: p.T, m]
             delta_tau = p.delta_tau[: p.T, m]
-            k = p.inv_tax_credit[: p.T, m]
+            tau_inv = p.inv_tax_credit[: p.T, m]
             r = r.reshape(p.T)
 
-    cost_of_capital = (r + p.delta - tau_b * delta_tau - k) / (1 - tau_b)
+    cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv) / (1 - tau_b)
 
     return cost_of_capital
 
