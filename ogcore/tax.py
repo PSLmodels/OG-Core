@@ -204,7 +204,7 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
 
     .. math::
         R_{t}^{b} = \sum_{m=1}^{M}\tau_{m,t}^{b}(Y_{m,t} - w_{t}L_{m,t}) -
-        \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau}
+        \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau} - \tau^{inv}_{m,t}I_{m,t}
     Args:
         r (array_like): real interest rate
         Y (array_like): aggregate output for each industry
@@ -222,13 +222,13 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
         if method == "SS":
             delta_tau = p.delta_tau[-1, m]
             tau_b = p.tau_b[-1, m]
-            k = p.inv_tax_credit[-1, m]
+            tau_inv = p.inv_tax_credit[-1, m]
             price = p_m[m]
             Inv = p.delta * K  # compute gross investment
         else:
             delta_tau = p.delta_tau[: p.T, m].reshape(p.T)
             tau_b = p.tau_b[: p.T, m].reshape(p.T)
-            k = p.inv_tax_credit[: p.T, m].reshape(p.T)
+            tau_inv = p.inv_tax_credit[: p.T, m].reshape(p.T)
             price = p_m[: p.T, m].reshape(p.T)
             w = w.reshape(p.T)
             Inv = np.append(K[1:] - K[:1], p.delta * K[-1], axis=0)
@@ -236,19 +236,19 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
         if method == "SS":
             delta_tau = p.delta_tau[-1, :]
             tau_b = p.tau_b[-1, :]
-            k = p.inv_tax_credit[-1, :]
+            tau_inv = p.inv_tax_credit[-1, :]
             price = p_m
             Inv = p.delta * K
         else:
             delta_tau = p.delta_tau[: p.T, :].reshape(p.T, p.M)
             tau_b = p.tau_b[: p.T, :].reshape(p.T, p.M)
-            k = p.inv_tax_credit[: p.T, :].reshape(p.T, p.M)
+            tau_inv = p.inv_tax_credit[: p.T, :].reshape(p.T, p.M)
             price = p_m[: p.T, :].reshape(p.T, p.M)
             w = w.reshape(p.T, 1)
             Inv = np.append(K[1:, :] - K[:1, :], p.delta * K[-1, :], axis=0)
 
     business_revenue = (
-        tau_b * (price * Y - w * L) - tau_b * delta_tau * K - k * Inv
+        tau_b * (price * Y - w * L) - tau_b * delta_tau * K - tau_inv * Inv
     )
     return business_revenue
 
