@@ -595,20 +595,24 @@ def get_cost_of_capital(r, p, method, m=-1):
         if method == "SS":
             tau_b = p.tau_b[-1, :]
             delta_tau = p.delta_tau[-1, :]
+            k = p.inv_tax_credit[-1, :]
         else:
             tau_b = p.tau_b[: p.T, :]
             delta_tau = p.delta_tau[: p.T, :]
+            k = p.inv_tax_credit[: p.T, :]
             r = r.reshape(p.T, 1)
     else:
         if method == "SS":
             tau_b = p.tau_b[-1, m]
             delta_tau = p.delta_tau[-1, m]
+            k = p.inv_tax_credit[-1, m]
         else:
             tau_b = p.tau_b[: p.T, m]
             delta_tau = p.delta_tau[: p.T, m]
+            k = p.inv_tax_credit[: p.T, m]
             r = r.reshape(p.T)
 
-    cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
+    cost_of_capital = (r + p.delta - tau_b * delta_tau - k) / (1 - tau_b)
 
     return cost_of_capital
 
