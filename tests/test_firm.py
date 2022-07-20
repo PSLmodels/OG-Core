@@ -787,9 +787,8 @@ p3.update_specifications(new_param_values3)
 coc_expected1 = np.array([0.75])
 coc_expected2 = np.array([0.75, 0.75, 0.75])
 coc_expected3 = np.array([0.25, 0.25]) - (0.03 / (1 - 0.5))
-coc_expected4 = (
-    np.array([[0.25, 0.25], [0.25, 0.25], [0.25, 0.25]]) -
-    (0.03 / (1 - 0.5))
+coc_expected4 = np.array([[0.25, 0.25], [0.25, 0.25], [0.25, 0.25]]) - (
+    0.03 / (1 - 0.5)
 )
 ky_expected1 = np.array([0.315478672])
 ky_expected2 = np.array([2.4, 2.4, 2.4])

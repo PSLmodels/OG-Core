@@ -166,11 +166,12 @@ class Specifications(paramtools.Parameters):
             setattr(self, item, this_attr)
         # Deal with parameters that vary across industry and over time
         tp_param_list2 = [
-            "Z", "delta_tau_annual",
+            "Z",
+            "delta_tau_annual",
             "cit_rate",
             "tau_c",
-            "inv_tax_credit"
-            ]
+            "inv_tax_credit",
+        ]
         for item in tp_param_list2:
             this_attr = getattr(self, item)
             if this_attr.ndim == 1:
