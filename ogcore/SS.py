@@ -1152,42 +1152,45 @@ def run_SS(p, client=None):
         # Use the baseline solution to get starting values for the reform
         baseline_ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
         ss_solutions = utils.safe_read_pickle(baseline_ss_dir)
-        # use baseline solution as starting values if dimensions match
-        try:
-            if ss_solutions["bssmat_splus1"].shape == (
-                p.S,
-                p.J,
-            ) and ss_solutions["Y_vec_ss"].shape == (p.M):
-                print("Using previous solutions for SS")
-                (
-                    b_guess,
-                    n_guess,
-                    r_p_guess,
-                    rguess,
-                    wguess,
-                    p_m_guess,
-                    BQguess,
-                    TRguess,
-                    Yguess,
-                    factor,
-                ) = (
-                    ss_solutions["bssmat_splus1"],
-                    ss_solutions["nssmat"],
-                    float(ss_solutions["r_p_ss"]),
-                    float(ss_solutions["rss"]),
-                    float(ss_solutions["wss"]),
-                    ss_solutions[
-                        "p_m_ss"
-                    ],  # Not sure why need to index p_m,but otherwise its shape is off..
-                    ss_solutions["BQss"],
-                    float(ss_solutions["TR_ss"]),
-                    float(ss_solutions["Yss"]),
-                    ss_solutions["factor_ss"],
-                )
-                use_new_guesses = False
-            else:
+        if p.reform_use_baseline_solution:
+            # use baseline solution as starting values if dimensions match
+            try:
+                if ss_solutions["bssmat_splus1"].shape == (
+                    p.S,
+                    p.J,
+                ) and ss_solutions["Y_vec_ss"].shape == (p.M):
+                    print("Using previous solutions for SS")
+                    (
+                        b_guess,
+                        n_guess,
+                        r_p_guess,
+                        rguess,
+                        wguess,
+                        p_m_guess,
+                        BQguess,
+                        TRguess,
+                        Yguess,
+                        factor,
+                    ) = (
+                        ss_solutions["bssmat_splus1"],
+                        ss_solutions["nssmat"],
+                        float(ss_solutions["r_p_ss"]),
+                        float(ss_solutions["rss"]),
+                        float(ss_solutions["wss"]),
+                        ss_solutions[
+                            "p_m_ss"
+                        ],  # Not sure why need to index p_m,but otherwise its shape is off..
+                        ss_solutions["BQss"],
+                        float(ss_solutions["TR_ss"]),
+                        float(ss_solutions["Yss"]),
+                        ss_solutions["factor_ss"],
+                    )
+                    use_new_guesses = False
+                else:
+                    use_new_guesses = True
+            except KeyError:
                 use_new_guesses = True
-        except KeyError:
+        else:
             use_new_guesses = True
         if use_new_guesses:
             if p.use_zeta:

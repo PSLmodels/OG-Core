@@ -29,7 +29,13 @@ reform_tpi = utils.safe_read_pickle(
 reform_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "model_params_reform.pkl")
 )
-
+# add investment tax credit parameter that not in cached parameters
+base_params.inv_tax_credit = np.zeros(
+    (base_params.T + base_params.S, base_params.M)
+)
+reform_params.inv_tax_credit = np.zeros(
+    (reform_params.T + reform_params.S, reform_params.M)
+)
 
 test_data = [
     (base_tpi, base_params, reform_tpi, reform_params, "pct_diff"),

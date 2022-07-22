@@ -879,6 +879,28 @@
             }
         }
     },
+    "inv_tax_credit": {
+        "title": "Investment tax credit rate",
+        "description": "Investment tax credit rate.  This credit reduced the cost of new investment by the specified rate.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
+        "notes": "This credit reduced the cost of new investment by the specified rate",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [
+                    [0.0]
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -1.0,
+                "max": 1.0
+            }
+        }
+    },
     "tau_c": {
         "title": "Consumption tax rate",
         "description": "Consumption tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
@@ -3214,6 +3236,19 @@
                 "max": 0.001
             }
         }
+    },
+    "reform_use_baseline_solution":{
+        "title": "Whether or not the baseline SS solution is used for starting values when solving the reform",
+        "description": "Whether or not the baseline SS solution is used for starting values when solving the reform.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "bool",
+        "value": [
+            {
+                "value": true
+            }
+        ],
+        "validators": {}
     },
     "initial_guess_r_SS": {
         "title": "Initial guess of r for the SS solution",

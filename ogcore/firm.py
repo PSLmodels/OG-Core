@@ -179,7 +179,7 @@ def get_r(Y, K, p_m, p, method, m=-1):
     .. math::
         r_{t} = (1 - \tau^{corp}_t)Z_t^\frac{\varepsilon-1}{\varepsilon}
         \left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -
-        \delta + \tau^{corp}_t\delta^\tau_t
+        \delta + \tau^{corp}_t\delta^\tau_t + \tau^{inv}_{m,t}
 
     Args:
         Y (array_like): aggregate output
@@ -197,13 +197,15 @@ def get_r(Y, K, p_m, p, method, m=-1):
     if method == "SS":
         delta_tau = p.delta_tau[-1, m]
         tau_b = p.tau_b[-1, m]
+        tau_inv = p.inv_tax_credit[-1, m]
         p_mm = p_m[m]
     else:
         delta_tau = p.delta_tau[: p.T, m].reshape(p.T, 1)
         tau_b = p.tau_b[: p.T, m].reshape(p.T, 1)
+        tau_inv = p.inv_tax_credit[: p.T, m].reshape(p.T, 1)
         p_mm = p_m[:, m].reshape(p.T, 1)
     MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
-    r = (1 - tau_b) * p_mm * MPK - p.delta + tau_b * delta_tau
+    r = (1 - tau_b) * p_mm * MPK - p.delta + tau_b * delta_tau + tau_inv
 
     return r
 
@@ -437,45 +439,6 @@ def get_K_KLonly(L, r, p, method, m=-1):
     return K
 
 
-def get_K_from_Y(Y, r, p, method):
-    r"""
-    Generates vector of aggregate capital. Use with the open economy
-    options.
-
-    .. math::
-        K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}} \\
-        K_{t} = \frac{\gamma Z_t^{\varepsilon -1} Y_t}{
-            \left(\frac{r_t + \delta - \tau_t^{corp}\delta_t^\tau}
-            {1 - \tau_{t}^{corp}}\right)^\varepsilon}
-
-    Args:
-        Y (array_like): aggregate output
-        r (array_like): the real interest rate
-        p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
-
-    Returns:
-        r (array_like): the real interest rate
-
-    """
-    if method == "SS":
-        Z = p.Z[-1]
-        tau_b = p.tau_b[-1]
-        delta_tau = p.delta_tau[-1]
-    else:
-        Z = p.Z[: p.T]
-        tau_b = p.tau_b[: p.T]
-        delta_tau = p.delta_tau[: p.T]
-    numerator = p.gamma * Z ** (p.epsilon - 1) * Y
-    denominator = (
-        (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
-    ) ** p.epsilon
-    K = numerator / denominator
-
-    return K
-
-
 def get_L_from_Y(w, Y, p, method):
     r"""
     Find aggregate labor L from output Y and wages w
@@ -504,48 +467,6 @@ def get_L_from_Y(w, Y, p, method):
     )
 
     return L
-
-
-def get_K_from_Y_and_L(Y, L, K_g, p, method):
-    r"""
-    Find aggregate private capital K from output Y, aggregate labor L,
-    and public capital K_g
-
-    .. math::
-        K_{t} = \left(\frac{\left(\frac{Y_t}{Z_t}\right)^{\frac{\varepsilon-1}
-        {\varepsilon}} -
-        (1-\gamma-\gamma_g)L_t^{\frac{\varepsilon-1}{\varepsilon}} -
-        \gamma_g^{\frac{1}{\varepsilon}}K_{g,t}^{\frac{\varepsilon-1}{\varepsilon}}}
-        {\gamma^{\frac{1}{\varepsilon}}}\right)^{\frac{\varepsilon}{\varepsilon-1}}
-
-    Args:
-        w (array_like): the wage rate
-        Y (array_like): aggregate output
-        L (array_like): aggregate labor
-        K_g (array_like): aggregate public capital
-        p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
-
-    Returns:
-        K (array_like): firm capital demand
-
-    """
-    if method == "SS":
-        Z = p.Z[-1]
-    else:
-        Z = p.Z[: p.T]
-    K = (
-        (
-            (Y / Z) ** ((p.epsilon - 1) / p.epsilon)
-            - (1 - p.gamma - p.gamma_g) * L ** ((p.epsilon - 1) / p.epsilon)
-            - (p.gamma_g ** (1 / p.epsilon))
-            * (K_g ** ((p.epsilon - 1) / p.epsilon))
-        )
-        / (p.gamma ** (1 / p.epsilon))
-    ) ** (p.epsilon / (p.epsilon - 1))
-
-    return K
 
 
 def get_K(r, w, L, p, method, m=-1):
@@ -580,7 +501,7 @@ def get_cost_of_capital(r, p, method, m=-1):
     Compute the cost of capital.
 
     .. math::
-        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t}}{1 - \tau^{b}_{m,t}}
+        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{b}_{m,t}}
 
     Args:
         r (array_like): the real interest rate
@@ -595,20 +516,24 @@ def get_cost_of_capital(r, p, method, m=-1):
         if method == "SS":
             tau_b = p.tau_b[-1, :]
             delta_tau = p.delta_tau[-1, :]
+            tau_inv = p.inv_tax_credit[-1, :]
         else:
             tau_b = p.tau_b[: p.T, :]
             delta_tau = p.delta_tau[: p.T, :]
+            tau_inv = p.inv_tax_credit[: p.T, :]
             r = r.reshape(p.T, 1)
     else:
         if method == "SS":
             tau_b = p.tau_b[-1, m]
             delta_tau = p.delta_tau[-1, m]
+            tau_inv = p.inv_tax_credit[-1, m]
         else:
             tau_b = p.tau_b[: p.T, m]
             delta_tau = p.delta_tau[: p.T, m]
+            tau_inv = p.inv_tax_credit[: p.T, m]
             r = r.reshape(p.T)
 
-    cost_of_capital = (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
+    cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv) / (1 - tau_b)
 
     return cost_of_capital
 

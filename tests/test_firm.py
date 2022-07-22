@@ -275,13 +275,14 @@ new_param_values5 = {
     "delta_tau_annual": [[0.35], [0.2], [0.1]],
     "epsilon": [1.2],
     "delta_annual": 0.5,
+    "inv_tax_credit": [[0.07]],
     "T": 3,
     "S": 3,
     "eta": (np.ones((3, p5.J)) / (3 * p5.J)),
 }
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
-expected5 = np.array([-0.07814687, 0.48060411, 0.51451412])
+expected5 = np.array([-0.07814687, 0.48060411, 0.51451412]) + 0.07
 p_m = np.ones((p5.T, p5.M))
 
 
@@ -773,6 +774,7 @@ new_param_values3 = {
     "Z": [[2.0]],
     "delta_tau_annual": [[0.35]],
     "delta_annual": 0.25,
+    "inv_tax_credit": [[0.03]],
     "cit_rate": [[0.5]],
     "adjustment_factor_for_cit_receipts": [1.0],
     "c_corp_share_of_assets": 1.0,
@@ -784,9 +786,10 @@ p3.update_specifications(new_param_values3)
 
 coc_expected1 = np.array([0.75])
 coc_expected2 = np.array([0.75, 0.75, 0.75])
-coc_expected3 = np.array([0.25, 0.25])
-coc_expected4 = np.array([[0.25, 0.25], [0.25, 0.25], [0.25, 0.25]])
-
+coc_expected3 = np.array([0.25, 0.25]) - (0.03 / (1 - 0.5))
+coc_expected4 = np.array([[0.25, 0.25], [0.25, 0.25], [0.25, 0.25]]) - (
+    0.03 / (1 - 0.5)
+)
 ky_expected1 = np.array([0.315478672])
 ky_expected2 = np.array([2.4, 2.4, 2.4])
 ky_expected3 = np.array([2.4])

@@ -796,6 +796,7 @@ p1 = Specifications()
 new_param_values1 = {
     "cit_rate": [[0.20]],
     "delta_tau_annual": [[0.0023176377601205056]],
+    "inv_tax_credit": [[0.02]],
     "T": 3,
     "S": 3,
     "eta": (np.ones((3, p1.J)) / (3 * p1.J)),
@@ -807,7 +808,11 @@ Y = np.array([[3.0], [7.0], [3.0]])
 p_m = np.ones((p1.T, 1))
 L = np.array([[2.0], [3.0], [2.0]])
 K = np.array([[5.0], [6.0], [5.0]])
-expected1 = np.array([[0.0102], [0.11356], [0.0102]])
+inv_tax_credit_amounts = (
+    np.array([[1 + p1.delta * 5.0], [-1 + p1.delta * 6.0], [p1.delta * 5.0]])
+    * 0.02
+)
+expected1 = np.array([[0.0102], [0.11356], [0.0102]]) - inv_tax_credit_amounts
 
 
 @pytest.mark.parametrize(
