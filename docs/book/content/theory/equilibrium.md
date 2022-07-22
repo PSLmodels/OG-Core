@@ -339,7 +339,7 @@ The stationary non-steady state (transition path) solution algorithm has followi
 16. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\hat{I}_{g,t}$, solve for $\hat{K}_{g,t}^{i}$
 17. Find output and factor demands for M-1 industries:
     1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$
-    2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \frac{r_t + \delta_{M,t} -\delta_t^{\tau}\tau^{corp}_{m,t}}{p_{m,t}(1-\tau^{corp}_{m,t}){Z}_{m,t}^{\frac{\varepsilon_m -1}{\varepsilon_m}}}^{-\varepsilon_m} \gamma_{m}$
+    2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \gamma_m\left[\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{(1-\tau^{corp}_{m,t})p_{m,t}({Z}_{m,t})^\frac{\varepsilon_m -1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
     3. Capital demand can thus be found: $\hat{K}_{m,t} = \frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} * \hat{Y}_{m,t}$
     4. Labor demand can be found by inverting the production function:
       ```{math}
@@ -349,7 +349,7 @@ The stationary non-steady state (transition path) solution algorithm has followi
     5\. Use the interest rate $r_t^*$ and labor demand $\hat{L}_{m,t}$ to solve for private capital demand at the world interest rate $\hat{K}_{m,t}^{r^*}$ using {eq}`EqFirmsMPKg_opt`
       ```{math}
       :label: EqTP_MPKg
-        \hat{K}_{m,t}^{r^*} = \hat{L}_{m,t}\left(\frac{\hat{w}_t}{\frac{r_t + \delta_{M,t} - \tau^b_{m,t}\delta^{\tau}_{m,t}}{1 - \bar{\tau}_{m,t}^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
+        \hat{K}_{m,t}^{r^*} = \hat{L}_{m,t}\left(\frac{\hat{w}_t}{\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \bar{\tau}_{m,t}^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
       ```
 
 18.  Determine factor demands and output for industry $M$:
