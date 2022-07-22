@@ -34,14 +34,14 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
   ```{math}
   :label: EqFirmsProfit
     PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
-    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \left(\tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\right)K_{m,t} \quad\forall m,t
+    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}I_{m,t} \quad\forall m,t
   ```
 
   Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
 
   Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_{m,t}$, which is a flat tax on corporate income that can vary by industry $m$. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only have a direct effect on the firms' capital demand decision.
 
-  The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_{m,t}$, which then lower corporate tax liability. When $\delta^\tau_{m,t}=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_{m,t}=\delta_{M,t}$, all economic depreciation is deducted from corporate income. The investment tax credit is characterized by the parameter $\tau^{inv}_{m,t}$, which represents the percent of industry-specific capital that can be credited against profits.
+  The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_{m,t}$, which then lower corporate tax liability. When $\delta^\tau_{m,t}=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_{m,t}=\delta_{M,t}$, all economic depreciation is deducted from corporate income. The investment tax credit is characterized by the parameter $\tau^{inv}_{m,t}$ multiplied by $I_{m,t}$ investment by industry $m$, which represents the percent of industry-specific capital that can be credited against profits.
 
   Firms take as given prices $p_{m,t}$, $w_t$, and $r_t$ and the level of public capital supply $K_{g,m,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_{m,t}$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to private capital $K_{m,t}$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
 
@@ -93,9 +93,9 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
   ```{math}
   :label: EqFirmsProfit_Kg
     \begin{split}
-      PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}Y_{m,t} - w_t L_{m,t}\Bigr] - \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \left(\tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\right)K_{m,t} \\
+      PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}Y_{m,t} - w_t L_{m,t}\Bigr] - \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}I_{m,t} \\
       &= (1 - \tau^{corp}_{m,t})\Biggl[\biggl(\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{corp}_{m,t}}\biggr)K_{m,t} + p_{m,t}MPK_{g,m,t}K_{g,m,t} + w_t L_{m,t}\Biggr] ... \\
-      &\quad\quad - (1 - \tau^{corp}_{m,t})w_t L_{m,t} - (r_t + \delta_{M,t})K_{m,t} + \left(\tau^{corp}_{m,t}\delta^{\tau}_{m,t} + \tau^{inv}_{m,t}\right)K_{m,t} \\
+      &\quad\quad - (1 - \tau^{corp}_{m,t})w_t L_{m,t} - (r_t + \delta_{M,t})K_{m,t} + \tau^{corp}_{m,t}\delta^{\tau}_{m,t}K_{m,t} + \tau^{inv}_{m,t}I_{m,t} \\
       &= (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t} \quad\forall m,t
     \end{split}
   ```
