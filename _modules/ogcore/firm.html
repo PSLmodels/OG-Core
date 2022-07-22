@@ -20,7 +20,7 @@
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -36,7 +36,7 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -618,7 +618,7 @@ title="Open an issue"
 <span class="sd">    .. math::</span>
 <span class="sd">        r_{t} = (1 - \tau^{corp}_t)Z_t^\frac{\varepsilon-1}{\varepsilon}</span>
 <span class="sd">        \left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -</span>
-<span class="sd">        \delta + \tau^{corp}_t\delta^\tau_t</span>
+<span class="sd">        \delta + \tau^{corp}_t\delta^\tau_t + \tau^{inv}_{m,t}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
@@ -636,13 +636,15 @@ title="Open an issue"
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+        <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
         <span class="n">p_mm</span> <span class="o">=</span> <span class="n">p_m</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">p_mm</span> <span class="o">=</span> <span class="n">p_m</span><span class="p">[:,</span> <span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">MPK</span> <span class="o">=</span> <span class="n">get_MPx</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_mm</span> <span class="o">*</span> <span class="n">MPK</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">+</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_mm</span> <span class="o">*</span> <span class="n">MPK</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">+</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span> <span class="o">+</span> <span class="n">tau_inv</span>
 
     <span class="k">return</span> <span class="n">r</span></div>
 
@@ -876,45 +878,6 @@ title="Open an issue"
     <span class="k">return</span> <span class="n">K</span>
 
 
-<div class="viewcode-block" id="get_K_from_Y"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K_from_Y">[docs]</a><span class="k">def</span> <span class="nf">get_K_from_Y</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generates vector of aggregate capital. Use with the open economy</span>
-<span class="sd">    options.</span>
-
-<span class="sd">    .. math::</span>
-<span class="sd">        K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}} \\</span>
-<span class="sd">        K_{t} = \frac{\gamma Z_t^{\varepsilon -1} Y_t}{</span>
-<span class="sd">            \left(\frac{r_t + \delta - \tau_t^{corp}\delta_t^\tau}</span>
-<span class="sd">            {1 - \tau_{t}^{corp}}\right)^\varepsilon}</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        Y (array_like): aggregate output</span>
-<span class="sd">        r (array_like): the real interest rate</span>
-<span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        r (array_like): the real interest rate</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-        <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-    <span class="n">numerator</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span>
-    <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span>
-    <span class="p">)</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
-
-    <span class="k">return</span> <span class="n">K</span></div>
-
-
 <div class="viewcode-block" id="get_L_from_Y"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_L_from_Y">[docs]</a><span class="k">def</span> <span class="nf">get_L_from_Y</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find aggregate labor L from output Y and wages w</span>
@@ -943,48 +906,6 @@ title="Open an issue"
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">L</span></div>
-
-
-<div class="viewcode-block" id="get_K_from_Y_and_L"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K_from_Y_and_L">[docs]</a><span class="k">def</span> <span class="nf">get_K_from_Y_and_L</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Find aggregate private capital K from output Y, aggregate labor L,</span>
-<span class="sd">    and public capital K_g</span>
-
-<span class="sd">    .. math::</span>
-<span class="sd">        K_{t} = \left(\frac{\left(\frac{Y_t}{Z_t}\right)^{\frac{\varepsilon-1}</span>
-<span class="sd">        {\varepsilon}} -</span>
-<span class="sd">        (1-\gamma-\gamma_g)L_t^{\frac{\varepsilon-1}{\varepsilon}} -</span>
-<span class="sd">        \gamma_g^{\frac{1}{\varepsilon}}K_{g,t}^{\frac{\varepsilon-1}{\varepsilon}}}</span>
-<span class="sd">        {\gamma^{\frac{1}{\varepsilon}}}\right)^{\frac{\varepsilon}{\varepsilon-1}}</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        w (array_like): the wage rate</span>
-<span class="sd">        Y (array_like): aggregate output</span>
-<span class="sd">        L (array_like): aggregate labor</span>
-<span class="sd">        K_g (array_like): aggregate public capital</span>
-<span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        K (array_like): firm capital demand</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span>
-            <span class="p">(</span><span class="n">Y</span> <span class="o">/</span> <span class="n">Z</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
-            <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">)</span> <span class="o">*</span> <span class="n">L</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
-            <span class="o">-</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">K_g</span> <span class="o">**</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
-        <span class="p">)</span>
-        <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
-    <span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">K</span></div>
 
 
 <div class="viewcode-block" id="get_K"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K">[docs]</a><span class="k">def</span> <span class="nf">get_K</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
@@ -1019,7 +940,7 @@ title="Open an issue"
 <span class="sd">    Compute the cost of capital.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t}}{1 - \tau^{b}_{m,t}}</span>
+<span class="sd">        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{b}_{m,t}}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -1034,20 +955,24 @@ title="Open an issue"
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
             <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
             <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
             <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+            <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
             <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+            <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
-    <span class="n">cost_of_capital</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span>
+    <span class="n">cost_of_capital</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span> <span class="o">-</span> <span class="n">tau_inv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">cost_of_capital</span></div>
 

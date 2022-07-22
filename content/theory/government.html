@@ -21,7 +21,7 @@
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -37,7 +37,7 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -1131,10 +1131,10 @@ title="Print to PDF"
 <p>where we defined the tax liability function <span class="math notranslate nohighlight">\(T_{j,s,t}\)</span> in <a class="reference internal" href="households.html#equation-eqtaxcalcliabetr">(21)</a> as an effective tax rate times total income and the transfer distribution function <span class="math notranslate nohighlight">\(\eta_{j,s,t}\)</span> is uniform across all households. And government revenue from the corporate income tax rate schedule <span class="math notranslate nohighlight">\(\tau^{corp}_{m,t}\)</span> and the tax on depreciation expensing schedule <span class="math notranslate nohighlight">\(\delta^\tau_{m,t}\)</span> enters the firms’ profit function in each industry <span class="math notranslate nohighlight">\(m\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmsprofit2">
 <span class="eqno">(69)<a class="headerlink" href="#equation-eqfirmsprofit2" title="Permalink to this equation">#</a></span>\[\begin{split}  PR_{m,t} &amp;= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
-  &amp;\quad\quad\quad\quad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} K_{m,t} \quad\forall m,t\end{split}\]</div>
+  &amp;\quad\quad\quad\quad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \left(\tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\right)K_{m,t} \quad\forall m,t\end{split}\]</div>
 <p>We define total government revenue from taxes in terms of the numeraire good as the following,</p>
 <div class="math notranslate nohighlight" id="equation-equnbalgbcgovrev">
-<span class="eqno">(70)<a class="headerlink" href="#equation-equnbalgbcgovrev" title="Permalink to this equation">#</a></span>\[\begin{split}  Rev_t &amp;= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
+<span class="eqno">(70)<a class="headerlink" href="#equation-equnbalgbcgovrev" title="Permalink to this equation">#</a></span>\[\begin{split}  Rev_t &amp;= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} - \tau^{inv}_{m,t}I_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
   &amp;\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t\end{split}\]</div>
 <p>where household labor income is defined as <span class="math notranslate nohighlight">\(x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}\)</span> and capital income <span class="math notranslate nohighlight">\(y_{j,s,t}\equiv r_{p,t} b_{j,s,t}\)</span>.</p>
 </section>

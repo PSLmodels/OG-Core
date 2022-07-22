@@ -21,7 +21,7 @@
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -37,7 +37,7 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -698,7 +698,7 @@ title="Print to PDF"
 <li><p>Find output and factor demands for M-1 industries:</p>
 <ol class="simple">
 <li><p>By <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-mm1">(101)</a>, <span class="math notranslate nohighlight">\(\bar{Y}_{m}=\bar{C}_{m}\)</span></p></li>
-<li><p>The capital-output ratio can be determined from the FOC for the firms’ choice of capital: <span class="math notranslate nohighlight">\(\frac{\bar{K}_m}{\bar{Y}_m} = \frac{\bar{r} + \bar{\delta}_{M} -\bar{\delta}^{\tau}\bar{\tau}^{corp}_{m}}{\bar{p}_m(1-\bar{\tau}^{corp}_{m})\bar{Z}_m^{\frac{\varepsilon_m -1}{\varepsilon_m}}}^{-\varepsilon_m} \gamma_{m}\)</span></p></li>
+<li><p>The capital-output ratio can be determined from the FOC for the firms’ choice of capital: <span class="math notranslate nohighlight">\(\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}\)</span></p></li>
 <li><p>Capital demand can thus be found: <span class="math notranslate nohighlight">\(\bar{K}_{m} = \frac{\bar{K}_m}{\bar{Y}_m} * \bar{Y}_m\)</span></p></li>
 <li><p>Labor demand can be found by inverting the production function:</p></li>
 </ol>
@@ -706,7 +706,7 @@ title="Print to PDF"
 <span class="eqno">(154)<a class="headerlink" href="#equation-eqss-solvel" title="Permalink to this equation">#</a></span>\[  \bar{L}_{m} = \left(\frac{\left(\frac{\bar{Y}_m}{\bar{Z}_m}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\bar{K}_m^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\bar{K}_{g,m}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}\]</div>
 <p>5.  Use the steady-state world interest rate <span class="math notranslate nohighlight">\(\bar{r}^*\)</span> and labor demand <span class="math notranslate nohighlight">\(\bar{L}_m\)</span> to solve for private capital demand at the world interest rate <span class="math notranslate nohighlight">\(\bar{K}_m^{r^*}\)</span> using the steady-state version of <a class="reference internal" href="firms.html#equation-eqfirmsmpkg-opt">(46)</a></p>
 <div class="math notranslate nohighlight" id="equation-eqss-mpkg">
-<span class="eqno">(155)<a class="headerlink" href="#equation-eqss-mpkg" title="Permalink to this equation">#</a></span>\[  \bar{K}_m^{r^*} = \bar{L}_m\left(\frac{\bar{w}}{\frac{\bar{r} + \bar{\delta}_M - \bar{\tau}^b_m\bar{\delta}^{\tau}_m}{1 - \bar{\tau}_m^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}\]</div>
+<span class="eqno">(155)<a class="headerlink" href="#equation-eqss-mpkg" title="Permalink to this equation">#</a></span>\[  \bar{K}_m^{r^*} = \bar{L}_m\left(\frac{\bar{w}}{\frac{\bar{r} + \bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m}{1 - \bar{\tau}^{corp}_m}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}\]</div>
 </li>
 <li><p>Determine factor demands and output for industry <span class="math notranslate nohighlight">\(M\)</span>:</p>
 <ol class="simple">
@@ -720,10 +720,10 @@ title="Print to PDF"
 </ol>
 </li>
 <li><p><span class="math notranslate nohighlight">\(\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}\)</span></p></li>
-<li><p>Use the factor demands and <span class="math notranslate nohighlight">\(\bar{K}_g\)</span> in the production function for industry <span class="math notranslate nohighlight">\(M\)</span> to find $\bar{Y}_M</p></li>
+<li><p>Use the factor demands and <span class="math notranslate nohighlight">\(\bar{K}_g\)</span> in the production function for industry <span class="math notranslate nohighlight">\(M\)</span> to find <span class="math notranslate nohighlight">\(\bar{Y}_M\)</span>.</p></li>
 </ol>
 </li>
-<li><p>Find an updated value for GDP, $\bar{Y}^{i’} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m</p></li>
+<li><p>Find an updated value for GDP, <span class="math notranslate nohighlight">\(\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m\)</span>.</p></li>
 <li><p>Find a updated values for <span class="math notranslate nohighlight">\(\bar{I}_{g}\)</span> and <span class="math notranslate nohighlight">\(\bar{K}_g\)</span> using  <span class="math notranslate nohighlight">\(\bar{Y}^{i'}\)</span>, equations <a class="reference internal" href="stationarization.html#equation-eqstnrz-igt">(126)</a> and <a class="reference internal" href="stationarization.html#equation-eqstnrz-kgmt">(128)</a></p></li>
 </ol>
 </li>
@@ -930,7 +930,7 @@ title="Print to PDF"
 <li><p>Find output and factor demands for M-1 industries:</p>
 <ol class="simple">
 <li><p>By <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-mm1">(101)</a>, <span class="math notranslate nohighlight">\(\hat{Y}_{m,t}=\hat{C}_{m,t}\)</span></p></li>
-<li><p>The capital-output ratio can be determined from the FOC for the firms’ choice of capital: <span class="math notranslate nohighlight">\(\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \frac{r_t + \delta_{M,t} -\delta_t^{\tau}\tau^{corp}_{m,t}}{p_{m,t}(1-\tau^{corp}_{m,t}){Z}_{m,t}^{\frac{\varepsilon_m -1}{\varepsilon_m}}}^{-\varepsilon_m} \gamma_{m}\)</span></p></li>
+<li><p>The capital-output ratio can be determined from the FOC for the firms’ choice of capital: <span class="math notranslate nohighlight">\(\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \gamma_m\left[\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{(1-\tau^{corp}_{m,t})p_{m,t}({Z}_{m,t})^\frac{\varepsilon_m -1}{\varepsilon_m}}\right]^{-\varepsilon_m}\)</span></p></li>
 <li><p>Capital demand can thus be found: <span class="math notranslate nohighlight">\(\hat{K}_{m,t} = \frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} * \hat{Y}_{m,t}\)</span></p></li>
 <li><p>Labor demand can be found by inverting the production function:</p></li>
 </ol>
@@ -938,7 +938,7 @@ title="Print to PDF"
 <span class="eqno">(160)<a class="headerlink" href="#equation-eqtpi-solvel" title="Permalink to this equation">#</a></span>\[  \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}{Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\hat{K}_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}\]</div>
 <p>5. Use the interest rate <span class="math notranslate nohighlight">\(r_t^*\)</span> and labor demand <span class="math notranslate nohighlight">\(\hat{L}_{m,t}\)</span> to solve for private capital demand at the world interest rate <span class="math notranslate nohighlight">\(\hat{K}_{m,t}^{r^*}\)</span> using <a class="reference internal" href="firms.html#equation-eqfirmsmpkg-opt">(46)</a></p>
 <div class="math notranslate nohighlight" id="equation-eqtp-mpkg">
-<span class="eqno">(161)<a class="headerlink" href="#equation-eqtp-mpkg" title="Permalink to this equation">#</a></span>\[  \hat{K}_{m,t}^{r^*} = \hat{L}_{m,t}\left(\frac{\hat{w}_t}{\frac{r_t + \delta_{M,t} - \tau^b_{m,t}\delta^{\tau}_{m,t}}{1 - \bar{\tau}_{m,t}^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}\]</div>
+<span class="eqno">(161)<a class="headerlink" href="#equation-eqtp-mpkg" title="Permalink to this equation">#</a></span>\[  \hat{K}_{m,t}^{r^*} = \hat{L}_{m,t}\left(\frac{\hat{w}_t}{\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \bar{\tau}_{m,t}^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}\]</div>
 </li>
 <li><p>Determine factor demands and output for industry <span class="math notranslate nohighlight">\(M\)</span>:</p>
 <ol class="simple">

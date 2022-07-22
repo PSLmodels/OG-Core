@@ -21,7 +21,7 @@
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -37,7 +37,7 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -588,67 +588,6 @@ rate r wage w and parameters.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="ogcore.firm.get_K_from_Y">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K_from_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K_from_Y" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates vector of aggregate capital. Use with the open economy
-options.</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}} \\
-K_{t} = \frac{\gamma Z_t^{\varepsilon -1} Y_t}{
-    \left(\frac{r_t + \delta - \tau_t^{corp}\delta_t^\tau}
-    {1 - \tau_{t}^{corp}}\right)^\varepsilon}\end{split}\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
-<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
-<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
-‘TPI’</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the real interest rate</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>r (array_like)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ogcore.firm.get_K_from_Y_and_L">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K_from_Y_and_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K_from_Y_and_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K_from_Y_and_L" title="Permalink to this definition">#</a></dt>
-<dd><p>Find aggregate private capital K from output Y, aggregate labor L,
-and public capital K_g</p>
-<div class="math notranslate nohighlight">
-\[K_{t} = \left(\frac{\left(\frac{Y_t}{Z_t}\right)^{\frac{\varepsilon-1}
-{\varepsilon}} -
-(1-\gamma-\gamma_g)L_t^{\frac{\varepsilon-1}{\varepsilon}} -
-\gamma_g^{\frac{1}{\varepsilon}}K_{g,t}^{\frac{\varepsilon-1}{\varepsilon}}}
-{\gamma^{\frac{1}{\varepsilon}}}\right)^{\frac{\varepsilon}{\varepsilon-1}}\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>w</strong> (<em>array_like</em>) – the wage rate</p></li>
-<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
-<li><p><strong>L</strong> (<em>array_like</em>) – aggregate labor</p></li>
-<li><p><strong>K_g</strong> (<em>array_like</em>) – aggregate public capital</p></li>
-<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
-‘TPI’</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>firm capital demand</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>K (array_like)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_L_from_Y">
 <span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_L_from_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_L_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_L_from_Y" title="Permalink to this definition">#</a></dt>
 <dd><p>Find aggregate labor L from output Y and wages w</p>
@@ -739,7 +678,7 @@ aggregate labor, and CES production function parameters.</p>
 <span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_cost_of_capital</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_cost_of_capital"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_cost_of_capital" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the cost of capital.</p>
 <div class="math notranslate nohighlight">
-\[\rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t}}{1 - \tau^{b}_{m,t}}\]</div>
+\[\rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{b}_{m,t}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -793,7 +732,7 @@ demand.</p>
 <div class="math notranslate nohighlight">
 \[r_{t} = (1 - \tau^{corp}_t)Z_t^\frac{\varepsilon-1}{\varepsilon}
 \left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} -
-\delta + \tau^{corp}_t\delta^\tau_t\]</div>
+\delta + \tau^{corp}_t\delta^\tau_t + \tau^{inv}_{m,t}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
