@@ -496,41 +496,6 @@ def get_K(r, w, L, p, method, m=-1):
     return K
 
 
-def get_K_from_Y(Y, r, p, method):
-    r"""
-    Generates vector of aggregate capital. Use with the open economy
-    options.
-    .. math::
-        K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}} \\
-        K_{t} = \frac{\gamma Z_t^{\varepsilon -1} Y_t}{
-            \left(\frac{r_t + \delta - \tau_t^{corp}\delta_t^\tau}
-            {1 - \tau_{t}^{corp}}\right)^\varepsilon}
-    Args:
-        Y (array_like): aggregate output
-        r (array_like): the real interest rate
-        p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
-    Returns:
-        r (array_like): the real interest rate
-    """
-    if method == "SS":
-        Z = p.Z[-1]
-        tau_b = p.tau_b[-1]
-        delta_tau = p.delta_tau[-1]
-    else:
-        Z = p.Z[: p.T]
-        tau_b = p.tau_b[: p.T]
-        delta_tau = p.delta_tau[: p.T]
-    numerator = p.gamma * Z ** (p.epsilon - 1) * Y
-    denominator = (
-        (r + p.delta - tau_b * delta_tau) / (1 - tau_b)
-    ) ** p.epsilon
-    K = numerator / denominator
-
-    return K
-
-
 def get_cost_of_capital(r, p, method, m=-1):
     r"""
     Compute the cost of capital.

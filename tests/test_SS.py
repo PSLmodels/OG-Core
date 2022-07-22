@@ -457,14 +457,14 @@ filename7 = "inner_loop_outputs_reform_M4.pkl"
 
 
 @pytest.mark.parametrize(
-    "baseline,param_updates,filename",
+    "baseline,r_p,param_updates,filename",
     [
-        (True, param_updates1, filename1),
-        (True, param_updates2, filename2),
-        (True, param_updates3, filename3),
-        (False, param_updates4, filename4),
-        (False, param_updates5, filename5),
-        (False, param_updates7, filename7),
+        (True, 0.03309231672773741, param_updates1, filename1),
+        (True, 0.05, param_updates2, filename2),
+        (True, 0.04260341179572245, param_updates3, filename3),
+        (False, 0.04260341179572245, param_updates4, filename4),
+        (False, 0.04260341179572245, param_updates5, filename5),
+        (False, 0.04759112768438152, param_updates7, filename7),
     ],
     ids=[
         "Baseline, Small Open",
@@ -475,7 +475,7 @@ filename7 = "inner_loop_outputs_reform_M4.pkl"
         "Reform, M>1",
     ],
 )
-def test_inner_loop(baseline, param_updates, filename, dask_client):
+def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
@@ -490,23 +490,7 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     w = firm.get_w_from_r(r, p, "SS")
     TR = 0.12
     Y = 1.3
-
-    # Solve for r_p because of new sol'n algo
-    r_gov = fiscal.get_r_gov(r, p)
-    (
-        D,
-        D_d,
-        D_f,
-        new_borrowing,
-        debt_service,
-        new_borrowing_f,
-    ) = fiscal.get_D_ss(r_gov, Y, p)
-    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
-    K_g = fiscal.get_K_g(0, I_g, p, "SS")
-    MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, "SS")
-    K = firm.get_K_from_Y(Y, r, p, "SS")
     p_m = np.ones(p.M)
-    r_p = aggregates.get_r_p(r, r_gov, p_m, K, K_g, D, MPKg, p, "SS")
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
@@ -607,22 +591,8 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     Y = 1.3
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
-    # Solve for r_p because of new sol'n algo
-    r_gov = fiscal.get_r_gov(r, p)
-    (
-        D,
-        D_d,
-        D_f,
-        new_borrowing,
-        debt_service,
-        new_borrowing_f,
-    ) = fiscal.get_D_ss(r_gov, Y, p)
-    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
-    K_g = fiscal.get_K_g(0, I_g, p, "SS")
-    MPKg = firm.get_MPx(Y, K_g, p.gamma_g, p, "SS")
-    K = firm.get_K_from_Y(Y, r, p, "SS")
     p_m = np.array([1.0])
-    r_p = aggregates.get_r_p(r, r_gov, p_m, K, K_g, D, MPKg, p, "SS")
+    r_p = 0.04260341179572245
     outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
