@@ -99,7 +99,8 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
 
     .. math::
         \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =
-        \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}
+        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\left[2 -
+        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\right]
 
     Args:
         b (Numpy array): savings
@@ -111,9 +112,10 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
         tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ
 
     """
-    tau_prime = (b * h_wealth * m_wealth * p_wealth) / (
-        (b * h_wealth + m_wealth) ** 2
-    ) + ETR_wealth(b, h_wealth, m_wealth, p_wealth)
+    tau_prime = (
+        ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2  -
+        ((h_wealth ** 2 * p_wealth * b ** 2) / (
+        (b * h_wealth + m_wealth) ** 2)))
     return tau_prime
 
 
