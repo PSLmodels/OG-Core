@@ -112,10 +112,9 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
         tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ
 
     """
-    tau_prime = (
-        ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2  -
-        ((h_wealth ** 2 * p_wealth * b ** 2) / (
-        (b * h_wealth + m_wealth) ** 2)))
+    tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2 - (
+        (h_wealth**2 * p_wealth * b**2) / ((b * h_wealth + m_wealth) ** 2)
+    )
     return tau_prime
 
 
