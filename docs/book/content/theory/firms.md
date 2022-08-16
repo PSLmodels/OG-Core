@@ -34,10 +34,10 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
   ```{math}
   :label: EqFirmsProfit
     PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
-    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}I_{m,t} \quad\forall m,t
+    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}K_{m,t} \quad\forall m,t
   ```
 
-  Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax.
+  Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax. Note that the last term above represents the benefits from any investment tax credit.  While this should be applied to all investment, firms in OG-Core are making static decisions each period about the amount of capital to rent.  We therefore proxy for investment with $\delta_{M,t}K_{m,t}$, which is accurate in the steady-state, but is an approximation over the transition to the steady-state.
 
   Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_{m,t}$, which is a flat tax on corporate income that can vary by industry $m$. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only have a direct effect on the firms' capital demand decision.
 
@@ -52,7 +52,7 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 
   ```{math}
   :label: EqFirmFOC_K
-    r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{Y_{m,t}}{K_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t} \quad\forall m,t
+    r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{Y_{m,t}}{K_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t} \quad\forall m,t
   ```
 
   Note that the presence of the public capital good creates economic rents. These rents will accrue to the owners of capital via the financial intermediary. See Section Chapter {ref}`Chap_FinInt` for more details on the determination of the return to the household's portfolio. Because public capital is exogenous to the firm's decisions, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,m,t}$ through the $Y_{m,t}$ term.
@@ -71,7 +71,7 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 
   ```{math}
   :label: EqFirmsMPK_opt
-    MPK_{m,t} =  \frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^\tau_{m,t} - \tau^{inv}_{m,t}}{p_{m,t}(1 - \tau^{corp}_{m,t})} \quad\forall m,t
+    MPK_{m,t} =  \frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^\tau_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{p_{m,t}(1 - \tau^{corp}_{m,t})} \quad\forall m,t
   ```
 
   Firm profit maximization for labor demand from equation {eq}`EqFirmFOC_L` implies that the marginal product of labor is equal to the real wage rate:
@@ -95,7 +95,7 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
     \begin{split}
       PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}Y_{m,t} - w_t L_{m,t}\Bigr] - \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}I_{m,t} \\
       &= (1 - \tau^{corp}_{m,t})\Biggl[\biggl(\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{corp}_{m,t}}\biggr)K_{m,t} + p_{m,t}MPK_{g,m,t}K_{g,m,t} + w_t L_{m,t}\Biggr] ... \\
-      &\quad\quad - (1 - \tau^{corp}_{m,t})w_t L_{m,t} - (r_t + \delta_{M,t})K_{m,t} + \tau^{corp}_{m,t}\delta^{\tau}_{m,t}K_{m,t} + \tau^{inv}_{m,t}I_{m,t} \\
+      &\quad\quad - (1 - \tau^{corp}_{m,t})w_t L_{m,t} - (r_t + \delta_{M,t})K_{m,t} + \tau^{corp}_{m,t}\delta^{\tau}_{m,t}K_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}K_{m,t} \\
       &= (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t} \quad\forall m,t
     \end{split}
   ```
