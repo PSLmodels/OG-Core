@@ -90,6 +90,7 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
 
     """
     tau_w = (p_wealth * h_wealth * b) / (h_wealth * b + m_wealth)
+
     return tau_w
 
 
@@ -115,6 +116,7 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
     tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2 - (
         (h_wealth**2 * p_wealth * b**2) / ((b * h_wealth + m_wealth) ** 2)
     )
+
     return tau_prime
 
 
@@ -225,7 +227,7 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
             tau_b = p.tau_b[-1, m]
             tau_inv = p.inv_tax_credit[-1, m]
             price = p_m[m]
-            Inv = p.delta * K  # compute gross investment
+            Inv = p.delta * K[m]  # compute gross investment
         else:
             delta_tau = p.delta_tau[: p.T, m].reshape(p.T)
             tau_b = p.tau_b[: p.T, m].reshape(p.T)
@@ -233,11 +235,7 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
             price = p_m[: p.T, m].reshape(p.T)
             w = w.reshape(p.T)
             print("K = ", K.shape)
-            Inv = np.append(
-                K[1:] - K[:-1] + p.delta * K[:-1],
-                np.array([p.delta * K[-1]]),
-                axis=0,
-            )
+            Inv = p.delta * K[:, m]
     else:
         if method == "SS":
             delta_tau = p.delta_tau[-1, :]
@@ -252,11 +250,7 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
             price = p_m[: p.T, :].reshape(p.T, p.M)
             w = w.reshape(p.T, 1)
             print("K = ", K.shape)
-            Inv = np.append(
-                K[1:, :] - K[:-1, :] + p.delta * K[:-1, :],
-                p.delta * K[-1, :].reshape(1, p.M),
-                axis=0,
-            )
+            Inv = p.delta * K
 
     business_revenue = (
         tau_b * (price * Y - w * L) - tau_b * delta_tau * K - tau_inv * Inv
