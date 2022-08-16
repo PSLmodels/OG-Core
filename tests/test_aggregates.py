@@ -349,6 +349,7 @@ new_param_values3 = {
     "p_wealth": [0.2],
     "m_wealth": [1.0],
     "cit_rate": [[0.2]],
+    "inv_tax_credit": [[0.02]],
     "replacement_rate_adjust": [1.5, 1.5, 1.5, 1.6, 1.0],
     "delta_tau_annual": [
         [float(1 - ((1 - 0.0975) ** (20 / (p3.ending_age - p3.starting_age))))]
@@ -361,6 +362,8 @@ p3.update_specifications(new_param_values3)
 p3.e = p.e
 p3.omega = p.omega
 p3.omega_SS = p.omega_SS
+Inv3 = p3.delta * K
+inv_tax_cred_rev3 = np.squeeze(p3.inv_tax_credit[:p3.T] * Inv3)
 
 p_u = Specifications()
 new_param_values_ubi = {
@@ -491,7 +494,7 @@ expected3 = np.array(
         0.58759922,
         0.5580478,
     ]
-)
+) - inv_tax_cred_rev3
 expected4 = 0.5688319028341413
 expected5 = np.array(
     [
