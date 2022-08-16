@@ -234,8 +234,7 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
             tau_inv = p.inv_tax_credit[: p.T, m].reshape(p.T)
             price = p_m[: p.T, m].reshape(p.T)
             w = w.reshape(p.T)
-            print("K = ", K.shape)
-            Inv = p.delta * K[:, m]
+            Inv = p.delta * K
     else:
         if method == "SS":
             delta_tau = p.delta_tau[-1, :]
@@ -249,7 +248,6 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
             tau_inv = p.inv_tax_credit[: p.T, :].reshape(p.T, p.M)
             price = p_m[: p.T, :].reshape(p.T, p.M)
             w = w.reshape(p.T, 1)
-            print("K = ", K.shape)
             Inv = p.delta * K
 
     business_revenue = (
