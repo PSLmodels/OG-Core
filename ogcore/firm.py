@@ -39,9 +39,6 @@ def get_Y(K, K_g, L, p, method, m=-1):
         Y (array_like): aggregate output
 
     """
-    # TODO: Generalize for T x M
-    # in this case, follow example of household functions that allow
-    # one to pass j or not (if not, then do for all j at once)
 
     if method == "SS":
         if m is not None:
@@ -205,7 +202,7 @@ def get_r(Y, K, p_m, p, method, m=-1):
         tau_inv = p.inv_tax_credit[: p.T, m].reshape(p.T, 1)
         p_mm = p_m[:, m].reshape(p.T, 1)
     MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
-    r = (1 - tau_b) * p_mm * MPK - p.delta + tau_b * delta_tau + tau_inv
+    r = (1 - tau_b) * p_mm * MPK - p.delta + tau_b * delta_tau + tau_inv * p.delta
 
     return r
 
@@ -232,8 +229,6 @@ def get_w(Y, L, p_m, p, method, m=-1):
         w (array_like): the real wage rate
 
     """
-    # mp = get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
-    # print('MPx size = ', mp.shape)
     if method == "SS":
         p_mm = p_m[m]
     else:
@@ -501,7 +496,8 @@ def get_cost_of_capital(r, p, method, m=-1):
     Compute the cost of capital.
 
     .. math::
-        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{b}_{m,t}}
+        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t}
+        \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{b}_{m,t}}
 
     Args:
         r (array_like): the real interest rate
@@ -533,7 +529,7 @@ def get_cost_of_capital(r, p, method, m=-1):
             tau_inv = p.inv_tax_credit[: p.T, m]
             r = r.reshape(p.T)
 
-    cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv) / (1 - tau_b)
+    cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv * p.delta) / (1 - tau_b)
 
     return cost_of_capital
 
