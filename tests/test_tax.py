@@ -809,8 +809,7 @@ p_m = np.ones((p1.T, 1))
 L = np.array([[2.0], [3.0], [2.0]])
 K = np.array([[5.0], [6.0], [5.0]])
 inv_tax_credit_amounts = (
-    np.array([[p1.delta * 5.0], [p1.delta * 6.0], [p1.delta * 5.0]])
-    * 0.02
+    np.array([[p1.delta * 5.0], [p1.delta * 6.0], [p1.delta * 5.0]]) * 0.02
 )
 expected1 = np.array([[0.0102], [0.11356], [0.0102]]) - inv_tax_credit_amounts
 

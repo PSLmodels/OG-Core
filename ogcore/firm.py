@@ -202,7 +202,12 @@ def get_r(Y, K, p_m, p, method, m=-1):
         tau_inv = p.inv_tax_credit[: p.T, m].reshape(p.T, 1)
         p_mm = p_m[:, m].reshape(p.T, 1)
     MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
-    r = (1 - tau_b) * p_mm * MPK - p.delta + tau_b * delta_tau + tau_inv * p.delta
+    r = (
+        (1 - tau_b) * p_mm * MPK
+        - p.delta
+        + tau_b * delta_tau
+        + tau_inv * p.delta
+    )
 
     return r
 
@@ -529,7 +534,9 @@ def get_cost_of_capital(r, p, method, m=-1):
             tau_inv = p.inv_tax_credit[: p.T, m]
             r = r.reshape(p.T)
 
-    cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv * p.delta) / (1 - tau_b)
+    cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv * p.delta) / (
+        1 - tau_b
+    )
 
     return cost_of_capital
 
