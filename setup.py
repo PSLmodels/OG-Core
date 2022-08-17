@@ -20,10 +20,6 @@ setuptools.setup(
     package_data={
         "ogcore": [
             "default_parameters.json",
-            "data/ability/*",
-            "data/demographic/*",
-            "data/labor/*",
-            "data/wealth/*",
         ]
     },
     include_packages=True,
