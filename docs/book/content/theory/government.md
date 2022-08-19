@@ -79,7 +79,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 (SecTaxCalcFuncs)=
 ##### Fitting Tax Functions
 
-  In looking at the 2D scatter plot on effective tax rates as a function of total income in {numref}`Figure %s <FigTaxCalcETRtotinc>` and the 3D scatter plots of $ETR$, $MTRx$, and $MTRy$ in {numref}`Figure %s <FigTaxCalc3Dtaxrates>`, it is clear that all of these rates exhibit negative exponential or logistic shape. This empirical regularity allows us to make an important and nonrestrictive assumption. We can fit parametric tax rate functions to these data that are constrained to be monotonically increasing in labor income and capital income. This assumption of monotonicity is computationally important as it preserves a convex budget set for each household, which is important for being able to solve many household lifetime problems over a large number of periods.
+  In looking at the 2D scatter plot on effective tax rates as a function of total income in {numref}`Figure %s <FigTaxCalcETRtotinc>` and the 3D scatter plots of $ETR$, $MTRx$, and $MTRy$ in {numref}`Figure %s <FigTaxCalc3DvsPred>`, it is clear that all of these rates exhibit negative exponential or logistic shape. This empirical regularity allows us to make an important and nonrestrictive assumption. We can fit parametric tax rate functions to these data that are constrained to be monotonically increasing in labor income and capital income. This assumption of monotonicity is computationally important as it preserves a convex budget set for each household, which is important for being able to solve many household lifetime problems over a large number of periods.
 
 
 (SecTaxCalcFuncs_DEP)=
@@ -104,7 +104,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   The respective $shift_x$ and $shift_y$ parameters in Equation {eq}`EqTaxCalcTaxFuncForm` are analogous to the additive constants in a Stone-Geary utility function. These constants ensure that the two sums $\tau(x) + shift_x$ and $\tau(y) + shift_y$ are both strictly positive. They allow for negative tax rates in the $\tau(\cdot)$ functions despite the requirement that the arguments inside the brackets be strictly positive. The general $shift$ parameter outside of the Cobb-Douglas brackets can then shift the tax rate function so that it can accommodate negative tax rates. The Cobb-Douglas share parameter $\phi\in[0,1]$ controls the shape of the function between the two univariate functions $\tau(x)$ and $\tau(y)$.
 
 
-  This functional form for tax rates delivers flexible parametric functions that can fit the tax rate data shown in {numref}`Figure %s <FigTaxCalc3Dtaxrates>` as well as a wide variety of policy reforms. Further, these functional forms are monotonically increasing in both labor income $x$ and capital income $y$. This characteristic of monotonicity in $x$ and $y$ is essential for guaranteeing convex budget sets and thus uniqueness of solutions to the household Euler equations. The assumption of monotonicity does not appear to be a strong one when viewing the the tax rate data shown in {numref}`Figure %s <FigTaxCalc3Dtaxrates>`. While it does limit the potential tax systems to which one could apply our methodology, tax policies that do not satisfy this assumption would result in non-convex budget sets and thus require non-standard DGE model solutions methods and would not guarantee a unique equilibrium. The 12 parameters of our tax rate functional form from {eq}`EqTaxCalcTaxFuncForm` are summarized in {numref}`TabTaxCalcTfuncParams`.
+  This functional form for tax rates delivers flexible parametric functions that can fit the tax rate data shown in the scatterplot data in {numref}`Figure %s <FigTaxCalcETRtotinc>` and {numref}`Figure %s <FigTaxCalc3DvsPred>` as well as a wide variety of policy reforms. Further, these functional forms are monotonically increasing in both labor income $x$ and capital income $y$. This characteristic of monotonicity in $x$ and $y$ is essential for guaranteeing convex budget sets and thus uniqueness of solutions to the household Euler equations. The assumption of monotonicity does not appear to be a strong one when viewing the the tax rate data shown in {numref}`Figure %s <FigTaxCalc3DvsPred>`. While it does limit the potential tax systems to which one could apply our methodology, tax policies that do not satisfy this assumption would result in non-convex budget sets and thus require non-standard DGE model solutions methods and would not guarantee a unique equilibrium. The 12 parameters of our tax rate functional form from {eq}`EqTaxCalcTaxFuncForm` are summarized in {numref}`TabTaxCalcTfuncParams`.
 
   ```{list-table} **Description of tax rate function $\tau(x,y)$ parameters.**
   :header-rows: 1
@@ -135,6 +135,14 @@ The second difficulty in modeling realistic tax and incentive detail is the need
     - shifter (can be negative) allows for support of $\tau(x,y)$ to include negative tax rates
   * - $\phi$
     - Cobb-Douglas share parameter between 0 and 1
+  ```
+
+  ```{figure} ./images/Compare_ETR_functions.png
+  ---
+  height: 500px
+  name: FigTaxCalcETRtotinc
+  ---
+  Plot of estimated $ETR$ functions: $t=2017$ and $s=43$ under current law
   ```
 
   ```{figure} ./images/Age42_2017_vsPred.png
@@ -220,7 +228,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
       &\qquad\text{subject to}\quad A, B, C, D > 0 \quad\text{and}\quad \phi\in[0,1]
   ```
 
-  where $\tau_{i}$ is the tax rate for observation $i$ from the microsimulation output, $\tau_{s,t}(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t})$ is the predicted tax rate for filing-unit $i$ with $x_{i}$ labor income and $y_{i}$ capital income given parameters $\boldsymbol{\theta}_{s,t}$, and $w_{i}$ is the CPS sampling weight of this observation. The number $N$ is the total number of observations from the microsimulation output for age $s$ and year $t$. {numref}`Figure %s <FigTaxCalc3DvsPred>` shows the typical fit of an estimated tax function $\tau_{s,t}\bigl(x,y|\hat{\boldsymbol{\theta}}_{s,t}\bigr)$ to the data. The data in {numref}`Figure %s <FigTaxCalc3DvsPred>` are the same age $s=42$ and year $t=2017$ as the data {numref}`Figure %s <FigTaxCalc3Dtaxrates>`.
+  where $\tau_{i}$ is the tax rate for observation $i$ from the microsimulation output, $\tau_{s,t}(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t})$ is the predicted tax rate for filing-unit $i$ with $x_{i}$ labor income and $y_{i}$ capital income given parameters $\boldsymbol{\theta}_{s,t}$, and $w_{i}$ is the CPS sampling weight of this observation. The number $N$ is the total number of observations from the microsimulation output for age $s$ and year $t$. {numref}`Figure %s <FigTaxCalc3DvsPred>` shows the typical fit of an estimated tax function $\tau_{s,t}\bigl(x,y|\hat{\boldsymbol{\theta}}_{s,t}\bigr)$ to the data for $s=42$ and year $t=2017$.
 
   The underlying data can limit the number of tax functions that can be estimated. For example, we use the age of the primary filer from the PUF-CPS match to be equivalent to the age of the DGE model household. The DGE model we use allows for individuals up to age 100, however the data contain few primary filers with age above age 80. Because we cannot reliably estimate tax functions for $s>80$, we apply the tax function estimates for 80 year-olds to those with model ages 81 to 100. In the case certain ages below age 80 have too few observations to enable precise estimation of the model parameters, we use a linear interpolation method to find the values for those ages $21\leq s <80$ that cannot be precisely estimated. [^interpolation_note]
 
