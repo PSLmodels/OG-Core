@@ -502,7 +502,7 @@ def get_cost_of_capital(r, p, method, m=-1):
 
     .. math::
         \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t}
-        \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{b}_{m,t}}
+        \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{1 - \tau^{b}_{m,t}}
 
     Args:
         r (array_like): the real interest rate
