@@ -111,19 +111,19 @@ The computational algorithm for solving for the steady-state follows the steps b
     12. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
     13. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
     14. Find output and factor demands for M-1 industries:
-        1.  By {eq}`EqMarkClrGoods_Mm1`, $\bar{Y}_{m}=\bar{C}_{m}$
-        2.  The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
-        3.  Capital demand can thus be found: $\bar{K}_{m} = \frac{\bar{K}_m}{\bar{Y}_m} * \bar{Y}_m$
-        4.  Labor demand can be found by inverting the production function:
+        1. By {eq}`EqMarkClrGoods_Mm1`, $\bar{Y}_{m}=\bar{C}_{m}$
+        2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
+        3. Capital demand can thus be found: $\bar{K}_{m} = \frac{\bar{K}_m}{\bar{Y}_m} * \bar{Y}_m$
+        4. Labor demand can be found by inverting the production function:
            ```{math}
            :label: EqSS_solveL
              \bar{L}_{m} = \left(\frac{\left(\frac{\bar{Y}_m}{\bar{Z}_m}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\bar{K}_m^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\bar{K}_{g,m}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
            ```
-          5\.  Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for private capital demand at the world interest rate $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
+        5. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for private capital demand at the world interest rate $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
 
            ```{math}
            :label: EqSS_MPKg
-             \bar{K}_m^{r^*} = \bar{L}_m\left(\frac{\bar{w}}{\frac{\bar{r} + \bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m}{1 - \bar{\tau}^{corp}_m}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
+             \bar{K}_m^{r^*} = \bar{L}_m\left(\frac{\bar{w}}{\frac{\bar{r} + \bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{1 - \bar{\tau}^{corp}_m}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
            ```
 
     16. Determine factor demands and output for industry $M$:
@@ -339,17 +339,17 @@ The stationary non-steady state (transition path) solution algorithm has followi
 16. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\hat{I}_{g,t}$, solve for $\hat{K}_{g,t}^{i}$
 17. Find output and factor demands for M-1 industries:
     1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$
-    2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \gamma_m\left[\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{(1-\tau^{corp}_{m,t})p_{m,t}({Z}_{m,t})^\frac{\varepsilon_m -1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
+    2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \gamma_m\left[\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{(1-\tau^{corp}_{m,t})p_{m,t}({Z}_{m,t})^\frac{\varepsilon_m -1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
     3. Capital demand can thus be found: $\hat{K}_{m,t} = \frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} * \hat{Y}_{m,t}$
     4. Labor demand can be found by inverting the production function:
       ```{math}
       :label: EqTPI_solveL
         \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}{Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\hat{K}_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
       ```
-    5\. Use the interest rate $r_t^*$ and labor demand $\hat{L}_{m,t}$ to solve for private capital demand at the world interest rate $\hat{K}_{m,t}^{r^*}$ using {eq}`EqFirmsMPKg_opt`
+    5. Use the interest rate $r_t^*$ and labor demand $\hat{L}_{m,t}$ to solve for private capital demand at the world interest rate $\hat{K}_{m,t}^{r^*}$ using {eq}`EqFirmsMPKg_opt`
       ```{math}
       :label: EqTP_MPKg
-        \hat{K}_{m,t}^{r^*} = \hat{L}_{m,t}\left(\frac{\hat{w}_t}{\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \bar{\tau}_{m,t}^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
+        \hat{K}_{m,t}^{r^*} = \hat{L}_{m,t}\left(\frac{\hat{w}_t}{\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{1 - \bar{\tau}_{m,t}^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
       ```
 
 18.  Determine factor demands and output for industry $M$:

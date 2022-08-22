@@ -478,9 +478,6 @@ title="Open an issue"
 <span class="sd">        Y (array_like): aggregate output</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Generalize for T x M</span>
-    <span class="c1"># in this case, follow example of household functions that allow</span>
-    <span class="c1"># one to pass j or not (if not, then do for all j at once)</span>
 
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -644,7 +641,12 @@ title="Open an issue"
         <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">p_mm</span> <span class="o">=</span> <span class="n">p_m</span><span class="p">[:,</span> <span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">MPK</span> <span class="o">=</span> <span class="n">get_MPx</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_mm</span> <span class="o">*</span> <span class="n">MPK</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">+</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span> <span class="o">+</span> <span class="n">tau_inv</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_mm</span> <span class="o">*</span> <span class="n">MPK</span>
+        <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span>
+        <span class="o">+</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span>
+        <span class="o">+</span> <span class="n">tau_inv</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">r</span></div>
 
@@ -671,8 +673,6 @@ title="Open an issue"
 <span class="sd">        w (array_like): the real wage rate</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># mp = get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)</span>
-    <span class="c1"># print(&#39;MPx size = &#39;, mp.shape)</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">p_mm</span> <span class="o">=</span> <span class="n">p_m</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -940,7 +940,8 @@ title="Open an issue"
 <span class="sd">    Compute the cost of capital.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t} \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}}{1 - \tau^{b}_{m,t}}</span>
+<span class="sd">        \rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t}</span>
+<span class="sd">        \delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{1 - \tau^{b}_{m,t}}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
@@ -972,7 +973,9 @@ title="Open an issue"
             <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
-    <span class="n">cost_of_capital</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span> <span class="o">-</span> <span class="n">tau_inv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span>
+    <span class="n">cost_of_capital</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">*</span> <span class="n">delta_tau</span> <span class="o">-</span> <span class="n">tau_inv</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">cost_of_capital</span></div>
 
