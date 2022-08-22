@@ -972,7 +972,7 @@
         "description": "Term in denominator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "",
+        "notes": "Must be positive to avoid division by zero when computing ETR and MTR for wealth tax",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -984,7 +984,7 @@
         ],
         "validators": {
             "range": {
-                "min": 0.0,
+                "min": 0.00000001,
                 "max": 10.0
             }
         }

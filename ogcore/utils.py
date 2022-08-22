@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import pickle
 from pkg_resources import resource_stream, Requirement
+import importlib.resources
 
 EPSILON = 1e-10  # tolerance or comparison functions
 
@@ -89,8 +90,7 @@ def read_file(path, fname):
     """
 
     if not os.path.exists(os.path.join(path, fname)):
-        path_in_egg = os.path.join("ogcore", fname)
-        buf = resource_stream(Requirement.parse("ogcore"), path_in_egg)
+        buf = resource_stream("ogcore", fname)
         _bytes = buf.read()
         return StringIO(_bytes.decode("utf-8"))
     else:
