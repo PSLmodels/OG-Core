@@ -3109,6 +3109,34 @@
             }
         }
     },
+    "tax_noncompliance_rate": {
+        "title": "Income tax noncompliance rate",
+        "description": "Income tax noncompliance rate, the ratio of taxes paid to taxes owed.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
     "nu": {
         "title": "Parameter for convergence rate of functional iteration",
         "description": "Parameter for convergence rate of functional iteration.",
