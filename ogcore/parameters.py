@@ -230,7 +230,8 @@ class Specifications(paramtools.Parameters):
             setattr(self, item, this_attr)
         # Deal with parameters that vary across J and over time
         tp_param_list3 = [
-            "income_tax_noncompliance_rate",
+            "labor_income_tax_noncompliance_rate",
+            "capital_income_tax_noncompliance_rate",
         ]
         for item in tp_param_list3:
             this_attr = getattr(self, item)
