@@ -1080,7 +1080,14 @@ def run_TPI(p, client=None):
         ),
         (1, 1, p.J, 1),
     )
-
+    labor_noncompliance_rate_3D = np.tile(
+        np.reshape(p.income_tax_noncompliance_rate[: p.T, :], (p.T, p.J)),
+        (1, p.S, 1),
+    )
+    capital_noncompliance_rate_3D = np.tile(
+        np.reshape(p.income_tax_noncompliance_rate[-1, :], (1, p.J)),
+        (1, p.S, p.J),
+    )
     e_3D = np.tile(p.e.reshape(1, p.S, p.J), (p.T, 1, 1))
     mtry_path = tax.MTR_income(
         r_p_path[: p.T],
@@ -1092,6 +1099,7 @@ def run_TPI(p, client=None):
         e_3D,
         etr_params_4D,
         mtry_params_4D,
+        capital_noncompliance_rate_3D,
         p,
     )
     mtrx_path = tax.MTR_income(
@@ -1104,6 +1112,7 @@ def run_TPI(p, client=None):
         e_3D,
         etr_params_4D,
         mtrx_params_4D,
+        labor_noncompliance_rate_3D,
         p,
     )
     etr_path = tax.ETR_income(
@@ -1114,6 +1123,8 @@ def run_TPI(p, client=None):
         factor,
         e_3D,
         etr_params_4D,
+        labor_noncompliance_rate_3D,
+        capital_noncompliance_rate_3D,
         p,
     )
 
