@@ -756,7 +756,16 @@ def SS_solver(
         p,
     )
     etr_ss = tax.ETR_income(
-        r_p_ss, wss, bssmat_s, nssmat, factor, p.e, etr_params_3D, labor_noncompliance_rate, capital_noncompliance_rate, p
+        r_p_ss,
+        wss,
+        bssmat_s,
+        nssmat,
+        factor,
+        p.e,
+        etr_params_3D,
+        labor_noncompliance_rate,
+        capital_noncompliance_rate,
+        p,
     )
 
     taxss = tax.net_taxes(

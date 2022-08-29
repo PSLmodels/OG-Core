@@ -120,7 +120,18 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
     return tau_prime
 
 
-def ETR_income(r, w, b, n, factor, e, etr_params, labor_noncompliance_rate, capital_noncompliance_rate, p):
+def ETR_income(
+    r,
+    w,
+    b,
+    n,
+    factor,
+    e,
+    etr_params,
+    labor_noncompliance_rate,
+    capital_noncompliance_rate,
+    p,
+):
     """
     Calculates effective personal income tax rate.
 
@@ -143,7 +154,9 @@ def ETR_income(r, w, b, n, factor, e, etr_params, labor_noncompliance_rate, capi
     """
     X = (w * e * n) * factor
     Y = (r * b) * factor
-    noncompliance_rate = ((X * labor_noncompliance_rate) + (Y * capital_noncompliance_rate)) / (X + Y)
+    noncompliance_rate = (
+        (X * labor_noncompliance_rate) + (Y * capital_noncompliance_rate)
+    ) / (X + Y)
 
     tau = get_tax_rates(
         etr_params, X, Y, None, p.tax_func_type, "etr", for_estimation=False
@@ -152,7 +165,19 @@ def ETR_income(r, w, b, n, factor, e, etr_params, labor_noncompliance_rate, capi
     return tau * (1 - noncompliance_rate)
 
 
-def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params, mtr_params, noncompliance_rate, p):
+def MTR_income(
+    r,
+    w,
+    b,
+    n,
+    factor,
+    mtr_capital,
+    e,
+    etr_params,
+    mtr_params,
+    noncompliance_rate,
+    p,
+):
     r"""
     Generates the marginal tax rate on labor income for households.
 
@@ -203,6 +228,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params, mtr_params, nonco
         )
 
     return tau * (1 - noncompliance_rate)
+
 
 def get_biz_tax(w, Y, L, K, p_m, p, m, method):
     r"""
@@ -345,28 +371,62 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             if b.ndim == 2:
                 r = r.reshape(r.shape[0], 1)
                 w = w.reshape(w.shape[0], 1)
-            labor_income_tax_compliance_rate = p.labor_income_tax_noncompliance_rate[t, j]
-            capital_income_tax_compliance_rate = p.capital_income_tax_noncompliance_rate[t, j]
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[t, j]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[t, j]
+            )
         else:
-            labor_income_tax_compliance_rate = p.labor_income_tax_noncompliance_rate[-1, j]
-            capital_income_tax_compliance_rate = p.capital_income_tax_noncompliance_rate[-1, j]
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[-1, j]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[-1, j]
+            )
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
             w = utils.to_timepath_shape(w)
-            labor_income_tax_compliance_rate = p.labor_income_tax_noncompliance_rate[t, :]
-            capital_income_tax_compliance_rate = p.capital_income_tax_noncompliance_rate[t, :]
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[t, :]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[t, :]
+            )
         else:
-            labor_income_tax_compliance_rate = p.labor_income_tax_noncompliance_rate[-1, :]
-            capital_income_tax_compliance_rate = p.capital_income_tax_noncompliance_rate[-1, :]
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[-1, :]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[-1, :]
+            )
 
     income = r * b + w * e * n
     labor_income = w * e * n
-    print('X and Y shape = ', labor_income.shape)
-    print('tax comply shape = ', labor_income_tax_compliance_rate.shape, capital_income_tax_compliance_rate.shape)
-    print('t and j are: ', t, j)
-    print('shape of e is ', e.shape, p.J)
-    T_I = ETR_income(r, w, b, n, factor, e, etr_params, labor_income_tax_compliance_rate, capital_income_tax_compliance_rate, p) * income
+    print("X and Y shape = ", labor_income.shape)
+    print(
+        "tax comply shape = ",
+        labor_income_tax_compliance_rate.shape,
+        capital_income_tax_compliance_rate.shape,
+    )
+    print("t and j are: ", t, j)
+    print("shape of e is ", e.shape, p.J)
+    T_I = (
+        ETR_income(
+            r,
+            w,
+            b,
+            n,
+            factor,
+            e,
+            etr_params,
+            labor_income_tax_compliance_rate,
+            capital_income_tax_compliance_rate,
+            p,
+        )
+        * income
+    )
     if method == "SS":
         T_P = p.tau_payroll[-1] * labor_income
     elif method == "TPI":

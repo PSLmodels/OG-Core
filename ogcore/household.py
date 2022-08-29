@@ -423,7 +423,17 @@ def FOC_savings(
         - (
             r
             * tax.MTR_income(
-                r, w, b, n, factor, True, e, etr_params, mtry_params, tax_noncompliance, p
+                r,
+                w,
+                b,
+                n,
+                factor,
+                True,
+                e,
+                etr_params,
+                mtry_params,
+                tax_noncompliance,
+                p,
             )
         )
         - tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth)
@@ -566,7 +576,17 @@ def FOC_labor(
         1
         - tau_payroll
         - tax.MTR_income(
-            r, w, b, n, factor, False, e, etr_params, mtrx_params, tax_noncompliance, p
+            r,
+            w,
+            b,
+            n,
+            factor,
+            False,
+            e,
+            etr_params,
+            mtrx_params,
+            tax_noncompliance,
+            p,
         )
     )
     FOC_error = marg_ut_cons(cons, p.sigma) * (
