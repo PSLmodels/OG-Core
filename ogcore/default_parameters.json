@@ -3109,9 +3109,37 @@
             }
         }
     },
-    "income_tax_noncompliance_rate": {
-        "title": "Income tax noncompliance rate",
-        "description": "Income tax noncompliance rate, the ratio of taxes paid to taxes owed.",
+    "labor_income_tax_noncompliance_rate": {
+        "title": "Labor income tax noncompliance rate",
+        "description": "Labor income tax noncompliance rate, the ratio of taxes paid to taxes owed.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
+        "notes": "Can be specified to vary by type J and over year T",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [[
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ]]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "capital_income_tax_noncompliance_rate": {
+        "title": "Capital income tax noncompliance rate",
+        "description": "Capital income tax noncompliance rate, the ratio of taxes paid to taxes owed.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Can be specified to vary by type J and over year T",
