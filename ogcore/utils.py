@@ -757,3 +757,121 @@ def not_connected(url="http://www.google.com/", timeout=5):
         return False
     except requests.ConnectionError:
         return True
+
+
+def avg_by_bin(x, y, weights=None, bins=10, eql_pctl=True):
+    """
+    For an x series and y series (vectors), this function computes vectors of
+    weighted average values in specified bins.
+
+    Args:
+        x (array_like, either pd.Series or np.array): x values
+        y (array_like, either pd.Series or np.array): y values
+        weights (array_like, either pd.Series or np.array): weights
+        bins (scalar, list, or np.array): number of bins or specific bin edges
+        eql_pctl (boolean): if True, bins are equal percentiles of x
+
+    Returns:
+        x_binned(array_like, np.array): weighted average x values in bins
+        y_binned (array_like, np.array): weighted average y values in bins
+        weights_binned (array_like, np.array): total weights in bins
+    """
+    # If vectors are pandas Series objects, convert to numpy arrays
+    if isinstance(x, pd.Series):
+        x = x.to_numpy()
+        y = y.to_numpy()
+        if isinstance(weights, pd.Series):
+            weights = weights.to_numpy()
+
+    # Set original observations number and weights
+    obs = len(x)
+    if weights is None:
+        weights = np.ones_like(x)
+
+    # Case of bins=K bins that are either equal percentiles or equal x-width
+    if np.isscalar(bins):
+        x_binned = np.zeros(bins)
+        y_binned = np.zeros(bins)
+        weights_binned = np.zeros(bins)
+
+        pctl_cuts = np.append(0, np.linspace(1 / bins, 1, bins))
+
+        # Case of bins=K bins that are equal percentiles
+        if eql_pctl:
+            # Sort x and weights by x in ascending order
+            df = pd.DataFrame(
+                data=np.hstack((x.reshape((-1, 1)), y.reshape((-1, 1)),
+                                weights.reshape((-1, 1)))),
+                columns=['x', 'y', 'weights']
+            ).sort_values(by=['x'])
+            x = df['x'].to_numpy()
+            y = df['y'].to_numpy()
+            weights = df['weights'].to_numpy()
+
+            weights_norm_cum = weights.cumsum() / weights.sum()
+            weights_norm_cum[-1] = 1.0
+
+            bin = 1
+            i_part_last = int(0)
+            pct_ind_end = 0.0
+            for i in range(obs):
+                if weights_norm_cum[i] >= pctl_cuts[bin]:
+                    pct_ind_beg = 1 - pct_ind_end
+                    pct_ind_end = (
+                        1 - ((weights_norm_cum[i] - pctl_cuts[bin]) /
+                             (weights_norm_cum[i] - weights_norm_cum[i - 1]))
+                    )
+                    weights_vec_bin = np.concatenate([
+                        [pct_ind_beg * weights[i_part_last]],
+                        weights[i_part_last + 1:i],
+                        [pct_ind_end * weights[i]]])
+                    weights_binned[bin - 1] = weights_vec_bin.sum()
+                    x_binned[bin - 1] = np.average(x[i_part_last:i + 1],
+                                                   weights=weights_vec_bin)
+                    y_binned[bin - 1] = np.average(y[i_part_last:i + 1],
+                                                   weights=weights_vec_bin)
+
+                    i_part_last = i
+                    bin += 1
+
+        # Case of bins=K bins that are equal x-width
+        else:
+            bin_edges = np.linspace(x.min(), x.max(), bins + 1)
+            for bin in range(bins):
+                if bin == 0:
+                    bin_ind = x >= bin_edges[bin] & x <= bin_edges[bin + 1]
+                else:
+                    bin_ind = x > bin_edges[bin] & x <= bin_edges[bin + 1]
+                x_binned[bin] = np.average(x[bin_ind],
+                                           weights=weights[bin_ind])
+                y_binned[bin] = np.average(y[bin_ind],
+                                           weights=weights[bin_ind])
+                weights_binned[bin] = weights[bin_ind].sum()
+
+
+    # Case of bin edges specified, eql_pctl must be False
+    elif isinstance(bins, list) or isinstance(bins, np.ndarray):
+        if eql_pctl:
+            err_msg = ('avg_by_bin ERROR: eql_pctl=True with bins given as ' +
+                       'list or ndarray. In this case, eql_pctl must be set ' +
+                       'to False')
+            raise ValueError(err_msg)
+        bin_num = len(bins) - 1
+        x_binned = np.zeros(bin_num)
+        y_binned = np.zeros(bin_num)
+        weights_binned = np.zeros(bin_num)
+        for bin in range(bin_num):
+            if bin == 0:
+                bin_ind = x >= bins[bin] & x <= bins[bin + 1]
+            else:
+                bin_ind = x > bins[bin] & x <= bins[bin + 1]
+            x_binned[bin] = np.average(x[bin_ind], weights=weights[bin_ind])
+            y_binned[bin] = np.average(y[bin_ind], weights=weights[bin_ind])
+            weights_binned[bin] = weights[bin_ind].sum()
+
+    else:
+        err_msg = ('avg_by_bin ERROR: bins value is type ' + str(type(bins)) +
+                   ', but needs to be either scalar, list, or ndarray.')
+        raise ValueError(err_msg)
+
+    return x_binned, y_binned, weights_binned
