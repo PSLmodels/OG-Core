@@ -16,8 +16,11 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
+from scipy.interpolate import interp1d as intp
+import matplotlib.pyplot as plt
 import ogcore.parameter_plots as pp
 from ogcore.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
+from ogcore import utils
 import warnings
 
 
@@ -660,6 +663,14 @@ def txfunc_est(
         obs = df.shape[0]
         params[0] = (txrates * wgts * income).sum() / (income * wgts).sum()
         params_to_plot = params
+    elif tax_func_type == "mono":
+        # '''
+        # For monotonically increasing smoothing spline function rates, just take the mean ETR or MTR by age-year.
+        # Can use DEP form and set all parameters except for the shift
+        # parameter to zero.
+        # '''
+
+        params = [mono_interp]
     else:
         raise RuntimeError(
             "Choice of tax function is not in the set of"
@@ -807,9 +818,9 @@ def tax_func_loop(
 
     """
     # initialize arrays for output
-    etrparam_arr = np.zeros((s_max - s_min + 1, numparams))
-    mtrxparam_arr = np.zeros((s_max - s_min + 1, numparams))
-    mtryparam_arr = np.zeros((s_max - s_min + 1, numparams))
+    etrparam_arr = np.zeros((s_max - s_min + 1, numparams)).tolist()
+    mtrxparam_arr = np.zeros((s_max - s_min + 1, numparams)).tolist()
+    mtryparam_arr = np.zeros((s_max - s_min + 1, numparams)).tolist()
     etr_wsumsq_arr = np.zeros(s_max - s_min + 1)
     etr_obs_arr = np.zeros(s_max - s_min + 1)
     mtrx_wsumsq_arr = np.zeros(s_max - s_min + 1)
@@ -912,7 +923,7 @@ def tax_func_loop(
         if df_minobs < MIN_OBS and s < max_age:
             # '''
             # --------------------------------------------------------
-            # Don't estimate function on this iteration if obs < 500.
+            # Don't estimate function on this iteration if obs < 240.
             # Will fill in later with interpolated values
             # --------------------------------------------------------
             # '''
@@ -1264,6 +1275,7 @@ def tax_func_estimate(
         "DEP_totalinc": 6,
         "GS": 3,
         "linear": 1,
+        "mono": 1
     }
     numparams = int(tax_func_type_num_params_dict[tax_func_type])
     years_list = np.arange(start_year, end_yr + 1)
@@ -1272,9 +1284,9 @@ def tax_func_estimate(
     else:
         ages_list = np.arange(0, 1)
     # initialize arrays for output
-    etrparam_arr = np.zeros((s_max - s_min + 1, BW, numparams))
-    mtrxparam_arr = np.zeros((s_max - s_min + 1, BW, numparams))
-    mtryparam_arr = np.zeros((s_max - s_min + 1, BW, numparams))
+    etrparam_arr = np.zeros((s_max - s_min + 1, BW, numparams)).tolist()
+    mtrxparam_arr = np.zeros((s_max - s_min + 1, BW, numparams)).tolist()
+    mtryparam_arr = np.zeros((s_max - s_min + 1, BW, numparams)).tolist()
     etr_wsumsq_arr = np.zeros((s_max - s_min + 1, BW))
     etr_obs_arr = np.zeros((s_max - s_min + 1, BW))
     mtrx_wsumsq_arr = np.zeros((s_max - s_min + 1, BW))
@@ -1572,3 +1584,102 @@ def tax_func_estimate(
             pickle.dump(dict_params, f)
 
     return dict_params
+
+
+def monotone_spline(x, y, weights, bins=None, lam=12, kap=1e+7,
+                    incl_uncstr=False, show_plot=False):
+    # create binned and weighted x and y data
+    if bins:
+        if not np.isscalar(bins):
+            err_msg = 'monotone_spline2 ERROR: bins value is not type scalar'
+            raise ValueError(err_msg)
+        N = bins
+        x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y, weights,
+                                                              bins)
+
+    elif not bins:
+        N = len(x)
+        x_binned = x
+        y_binned = y
+        weights_binned = weights
+
+    # Prepare bases (Imat) and penalty
+    dd = 3
+    E  = np.eye(N)
+    D3 = np.diff(E, n=dd, axis=0)
+    D1 = np.diff(E, n=1, axis=0)
+
+    # Monotone smoothing
+    ws = np.zeros(N - 1)
+    weights_binned = weights_binned.reshape(len(weights_binned), 1)
+    weights1 = 0.5 * weights_binned[1:, :] + 0.5 * weights_binned[:-1, :]
+    weights3 = (
+        0.25 * weights_binned[3:, :] + 0.25 * weights_binned[2:-1, :] +
+        0.25 * weights_binned[1:-2, :] + 0.25 * weights_binned[:-3, :]
+    ).flatten()
+
+    for it in range(30):
+        Ws = np.diag(ws * kap)
+        mon_cof = np.linalg.solve(E + lam * D3.T @ np.diag(weights3) @ D3 +
+                                  D1.T @ (Ws * weights1) @ D1, y_binned)
+        ws_new = (D1 @ mon_cof < 0.0) * 1
+        dw = np.sum(ws != ws_new)
+        ws = ws_new
+        if(dw == 0):
+            break
+
+    # Monotonic and non monotonic fits
+    y_cstr  = mon_cof
+    wsse_cstr = (weights_binned * ((y_cstr - y_binned) ** 2)).sum()
+    if incl_uncstr:
+        y_uncstr = np.linalg.solve(E + lam * D3.T @ np.diag(weights3) @ D3,
+                                   y_binned)
+        wsse_uncstr = (weights_binned * ((y_uncstr - y_binned) ** 2)).sum()
+    else:
+        y_uncstr = None
+        wsse_uncstr = None
+
+    def mono_interp(x_vec):
+        # replace last point in data with two copies further out to make smooth
+        # extrapolation
+        x_new = np.append(x_binned[:-1], [1.005 * x_binned[-1],
+                          1.01 * x_binned[-1]])
+        y_cstr_new = np.append(y_cstr[:-1], [y_cstr[-1], y_cstr[-1]])
+        # Create interpolating cubic spline for interior points
+        inter_interpl = intp(x_new, y_cstr_new, kind='cubic')
+        y_pred = np.zeros_like(x_vec)
+        x_lt_min = x_vec < x_binned.min()
+        x_gt_max = x_vec > x_new.max()
+        x_inter = (x_vec >= x_binned.min()) & (x_vec <= x_new.max())
+        y_pred[x_inter] = inter_interpl(x_vec[x_inter])
+        # extrapolate the maximum for values above the maximum
+        y_pred[x_gt_max] = y_cstr[-1]
+        # linear extrapolation of last two points for values below the min
+        slope = (y_cstr[1] - y_cstr[0]) / (x_binned[1] - x_binned[0])
+        intercept = y_cstr[0] - slope * x_binned[0]
+        y_pred[x_lt_min] = slope * x_vec[x_lt_min] + intercept
+
+        return y_pred
+
+    if show_plot:
+        plt.scatter(x, y, linestyle='None', color='gray', s=0.8, alpha=0.7,
+                    label='All data')
+        if not bins:
+            plt.plot(x, y_cstr, color='red', alpha=1.0,
+                     label='Monotonic smooth spline')
+            if incl_uncstr:
+                plt.plot(x, y_uncstr, color='blue', alpha=1.0,
+                         label='Unconstrained smooth spline')
+        else:
+            plt.scatter(x_binned, y_binned, linestyle='None', color='black',
+                        s=0.8, alpha=0.7, label="Binned data averages")
+            plt.plot(x, mono_interp(x), color='red', alpha=1.0,
+                     label='Monotonic smooth spline')
+            if incl_uncstr:
+                plt.plot(x_binned, y_uncstr, color='blue', alpha=1.0,
+                         label='Unconstrained smooth spline')
+        plt.legend(loc="lower right")
+        plt.show()
+        plt.close()
+
+    return mono_interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr
