@@ -93,15 +93,22 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
   (SecMarkClrMktClr_goods)=
   ### Goods market clearing
 
-  All $M$ industry goods markets must clear. We make a simplifying assumption that only the $M$th industry output can be used as investment, government spending, or government debt. This means that total consumption of good $m$ equals total output of good $m$ in the first $M-1$ industries.
+  All $M$ industry goods markets must clear. Total demand of production good $m$ for consumption can be written as:
+
+    ```{math}
+  :label: EqMarkConsDemand
+    C_{m,t} = \sum_{i=1}^{I} \pi_{i,m} C_{i,t} \quad\forall t \quad\text{and}\quad m=1,2,...M
+  ```
+   where
+  ```{math}
+  :label: EqCmt
+    C_{i,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{i,j,s,t} \quad\forall i,t
+  ```
+
+  Because we make a simplifying assumption that only the $M$th industry output can be used as investment, government spending, or government debt, consumption demand equals total output of good $m$ in the first $M-1$ industries.
   ```{math}
   :label: EqMarkClrGoods_Mm1
     Y_{m,t} = C_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1
-  ```
-  where
-  ```{math}
-  :label: EqCmt
-    C_{m,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{m,j,s,t} \quad\forall m,t
   ```
 
   The output of the $M$th industry can be used for private investment, infrastructure investment, government spending, and government debt.[^M_ind] As such, the market clearing condition in the $M$th industry will look more like the traditional $Y=C+I+G+NX$ expression.[^RCrates_note]

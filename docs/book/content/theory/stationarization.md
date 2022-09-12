@@ -40,14 +40,15 @@ The previous chapters derive all the equations necessary to solve for the steady
 * - $\hat{ubi}_{j,s,t}\equiv\frac{ubi_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{TR}_t\equiv\frac{TR_t}{e^{g_y t}\tilde{N}_t}$
-  - $p_t \equiv \frac{\tilde{p}_t}{\tilde{p}_{M,t}}$
+  - $p_{i,t} \equiv \frac{\tilde{p}_{i,t}}{\tilde{p}_{M,t}}$
 * - $\hat{T}_{j,s,t}\equiv \frac{T_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{UBI}_t\equiv\frac{UBI_t}{e^{g_y t}\tilde{N}_t}$
-  - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
+  - $p_t \equiv \frac{\tilde{p}_t}{\tilde{p}_{M,t}}$
 * - $\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}$
   -
   - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
+  - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
   -
 ```
 
@@ -61,24 +62,24 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzCompCons
-    \hat{c}_{j,s,t} \equiv \prod_{m=1}^M \left(\hat{c}_{m,j,s,t} - \hat{c}_{min,m,t}\right)^{\alpha_m} \quad\forall j,s,t \quad\text{with}\quad \sum_{m=1}^M\alpha_m=1
+    \hat{c}_{j,s,t} \equiv \prod_{i=1}^I \left(\hat{c}_{i,j,s,t} - \hat{c}_{min,i,t}\right)^{\alpha_i} \quad\forall j,s,t \quad\text{with}\quad \sum_{i=1}^I\alpha_i=1
   ```
   ```{math}
   :label: EqStnrz_cmDem2
-    \hat{c}_{m,j,s,t} = \alpha_m\left(\frac{p_{m,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,m,t} \quad\forall m,j,s,t
+    \hat{c}_{i,j,s,t} = \alpha_i\left(\frac{p_{i,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,i,t} \quad\forall i,j,s,t
   ```
   ```{math}
   :label: EqStnrz_cmin
-    \hat{c}_{min,m,t} \equiv
+    \hat{c}_{min,i,t} \equiv
     \begin{cases}
-      \frac{c_{min,m}}{e^{g_y t}} \quad\text{for}\quad t < T \\
-      \frac{c_{min,m}}{e^{g_y T}} \quad\text{for}\quad t \geq T
-    \end{cases} \quad\forall m
+      \frac{c_{min,i}}{e^{g_y t}} \quad\text{for}\quad t < T \\
+      \frac{c_{min,i}}{e^{g_y T}} \quad\text{for}\quad t \geq T
+    \end{cases} \quad\forall i
   ```
 
-  where {eq}`EqStnrzCompCons` is the stationarized Stone-Geary industry-specific consumption aggregator for composite consumption and  {eq}`EqStnrzCompCons` is the stationarized household demand for industry-specific consumption. The composite price aggregation equation {eq}`EqCompPnorm2` is already stationary.
+  where {eq}`EqStnrzCompCons` is the stationarized Stone-Geary consumption aggregator for composite consumption and  {eq}`EqStnrzCompCons` is the stationarized household demand for the composite consumption good. The composite price aggregation equation {eq}`EqCompPnorm2` is already stationary.
 
-  Note that the only way to stationarize the consumption aggregator {eq}`EqStnrzCompCons` and consumption demand {eq}`EqStnrz_cmDem2` is to divide $c_{min,m}$ by the growth rate $e^{g_y t}$. However, $c_{min,m}$ is already stationary. It is constant for each $m$. Therefore, the version of $\hat{c}_{min,m,t}$ divided by $e^{g_y t}$ would be changing over time (nonstationary) for $g_y\neq 0$. For this reason, we define $\hat{c}_{min,m,t}$ in {eq}`EqStnrz_cmin` as being constant after the steady-state period $T$ at whatever value it reaches at that period. In most cases with $g_y>0$, that value will be close to zero. But we use $\bar{c}_{min,m} = c_{min,m}/e^{g_y T}$ from {eq}`EqStnrz_cmin` as the steady-state value of $c_{min,m}$.
+  Note that the only way to stationarize the consumption aggregator {eq}`EqStnrzCompCons` and consumption demand {eq}`EqStnrz_cmDem2` is to divide $c_{min,i}$ by the growth rate $e^{g_y t}$. However, $c_{min,i}$ is already stationary. It is constant for each $m$. Therefore, the version of $\hat{c}_{min,i,t}$ divided by $e^{g_y t}$ would be changing over time (nonstationary) for $g_y\neq 0$. For this reason, we define $\hat{c}_{min,i,t}$ in {eq}`EqStnrz_cmin` as being constant after the steady-state period $T$ at whatever value it reaches at that period. In most cases with $g_y>0$, that value will be close to zero. But we use $\bar{c}_{min,i} = c_{min,i}/e^{g_y T}$ from {eq}`EqStnrz_cmin` as the steady-state value of $c_{min,i}$.
 
   The stationary version of the household budget constraint {eq}`EqHHBC` is found by dividing both sides of the equation by $e^{g_y t}$. For the savings term $b_{j,s+1,t+1}$, we must multiply and divide by $e^{g_y(t+1)}$, which leaves an $e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}$ in front of the stationarized variable.
 
@@ -369,7 +370,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   where
   ```{math}
   :label: EqCmt
-    \hat{C}_{m,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j \hat{c}_{m,j,s,t} \quad\forall m,t
+    \hat{C}_{m,t} \equiv \sum_{i=1}^{I}\sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j \pi_{i,m} \hat{c}_{i,j,s,t} \quad\forall m,t
   ```
   and
   ```{math}
