@@ -465,7 +465,7 @@
     },
     "io_matrix": {
         "title": "Input-output matrix",
-        "description": "Input-output matrix used to map production outputs into consumption goods using a fixed coefficient model.  This matrix has dimensions I x M, where I is the number of distinct consumption goods and M is the number of distinct production goods.  The sum of all elements of this matrix must be 1.",
+        "description": "Input-output matrix used to map production outputs into consumption goods using a fixed coefficient model.  This matrix has dimensions I x M, where I is the number of distinct consumption goods and M is the number of distinct production goods.  The sum each row of this matrix must be 1.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "",
