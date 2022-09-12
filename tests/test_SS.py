@@ -458,6 +458,24 @@ param_updates7 = {
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
 }
 filename7 = "inner_loop_outputs_reform_M4.pkl"
+param_updates8 = {
+    "M": 4,
+    "I": 5,
+    "io_matrix": np.array(
+        [
+            [0.2, 0.2, 0.2, 0.4],
+            [0.3, 0.1, 0.4, 0.2],
+            [0.25, 0.25, 0.25, 0.25],
+            [0.1, 0.7, 0.0, 0.2],
+            [0.0, 0.0, 1.0, 0.0],
+        ]
+    ),
+    "alpha_c": [0.1, 0.4, 0.3, 0.1, 0.1],
+    "epsilon": [1.0, 1.0, 1.0, 1.0],
+    "gamma": [0.3, 0.4, 0.35, 0.45],
+    "gamma_g": [0.0, 0.0, 0.0, 0.0],
+}
+filename8 = "inner_loop_outputs_reform_MneI.pkl"
 
 
 @pytest.mark.parametrize(
@@ -469,6 +487,7 @@ filename7 = "inner_loop_outputs_reform_M4.pkl"
         (False, 0.04260341179572245, param_updates4, filename4),
         (False, 0.04260341179572245, param_updates5, filename5),
         (False, 0.04759112768438152, param_updates7, filename7),
+        (False, 0.04759112768438152, param_updates8, filename8),
     ],
     ids=[
         "Baseline, Small Open",
@@ -477,6 +496,7 @@ filename7 = "inner_loop_outputs_reform_M4.pkl"
         "Reform",
         "Reform, baseline spending",
         "Reform, M>1",
+        "Reform, I!=>M",
     ],
 )
 def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):

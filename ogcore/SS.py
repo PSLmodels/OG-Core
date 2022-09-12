@@ -213,7 +213,6 @@ def inner_loop(outer_loop_vars, p, client):
     bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
 
     p_m = np.array(p_m)  # TODO: why is this a list otherwise?
-    print("p_m: ", p_m.shape, ", IO: ", p.io_matrix.shape)
     p_i = np.dot(p.io_matrix, p_m)
     BQ = np.array(BQ)
     # initialize array for euler errors
@@ -488,6 +487,8 @@ def inner_loop(outer_loop_vars, p, client):
 
     G_vec = np.zeros(p.M)
     G_vec[-1] = G
+    print("IO: ", p.io_matrix.T.shape, ", C: ", C_vec.shape)
+    C_m_vec = np.dot(p.io_matrix.T, C_vec)
     I_d_vec = np.zeros(p.M)
     I_d = aggr.get_I(b_splus1, K_d, K_d, p, "SS")
     I_d_vec[-1] = I_d
@@ -500,7 +501,7 @@ def inner_loop(outer_loop_vars, p, client):
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
     rc_error = (
-        Y_vec - C_vec - G_vec - I_d_vec - I_g_vec - net_capital_outflows_vec
+        Y_vec - C_m_vec - G_vec - I_d_vec - I_g_vec - net_capital_outflows_vec
     )
 
     return (
@@ -849,6 +850,7 @@ def SS_solver(
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec_ss = np.zeros(p.M)
     # Map consumption goods back to demands for production goods
+    print("IO: ", p.io_matrix.T.shape, ", C: ", C_vec_ss.shape)
     C_m_vec_ss = np.dot(p.io_matrix.T, C_vec_ss)
     G_vec_ss[-1] = Gss
     I_d_vec_ss = np.zeros(p.M)
