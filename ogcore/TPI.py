@@ -1149,6 +1149,11 @@ def run_TPI(p, client=None):
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec = np.zeros((p.T, p.M))
     G_vec[:, -1] = G[: p.T]
+    # Map consumption goods back to demands for production goods
+    C_m_vec = (
+            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
+            * np.tile(C_vec[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1))
+    C_m_vec = np.dot(p.io_matrix.T, C_vec)
     I_d_vec = np.zeros((p.T, p.M))
     I_d_vec[:, -1] = I_d[: p.T]
     I_g_vec = np.zeros((p.T, p.M))
@@ -1156,7 +1161,7 @@ def run_TPI(p, client=None):
     net_capital_outflows_vec = np.zeros((p.T, p.M))
     net_capital_outflows_vec[:, -1] = net_capital_outflows[: p.T]
     RC_error = aggr.resource_constraint(
-        Y_vec, C_vec, G_vec, I_d_vec, I_g_vec, net_capital_outflows_vec
+        Y_vec, C_m_vec, G_vec, I_d_vec, I_g_vec, net_capital_outflows_vec
     )
     # Compute total investment (not just domestic)
     I_total = aggr.get_I(None, K[1 : p.T + 1], K[: p.T], p, "total_tpi")

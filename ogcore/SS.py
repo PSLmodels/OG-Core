@@ -848,6 +848,8 @@ def SS_solver(
     )
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec_ss = np.zeros(p.M)
+    # Map consumption goods back to demands for production goods
+    C_m_vec_ss = np.dot(p.io_matrix.T, C_vec_ss)
     G_vec_ss[-1] = Gss
     I_d_vec_ss = np.zeros(p.M)
     I_d_vec_ss[-1] = I_d_ss
@@ -857,7 +859,7 @@ def SS_solver(
     net_capital_outflows_vec[-1] = net_capital_outflows
     RC = aggr.resource_constraint(
         Y_vec_ss,
-        C_vec_ss,
+        C_m_vec_ss,
         G_vec_ss,
         I_d_vec_ss,
         I_g_vec_ss,
