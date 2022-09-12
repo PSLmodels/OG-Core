@@ -213,6 +213,7 @@ def inner_loop(outer_loop_vars, p, client):
     bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
 
     p_m = np.array(p_m)  # TODO: why is this a list otherwise?
+    print("p_m: ", p_m.shape, ", IO: ", p.io_matrix.shape)
     p_i = np.dot(p.io_matrix, p_m)
     BQ = np.array(BQ)
     # initialize array for euler errors
@@ -325,14 +326,13 @@ def inner_loop(outer_loop_vars, p, client):
     # Find output, labor demand, capital demand for M-1 industries
     L_vec = np.zeros(p.M)
     K_vec = np.zeros(p.M)
-    Y_vec = np.zeros(p.M)
     C_vec = np.zeros(p.I)
     K_demand_open_vec = np.zeros(p.M)
     for i_ind in range(p.I):
         C_vec[i_ind] = aggr.get_C(c_i[i_ind, :, :], p, "SS")
+    Y_vec = np.dot(p.io_matrix.T, C_vec)
     for m_ind in range(p.M - 1):
         KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
-        Y_vec[m_ind] = np.dot(p.io_matrix.T, C_vec)
         K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
         L_vec[m_ind] = firm.solve_L(
             Y_vec[m_ind], K_vec[m_ind], K_g, p, "SS", m_ind

@@ -185,6 +185,8 @@ p7 = Specifications(baseline=True)
 p7.update_specifications(
     {
         "M": 4,
+        "I": 4,
+        "io_matrix": np.eye(4),
         "alpha_c": [0.1, 0.5, 0.3, 0.1],
         "epsilon": [1.0, 1.0, 1.0, 1.0],
         "gamma": [0.3, 0.4, 0.35, 0.45],
@@ -448,6 +450,8 @@ param_updates5 = {"baseline_spending": True}
 filename5 = "inner_loop_outputs_reform_baselinespending.pkl"
 param_updates7 = {
     "M": 4,
+    "I": 4,
+    "io_matrix": np.eye(4),
     "alpha_c": [0.1, 0.5, 0.3, 0.1],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
     "gamma": [0.3, 0.4, 0.35, 0.45],
