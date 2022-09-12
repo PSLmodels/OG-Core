@@ -355,8 +355,9 @@ def revenue(
         payroll_tax_revenue = p.frac_tax_payroll[-1] * iit_payroll_tax_revenue
     elif method == "TPI":
         p_i = (
-            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1)) *
-            np.tile(p_m[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1))).sum(axis=2)
+            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
+            * np.tile(p_m[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1))
+        ).sum(axis=2)
         pop_weights = np.squeeze(p.lambdas) * np.tile(
             np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
         )

@@ -364,8 +364,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
 
     # compute composite good price
     p_i = (
-           np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1)) *
-           np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))).sum(axis=2)
+        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
+        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
+    ).sum(axis=2)
     p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # compute bq
     bq = household.get_bq(BQ, None, p, "TPI")
@@ -604,8 +605,9 @@ def run_TPI(p, client=None):
         p.T + p.S, 1
     )  # normalize prices by industry M
     p_i = (
-            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1)) *
-            np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))).sum(axis=2)
+        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
+        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
+    ).sum(axis=2)
     p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     if not any(p.zeta_K == 1):
         w[: p.T] = np.squeeze(
@@ -619,8 +621,9 @@ def run_TPI(p, client=None):
         p.T + p.S, 1
     )  # normalize prices by industry M
     p_i = (
-            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1)) *
-            np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))).sum(axis=2)
+        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
+        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
+    ).sum(axis=2)
     p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # path for interest rates
     r = np.zeros_like(Y)
@@ -815,8 +818,9 @@ def run_TPI(p, client=None):
         for i_ind in range(p.I):
             C_vec[:, i_ind] = aggr.get_C(c_i[: p.T, i_ind, :, :], p, "TPI")
         Y_vec = (
-            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1)) *
-            np.tile(C_vec[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1))).sum(axis=1)
+            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
+            * np.tile(C_vec[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1))
+        ).sum(axis=1)
         for m_ind in range(p.M - 1):
             KYrat_m = firm.get_KY_ratio(
                 r[: p.T], p_m[: p.T, :], p, "TPI", m_ind

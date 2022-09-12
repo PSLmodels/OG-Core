@@ -228,9 +228,7 @@ class Specifications(paramtools.Parameters):
                 )
             setattr(self, item, this_attr)
         # Deal with parameters that vary across consumption good and over time
-        tp_param_list3 = [
-            "tau_c"
-        ]
+        tp_param_list3 = ["tau_c"]
         for item in tp_param_list3:
             this_attr = getattr(self, item)
             if this_attr.ndim == 1:
