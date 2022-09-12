@@ -695,7 +695,6 @@ def txfunc_graph(
     txrates,
     rate_type,
     tax_func_type,
-    get_tax_rates,
     params_to_plot,
     output_dir,
 ):
@@ -713,8 +712,6 @@ def txfunc_graph(
         Y (Pandas DataSeries): tax rates from the data
         rate_type (str): type of tax rate: mtrx, mtry, etr
         tax_func_type (str): functional form of tax functions
-        get_tax_rates (function): function to generate tax rates given
-            parameters
         params_to_plot (Numpy Array): tax function parameters
         output_dir (str): output directory for saving plot files
 
