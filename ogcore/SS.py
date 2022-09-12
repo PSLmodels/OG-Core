@@ -176,7 +176,7 @@ def inner_loop(outer_loop_vars, p, client):
         r_p (scalar): return on household investment portfolio
         r (scalar): real interest rate
         w (scalar): real wage rate
-        p_m (array_like): good prices
+        p_m (array_like): production goods prices
         BQ (array_like): aggregate bequest amount(s)
         TR (scalar): lump sum transfer amount
         Y (scalar): real GDP
@@ -196,7 +196,7 @@ def inner_loop(outer_loop_vars, p, client):
             * new_r_p (scalar): real interest rate on household
                 portfolio
             * new_w (scalar): real wage rate
-            * new_p_m (array_like): good prices
+            * new_p_i (array_like): good prices
             * K_vec (array_like): capital demand for each industry
             * L_vec (array_like): labor demand for each industry
             * Y_vec (array_like): output from each industry
@@ -213,11 +213,12 @@ def inner_loop(outer_loop_vars, p, client):
     bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
 
     p_m = np.array(p_m)  # TODO: why is this a list otherwise?
+    p_i = np.dot(p.io_matrix, p_m)
     BQ = np.array(BQ)
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
-    p_tilde = aggr.get_ptilde(p_m, p.tau_c[-1, :], p.alpha_c)
+    p_tilde = aggr.get_ptilde(p_i, p.tau_c[-1, :], p.alpha_c)
     bq = household.get_bq(BQ, None, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
     ubi = p.ubi_nom_array[-1, :, :] / factor
@@ -304,7 +305,7 @@ def inner_loop(outer_loop_vars, p, client):
         p.e,
         p,
     )
-    c_m = household.get_cm(c_s, p_m, p_tilde, p.tau_c[-1, :], p.alpha_c)
+    c_i = household.get_ci(c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c)
     L = aggr.get_L(nssmat, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
 
@@ -325,13 +326,13 @@ def inner_loop(outer_loop_vars, p, client):
     L_vec = np.zeros(p.M)
     K_vec = np.zeros(p.M)
     Y_vec = np.zeros(p.M)
-    C_vec = np.zeros(p.M)
+    C_vec = np.zeros(p.I)
     K_demand_open_vec = np.zeros(p.M)
+    for i_ind in range(p.I):
+        C_vec[i_ind] = aggr.get_C(c_i[i_ind, :, :], p, "SS")
     for m_ind in range(p.M - 1):
-        C_m = aggr.get_C(c_m[m_ind, :, :], p, "SS")
-        C_vec[m_ind] = C_m
         KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
-        Y_vec[m_ind] = C_m
+        Y_vec[m_ind] = np.dot(p.io_matrix.T, C_vec)
         K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
         L_vec[m_ind] = firm.solve_L(
             Y_vec[m_ind], K_vec[m_ind], K_g, p, "SS", m_ind
@@ -348,7 +349,6 @@ def inner_loop(outer_loop_vars, p, client):
         B, K_demand_open_vec.sum(), D_d, p.zeta_K[-1]
     )
     K_M = max(0.001, K - K_vec.sum())  # make sure K_M > 0
-    C_vec[-1] = np.squeeze(aggr.get_C(c_m[-1, :], p, "SS"))
     L_vec[-1] = L_M
     K_vec[-1] = K_M
     Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, "SS", -1)
@@ -396,7 +396,8 @@ def inner_loop(outer_loop_vars, p, client):
     # Find updated goods prices
     new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS")
     new_p_m = new_p_m / new_p_m[-1]  # normalize prices by industry M
-    new_p_tilde = aggr.get_ptilde(new_p_m, p.tau_c[-1, :], p.alpha_c)
+    new_p_i = np.dot(p.io_matrix, new_p_m)
+    new_p_tilde = aggr.get_ptilde(new_p_i, p.tau_c[-1, :], p.alpha_c)
 
     etr_params_3D = np.tile(
         np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
@@ -449,7 +450,7 @@ def inner_loop(outer_loop_vars, p, client):
         b_s,
         nssmat,
         new_bq,
-        c_m,
+        c_i,
         Y_vec,
         L_vec,
         K_vec,
@@ -659,7 +660,8 @@ def SS_solver(
     Y_vec_ss = new_Y_vec
     r_gov_ss = fiscal.get_r_gov(rss, p)
     p_m_ss = new_p_m
-    p_tilde_ss = aggr.get_ptilde(p_m_ss, p.tau_c[-1, :], p.alpha_c)
+    p_i_ss = np.dot(p.io_matrix, p_m_ss)
+    p_tilde_ss = aggr.get_ptilde(p_i_ss, p.tau_c[-1, :], p.alpha_c)
     TR_ss = new_TR
     Yss = new_Y
     I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
@@ -681,7 +683,6 @@ def SS_solver(
         K_demand_open_ss[m] = firm.get_K(
             p.world_int_rate[-1], w_open, L_vec_ss[m], p, "SS", m
         )
-    print("K_demand_open_ss = ", K_demand_open_ss, L_vec_ss)
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
         Bss, K_demand_open_ss.sum(), D_d_ss, p.zeta_K[-1]
     )
@@ -781,15 +782,15 @@ def SS_solver(
     )
     yss_before_tax_mat = household.get_y(r_p_ss, wss, bssmat_s, nssmat, p)
     Css = aggr.get_C(cssmat, p, "SS")
-    c_m_ss_mat = household.get_cm(
-        cssmat, p_m_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c
+    c_i_ss_mat = household.get_ci(
+        cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c
     )
-    C_vec_ss = np.zeros(p.M)
-    for m_ind in range(
-        p.M
-    ):  # TODO: update aggr.get_C to take full MxSxJ array
-        C_vec_ss[m_ind] = aggr.get_C(
-            c_m_ss_mat[m_ind, :, :],
+    C_vec_ss = np.zeros(p.I)
+    for i_ind in range(
+        p.I
+    ):  # TODO: update aggr.get_C to take full IxSxJ array
+        C_vec_ss[i_ind] = aggr.get_C(
+            c_i_ss_mat[i_ind, :, :],
             p,
             "SS",
         )
@@ -811,7 +812,7 @@ def SS_solver(
         bssmat_s,
         nssmat,
         bqssmat,
-        c_m_ss_mat,
+        c_i_ss_mat,
         Y_vec_ss,
         L_vec_ss,
         K_vec_ss,
