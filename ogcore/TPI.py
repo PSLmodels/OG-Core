@@ -1150,9 +1150,9 @@ def run_TPI(p, client=None):
     G_vec = np.zeros((p.T, p.M))
     G_vec[:, -1] = G[: p.T]
     # Map consumption goods back to demands for production goods
-    C_m_vec = (
-            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
-            * np.tile(C_vec[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1)))
+    C_m_vec = np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1)) * np.tile(
+        C_vec[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1)
+    )
     C_m_vec = np.dot(p.io_matrix.T, C_vec)
     I_d_vec = np.zeros((p.T, p.M))
     I_d_vec[:, -1] = I_d[: p.T]
