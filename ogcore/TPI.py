@@ -709,6 +709,12 @@ def run_TPI(p, client=None):
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
 
         outer_loop_vars = (r_p, r, w, p_m, BQ, TR, theta)
+        # compute composite good price
+        p_i = (
+            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
+            * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
+        ).sum(axis=2)
+        p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
