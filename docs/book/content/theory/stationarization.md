@@ -369,7 +369,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```
   where
   ```{math}
-  :label: EqCmt
+  :label: EqStnrzEqCmt
     \hat{C}_{m,t} \equiv \sum_{i=1}^{I}\sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j \pi_{i,m} \hat{c}_{i,j,s,t} \quad\forall m,t
   ```
   and
