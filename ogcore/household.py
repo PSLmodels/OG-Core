@@ -380,20 +380,30 @@ def FOC_savings(
         beta = p.beta[j]
         if method == "SS":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, j]
+        elif method == "TPI_scalar":
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, j]
         else:
-            tax_noncompliance = p.capital_income_tax_noncompliance_rate[t, j]
+            length = r.shape[0]
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[t : t + length, j]
     else:
         chi_b = p.chi_b
         beta = p.beta
         if method == "SS":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, :]
+        elif method == "TPI_scalar":
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, :]
         else:
-            tax_noncompliance = p.capital_income_tax_noncompliance_rate[t, :]
+            length = r.shape[0]
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[t : t + length, :]
     if method == "SS":
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
         p_wealth = p.p_wealth[-1]
         p_tilde = np.ones_like(p.rho) * p_tilde
+    elif method == "TPI_scalar":
+        h_wealth = p.h_wealth[0]
+        m_wealth = p.m_wealth[0]
+        p_wealth = p.p_wealth[0]
     else:
         h_wealth = p.h_wealth[t]
         m_wealth = p.m_wealth[t]
@@ -530,16 +540,27 @@ def FOC_labor(
         FOC_error (Numpy array): error from FOC for labor supply
 
     """
+    if method == "SS":
+        tau_payroll = p.tau_payroll[-1]
+    elif method == "TPI_scalar":  # for 1st donut ring only
+        tau_payroll = p.tau_payroll[0]
+    else:
+        length = r.shape[0]
+        tau_payroll = p.tau_payroll[t : t + length]
     if j is not None:
         if method == "SS":
-            tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, j]
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, j]
+        elif method == "TPI_scalar":
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, j]
         else:
-            tax_noncompliance = p.capital_income_tax_noncompliance_rate[t, j]
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[t : t + length, j]
     else:
         if method == "SS":
-            tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, :]
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, :]
+        elif method == "TPI_scalar":
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, :]
         else:
-            tax_noncompliance = p.capital_income_tax_noncompliance_rate[t, :]
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[t : t + length, :]
     if method == "SS":
         tau_payroll = p.tau_payroll[-1]
     elif method == "TPI_scalar":  # for 1st donut ring only
