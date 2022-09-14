@@ -1474,9 +1474,9 @@ def tax_func_estimate(
             graph=graph_est,
         )
         if mtrx_sse_big.sum() > 0:
-            mtrxparam_arr_adj = replace_outliers(mtrxparam_arr, mtrx_sse_big)
+            mtrxparam_list_adj = replace_outliers(mtrxparam_list, mtrx_sse_big)
         elif mtrx_sse_big.sum() == 0:
-            mtrxparam_arr_adj = mtrxparam_arr
+            mtrxparam_list_adj = mtrxparam_list
 
         mtry_sse_big = find_outliers(
             mtry_wsumsq_arr / mtry_obs_arr,
@@ -1487,22 +1487,20 @@ def tax_func_estimate(
             graph=graph_est,
         )
         if mtry_sse_big.sum() > 0:
-            mtryparam_arr_adj = replace_outliers(mtryparam_arr, mtry_sse_big)
+            mtryparam_list_adj = replace_outliers(mtryparam_list, mtry_sse_big)
         elif mtry_sse_big.sum() == 0:
-            mtryparam_arr_adj = mtryparam_arr
+            mtryparam_list_adj = mtryparam_list
 
     # '''
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Generate tax function parameters for S < s_max - s_min + 1
-    # --------------------------------------------------------------------
-    # etrparam_arr_S  = S x BW x 10 array, this is an array in which S
-    #                   is less-than-or-equal-to s_max-s_min+1. We use
-    #                   weighted averages of parameters in relevant age
-    #                   groups
-    # mtrxparam_arr_S = S x BW x 10 array, this is an array in which S
-    #                   is less-than-or-equal-to s_max-s_min+1. We use
-    #                   weighted averages of parameters in relevant age
-    #                   groups
+    # -------------------------------------------------------------------------
+    # etrparam_list_S (list BW x S x numparams): this is an array in which S is
+    #     less-than-or-equal-to s_max-s_min+1. We use weighted averages of
+    #     parameters in relevant age groups
+    # mtrxparam_list_S (list BW x S x numparams): this is an array in which S
+    #     is less-than-or-equal-to s_max-s_min+1. We use weighted averages of
+    #     parameters in relevant age groups
     # age_cuts     = (S+1,) vector, linspace of age cutoffs of S+1 points
     #                between 0 and S+1
     # yrcut_lb     = integer >= 0, index of lower bound age for S bin
@@ -1513,80 +1511,86 @@ def tax_func_estimate(
     #                each year copied back 10 times in the 3rd dimension
     # --------------------------------------------------------------------
     # '''
-    if age_specific:
+    if age_specific and tax_func_type != "mono":
         if S == s_max - s_min + 1:
-            etrparam_arr_S = etrparam_arr_adj
-            mtrxparam_arr_S = mtrxparam_arr_adj
-            mtryparam_arr_S = mtryparam_arr_adj
+            etrparam_list_S = etrparam_list_adj
+            mtrxparam_list_S = mtrxparam_list_adj
+            mtryparam_list_S = mtryparam_list_adj
         elif S < s_max - s_min + 1:
-            etrparam_arr_S = etrparam_arr_adj
-            mtrxparam_arr_S = mtrxparam_arr_adj
-            mtryparam_arr_S = mtryparam_arr_adj
-            etrparam_arr_S = np.zeros((S, BW, numparams))
-            mtrxparam_arr_S = np.zeros((S, BW, numparams))
-            mtryparam_arr_S = np.zeros((S, BW, numparams))
+            etrparam_list_S = np.zeros((BW, S)).tolist()
+            mtrxparam_list_S = np.zeros((BW, S)).tolist()
+            mtryparam_list_S = np.zeros((BW, S)).tolist()
             age_cuts = np.linspace(0, s_max - s_min + 1, S + 1)
             yrcut_lb = int(age_cuts[0])
             rmndr_pct_lb = 1.0
-            for s in np.arange(S):
-                yrcut_ub = int(np.floor(age_cuts[s + 1]))
-                rmndr_pct_ub = age_cuts[s + 1] - np.floor(age_cuts[s + 1])
-                if rmndr_pct_ub == 0.0:
-                    rmndr_pct_ub = 1.0
-                    yrcut_ub -= 1
-                age_wgts = np.dstack(
-                    [PopPct_age[yrcut_lb : yrcut_ub + 1, :]] * numparams
-                )
-                age_wgts[0, :, :] *= rmndr_pct_lb
-                age_wgts[yrcut_ub - yrcut_lb, :, :] *= rmndr_pct_ub
-                etrparam_arr_S[s, :, :] = (
-                    etrparam_arr_adj[yrcut_lb : yrcut_ub + 1, :, :] * age_wgts
-                ).sum(axis=0)
-                mtrxparam_arr_S[s, :, :] = (
-                    mtrxparam_arr_adj[yrcut_lb : yrcut_ub + 1, :, :] * age_wgts
-                ).sum(axis=0)
-                mtryparam_arr_S[s, :, :] = (
-                    mtryparam_arr_adj[yrcut_lb : yrcut_ub + 1, :, :] * age_wgts
-                ).sum(axis=0)
-                yrcut_lb = yrcut_ub
-                rmndr_pct_lb = 1 - rmndr_pct_ub
+            for bw in range(BW):
+                for s in range(S):
+                    yrcut_ub = int(np.floor(age_cuts[s + 1]))
+                    rmndr_pct_ub = age_cuts[s + 1] - np.floor(age_cuts[s + 1])
+                    if rmndr_pct_ub == 0.0:
+                        rmndr_pct_ub = 1.0
+                        yrcut_ub -= 1
+                    age_wgts = PopPct_age[bw, yrcut_lb:yrcut_ub + 1]
+                    age_wgts[0] *= rmndr_pct_lb
+                    age_wgts[yrcut_ub - yrcut_lb] *= rmndr_pct_ub
+                    etrparam_list_S[bw][s] = (
+                        etrparam_list_adj[bw][yrcut_lb:yrcut_ub + 1] * age_wgts
+                    ).sum()
+                    mtrxparam_list_S[bw][s] = (
+                        mtrxparam_list_adj[bw][yrcut_lb:yrcut_ub + 1] *
+                        age_wgts
+                    ).sum()
+                    mtryparam_list_S[bw][s] = (
+                        mtryparam_list_adj[bw][yrcut_lb:yrcut_ub + 1] *
+                        age_wgts
+                    ).sum()
+                    yrcut_lb = yrcut_ub
+                    rmndr_pct_lb = 1 - rmndr_pct_ub
+
         else:
-            print(
-                "S is larger than the difference between the minimum"
-                + " age and the maximum age specified.  Please choose"
-                + " and S such that a model period equals at least"
-                + " one calendar year."
+            err_msg("txfunc ERROR: S is larger than the difference between " +
+                     "the minimum age and the maximum age specified. Please " +
+                     "choose an S such that a model period equals at least " +
+                     "one calendar year."
             )
+            raise ValueError(err_msg)
+        print("Big S: ", S)
+        print("max age, min age: ", s_max, s_min)
+    elif age_specific and tax_func_type == "mono":
+        if S == s_max - s_min + 1:
+            etrparam_list_S = etrparam_list_adj
+            mtrxparam_list_S = mtrxparam_list_adj
+            mtryparam_list_S = mtryparam_list_adj
+        elif S < s_max - s_min + 1:
+            err_msg = ("txfunc ERROR: tax_func_type = mono and S < s_max - " +
+                       "s_min + 1")
+            raise ValueError(err_msg)
+        else:
+            err_msg("txfunc ERROR: S is larger than the difference between " +
+                     "the minimum age and the maximum age specified. Please " +
+                     "choose an S such that a model period equals at least " +
+                     "one calendar year."
+            )
+            raise ValueError(err_msg)
 
         print("Big S: ", S)
         print("max age, min age: ", s_max, s_min)
-    else:
-        etrparam_arr_S = np.tile(
-            np.reshape(
-                etrparam_arr[0 - s_min, :, :], (1, BW, etrparam_arr.shape[2])
-            ),
-            (S, 1, 1),
-        )
-        mtrxparam_arr_S = np.tile(
-            np.reshape(
-                mtrxparam_arr[0 - s_min, :, :], (1, BW, mtrxparam_arr.shape[2])
-            ),
-            (S, 1, 1),
-        )
-        mtryparam_arr_S = np.tile(
-            np.reshape(
-                mtryparam_arr[0 - s_min, :, :], (1, BW, mtryparam_arr.shape[2])
-            ),
-            (S, 1, 1),
-        )
+    elif not age_specific:
+        etrparam_list_S = np.zeros((BW, S)).tolist()
+        mtrxparam_list_S = np.zeros((BW, S)).tolist()
+        mtryparam_list_S = np.zeros((BW, S)).tolist()
+        for BW_ind in range(BW):
+            etrparam_list_S[BW][:] = [etrparam_list[BW_ind][0 - s_min]] * S
+            mtrxparam_list_S[BW][:] = [mtrxparam_list[BW_ind][0 - s_min]] * S
+            mtryparam_list_S[BW][:] = [mtryparam_list[BW_ind][0 - s_min]] * S
 
     # Save tax function parameters array and computation time in
     # dictionary
     dict_params = dict(
         [
-            ("tfunc_etr_params_S", etrparam_arr_S),
-            ("tfunc_mtrx_params_S", mtrxparam_arr_S),
-            ("tfunc_mtry_params_S", mtryparam_arr_S),
+            ("tfunc_etr_params_S", etrparam_list_S),
+            ("tfunc_mtrx_params_S", mtrxparam_list_S),
+            ("tfunc_mtry_params_S", mtryparam_list_S),
             ("tfunc_avginc", AvgInc),
             ("tfunc_avg_etr", AvgETR),
             ("tfunc_avg_mtrx", AvgMTRx),
