@@ -404,14 +404,6 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
 
     income = r * b + w * e * n
     labor_income = w * e * n
-    print("X and Y shape = ", labor_income.shape)
-    print(
-        "tax comply shape = ",
-        labor_income_tax_compliance_rate.shape,
-        capital_income_tax_compliance_rate.shape,
-    )
-    print("t and j are: ", t, j)
-    print("shape of e is ", e.shape, p.J)
     T_I = (
         ETR_income(
             r,
