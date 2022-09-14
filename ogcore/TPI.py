@@ -1081,11 +1081,13 @@ def run_TPI(p, client=None):
         (1, 1, p.J, 1),
     )
     labor_noncompliance_rate_3D = np.tile(
-        np.reshape(p.income_tax_noncompliance_rate[: p.T, :], (p.T, p.J)),
+        np.reshape(
+            p.labor_income_tax_noncompliance_rate[: p.T, :], (p.T, p.J)
+        ),
         (1, p.S, 1),
     )
     capital_noncompliance_rate_3D = np.tile(
-        np.reshape(p.income_tax_noncompliance_rate[-1, :], (1, p.J)),
+        np.reshape(p.capital_income_tax_noncompliance_rate[-1, :], (1, p.J)),
         (1, p.S, p.J),
     )
     e_3D = np.tile(p.e.reshape(1, p.S, p.J), (p.T, 1, 1))

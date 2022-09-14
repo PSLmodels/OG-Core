@@ -722,11 +722,11 @@ def SS_solver(
         (1, p.J, 1),
     )
     labor_noncompliance_rate_2D = np.tile(
-        np.reshape(p.income_tax_noncompliance_rate[-1, :], (1, p.J)),
+        np.reshape(p.labor_income_tax_noncompliance_rate[-1, :], (1, p.J)),
         (p.S, 1),
     )
     capital_noncompliance_rate_2D = np.tile(
-        np.reshape(p.income_tax_noncompliance_rate[-1, :], (1, p.J)),
+        np.reshape(p.labor_income_tax_noncompliance_rate[-1, :], (1, p.J)),
         (p.S, 1),
     )
     mtry_ss = tax.MTR_income(
@@ -763,8 +763,8 @@ def SS_solver(
         factor,
         p.e,
         etr_params_3D,
-        labor_noncompliance_rate,
-        capital_noncompliance_rate,
+        labor_noncompliance_rate_2D,
+        capital_noncompliance_rate_2D,
         p,
     )
 
