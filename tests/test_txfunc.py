@@ -78,14 +78,14 @@ def test_wsumsq(tax_func_type, expected):
 @pytest.mark.parametrize(
     "se_mult,expected_mat",
     [
-        (2, np.array([[False, False], [False, False], [False, True]])),
-        (8, np.array([[False, False], [False, False], [False, False]])),
+        (2, np.array([[False, False, False], [False, False, True]])),
+        (8, np.array([[False, False, False], [False, False, False]])),
     ],
     ids=["2", "8"],
 )
 def test_find_outliers(se_mult, expected_mat):
     # Test the find outliers function
-    sse_mat = np.array([[21.0, 22.0], [20.0, 32.0], [20.0, 100.0]])
+    sse_mat = np.array([[21.0, 20.0, 20.0], [22.0, 32.0, 100.0]])
     age_vec = np.array([40, 41])
     start_year = 2018
     varstr = "MTRy"
@@ -108,16 +108,20 @@ def test_replace_outliers():
     BW = 2
     numparams = 3
     random_state = np.random.RandomState(10)
-    param_arr = random_state.rand(S * BW * numparams).reshape(S, BW, numparams)
-    sse_big_mat = ~np.ones((S, BW), dtype=bool)
+    param_arr = random_state.rand(S * BW * numparams).reshape(BW, S, numparams)
+    param_list = np.zeros((BW, S)).tolist()
+    for bw in range(BW):
+        for s in range(S):
+            param_list[bw][s] = param_arr[bw, s, :]
+    sse_big_mat = ~np.ones((BW, S), dtype=bool)
     sse_big_mat[0, 0] = True
-    sse_big_mat[1, 0] = True
-    sse_big_mat[S - 4, 0] = True
-    sse_big_mat[S - 5, 0] = True
-    sse_big_mat[S - 2, 0] = True
-    sse_big_mat[S - 1, 0] = True
+    sse_big_mat[0, 1] = True
+    sse_big_mat[0, S - 4] = True
+    sse_big_mat[0, S - 5] = True
+    sse_big_mat[0, S - 2] = True
+    sse_big_mat[0, S - 1] = True
 
-    act = txfunc.replace_outliers(param_arr, sse_big_mat)
+    act = txfunc.replace_outliers(param_list, sse_big_mat)
 
     exp = [
         [
