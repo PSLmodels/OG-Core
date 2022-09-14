@@ -568,6 +568,17 @@ test_vars_tpi = (
 )
 expected_tpi = np.array([300.97703103, 2.71986664, -139.91872277])
 
+# create parameter objects with non-zero tax noncompliance
+test_params_ss_noncomply = copy.deepcopy(test_params_ss)
+test_params_ss_noncomply.labor_income_tax_noncompliance_rate = np.ones((test_params_ss.T, test_params_ss.J)) * 0.05
+test_params_ss_noncomply.capital_income_tax_noncompliance_rate = np.ones((test_params_ss.T, test_params_ss.J)) * 0.05
+test_params_tpi_noncomply = copy.deepcopy(test_params_tpi)
+test_params_tpi_noncomply.labor_income_tax_noncompliance_rate = np.ones((test_params_tpi.T, test_params_tpi.J)) * 0.05
+test_params_tpi_noncomply.capital_income_tax_noncompliance_rate = np.ones((test_params_tpi.T, test_params_tpi.J)) * 0.05
+
+expected_ss_noncomply = np.array([9.57729582, -0.99595713, -140.57731873])
+expected_tpi_noncomply = np.array([173.72734003,    2.16357338, -139.95857116])
+
 
 # Define variables for test of SS and TPI with non-zero wealth tax
 test_params_ss_tau_w = copy.deepcopy(p1)
@@ -588,13 +599,18 @@ test_data = [
     (test_vars_ss, test_params_ss_tau_w, expected_ss_tau_w),
     (test_vars_tpi, test_params_tpi_tau_w, expected_tpi_tau_w),
     (test_vars_ss0, test_params_ss, expected_ss),
+    (test_vars_ss0, test_params_ss_noncomply, expected_ss_noncomply),
+    (test_vars_ss, test_params_ss_noncomply, expected_ss_noncomply),
+    (test_vars_tpi, test_params_tpi_noncomply, expected_tpi_noncomply),
 ]
 
 
 @pytest.mark.parametrize(
     "model_vars,params,expected",
     test_data,
-    ids=["SS", "TPI", "SS - wealth tax", "TPI - wealth tax", "SS - j =0"],
+    ids=["SS", "TPI", "SS - wealth tax", "TPI - wealth tax", "SS - j =0",
+    "SS, j=0, noncomply", "SS, j=None, noncomply",
+    "TPI, j=0, noncomply"],
 )
 def test_FOC_savings(model_vars, params, expected):
     # Test FOC condition for household's choice of savings
@@ -840,17 +856,36 @@ expected_tau_pay = np.array(
     ]
 )
 
+# create parameter objects with non-zero tax noncompliance
+test_params_ss_noncomply = copy.deepcopy(test_params_ss)
+test_params_ss_noncomply.labor_income_tax_noncompliance_rate = np.ones((test_params_ss.T, test_params_ss.J)) * 0.05
+test_params_ss_noncomply.capital_income_tax_noncompliance_rate = np.ones((test_params_ss.T, test_params_ss.J)) * 0.05
+test_params_tpi_noncomply = copy.deepcopy(test_params_tpi)
+test_params_tpi_noncomply.labor_income_tax_noncompliance_rate = np.ones((test_params_tpi.T, test_params_tpi.J)) * 0.05
+test_params_tpi_noncomply.capital_income_tax_noncompliance_rate = np.ones((test_params_tpi.T, test_params_tpi.J)) * 0.05
+
+expected_ss_noncomply = np.array([4.69251429,  0.14527838, -0.09559029])
+expected_tpi_noncomply = np.array(
+    [
+        [4.41773424e+01,  2.08215139e-02,  4.34837339e-01],
+        [5.10759447e+01,  1.71845336e+00, -2.53093346e-01],
+        [2.48092106e+05,  2.21159842e-01, -8.36295540e-02],
+    ]
+)
+
 test_data = [
     (test_vars_ss, test_params_ss, expected_ss),
     (test_vars_tpi, test_params_tpi, expected_tpi),
     (test_vars_tpi, test_params_tau_pay, expected_tau_pay),
+    (test_vars_ss, test_params_ss_noncomply, expected_ss_noncomply),
+    (test_vars_tpi, test_params_tpi_noncomply, expected_tpi_noncomply),
 ]
 
 
 @pytest.mark.parametrize(
     "model_vars,params,expected",
     test_data,
-    ids=["SS", "TPI", "vary tau_payroll"],
+    ids=["SS", "TPI", "vary tau_payroll", "SS, noncomply", "TPI, noncomply"],
 )
 def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply
