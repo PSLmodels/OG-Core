@@ -384,7 +384,9 @@ def FOC_savings(
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, j]
         else:
             length = r.shape[0]
-            tax_noncompliance = p.capital_income_tax_noncompliance_rate[t : t + length, j]
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[
+                t : t + length, j
+            ]
     else:
         chi_b = p.chi_b
         beta = p.beta
@@ -394,7 +396,9 @@ def FOC_savings(
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, :]
         else:
             length = r.shape[0]
-            tax_noncompliance = p.capital_income_tax_noncompliance_rate[t : t + length, :]
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[
+                t : t + length, :
+            ]
     if method == "SS":
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
@@ -553,14 +557,18 @@ def FOC_labor(
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, j]
         else:
-            tax_noncompliance = p.labor_income_tax_noncompliance_rate[t : t + length, j]
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[
+                t : t + length, j
+            ]
     else:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, :]
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, :]
         else:
-            tax_noncompliance = p.labor_income_tax_noncompliance_rate[t : t + length, :]
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[
+                t : t + length, :
+            ]
     if method == "SS":
         tau_payroll = p.tau_payroll[-1]
     elif method == "TPI_scalar":  # for 1st donut ring only
