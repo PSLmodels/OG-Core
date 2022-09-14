@@ -305,7 +305,7 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr, graph=False):
 
     Args:
         sse_mat (Numpy array): SSE for each estimated tax function,
-            size is SxBW
+            size is BW x S
         age_vec (numpy array): vector of ages, length S
         se_mult (scalar): multiple of standard deviations before
             consider estimate an outlier
@@ -314,8 +314,8 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr, graph=False):
         graph (bool): whether to output graphs
 
     Returns:
-        sse_big_mat (Numpy array): indicators of whether tax function
-            is outlier, size is SxBW
+        sse_big_mat (bool array_like): indicators of whether tax function
+            is outlier, size is BW x S
 
     """
     # Mark outliers from estimated MTRx functions
@@ -363,56 +363,53 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr, graph=False):
     return sse_big_mat
 
 
-def replace_outliers(param_arr, sse_big_mat):
+def replace_outliers(param_list, sse_big_mat):
     """
     This function replaces outlier estimated tax function parameters
     with linearly interpolated tax function tax function parameters
 
     Args:
-        param_arr (Numpy array): estimated tax function parameters,
-            size is SxBWx#tax params
-        sse_big_mat (Numpy array): indicators of whether tax function
-            is outlier, size is SxBW
+        param_list (list): estimated tax function parameters or nonparametric
+            functions, size is BW x S x #TaxParams
+        sse_big_mat (bool, array_like): indicators of whether tax function
+            is outlier, size is BW x S
 
     Returns:
-        param_arr_adj (Numpy array): estimated and interpolated tax
-            function parameters, size SxBWx#tax params
+        param_arr_adj (array_like): estimated and interpolated tax function
+            parameters, size BW x S x #TaxParams
 
     """
-    numparams = param_arr.shape[2]
-    age_ind = np.arange(0, sse_big_mat.shape[0])
-    param_arr_adj = param_arr.copy()
-    for t in range(sse_big_mat.shape[1]):
+    numparams = len(param_list[0][0])
+    age_ind = np.arange(0, sse_big_mat.shape[1])
+    param_list_adj = param_list.copy()
+    for t in range(sse_big_mat.shape[0]):
         big_cnt = 0
         for s in age_ind:
             # Smooth out ETR tax function outliers
-            if sse_big_mat[s, t] and s < sse_big_mat.shape[0] - 1:
+            if sse_big_mat[t, s] and s < sse_big_mat.shape[1] - 1:
                 # For all outlier observations, increase the big_cnt by
                 # 1 and set the param_arr_adj equal to nan
                 big_cnt += 1
-                param_arr_adj[s, t, :] = np.nan
-            if not sse_big_mat[s, t] and big_cnt > 0 and s == big_cnt:
+                param_list_adj[t][s] = None
+            if not sse_big_mat[t, s] and big_cnt > 0 and s == big_cnt:
                 # When the current function is not an outlier but the last
                 # one was and this string of outliers is at the beginning
                 # ages, set the outliers equal to this period's tax function
-                reshaped = param_arr_adj[s, t, :].reshape((1, 1, numparams))
-                param_arr_adj[:big_cnt, t, :] = np.tile(reshaped, (big_cnt, 1))
+                param_list_adj[t][:big_cnt] = [param_list_adj[t][s]] * big_cnt
                 big_cnt = 0
 
-            if not sse_big_mat[s, t] and big_cnt > 0 and s > big_cnt:
+            if not sse_big_mat[t, s] and big_cnt > 0 and s > big_cnt:
                 # When the current function is not an outlier but the last
                 # one was and this string of outliers is in the interior of
                 # ages, set the outliers equal to a linear interpolation
                 # between the two bounding non-outlier functions
                 diff = (
-                    param_arr_adj[s, t, :]
-                    - param_arr_adj[s - big_cnt - 1, t, :]
+                    param_list_adj[t][s] - param_list_adj[t][s - big_cnt - 1]
                 )
-                slopevec = diff / (big_cnt + 1)
-                slopevec = slopevec.reshape(1, numparams)
+                slopevec = (diff / (big_cnt + 1)).reshape(1, numparams)
                 tiled_slopevec = np.tile(slopevec, (big_cnt, 1))
 
-                interceptvec = param_arr_adj[s - big_cnt - 1, t, :].reshape(
+                interceptvec = param_list_adj[t][s - big_cnt - 1].reshape(
                     1, numparams
                 )
                 tiled_intvec = np.tile(interceptvec, (big_cnt, 1))
@@ -420,24 +417,24 @@ def replace_outliers(param_arr, sse_big_mat):
                 reshaped_arange = np.arange(1, big_cnt + 1).reshape(big_cnt, 1)
                 tiled_reshape_arange = np.tile(reshaped_arange, (1, numparams))
 
-                param_arr_adj[s - big_cnt : s, t, :] = (
-                    tiled_intvec + tiled_slopevec * tiled_reshape_arange
-                )
+                for s_ind in range(big_cnt):
+                    param_list_adj[t][s - big_cnt + s_ind] = (
+                        tiled_intvec[:, s_ind] +
+                        (tiled_slopevec[:, s_ind] *
+                         tiled_reshape_arange[:, s_ind])
+                    )
 
                 big_cnt = 0
-            if sse_big_mat[s, t] and s == sse_big_mat.shape[0] - 1:
+            if sse_big_mat[t, s] and s == sse_big_mat.shape[1] - 1:
                 # When the last ages are outliers, set the parameters equal
                 # to the most recent non-outlier tax function
                 big_cnt += 1
-                param_arr_adj[s, t, :] = np.nan
-                reshaped = param_arr_adj[s - big_cnt, t, :].reshape(
-                    1, 1, numparams
-                )
-                param_arr_adj[s - big_cnt + 1 :, t, :] = np.tile(
-                    reshaped, (big_cnt, 1)
-                )
+                param_list_adj[t][s] = np.nan
+                reshaped = param_list_adj[t][s - big_cnt]
+                param_list_adj[t][s - big_cnt + 1:] = \
+                    [param_list_adj[t][s - big_cnt]] * big_cnt
 
-    return param_arr_adj
+    return param_list_adj
 
 
 def txfunc_est(
@@ -1259,10 +1256,10 @@ def tax_func_estimate(
     tax_func_path=None,
 ):
     """
-    This function performs analysis on the source data from Tax-
-    Calculator and estimates functions for the effective tax rate (ETR),
-    marginal tax rate on labor income (MTRx), and marginal tax rate on
-    capital income (MTRy).
+    This function performs analysis on the source data from microsimulation
+    model and estimates functions for the effective tax rate (ETR), marginal
+    tax rate on labor income (MTRx), and marginal tax rate on capital income
+    (MTRy).
 
     Args:
         micro_data (dict): Dictionary of DataFrames with micro data
@@ -1315,19 +1312,19 @@ def tax_func_estimate(
     etrparam_list = np.zeros(BW).tolist()
     mtrxparam_list = np.zeros(BW).tolist()
     mtryparam_list = np.zeros(BW).tolist()
-    etr_wsumsq_arr = np.zeros((s_max - s_min + 1, BW))
-    etr_obs_arr = np.zeros((s_max - s_min + 1, BW))
-    mtrx_wsumsq_arr = np.zeros((s_max - s_min + 1, BW))
-    mtrx_obs_arr = np.zeros((s_max - s_min + 1, BW))
-    mtry_wsumsq_arr = np.zeros((s_max - s_min + 1, BW))
-    mtry_obs_arr = np.zeros((s_max - s_min + 1, BW))
+    etr_wsumsq_arr = np.zeros((BW, s_max - s_min + 1))
+    etr_obs_arr = np.zeros((BW, s_max - s_min + 1))
+    mtrx_wsumsq_arr = np.zeros((BW, s_max - s_min + 1))
+    mtrx_obs_arr = np.zeros((BW, s_max - s_min + 1))
+    mtry_wsumsq_arr = np.zeros((BW, s_max - s_min + 1))
+    mtry_obs_arr = np.zeros((BW, s_max - s_min + 1))
     AvgInc = np.zeros(BW)
     AvgETR = np.zeros(BW)
     AvgMTRx = np.zeros(BW)
     AvgMTRy = np.zeros(BW)
     frac_tax_payroll = np.zeros(BW)
     TotPop_yr = np.zeros(BW)
-    PopPct_age = np.zeros((s_max - s_min + 1, BW))
+    PopPct_age = np.zeros((BW, s_max - s_min + 1))
 
     # '''
     # --------------------------------------------------------------------
@@ -1387,21 +1384,21 @@ def tax_func_estimate(
     for i, result in enumerate(results):
         (
             TotPop_yr[i],
-            PopPct_age[:, i],
+            PopPct_age[i, :],
             AvgInc[i],
             AvgETR[i],
             AvgMTRx[i],
             AvgMTRy[i],
             frac_tax_payroll[i],
             etrparam_list[i],
-            etr_wsumsq_arr[:, i],
-            etr_obs_arr[:, i],
+            etr_wsumsq_arr[i, :],
+            etr_obs_arr[i, :],
             mtrxparam_list[i],
-            mtrx_wsumsq_arr[:, i],
-            mtrx_obs_arr[:, i],
+            mtrx_wsumsq_arr[i, :],
+            mtrx_obs_arr[i, :],
             mtryparam_list[i],
-            mtry_wsumsq_arr[:, i],
-            mtry_obs_arr[:, i],
+            mtry_wsumsq_arr[i, :],
+            mtry_obs_arr[i, :],
         ) = result
 
     message = (
@@ -1446,12 +1443,13 @@ def tax_func_estimate(
         print(message)
 
     # '''
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Replace outlier tax functions (SSE>mean+2.5*std) with linear
-    # linear interpolation. We make two passes (filtering runs).
-    # --------------------------------------------------------------------
+    # interpolation for parametric tax functions (not "mono"). We make two
+    # passes (filtering runs).
+    # -------------------------------------------------------------------------
     # '''
-    if age_specific:
+    if age_specific and tax_func_type != "mono":
         age_sup = np.linspace(s_min, s_max, s_max - s_min + 1)
         se_mult = 3.5
         etr_sse_big = find_outliers(
@@ -1463,9 +1461,9 @@ def tax_func_estimate(
             graph=graph_est,
         )
         if etr_sse_big.sum() > 0:
-            etrparam_arr_adj = replace_outliers(etrparam_arr, etr_sse_big)
+            etrparam_list_adj = replace_outliers(etrparam_list, etr_sse_big)
         elif etr_sse_big.sum() == 0:
-            etrparam_arr_adj = etrparam_arr
+            etrparam_list_adj = etrparam_list
 
         mtrx_sse_big = find_outliers(
             mtrx_wsumsq_arr / mtrx_obs_arr,

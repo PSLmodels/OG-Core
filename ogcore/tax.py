@@ -132,7 +132,8 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
         factor (scalar): scaling factor converting model units to
             dollars
         e (Numpy array): effective labor units
-        etr_params (Numpy array): effective tax rate function parameters
+        etr_params (array_like or function): effective tax rate function
+            parameters or nonparametric function
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -163,7 +164,10 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params, mtr_params, p):
         mtr_capital (bool): whether to compute the marginal tax rate on
             capital income or labor income
         e (Numpy array): effective labor units
-        etr_params (Numpy array): effective tax rate function parameters
+        etr_params (array_like or function): effective tax rate function
+            parameters or nonparametric function
+        mtr_params (array_like or function): marginal tax rate function
+            parameters or nonparametric function
         p (OG-Core Specifications object): model parameters
 
     Returns:
