@@ -294,6 +294,7 @@ p5 = copy.deepcopy(p1)
 p5.labor_income_tax_noncompliance_rate = np.ones((p5.T, p5.S, p5.J)) * 0.05
 p5.capital_income_tax_noncompliance_rate = np.ones((p5.T, p5.S, p5.J)) * 0.05
 
+
 @pytest.mark.parametrize(
     "b,n,etr_params,params,expected",
     [
@@ -341,10 +342,16 @@ def test_ETR_income(b, n, etr_params, params, expected):
     w = 1.2
     factor = 100000
     test_ETR_income = tax.ETR_income(
-        r, w, b, n, factor, params.e, etr_params,
+        r,
+        w,
+        b,
+        n,
+        factor,
+        params.e,
+        etr_params,
         params.labor_income_tax_noncompliance_rate,
         params.capital_income_tax_noncompliance_rate,
-        params
+        params,
     )
     assert np.allclose(test_ETR_income, expected)
 
@@ -758,6 +765,7 @@ p7 = copy.deepcopy(p4)
 p7.labor_income_tax_noncompliance_rate = np.ones((p7.T, p7.S, p7.J)) * 0.05
 p7.capital_income_tax_noncompliance_rate = np.ones((p7.T, p7.S, p7.J)) * 0.05
 
+
 @pytest.mark.parametrize(
     "etr_params,mtr_params,params,mtr_capital,expected",
     [
@@ -808,7 +816,9 @@ p7.capital_income_tax_noncompliance_rate = np.ones((p7.T, p7.S, p7.J)) * 0.05
             mtrx_params4,
             p7,
             False,
-            np.array([0.395999995 * 0.95, 0.395999983 * 0.95, 0.599999478 * 0.95]),
+            np.array(
+                [0.395999995 * 0.95, 0.395999983 * 0.95, 0.599999478 * 0.95]
+            ),
         ),
     ],
     ids=[
@@ -1317,6 +1327,22 @@ j11 = 0
 shift11 = True
 method11 = "TPI"
 
+
+p12 = copy.deepcopy(p1)
+p12.labor_income_tax_noncompliance_rate = (
+    np.ones((p12.T + p12.S, p12.J)) * 0.05
+)
+p12.capital_income_tax_noncompliance_rate = (
+    np.ones((p12.T + p12.S, p12.J)) * 0.05
+)
+p13 = copy.deepcopy(p5)
+p13.labor_income_tax_noncompliance_rate = (
+    np.ones((p13.T + p13.S, p13.J)) * 0.05
+)
+p13.capital_income_tax_noncompliance_rate = (
+    np.ones((p13.T + p13.S, p13.J)) * 0.05
+)
+
 expected1 = np.array([0.47374766, -0.09027663, 0.03871394])
 expected2 = np.array([0.20374766, -0.09027663, 0.03871394])
 expected3 = np.array(
@@ -1419,6 +1445,26 @@ expected11 = np.array(
         [0.30869878, -0.0497642, 0.17629838],
         [0.39311429, 0.00794409, 0.24575229],
         [0.35257605, 0.02042006, 0.23553789],
+    ]
+)
+expected12 = np.array([0.453866159, -0.09027663 - 0.009138896, 0.027811102])
+expected13 = np.array(
+    [
+        [
+            [0.15413763, 0.15307288],
+            [0.2633108, 0.30445456],
+            [0.10703778, -0.03366739],
+        ],
+        [
+            [0.18849603, 0.15245539],
+            [0.34255564, 0.38370095],
+            [0.17925424, -0.07029269],
+        ],
+        [
+            [0.30819723, 0.21311562],
+            [0.33108374, 0.38157802],
+            [0.14425679, -0.05808117],
+        ],
     ]
 )
 
@@ -1632,6 +1678,44 @@ test_data = [
         p_u,
         expected11,
     ),
+    (
+        r1,
+        w1,
+        b1,
+        n1,
+        bq1,
+        factor,
+        tr1,
+        ubi1[0, :, :],
+        theta1,
+        None,
+        j1,
+        shift1,
+        method1,
+        p1.e[:, j1],
+        etr_params1[-1, :, :],
+        p12,
+        expected12,
+    ),
+    (
+        r5,
+        w5,
+        b5,
+        n5,
+        bq5,
+        factor,
+        tr5,
+        ubi5,
+        theta5,
+        0,
+        j5,
+        shift5,
+        method5,
+        p5.e,
+        etr_params5,
+        p13,
+        expected13,
+    ),
 ]
 
 
@@ -1651,6 +1735,8 @@ test_data = [
         "SS UBI>0",
         "TPI scalar UBI>0",
         "TPI UBI>0",
+        "SS, noncomply",
+        "TPI 3D. noncomply",
     ],
 )
 def test_net_taxes(
@@ -1691,4 +1777,5 @@ def test_net_taxes(
         etr_params,
         p,
     )
+
     assert np.allclose(net_taxes, expected)
