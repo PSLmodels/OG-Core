@@ -196,8 +196,8 @@ expected_tuple_DEP_totalinc = (
 )
 expected_tuple_linear = (0.26135747, 0.0, 152900)
 expected_tuple_GS = (
-    np.array([0.42897179, 0.39679734, 0.00239574]),
-    242750.4467703229,
+    np.array([3.03099171e-01, 9.64733478e-01, 1.77900933e-05]),
+    256366.42971360413,
     152900,
 )
 expected_tuple_linear_mtrx = (0.37030104, 0.0, 152900)
