@@ -134,20 +134,20 @@ def test_replace_outliers():
             np.array([0.09609612, 0.41962459, 0.72029606]),
             np.array([0.14217005, 0.37334076, 0.67413362]),
             np.array([0.14217005, 0.37334076, 0.67413362]),
-            np.array([0.14217005, 0.37334076, 0.67413362])
+            np.array([0.14217005, 0.37334076, 0.67413362]),
         ],
         [
-            np.array([0.8052232 , 0.52164715, 0.90864888]),
+            np.array([0.8052232, 0.52164715, 0.90864888]),
             np.array([0.31923609, 0.09045935, 0.30070006]),
             np.array([0.11398436, 0.82868133, 0.04689632]),
-            np.array([0.62628715, 0.54758616, 0.819287  ]),
-            np.array([0.19894754, 0.8568503 , 0.35165264]),
+            np.array([0.62628715, 0.54758616, 0.819287]),
+            np.array([0.19894754, 0.8568503, 0.35165264]),
             np.array([0.75464769, 0.29596171, 0.88393648]),
-            np.array([0.32551164, 0.1650159 , 0.39252924]),
+            np.array([0.32551164, 0.1650159, 0.39252924]),
             np.array([0.09346037, 0.82110566, 0.15115202]),
             np.array([0.38411445, 0.94426071, 0.98762547]),
-            np.array([0.45630455, 0.82612284, 0.25137413])
-        ]
+            np.array([0.45630455, 0.82612284, 0.25137413]),
+        ],
     ]
 
     # test that act == exp
@@ -216,9 +216,7 @@ expected_tuple_linear_mtry = (0.24793767, 0.0, 152900)
     ],
     ids=["DEP", "DEP_totalinc", "GS"],
 )
-def test_txfunc_est(
-    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
-):
+def test_txfunc_est(rate_type, tax_func_type, numparams, expected_tuple, tmpdir):
     """
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -260,9 +258,7 @@ def test_txfunc_est(
     ],
     ids=["linear", "linear, mtrx", "linear, mtry"],
 )
-def test_txfunc_est_on_GH(
-    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
-):
+def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams, expected_tuple, tmpdir):
     """
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -344,9 +340,7 @@ def test_tax_func_loop():
 
     """
     input_tuple = decompress_pickle(
-        os.path.join(
-            CUR_PATH, "test_io_data", "tax_func_loop_inputs_large.pbz2"
-        )
+        os.path.join(CUR_PATH, "test_io_data", "tax_func_loop_inputs_large.pbz2")
     )
     (
         t,
@@ -365,9 +359,7 @@ def test_tax_func_loop():
     ) = input_tuple
     tax_func_type = "DEP"
     # Rename and create vars to suit new micro_data var names
-    micro_data["total_labinc"] = (
-        micro_data["Wage income"] + micro_data["SE income"]
-    )
+    micro_data["total_labinc"] = micro_data["Wage income"] + micro_data["SE income"]
     micro_data["etr"] = (
         micro_data["Total tax liability"] / micro_data["Adjusted total income"]
     )
@@ -701,7 +693,5 @@ def test_tax_func_estimate(tmpdir, dask_client):
         if isinstance(v, str):  # for testing tax_func_type object
             assert test_dict[k] == v
         else:  # for testing all other objects
-            print(
-                "Max diff for ", k, " = ", np.absolute(test_dict[k] - v).max()
-            )
+            print("Max diff for ", k, " = ", np.absolute(test_dict[k] - v).max())
             assert np.all(np.isclose(test_dict[k], v))

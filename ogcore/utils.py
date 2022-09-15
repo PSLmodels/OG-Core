@@ -97,9 +97,7 @@ def read_file(path, fname):
         return open(os.path.join(path, fname))
 
 
-def pickle_file_compare(
-    fname1, fname2, tol=1e-3, exceptions={}, relative=False
-):
+def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={}, relative=False):
     """
     Read two pickle files and unpickle each. We assume that each
     resulting object is a dictionary. The values of each dict are either
@@ -485,9 +483,9 @@ class Inequality:
         self.dist = dist
         self.pop_weights = pop_weights
         self.ability_weights = ability_weights
-        weights = np.tile(
-            pop_weights.reshape(S, 1), (1, J)
-        ) * ability_weights.reshape(1, J)
+        weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * ability_weights.reshape(
+            1, J
+        )
         flattened_dist = dist.flatten()
         flattened_weights = weights.flatten()
         idx = np.argsort(flattened_dist)
@@ -541,12 +539,10 @@ class Inequality:
 
         """
         ln_dist = np.log(self.sort_dist)
-        weight_mean = (
-            ln_dist * self.sort_weights
-        ).sum() / self.sort_weights.sum()
-        var_ln_dist = (
-            (self.sort_weights * ((ln_dist - weight_mean) ** 2)).sum()
-        ) * (1.0 / (self.sort_weights.sum()))
+        weight_mean = (ln_dist * self.sort_weights).sum() / self.sort_weights.sum()
+        var_ln_dist = ((self.sort_weights * ((ln_dist - weight_mean) ** 2)).sum()) * (
+            1.0 / (self.sort_weights.sum())
+        )
 
         return var_ln_dist
 
@@ -662,9 +658,7 @@ def print_progress(
         else:
             sys.stdout.write("Accessing " + source_name + " data files...\n")
 
-    sys.stdout.write(
-        "\r%s |%s| %s%s %s" % (prefix, bar, percents, "%", suffix)
-    ),
+    sys.stdout.write("\r%s |%s| %s%s %s" % (prefix, bar, percents, "%", suffix)),
 
     if iteration == total:
         sys.stdout.write("\n")
@@ -797,13 +791,14 @@ def avg_by_bin(x, y, weights=None, bins=10, eql_pctl=True):
         if eql_pctl:
             # Sort x and weights by x in ascending order
             df = pd.DataFrame(
-                data=np.hstack((x.reshape((-1, 1)), y.reshape((-1, 1)),
-                                weights.reshape((-1, 1)))),
-                columns=['x', 'y', 'weights']
-            ).sort_values(by=['x'])
-            x = df['x'].to_numpy()
-            y = df['y'].to_numpy()
-            weights = df['weights'].to_numpy()
+                data=np.hstack(
+                    (x.reshape((-1, 1)), y.reshape((-1, 1)), weights.reshape((-1, 1)))
+                ),
+                columns=["x", "y", "weights"],
+            ).sort_values(by=["x"])
+            x = df["x"].to_numpy()
+            y = df["y"].to_numpy()
+            weights = df["weights"].to_numpy()
 
             weights_norm_cum = weights.cumsum() / weights.sum()
             weights_norm_cum[-1] = 1.0
@@ -814,19 +809,24 @@ def avg_by_bin(x, y, weights=None, bins=10, eql_pctl=True):
             for i in range(obs):
                 if weights_norm_cum[i] >= pctl_cuts[bin]:
                     pct_ind_beg = 1 - pct_ind_end
-                    pct_ind_end = (
-                        1 - ((weights_norm_cum[i] - pctl_cuts[bin]) /
-                             (weights_norm_cum[i] - weights_norm_cum[i - 1]))
+                    pct_ind_end = 1 - (
+                        (weights_norm_cum[i] - pctl_cuts[bin])
+                        / (weights_norm_cum[i] - weights_norm_cum[i - 1])
                     )
-                    weights_vec_bin = np.concatenate([
-                        [pct_ind_beg * weights[i_part_last]],
-                        weights[i_part_last + 1:i],
-                        [pct_ind_end * weights[i]]])
+                    weights_vec_bin = np.concatenate(
+                        [
+                            [pct_ind_beg * weights[i_part_last]],
+                            weights[i_part_last + 1 : i],
+                            [pct_ind_end * weights[i]],
+                        ]
+                    )
                     weights_binned[bin - 1] = weights_vec_bin.sum()
-                    x_binned[bin - 1] = np.average(x[i_part_last:i + 1],
-                                                   weights=weights_vec_bin)
-                    y_binned[bin - 1] = np.average(y[i_part_last:i + 1],
-                                                   weights=weights_vec_bin)
+                    x_binned[bin - 1] = np.average(
+                        x[i_part_last : i + 1], weights=weights_vec_bin
+                    )
+                    y_binned[bin - 1] = np.average(
+                        y[i_part_last : i + 1], weights=weights_vec_bin
+                    )
 
                     i_part_last = i
                     bin += 1
@@ -839,19 +839,18 @@ def avg_by_bin(x, y, weights=None, bins=10, eql_pctl=True):
                     bin_ind = x >= bin_edges[bin] & x <= bin_edges[bin + 1]
                 else:
                     bin_ind = x > bin_edges[bin] & x <= bin_edges[bin + 1]
-                x_binned[bin] = np.average(x[bin_ind],
-                                           weights=weights[bin_ind])
-                y_binned[bin] = np.average(y[bin_ind],
-                                           weights=weights[bin_ind])
+                x_binned[bin] = np.average(x[bin_ind], weights=weights[bin_ind])
+                y_binned[bin] = np.average(y[bin_ind], weights=weights[bin_ind])
                 weights_binned[bin] = weights[bin_ind].sum()
-
 
     # Case of bin edges specified, eql_pctl must be False
     elif isinstance(bins, list) or isinstance(bins, np.ndarray):
         if eql_pctl:
-            err_msg = ('avg_by_bin ERROR: eql_pctl=True with bins given as ' +
-                       'list or ndarray. In this case, eql_pctl must be set ' +
-                       'to False')
+            err_msg = (
+                "avg_by_bin ERROR: eql_pctl=True with bins given as "
+                + "list or ndarray. In this case, eql_pctl must be set "
+                + "to False"
+            )
             raise ValueError(err_msg)
         bin_num = len(bins) - 1
         x_binned = np.zeros(bin_num)
@@ -867,8 +866,11 @@ def avg_by_bin(x, y, weights=None, bins=10, eql_pctl=True):
             weights_binned[bin] = weights[bin_ind].sum()
 
     else:
-        err_msg = ('avg_by_bin ERROR: bins value is type ' + str(type(bins)) +
-                   ', but needs to be either scalar, list, or ndarray.')
+        err_msg = (
+            "avg_by_bin ERROR: bins value is type "
+            + str(type(bins))
+            + ", but needs to be either scalar, list, or ndarray."
+        )
         raise ValueError(err_msg)
 
     return x_binned, y_binned, weights_binned

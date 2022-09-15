@@ -98,20 +98,7 @@ def get_tax_rates(
                 )
             )
     elif tax_func_type == "DEP":
-        (
-            A,
-            B,
-            C,
-            D,
-            max_x,
-            max_y,
-            share,
-            min_x,
-            min_y,
-            shift_x,
-            shift_y,
-            shift,
-        ) = (
+        (A, B, C, D, max_x, max_y, share, min_x, min_y, shift_x, shift_y, shift,) = (
             np.squeeze(params[..., 0]),
             np.squeeze(params[..., 1]),
             np.squeeze(params[..., 2]),
@@ -149,8 +136,7 @@ def get_tax_rates(
                 / (C * Y2til + D * Ytil + Ftil + 1)
             ) + min_y
             txrates = (
-                ((tau_x + shift_x) ** share)
-                * ((tau_y + shift_y) ** (1 - share))
+                ((tau_x + shift_x) ** share) * ((tau_y + shift_y) ** (1 - share))
             ) + shift
         else:
             if analytical_mtrs:
@@ -161,8 +147,7 @@ def get_tax_rates(
                     C * Y2 + D * Y + 1
                 ) + min_y
                 etr = (
-                    ((tau_x + shift_x) ** share)
-                    * ((tau_y + shift_y) ** (1 - share))
+                    ((tau_x + shift_x) ** share) * ((tau_y + shift_y) ** (1 - share))
                 ) + shift
                 if mtr_capital:
                     d_etr = (
@@ -190,8 +175,7 @@ def get_tax_rates(
                     (max_y - min_y) * (C * Y2 + D * Y) / (C * Y2 + D * Y + 1)
                 ) + min_y
                 txrates = (
-                    ((tau_x + shift_x) ** share)
-                    * ((tau_y + shift_y) ** (1 - share))
+                    ((tau_x + shift_x) ** share) * ((tau_y + shift_y) ** (1 - share))
                 ) + shift
     elif tax_func_type == "DEP_totalinc":
         A, B, max_income, min_income, shift_income, shift = (
@@ -221,16 +205,12 @@ def get_tax_rates(
         else:
             if analytical_mtrs:
                 d_etr = (max_income - min_income) * (
-                    (2 * A * income + B)
-                    / ((A * income2 + B * income + 1) ** 2)
+                    (2 * A * income + B) / ((A * income2 + B * income + 1) ** 2)
                 )
                 etr = (
                     (
                         (max_income - min_income)
-                        * (
-                            (A * income2 + B * income)
-                            / (A * income2 + B * income + 1)
-                        )
+                        * ((A * income2 + B * income) / (A * income2 + B * income + 1))
                         + min_income
                     )
                     + shift_income
@@ -288,9 +268,7 @@ def wsumsq(params, *args):
         rate_type,
     ) = args
     params_all = np.append(params, fixed_tax_func_params)
-    txrates_est = get_tax_rates(
-        params_all, X, Y, wgts, tax_func_type, rate_type
-    )
+    txrates_est = get_tax_rates(params_all, X, Y, wgts, tax_func_type, rate_type)
     errors = txrates_est - txrates
     wssqdev = (wgts * (errors**2)).sum()
 
@@ -348,9 +326,7 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr, graph=False):
             " observations tagged as outliers (cumulative).",
         )
         if graph:
-            pp.txfunc_sse_plot(
-                age_vec, sse_mat_new, start_year, varstr, output_dir, 1
-            )
+            pp.txfunc_sse_plot(age_vec, sse_mat_new, start_year, varstr, output_dir, 1)
         if (sse_mat_new > thresh2).sum() > 0:
             # Mark the outliers from the second sweep above
             sse_mat_new2 = sse_mat_new.copy()
@@ -403,25 +379,19 @@ def replace_outliers(param_list, sse_big_mat):
                 # one was and this string of outliers is in the interior of
                 # ages, set the outliers equal to a linear interpolation
                 # between the two bounding non-outlier functions
-                diff = (
-                    param_list_adj[t][s] - param_list_adj[t][s - big_cnt - 1]
-                )
+                diff = param_list_adj[t][s] - param_list_adj[t][s - big_cnt - 1]
                 slopevec = (diff / (big_cnt + 1)).reshape(1, numparams)
                 tiled_slopevec = np.tile(slopevec, (big_cnt, 1))
 
-                interceptvec = param_list_adj[t][s - big_cnt - 1].reshape(
-                    1, numparams
-                )
+                interceptvec = param_list_adj[t][s - big_cnt - 1].reshape(1, numparams)
                 tiled_intvec = np.tile(interceptvec, (big_cnt, 1))
 
                 reshaped_arange = np.arange(1, big_cnt + 1).reshape(big_cnt, 1)
                 tiled_reshape_arange = np.tile(reshaped_arange, (1, numparams))
 
                 for s_ind in range(big_cnt):
-                    param_list_adj[t][s - big_cnt + s_ind] = (
-                        tiled_intvec[s_ind, :] +
-                        (tiled_slopevec[s_ind, :] *
-                         tiled_reshape_arange[s_ind, :])
+                    param_list_adj[t][s - big_cnt + s_ind] = tiled_intvec[s_ind, :] + (
+                        tiled_slopevec[s_ind, :] * tiled_reshape_arange[s_ind, :]
                     )
 
                 big_cnt = 0
@@ -431,15 +401,14 @@ def replace_outliers(param_list, sse_big_mat):
                 big_cnt += 1
                 param_list_adj[t][s] = np.nan
                 reshaped = param_list_adj[t][s - big_cnt]
-                param_list_adj[t][s - big_cnt + 1:] = \
-                    [param_list_adj[t][s - big_cnt]] * big_cnt
+                param_list_adj[t][s - big_cnt + 1 :] = [
+                    param_list_adj[t][s - big_cnt]
+                ] * big_cnt
 
     return param_list_adj
 
 
-def txfunc_est(
-    df, s, t, rate_type, tax_func_type, numparams, output_dir, graph
-):
+def txfunc_est(df, s, t, rate_type, tax_func_type, numparams, output_dir, graph):
     """
     This function uses tax tax rate and income data for individuals of a
     particular age (s) and a particular year (t) to estimate the
@@ -613,9 +582,7 @@ def txfunc_est(
         Atil, Btil, max_income = params_til.x
         wsse = params_til.fun
         obs = df.shape[0]
-        shift_income = np.maximum(-min_income, 0.0) + 0.01 * (
-            max_income - min_income
-        )
+        shift_income = np.maximum(-min_income, 0.0) + 0.01 * (max_income - min_income)
         params = np.zeros(numparams)
         params[:2] = np.array([Atil, Btil]) / np.array([income2bar, Ibar])
         params[2:] = np.array([max_income, min_income, shift_income, shift])
@@ -680,8 +647,9 @@ def txfunc_est(
         slope = (500 - np.round(0.8 * MIN_OBS)) / (1_000 - MIN_OBS)
         intercept = 500 - slope * 1_000
         bin_num = np.minimum(500, slope * obs + intercept)
-        mono_interp, _, wsse_cstr, _, _ = monotone_spline(income, txrates,
-                                                          wgts, bins=bin_num)
+        mono_interp, _, wsse_cstr, _, _ = monotone_spline(
+            income, txrates, wgts, bins=bin_num
+        )
         wsse = wsse_cstr
         params = mono_interp
         params_to_plot = params
@@ -711,9 +679,7 @@ def txfunc_est(
     return params, wsse, obs
 
 
-def tax_data_sample(
-    data, max_etr=MAX_ETR, min_income=MIN_INCOME, max_mtr=MAX_MTR
-):
+def tax_data_sample(data, max_etr=MAX_ETR, min_income=MIN_INCOME, max_mtr=MAX_MTR):
     """
     Function to create sample tax data for estimation by dropping
     observations with extreme values.
@@ -843,9 +809,7 @@ def tax_func_loop(
     PopPct_age = np.zeros(s_max - s_min + 1)
 
     # Calculate average total income in each year
-    AvgInc = ((data["market_income"] * data["weight"]).sum()) / data[
-        "weight"
-    ].sum()
+    AvgInc = ((data["market_income"] * data["weight"]).sum()) / data["weight"].sum()
 
     # Calculate average ETR and MTRs (weight by population weights
     #    and income) for each year
@@ -853,13 +817,13 @@ def tax_func_loop(
         data["market_income"] * data["weight"]
     ).sum()
 
-    AvgMTRx = (
-        (data["mtr_labinc"] * data["market_income"] * data["weight"]).sum()
-    ) / (data["market_income"] * data["weight"]).sum()
+    AvgMTRx = ((data["mtr_labinc"] * data["market_income"] * data["weight"]).sum()) / (
+        data["market_income"] * data["weight"]
+    ).sum()
 
-    AvgMTRy = (
-        (data["mtr_capinc"] * data["market_income"] * data["weight"]).sum()
-    ) / (data["market_income"] * data["weight"]).sum()
+    AvgMTRy = ((data["mtr_capinc"] * data["market_income"] * data["weight"]).sum()) / (
+        data["market_income"] * data["weight"]
+    ).sum()
 
     # Caulcatoe fraction of total tax liability that is from payroll
     # taxes
@@ -928,9 +892,7 @@ def tax_func_loop(
             ].index,
             ["mtr_capinc", "total_labinc", "total_capinc", "weight"],
         ].copy()
-        df_minobs = np.min(
-            [df_etr.shape[0], df_mtrx.shape[0], df_mtry.shape[0]]
-        )
+        df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0], df_mtry.shape[0]])
         del df
 
         if df_minobs < MIN_OBS and s < max_age:
@@ -940,9 +902,7 @@ def tax_func_loop(
             # Will fill in later with interpolated values
             # --------------------------------------------------------
             # '''
-            message = (
-                "Insuff. sample size for age " + str(s) + " in year " + str(t)
-            )
+            message = "Insuff. sample size for age " + str(s) + " in year " + str(t)
             print(message)
             NoData_cnt += 1
             etrparam_list[s - s_min] = None
@@ -979,16 +939,16 @@ def tax_func_loop(
             print(message)
             NoData_cnt += 1
             lastp_etr = etrparam_list[s - NoData_cnt - s_min]
-            etrparam_list[s - NoData_cnt - s_min + 1:] = (
-                [lastp_etr] * (NoData_cnt + s_max - max_age)
+            etrparam_list[s - NoData_cnt - s_min + 1 :] = [lastp_etr] * (
+                NoData_cnt + s_max - max_age
             )
             lastp_mtrx = mtrxparam_list[s - NoData_cnt - s_min]
-            mtrxparam_list[s - NoData_cnt - s_min + 1:] = (
-                [lastp_mtrx] * (NoData_cnt + s_max - max_age)
+            mtrxparam_list[s - NoData_cnt - s_min + 1 :] = [lastp_mtrx] * (
+                NoData_cnt + s_max - max_age
             )
             lastp_mtry = mtryparam_list[s - NoData_cnt - s_min]
-            mtryparam_list[s - NoData_cnt - s_min + 1:] = (
-                [lastp_mtry] * (NoData_cnt + s_max - max_age)
+            mtryparam_list[s - NoData_cnt - s_min + 1 :] = [lastp_mtry] * (
+                NoData_cnt + s_max - max_age
             )
 
         else:
@@ -1089,14 +1049,11 @@ def tax_func_loop(
                 # '''
                 message = "Fill in all previous blank ages"
                 print(message)
-                etrparam_list[:s - s_min] = [etrparams] * (s - s_min)
-                mtrxparam_list[:s - s_min] = [mtrxparams] * (s - s_min)
-                mtryparam_list[:s - s_min] = [mtryparams] * (s - s_min)
+                etrparam_list[: s - s_min] = [etrparams] * (s - s_min)
+                mtrxparam_list[: s - s_min] = [mtrxparams] * (s - s_min)
+                mtryparam_list[: s - s_min] = [mtryparams] * (s - s_min)
 
-            elif (
-                NoData_cnt > 0 & NoData_cnt < s - s_min &
-                tax_func_type != "mono"
-            ):
+            elif NoData_cnt > 0 & NoData_cnt < s - s_min & tax_func_type != "mono":
                 # '''
                 # -------------------------------------------------------------
                 # For all parametric tax function types (not "mono"), fill in
@@ -1130,71 +1087,59 @@ def tax_func_loop(
                 print(message)
                 tvals = np.linspace(0, 1, NoData_cnt + 2)
                 x0_etr = np.tile(
-                    etrparam_list[s - NoData_cnt - s_min - 1].reshape(
-                        (1, numparams)
-                    ),
+                    etrparam_list[s - NoData_cnt - s_min - 1].reshape((1, numparams)),
                     (NoData_cnt, 1),
                 )
-                x1_etr = np.tile(
-                    etrparams.reshape((1, numparams)), (NoData_cnt, 1)
-                )
+                x1_etr = np.tile(etrparams.reshape((1, numparams)), (NoData_cnt, 1))
                 lin_int_etr = x0_etr + tvals[1:-1].reshape((NoData_cnt, 1)) * (
                     x1_etr - x0_etr
                 )
 
                 x0_mtrx = np.tile(
-                    mtrxparam_list[s - NoData_cnt - s_min - 1].reshape(
-                        (1, numparams)
-                    ),
+                    mtrxparam_list[s - NoData_cnt - s_min - 1].reshape((1, numparams)),
                     (NoData_cnt, 1),
                 )
-                x1_mtrx = np.tile(
-                    mtrxparams.reshape((1, numparams)), (NoData_cnt, 1)
+                x1_mtrx = np.tile(mtrxparams.reshape((1, numparams)), (NoData_cnt, 1))
+                lin_int_mtrx = x0_mtrx + tvals[1:-1].reshape((NoData_cnt, 1)) * (
+                    x1_mtrx - x0_mtrx
                 )
-                lin_int_mtrx = x0_mtrx + tvals[1:-1].reshape(
-                    (NoData_cnt, 1)
-                ) * (x1_mtrx - x0_mtrx)
 
                 x0_mtry = np.tile(
-                    mtryparam_list[s - NoData_cnt - s_min - 1].reshape(
-                        (1, numparams)
-                    ),
+                    mtryparam_list[s - NoData_cnt - s_min - 1].reshape((1, numparams)),
                     (NoData_cnt, 1),
                 )
-                x1_mtry = np.tile(
-                    mtryparams.reshape((1, numparams)), (NoData_cnt, 1)
+                x1_mtry = np.tile(mtryparams.reshape((1, numparams)), (NoData_cnt, 1))
+                lin_int_mtry = x0_mtry + tvals[1:-1].reshape((NoData_cnt, 1)) * (
+                    x1_mtry - x0_mtry
                 )
-                lin_int_mtry = x0_mtry + tvals[1:-1].reshape(
-                    (NoData_cnt, 1)
-                ) * (x1_mtry - x0_mtry)
                 for s_ind in range(NoData_cnt):
-                    etrparam_list[s - NoData_cnt - min_age + s_ind] = \
-                        lin_int_etr[s_ind, :]
-                    mtrxparam_list[s - NoData_cnt - min_age + s_ind] = \
-                        lin_int_mtrx[s_ind, :]
-                    mtryparam_list[s - NoData_cnt - min_age + s_ind] = \
-                        lin_int_mtry[s_ind, :]
+                    etrparam_list[s - NoData_cnt - min_age + s_ind] = lin_int_etr[
+                        s_ind, :
+                    ]
+                    mtrxparam_list[s - NoData_cnt - min_age + s_ind] = lin_int_mtrx[
+                        s_ind, :
+                    ]
+                    mtryparam_list[s - NoData_cnt - min_age + s_ind] = lin_int_mtry[
+                        s_ind, :
+                    ]
 
-            elif (
-                NoData_cnt > 0 & NoData_cnt < s - s_min &
-                tax_func_type == "mono"
-            ):
-               # '''
+            elif NoData_cnt > 0 & NoData_cnt < s - s_min & tax_func_type == "mono":
+                # '''
                 # -------------------------------------------------------------
                 # For all nonparametric tax function types ("mono"), fill in
                 # interior data gaps with the previous estimated interpolating
                 # function (no interpolation between last function and current
                 # function). In all of these cases, min_age < s <= max_age.
                 # -------------------------------------------------------------
-                etrparam_list[s - NoData_cnt - min_age: s - min_age] = (
-                    [etrparam_list[s - NoData_cnt - s_min - 1]] * NoData_cnt
-                )
-                mtrxparam_list[s - NoData_cnt - min_age: s - min_age] = (
-                    [mtrxparam_list[s - NoData_cnt - s_min - 1]] * NoData_cnt
-                )
-                mtryparam_list[s - NoData_cnt - min_age: s - min_age] = (
-                    [mtryparam_list[s - NoData_cnt - s_min - 1]] * NoData_cnt
-                )
+                etrparam_list[s - NoData_cnt - min_age : s - min_age] = [
+                    etrparam_list[s - NoData_cnt - s_min - 1]
+                ] * NoData_cnt
+                mtrxparam_list[s - NoData_cnt - min_age : s - min_age] = [
+                    mtrxparam_list[s - NoData_cnt - s_min - 1]
+                ] * NoData_cnt
+                mtryparam_list[s - NoData_cnt - min_age : s - min_age] = [
+                    mtryparam_list[s - NoData_cnt - s_min - 1]
+                ] * NoData_cnt
 
             NoData_cnt == 0
 
@@ -1207,13 +1152,9 @@ def tax_func_loop(
                 # '''
                 message = "Fill in all remaining old age tax functions."
                 print(message)
-                etrparam_list[s - s_min + 1:] = [etrparams] * (s_max - max_age)
-                mtrxparam_list[s - s_min + 1:] = (
-                    [mtrxparams] * (s_max - max_age)
-                )
-                mtryparam_list[s - s_min + 1:] = (
-                    [mtryparams] * (s_max - max_age, 1)
-                )
+                etrparam_list[s - s_min + 1 :] = [etrparams] * (s_max - max_age)
+                mtrxparam_list[s - s_min + 1 :] = [mtrxparams] * (s_max - max_age)
+                mtryparam_list[s - s_min + 1 :] = [mtryparams] * (s_max - max_age, 1)
 
     return (
         TotPop_yr,
@@ -1300,7 +1241,7 @@ def tax_func_estimate(
         "DEP_totalinc": 6,
         "GS": 3,
         "linear": 1,
-        "mono": 1
+        "mono": 1,
     }
     numparams = int(tax_func_type_num_params_dict[tax_func_type])
     years_list = np.arange(start_year, end_yr + 1)
@@ -1372,9 +1313,7 @@ def tax_func_estimate(
         results = client.gather(futures)
     else:
         results = results = compute(
-            *lazy_values,
-            scheduler=dask.multiprocessing.get,
-            num_workers=num_workers
+            *lazy_values, scheduler=dask.multiprocessing.get, num_workers=num_workers
         )
 
     # Garbage collection
@@ -1420,11 +1359,7 @@ def tax_func_estimate(
         mins = int(elapsed_time / 60)
         secs = round(((elapsed_time / 60) - mins) * 60, 1)
         message = (
-            "Tax function estimation time: "
-            + str(mins)
-            + " min, "
-            + str(secs)
-            + " sec"
+            "Tax function estimation time: " + str(mins) + " min, " + str(secs) + " sec"
         )
         print(message)
     elif elapsed_time >= 3600 and elapsed_time < 86400:  # less than day
@@ -1530,28 +1465,27 @@ def tax_func_estimate(
                     if rmndr_pct_ub == 0.0:
                         rmndr_pct_ub = 1.0
                         yrcut_ub -= 1
-                    age_wgts = PopPct_age[bw, yrcut_lb:yrcut_ub + 1]
+                    age_wgts = PopPct_age[bw, yrcut_lb : yrcut_ub + 1]
                     age_wgts[0] *= rmndr_pct_lb
                     age_wgts[yrcut_ub - yrcut_lb] *= rmndr_pct_ub
                     etrparam_list_S[bw][s] = (
-                        etrparam_list_adj[bw][yrcut_lb:yrcut_ub + 1] * age_wgts
+                        etrparam_list_adj[bw][yrcut_lb : yrcut_ub + 1] * age_wgts
                     ).sum()
                     mtrxparam_list_S[bw][s] = (
-                        mtrxparam_list_adj[bw][yrcut_lb:yrcut_ub + 1] *
-                        age_wgts
+                        mtrxparam_list_adj[bw][yrcut_lb : yrcut_ub + 1] * age_wgts
                     ).sum()
                     mtryparam_list_S[bw][s] = (
-                        mtryparam_list_adj[bw][yrcut_lb:yrcut_ub + 1] *
-                        age_wgts
+                        mtryparam_list_adj[bw][yrcut_lb : yrcut_ub + 1] * age_wgts
                     ).sum()
                     yrcut_lb = yrcut_ub
                     rmndr_pct_lb = 1 - rmndr_pct_ub
 
         else:
-            err_msg("txfunc ERROR: S is larger than the difference between " +
-                     "the minimum age and the maximum age specified. Please " +
-                     "choose an S such that a model period equals at least " +
-                     "one calendar year."
+            err_msg(
+                "txfunc ERROR: S is larger than the difference between "
+                + "the minimum age and the maximum age specified. Please "
+                + "choose an S such that a model period equals at least "
+                + "one calendar year."
             )
             raise ValueError(err_msg)
         print("Big S: ", S)
@@ -1562,14 +1496,16 @@ def tax_func_estimate(
             mtrxparam_list_S = mtrxparam_list_adj
             mtryparam_list_S = mtryparam_list_adj
         elif S < s_max - s_min + 1:
-            err_msg = ("txfunc ERROR: tax_func_type = mono and S < s_max - " +
-                       "s_min + 1")
+            err_msg = (
+                "txfunc ERROR: tax_func_type = mono and S < s_max - " + "s_min + 1"
+            )
             raise ValueError(err_msg)
         else:
-            err_msg("txfunc ERROR: S is larger than the difference between " +
-                     "the minimum age and the maximum age specified. Please " +
-                     "choose an S such that a model period equals at least " +
-                     "one calendar year."
+            err_msg(
+                "txfunc ERROR: S is larger than the difference between "
+                + "the minimum age and the maximum age specified. Please "
+                + "choose an S such that a model period equals at least "
+                + "one calendar year."
             )
             raise ValueError(err_msg)
 
@@ -1616,16 +1552,16 @@ def tax_func_estimate(
     return dict_params
 
 
-def monotone_spline(x, y, weights, bins=None, lam=12, kap=1e+7,
-                    incl_uncstr=False, show_plot=False):
+def monotone_spline(
+    x, y, weights, bins=None, lam=12, kap=1e7, incl_uncstr=False, show_plot=False
+):
     # create binned and weighted x and y data
     if bins:
         if not np.isscalar(bins):
-            err_msg = 'monotone_spline2 ERROR: bins value is not type scalar'
+            err_msg = "monotone_spline2 ERROR: bins value is not type scalar"
             raise ValueError(err_msg)
         N = bins
-        x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y, weights,
-                                                              bins)
+        x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y, weights, bins)
 
     elif not bins:
         N = len(x)
@@ -1635,7 +1571,7 @@ def monotone_spline(x, y, weights, bins=None, lam=12, kap=1e+7,
 
     # Prepare bases (Imat) and penalty
     dd = 3
-    E  = np.eye(N)
+    E = np.eye(N)
     D3 = np.diff(E, n=dd, axis=0)
     D1 = np.diff(E, n=1, axis=0)
 
@@ -1644,26 +1580,29 @@ def monotone_spline(x, y, weights, bins=None, lam=12, kap=1e+7,
     weights_binned = weights_binned.reshape(len(weights_binned), 1)
     weights1 = 0.5 * weights_binned[1:, :] + 0.5 * weights_binned[:-1, :]
     weights3 = (
-        0.25 * weights_binned[3:, :] + 0.25 * weights_binned[2:-1, :] +
-        0.25 * weights_binned[1:-2, :] + 0.25 * weights_binned[:-3, :]
+        0.25 * weights_binned[3:, :]
+        + 0.25 * weights_binned[2:-1, :]
+        + 0.25 * weights_binned[1:-2, :]
+        + 0.25 * weights_binned[:-3, :]
     ).flatten()
 
     for it in range(30):
         Ws = np.diag(ws * kap)
-        mon_cof = np.linalg.solve(E + lam * D3.T @ np.diag(weights3) @ D3 +
-                                  D1.T @ (Ws * weights1) @ D1, y_binned)
+        mon_cof = np.linalg.solve(
+            E + lam * D3.T @ np.diag(weights3) @ D3 + D1.T @ (Ws * weights1) @ D1,
+            y_binned,
+        )
         ws_new = (D1 @ mon_cof < 0.0) * 1
         dw = np.sum(ws != ws_new)
         ws = ws_new
-        if(dw == 0):
+        if dw == 0:
             break
 
     # Monotonic and non monotonic fits
-    y_cstr  = mon_cof
+    y_cstr = mon_cof
     wsse_cstr = (weights_binned * ((y_cstr - y_binned) ** 2)).sum()
     if incl_uncstr:
-        y_uncstr = np.linalg.solve(E + lam * D3.T @ np.diag(weights3) @ D3,
-                                   y_binned)
+        y_uncstr = np.linalg.solve(E + lam * D3.T @ np.diag(weights3) @ D3, y_binned)
         wsse_uncstr = (weights_binned * ((y_uncstr - y_binned) ** 2)).sum()
     else:
         y_uncstr = None
@@ -1672,11 +1611,10 @@ def monotone_spline(x, y, weights, bins=None, lam=12, kap=1e+7,
     def mono_interp(x_vec):
         # replace last point in data with two copies further out to make smooth
         # extrapolation
-        x_new = np.append(x_binned[:-1], [1.005 * x_binned[-1],
-                          1.01 * x_binned[-1]])
+        x_new = np.append(x_binned[:-1], [1.005 * x_binned[-1], 1.01 * x_binned[-1]])
         y_cstr_new = np.append(y_cstr[:-1], [y_cstr[-1], y_cstr[-1]])
         # Create interpolating cubic spline for interior points
-        inter_interpl = intp(x_new, y_cstr_new, kind='cubic')
+        inter_interpl = intp(x_new, y_cstr_new, kind="cubic")
         y_pred = np.zeros_like(x_vec)
         x_lt_min = x_vec < x_binned.min()
         x_gt_max = x_vec > x_new.max()
@@ -1692,22 +1630,44 @@ def monotone_spline(x, y, weights, bins=None, lam=12, kap=1e+7,
         return y_pred
 
     if show_plot:
-        plt.scatter(x, y, linestyle='None', color='gray', s=0.8, alpha=0.7,
-                    label='All data')
+        plt.scatter(
+            x, y, linestyle="None", color="gray", s=0.8, alpha=0.7, label="All data"
+        )
         if not bins:
-            plt.plot(x, y_cstr, color='red', alpha=1.0,
-                     label='Monotonic smooth spline')
+            plt.plot(x, y_cstr, color="red", alpha=1.0, label="Monotonic smooth spline")
             if incl_uncstr:
-                plt.plot(x, y_uncstr, color='blue', alpha=1.0,
-                         label='Unconstrained smooth spline')
+                plt.plot(
+                    x,
+                    y_uncstr,
+                    color="blue",
+                    alpha=1.0,
+                    label="Unconstrained smooth spline",
+                )
         else:
-            plt.scatter(x_binned, y_binned, linestyle='None', color='black',
-                        s=0.8, alpha=0.7, label="Binned data averages")
-            plt.plot(x, mono_interp(x), color='red', alpha=1.0,
-                     label='Monotonic smooth spline')
+            plt.scatter(
+                x_binned,
+                y_binned,
+                linestyle="None",
+                color="black",
+                s=0.8,
+                alpha=0.7,
+                label="Binned data averages",
+            )
+            plt.plot(
+                x,
+                mono_interp(x),
+                color="red",
+                alpha=1.0,
+                label="Monotonic smooth spline",
+            )
             if incl_uncstr:
-                plt.plot(x_binned, y_uncstr, color='blue', alpha=1.0,
-                         label='Unconstrained smooth spline')
+                plt.plot(
+                    x_binned,
+                    y_uncstr,
+                    color="blue",
+                    alpha=1.0,
+                    label="Unconstrained smooth spline",
+                )
         plt.legend(loc="lower right")
         plt.show()
         plt.close()
