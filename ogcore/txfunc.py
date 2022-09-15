@@ -408,7 +408,9 @@ def replace_outliers(param_list, sse_big_mat):
     return param_list_adj
 
 
-def txfunc_est(df, s, t, rate_type, tax_func_type, numparams, output_dir, graph):
+def txfunc_est(
+    df, s, t, rate_type, tax_func_type, numparams, output_dir, graph
+):
     """
     This function uses tax tax rate and income data for individuals of a
     particular age (s) and a particular year (t) to estimate the
