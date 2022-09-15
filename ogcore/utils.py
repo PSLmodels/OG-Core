@@ -132,10 +132,9 @@ def pickle_file_compare(
 
 def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
     """
-    Compare two arrays in the L inifinity norm
-    Return True if | a - b | < tol, False otherwise
-    If not equal, add items to the unequal list
-    name: the name of the value being compared
+    Compare two arrays in the L inifinity norm. Return True if | a - b | < tol,
+    False otherwise. If not equal, add items to the unequal list name: the name
+    of the value being compared
 
     Args:
         name (str): name of variable being compared
@@ -148,7 +147,6 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
 
     Returns:
         (bool): whether two arrays are the same or not
-
     """
 
     if name in exceptions:
@@ -182,9 +180,9 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
 
 def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
     """
-    Compare two scalars in the L inifinity norm
-    Return True if abs(a - b) < tol, False otherwise
-    If not equal, add items to the unequal list
+    Compare two scalars in the L inifinity norm. Return True if
+    abs(a - b) < tol, False otherwise. If not equal, add items to the unequal
+    list.
 
     Args:
         name (str): name of variable being compared
@@ -197,7 +195,6 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
 
     Returns:
         (bool): whether two arrays are the same or not
-
     """
 
     if name in exceptions:
