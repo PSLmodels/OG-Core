@@ -380,17 +380,17 @@ def replace_outliers(param_list, sse_big_mat):
 
     """
     numparams = len(param_list[0][0])
-    age_ind = np.arange(0, sse_big_mat.shape[1])
+    S = sse_big_mat.shape[1]
     param_list_adj = param_list.copy()
     for t in range(sse_big_mat.shape[0]):
         big_cnt = 0
-        for s in age_ind:
+        for s in range(S):
             # Smooth out ETR tax function outliers
-            if sse_big_mat[t, s] and s < sse_big_mat.shape[1] - 1:
+            if sse_big_mat[t, s] and s < S - 1:
                 # For all outlier observations, increase the big_cnt by
                 # 1 and set the param_arr_adj equal to nan
                 big_cnt += 1
-                param_list_adj[t][s] = None
+                param_list_adj[t][s] = np.nan
             if not sse_big_mat[t, s] and big_cnt > 0 and s == big_cnt:
                 # When the current function is not an outlier but the last
                 # one was and this string of outliers is at the beginning
@@ -419,9 +419,9 @@ def replace_outliers(param_list, sse_big_mat):
 
                 for s_ind in range(big_cnt):
                     param_list_adj[t][s - big_cnt + s_ind] = (
-                        tiled_intvec[:, s_ind] +
-                        (tiled_slopevec[:, s_ind] *
-                         tiled_reshape_arange[:, s_ind])
+                        tiled_intvec[s_ind, :] +
+                        (tiled_slopevec[s_ind, :] *
+                         tiled_reshape_arange[s_ind, :])
                     )
 
                 big_cnt = 0
