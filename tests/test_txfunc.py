@@ -216,7 +216,9 @@ expected_tuple_linear_mtry = (0.24793767, 0.0, 152900)
     ],
     ids=["DEP", "DEP_totalinc", "GS"],
 )
-def test_txfunc_est(rate_type, tax_func_type, numparams, expected_tuple, tmpdir):
+def test_txfunc_est(
+    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
+):
     """
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -258,7 +260,9 @@ def test_txfunc_est(rate_type, tax_func_type, numparams, expected_tuple, tmpdir)
     ],
     ids=["linear", "linear, mtrx", "linear, mtry"],
 )
-def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams, expected_tuple, tmpdir):
+def test_txfunc_est_on_GH(
+    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
+):
     """
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -332,15 +336,12 @@ def test_tax_data_sample():
 # platforms
 def test_tax_func_loop():
     """
-    Test txfunc.tax_func_loop() function.  The test is that given
-    inputs from previous run, the outputs are unchanged.
-
-    Note that the data for this test is too large for GitHub, so it
-    won't be available there.
-
+    Test txfunc.tax_func_loop() function. The test is that given inputs from
+    previous run, the outputs are unchanged.
     """
     input_tuple = decompress_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "tax_func_loop_inputs_large.pbz2")
+        os.path.join(CUR_PATH, "test_io_data",
+                     "tax_func_loop_inputs_large.pbz2")
     )
     (
         t,
@@ -693,5 +694,6 @@ def test_tax_func_estimate(tmpdir, dask_client):
         if isinstance(v, str):  # for testing tax_func_type object
             assert test_dict[k] == v
         else:  # for testing all other objects
-            print("Max diff for ", k, " = ", np.absolute(test_dict[k] - v).max())
+            print("Max diff for ", k, " = ",
+                  np.absolute(test_dict[k] - v).max())
             assert np.all(np.isclose(test_dict[k], v))

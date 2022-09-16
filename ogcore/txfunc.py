@@ -1053,7 +1053,10 @@ def tax_func_loop(
                 mtrxparam_list[: s - s_min] = [mtrxparams] * (s - s_min)
                 mtryparam_list[: s - s_min] = [mtryparams] * (s - s_min)
 
-            elif NoData_cnt > 0 & NoData_cnt < s - s_min & tax_func_type != "mono":
+            elif (
+                (NoData_cnt > 0) & (NoData_cnt < s - s_min) &
+                (tax_func_type != "mono")
+            ):
                 # '''
                 # -------------------------------------------------------------
                 # For all parametric tax function types (not "mono"), fill in
@@ -1152,9 +1155,12 @@ def tax_func_loop(
                 # '''
                 message = "Fill in all remaining old age tax functions."
                 print(message)
-                etrparam_list[s - s_min + 1 :] = [etrparams] * (s_max - max_age)
-                mtrxparam_list[s - s_min + 1 :] = [mtrxparams] * (s_max - max_age)
-                mtryparam_list[s - s_min + 1 :] = [mtryparams] * (s_max - max_age, 1)
+                etrparam_list[s - s_min + 1 :] = \
+                    [etrparams] * (s_max - max_age)
+                mtrxparam_list[s - s_min + 1 :] = \
+                    [mtrxparams] * (s_max - max_age)
+                mtryparam_list[s - s_min + 1 :] = \
+                    [mtryparams] * (s_max - max_age)
 
     return (
         TotPop_yr,
