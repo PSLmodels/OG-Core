@@ -410,7 +410,14 @@ def test_tax_func_loop():
     )
 
     for i, v in enumerate(expected_tuple):
-        print("diff = ", np.absolute(test_tuple[i] - v).max())
+        if isinstance(test_tuple[i], list):
+            test_tuple_obj = np.array(test_tuple[i])
+            exp_tuple_obj = np.array(expected_tuple[i])
+            print("For element", i, ", diff =",
+                  np.absolute(test_tuple_obj - exp_tuple_obj).max())
+        else:
+            print("For element", i, ", diff =",
+            np.absolute(test_tuple[i] - v).max())
         assert np.allclose(test_tuple[i], v, atol=1e-06)
 
 
