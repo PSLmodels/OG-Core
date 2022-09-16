@@ -1521,10 +1521,10 @@ def tax_func_estimate(
         etrparam_list_S = np.zeros((BW, S)).tolist()
         mtrxparam_list_S = np.zeros((BW, S)).tolist()
         mtryparam_list_S = np.zeros((BW, S)).tolist()
-        for BW_ind in range(BW):
-            etrparam_list_S[BW][:] = [etrparam_list[BW_ind][0 - s_min]] * S
-            mtrxparam_list_S[BW][:] = [mtrxparam_list[BW_ind][0 - s_min]] * S
-            mtryparam_list_S[BW][:] = [mtryparam_list[BW_ind][0 - s_min]] * S
+        for bw in range(BW):
+            etrparam_list_S[bw][:] = [etrparam_list[bw][0 - s_min]] * S
+            mtrxparam_list_S[bw][:] = [mtrxparam_list[bw][0 - s_min]] * S
+            mtryparam_list_S[bw][:] = [mtryparam_list[bw][0 - s_min]] * S
 
     # Save tax function parameters array and computation time in
     # dictionary

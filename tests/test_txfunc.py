@@ -617,14 +617,7 @@ def test_get_tax_rates(
     expected,
 ):
     """
-    Teset of txfunc.get_tax_rates() function.  There are 6 cases to
-    test:
-    1) DEP function, for estimation
-    2) DEP function, not for estimation
-    3) GS function, etr
-    4) GS function, mtr
-    5) DEP_totalinc function, for estimation
-    6) DEP_totalinc function, not for estimation
+    Teset of txfunc.get_tax_rates() function.
     """
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
     X = np.array([32.0, 44.0, 1.6, 0.4])
