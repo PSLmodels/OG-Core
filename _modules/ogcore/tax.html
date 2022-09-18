@@ -559,7 +559,18 @@ title="Open an issue"
     <span class="k">return</span> <span class="n">tau_prime</span></div>
 
 
-<div class="viewcode-block" id="ETR_income"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.ETR_income">[docs]</a><span class="k">def</span> <span class="nf">ETR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<div class="viewcode-block" id="ETR_income"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.ETR_income">[docs]</a><span class="k">def</span> <span class="nf">ETR_income</span><span class="p">(</span>
+    <span class="n">r</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">factor</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">etr_params</span><span class="p">,</span>
+    <span class="n">labor_noncompliance_rate</span><span class="p">,</span>
+    <span class="n">capital_noncompliance_rate</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates effective personal income tax rate.</span>
 
@@ -572,6 +583,8 @@ title="Open an issue"
 <span class="sd">            dollars</span>
 <span class="sd">        e (Numpy array): effective labor units</span>
 <span class="sd">        etr_params (Numpy array): effective tax rate function parameters</span>
+<span class="sd">        labor_noncompliance_rate (Numpy array): income tax noncompliance rate for labor income</span>
+<span class="sd">        capital_noncompliance_rate (Numpy array): income tax noncompliance rate for capital income</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
 <span class="sd">    Returns:</span>
@@ -580,15 +593,30 @@ title="Open an issue"
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
     <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span>
+    <span class="n">noncompliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">labor_noncompliance_rate</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">Y</span> <span class="o">*</span> <span class="n">capital_noncompliance_rate</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">X</span> <span class="o">+</span> <span class="n">Y</span><span class="p">)</span>
 
     <span class="n">tau</span> <span class="o">=</span> <span class="n">get_tax_rates</span><span class="p">(</span>
         <span class="n">etr_params</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span><span class="p">,</span> <span class="s2">&quot;etr&quot;</span><span class="p">,</span> <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">tau</span></div>
+    <span class="k">return</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">noncompliance_rate</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MTR_income"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.MTR_income">[docs]</a><span class="k">def</span> <span class="nf">MTR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">mtr_capital</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<div class="viewcode-block" id="MTR_income"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.MTR_income">[docs]</a><span class="k">def</span> <span class="nf">MTR_income</span><span class="p">(</span>
+    <span class="n">r</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">factor</span><span class="p">,</span>
+    <span class="n">mtr_capital</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">etr_params</span><span class="p">,</span>
+    <span class="n">mtr_params</span><span class="p">,</span>
+    <span class="n">noncompliance_rate</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates the marginal tax rate on labor income for households.</span>
 
@@ -603,6 +631,7 @@ title="Open an issue"
 <span class="sd">            capital income or labor income</span>
 <span class="sd">        e (Numpy array): effective labor units</span>
 <span class="sd">        etr_params (Numpy array): effective tax rate function parameters</span>
+<span class="sd">        noncompliance_rate (Numpy array): income tax noncompliance rate</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
 <span class="sd">    Returns:</span>
@@ -637,7 +666,7 @@ title="Open an issue"
             <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">tau</span></div>
+    <span class="k">return</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">noncompliance_rate</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_biz_tax"><a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.get_biz_tax">[docs]</a><span class="k">def</span> <span class="nf">get_biz_tax</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
@@ -781,14 +810,54 @@ title="Open an issue"
             <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>
+            <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>
+            <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>
 
     <span class="n">income</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
     <span class="n">labor_income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
-    <span class="n">T_I</span> <span class="o">=</span> <span class="n">ETR_income</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">income</span>
+    <span class="n">T_I</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">ETR_income</span><span class="p">(</span>
+            <span class="n">r</span><span class="p">,</span>
+            <span class="n">w</span><span class="p">,</span>
+            <span class="n">b</span><span class="p">,</span>
+            <span class="n">n</span><span class="p">,</span>
+            <span class="n">factor</span><span class="p">,</span>
+            <span class="n">e</span><span class="p">,</span>
+            <span class="n">etr_params</span><span class="p">,</span>
+            <span class="n">labor_income_tax_compliance_rate</span><span class="p">,</span>
+            <span class="n">capital_income_tax_compliance_rate</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">*</span> <span class="n">income</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>

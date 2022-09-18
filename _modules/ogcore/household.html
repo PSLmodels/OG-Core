@@ -817,14 +817,36 @@ title="Open an issue"
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">chi_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">chi_b</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span>
+                <span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span>
+            <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">chi_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">chi_b</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span>
+                <span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:</span>
+            <span class="p">]</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">p_tilde</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_tilde</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+        <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
         <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
@@ -854,7 +876,17 @@ title="Open an issue"
         <span class="o">-</span> <span class="p">(</span>
             <span class="n">r</span>
             <span class="o">*</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_income</span><span class="p">(</span>
-                <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtry_params</span><span class="p">,</span> <span class="n">p</span>
+                <span class="n">r</span><span class="p">,</span>
+                <span class="n">w</span><span class="p">,</span>
+                <span class="n">b</span><span class="p">,</span>
+                <span class="n">n</span><span class="p">,</span>
+                <span class="n">factor</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span>
+                <span class="n">e</span><span class="p">,</span>
+                <span class="n">etr_params</span><span class="p">,</span>
+                <span class="n">mtry_params</span><span class="p">,</span>
+                <span class="n">tax_noncompliance</span><span class="p">,</span>
+                <span class="n">p</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="o">-</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">)</span>
@@ -958,6 +990,31 @@ title="Open an issue"
     <span class="k">else</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span>
+                <span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span>
+            <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span>
+                <span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:</span>
+            <span class="p">]</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>  <span class="c1"># for 1st donut ring only</span>
+        <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
@@ -987,7 +1044,17 @@ title="Open an issue"
         <span class="mi">1</span>
         <span class="o">-</span> <span class="n">tau_payroll</span>
         <span class="o">-</span> <span class="n">tax</span><span class="o">.</span><span class="n">MTR_income</span><span class="p">(</span>
-            <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">mtrx_params</span><span class="p">,</span> <span class="n">p</span>
+            <span class="n">r</span><span class="p">,</span>
+            <span class="n">w</span><span class="p">,</span>
+            <span class="n">b</span><span class="p">,</span>
+            <span class="n">n</span><span class="p">,</span>
+            <span class="n">factor</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="n">e</span><span class="p">,</span>
+            <span class="n">etr_params</span><span class="p">,</span>
+            <span class="n">mtrx_params</span><span class="p">,</span>
+            <span class="n">tax_noncompliance</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="n">FOC_error</span> <span class="o">=</span> <span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
