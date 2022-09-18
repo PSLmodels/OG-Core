@@ -693,7 +693,20 @@ def test_tax_func_estimate(tmpdir, dask_client):
     for k, v in expected_dict.items():
         if isinstance(v, str):  # for testing tax_func_type object
             assert test_dict[k] == v
+        elif isinstance(expected_dict[i], list):
+            test_dict_obj = np.array(test_dict[i])
+            exp_dict_obj = np.array(expected_dict[i])
+            print("For element", i, ", diff =",
+                  np.absolute(test_dict_obj - exp_dict_obj).max())
         else:  # for testing all other objects
             print("Max diff for ", k, " = ",
                   np.absolute(test_dict[k] - v).max())
             assert np.all(np.isclose(test_dict[k], v))
+
+
+@pytest.mark.local
+def test_monotone_spline():
+    """
+    Test txfunc.monotone_spline() function.
+    """
+    assert 2 == 2
