@@ -254,6 +254,13 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   Among all of these tax functional forms, users can set the `age_specific` parameter to `False` if they wish to have one function for all ages $s$.  In addition, for the functions based on {cite}`DeBackerEtAl:2019` (`tax_func_type="DEP"` or `tax_func_type="DEP_totinc"`), one can set `analytical_mtrs=True` if they wish to have the $\tau^{mtrx}_{s,t}$ and $\tau^{mtry}_{s,t}$ derived from the $\tau^{etr}_{s,t}$ functions.  This provides theoretical consistency, but reduced fit of the functions (see {cite}`DeBackerEtAl:2019` for more details).
 
+(SecTaxCompliance)=
+###### Income Tax Noncompliance
+
+The parameters of the tax functions used in `OG-Core` are typically estimated using data that miss the effects of compliance (either because they use administrative data from tax returns or because of similar under-reporting in survey data {cite}`HurstEtAl:2014`(see Hurst et al. (REStat, 2014))).  `OG-Core` therefore offers the user two parameters that scale the marginal and effective tax rate functions in order to account for income tax noncompliance.  These parameters are `labor_income_tax_noncompliance_rate` and `capital_income_tax_noncompliance_rate` and represent the rates of noncompliance on the respective sources of income.  The implementation of these parameters is as follows.  Let represent $\eta$ the noncompliance rate (on labor and capital income) and let $\tau$ represent the marginal tax rate (on labor or capital income) without accounting for noncompliance.  Then, the marginal tax rate faced by a household, after accounting for compliance decisions, is $\tau^{nc} = (1 - \eta)\tau$.
+
+When computing the role of compliance on the effective tax rate, we take a weighted average over the rates of noncompliance for labor and capital income.  If we let $X$ represent labor income, $Y$ capital income, and $\eta_X$ and $\eta_Y$ represent the noncompliance rates on labor and capital income, respecitvely.  Then the noncompliance rate applied to the effective tax rate is given by $\eta = \frac{\eta_X X + \eta_Y Y}{X + Y}$.  If we use $\tau$ to represent the effective tax rate, then the effective tax rate used in the households budget constraint and to determine tax liability is $\tau^{nc} = (1 - \eta)\tau$, where the $\eta$ represents the average rate of noncompliance across income sources.
+
 (SecTaxCalcFactor)=
 ###### Factor Transforming Income Units
 

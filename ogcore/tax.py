@@ -120,7 +120,18 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
     return tau_prime
 
 
-def ETR_income(r, w, b, n, factor, e, etr_params, p):
+def ETR_income(
+    r,
+    w,
+    b,
+    n,
+    factor,
+    e,
+    etr_params,
+    labor_noncompliance_rate,
+    capital_noncompliance_rate,
+    p,
+):
     """
     Calculates effective personal income tax rate.
 
@@ -134,6 +145,8 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
         e (Numpy array): effective labor units
         etr_params (array_like or function): effective tax rate function
             parameters or nonparametric function
+        labor_noncompliance_rate (Numpy array): income tax noncompliance rate for labor income
+        capital_noncompliance_rate (Numpy array): income tax noncompliance rate for capital income
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -142,15 +155,30 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
     """
     X = (w * e * n) * factor
     Y = (r * b) * factor
+    noncompliance_rate = (
+        (X * labor_noncompliance_rate) + (Y * capital_noncompliance_rate)
+    ) / (X + Y)
 
     tau = get_tax_rates(
         etr_params, X, Y, None, p.tax_func_type, "etr", for_estimation=False
     )
 
-    return tau
+    return tau * (1 - noncompliance_rate)
 
 
-def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params, mtr_params, p):
+def MTR_income(
+    r,
+    w,
+    b,
+    n,
+    factor,
+    mtr_capital,
+    e,
+    etr_params,
+    mtr_params,
+    noncompliance_rate,
+    p,
+):
     r"""
     Generates the marginal tax rate on labor income for households.
 
@@ -168,6 +196,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params, mtr_params, p):
             parameters or nonparametric function
         mtr_params (array_like or function): marginal tax rate function
             parameters or nonparametric function
+        noncompliance_rate (Numpy array): income tax noncompliance rate
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -202,7 +231,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params, mtr_params, p):
             for_estimation=False,
         )
 
-    return tau
+    return tau * (1 - noncompliance_rate)
 
 
 def get_biz_tax(w, Y, L, K, p_m, p, m, method):
@@ -346,14 +375,54 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             if b.ndim == 2:
                 r = r.reshape(r.shape[0], 1)
                 w = w.reshape(w.shape[0], 1)
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[t, j]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[t, j]
+            )
+        else:
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[-1, j]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[-1, j]
+            )
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
             w = utils.to_timepath_shape(w)
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[t, :]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[t, :]
+            )
+        else:
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[-1, :]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[-1, :]
+            )
 
     income = r * b + w * e * n
     labor_income = w * e * n
-    T_I = ETR_income(r, w, b, n, factor, e, etr_params, p) * income
+    T_I = (
+        ETR_income(
+            r,
+            w,
+            b,
+            n,
+            factor,
+            e,
+            etr_params,
+            labor_income_tax_compliance_rate,
+            capital_income_tax_compliance_rate,
+            p,
+        )
+        * income
+    )
     if method == "SS":
         T_P = p.tau_payroll[-1] * labor_income
     elif method == "TPI":

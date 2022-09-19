@@ -124,6 +124,18 @@ def test_tp_output_dump_table():
     ],
 )
 def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
+    base_params.labor_income_tax_noncompliance_rate = np.zeros(
+        (base_params.T, base_params.J)
+    )
+    base_params.capital_income_tax_noncompliance_rate = np.zeros(
+        (base_params.T, base_params.J)
+    )
+    reform_params.labor_income_tax_noncompliance_rate = np.zeros(
+        (reform_params.T, reform_params.J)
+    )
+    reform_params.capital_income_tax_noncompliance_rate = np.zeros(
+        (reform_params.T, reform_params.J)
+    )
     df = output_tables.dynamic_revenue_decomposition(
         base_params,
         base_tpi,
