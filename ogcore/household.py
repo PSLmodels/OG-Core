@@ -378,14 +378,36 @@ def FOC_savings(
     if j is not None:
         chi_b = p.chi_b[j]
         beta = p.beta[j]
+        if method == "SS":
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, j]
+        elif method == "TPI_scalar":
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, j]
+        else:
+            length = r.shape[0]
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[
+                t : t + length, j
+            ]
     else:
         chi_b = p.chi_b
         beta = p.beta
+        if method == "SS":
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, :]
+        elif method == "TPI_scalar":
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, :]
+        else:
+            length = r.shape[0]
+            tax_noncompliance = p.capital_income_tax_noncompliance_rate[
+                t : t + length, :
+            ]
     if method == "SS":
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
         p_wealth = p.p_wealth[-1]
         p_tilde = np.ones_like(p.rho) * p_tilde
+    elif method == "TPI_scalar":
+        h_wealth = p.h_wealth[0]
+        m_wealth = p.m_wealth[0]
+        p_wealth = p.p_wealth[0]
     else:
         h_wealth = p.h_wealth[t]
         m_wealth = p.m_wealth[t]
@@ -415,7 +437,17 @@ def FOC_savings(
         - (
             r
             * tax.MTR_income(
-                r, w, b, n, factor, True, e, etr_params, mtry_params, p
+                r,
+                w,
+                b,
+                n,
+                factor,
+                True,
+                e,
+                etr_params,
+                mtry_params,
+                tax_noncompliance,
+                p,
             )
         )
         - tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth)
@@ -519,6 +551,31 @@ def FOC_labor(
     else:
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t : t + length]
+    if j is not None:
+        if method == "SS":
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, j]
+        elif method == "TPI_scalar":
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, j]
+        else:
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[
+                t : t + length, j
+            ]
+    else:
+        if method == "SS":
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, :]
+        elif method == "TPI_scalar":
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, :]
+        else:
+            tax_noncompliance = p.labor_income_tax_noncompliance_rate[
+                t : t + length, :
+            ]
+    if method == "SS":
+        tau_payroll = p.tau_payroll[-1]
+    elif method == "TPI_scalar":  # for 1st donut ring only
+        tau_payroll = p.tau_payroll[0]
+    else:
+        length = r.shape[0]
+        tau_payroll = p.tau_payroll[t : t + length]
     if method == "TPI":
         if b.ndim == 2:
             r = r.reshape(r.shape[0], 1)
@@ -548,7 +605,17 @@ def FOC_labor(
         1
         - tau_payroll
         - tax.MTR_income(
-            r, w, b, n, factor, False, e, etr_params, mtrx_params, p
+            r,
+            w,
+            b,
+            n,
+            factor,
+            False,
+            e,
+            etr_params,
+            mtrx_params,
+            tax_noncompliance,
+            p,
         )
     )
     FOC_error = marg_ut_cons(cons, p.sigma) * (
