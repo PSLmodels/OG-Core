@@ -708,5 +708,46 @@ def test_tax_func_estimate(tmpdir, dask_client):
 def test_monotone_spline():
     """
     Test txfunc.monotone_spline() function.
+
+        1. Test whether the output includes a function
+        2. test that the function give the correct outputs
+        3. test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
     """
-    assert 2 == 2
+    # Simulate some data
+    N   = 100
+    xlo = 0.001
+    xhi = 2 * np.pi
+    x   = np.arange(xlo, xhi, step = (xhi-xlo)/N)
+    y0  = np.sin(x) + np.log(x)
+    y   = y0 + np.random.randn(N) * 0.5
+    weights = np.ones(N)
+
+    # Estimate monotonically increasing function on the data
+    mono_interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr = \
+        txfunc.monotone_spline(
+            x, y, weights, bins=10, lam=100, incl_uncstr=True, show_plot=False
+        )
+    # Test whether mono_interp is a function
+    assert isinstance(mono_interp, 'function')
+
+    # Test whether mono_interp gives the correct output
+    x_vec_test = np.array([2.0, 5.0])
+    y_vec_expected = np.array([0.54745566, 1.0997475])
+    y_monointerp = mono_interp(x_vec_test)
+    assert np.allclose(y_monointerp, y_vec_expected)
+
+    # Test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
+    y_cstr_expected = np.array([
+        -0.28723655,  0.06915227,  0.36652721,  0.60616912,  0.79148558,
+        0.92796704,  1.02237245,  1.08126027,  1.10948871,  1.10948868
+    ])
+    wsse_cstr_expected = 485.91925559586105
+    y_uncstr_expected = np.array([
+        -0.56163591,  0.02718061,  0.49449398,  0.84131066,  1.07017307,
+        1.1849273 ,  1.18995552,  1.08903242,  0.88440775,  0.57682937
+    ])
+    wsse_uncstr_expected = 427.7942771254685
+    assert np.allclose(y_cstr, y_cstr_expected)
+    assert np.allclose(wsse_cstr, wsse_cstr_expected)
+    assert np.allclose(y_uncstr, y_uncstr_expected)
+    assert np.allclose(wsse_uncstr, wsse_uncstr_expected)

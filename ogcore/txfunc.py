@@ -1559,7 +1559,8 @@ def tax_func_estimate(
 
 
 def monotone_spline(
-    x, y, weights, bins=None, lam=12, kap=1e7, incl_uncstr=False, show_plot=False
+    x, y, weights, bins=None, lam=12, kap=1e7, incl_uncstr=False,
+    show_plot=False
 ):
     # create binned and weighted x and y data
     if bins:
