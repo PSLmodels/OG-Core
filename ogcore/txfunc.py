@@ -1054,8 +1054,7 @@ def tax_func_loop(
                 mtryparam_list[: s - s_min] = [mtryparams] * (s - s_min)
 
             elif (
-                (NoData_cnt > 0) & (NoData_cnt < s - s_min) &
-                (tax_func_type != "mono")
+                (NoData_cnt > 0) & (NoData_cnt < s - s_min) & (tax_func_type != "mono")
             ):
                 # '''
                 # -------------------------------------------------------------
@@ -1155,12 +1154,9 @@ def tax_func_loop(
                 # '''
                 message = "Fill in all remaining old age tax functions."
                 print(message)
-                etrparam_list[s - s_min + 1 :] = \
-                    [etrparams] * (s_max - max_age)
-                mtrxparam_list[s - s_min + 1 :] = \
-                    [mtrxparams] * (s_max - max_age)
-                mtryparam_list[s - s_min + 1 :] = \
-                    [mtryparams] * (s_max - max_age)
+                etrparam_list[s - s_min + 1 :] = [etrparams] * (s_max - max_age)
+                mtrxparam_list[s - s_min + 1 :] = [mtrxparams] * (s_max - max_age)
+                mtryparam_list[s - s_min + 1 :] = [mtryparams] * (s_max - max_age)
 
     return (
         TotPop_yr,
@@ -1559,8 +1555,7 @@ def tax_func_estimate(
 
 
 def monotone_spline(
-    x, y, weights, bins=None, lam=12, kap=1e7, incl_uncstr=False,
-    show_plot=False
+    x, y, weights, bins=None, lam=12, kap=1e7, incl_uncstr=False, show_plot=False
 ):
     # create binned and weighted x and y data
     if bins:
