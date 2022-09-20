@@ -216,9 +216,7 @@ expected_tuple_linear_mtry = (0.24793767, 0.0, 152900)
     ],
     ids=["DEP", "DEP_totalinc", "GS"],
 )
-def test_txfunc_est(
-    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
-):
+def test_txfunc_est(rate_type, tax_func_type, numparams, expected_tuple, tmpdir):
     """
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -260,9 +258,7 @@ def test_txfunc_est(
     ],
     ids=["linear", "linear, mtrx", "linear, mtry"],
 )
-def test_txfunc_est_on_GH(
-    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
-):
+def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams, expected_tuple, tmpdir):
     """
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -340,8 +336,7 @@ def test_tax_func_loop():
     previous run, the outputs are unchanged.
     """
     input_tuple = decompress_pickle(
-        os.path.join(CUR_PATH, "test_io_data",
-                     "tax_func_loop_inputs_large.pbz2")
+        os.path.join(CUR_PATH, "test_io_data", "tax_func_loop_inputs_large.pbz2")
     )
     (
         t,
@@ -413,11 +408,14 @@ def test_tax_func_loop():
         if isinstance(test_tuple[i], list):
             test_tuple_obj = np.array(test_tuple[i])
             exp_tuple_obj = np.array(expected_tuple[i])
-            print("For element", i, ", diff =",
-                  np.absolute(test_tuple_obj - exp_tuple_obj).max())
+            print(
+                "For element",
+                i,
+                ", diff =",
+                np.absolute(test_tuple_obj - exp_tuple_obj).max(),
+            )
         else:
-            print("For element", i, ", diff =",
-            np.absolute(test_tuple[i] - v).max())
+            print("For element", i, ", diff =", np.absolute(test_tuple[i] - v).max())
         assert np.allclose(test_tuple[i], v, atol=1e-06)
 
 
@@ -696,11 +694,14 @@ def test_tax_func_estimate(tmpdir, dask_client):
         elif isinstance(expected_dict[k], list):
             test_dict_obj = np.array(test_dict[k])
             exp_dict_obj = np.array(expected_dict[k])
-            print("For element", k, ", diff =",
-                  np.absolute(test_dict_obj - exp_dict_obj).max())
+            print(
+                "For element",
+                k,
+                ", diff =",
+                np.absolute(test_dict_obj - exp_dict_obj).max(),
+            )
         else:  # for testing all other objects
-            print("Max diff for ", k, " = ",
-                  np.absolute(test_dict[k] - v).max())
+            print("Max diff for ", k, " = ", np.absolute(test_dict[k] - v).max())
             assert np.all(np.isclose(test_dict[k], v))
 
 
@@ -715,21 +716,20 @@ def test_monotone_spline():
     """
     # Simulate some data
     np.random.seed(10)
-    N   = 100
+    N = 100
     xlo = 0.001
     xhi = 2 * np.pi
-    x   = np.arange(xlo, xhi, step = (xhi-xlo)/N)
-    y0  = np.sin(x) + np.log(x)
-    y   = y0 + np.random.randn(N) * 0.5
+    x = np.arange(xlo, xhi, step=(xhi - xlo) / N)
+    y0 = np.sin(x) + np.log(x)
+    y = y0 + np.random.randn(N) * 0.5
     weights = np.ones(N)
 
     # Estimate monotonically increasing function on the data
-    mono_interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr = \
-        txfunc.monotone_spline(
-            x, y, weights, bins=10, lam=100, incl_uncstr=True, show_plot=False
-        )
+    mono_interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr = txfunc.monotone_spline(
+        x, y, weights, bins=10, lam=100, incl_uncstr=True, show_plot=False
+    )
     # Test whether mono_interp is a function
-    assert hasattr(mono_interp, '__call__')
+    assert hasattr(mono_interp, "__call__")
 
     # Test whether mono_interp gives the correct output
     x_vec_test = np.array([2.0, 5.0])
@@ -738,15 +738,35 @@ def test_monotone_spline():
     assert np.allclose(y_monointerp, y_vec_expected)
 
     # Test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
-    y_cstr_expected = np.array([
-        -0.14203509, 0.21658404, 0.5146192, 0.75351991, 0.93709706,
-        1.071363, 1.16349465, 1.22046208, 1.24755794, 1.24755791
-    ])
+    y_cstr_expected = np.array(
+        [
+            -0.14203509,
+            0.21658404,
+            0.5146192,
+            0.75351991,
+            0.93709706,
+            1.071363,
+            1.16349465,
+            1.22046208,
+            1.24755794,
+            1.24755791,
+        ]
+    )
     wsse_cstr_expected = 546.0485935661629
-    y_uncstr_expected = np.array([
-        -0.45699668, 0.16840804, 0.66150226, 1.02342052, 1.25698067,
-        1.36630762, 1.35585018, 1.22938312, 0.98920508, 0.63615989
-    ])
+    y_uncstr_expected = np.array(
+        [
+            -0.45699668,
+            0.16840804,
+            0.66150226,
+            1.02342052,
+            1.25698067,
+            1.36630762,
+            1.35585018,
+            1.22938312,
+            0.98920508,
+            0.63615989,
+        ]
+    )
     wsse_uncstr_expected = 468.4894930349361
     assert np.allclose(y_cstr, y_cstr_expected)
     assert np.allclose(wsse_cstr, wsse_cstr_expected)
