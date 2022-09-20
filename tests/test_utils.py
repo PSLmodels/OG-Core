@@ -738,3 +738,35 @@ def test_save_return_table_write(tmpdir, df, output_type, path):
         from openpyxl import load_workbook
 
         wb = load_workbook(filename=newpath)
+
+def test_avg_by_bin():
+    """
+    Test of the utils.avg_by_bin function
+    """
+    # Simulate some data
+    np.random.seed(10)
+    N   = 100
+    xlo = 0.001
+    xhi = 2 * np.pi
+    x   = np.arange(xlo, xhi, step = (xhi-xlo)/N)
+    y0  = np.sin(x) + np.log(x)
+    y   = y0 + np.random.randn(N) * 0.5
+    weights = np.ones(N)
+
+    x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y,
+                                                            weights=weights)
+    x_expected = np.array([
+        0.28369834, 0.91191687, 1.5401354, 2.16835393, 2.79657246,
+        3.42479099, 4.05300952, 4.68122805, 5.30944658, 5.93766512
+    ])
+    y_expected = np.array([
+        -1.59153872, 0.75418082, 1.58652565, 1.63032804, 1.27174446,
+        1.17049742, 0.53239289, 0.63974983, 0.75635262, 1.47998768
+    ])
+    weights_expected = np.array([
+        10., 10., 10., 10., 10., 10., 10., 10., 10., 10.
+    ])
+
+    assert np.allclose(x_binned, x_expected)
+    assert np.allclose(y_binned, y_expected)
+    assert np.allclose(weights_binned, weights_expected)
