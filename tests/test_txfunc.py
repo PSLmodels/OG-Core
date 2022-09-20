@@ -729,7 +729,7 @@ def test_monotone_spline():
             x, y, weights, bins=10, lam=100, incl_uncstr=True, show_plot=False
         )
     # Test whether mono_interp is a function
-    assert isinstance(mono_interp, 'function')
+    assert hasattr(mono_interp, '__call__')
 
     # Test whether mono_interp gives the correct output
     x_vec_test = np.array([2.0, 5.0])
