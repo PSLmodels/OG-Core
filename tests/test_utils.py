@@ -84,9 +84,7 @@ def test_pickle_file_compare():
     """
     Test of utils.pickle_file_compare() function
     """
-    fname = os.path.join(
-        CUR_PATH, "test_io_data", "SS_solver_outputs_baseline.pkl"
-    )
+    fname = os.path.join(CUR_PATH, "test_io_data", "SS_solver_outputs_baseline.pkl")
     comparison = utils.pickle_file_compare(fname, fname)
     assert comparison
 
@@ -248,9 +246,7 @@ def test_rate_conversion():
 # Parameter values to use for inequality tests
 J = 2
 S = 10
-dist = np.array(
-    [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 1, 1, 2, 3, 4, 5, 6, 7, 20]]
-)
+dist = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 1, 1, 2, 3, 4, 5, 6, 7, 20]])
 pop_weights = np.ones(S) / S
 ability_weights = np.array([0.5, 0.5])
 
@@ -573,9 +569,7 @@ def test_compare_pickle_file_bad2(picklefile3, picklefile4):
 
 
 def test_compare_pickle_file_relative(picklefile3, picklefile4):
-    assert utils.pickle_file_compare(
-        picklefile3.name, picklefile4.name, relative=True
-    )
+    assert utils.pickle_file_compare(picklefile3.name, picklefile4.name, relative=True)
 
 
 def test_compare_pickle_file_basic(picklefile1):
@@ -621,9 +615,7 @@ def test_comp_array_relative_exception():
     y = np.array([100.01, 200.02, 300.03])
     unequal = []
     exc = {"var": 1e-3}
-    assert utils.comp_array(
-        "var", y, x, 1e-5, unequal, exceptions=exc, relative=True
-    )
+    assert utils.comp_array("var", y, x, 1e-5, unequal, exceptions=exc, relative=True)
 
 
 def test_comp_scalar_relative():
@@ -639,17 +631,13 @@ def test_comp_scalar_relative_exception():
     y = 100.01
     unequal = []
     exc = {"var": 1e-3}
-    assert utils.comp_scalar(
-        "var", y, x, 1e-5, unequal, exceptions=exc, relative=True
-    )
+    assert utils.comp_scalar("var", y, x, 1e-5, unequal, exceptions=exc, relative=True)
 
 
 def test_compare_dict_diff_ndarrays_relative():
     lhs = {"a": np.array([100.0, 200.0, 300.0]), "b": 2}
     rhs = {"a": np.array([100.0, 200.0, 300.1]), "b": 2}
-    assert utils.dict_compare(
-        "lhs.pkle", lhs, "rhs.pkle", rhs, tol=1e-3, relative=True
-    )
+    assert utils.dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=1e-3, relative=True)
 
 
 def test_print_progress():
@@ -666,12 +654,8 @@ def test_fetch_files_from_web():
     Test fetch_files_from_web() that it returns a list of local
     directory paths that is the same length as the input list of URLs
     """
-    zipfilename1 = (
-        "https://www.federalreserve.gov/econres/" + "files/scfp2016s.zip"
-    )
-    zipfilename2 = (
-        "https://www.federalreserve.gov/econres/" + "files/scfp2013s.zip"
-    )
+    zipfilename1 = "https://www.federalreserve.gov/econres/" + "files/scfp2016s.zip"
+    zipfilename2 = "https://www.federalreserve.gov/econres/" + "files/scfp2013s.zip"
     url_list = [zipfilename1, zipfilename2]
     paths_list = utils.fetch_files_from_web(url_list)
     assert len(paths_list) == len(url_list)
@@ -739,33 +723,53 @@ def test_save_return_table_write(tmpdir, df, output_type, path):
 
         wb = load_workbook(filename=newpath)
 
+
 def test_avg_by_bin():
     """
     Test of the utils.avg_by_bin function
     """
     # Simulate some data
     np.random.seed(10)
-    N   = 100
+    N = 100
     xlo = 0.001
     xhi = 2 * np.pi
-    x   = np.arange(xlo, xhi, step = (xhi-xlo)/N)
-    y0  = np.sin(x) + np.log(x)
-    y   = y0 + np.random.randn(N) * 0.5
+    x = np.arange(xlo, xhi, step=(xhi - xlo) / N)
+    y0 = np.sin(x) + np.log(x)
+    y = y0 + np.random.randn(N) * 0.5
     weights = np.ones(N)
 
-    x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y,
-                                                            weights=weights)
-    x_expected = np.array([
-        0.28369834, 0.91191687, 1.5401354, 2.16835393, 2.79657246,
-        3.42479099, 4.05300952, 4.68122805, 5.30944658, 5.93766512
-    ])
-    y_expected = np.array([
-        -1.59153872, 0.75418082, 1.58652565, 1.63032804, 1.27174446,
-        1.17049742, 0.53239289, 0.63974983, 0.75635262, 1.47998768
-    ])
-    weights_expected = np.array([
-        10., 10., 10., 10., 10., 10., 10., 10., 10., 10.
-    ])
+    x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y, weights=weights)
+    x_expected = np.array(
+        [
+            0.28369834,
+            0.91191687,
+            1.5401354,
+            2.16835393,
+            2.79657246,
+            3.42479099,
+            4.05300952,
+            4.68122805,
+            5.30944658,
+            5.93766512,
+        ]
+    )
+    y_expected = np.array(
+        [
+            -1.59153872,
+            0.75418082,
+            1.58652565,
+            1.63032804,
+            1.27174446,
+            1.17049742,
+            0.53239289,
+            0.63974983,
+            0.75635262,
+            1.47998768,
+        ]
+    )
+    weights_expected = np.array(
+        [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+    )
 
     assert np.allclose(x_binned, x_expected)
     assert np.allclose(y_binned, y_expected)
