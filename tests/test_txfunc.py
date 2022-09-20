@@ -714,6 +714,7 @@ def test_monotone_spline():
         3. test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
     """
     # Simulate some data
+    np.random.seed(10)
     N   = 100
     xlo = 0.001
     xhi = 2 * np.pi
@@ -732,21 +733,21 @@ def test_monotone_spline():
 
     # Test whether mono_interp gives the correct output
     x_vec_test = np.array([2.0, 5.0])
-    y_vec_expected = np.array([0.54745566, 1.0997475])
+    y_vec_expected = np.array([0.69512331, 1.23822669])
     y_monointerp = mono_interp(x_vec_test)
     assert np.allclose(y_monointerp, y_vec_expected)
 
     # Test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
     y_cstr_expected = np.array([
-        -0.28723655,  0.06915227,  0.36652721,  0.60616912,  0.79148558,
-        0.92796704,  1.02237245,  1.08126027,  1.10948871,  1.10948868
+        -0.14203509, 0.21658404, 0.5146192, 0.75351991, 0.93709706,
+        1.071363, 1.16349465, 1.22046208, 1.24755794, 1.24755791
     ])
-    wsse_cstr_expected = 485.91925559586105
+    wsse_cstr_expected = 546.0485935661629
     y_uncstr_expected = np.array([
-        -0.56163591,  0.02718061,  0.49449398,  0.84131066,  1.07017307,
-        1.1849273 ,  1.18995552,  1.08903242,  0.88440775,  0.57682937
+        -0.45699668, 0.16840804, 0.66150226, 1.02342052, 1.25698067,
+        1.36630762, 1.35585018, 1.22938312, 0.98920508, 0.63615989
     ])
-    wsse_uncstr_expected = 427.7942771254685
+    wsse_uncstr_expected = 468.4894930349361
     assert np.allclose(y_cstr, y_cstr_expected)
     assert np.allclose(wsse_cstr, wsse_cstr_expected)
     assert np.allclose(y_uncstr, y_uncstr_expected)
