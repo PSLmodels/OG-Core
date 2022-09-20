@@ -901,8 +901,7 @@ def plot_income_data(
             plt.close()
         else:
             # Plot of 3D, J>1 in levels
-            fig10 = plt.figure()
-            ax10 = fig10.gca(projection="3d")
+            fig10, ax10 = plt.subplots(subplot_kw={"projection": "3d"})
             ax10.plot_surface(
                 age_mesh, abil_mesh, emat, rstride=8, cstride=1, cmap=cmap1
             )
@@ -915,8 +914,7 @@ def plot_income_data(
             plt.close()
 
             # Plot of 3D, J>1 in logs
-            fig11 = plt.figure()
-            ax11 = fig11.gca(projection="3d")
+            fig11, ax11 = plt.subplots(subplot_kw={"projection": "3d"})
             ax11.plot_surface(
                 age_mesh,
                 abil_mesh,
