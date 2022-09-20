@@ -216,7 +216,9 @@ expected_tuple_linear_mtry = (0.24793767, 0.0, 152900)
     ],
     ids=["DEP", "DEP_totalinc", "GS"],
 )
-def test_txfunc_est(rate_type, tax_func_type, numparams, expected_tuple, tmpdir):
+def test_txfunc_est(
+    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
+):
     """
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -258,7 +260,9 @@ def test_txfunc_est(rate_type, tax_func_type, numparams, expected_tuple, tmpdir)
     ],
     ids=["linear", "linear, mtrx", "linear, mtry"],
 )
-def test_txfunc_est_on_GH(rate_type, tax_func_type, numparams, expected_tuple, tmpdir):
+def test_txfunc_est_on_GH(
+    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
+):
     """
     Test txfunc.txfunc_est() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -336,7 +340,9 @@ def test_tax_func_loop():
     previous run, the outputs are unchanged.
     """
     input_tuple = decompress_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "tax_func_loop_inputs_large.pbz2")
+        os.path.join(
+            CUR_PATH, "test_io_data", "tax_func_loop_inputs_large.pbz2"
+        )
     )
     (
         t,
@@ -355,7 +361,9 @@ def test_tax_func_loop():
     ) = input_tuple
     tax_func_type = "DEP"
     # Rename and create vars to suit new micro_data var names
-    micro_data["total_labinc"] = micro_data["Wage income"] + micro_data["SE income"]
+    micro_data["total_labinc"] = (
+        micro_data["Wage income"] + micro_data["SE income"]
+    )
     micro_data["etr"] = (
         micro_data["Total tax liability"] / micro_data["Adjusted total income"]
     )
@@ -415,7 +423,12 @@ def test_tax_func_loop():
                 np.absolute(test_tuple_obj - exp_tuple_obj).max(),
             )
         else:
-            print("For element", i, ", diff =", np.absolute(test_tuple[i] - v).max())
+            print(
+                "For element",
+                i,
+                ", diff =",
+                np.absolute(test_tuple[i] - v).max(),
+            )
         assert np.allclose(test_tuple[i], v, atol=1e-06)
 
 
@@ -701,7 +714,9 @@ def test_tax_func_estimate(tmpdir, dask_client):
                 np.absolute(test_dict_obj - exp_dict_obj).max(),
             )
         else:  # for testing all other objects
-            print("Max diff for ", k, " = ", np.absolute(test_dict[k] - v).max())
+            print(
+                "Max diff for ", k, " = ", np.absolute(test_dict[k] - v).max()
+            )
             assert np.all(np.isclose(test_dict[k], v))
 
 
@@ -725,7 +740,13 @@ def test_monotone_spline():
     weights = np.ones(N)
 
     # Estimate monotonically increasing function on the data
-    mono_interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr = txfunc.monotone_spline(
+    (
+        mono_interp,
+        y_cstr,
+        wsse_cstr,
+        y_uncstr,
+        wsse_uncstr,
+    ) = txfunc.monotone_spline(
         x, y, weights, bins=10, lam=100, incl_uncstr=True, show_plot=False
     )
     # Test whether mono_interp is a function
