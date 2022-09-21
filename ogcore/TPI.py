@@ -796,6 +796,7 @@ def run_TPI(p, client=None):
             p,
         )
         C = aggr.get_C(c_mat, p, "TPI")
+
         c_i = household.get_ci(
             c_mat[: p.T, :, :],
             p_i[: p.T, :],

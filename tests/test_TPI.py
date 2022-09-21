@@ -266,6 +266,8 @@ param_updates9 = {
     "frisch": 0.41,
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
+    "I": 3,
+    "io_matrix": np.eye(3),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
