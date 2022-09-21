@@ -455,8 +455,11 @@ title="Open an issue"
 <span class="kn">from</span> <span class="nn">dask</span> <span class="kn">import</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">compute</span>
 <span class="kn">import</span> <span class="nn">dask.multiprocessing</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span> <span class="k">as</span> <span class="n">intp</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">ogcore.parameter_plots</span> <span class="k">as</span> <span class="nn">pp</span>
 <span class="kn">from</span> <span class="nn">ogcore.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">SHOW_RUNTIME</span>
+<span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 
@@ -494,8 +497,8 @@ title="Open an issue"
 <span class="sd">    functions.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        params (tuple): parameters of the tax function, varies by</span>
-<span class="sd">            tax_func_type</span>
+<span class="sd">        params (array_like or function): parameters of the tax function, or</span>
+<span class="sd">            nonparametric function for tax function type &quot;mono&quot;</span>
 <span class="sd">        X (array_like): labor income data</span>
 <span class="sd">        Y (array_like): capital income data</span>
 <span class="sd">        wgts (array_like): weights for data observations</span>
@@ -683,6 +686,9 @@ title="Open an issue"
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
         <span class="n">rate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
         <span class="n">txrates</span> <span class="o">=</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;mono&quot;</span><span class="p">:</span>
+        <span class="n">mono_interp</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">txrates</span> <span class="o">=</span> <span class="n">mono_interp</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">txrates</span></div>
 
@@ -738,7 +744,7 @@ title="Open an issue"
 
 <span class="sd">    Args:</span>
 <span class="sd">        sse_mat (Numpy array): SSE for each estimated tax function,</span>
-<span class="sd">            size is SxBW</span>
+<span class="sd">            size is BW x S</span>
 <span class="sd">        age_vec (numpy array): vector of ages, length S</span>
 <span class="sd">        se_mult (scalar): multiple of standard deviations before</span>
 <span class="sd">            consider estimate an outlier</span>
@@ -747,8 +753,8 @@ title="Open an issue"
 <span class="sd">        graph (bool): whether to output graphs</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        sse_big_mat (Numpy array): indicators of whether tax function</span>
-<span class="sd">            is outlier, size is SxBW</span>
+<span class="sd">        sse_big_mat (bool array_like): indicators of whether tax function</span>
+<span class="sd">            is outlier, size is BW x S</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Mark outliers from estimated MTRx functions</span>
@@ -796,56 +802,53 @@ title="Open an issue"
     <span class="k">return</span> <span class="n">sse_big_mat</span></div>
 
 
-<div class="viewcode-block" id="replace_outliers"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.replace_outliers">[docs]</a><span class="k">def</span> <span class="nf">replace_outliers</span><span class="p">(</span><span class="n">param_arr</span><span class="p">,</span> <span class="n">sse_big_mat</span><span class="p">):</span>
+<div class="viewcode-block" id="replace_outliers"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.replace_outliers">[docs]</a><span class="k">def</span> <span class="nf">replace_outliers</span><span class="p">(</span><span class="n">param_list</span><span class="p">,</span> <span class="n">sse_big_mat</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function replaces outlier estimated tax function parameters</span>
 <span class="sd">    with linearly interpolated tax function tax function parameters</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        param_arr (Numpy array): estimated tax function parameters,</span>
-<span class="sd">            size is SxBWx#tax params</span>
-<span class="sd">        sse_big_mat (Numpy array): indicators of whether tax function</span>
-<span class="sd">            is outlier, size is SxBW</span>
+<span class="sd">        param_list (list): estimated tax function parameters or nonparametric</span>
+<span class="sd">            functions, size is BW x S x #TaxParams</span>
+<span class="sd">        sse_big_mat (bool, array_like): indicators of whether tax function</span>
+<span class="sd">            is outlier, size is BW x S</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        param_arr_adj (Numpy array): estimated and interpolated tax</span>
-<span class="sd">            function parameters, size SxBWx#tax params</span>
+<span class="sd">        param_arr_adj (array_like): estimated and interpolated tax function</span>
+<span class="sd">            parameters, size BW x S x #TaxParams</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">numparams</span> <span class="o">=</span> <span class="n">param_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">age_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sse_big_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">param_arr_adj</span> <span class="o">=</span> <span class="n">param_arr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sse_big_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="n">numparams</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">sse_big_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">param_list_adj</span> <span class="o">=</span> <span class="n">param_list</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sse_big_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="n">big_cnt</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">age_ind</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
             <span class="c1"># Smooth out ETR tax function outliers</span>
-            <span class="k">if</span> <span class="n">sse_big_mat</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">sse_big_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sse_big_mat</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">S</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="c1"># For all outlier observations, increase the big_cnt by</span>
                 <span class="c1"># 1 and set the param_arr_adj equal to nan</span>
                 <span class="n">big_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">sse_big_mat</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="ow">and</span> <span class="n">big_cnt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">==</span> <span class="n">big_cnt</span><span class="p">:</span>
+                <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">sse_big_mat</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="ow">and</span> <span class="n">big_cnt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">==</span> <span class="n">big_cnt</span><span class="p">:</span>
                 <span class="c1"># When the current function is not an outlier but the last</span>
                 <span class="c1"># one was and this string of outliers is at the beginning</span>
                 <span class="c1"># ages, set the outliers equal to this period&#39;s tax function</span>
-                <span class="n">reshaped</span> <span class="o">=</span> <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
-                <span class="n">param_arr_adj</span><span class="p">[:</span><span class="n">big_cnt</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">reshaped</span><span class="p">,</span> <span class="p">(</span><span class="n">big_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][:</span><span class="n">big_cnt</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">]]</span> <span class="o">*</span> <span class="n">big_cnt</span>
                 <span class="n">big_cnt</span> <span class="o">=</span> <span class="mi">0</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">sse_big_mat</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="ow">and</span> <span class="n">big_cnt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">&gt;</span> <span class="n">big_cnt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">sse_big_mat</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="ow">and</span> <span class="n">big_cnt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">&gt;</span> <span class="n">big_cnt</span><span class="p">:</span>
                 <span class="c1"># When the current function is not an outlier but the last</span>
                 <span class="c1"># one was and this string of outliers is in the interior of</span>
                 <span class="c1"># ages, set the outliers equal to a linear interpolation</span>
                 <span class="c1"># between the two bounding non-outlier functions</span>
                 <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
-                    <span class="o">-</span> <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
+                    <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">]</span> <span class="o">-</span> <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="p">)</span>
-                <span class="n">slopevec</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">/</span> <span class="p">(</span><span class="n">big_cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="n">slopevec</span> <span class="o">=</span> <span class="n">slopevec</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)</span>
+                <span class="n">slopevec</span> <span class="o">=</span> <span class="p">(</span><span class="n">diff</span> <span class="o">/</span> <span class="p">(</span><span class="n">big_cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)</span>
                 <span class="n">tiled_slopevec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">slopevec</span><span class="p">,</span> <span class="p">(</span><span class="n">big_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-                <span class="n">interceptvec</span> <span class="o">=</span> <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="n">interceptvec</span> <span class="o">=</span> <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                     <span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span>
                 <span class="p">)</span>
                 <span class="n">tiled_intvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">interceptvec</span><span class="p">,</span> <span class="p">(</span><span class="n">big_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -853,24 +856,26 @@ title="Open an issue"
                 <span class="n">reshaped_arange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">big_cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">big_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">tiled_reshape_arange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">reshaped_arange</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
 
-                <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span> <span class="p">:</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">tiled_intvec</span> <span class="o">+</span> <span class="n">tiled_slopevec</span> <span class="o">*</span> <span class="n">tiled_reshape_arange</span>
-                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">s_ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">big_cnt</span><span class="p">):</span>
+                    <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span> <span class="o">+</span> <span class="n">s_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiled_intvec</span><span class="p">[</span>
+                        <span class="n">s_ind</span><span class="p">,</span> <span class="p">:</span>
+                    <span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                        <span class="n">tiled_slopevec</span><span class="p">[</span><span class="n">s_ind</span><span class="p">,</span> <span class="p">:]</span>
+                        <span class="o">*</span> <span class="n">tiled_reshape_arange</span><span class="p">[</span><span class="n">s_ind</span><span class="p">,</span> <span class="p">:]</span>
+                    <span class="p">)</span>
 
                 <span class="n">big_cnt</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">if</span> <span class="n">sse_big_mat</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">==</span> <span class="n">sse_big_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sse_big_mat</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">==</span> <span class="n">sse_big_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="c1"># When the last ages are outliers, set the parameters equal</span>
                 <span class="c1"># to the most recent non-outlier tax function</span>
                 <span class="n">big_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-                <span class="n">reshaped</span> <span class="o">=</span> <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                    <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span>
-                <span class="p">)</span>
-                <span class="n">param_arr_adj</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">reshaped</span><span class="p">,</span> <span class="p">(</span><span class="n">big_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                <span class="n">reshaped</span> <span class="o">=</span> <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span><span class="p">]</span>
+                <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">param_list_adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span> <span class="o">-</span> <span class="n">big_cnt</span><span class="p">]</span>
+                <span class="p">]</span> <span class="o">*</span> <span class="n">big_cnt</span>
 
-    <span class="k">return</span> <span class="n">param_arr_adj</span></div>
+    <span class="k">return</span> <span class="n">param_list_adj</span></div>
 
 
 <div class="viewcode-block" id="txfunc_est"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.txfunc_est">[docs]</a><span class="k">def</span> <span class="nf">txfunc_est</span><span class="p">(</span>
@@ -897,9 +902,10 @@ title="Open an issue"
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): tax function estimation output:</span>
 
-<span class="sd">            * params (Numpy array): vector of estimated parameters</span>
+<span class="sd">            * params (Numpy array or function object): vector of estimated</span>
+<span class="sd">            parameters or nonparametric function object</span>
 <span class="sd">            * wsse (scalar): weighted sum of squared deviations from</span>
-<span class="sd">                minimization</span>
+<span class="sd">            minimization</span>
 <span class="sd">            * obs (int): number of observations in the data, &gt; 600</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1099,6 +1105,28 @@ title="Open an issue"
         <span class="n">obs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">txrates</span> <span class="o">*</span> <span class="n">wgts</span> <span class="o">*</span> <span class="n">income</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">income</span> <span class="o">*</span> <span class="n">wgts</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="n">params_to_plot</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;mono&quot;</span><span class="p">:</span>
+        <span class="c1"># &#39;&#39;&#39;</span>
+        <span class="c1"># For monotonically increasing smoothing spline function rates, return</span>
+        <span class="c1"># the resulting function object in place of parametric model.</span>
+        <span class="c1"># This is the approach we will take with all nonparametric tax</span>
+        <span class="c1"># functions and might be the best approach even for our parametric</span>
+        <span class="c1"># tax functions.</span>
+        <span class="c1"># &#39;&#39;&#39;</span>
+        <span class="c1"># Set the number of bins to 500 unless the number of observations is</span>
+        <span class="c1"># less-than-or-equal-to 1,000 and greater-than-or-equal-to MIN_OBS. For</span>
+        <span class="c1"># that case create a linear function of bin number as 80% of MIN_OBS at</span>
+        <span class="c1"># MIN_OBS and 500 bins at 1,000 observations.</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="mi">500</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mf">0.8</span> <span class="o">*</span> <span class="n">MIN_OBS</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1_000</span> <span class="o">-</span> <span class="n">MIN_OBS</span><span class="p">)</span>
+        <span class="n">intercept</span> <span class="o">=</span> <span class="mi">500</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="mi">1_000</span>
+        <span class="n">bin_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">obs</span> <span class="o">+</span> <span class="n">intercept</span><span class="p">)</span>
+        <span class="n">mono_interp</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">wsse_cstr</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">monotone_spline</span><span class="p">(</span>
+            <span class="n">income</span><span class="p">,</span> <span class="n">txrates</span><span class="p">,</span> <span class="n">wgts</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bin_num</span>
+        <span class="p">)</span>
+        <span class="n">wsse</span> <span class="o">=</span> <span class="n">wsse_cstr</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">mono_interp</span>
+        <span class="n">params_to_plot</span> <span class="o">=</span> <span class="n">params</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="s2">&quot;Choice of tax function is not in the set of&quot;</span>
@@ -1115,7 +1143,6 @@ title="Open an issue"
             <span class="n">txrates</span><span class="p">,</span>
             <span class="n">rate_type</span><span class="p">,</span>
             <span class="n">tax_func_type</span><span class="p">,</span>
-            <span class="n">get_tax_rates</span><span class="p">,</span>
             <span class="n">params_to_plot</span><span class="p">,</span>
             <span class="n">output_dir</span><span class="p">,</span>
         <span class="p">)</span>
@@ -1126,7 +1153,7 @@ title="Open an issue"
     <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">wsse</span><span class="p">,</span> <span class="n">obs</span></div>
 
 
-<span class="k">def</span> <span class="nf">tax_data_sample</span><span class="p">(</span>
+<div class="viewcode-block" id="tax_data_sample"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.tax_data_sample">[docs]</a><span class="k">def</span> <span class="nf">tax_data_sample</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span> <span class="n">max_etr</span><span class="o">=</span><span class="n">MAX_ETR</span><span class="p">,</span> <span class="n">min_income</span><span class="o">=</span><span class="n">MIN_INCOME</span><span class="p">,</span> <span class="n">max_mtr</span><span class="o">=</span><span class="n">MAX_MTR</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1168,7 +1195,7 @@ title="Open an issue"
     <span class="n">min_lab_mtr</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mtr_labinc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="mf">0.10</span><span class="p">)</span>
     <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mtr_labinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_lab_mtr</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">data</span>
+    <span class="k">return</span> <span class="n">data</span></div>
 
 
 <div class="viewcode-block" id="tax_func_loop"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.tax_func_loop">[docs]</a><span class="k">def</span> <span class="nf">tax_func_loop</span><span class="p">(</span>
@@ -1246,9 +1273,9 @@ title="Open an issue"
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># initialize arrays for output</span>
-    <span class="n">etrparam_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
-    <span class="n">mtrxparam_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
-    <span class="n">mtryparam_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
+    <span class="n">etrparam_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">mtrxparam_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">mtryparam_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="n">etr_wsumsq_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">etr_obs_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">mtrx_wsumsq_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -1351,7 +1378,7 @@ title="Open an issue"
         <span class="k">if</span> <span class="n">df_minobs</span> <span class="o">&lt;</span> <span class="n">MIN_OBS</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">max_age</span><span class="p">:</span>
             <span class="c1"># &#39;&#39;&#39;</span>
             <span class="c1"># --------------------------------------------------------</span>
-            <span class="c1"># Don&#39;t estimate function on this iteration if obs &lt; 500.</span>
+            <span class="c1"># Don&#39;t estimate function on this iteration if obs &lt; 240.</span>
             <span class="c1"># Will fill in later with interpolated values</span>
             <span class="c1"># --------------------------------------------------------</span>
             <span class="c1"># &#39;&#39;&#39;</span>
@@ -1360,9 +1387,9 @@ title="Open an issue"
             <span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="n">NoData_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">etrparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-            <span class="n">mtrxparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-            <span class="n">mtryparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">elif</span> <span class="n">df_minobs</span> <span class="o">&lt;</span> <span class="n">MIN_OBS</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">==</span> <span class="n">max_age</span><span class="p">:</span>
             <span class="c1"># &#39;&#39;&#39;</span>
@@ -1393,20 +1420,17 @@ title="Open an issue"
             <span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="n">NoData_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">lastp_etr</span> <span class="o">=</span> <span class="n">etrparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">etrparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                <span class="n">lastp_etr</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span>
-                <span class="p">(</span><span class="n">NoData_cnt</span> <span class="o">+</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">lastp_etr</span> <span class="o">=</span> <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span>
+            <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">lastp_etr</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">NoData_cnt</span> <span class="o">+</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span>
             <span class="p">)</span>
-            <span class="n">lastp_mtrx</span> <span class="o">=</span> <span class="n">mtrxparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">mtrxparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                <span class="n">lastp_mtrx</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span>
-                <span class="p">(</span><span class="n">NoData_cnt</span> <span class="o">+</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">lastp_mtrx</span> <span class="o">=</span> <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span>
+            <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">lastp_mtrx</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">NoData_cnt</span> <span class="o">+</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span>
             <span class="p">)</span>
-            <span class="n">lastp_mtry</span> <span class="o">=</span> <span class="n">mtryparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">mtryparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                <span class="n">lastp_mtry</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span>
-                <span class="p">(</span><span class="n">NoData_cnt</span> <span class="o">+</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">lastp_mtry</span> <span class="o">=</span> <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span>
+            <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">lastp_mtry</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">NoData_cnt</span> <span class="o">+</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span>
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
@@ -1456,7 +1480,7 @@ title="Open an issue"
                 <span class="n">output_dir</span><span class="p">,</span>
                 <span class="n">graph_est</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">etrparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">etrparams</span>
+            <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">etrparams</span>
             <span class="k">del</span> <span class="n">df_etr</span>
 
             <span class="c1"># Estimate marginal tax rate of labor income function</span>
@@ -1475,7 +1499,7 @@ title="Open an issue"
                 <span class="n">output_dir</span><span class="p">,</span>
                 <span class="n">graph_est</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">mtrxparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">mtrxparams</span>
+            <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">mtrxparams</span>
             <span class="k">del</span> <span class="n">df_mtrx</span>
             <span class="c1"># Estimate marginal tax rate of capital income function</span>
             <span class="c1"># MTRy(x,y)</span>
@@ -1493,7 +1517,7 @@ title="Open an issue"
                 <span class="n">output_dir</span><span class="p">,</span>
                 <span class="n">graph_est</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">mtryparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">mtryparams</span>
+            <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">mtryparams</span>
 
             <span class="k">del</span> <span class="n">df_mtry</span>
 
@@ -1507,23 +1531,22 @@ title="Open an issue"
                 <span class="c1"># &#39;&#39;&#39;</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Fill in all previous blank ages&quot;</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-                <span class="n">etrparam_arr</span><span class="p">[:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">etrparams</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">mtrxparam_arr</span><span class="p">[:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">mtrxparams</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">mtryparam_arr</span><span class="p">[:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">mtryparams</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="n">etrparam_list</span><span class="p">[:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">etrparams</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span>
+                <span class="n">mtrxparam_list</span><span class="p">[:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mtrxparams</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span>
+                <span class="n">mtryparam_list</span><span class="p">[:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mtryparams</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span>
 
-            <span class="k">elif</span> <span class="n">NoData_cnt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="n">NoData_cnt</span> <span class="o">&lt;</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">NoData_cnt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">NoData_cnt</span> <span class="o">&lt;</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">tax_func_type</span> <span class="o">!=</span> <span class="s2">&quot;mono&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="c1"># &#39;&#39;&#39;</span>
-                <span class="c1"># ----------------------------------------------------</span>
-                <span class="c1"># Fill in interior data gaps with linear interpolation</span>
-                <span class="c1"># between bracketing positive data ages. In all of</span>
-                <span class="c1"># these cases min_age &lt; s &lt;= max_age.</span>
-                <span class="c1"># ----------------------------------------------------</span>
+                <span class="c1"># -------------------------------------------------------------</span>
+                <span class="c1"># For all parametric tax function types (not &quot;mono&quot;), fill in</span>
+                <span class="c1"># interior data gaps with linear interpolation between</span>
+                <span class="c1"># bracketing positive data ages. In all of these cases,</span>
+                <span class="c1"># min_age &lt; s &lt;= max_age.</span>
+                <span class="c1"># -------------------------------------------------------------</span>
                 <span class="c1"># tvals        = (NoData_cnt+2,) vector, linearly</span>
                 <span class="c1">#                space points between 0 and 1</span>
                 <span class="c1"># x0_etr       = (NoData_cnt x 10) matrix, positive</span>
@@ -1544,15 +1567,13 @@ title="Open an issue"
                 <span class="c1"># lin_int_mtrx = (NoData_cnt x 10) matrix, linearly</span>
                 <span class="c1">#                interpolated mtrx parameters between</span>
                 <span class="c1">#                x0_mtrx and x1_mtrx</span>
-                <span class="c1"># ----------------------------------------------------</span>
+                <span class="c1"># -------------------------------------------------------------</span>
                 <span class="c1"># &#39;&#39;&#39;</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;Linearly interpolate previous blank &quot;</span> <span class="o">+</span> <span class="s2">&quot;tax functions&quot;</span>
-                <span class="p">)</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Linearly interpolate previous blank tax functions&quot;</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                 <span class="n">tvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">NoData_cnt</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
                 <span class="n">x0_etr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">etrparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                         <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)</span>
                     <span class="p">),</span>
                     <span class="p">(</span><span class="n">NoData_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -1563,11 +1584,9 @@ title="Open an issue"
                 <span class="n">lin_int_etr</span> <span class="o">=</span> <span class="n">x0_etr</span> <span class="o">+</span> <span class="n">tvals</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">NoData_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span>
                     <span class="n">x1_etr</span> <span class="o">-</span> <span class="n">x0_etr</span>
                 <span class="p">)</span>
-                <span class="n">etrparam_arr</span><span class="p">[</span>
-                    <span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="p">:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">min_age</span><span class="p">,</span> <span class="p">:</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="n">lin_int_etr</span>
+
                 <span class="n">x0_mtrx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">mtrxparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                         <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)</span>
                     <span class="p">),</span>
                     <span class="p">(</span><span class="n">NoData_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -1578,11 +1597,9 @@ title="Open an issue"
                 <span class="n">lin_int_mtrx</span> <span class="o">=</span> <span class="n">x0_mtrx</span> <span class="o">+</span> <span class="n">tvals</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">NoData_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1_mtrx</span> <span class="o">-</span> <span class="n">x0_mtrx</span><span class="p">)</span>
-                <span class="n">mtrxparam_arr</span><span class="p">[</span>
-                    <span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="p">:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">min_age</span><span class="p">,</span> <span class="p">:</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="n">lin_int_mtrx</span>
+
                 <span class="n">x0_mtry</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">mtryparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                         <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)</span>
                     <span class="p">),</span>
                     <span class="p">(</span><span class="n">NoData_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -1593,9 +1610,39 @@ title="Open an issue"
                 <span class="n">lin_int_mtry</span> <span class="o">=</span> <span class="n">x0_mtry</span> <span class="o">+</span> <span class="n">tvals</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">NoData_cnt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1_mtry</span> <span class="o">-</span> <span class="n">x0_mtry</span><span class="p">)</span>
-                <span class="n">mtryparam_arr</span><span class="p">[</span>
-                    <span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="p">:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">min_age</span><span class="p">,</span> <span class="p">:</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="n">lin_int_mtry</span>
+                <span class="k">for</span> <span class="n">s_ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NoData_cnt</span><span class="p">):</span>
+                    <span class="n">etrparam_list</span><span class="p">[</span>
+                        <span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="o">+</span> <span class="n">s_ind</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">lin_int_etr</span><span class="p">[</span><span class="n">s_ind</span><span class="p">,</span> <span class="p">:]</span>
+                    <span class="n">mtrxparam_list</span><span class="p">[</span>
+                        <span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="o">+</span> <span class="n">s_ind</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">lin_int_mtrx</span><span class="p">[</span><span class="n">s_ind</span><span class="p">,</span> <span class="p">:]</span>
+                    <span class="n">mtryparam_list</span><span class="p">[</span>
+                        <span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="o">+</span> <span class="n">s_ind</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">lin_int_mtry</span><span class="p">[</span><span class="n">s_ind</span><span class="p">,</span> <span class="p">:]</span>
+
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">NoData_cnt</span>
+                <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="n">NoData_cnt</span>
+                <span class="o">&lt;</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">&amp;</span> <span class="n">tax_func_type</span>
+                <span class="o">==</span> <span class="s2">&quot;mono&quot;</span>
+            <span class="p">):</span>
+                <span class="c1"># &#39;&#39;&#39;</span>
+                <span class="c1"># -------------------------------------------------------------</span>
+                <span class="c1"># For all nonparametric tax function types (&quot;mono&quot;), fill in</span>
+                <span class="c1"># interior data gaps with the previous estimated interpolating</span>
+                <span class="c1"># function (no interpolation between last function and current</span>
+                <span class="c1"># function). In all of these cases, min_age &lt; s &lt;= max_age.</span>
+                <span class="c1"># -------------------------------------------------------------</span>
+                <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="p">:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">min_age</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">]</span> <span class="o">*</span> <span class="n">NoData_cnt</span>
+                <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="p">:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">min_age</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">]</span> <span class="o">*</span> <span class="n">NoData_cnt</span>
+                <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">min_age</span> <span class="p">:</span> <span class="n">s</span> <span class="o">-</span> <span class="n">min_age</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">NoData_cnt</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">]</span> <span class="o">*</span> <span class="n">NoData_cnt</span>
 
             <span class="n">NoData_cnt</span> <span class="o">==</span> <span class="mi">0</span>
 
@@ -1606,16 +1653,16 @@ title="Open an issue"
                 <span class="c1"># in the remaining ages with these last estimates</span>
                 <span class="c1"># ----------------------------------------------------</span>
                 <span class="c1"># &#39;&#39;&#39;</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Fill in all old tax functions.&quot;</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Fill in all remaining old age tax functions.&quot;</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-                <span class="n">etrparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">etrparams</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span> <span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">etrparams</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                    <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span>
                 <span class="p">)</span>
-                <span class="n">mtrxparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">mtrxparams</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span> <span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mtrxparams</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                    <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span>
                 <span class="p">)</span>
-                <span class="n">mtryparam_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                    <span class="n">mtryparams</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">numparams</span><span class="p">)),</span> <span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mtryparams</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+                    <span class="n">s_max</span> <span class="o">-</span> <span class="n">max_age</span>
                 <span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span>
@@ -1626,13 +1673,13 @@ title="Open an issue"
         <span class="n">AvgMTRx</span><span class="p">,</span>
         <span class="n">AvgMTRy</span><span class="p">,</span>
         <span class="n">frac_tax_payroll</span><span class="p">,</span>
-        <span class="n">etrparam_arr</span><span class="p">,</span>
+        <span class="n">etrparam_list</span><span class="p">,</span>
         <span class="n">etr_wsumsq_arr</span><span class="p">,</span>
         <span class="n">etr_obs_arr</span><span class="p">,</span>
-        <span class="n">mtrxparam_arr</span><span class="p">,</span>
+        <span class="n">mtrxparam_list</span><span class="p">,</span>
         <span class="n">mtrx_wsumsq_arr</span><span class="p">,</span>
         <span class="n">mtrx_obs_arr</span><span class="p">,</span>
-        <span class="n">mtryparam_arr</span><span class="p">,</span>
+        <span class="n">mtryparam_list</span><span class="p">,</span>
         <span class="n">mtry_wsumsq_arr</span><span class="p">,</span>
         <span class="n">mtry_obs_arr</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -1659,10 +1706,10 @@ title="Open an issue"
     <span class="n">tax_func_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function performs analysis on the source data from Tax-</span>
-<span class="sd">    Calculator and estimates functions for the effective tax rate (ETR),</span>
-<span class="sd">    marginal tax rate on labor income (MTRx), and marginal tax rate on</span>
-<span class="sd">    capital income (MTRy).</span>
+<span class="sd">    This function performs analysis on the source data from microsimulation</span>
+<span class="sd">    model and estimates functions for the effective tax rate (ETR), marginal</span>
+<span class="sd">    tax rate on labor income (MTRx), and marginal tax rate on capital income</span>
+<span class="sd">    (MTRy).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        micro_data (dict): Dictionary of DataFrames with micro data</span>
@@ -1703,6 +1750,7 @@ title="Open an issue"
         <span class="s2">&quot;DEP_totalinc&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
         <span class="s2">&quot;GS&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
         <span class="s2">&quot;linear&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;mono&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">numparams</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tax_func_type_num_params_dict</span><span class="p">[</span><span class="n">tax_func_type</span><span class="p">])</span>
     <span class="n">years_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_yr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -1711,22 +1759,22 @@ title="Open an issue"
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ages_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="c1"># initialize arrays for output</span>
-    <span class="n">etrparam_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
-    <span class="n">mtrxparam_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
-    <span class="n">mtryparam_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
-    <span class="n">etr_wsumsq_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">))</span>
-    <span class="n">etr_obs_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">))</span>
-    <span class="n">mtrx_wsumsq_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">))</span>
-    <span class="n">mtrx_obs_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">))</span>
-    <span class="n">mtry_wsumsq_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">))</span>
-    <span class="n">mtry_obs_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">))</span>
+    <span class="n">etrparam_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">mtrxparam_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">mtryparam_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">etr_wsumsq_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">etr_obs_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">mtrx_wsumsq_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">mtrx_obs_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">mtry_wsumsq_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">mtry_obs_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
     <span class="n">AvgInc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span>
     <span class="n">AvgETR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span>
     <span class="n">AvgMTRx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span>
     <span class="n">AvgMTRy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span>
     <span class="n">frac_tax_payroll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span>
     <span class="n">TotPop_yr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BW</span><span class="p">)</span>
-    <span class="n">PopPct_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">))</span>
+    <span class="n">PopPct_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 
     <span class="c1"># &#39;&#39;&#39;</span>
     <span class="c1"># --------------------------------------------------------------------</span>
@@ -1776,7 +1824,7 @@ title="Open an issue"
         <span class="n">results</span> <span class="o">=</span> <span class="n">results</span> <span class="o">=</span> <span class="n">compute</span><span class="p">(</span>
             <span class="o">*</span><span class="n">lazy_values</span><span class="p">,</span>
             <span class="n">scheduler</span><span class="o">=</span><span class="n">dask</span><span class="o">.</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
-            <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
+            <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Garbage collection</span>
@@ -1786,21 +1834,21 @@ title="Open an issue"
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
         <span class="p">(</span>
             <span class="n">TotPop_yr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-            <span class="n">PopPct_age</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
+            <span class="n">PopPct_age</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
             <span class="n">AvgInc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
             <span class="n">AvgETR</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
             <span class="n">AvgMTRx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
             <span class="n">AvgMTRy</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
             <span class="n">frac_tax_payroll</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-            <span class="n">etrparam_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="n">etr_wsumsq_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
-            <span class="n">etr_obs_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
-            <span class="n">mtrxparam_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="n">mtrx_wsumsq_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
-            <span class="n">mtrx_obs_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
-            <span class="n">mtryparam_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
-            <span class="n">mtry_wsumsq_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
-            <span class="n">mtry_obs_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
+            <span class="n">etrparam_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">etr_wsumsq_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">etr_obs_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">mtrx_wsumsq_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">mtrx_obs_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">mtry_wsumsq_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">mtry_obs_arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
         <span class="p">)</span> <span class="o">=</span> <span class="n">result</span>
 
     <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
@@ -1845,12 +1893,13 @@ title="Open an issue"
         <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="c1"># &#39;&#39;&#39;</span>
-    <span class="c1"># --------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Replace outlier tax functions (SSE&gt;mean+2.5*std) with linear</span>
-    <span class="c1"># linear interpolation. We make two passes (filtering runs).</span>
-    <span class="c1"># --------------------------------------------------------------------</span>
+    <span class="c1"># interpolation for parametric tax functions (not &quot;mono&quot;). We make two</span>
+    <span class="c1"># passes (filtering runs).</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">age_specific</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">age_specific</span> <span class="ow">and</span> <span class="n">tax_func_type</span> <span class="o">!=</span> <span class="s2">&quot;mono&quot;</span><span class="p">:</span>
         <span class="n">age_sup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">s_min</span><span class="p">,</span> <span class="n">s_max</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">se_mult</span> <span class="o">=</span> <span class="mf">3.5</span>
         <span class="n">etr_sse_big</span> <span class="o">=</span> <span class="n">find_outliers</span><span class="p">(</span>
@@ -1862,9 +1911,9 @@ title="Open an issue"
             <span class="n">graph</span><span class="o">=</span><span class="n">graph_est</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">etr_sse_big</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">etrparam_arr_adj</span> <span class="o">=</span> <span class="n">replace_outliers</span><span class="p">(</span><span class="n">etrparam_arr</span><span class="p">,</span> <span class="n">etr_sse_big</span><span class="p">)</span>
+            <span class="n">etrparam_list_adj</span> <span class="o">=</span> <span class="n">replace_outliers</span><span class="p">(</span><span class="n">etrparam_list</span><span class="p">,</span> <span class="n">etr_sse_big</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">etr_sse_big</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">etrparam_arr_adj</span> <span class="o">=</span> <span class="n">etrparam_arr</span>
+            <span class="n">etrparam_list_adj</span> <span class="o">=</span> <span class="n">etrparam_list</span>
 
         <span class="n">mtrx_sse_big</span> <span class="o">=</span> <span class="n">find_outliers</span><span class="p">(</span>
             <span class="n">mtrx_wsumsq_arr</span> <span class="o">/</span> <span class="n">mtrx_obs_arr</span><span class="p">,</span>
@@ -1875,9 +1924,9 @@ title="Open an issue"
             <span class="n">graph</span><span class="o">=</span><span class="n">graph_est</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">mtrx_sse_big</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">mtrxparam_arr_adj</span> <span class="o">=</span> <span class="n">replace_outliers</span><span class="p">(</span><span class="n">mtrxparam_arr</span><span class="p">,</span> <span class="n">mtrx_sse_big</span><span class="p">)</span>
+            <span class="n">mtrxparam_list_adj</span> <span class="o">=</span> <span class="n">replace_outliers</span><span class="p">(</span><span class="n">mtrxparam_list</span><span class="p">,</span> <span class="n">mtrx_sse_big</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">mtrx_sse_big</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">mtrxparam_arr_adj</span> <span class="o">=</span> <span class="n">mtrxparam_arr</span>
+            <span class="n">mtrxparam_list_adj</span> <span class="o">=</span> <span class="n">mtrxparam_list</span>
 
         <span class="n">mtry_sse_big</span> <span class="o">=</span> <span class="n">find_outliers</span><span class="p">(</span>
             <span class="n">mtry_wsumsq_arr</span> <span class="o">/</span> <span class="n">mtry_obs_arr</span><span class="p">,</span>
@@ -1888,22 +1937,20 @@ title="Open an issue"
             <span class="n">graph</span><span class="o">=</span><span class="n">graph_est</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">mtry_sse_big</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">mtryparam_arr_adj</span> <span class="o">=</span> <span class="n">replace_outliers</span><span class="p">(</span><span class="n">mtryparam_arr</span><span class="p">,</span> <span class="n">mtry_sse_big</span><span class="p">)</span>
+            <span class="n">mtryparam_list_adj</span> <span class="o">=</span> <span class="n">replace_outliers</span><span class="p">(</span><span class="n">mtryparam_list</span><span class="p">,</span> <span class="n">mtry_sse_big</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">mtry_sse_big</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">mtryparam_arr_adj</span> <span class="o">=</span> <span class="n">mtryparam_arr</span>
+            <span class="n">mtryparam_list_adj</span> <span class="o">=</span> <span class="n">mtryparam_list</span>
 
     <span class="c1"># &#39;&#39;&#39;</span>
-    <span class="c1"># --------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Generate tax function parameters for S &lt; s_max - s_min + 1</span>
-    <span class="c1"># --------------------------------------------------------------------</span>
-    <span class="c1"># etrparam_arr_S  = S x BW x 10 array, this is an array in which S</span>
-    <span class="c1">#                   is less-than-or-equal-to s_max-s_min+1. We use</span>
-    <span class="c1">#                   weighted averages of parameters in relevant age</span>
-    <span class="c1">#                   groups</span>
-    <span class="c1"># mtrxparam_arr_S = S x BW x 10 array, this is an array in which S</span>
-    <span class="c1">#                   is less-than-or-equal-to s_max-s_min+1. We use</span>
-    <span class="c1">#                   weighted averages of parameters in relevant age</span>
-    <span class="c1">#                   groups</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># etrparam_list_S (list BW x S x numparams): this is an array in which S is</span>
+    <span class="c1">#     less-than-or-equal-to s_max-s_min+1. We use weighted averages of</span>
+    <span class="c1">#     parameters in relevant age groups</span>
+    <span class="c1"># mtrxparam_list_S (list BW x S x numparams): this is an array in which S</span>
+    <span class="c1">#     is less-than-or-equal-to s_max-s_min+1. We use weighted averages of</span>
+    <span class="c1">#     parameters in relevant age groups</span>
     <span class="c1"># age_cuts     = (S+1,) vector, linspace of age cutoffs of S+1 points</span>
     <span class="c1">#                between 0 and S+1</span>
     <span class="c1"># yrcut_lb     = integer &gt;= 0, index of lower bound age for S bin</span>
@@ -1914,80 +1961,91 @@ title="Open an issue"
     <span class="c1">#                each year copied back 10 times in the 3rd dimension</span>
     <span class="c1"># --------------------------------------------------------------------</span>
     <span class="c1"># &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">age_specific</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">age_specific</span> <span class="ow">and</span> <span class="n">tax_func_type</span> <span class="o">!=</span> <span class="s2">&quot;mono&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">S</span> <span class="o">==</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">etrparam_arr_S</span> <span class="o">=</span> <span class="n">etrparam_arr_adj</span>
-            <span class="n">mtrxparam_arr_S</span> <span class="o">=</span> <span class="n">mtrxparam_arr_adj</span>
-            <span class="n">mtryparam_arr_S</span> <span class="o">=</span> <span class="n">mtryparam_arr_adj</span>
+            <span class="n">etrparam_list_S</span> <span class="o">=</span> <span class="n">etrparam_list_adj</span>
+            <span class="n">mtrxparam_list_S</span> <span class="o">=</span> <span class="n">mtrxparam_list_adj</span>
+            <span class="n">mtryparam_list_S</span> <span class="o">=</span> <span class="n">mtryparam_list_adj</span>
         <span class="k">elif</span> <span class="n">S</span> <span class="o">&lt;</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">etrparam_arr_S</span> <span class="o">=</span> <span class="n">etrparam_arr_adj</span>
-            <span class="n">mtrxparam_arr_S</span> <span class="o">=</span> <span class="n">mtrxparam_arr_adj</span>
-            <span class="n">mtryparam_arr_S</span> <span class="o">=</span> <span class="n">mtryparam_arr_adj</span>
-            <span class="n">etrparam_arr_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
-            <span class="n">mtrxparam_arr_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
-            <span class="n">mtryparam_arr_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">numparams</span><span class="p">))</span>
+            <span class="n">etrparam_list_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">mtrxparam_list_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">mtryparam_list_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">age_cuts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">S</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">yrcut_lb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">age_cuts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">rmndr_pct_lb</span> <span class="o">=</span> <span class="mf">1.0</span>
-            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
-                <span class="n">yrcut_ub</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">age_cuts</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
-                <span class="n">rmndr_pct_ub</span> <span class="o">=</span> <span class="n">age_cuts</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">age_cuts</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">rmndr_pct_ub</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-                    <span class="n">rmndr_pct_ub</span> <span class="o">=</span> <span class="mf">1.0</span>
-                    <span class="n">yrcut_ub</span> <span class="o">-=</span> <span class="mi">1</span>
-                <span class="n">age_wgts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">PopPct_age</span><span class="p">[</span><span class="n">yrcut_lb</span> <span class="p">:</span> <span class="n">yrcut_ub</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]]</span> <span class="o">*</span> <span class="n">numparams</span>
-                <span class="p">)</span>
-                <span class="n">age_wgts</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*=</span> <span class="n">rmndr_pct_lb</span>
-                <span class="n">age_wgts</span><span class="p">[</span><span class="n">yrcut_ub</span> <span class="o">-</span> <span class="n">yrcut_lb</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*=</span> <span class="n">rmndr_pct_ub</span>
-                <span class="n">etrparam_arr_S</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">etrparam_arr_adj</span><span class="p">[</span><span class="n">yrcut_lb</span> <span class="p">:</span> <span class="n">yrcut_ub</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">age_wgts</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                <span class="n">mtrxparam_arr_S</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">mtrxparam_arr_adj</span><span class="p">[</span><span class="n">yrcut_lb</span> <span class="p">:</span> <span class="n">yrcut_ub</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">age_wgts</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                <span class="n">mtryparam_arr_S</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">mtryparam_arr_adj</span><span class="p">[</span><span class="n">yrcut_lb</span> <span class="p">:</span> <span class="n">yrcut_ub</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">age_wgts</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                <span class="n">yrcut_lb</span> <span class="o">=</span> <span class="n">yrcut_ub</span>
-                <span class="n">rmndr_pct_lb</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">rmndr_pct_ub</span>
+            <span class="k">for</span> <span class="n">bw</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">BW</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+                    <span class="n">yrcut_ub</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">age_cuts</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">rmndr_pct_ub</span> <span class="o">=</span> <span class="n">age_cuts</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">age_cuts</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">rmndr_pct_ub</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                        <span class="n">rmndr_pct_ub</span> <span class="o">=</span> <span class="mf">1.0</span>
+                        <span class="n">yrcut_ub</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">age_wgts</span> <span class="o">=</span> <span class="n">PopPct_age</span><span class="p">[</span><span class="n">bw</span><span class="p">,</span> <span class="n">yrcut_lb</span> <span class="p">:</span> <span class="n">yrcut_ub</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">age_wgts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="n">rmndr_pct_lb</span>
+                    <span class="n">age_wgts</span><span class="p">[</span><span class="n">yrcut_ub</span> <span class="o">-</span> <span class="n">yrcut_lb</span><span class="p">]</span> <span class="o">*=</span> <span class="n">rmndr_pct_ub</span>
+                    <span class="n">etrparam_list_S</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">etrparam_list_adj</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="n">yrcut_lb</span> <span class="p">:</span> <span class="n">yrcut_ub</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="o">*</span> <span class="n">age_wgts</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                    <span class="n">mtrxparam_list_S</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">mtrxparam_list_adj</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="n">yrcut_lb</span> <span class="p">:</span> <span class="n">yrcut_ub</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="o">*</span> <span class="n">age_wgts</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                    <span class="n">mtryparam_list_S</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">mtryparam_list_adj</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="n">yrcut_lb</span> <span class="p">:</span> <span class="n">yrcut_ub</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="o">*</span> <span class="n">age_wgts</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                    <span class="n">yrcut_lb</span> <span class="o">=</span> <span class="n">yrcut_ub</span>
+                    <span class="n">rmndr_pct_lb</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">rmndr_pct_ub</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;S is larger than the difference between the minimum&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; age and the maximum age specified.  Please choose&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; and S such that a model period equals at least&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; one calendar year.&quot;</span>
+            <span class="n">err_msg</span><span class="p">(</span>
+                <span class="s2">&quot;txfunc ERROR: S is larger than the difference between &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;the minimum age and the maximum age specified. Please &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;choose an S such that a model period equals at least &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;one calendar year.&quot;</span>
             <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Big S: &quot;</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max age, min age: &quot;</span><span class="p">,</span> <span class="n">s_max</span><span class="p">,</span> <span class="n">s_min</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">age_specific</span> <span class="ow">and</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;mono&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">S</span> <span class="o">==</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">etrparam_list_S</span> <span class="o">=</span> <span class="n">etrparam_list_adj</span>
+            <span class="n">mtrxparam_list_S</span> <span class="o">=</span> <span class="n">mtrxparam_list_adj</span>
+            <span class="n">mtryparam_list_S</span> <span class="o">=</span> <span class="n">mtryparam_list_adj</span>
+        <span class="k">elif</span> <span class="n">S</span> <span class="o">&lt;</span> <span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;txfunc ERROR: tax_func_type = mono and S &lt; s_max - &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;s_min + 1&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">err_msg</span><span class="p">(</span>
+                <span class="s2">&quot;txfunc ERROR: S is larger than the difference between &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;the minimum age and the maximum age specified. Please &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;choose an S such that a model period equals at least &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;one calendar year.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Big S: &quot;</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max age, min age: &quot;</span><span class="p">,</span> <span class="n">s_max</span><span class="p">,</span> <span class="n">s_min</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">etrparam_arr_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                <span class="n">etrparam_arr</span><span class="p">[</span><span class="mi">0</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">etrparam_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-            <span class="p">),</span>
-            <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">)</span>
-        <span class="n">mtrxparam_arr_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                <span class="n">mtrxparam_arr</span><span class="p">[</span><span class="mi">0</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">mtrxparam_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-            <span class="p">),</span>
-            <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">)</span>
-        <span class="n">mtryparam_arr_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                <span class="n">mtryparam_arr</span><span class="p">[</span><span class="mi">0</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">BW</span><span class="p">,</span> <span class="n">mtryparam_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-            <span class="p">),</span>
-            <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">age_specific</span><span class="p">:</span>
+        <span class="n">etrparam_list_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">mtrxparam_list_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">mtryparam_list_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">BW</span><span class="p">,</span> <span class="n">S</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">bw</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">BW</span><span class="p">):</span>
+            <span class="n">etrparam_list_S</span><span class="p">[</span><span class="n">bw</span><span class="p">][:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">etrparam_list</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="mi">0</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]]</span> <span class="o">*</span> <span class="n">S</span>
+            <span class="n">mtrxparam_list_S</span><span class="p">[</span><span class="n">bw</span><span class="p">][:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="mi">0</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]]</span> <span class="o">*</span> <span class="n">S</span>
+            <span class="n">mtryparam_list_S</span><span class="p">[</span><span class="n">bw</span><span class="p">][:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mtryparam_list</span><span class="p">[</span><span class="n">bw</span><span class="p">][</span><span class="mi">0</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]]</span> <span class="o">*</span> <span class="n">S</span>
 
     <span class="c1"># Save tax function parameters array and computation time in</span>
     <span class="c1"># dictionary</span>
     <span class="n">dict_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="p">(</span><span class="s2">&quot;tfunc_etr_params_S&quot;</span><span class="p">,</span> <span class="n">etrparam_arr_S</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;tfunc_mtrx_params_S&quot;</span><span class="p">,</span> <span class="n">mtrxparam_arr_S</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;tfunc_mtry_params_S&quot;</span><span class="p">,</span> <span class="n">mtryparam_arr_S</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;tfunc_etr_params_S&quot;</span><span class="p">,</span> <span class="n">etrparam_list_S</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;tfunc_mtrx_params_S&quot;</span><span class="p">,</span> <span class="n">mtrxparam_list_S</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;tfunc_mtry_params_S&quot;</span><span class="p">,</span> <span class="n">mtryparam_list_S</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;tfunc_avginc&quot;</span><span class="p">,</span> <span class="n">AvgInc</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;tfunc_avg_etr&quot;</span><span class="p">,</span> <span class="n">AvgETR</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;tfunc_avg_mtrx&quot;</span><span class="p">,</span> <span class="n">AvgMTRx</span><span class="p">),</span>
@@ -2011,6 +2069,156 @@ title="Open an issue"
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dict_params</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dict_params</span></div>
+
+
+<span class="k">def</span> <span class="nf">monotone_spline</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">,</span>
+    <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lam</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="n">kap</span><span class="o">=</span><span class="mf">1e7</span><span class="p">,</span>
+    <span class="n">incl_uncstr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1"># create binned and weighted x and y data</span>
+    <span class="k">if</span> <span class="n">bins</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;monotone_spline2 ERROR: bins value is not type scalar&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">bins</span>
+        <span class="n">x_binned</span><span class="p">,</span> <span class="n">y_binned</span><span class="p">,</span> <span class="n">weights_binned</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">avg_by_bin</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bins</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">bins</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x_binned</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">y_binned</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">weights_binned</span> <span class="o">=</span> <span class="n">weights</span>
+
+    <span class="c1"># Prepare bases (Imat) and penalty</span>
+    <span class="n">dd</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">D3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">dd</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">D1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Monotone smoothing</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">weights_binned</span> <span class="o">=</span> <span class="n">weights_binned</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">weights_binned</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">weights1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">weights_binned</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">weights_binned</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">weights3</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mf">0.25</span> <span class="o">*</span> <span class="n">weights_binned</span><span class="p">[</span><span class="mi">3</span><span class="p">:,</span> <span class="p">:]</span>
+        <span class="o">+</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">weights_binned</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="o">+</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">weights_binned</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="o">+</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">weights_binned</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+        <span class="n">Ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">ws</span> <span class="o">*</span> <span class="n">kap</span><span class="p">)</span>
+        <span class="n">mon_cof</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+            <span class="n">E</span>
+            <span class="o">+</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">D3</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">weights3</span><span class="p">)</span> <span class="o">@</span> <span class="n">D3</span>
+            <span class="o">+</span> <span class="n">D1</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="n">Ws</span> <span class="o">*</span> <span class="n">weights1</span><span class="p">)</span> <span class="o">@</span> <span class="n">D1</span><span class="p">,</span>
+            <span class="n">y_binned</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ws_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">D1</span> <span class="o">@</span> <span class="n">mon_cof</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+        <span class="n">dw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ws</span> <span class="o">!=</span> <span class="n">ws_new</span><span class="p">)</span>
+        <span class="n">ws</span> <span class="o">=</span> <span class="n">ws_new</span>
+        <span class="k">if</span> <span class="n">dw</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="c1"># Monotonic and non monotonic fits</span>
+    <span class="n">y_cstr</span> <span class="o">=</span> <span class="n">mon_cof</span>
+    <span class="n">wsse_cstr</span> <span class="o">=</span> <span class="p">(</span><span class="n">weights_binned</span> <span class="o">*</span> <span class="p">((</span><span class="n">y_cstr</span> <span class="o">-</span> <span class="n">y_binned</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">incl_uncstr</span><span class="p">:</span>
+        <span class="n">y_uncstr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+            <span class="n">E</span> <span class="o">+</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">D3</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">weights3</span><span class="p">)</span> <span class="o">@</span> <span class="n">D3</span><span class="p">,</span> <span class="n">y_binned</span>
+        <span class="p">)</span>
+        <span class="n">wsse_uncstr</span> <span class="o">=</span> <span class="p">(</span><span class="n">weights_binned</span> <span class="o">*</span> <span class="p">((</span><span class="n">y_uncstr</span> <span class="o">-</span> <span class="n">y_binned</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_uncstr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">wsse_uncstr</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">mono_interp</span><span class="p">(</span><span class="n">x_vec</span><span class="p">):</span>
+        <span class="c1"># replace last point in data with two copies further out to make smooth</span>
+        <span class="c1"># extrapolation</span>
+        <span class="n">x_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">x_binned</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.005</span> <span class="o">*</span> <span class="n">x_binned</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mf">1.01</span> <span class="o">*</span> <span class="n">x_binned</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="p">)</span>
+        <span class="n">y_cstr_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_cstr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">y_cstr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">y_cstr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="c1"># Create interpolating cubic spline for interior points</span>
+        <span class="n">inter_interpl</span> <span class="o">=</span> <span class="n">intp</span><span class="p">(</span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_cstr_new</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x_vec</span><span class="p">)</span>
+        <span class="n">x_lt_min</span> <span class="o">=</span> <span class="n">x_vec</span> <span class="o">&lt;</span> <span class="n">x_binned</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">x_gt_max</span> <span class="o">=</span> <span class="n">x_vec</span> <span class="o">&gt;</span> <span class="n">x_new</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">x_inter</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_vec</span> <span class="o">&gt;=</span> <span class="n">x_binned</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_vec</span> <span class="o">&lt;=</span> <span class="n">x_new</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">y_pred</span><span class="p">[</span><span class="n">x_inter</span><span class="p">]</span> <span class="o">=</span> <span class="n">inter_interpl</span><span class="p">(</span><span class="n">x_vec</span><span class="p">[</span><span class="n">x_inter</span><span class="p">])</span>
+        <span class="c1"># extrapolate the maximum for values above the maximum</span>
+        <span class="n">y_pred</span><span class="p">[</span><span class="n">x_gt_max</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_cstr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># linear extrapolation of last two points for values below the min</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_cstr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_cstr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">x_binned</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x_binned</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">intercept</span> <span class="o">=</span> <span class="n">y_cstr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x_binned</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y_pred</span><span class="p">[</span><span class="n">x_lt_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x_vec</span><span class="p">[</span><span class="n">x_lt_min</span><span class="p">]</span> <span class="o">+</span> <span class="n">intercept</span>
+
+        <span class="k">return</span> <span class="n">y_pred</span>
+
+    <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;All data&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bins</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">y_cstr</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Monotonic smooth spline&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">incl_uncstr</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">y_uncstr</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Unconstrained smooth spline&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">x_binned</span><span class="p">,</span>
+                <span class="n">y_binned</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">s</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Binned data averages&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">mono_interp</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Monotonic smooth spline&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">incl_uncstr</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">x_binned</span><span class="p">,</span>
+                    <span class="n">y_uncstr</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Unconstrained smooth spline&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">mono_interp</span><span class="p">,</span> <span class="n">y_cstr</span><span class="p">,</span> <span class="n">wsse_cstr</span><span class="p">,</span> <span class="n">y_uncstr</span><span class="p">,</span> <span class="n">wsse_uncstr</span>
 </pre></div>
 
               </div>

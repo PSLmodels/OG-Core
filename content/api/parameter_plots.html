@@ -912,7 +912,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.txfunc_graph">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">txfunc_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">txrates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_tax_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_to_plot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#txfunc_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.txfunc_graph" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">txfunc_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">txrates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_to_plot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#txfunc_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.txfunc_graph" title="Permalink to this definition">#</a></dt>
 <dd><p>This function creates a 3D plot of the fitted tax function against
 the data.</p>
 <dl class="field-list simple">
@@ -927,9 +927,8 @@ rates</p></li>
 <li><p><strong>Y</strong> – tax rates from the data</p></li>
 <li><p><strong>rate_type</strong> (<em>str</em>) – type of tax rate: mtrx, mtry, etr</p></li>
 <li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
-<li><p><strong>get_tax_rates</strong> (<em>function</em>) – function to generate tax rates given
-parameters</p></li>
-<li><p><strong>params_to_plot</strong> (<em>Numpy Array</em>) – tax function parameters</p></li>
+<li><p><strong>params_to_plot</strong> (<em>array_like</em><em> or </em><em>function</em>) – tax function parameters or
+nonparametric function</p></li>
 <li><p><strong>output_dir</strong> (<em>str</em>) – output directory for saving plot files</p></li>
 </ul>
 </dd>
@@ -949,7 +948,7 @@ of budget window.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>age_vec</strong> (<em>numpy array</em>) – vector of ages, length S</p></li>
 <li><p><strong>sse_mat</strong> (<em>Numpy array</em>) – SSE for each estimated tax function,
-size is SxBW</p></li>
+size is BW x S</p></li>
 <li><p><strong>start_year</strong> (<em>int</em>) – first year of budget window</p></li>
 <li><p><strong>varstr</strong> (<em>str</em>) – name of tax function being evaluated</p></li>
 <li><p><strong>output_dir</strong> (<em>str</em>) – path to save graph to</p></li>

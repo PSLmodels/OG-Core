@@ -542,7 +542,7 @@ window (t) and marks estimations that have outlier SSE.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sse_mat</strong> (<em>Numpy array</em>) – SSE for each estimated tax function,
-size is SxBW</p></li>
+size is BW x S</p></li>
 <li><p><strong>age_vec</strong> (<em>numpy array</em>) – vector of ages, length S</p></li>
 <li><p><strong>se_mult</strong> (<em>scalar</em>) – multiple of standard deviations before
 consider estimate an outlier</p></li>
@@ -553,13 +553,13 @@ consider estimate an outlier</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>indicators of whether tax function</dt><dd><p>is outlier, size is SxBW</p>
+<dt>indicators of whether tax function</dt><dd><p>is outlier, size is BW x S</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>sse_big_mat (Numpy array)</p>
+<dd class="field-odd"><p>sse_big_mat (bool array_like)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -572,8 +572,8 @@ functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>params</strong> (<em>tuple</em>) – parameters of the tax function, varies by
-tax_func_type</p></li>
+<li><p><strong>params</strong> (<em>array_like</em><em> or </em><em>function</em>) – parameters of the tax function, or
+nonparametric function for tax function type “mono”</p></li>
 <li><p><strong>X</strong> (<em>array_like</em>) – labor income data</p></li>
 <li><p><strong>Y</strong> (<em>array_like</em>) – capital income data</p></li>
 <li><p><strong>wgts</strong> (<em>array_like</em>) – weights for data observations</p></li>
@@ -598,27 +598,45 @@ deviations from the mean</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.txfunc.replace_outliers">
-<span class="sig-prename descclassname"><span class="pre">ogcore.txfunc.</span></span><span class="sig-name descname"><span class="pre">replace_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sse_big_mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/txfunc.html#replace_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.txfunc.replace_outliers" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.txfunc.</span></span><span class="sig-name descname"><span class="pre">replace_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sse_big_mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/txfunc.html#replace_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.txfunc.replace_outliers" title="Permalink to this definition">#</a></dt>
 <dd><p>This function replaces outlier estimated tax function parameters
 with linearly interpolated tax function tax function parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>param_arr</strong> (<em>Numpy array</em>) – estimated tax function parameters,
-size is SxBWx#tax params</p></li>
-<li><p><strong>sse_big_mat</strong> (<em>Numpy array</em>) – indicators of whether tax function
-is outlier, size is SxBW</p></li>
+<li><p><strong>param_list</strong> (<em>list</em>) – estimated tax function parameters or nonparametric
+functions, size is BW x S x #TaxParams</p></li>
+<li><p><strong>sse_big_mat</strong> (<em>bool</em><em>, </em><em>array_like</em>) – indicators of whether tax function
+is outlier, size is BW x S</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>estimated and interpolated tax</dt><dd><p>function parameters, size SxBWx#tax params</p>
+<dt>estimated and interpolated tax function</dt><dd><p>parameters, size BW x S x #TaxParams</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>param_arr_adj (Numpy array)</p>
+<dd class="field-odd"><p>param_arr_adj (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.txfunc.tax_data_sample">
+<span class="sig-prename descclassname"><span class="pre">ogcore.txfunc.</span></span><span class="sig-name descname"><span class="pre">tax_data_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_etr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.65</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_income</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_mtr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/txfunc.html#tax_data_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.txfunc.tax_data_sample" title="Permalink to this definition">#</a></dt>
+<dd><p>Function to create sample tax data for estimation by dropping
+observations with extreme values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>DataFrame</em>) – raw data from microsimulation model</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>selected sample</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>data (DataFrame)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -626,10 +644,10 @@ is outlier, size is SxBW</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.txfunc.tax_func_estimate">
 <span class="sig-prename descclassname"><span class="pre">ogcore.txfunc.</span></span><span class="sig-name descname"><span class="pre">tax_func_estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">micro_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BW</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ending_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analytical_mtrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DEP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age_specific</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_est</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/txfunc.html#tax_func_estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.txfunc.tax_func_estimate" title="Permalink to this definition">#</a></dt>
-<dd><p>This function performs analysis on the source data from Tax-
-Calculator and estimates functions for the effective tax rate (ETR),
-marginal tax rate on labor income (MTRx), and marginal tax rate on
-capital income (MTRy).</p>
+<dd><p>This function performs analysis on the source data from microsimulation
+model and estimates functions for the effective tax rate (ETR), marginal
+tax rate on labor income (MTRx), and marginal tax rate on capital income
+(MTRy).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -804,14 +822,12 @@ to the data</p></li>
 <dd class="field-even"><p><p>tax function estimation output:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>params (Numpy array): vector of estimated parameters</p></li>
-<li><dl class="simple">
-<dt>wsse (scalar): weighted sum of squared deviations from</dt><dd><p>minimization</p>
-</dd>
-</dl>
-</li>
-<li><p>obs (int): number of observations in the data, &gt; 600</p></li>
+<li><p>params (Numpy array or function object): vector of estimated</p></li>
 </ul>
+<p>parameters or nonparametric function object
+* wsse (scalar): weighted sum of squared deviations from
+minimization
+* obs (int): number of observations in the data, &gt; 600</p>
 </div></blockquote>
 </p>
 </dd>

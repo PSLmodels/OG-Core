@@ -559,7 +559,8 @@ title="Print to PDF"
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to
 dollars</p></li>
 <li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
-<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – effective tax rate function parameters</p></li>
+<li><p><strong>etr_params</strong> (<em>array_like</em><em> or </em><em>function</em>) – effective tax rate function
+parameters or nonparametric function</p></li>
 <li><p><strong>labor_noncompliance_rate</strong> (<em>Numpy array</em>) – income tax noncompliance rate for labor income</p></li>
 <li><p><strong>capital_noncompliance_rate</strong> (<em>Numpy array</em>) – income tax noncompliance rate for capital income</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
@@ -614,7 +615,10 @@ dollars</p></li>
 <li><p><strong>mtr_capital</strong> (<em>bool</em>) – whether to compute the marginal tax rate on
 capital income or labor income</p></li>
 <li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
-<li><p><strong>etr_params</strong> (<em>Numpy array</em>) – effective tax rate function parameters</p></li>
+<li><p><strong>etr_params</strong> (<em>array_like</em><em> or </em><em>function</em>) – effective tax rate function
+parameters or nonparametric function</p></li>
+<li><p><strong>mtr_params</strong> (<em>array_like</em><em> or </em><em>function</em>) – marginal tax rate function
+parameters or nonparametric function</p></li>
 <li><p><strong>noncompliance_rate</strong> (<em>Numpy array</em>) – income tax noncompliance rate</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>

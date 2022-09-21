@@ -571,10 +571,9 @@ title="Open an issue"
 
 <div class="viewcode-block" id="comp_array"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.comp_array">[docs]</a><span class="k">def</span> <span class="nf">comp_array</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compare two arrays in the L inifinity norm</span>
-<span class="sd">    Return True if | a - b | &lt; tol, False otherwise</span>
-<span class="sd">    If not equal, add items to the unequal list</span>
-<span class="sd">    name: the name of the value being compared</span>
+<span class="sd">    Compare two arrays in the L inifinity norm. Return True if | a - b | &lt; tol,</span>
+<span class="sd">    False otherwise. If not equal, add items to the unequal list name: the name</span>
+<span class="sd">    of the value being compared</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name (str): name of variable being compared</span>
@@ -587,7 +586,6 @@ title="Open an issue"
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (bool): whether two arrays are the same or not</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">exceptions</span><span class="p">:</span>
@@ -621,9 +619,9 @@ title="Open an issue"
 
 <div class="viewcode-block" id="comp_scalar"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.comp_scalar">[docs]</a><span class="k">def</span> <span class="nf">comp_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compare two scalars in the L inifinity norm</span>
-<span class="sd">    Return True if abs(a - b) &lt; tol, False otherwise</span>
-<span class="sd">    If not equal, add items to the unequal list</span>
+<span class="sd">    Compare two scalars in the L inifinity norm. Return True if</span>
+<span class="sd">    abs(a - b) &lt; tol, False otherwise. If not equal, add items to the unequal</span>
+<span class="sd">    list.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name (str): name of variable being compared</span>
@@ -636,7 +634,6 @@ title="Open an issue"
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (bool): whether two arrays are the same or not</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">exceptions</span><span class="p">:</span>
@@ -1196,6 +1193,140 @@ title="Open an issue"
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="avg_by_bin"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.avg_by_bin">[docs]</a><span class="k">def</span> <span class="nf">avg_by_bin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">eql_pctl</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For an x series and y series (vectors), this function computes vectors of</span>
+<span class="sd">    weighted average values in specified bins.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (array_like, either pd.Series or np.array): x values</span>
+<span class="sd">        y (array_like, either pd.Series or np.array): y values</span>
+<span class="sd">        weights (array_like, either pd.Series or np.array): weights</span>
+<span class="sd">        bins (scalar, list, or np.array): number of bins or specific bin edges</span>
+<span class="sd">        eql_pctl (boolean): if True, bins are equal percentiles of x</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        x_binned(array_like, np.array): weighted average x values in bins</span>
+<span class="sd">        y_binned (array_like, np.array): weighted average y values in bins</span>
+<span class="sd">        weights_binned (array_like, np.array): total weights in bins</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If vectors are pandas Series objects, convert to numpy arrays</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+    <span class="c1"># Set original observations number and weights</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Case of bins=K bins that are either equal percentiles or equal x-width</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+        <span class="n">x_binned</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+        <span class="n">y_binned</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+        <span class="n">weights_binned</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+
+        <span class="n">pctl_cuts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">bins</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bins</span><span class="p">))</span>
+
+        <span class="c1"># Case of bins=K bins that are equal percentiles</span>
+        <span class="k">if</span> <span class="n">eql_pctl</span><span class="p">:</span>
+            <span class="c1"># Sort x and weights by x in ascending order</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+                        <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+                        <span class="n">weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">],</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;weights&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+            <span class="n">weights_norm_cum</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">/</span> <span class="n">weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">weights_norm_cum</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+            <span class="nb">bin</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">i_part_last</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">pct_ind_end</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">obs</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">weights_norm_cum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">pctl_cuts</span><span class="p">[</span><span class="nb">bin</span><span class="p">]:</span>
+                    <span class="n">pct_ind_beg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">pct_ind_end</span>
+                    <span class="n">pct_ind_end</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="n">weights_norm_cum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">pctl_cuts</span><span class="p">[</span><span class="nb">bin</span><span class="p">])</span>
+                        <span class="o">/</span> <span class="p">(</span><span class="n">weights_norm_cum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">weights_norm_cum</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="p">)</span>
+                    <span class="n">weights_vec_bin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="p">[</span><span class="n">pct_ind_beg</span> <span class="o">*</span> <span class="n">weights</span><span class="p">[</span><span class="n">i_part_last</span><span class="p">]],</span>
+                            <span class="n">weights</span><span class="p">[</span><span class="n">i_part_last</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">i</span><span class="p">],</span>
+                            <span class="p">[</span><span class="n">pct_ind_end</span> <span class="o">*</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">weights_binned</span><span class="p">[</span><span class="nb">bin</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">weights_vec_bin</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                    <span class="n">x_binned</span><span class="p">[</span><span class="nb">bin</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">[</span><span class="n">i_part_last</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights_vec_bin</span>
+                    <span class="p">)</span>
+                    <span class="n">y_binned</span><span class="p">[</span><span class="nb">bin</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span>
+                        <span class="n">y</span><span class="p">[</span><span class="n">i_part_last</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights_vec_bin</span>
+                    <span class="p">)</span>
+
+                    <span class="n">i_part_last</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="nb">bin</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Case of bins=K bins that are equal x-width</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="nb">bin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">bin</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">bin_ind</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">bin_edges</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">bin_edges</span><span class="p">[</span><span class="nb">bin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">bin_ind</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">bin_edges</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">bin_edges</span><span class="p">[</span><span class="nb">bin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">x_binned</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">y_binned</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">weights_binned</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="c1"># Case of bin edges specified, eql_pctl must be False</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">eql_pctl</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;avg_by_bin ERROR: eql_pctl=True with bins given as &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;list or ndarray. In this case, eql_pctl must be set &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;to False&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+        <span class="n">bin_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">x_binned</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bin_num</span><span class="p">)</span>
+        <span class="n">y_binned</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bin_num</span><span class="p">)</span>
+        <span class="n">weights_binned</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bin_num</span><span class="p">)</span>
+        <span class="k">for</span> <span class="nb">bin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bin_num</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">bin</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">bin_ind</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">bins</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">bins</span><span class="p">[</span><span class="nb">bin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bin_ind</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">bins</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">bins</span><span class="p">[</span><span class="nb">bin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">x_binned</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">])</span>
+            <span class="n">y_binned</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">])</span>
+            <span class="n">weights_binned</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">bin_ind</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;avg_by_bin ERROR: bins value is type &quot;</span>
+            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">bins</span><span class="p">))</span>
+            <span class="o">+</span> <span class="s2">&quot;, but needs to be either scalar, list, or ndarray.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x_binned</span><span class="p">,</span> <span class="n">y_binned</span><span class="p">,</span> <span class="n">weights_binned</span></div>
 </pre></div>
 
               </div>
