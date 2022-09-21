@@ -372,8 +372,7 @@ def ss_3Dplot(
         data = ((reform_ss[var] - base_ss[var]) / base_ss[var]).T
     cmap1 = matplotlib.cm.get_cmap("jet")
     X, Y = np.meshgrid(domain, Jgrid)
-    fig5 = plt.figure()
-    ax5 = fig5.gca(projection="3d")
+    fig5, ax5 = plt.subplots(subplot_kw={"projection": "3d"})
     ax5.set_xlabel(r"age-$s$")
     ax5.set_ylabel(r"ability type-$j$")
     ax5.set_zlabel(r"individual savings $\bar{b}_{j,s}$")
