@@ -246,7 +246,7 @@ param_updates7 = {
     "delta_tau_annual": [[0.0]],
     "zeta_K": [0.0],
     "zeta_D": [0.0],
-    "initial_guess_r_SS": 0.01,
+    "initial_guess_r_SS": 0.015,
 }
 filename7 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_delta_tau0.pkl"
@@ -346,7 +346,7 @@ filename11 = os.path.join(
     "baseline,param_updates,filename",
     [
         (True, param_updates2, filename2),
-        (True, {"initial_guess_r_SS": 0.03}, filename1),
+        (True, {"initial_guess_r_SS": 0.035}, filename1),
         (False, {}, filename3),
         (False, param_updates4, filename4),
         (True, param_updates5, filename5),

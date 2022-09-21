@@ -78,14 +78,14 @@ def test_wsumsq(tax_func_type, expected):
 @pytest.mark.parametrize(
     "se_mult,expected_mat",
     [
-        (2, np.array([[False, False], [False, False], [False, True]])),
-        (8, np.array([[False, False], [False, False], [False, False]])),
+        (2, np.array([[False, False, False], [False, False, True]])),
+        (8, np.array([[False, False, False], [False, False, False]])),
     ],
     ids=["2", "8"],
 )
 def test_find_outliers(se_mult, expected_mat):
     # Test the find outliers function
-    sse_mat = np.array([[21.0, 22.0], [20.0, 32.0], [20.0, 100.0]])
+    sse_mat = np.array([[21.0, 20.0, 20.0], [22.0, 32.0, 100.0]])
     age_vec = np.array([40, 41])
     start_year = 2018
     varstr = "MTRy"
@@ -108,61 +108,55 @@ def test_replace_outliers():
     BW = 2
     numparams = 3
     random_state = np.random.RandomState(10)
-    param_arr = random_state.rand(S * BW * numparams).reshape(S, BW, numparams)
-    sse_big_mat = ~np.ones((S, BW), dtype=bool)
+    param_arr = random_state.rand(BW * S * numparams).reshape(BW, S, numparams)
+    param_list = np.zeros((BW, S)).tolist()
+    for bw in range(BW):
+        for s in range(S):
+            param_list[bw][s] = param_arr[bw, s, :]
+    sse_big_mat = ~np.ones((BW, S), dtype=bool)
     sse_big_mat[0, 0] = True
-    sse_big_mat[1, 0] = True
-    sse_big_mat[S - 4, 0] = True
-    sse_big_mat[S - 5, 0] = True
-    sse_big_mat[S - 2, 0] = True
-    sse_big_mat[S - 1, 0] = True
+    sse_big_mat[0, 1] = True
+    sse_big_mat[0, S - 4] = True
+    sse_big_mat[0, S - 5] = True
+    sse_big_mat[0, S - 2] = True
+    sse_big_mat[0, S - 1] = True
 
-    act = txfunc.replace_outliers(param_arr, sse_big_mat)
+    act = txfunc.replace_outliers(param_list, sse_big_mat)
 
     exp = [
         [
-            [0.00394827, 0.51219226, 0.81262096],
-            [0.74880388, 0.49850701, 0.22479665],
+            np.array([0.19806286, 0.76053071, 0.16911084]),
+            np.array([0.19806286, 0.76053071, 0.16911084]),
+            np.array([0.19806286, 0.76053071, 0.16911084]),
+            np.array([0.08833981, 0.68535982, 0.95339335]),
+            np.array([0.00394827, 0.51219226, 0.81262096]),
+            np.array([0.05002219, 0.46590843, 0.76645851]),
+            np.array([0.09609612, 0.41962459, 0.72029606]),
+            np.array([0.14217005, 0.37334076, 0.67413362]),
+            np.array([0.14217005, 0.37334076, 0.67413362]),
+            np.array([0.14217005, 0.37334076, 0.67413362]),
         ],
         [
-            [0.00394827, 0.51219226, 0.81262096],
-            [0.08833981, 0.68535982, 0.95339335],
-        ],
-        [
-            [0.00394827, 0.51219226, 0.81262096],
-            [0.61252607, 0.72175532, 0.29187607],
-        ],
-        [
-            [0.91777412, 0.71457578, 0.54254437],
-            [0.14217005, 0.37334076, 0.67413362],
-        ],
-        [
-            [0.44183317, 0.43401399, 0.61776698],
-            [0.51313824, 0.65039718, 0.60103895],
-        ],
-        [
-            [0.3608713, 0.57495943, 0.5290622],
-            [0.31923609, 0.09045935, 0.30070006],
-        ],
-        [
-            [0.27990942, 0.71590487, 0.44035742],
-            [0.62628715, 0.54758616, 0.819287],
-        ],
-        [
-            [0.19894754, 0.8568503, 0.35165264],
-            [0.75464769, 0.29596171, 0.88393648],
-        ],
-        [
-            [0.19894754, 0.8568503, 0.35165264],
-            [0.09346037, 0.82110566, 0.15115202],
-        ],
-        [
-            [0.19894754, 0.8568503, 0.35165264],
-            [0.45630455, 0.82612284, 0.25137413],
+            np.array([0.8052232, 0.52164715, 0.90864888]),
+            np.array([0.31923609, 0.09045935, 0.30070006]),
+            np.array([0.11398436, 0.82868133, 0.04689632]),
+            np.array([0.62628715, 0.54758616, 0.819287]),
+            np.array([0.19894754, 0.8568503, 0.35165264]),
+            np.array([0.75464769, 0.29596171, 0.88393648]),
+            np.array([0.32551164, 0.1650159, 0.39252924]),
+            np.array([0.09346037, 0.82110566, 0.15115202]),
+            np.array([0.38411445, 0.94426071, 0.98762547]),
+            np.array([0.45630455, 0.82612284, 0.25137413]),
         ],
     ]
 
-    assert np.allclose(act, exp)
+    # test that act == exp
+    mat_isclose = np.zeros((BW, S), dtype=bool)
+    for bw in range(BW):
+        for s in range(S):
+            mat_isclose[bw, s] = np.allclose(act[bw][s], exp[bw][s])
+
+    assert (1 - mat_isclose).sum() == 0
 
 
 expected_tuple_DEP = (
@@ -202,8 +196,8 @@ expected_tuple_DEP_totalinc = (
 )
 expected_tuple_linear = (0.26135747, 0.0, 152900)
 expected_tuple_GS = (
-    np.array([0.42897179, 0.39679734, 0.00239574]),
-    242750.4467703229,
+    np.array([3.03099171e-01, 9.64733478e-01, 1.77900933e-05]),
+    256366.42971360413,
     152900,
 )
 expected_tuple_linear_mtrx = (0.37030104, 0.0, 152900)
@@ -342,12 +336,8 @@ def test_tax_data_sample():
 # platforms
 def test_tax_func_loop():
     """
-    Test txfunc.tax_func_loop() function.  The test is that given
-    inputs from previous run, the outputs are unchanged.
-
-    Note that the data for this test is too large for GitHub, so it
-    won't be available there.
-
+    Test txfunc.tax_func_loop() function. The test is that given inputs from
+    previous run, the outputs are unchanged.
     """
     input_tuple = decompress_pickle(
         os.path.join(
@@ -423,7 +413,22 @@ def test_tax_func_loop():
     )
 
     for i, v in enumerate(expected_tuple):
-        print("diff = ", np.absolute(test_tuple[i] - v).max())
+        if isinstance(test_tuple[i], list):
+            test_tuple_obj = np.array(test_tuple[i])
+            exp_tuple_obj = np.array(expected_tuple[i])
+            print(
+                "For element",
+                i,
+                ", diff =",
+                np.absolute(test_tuple_obj - exp_tuple_obj).max(),
+            )
+        else:
+            print(
+                "For element",
+                i,
+                ", diff =",
+                np.absolute(test_tuple[i] - v).max(),
+            )
         assert np.allclose(test_tuple[i], v, atol=1e-06)
 
 
@@ -623,14 +628,7 @@ def test_get_tax_rates(
     expected,
 ):
     """
-    Teset of txfunc.get_tax_rates() function.  There are 6 cases to
-    test:
-    1) DEP function, for estimation
-    2) DEP function, not for estimation
-    3) GS function, etr
-    4) GS function, mtr
-    5) DEP_totalinc function, for estimation
-    6) DEP_totalinc function, not for estimation
+    Teset of txfunc.get_tax_rates() function.
     """
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
     X = np.array([32.0, 44.0, 1.6, 0.4])
@@ -706,8 +704,92 @@ def test_tax_func_estimate(tmpdir, dask_client):
     for k, v in expected_dict.items():
         if isinstance(v, str):  # for testing tax_func_type object
             assert test_dict[k] == v
+        elif isinstance(expected_dict[k], list):
+            test_dict_obj = np.array(test_dict[k])
+            exp_dict_obj = np.array(expected_dict[k])
+            print(
+                "For element",
+                k,
+                ", diff =",
+                np.absolute(test_dict_obj - exp_dict_obj).max(),
+            )
         else:  # for testing all other objects
             print(
                 "Max diff for ", k, " = ", np.absolute(test_dict[k] - v).max()
             )
             assert np.all(np.isclose(test_dict[k], v))
+
+
+@pytest.mark.local
+def test_monotone_spline():
+    """
+    Test txfunc.monotone_spline() function.
+
+        1. Test whether the output includes a function
+        2. test that the function give the correct outputs
+        3. test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
+    """
+    # Simulate some data
+    np.random.seed(10)
+    N = 100
+    xlo = 0.001
+    xhi = 2 * np.pi
+    x = np.arange(xlo, xhi, step=(xhi - xlo) / N)
+    y0 = np.sin(x) + np.log(x)
+    y = y0 + np.random.randn(N) * 0.5
+    weights = np.ones(N)
+
+    # Estimate monotonically increasing function on the data
+    (
+        mono_interp,
+        y_cstr,
+        wsse_cstr,
+        y_uncstr,
+        wsse_uncstr,
+    ) = txfunc.monotone_spline(
+        x, y, weights, bins=10, lam=100, incl_uncstr=True, show_plot=False
+    )
+    # Test whether mono_interp is a function
+    assert hasattr(mono_interp, "__call__")
+
+    # Test whether mono_interp gives the correct output
+    x_vec_test = np.array([2.0, 5.0])
+    y_vec_expected = np.array([0.69512331, 1.23822669])
+    y_monointerp = mono_interp(x_vec_test)
+    assert np.allclose(y_monointerp, y_vec_expected)
+
+    # Test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
+    y_cstr_expected = np.array(
+        [
+            -0.14203509,
+            0.21658404,
+            0.5146192,
+            0.75351991,
+            0.93709706,
+            1.071363,
+            1.16349465,
+            1.22046208,
+            1.24755794,
+            1.24755791,
+        ]
+    )
+    wsse_cstr_expected = 546.0485935661629
+    y_uncstr_expected = np.array(
+        [
+            -0.45699668,
+            0.16840804,
+            0.66150226,
+            1.02342052,
+            1.25698067,
+            1.36630762,
+            1.35585018,
+            1.22938312,
+            0.98920508,
+            0.63615989,
+        ]
+    )
+    wsse_uncstr_expected = 468.4894930349361
+    assert np.allclose(y_cstr, y_cstr_expected)
+    assert np.allclose(wsse_cstr, wsse_cstr_expected)
+    assert np.allclose(y_uncstr, y_uncstr_expected)
+    assert np.allclose(wsse_uncstr, wsse_uncstr_expected)

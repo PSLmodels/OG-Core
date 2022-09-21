@@ -695,7 +695,6 @@ def txfunc_graph(
     txrates,
     rate_type,
     tax_func_type,
-    get_tax_rates,
     params_to_plot,
     output_dir,
 ):
@@ -713,9 +712,8 @@ def txfunc_graph(
         Y (Pandas DataSeries): tax rates from the data
         rate_type (str): type of tax rate: mtrx, mtry, etr
         tax_func_type (str): functional form of tax functions
-        get_tax_rates (function): function to generate tax rates given
-            parameters
-        params_to_plot (Numpy Array): tax function parameters
+        params_to_plot (array_like or function): tax function parameters or
+            nonparametric function
         output_dir (str): output directory for saving plot files
 
     Returns:
@@ -828,7 +826,7 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir, round):
     Args:
         age_vec (numpy array): vector of ages, length S
         sse_mat (Numpy array): SSE for each estimated tax function,
-            size is SxBW
+            size is BW x S
         start_year (int): first year of budget window
         varstr (str): name of tax function being evaluated
         output_dir (str): path to save graph to
@@ -839,9 +837,9 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir, round):
 
     """
     fig, ax = plt.subplots()
-    BW = sse_mat.shape[1]
+    BW = sse_mat.shape[0]
     for y in range(BW):
-        plt.plot(age_vec, sse_mat[:, y], label=str(start_year + y))
+        plt.plot(age_vec, sse_mat[y, :], label=str(start_year + y))
     plt.legend(loc="upper left")
     titletext = (
         "Sum of Squared Errors by age and Tax Year"
@@ -903,8 +901,7 @@ def plot_income_data(
             plt.close()
         else:
             # Plot of 3D, J>1 in levels
-            fig10 = plt.figure()
-            ax10 = fig10.gca(projection="3d")
+            fig10, ax10 = plt.subplots(subplot_kw={"projection": "3d"})
             ax10.plot_surface(
                 age_mesh, abil_mesh, emat, rstride=8, cstride=1, cmap=cmap1
             )
@@ -917,8 +914,7 @@ def plot_income_data(
             plt.close()
 
             # Plot of 3D, J>1 in logs
-            fig11 = plt.figure()
-            ax11 = fig11.gca(projection="3d")
+            fig11, ax11 = plt.subplots(subplot_kw={"projection": "3d"})
             ax11.plot_surface(
                 age_mesh,
                 abil_mesh,

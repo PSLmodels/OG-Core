@@ -986,7 +986,7 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     assert np.allclose(np.array(test_list), np.array(expected))
 
 
-param_updates1 = {"initial_guess_r_SS": 0.03}
+param_updates1 = {"initial_guess_r_SS": 0.035}
 filename1 = "run_SS_baseline_outputs.pkl"
 param_updates2 = {
     "use_zeta": True,
@@ -1007,7 +1007,7 @@ param_updates4 = {
     "initial_guess_factor_SS": 111267.90426318572,
 }
 filename4 = "run_SS_baseline_small_open_use_zeta.pkl"
-param_updates5 = {"initial_guess_r_SS": 0.03}
+param_updates5 = {"initial_guess_r_SS": 0.035}
 filename5 = "run_SS_reform.pkl"
 param_updates6 = {
     "use_zeta": True,
@@ -1040,7 +1040,7 @@ param_updates11 = {
     "delta_tau_annual": [[0.0]],
     "zeta_K": [0.0],
     "zeta_D": [0.0],
-    "initial_guess_r_SS": 0.01,
+    "initial_guess_r_SS": 0.015,
 }
 filename11 = "run_SS_baseline_delta_tau0.pkl"
 param_updates12 = {
