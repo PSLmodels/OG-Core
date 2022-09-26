@@ -69,16 +69,16 @@ In this section, we describe what is arguably the most important economic agent 
     \tilde{p}_{t} = \prod_{i=1}^I\left(\frac{(1 + \tau^{c}_{i,t})\tilde{p}_{i,t}}{\alpha_i}\right)^{\alpha_i} \quad\forall t
   ```
 
-  Consumption goods are determined from production goods through a fixed coefficient matrix, $\Pi^I$.  Each element, $\pi_{i,m}$ of $\Pi^I$ represents the fraction of good $i$ that is made up of output from industry $m$.  It follows that the prices of consumption goods can be expressed as a function of the prices of production goods and the fixed coefficient matrix $\Pi^I$.
+  Consumption goods are determined from production goods through a fixed $I\times M$ coefficient matrix, $\Pi^I$. Each element, $\pi_{i,m}$, of $\Pi^I$ represents the fraction of good $i$ that is made up of output from industry $m$. It follows that the prices of consumption goods can be expressed as a function of the prices of production goods and the fixed coefficient matrix $\Pi^I$.
   ```{math}
-    :label: EqHH_pi
-    \tilde{p}_{i,t} = \sum^{m=1}^M \pi_{i,m}\tilde{p}_{m,t} \quad\forall i,t
+  :label: EqHH_pi
+    \tilde{p}_{i,t} = \sum_{m=1}^M \pi_{i,m}\tilde{p}_{m,t} \quad\forall i,t
   ```
 
- We assume that the consumption good in industry $M$ is the numeraire.[^Numeraire] We can normalize the composite consumption price $\tilde{p}_t$ and the remaining $M-1$ output goods prices $\tilde{p}_{m,t}$ for $m=1,2,...M-1$ in every period $t$ by dividing all the equations with prices by the industry-$m$ price $\tilde{p}_{m,t}$. Simlarly, we can divide through all the consumption good prices in every period, \tilde{p}_{i,t}$ for $i=1,2,...I$ and rewrite the optimal consumption demand {eq}`EqHH_ciDem` and composite price index {eq}`EqCompPnonnorm2` equations as the following functions of normalized prices,
+ We assume that the production good in industry $M$ is the numeraire.[^Numeraire] We can normalize the composite consumption price $\tilde{p}_t$ and the remaining $M-1$ output goods prices $\tilde{p}_{m,t}$ for $m=1,2,...M-1$ in every period $t$ by dividing all the equations with prices by the industry-$m$ price $\tilde{p}_{m,t}$. Simlarly, we can divide through all the consumption good prices in every period, $\tilde{p}_{i,t}$ for $i=1,2,...I$ and rewrite the optimal consumption demand {eq}`EqHH_ciDem` and composite price index {eq}`EqCompPnonnorm2` equations as the following functions of normalized prices,
    ```{math}
     :label: EqHH_pi2
-    p_{i,t} = \sum^{m=1}^M \pi_{i,m}p_{m,t} \quad\forall i,t
+    p_{i,t} = \sum_{m=1}^M \pi_{i,m}p_{m,t} \quad\forall i,t
   ```
   ```{math}
   :label: EqHH_ciDem2
@@ -91,8 +91,7 @@ In this section, we describe what is arguably the most important economic agent 
   ```{math}
   :label: EqPmPcompNormDef
     \text{where}\quad &p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}} \quad\forall m, t \quad\Rightarrow\quad p_{M,t} = 1 \quad\forall t \\
-    \quad and  &p_{i,t} \equiv \frac{\tilde{p}_{i,t}}{\tilde{p}_{M,t}} \quad\forall m, t \quad\Rightarrow\quad p_{m,t} = 1 \quad\forall t\\
-    &\text{and}\quad p_t \equiv\frac{\tilde{p}_t}{\tilde{p}_{M,t}} \quad\forall t
+    \quad\text{and}\quad  &p_{i,t} \equiv \frac{\tilde{p}_{i,t}}{\tilde{p}_{M,t}} \quad\forall i, t \quad\text{and}\quad p_t \equiv\frac{\tilde{p}_t}{\tilde{p}_{M,t}} \quad\forall t
   ```
   where $p_{i,t}$ and $p_t$ defined in {eq}`EqPmPcompNormDef` are normalized consumption goods prices and normalized composite goods price, respectively, with the $M$th industry good being the numeraire.
 
@@ -305,9 +304,9 @@ If `use_zeta=False`, then bequests from households of lifetime earnings type `j`
 
   [^StoneGeary]: This functional form was originally proposed as a utility function by in a short comment by {cite}`Geary:1950` that aggregates differentiated goods into a scalar utility value. It is differentiated from Cobb-Douglas utility by the subsistence consumption amount in each term of the product. This function was further developed and operationalized by {cite}`Stone:1954`.
 
-  [^ConsDeriv]: See section {ref}`SecAppDerivCons` in the {ref}`Chap_Deriv` Chapter for the derivation of the household industry-specific consumption demand.
+  [^ConsDeriv]: See section {ref}`SecAppDerivHHcons` in the {ref}`Chap_Deriv` Chapter for the derivation of the household industry-specific consumption demand.
 
-  [^Numeraire]: We can normalize the model by any of the $i$ industry-specific consumption good prices $\tilde{p}_{i,t}$ or we could normalize the model by the composite good price $\tilde{p}_t$. We choose to normalize by the $i$th industry good price $\tilde{p}_{i,t}$ because that industry is the only one the output of which can be used as investment, government spending, or government debt. Furthermore, this nicely nests the case of one industry in which all the other industries share in consumption is set to zero $\alpha_i=0$ for $i=1,2,...M-1$.
+  [^Numeraire]: We can normalize the model by any of the $I$ consumption good prices $\tilde{p}_{i,t}$, any of the $M$ industry-specific princes $\tilde{p}_{m,t}$, or we could normalize the model by the composite good price $\tilde{p}_t$. We choose to normalize by the $M$th industry good price $\tilde{p}_{M,t}$ because that industry is the only one the output of which can be used as investment, government spending, or government debt. Furthermore, this nicely nests the case of one industry in which all the other industries share in consumption is set to zero $\alpha_m=0$ for $m=1,2,...M-1$.
 
   [^sav_util_note]: Savings enters the period utility function to provide a "warm glow" bequest motive.
 
