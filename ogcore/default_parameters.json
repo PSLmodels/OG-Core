@@ -947,7 +947,7 @@
         "description": "Consumption tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a IxSxJ array.",
+        "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes by consumption good. Tax rates cab vary over time. It is thus a TxI array.",
         "type": "float",
         "number_dims": 2,
         "value": [
