@@ -10,7 +10,7 @@ The main characteristic that differentiates the overlapping generations model fr
 * Households
     * overlapping generations of finitely lived households
     * households are forward looking and see to maximize their expected lifetime utility, which is a function of consumption, labor supply, and bequests
-    * households choose consumption of $M$ different consumption goods, composite consumption, savings, and labor supply every period.
+    * households choose consumption of $i\in\{1,2,...I\}$ different consumption goods, composite consumption, savings, and labor supply every period.
     * the only uncertainty households face is with respect to their mortality risk
     * realistic demographics: mortality rates, fertility rates, immigration rates, population growth, and population distribution dynamics
     * heterogeneous lifetime income groups within each age cohort, calibrated from U.S. tax data
