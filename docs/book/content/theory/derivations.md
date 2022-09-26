@@ -5,15 +5,15 @@
 This appendix contains derivations from the theory in the body of this book.
 
 
-(SecAppDerivIndSpecCons)=
+(SecAppDerivHHcons)=
 ## Household first order condition for industry-specific consumption demand
 
-  The derivation for the household first order condition for industry-specific consumption demand {eq}`EqHHFOCcm` is the following:
+  The derivation for the household first order condition for industry-specific consumption demand {eq}`EqHHFOCci` is the following:
   ```{math}
-  :label: EqAppDerivHHIndSpecConsFOC
-    \tilde{p}_{m,t} = \tilde{p}_{j,s,t}\alpha_m(c_{j,m,s,t} - c_{min,m})^{\alpha_m-1}\prod_{u\neq m}^M\left(c_{j,u,s,t} - c_{min,u}\right)^{\alpha_u} \\
-    \tilde{p}_{m,t}(c_{j,m,s,t} - c_{min,m}) = \tilde{p}_{j,s,t}\alpha_m(c_{j,m,s,t} - c_{min,m})^{\alpha_m}\prod_{u\neq m}^M\left(c_{j,u,s,t} - c_{min,u}\right)^{\alpha_u} \\
-    \tilde{p}_{m,t}(c_{j,m,s,t} - c_{min,m}) = \tilde{p}_{j,s,t}\alpha_m\prod_{m=1}^M\left(c_{j,m,s,t} - c_{min,m}\right)^{\alpha_m} = \alpha_m \tilde{p}_{j,s,t}c_{j,s,t}
+  :label: EqAppDerivHHconsFOC
+    \tilde{p}_{i,t} = \tilde{p}_{j,s,t}\alpha_m(c_{i,j,s,t} - c_{min,i})^{\alpha_i-1}\prod_{u\neq i}^I\left(c_{u,j,s,t} - c_{min,u}\right)^{\alpha_u} \\
+    \tilde{p}_{i,t}(c_{i,j,s,t} - c_{min,i}) = \tilde{p}_{j,s,t}\alpha_i(c_{i,j,s,t} - c_{min,i})^{\alpha_i}\prod_{u\neq i}^I\left(c_{u,j,s,t} - c_{min,u}\right)^{\alpha_u} \\
+    \tilde{p}_{i,t}(c_{i,j,s,t} - c_{min,i}) = \tilde{p}_{j,s,t}\alpha_i\prod_{i=1}^I\left(c_{i,j,s,t} - c_{min,i}\right)^{\alpha_i} = \alpha_i \tilde{p}_{j,s,t}c_{j,s,t}
   ```
 
 

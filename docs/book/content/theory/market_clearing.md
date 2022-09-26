@@ -93,13 +93,13 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
   (SecMarkClrMktClr_goods)=
   ### Goods market clearing
 
-  All $M$ industry goods markets must clear. Total demand of production good $m$ for consumption can be written as:
+  All $M$ industry goods markets must clear. Total demand of production good $m$ for consumption can be written as a function of total household demand for each consumption good $i$
 
-    ```{math}
+  ```{math}
   :label: EqMarkConsDemand
     C_{m,t} = \sum_{i=1}^{I} \pi_{i,m} C_{i,t} \quad\forall t \quad\text{and}\quad m=1,2,...M
   ```
-   where
+  where
   ```{math}
   :label: EqCmt
     C_{i,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{i,j,s,t} \quad\forall i,t

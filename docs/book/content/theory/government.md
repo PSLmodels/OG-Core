@@ -17,9 +17,10 @@ Government levies taxes on households and firms, funds public pensions, and make
 Income taxes are modeled through the total tax liability function $T_{s,t}$, which can be decomposed into the effective tax rate times total income {eq}`EqTaxCalcLiabETR2`. In this chapter, we detail the household tax component of government activity $T_{s,t}$ in `OG-Core`, along with our method of incorporating detailed microsimulation data into a dynamic general equilibrium model.
 
 ```{math}
-:label: EqHHBC
-  c_{j,s,t} + b_{j,s+1,t+1} &= (1 + r_{hh,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
-  &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t}  \\
+:label: EqHHBC2
+  p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
+  &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
+  &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
   &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
 ```
 
@@ -280,7 +281,7 @@ When computing the role of compliance on the effective tax rate, we take a weigh
 
 #### Consumption taxes
 
-Linear consumption taxes, $\tau^c_{m,t}$ can vary over time and by output good.
+Linear consumption taxes, $\tau^c_{i,t}$ can vary over time and by consumption good.
 
 #### Wealth taxes
 
@@ -389,8 +390,8 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
   We see from the household's budget constraint that taxes $T_{j,s,t}$ and transfers $TR_{t}$ enter into the household's decision,
 
   ```{math}
-  :label: EqHHBC2
-    p_t c_{j,s,t} + &\sum_{m=1}^M p_{m,t}c_{min,m} + b_{j,s+1,t+1} = \\
+  :label: EqHHBC3
+    p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
     &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
