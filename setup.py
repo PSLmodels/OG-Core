@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="ogcore",
-    version="0.9.2",
+    version="0.10.0",
     author="Jason DeBacker and Richard W. Evans",
     license="CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
     description="A general equilibribum overlapping generations model for fiscal policy analysis",
