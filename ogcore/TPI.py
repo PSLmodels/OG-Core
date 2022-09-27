@@ -363,7 +363,11 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars
 
     # compute composite good price
-    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
+    p_i = (
+        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
+        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
+    ).sum(axis=2)
+    p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # compute bq
     bq = household.get_bq(BQ, None, p, "TPI")
     # compute tr
@@ -600,7 +604,11 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
-    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
+    p_i = (
+        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
+        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
+    ).sum(axis=2)
+    p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     if not any(p.zeta_K == 1):
         w[: p.T] = np.squeeze(
             firm.get_w(Y[: p.T], L[: p.T], p_m[: p.T, :], p, "TPI")
@@ -612,7 +620,11 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
-    p_tilde = aggr.get_ptilde(p_m[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
+    p_i = (
+        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
+        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
+    ).sum(axis=2)
+    p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # path for interest rates
     r = np.zeros_like(Y)
     r[: p.T] = np.squeeze(
@@ -697,6 +709,12 @@ def run_TPI(p, client=None):
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
 
         outer_loop_vars = (r_p, r, w, p_m, BQ, TR, theta)
+        # compute composite good price
+        p_i = (
+            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
+            * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
+        ).sum(axis=2)
+        p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
@@ -778,9 +796,10 @@ def run_TPI(p, client=None):
             p,
         )
         C = aggr.get_C(c_mat, p, "TPI")
-        c_m = household.get_cm(
+
+        c_i = household.get_ci(
             c_mat[: p.T, :, :],
-            p_m[: p.T, :],
+            p_i[: p.T, :],
             p_tilde[: p.T],
             p.tau_c[: p.T, :],
             p.alpha_c,
@@ -801,16 +820,18 @@ def run_TPI(p, client=None):
         # Find output, labor demand, capital demand for M-1 industries
         L_vec = np.zeros((p.T, p.M))
         K_vec = np.zeros((p.T, p.M))
-        Y_vec = np.zeros((p.T, p.M))
-        C_vec = np.zeros((p.T, p.M))
+        C_vec = np.zeros((p.T, p.I))
         K_demand_open_vec = np.zeros((p.T, p.M))
+        for i_ind in range(p.I):
+            C_vec[:, i_ind] = aggr.get_C(c_i[: p.T, i_ind, :, :], p, "TPI")
+        Y_vec = (
+            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
+            * np.tile(C_vec[: p.T, :].reshape(p.T, p.I, 1), (1, 1, p.M))
+        ).sum(axis=1)
         for m_ind in range(p.M - 1):
-            C_m = aggr.get_C(c_m[: p.T, m_ind, :, :], p, "TPI")
-            C_vec[:, m_ind] = C_m
             KYrat_m = firm.get_KY_ratio(
                 r[: p.T], p_m[: p.T, :], p, "TPI", m_ind
             )
-            Y_vec[:, m_ind] = C_m
             K_vec[:, m_ind] = KYrat_m * Y_vec[:, m_ind]
             L_vec[:, m_ind] = firm.solve_L(
                 Y_vec[:, m_ind], K_vec[:, m_ind], K_g, p, "TPI", m_ind
@@ -841,7 +862,6 @@ def run_TPI(p, client=None):
             np.ones(p.T) * 0.001, K[: p.T] - K_vec[: p.T, :].sum(-1)
         )  # make sure K_M > 0
 
-        C_vec[:, -1] = np.squeeze(aggr.get_C(c_m[: p.T, -1, :], p, "TPI"))
         L_vec[:, -1] = L_M
         K_vec[:, -1] = K_M
         Y_vec[:, -1] = firm.get_Y(
@@ -867,7 +887,7 @@ def run_TPI(p, client=None):
             bmat_s,
             n_mat[: p.T, :, :],
             bqmat[: p.T, :, :],
-            c_m[: p.T, :, :, :],
+            c_i[: p.T, :, :, :],
             Y_vec[: p.T, :],
             L_vec[: p.T, :],
             K_vec[: p.T, :],
@@ -973,7 +993,7 @@ def run_TPI(p, client=None):
             bmat_s,
             n_mat[: p.T, :, :],
             bqmat_new[: p.T, :, :],
-            c_m[: p.T, :, :, :],
+            c_i[: p.T, :, :, :],
             Y_vec[: p.T, :],
             L_vec[: p.T, :],
             K_vec[: p.T, :],
@@ -1151,6 +1171,11 @@ def run_TPI(p, client=None):
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec = np.zeros((p.T, p.M))
     G_vec[:, -1] = G[: p.T]
+    # Map consumption goods back to demands for production goods
+    C_m_vec = (
+        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
+        * np.tile(C_vec[: p.T, :].reshape(p.T, p.I, 1), (1, 1, p.M))
+    ).sum(axis=1)
     I_d_vec = np.zeros((p.T, p.M))
     I_d_vec[:, -1] = I_d[: p.T]
     I_g_vec = np.zeros((p.T, p.M))
@@ -1158,7 +1183,7 @@ def run_TPI(p, client=None):
     net_capital_outflows_vec = np.zeros((p.T, p.M))
     net_capital_outflows_vec[:, -1] = net_capital_outflows[: p.T]
     RC_error = aggr.resource_constraint(
-        Y_vec, C_vec, G_vec, I_d_vec, I_g_vec, net_capital_outflows_vec
+        Y_vec, C_m_vec, G_vec, I_d_vec, I_g_vec, net_capital_outflows_vec
     )
     # Compute total investment (not just domestic)
     I_total = aggr.get_I(None, K[1 : p.T + 1], K[: p.T], p, "total_tpi")

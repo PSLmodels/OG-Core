@@ -341,6 +341,7 @@ def revenue(
     bq_tax_liab = tax.bequest_tax_liab(r, b, bq, 0, None, method, p)
     w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)
     if method == "SS":
+        p_i = np.dot(p.io_matrix, p_m)
         pop_weights = np.transpose(p.omega_SS * p.lambdas)
         iit_payroll_tax_revenue = (inc_pay_tax_liab * pop_weights).sum()
         agg_pension_outlays = (pension_benefits * pop_weights).sum()
@@ -348,11 +349,15 @@ def revenue(
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum()
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum()
         cons_tax_revenue = (
-            ((p.tau_c[-1, :] * p_m).reshape(p.M, 1, 1) * c).sum(axis=0)
+            ((p.tau_c[-1, :] * p_i).reshape(p.I, 1, 1) * c).sum(axis=0)
             * pop_weights
         ).sum()
         payroll_tax_revenue = p.frac_tax_payroll[-1] * iit_payroll_tax_revenue
     elif method == "TPI":
+        p_i = (
+            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
+            * np.tile(p_m[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1))
+        ).sum(axis=2)
         pop_weights = np.squeeze(p.lambdas) * np.tile(
             np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
         )
@@ -365,7 +370,7 @@ def revenue(
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
             (
-                ((p.tau_c[: p.T, :] * p_m).reshape(p.T, p.M, 1, 1) * c).sum(
+                ((p.tau_c[: p.T, :] * p_i).reshape(p.T, p.I, 1, 1) * c).sum(
                     axis=1
                 )
                 * pop_weights
@@ -548,25 +553,26 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
     return K, K_d, K_f
 
 
-def get_ptilde(p_m, tau_c, alpha_c, method="SS"):
+def get_ptilde(p_i, tau_c, alpha_c, method="SS"):
     r"""
     Calculate price of composite good.
 
     .. math::
-        \tilde{p}_{t} = \prod_{m=1}^{M} \left(\frac{(1 + \tau^{c}_{m,t})p_{m,j}}{\alpha_{m,j}}\right)^{\alpha_{m,j}}
+        \tilde{p}_{t} = \prod_{i=1}^{I} \left(\frac{(1 +
+        \tau^{c}_{i,t})p_{i,j}}{\alpha_{i,j}}\right)^{\alpha_{i,j}}
 
     Args:
-        p_m (array_like): prices for consumption good m
-        tau_c (array_like): consumption taxes on good m
+        p_i (array_like): prices for consumption good i
+        tau_c (array_like): consumption taxes on good i
         alpha_c (array_like): consumption share parameters
 
     Returns:
         p_tilde (array_like): tax-inclusive price of composite good
     """
     if method == "SS":
-        p_tilde = np.prod((((1 + tau_c) * p_m) / alpha_c) ** alpha_c)
+        p_tilde = np.prod((((1 + tau_c) * p_i) / alpha_c) ** alpha_c)
     else:  # TPI case
         alpha_c = alpha_c.reshape(1, alpha_c.shape[0])
-        p_tilde = np.prod((((1 + tau_c) * p_m) / alpha_c) ** alpha_c, axis=1)
+        p_tilde = np.prod((((1 + tau_c) * p_i) / alpha_c) ** alpha_c, axis=1)
 
     return p_tilde

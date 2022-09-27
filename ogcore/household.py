@@ -269,47 +269,47 @@ def get_cons(r, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
     return cons
 
 
-def get_cm(c_s, p_m, p_tilde, tau_c, alpha_c, method="SS"):
+def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
     r"""
-    Compute consumption of good m given amount of composite consumption
+    Compute consumption of good i given amount of composite consumption
     and prices.
 
     .. math::
-        c_{m,j,s,t} = \frac{c_{s,j,t}}{\alpha_{m,j}p_{m,j}}
+        c_{i,j,s,t} = \frac{c_{s,j,t}}{\alpha_{i,j}p_{i,j}}
 
     Args:
         c_s (array_like): composite consumption
-        p_m (array_like): prices for consumption good m
+        p_i (array_like): prices for consumption good i
         p_tilde (array_like): composite good price
         tau_c (array_like): consumption tax rate
         alpha_c (array_like): consumption share parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
-        c_sm (array_like): consumption of good m
+        c_si (array_like): consumption of good i
     """
     if method == "SS":
-        M = alpha_c.shape[0]
+        I = alpha_c.shape[0]
         S = c_s.shape[0]
         J = c_s.shape[1]
-        tau_c = tau_c.reshape(M, 1, 1)
-        alpha_c = alpha_c.reshape(M, 1, 1)
+        tau_c = tau_c.reshape(I, 1, 1)
+        alpha_c = alpha_c.reshape(I, 1, 1)
         p_tilde.reshape(1, 1, 1)
-        p_m = p_m.reshape(M, 1, 1)
+        p_i = p_i.reshape(I, 1, 1)
         c_s = c_s.reshape(1, S, J)
-        c_sm = alpha_c * (((1 + tau_c) * p_m) / p_tilde) ** (-1) * c_s
+        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s
     else:  # Time path case
-        M = alpha_c.shape[0]
-        T = p_m.shape[0]
+        I = alpha_c.shape[0]
+        T = p_i.shape[0]
         S = c_s.shape[1]
         J = c_s.shape[2]
-        tau_c = tau_c.reshape(T, M, 1, 1)
-        alpha_c = alpha_c.reshape(1, M, 1, 1)
+        tau_c = tau_c.reshape(T, I, 1, 1)
+        alpha_c = alpha_c.reshape(1, I, 1, 1)
         p_tilde = p_tilde.reshape(T, 1, 1, 1)
-        p_m = p_m.reshape(T, M, 1, 1)
+        p_i = p_i.reshape(T, I, 1, 1)
         c_s = c_s.reshape(T, 1, S, J)
-        c_sm = alpha_c * (((1 + tau_c) * p_m) / p_tilde) ** (-1) * c_s
-    return c_sm
+        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s
+    return c_si
 
 
 def FOC_savings(

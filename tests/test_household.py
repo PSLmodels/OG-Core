@@ -1008,16 +1008,16 @@ def test_constraint_checker_TPI(bssmat, nssmat, cssmat, ltilde):
     assert True
 
 
-def test_get_cm():
+def test_ci():
     """
-    Test of the get_cm function
+    Test of the get_ci function
     """
     c_s = np.array([2.0, 3.0, 5.0, 7.0]).reshape(4, 1)
-    p_m = np.array([1.1, 0.8, 1.0])
+    p_i = np.array([1.1, 0.8, 1.0])
     p_tilde = np.array([2.3])
     tau_c = np.array([0.2, 0.3, 0.5])
     alpha_c = np.array([0.5, 0.3, 0.2])
-    expected_cm = np.array(
+    expected_ci = np.array(
         [
             [1.742424242, 2.613636364, 4.356060606, 6.098484848],
             [1.326923077, 1.990384615, 3.317307692, 4.644230769],
@@ -1025,6 +1025,6 @@ def test_get_cm():
         ]
     ).reshape(3, 4, 1)
 
-    test_cm = household.get_cm(c_s, p_m, p_tilde, tau_c, alpha_c)
+    test_ci = household.get_ci(c_s, p_i, p_tilde, tau_c, alpha_c)
 
-    assert np.allclose(test_cm, expected_cm)
+    assert np.allclose(test_ci, expected_ci)

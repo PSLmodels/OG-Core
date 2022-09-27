@@ -1,4 +1,3 @@
-from inspect import Parameter
 import os
 import numpy as np
 import scipy.interpolate as si
@@ -169,7 +168,6 @@ class Specifications(paramtools.Parameters):
             "Z",
             "delta_tau_annual",
             "cit_rate",
-            "tau_c",
             "inv_tax_credit",
         ]
         for item in tp_param_list2:
@@ -212,6 +210,64 @@ class Specifications(paramtools.Parameters):
                 if this_attr.shape[1] == 1:
                     this_attr = np.tile(
                         this_attr.reshape(this_attr.shape[0], 1), (1, self.M)
+                    )
+                if this_attr.shape[0] > self.T + self.S:
+                    this_attr = this_attr[: self.T + self.S, :]
+                this_attr = np.concatenate(
+                    (
+                        this_attr,
+                        np.ones(
+                            (
+                                self.T + self.S - this_attr.shape[0],
+                                this_attr.shape[1],
+                            )
+                        )
+                        * this_attr[-1, :],
+                    )
+                )
+            setattr(self, item, this_attr)
+        # Deal with parameters that vary across consumption good and over time
+        tp_param_list3 = ["tau_c"]
+        for item in tp_param_list3:
+            this_attr = getattr(self, item)
+            if this_attr.ndim == 1:
+                # case where enter single number, so assume constant
+                # across years and industries
+                if this_attr.shape[0] == 1:
+                    this_attr = (
+                        np.ones((self.T + self.S, self.I)) * this_attr[0]
+                    )
+                # case where user enters just one year for all industries
+                if this_attr.shape[0] == self.I:
+                    this_attr = np.tile(
+                        this_attr.reshape(1, self.I), (self.T + self.S, 1)
+                    )
+                else:
+                    # case where user enters multiple years for one industry
+                    # will assume they implied values the same across industries
+                    this_attr = np.concatenate(
+                        (
+                            this_attr,
+                            np.ones((self.T + self.S - this_attr.size))
+                            * this_attr[-1],
+                        )
+                    )
+                    this_attr = np.tile(
+                        this_attr.reshape(self.T + self.S, 1), (1, self.I)
+                    )
+                this_attr = np.squeeze(this_attr, axis=2)
+            elif this_attr.ndim == 2:
+                if this_attr.shape[1] > 1 and this_attr.shape[1] != self.I:
+                    print(
+                        "please provide values of "
+                        + item
+                        + " for each industry (or one if common across "
+                        + "industries"
+                    )
+                    assert False
+                if this_attr.shape[1] == 1:
+                    this_attr = np.tile(
+                        this_attr.reshape(this_attr.shape[0], 1), (1, self.I)
                     )
                 if this_attr.shape[0] > self.T + self.S:
                     this_attr = this_attr[: self.T + self.S, :]

@@ -185,6 +185,8 @@ p7 = Specifications(baseline=True)
 p7.update_specifications(
     {
         "M": 4,
+        "I": 4,
+        "io_matrix": np.eye(4),
         "alpha_c": [0.1, 0.5, 0.3, 0.1],
         "epsilon": [1.0, 1.0, 1.0, 1.0],
         "gamma": [0.3, 0.4, 0.35, 0.45],
@@ -448,12 +450,32 @@ param_updates5 = {"baseline_spending": True}
 filename5 = "inner_loop_outputs_reform_baselinespending.pkl"
 param_updates7 = {
     "M": 4,
+    "I": 4,
+    "io_matrix": np.eye(4),
     "alpha_c": [0.1, 0.5, 0.3, 0.1],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
     "gamma": [0.3, 0.4, 0.35, 0.45],
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
 }
 filename7 = "inner_loop_outputs_reform_M4.pkl"
+param_updates8 = {
+    "M": 4,
+    "I": 5,
+    "io_matrix": np.array(
+        [
+            [0.2, 0.2, 0.2, 0.4],
+            [0.3, 0.1, 0.4, 0.2],
+            [0.25, 0.25, 0.25, 0.25],
+            [0.1, 0.7, 0.0, 0.2],
+            [0.0, 0.0, 1.0, 0.0],
+        ]
+    ),
+    "alpha_c": [0.1, 0.4, 0.3, 0.1, 0.1],
+    "epsilon": [1.0, 1.0, 1.0, 1.0],
+    "gamma": [0.3, 0.4, 0.35, 0.45],
+    "gamma_g": [0.0, 0.0, 0.0, 0.0],
+}
+filename8 = "inner_loop_outputs_reform_MneI.pkl"
 
 
 @pytest.mark.parametrize(
@@ -465,6 +487,7 @@ filename7 = "inner_loop_outputs_reform_M4.pkl"
         (False, 0.04260341179572245, param_updates4, filename4),
         (False, 0.04260341179572245, param_updates5, filename5),
         (False, 0.04759112768438152, param_updates7, filename7),
+        (False, 0.04759112768438152, param_updates8, filename8),
     ],
     ids=[
         "Baseline, Small Open",
@@ -473,6 +496,7 @@ filename7 = "inner_loop_outputs_reform_M4.pkl"
         "Reform",
         "Reform, baseline spending",
         "Reform, M>1",
+        "Reform, I!=>M",
     ],
 )
 def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
@@ -1032,6 +1056,8 @@ param_updates13 = {
     "frisch": 0.41,
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
+    "I": 3,
+    "io_matrix": np.eye(3),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
@@ -1049,6 +1075,8 @@ param_updates14 = {
     "frisch": 0.41,
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
+    "I": 3,
+    "io_matrix": np.eye(3),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],

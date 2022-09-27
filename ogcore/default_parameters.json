@@ -119,6 +119,25 @@
             }
         }
     },
+    "I": {
+        "title": "Number of different consumption goods",
+        "description": "Number of different consumption goods.",
+        "section_1": "Household Parameters",
+        "section_2": "Model Dimensions",
+        "notes": "",
+        "type": "int",
+        "value": [
+            {
+                "value": 1
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": 50
+            }
+        }
+    },
     "lambdas": {
         "title": "Fraction of population of each labor productivity type",
         "description": "Fraction of population of each labor productivity type.",
@@ -441,6 +460,28 @@
             "range": {
                 "min": 0.2,
                 "max": 10.0
+            }
+        }
+    },
+    "io_matrix": {
+        "title": "Input-output matrix",
+        "description": "Input-output matrix used to map production outputs into consumption goods using a fixed coefficient model.  This matrix has dimensions I x M, where I is the number of distinct consumption goods and M is the number of distinct production goods.  The sum each row of this matrix must be 1.",
+        "section_1": "Firm Parameters",
+        "section_2": "Production Function",
+        "notes": "",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [[
+                    1.0
+                ]]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
             }
         }
     },
@@ -906,7 +947,7 @@
         "description": "Consumption tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a SxJ matrix.",
+        "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes by consumption good. Tax rates cab vary over time. It is thus a TxI array.",
         "type": "float",
         "number_dims": 2,
         "value": [
