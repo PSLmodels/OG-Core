@@ -728,15 +728,16 @@ by foreign investors</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.get_ptilde">
-<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_ptilde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SS'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_ptilde"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_ptilde" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_ptilde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SS'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_ptilde"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_ptilde" title="Permalink to this definition">#</a></dt>
 <dd><p>Calculate price of composite good.</p>
 <div class="math notranslate nohighlight">
-\[\tilde{p}_{t} = \prod_{m=1}^{M} \left(\frac{(1 + \tau^{c}_{m,t})p_{m,j}}{\alpha_{m,j}}\right)^{\alpha_{m,j}}\]</div>
+\[\tilde{p}_{t} = \prod_{i=1}^{I} \left(\frac{(1 +
+\tau^{c}_{i,t})p_{i,j}}{\alpha_{i,j}}\right)^{\alpha_{i,j}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>p_m</strong> (<em>array_like</em>) – prices for consumption good m</p></li>
-<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption taxes on good m</p></li>
+<li><p><strong>p_i</strong> (<em>array_like</em>) – prices for consumption good i</p></li>
+<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption taxes on good i</p></li>
 <li><p><strong>alpha_c</strong> (<em>array_like</em>) – consumption share parameters</p></li>
 </ul>
 </dd>

@@ -719,33 +719,6 @@ the transition path. Does this for each period t separately.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="ogcore.household.get_cm">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_cm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SS'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_cm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_cm" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute consumption of good m given amount of composite consumption
-and prices.</p>
-<div class="math notranslate nohighlight">
-\[c_{m,j,s,t} = \frac{c_{s,j,t}}{\alpha_{m,j}p_{m,j}}\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>c_s</strong> (<em>array_like</em>) – composite consumption</p></li>
-<li><p><strong>p_m</strong> (<em>array_like</em>) – prices for consumption good m</p></li>
-<li><p><strong>p_tilde</strong> (<em>array_like</em>) – composite good price</p></li>
-<li><p><strong>tau_c</strong> (<em>array_like</em>) – consumption tax rate</p></li>
-<li><p><strong>alpha_c</strong> (<em>array_like</em>) – consumption share parameters</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or ‘TPI’</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>consumption of good m</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>c_sm (array_like)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.get_cons">
 <span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_cons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_tax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_cons" title="Permalink to this definition">#</a></dt>
 <dd><p>Calculate household consumption.</p>
