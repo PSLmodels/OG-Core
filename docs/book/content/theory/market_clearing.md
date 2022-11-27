@@ -125,7 +125,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
     &= (K^d_{t+1} + K^f_{t+1}) - (1 - \delta_{M,t})(K^d_t + K^f_t)
   ```
 
-  In the partially open economy, we must add to the right-hand-side of {eq}`EqMarkClrGoods_M` the output paid to the foreign owners of capital $r_{p,t} K^f_t$ and to the foreign holders of government debt $r_{p,t}K^f_t$. And we must subtract off the foreign inflow component $K^f_{t+1} - K^f_t$ from private capital investment as shown in the first term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. You can see in the definition of private investment {eq}`EqMarkClrGoods_IMt` where this amount of foreign capital is part of $I_{M,t}$.
+  In the partially open economy, we must add to the right-hand-side of {eq}`EqMarkClrGoods_M` the output paid to the foreign owners of capital $r_{p,t} K^f_t$ and to the foreign holders of government debt $r_{p,t}D^f_t$. And we must subtract off the foreign inflow component $K^f_{t+1} - K^f_t$ from private capital investment as shown in the first term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. You can see in the definition of private investment {eq}`EqMarkClrGoods_IMt` where this amount of foreign capital is part of $I_{M,t}$.
 
   Similarly, we must subtract off the foreign purchases of new government debt $D^f_{t+1} - D^f_t$ as shown in the second term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. These new foreign purchases of government debt are part of $I_{g,t}$ and $G_t$, as they are functions of GDP $p_tY_t$, as shown in {eq}`EqUnbalGBC_Gt`, {eq}`EqUnbalGBC_Igt`, and the government budget constraint {eq}`EqUnbalGBCbudgConstr`. Foreign lending relaxes the resource constraint.
 
