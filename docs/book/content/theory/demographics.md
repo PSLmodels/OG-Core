@@ -121,26 +121,28 @@ kernelspec:
   $$
   \boldsymbol{\Omega}^2 =
     \begin{bmatrix}
-      * & *  & * & \cdots & * & * & *\\
-      * & * & * & \cdots & * & * & * \\
-      0 & * & * & \cdots & 0 & 0 & 0 \\
+      * & *  & * & * & \cdots & * & * & * & *\\
+      * & * & * & * & \cdots & * & * & * & * \\
+      * & * & * & 0 & \cdots & 0 & 0 & 0 & 0 \\
       \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
-      0 & 0 & 0 & \cdots & *  & * & 0 \\
-      0 & 0 & 0 & \cdots & 0 & * & *
-    \end{bmatrix}; ~~~
-    \boldsymbol{\Omega}^{S+E-1} =
-    \begin{bmatrix}
-      * & *  & * & \cdots & * & * & *\\
-      * & * & * & \cdots & * & * & * \\
-      * & * & * & \cdots & * & * & * \\
-      \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
-      * & * & * & \cdots & *  & * & * \\
-      0 & 0 & 0 & \cdots & 0 & * & *
-    \end{bmatrix}
-    $$
+      0 & 0 & 0 & 0 & \cdots & * & * & * & 0 \\
+      0 & 0 & 0 & 0 & \cdots & 0 & * & * & *
+    \end{bmatrix} $$
+    
+  $$
+  \boldsymbol{\Omega}^{S+E-2} =
+  \begin{bmatrix}
+    * & *  & * & \cdots & * & * & *\\
+    * & * & * & \cdots & * & * & * \\
+    * & * & * & \cdots & * & * & * \\
+    \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+    * & * & * & \cdots & * & * & 0 \\
+    0 & * & * & \cdots & * & * & *
+  \end{bmatrix}
+  $$
 
   $$
-  \boldsymbol{\Omega}^{S+E} =
+  \boldsymbol{\Omega}^{S+E-1} =
       \begin{bmatrix}
       * & *  & * & \cdots & * & * & *\\
       * & * & * & \cdots & * & * & * \\
