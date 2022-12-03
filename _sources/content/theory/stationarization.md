@@ -76,11 +76,11 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \end{cases} \quad\forall i
   ```
 
-  where {eq}`EqStnrzCompCons` is the stationarized Stone-Geary consumption aggregator for composite consumption and  {eq}`EqStnrzCompCons` is the stationarized household demand for the composite consumption good. The composite price aggregation equation {eq}`EqCompPnorm2` is already stationary.
+  where {eq}`EqStnrzCompCons` is the stationarized Stone-Geary consumption aggregator for composite consumption and  {eq}`EqStnrz_cmDem2` is the stationarized household demand for the composite consumption good. The composite price aggregation equation {eq}`EqCompPnorm2` is already stationary.
 
   Note that the only way to stationarize the consumption aggregator {eq}`EqStnrzCompCons` and consumption demand {eq}`EqStnrz_cmDem2` is to divide $c_{min,i}$ by the growth rate $e^{g_y t}$. However, $c_{min,i}$ is already stationary. It is constant for each $m$. Therefore, the version of $\hat{c}_{min,i,t}$ divided by $e^{g_y t}$ would be changing over time (nonstationary) for $g_y\neq 0$. For this reason, we define $\hat{c}_{min,i,t}$ in {eq}`EqStnrz_cmin` as being constant after the steady-state period $T$ at whatever value it reaches at that period. In most cases with $g_y>0$, that value will be close to zero. But we use $\bar{c}_{min,i} = c_{min,i}/e^{g_y T}$ from {eq}`EqStnrz_cmin` as the steady-state value of $c_{min,i}$.
 
-  The stationary version of the household budget constraint {eq}`EqHHBC` is found by dividing both sides of the equation by $e^{g_y t}$. For the savings term $b_{j,s+1,t+1}$, we must multiply and divide by $e^{g_y(t+1)}$, which leaves an $e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}$ in front of the stationarized variable.
+  The stationary version of the household budget constraint {eq}`EqHHBC` is found by dividing both sides of the equation by $e^{g_y t}$. For the savings term $b_{j,s+1,t+1}$, we must also multiply by $e^{g_y(t+1)}$, which leaves an $e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}$ in front of the stationarized variable.
 
   ```{math}
   :label: EqStnrzHHBC

@@ -75,7 +75,7 @@ In this section, we describe what is arguably the most important economic agent 
     \tilde{p}_{i,t} = \sum_{m=1}^M \pi_{i,m}\tilde{p}_{m,t} \quad\forall i,t
   ```
 
- We assume that the production good in industry $M$ is the numeraire.[^Numeraire] We can normalize the composite consumption price $\tilde{p}_t$ and the remaining $M-1$ output goods prices $\tilde{p}_{m,t}$ for $m=1,2,...M-1$ in every period $t$ by dividing all the equations with prices by the industry-$m$ price $\tilde{p}_{m,t}$. Simlarly, we can divide through all the consumption good prices in every period, $\tilde{p}_{i,t}$ for $i=1,2,...I$ and rewrite the optimal consumption demand {eq}`EqHH_ciDem` and composite price index {eq}`EqCompPnonnorm2` equations as the following functions of normalized prices,
+ We assume that the production good in industry $M$ is the numeraire.[^Numeraire] We can normalize the composite consumption price $\tilde{p}_t$ and the remaining $M-1$ output goods prices $\tilde{p}_{m,t}$ for $m=1,2,...M-1$ in every period $t$ by dividing all the equations with prices by the industry-$M$ price $\tilde{p}_{M,t}$. Similarly, we can divide through all the consumption good prices in every period, $\tilde{p}_{i,t}$ for $i=1,2,...I$ and rewrite the optimal consumption demand {eq}`EqHH_ciDem` and composite price index {eq}`EqCompPnonnorm2` equations as the following functions of normalized prices,
    ```{math}
     :label: EqHH_pi2
     p_{i,t} = \sum_{m=1}^M \pi_{i,m}p_{m,t} \quad\forall i,t

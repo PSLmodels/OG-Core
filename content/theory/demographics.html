@@ -625,12 +625,15 @@ First, note that the matrix <span class="math notranslate nohighlight">\(\boldsy
 \[\begin{split}
 \boldsymbol{\Omega} =
   \begin{bmatrix}
-    * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
-    * &amp; * &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
-    0 &amp; * &amp; * &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
-    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
-    0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 \\
-    0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+    0 &amp; * &amp; * &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+    0 &amp; 0 &amp; * &amp; * &amp; \cdots &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; 0 &amp; 0 &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0  &amp; * &amp; * &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0  &amp; 0 &amp; * &amp; *
   \end{bmatrix}
 \end{split}\]</div>
 <p>Where each * is strictly positive. It is clear to see that taking powers of the matrix causes the sub-diagonal positive elements to be moved down a row and another row of positive entries is added at the top. None of these go to zero since the elements were all non-negative to begin with.</p>
@@ -638,33 +641,45 @@ First, note that the matrix <span class="math notranslate nohighlight">\(\boldsy
 \[\begin{split}
 \boldsymbol{\Omega}^2 =
   \begin{bmatrix}
-    * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
-    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-    0 &amp; * &amp; * &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\
-    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
-    0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 \\
-    0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
-  \end{bmatrix}; ~~~
-  \boldsymbol{\Omega}^{S+E-1} =
-  \begin{bmatrix}
-    * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
-    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
-    * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * \\
-    0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; * &amp; *
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+    0 &amp; * &amp; * &amp; * &amp; \cdots &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; 0 &amp; 0 &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; 0 &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; *  &amp; * &amp; * &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0  &amp; * &amp; * &amp; *
   \end{bmatrix}
-  \end{split}\]</div>
+\end{split}\]</div>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-\boldsymbol{\Omega}^{S+E} =
-    \begin{bmatrix}
-    * &amp; *  &amp; * &amp; \cdots &amp; * &amp; * &amp; *\\
-    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\
-    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * \\
-    * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; *
+\boldsymbol{\Omega}^{S+E-2} =
+  \begin{bmatrix}
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * &amp; 0 \\
+    0 &amp; * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * &amp; *
+  \end{bmatrix}
+\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\boldsymbol{\Omega}^{S+E-1} =
+  \begin{bmatrix}
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; * &amp; * &amp; * &amp; * \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * &amp; * \\
+    * &amp; * &amp; * &amp; * &amp; \cdots &amp; *  &amp; * &amp; * &amp; *
   \end{bmatrix}
 \end{split}\]</div>
 <p>Existence of an <span class="math notranslate nohighlight">\(m \in \mathbb{N}\)</span> such that <span class="math notranslate nohighlight">\(\left(\bf\Omega^m\right)_{ij} \neq 0 ~~ ( &gt; 0)\)</span> is one of the definitions of an irreducible (primitive) matrix. It is equivalent to saying that the directed graph associated with the matrix is strongly connected. Now the Perron-Frobenius Theorem for irreducible matrices gives us that the equilibrium vector is unique.</p>
