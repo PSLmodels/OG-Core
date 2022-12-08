@@ -3145,7 +3145,8 @@
                     "DEP",
                     "DEP_totalinc",
                     "GS",
-                    "linear"
+                    "linear",
+                    "mono"
                 ]
             }
         }
