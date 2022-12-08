@@ -878,7 +878,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_population_path">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_2013_pct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_path_lev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population_path" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_pop_pct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_path_lev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot the distribution of the population over age for various years.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -890,8 +890,8 @@ population distribution</p></li>
 over the transition path</p></li>
 <li><p><strong>omega_SSfx</strong> (<em>Numpy array</em>) – number of households by age
 in the SS</p></li>
+<li><p><strong>data_year</strong> (<em>int</em>) – year of data for initial_pop_pct</p></li>
 <li><p><strong>curr_year</strong> (<em>int</em>) – current year in the model</p></li>
-<li><p><strong>E</strong> (<em>int</em>) – age at which household becomes economically active</p></li>
 <li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
 <li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
