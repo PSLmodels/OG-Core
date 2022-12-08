@@ -298,15 +298,21 @@ def test_plot_imm_fixed_save_fig(tmpdir):
 
 
 def test_plot_population_path():
-    E = 0
     S = base_params.S
     age_per_EpS = np.arange(21, S + 21)
-    pop_2013_pct = base_params.omega[0, :]
+    initial_pop_pct = base_params.omega[0, :]
     omega_path_lev = base_params.omega.T
     omega_SSfx = base_params.omega_SS
+    data_year = base_params.start_year
     curr_year = base_params.start_year
     fig = parameter_plots.plot_population_path(
-        age_per_EpS, pop_2013_pct, omega_path_lev, omega_SSfx, curr_year, E, S
+        age_per_EpS,
+        initial_pop_pct,
+        omega_path_lev,
+        omega_SSfx,
+        data_year,
+        curr_year,
+        S,
     )
     assert fig
 
