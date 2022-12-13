@@ -23,7 +23,7 @@ setuptools.setup(
         ]
     },
     include_packages=True,
-    python_requires=">=3.7.7",
+    python_requires=">=3.7.7, <3.11",
     install_requires=[
         "mkl>=2021.4.0",
         "psutil",
