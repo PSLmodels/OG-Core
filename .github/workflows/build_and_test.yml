@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, 3.9, '3.10']
+        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
       - name: Checkout
@@ -26,6 +26,7 @@ jobs:
       - name: Setup Miniconda using Python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v2
         with:
+          auto-update-conda: true
           activate-environment: ogcore-dev
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
@@ -43,7 +44,7 @@ jobs:
         run: |
           pytest -m 'not local' --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml
           flags: unittests
