@@ -278,11 +278,9 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     test_list = SS.SS_fsolve(new_guesses, *args)
     print("Test list = ", test_list)
 
-    # assert np.allclose(
-    #     np.hstack(np.array(test_list)), np.array(expected), atol=1e-5
-    # )
-
-    assert 0 == 0
+    assert np.allclose(
+        np.hstack(np.array(test_list)), np.array(expected), atol=1e-5
+    )
 
 
 # Parameterize baseline, partially open econ case (default)
