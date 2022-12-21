@@ -301,10 +301,9 @@ def plot_fert_rates(
     fert_fine_pred = fert_func(age_fine_pred)
     age_fine = np.hstack((min_yr, age_fine_pred, max_yr))
     fert_fine = np.hstack((0, fert_fine_pred, 0))
-    age_mid_new = (
-        np.linspace(np.float64(max_yr) / totpers, max_yr, totpers) -
-        (0.5 * np.float64(max_yr) / totpers)
-    )
+    age_mid_new = np.linspace(
+        np.float64(max_yr) / totpers, max_yr, totpers
+    ) - (0.5 * np.float64(max_yr) / totpers)
 
     fig, ax = plt.subplots()
     plt.scatter(age_midp, fert_data, s=70, c="blue", marker="o", label="Data")
@@ -370,10 +369,9 @@ def plot_mort_rates_data(
         fig (Matplotlib plot object): plot of mortality rates
 
     """
-    age_mid_new = (
-        np.linspace(np.float64(max_yr) / totpers, max_yr, totpers) -
-        (0.5 * np.float64(max_yr) / totpers)
-    )
+    age_mid_new = np.linspace(
+        np.float64(max_yr) / totpers, max_yr, totpers
+    ) - (0.5 * np.float64(max_yr) / totpers)
     fig, ax = plt.subplots()
     plt.scatter(
         np.hstack([0, age_year_all]),
