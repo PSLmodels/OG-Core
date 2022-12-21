@@ -1007,25 +1007,26 @@ def SS_fsolve(guesses, *args):
     (bssmat, nssmat, TR_ss, factor_ss, p, client) = args
 
     # Rename the inputs
-    r_p = guesses[0]
-    r = guesses[1]
-    w = guesses[2]
-    p_m = guesses[3 : 3 + p.M]
-    Y = guesses[3 + p.M]
+    r_p = np.float64(guesses[0])
+    r = np.float64(guesses[1])
+    w = np.float64(guesses[2])
+    p_m = np.float64(guesses[3 : 3 + p.M])
+    Y = np.float64(guesses[3 + p.M])
     if p.baseline:
-        BQ = guesses[3 + p.M + 1 : -2]
-        TR = guesses[-2]
-        factor = guesses[-1]
+        BQ = np.float64(guesses[3 + p.M + 1 : -2])
+        TR = np.float64(guesses[-2])
+        factor = np.float64(guesses[-1])
     else:
-        BQ = guesses[3 + p.M + 1 : -1]
-        TR = guesses[-1]
-        factor = factor_ss
+        BQ = np.float64(guesses[3 + p.M + 1 : -1])
+        TR = np.float64(guesses[-1])
+        factor = np.float64(factor_ss)
     if p.baseline_spending:
-        TR = TR_ss
+        TR = np.float64(TR_ss)
     if not p.budget_balance and not p.baseline_spending:
-        Y = TR / p.alpha_T[-1]
+        Y = np.float64(TR / p.alpha_T[-1])
 
-    outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+    outer_loop_vars = (np.float64(bssmat), np.float64(nssmat), r_p, r, w, p_m,
+                       Y, BQ, TR, factor)
 
     # Solve for the steady state levels of b and n, given w, r, TR and
     # factor
@@ -1049,25 +1050,25 @@ def SS_fsolve(guesses, *args):
     ) = inner_loop(outer_loop_vars, p, client)
 
     # Create list of errors in general equilibrium variables
-    error_r_p = float(new_r_p - r_p)
+    error_r_p = np.float64(new_r_p - r_p)
     # Check and punish violations of the bounds on the interest rate
-    error_r = float(new_r - r)
-    error_w = float(new_w - w)
+    error_r = np.float64(new_r - r)
+    error_w = np.float64(new_w - w)
     if new_r + p.delta <= 0:
-        error_r_p = 1e9
-        error_r = 1e9
+        error_r_p = np.float64(1e9)
+        error_r = np.float64(1e9)
     if new_w < 0:
-        error_w = 1e9
-    error_p_m = new_p_m - p_m
-    error_p_m[new_p_m < 0] = 1e9
-    error_Y = float(new_Y - Y)
-    error_BQ = new_BQ - BQ
-    error_TR = float(new_TR - TR)
+        error_w = np.float64(1e9)
+    error_p_m = np.float64(new_p_m - p_m)
+    error_p_m[new_p_m < 0] = np.float64(1e9)
+    error_Y = np.float64(new_Y - Y)
+    error_BQ = np.float64(new_BQ - BQ)
+    error_TR = np.float64(new_TR - TR)
     # divide factor by 1000000 to put on similar scale
-    error_factor = float(new_factor / 1000000 - factor / 1000000)
+    error_factor = np.float64(new_factor / 1000000 - factor / 1000000)
     # Check and punish violations of the factor
     if new_factor <= 0:
-        error_factor = 1e9
+        error_factor = np.float64(1e9)
     if p.baseline:
         errors = (
             [error_r_p, error_r, error_w]
