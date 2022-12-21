@@ -185,7 +185,7 @@ def test_twist_doughnut(file_inputs, file_outputs):
     )
     test_list = TPI.twist_doughnut(*input_tuple)
     expected_list = utils.safe_read_pickle(file_outputs)
-    assert np.allclose(np.array(test_list), np.array(expected_list))
+    assert np.allclose(np.array(test_list), np.array(expected_list), atol=1e-5)
 
 
 def test_inner_loop():
