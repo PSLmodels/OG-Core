@@ -2,7 +2,6 @@
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3916/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3108/)
 ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/build_and_test.yml/badge.svg?branch=master?event=push)
-![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/docs_check.yml/badge.svg?branch=master?event=push)
 ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/deploy_docs.yml/badge.svg?branch=master?event=push)
 ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/check_black.yml/badge.svg?branch=master?event=push)
 [![Codecov](https://codecov.io/gh/PSLmodels/OG-Core/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-Core)
