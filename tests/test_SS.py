@@ -279,7 +279,7 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     print("Test list = ", test_list)
 
     assert np.allclose(
-        np.hstack(np.array(test_list)), np.array(expected), atol=1e-5
+        np.hstack(np.array(test_list)), np.array(expected), atol=5e-4
     )
 
 
