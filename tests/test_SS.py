@@ -1163,4 +1163,4 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         pass
     for k, v in expected_dict.items():
         print("Checking item = ", k)
-        assert np.allclose(test_dict[k], v, atol=1e-06)
+        assert np.allclose(test_dict[k], v, atol=5e-04)
