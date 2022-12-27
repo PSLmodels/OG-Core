@@ -837,7 +837,7 @@
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": 2.0
+                "max": 4.0
             }
         }
     },
@@ -855,7 +855,7 @@
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": 0.2
+                "max": 0.3
             }
         }
     },
@@ -3145,7 +3145,8 @@
                     "DEP",
                     "DEP_totalinc",
                     "GS",
-                    "linear"
+                    "linear",
+                    "mono"
                 ]
             }
         }

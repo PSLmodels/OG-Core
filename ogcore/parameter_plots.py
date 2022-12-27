@@ -301,9 +301,9 @@ def plot_fert_rates(
     fert_fine_pred = fert_func(age_fine_pred)
     age_fine = np.hstack((min_yr, age_fine_pred, max_yr))
     fert_fine = np.hstack((0, fert_fine_pred, 0))
-    age_mid_new = np.linspace(np.float(max_yr) / totpers, max_yr, totpers) - (
-        0.5 * np.float(max_yr) / totpers
-    )
+    age_mid_new = np.linspace(
+        np.float64(max_yr) / totpers, max_yr, totpers
+    ) - (0.5 * np.float64(max_yr) / totpers)
 
     fig, ax = plt.subplots()
     plt.scatter(age_midp, fert_data, s=70, c="blue", marker="o", label="Data")
@@ -369,9 +369,9 @@ def plot_mort_rates_data(
         fig (Matplotlib plot object): plot of mortality rates
 
     """
-    age_mid_new = np.linspace(np.float(max_yr) / totpers, max_yr, totpers) - (
-        0.5 * np.float(max_yr) / totpers
-    )
+    age_mid_new = np.linspace(
+        np.float64(max_yr) / totpers, max_yr, totpers
+    ) - (0.5 * np.float64(max_yr) / totpers)
     fig, ax = plt.subplots()
     plt.scatter(
         np.hstack([0, age_year_all]),
@@ -504,11 +504,11 @@ def plot_imm_fixed(
 
 def plot_population_path(
     age_per_EpS,
-    pop_2013_pct,
+    initial_pop_pct,
     omega_path_lev,
     omega_SSfx,
+    data_year,
     curr_year,
-    E,
     S,
     output_dir=None,
 ):
@@ -523,8 +523,8 @@ def plot_population_path(
             over the transition path
         omega_SSfx (Numpy array): number of households by age
             in the SS
+        data_year (int): year of data for initial_pop_pct
         curr_year (int): current year in the model
-        E (int): age at which household becomes economically active
         S (int): number of years which household is economically active
         output_dir (str): path to save figure to, if None then figure
             is returned
@@ -535,7 +535,7 @@ def plot_population_path(
 
     """
     fig, ax = plt.subplots()
-    plt.plot(age_per_EpS, pop_2013_pct, label="2013 pop.")
+    plt.plot(age_per_EpS, initial_pop_pct, label=str(data_year) + " pop.")
     plt.plot(
         age_per_EpS,
         (omega_path_lev[:, 0] / omega_path_lev[:, 0].sum()),
