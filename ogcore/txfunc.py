@@ -1824,7 +1824,7 @@ def monotone_spline(
                 err_msg = "monotone_spline2 ERROR: bins value is not type scalar"
                 raise ValueError(err_msg)
             N = bins
-            x_binned, y_binned, weights_binned_ = utils.avg_by_bin(
+            x_binned, y_binned, weights_binned = utils.avg_by_bin(
                 x, y, weights, bins
             )
 
@@ -1832,7 +1832,7 @@ def monotone_spline(
             N = len(x)
             x_binned = x
             y_binned = y
-            weights_binned_ = weights
+            weights_binned = weights
 
         # Prepare bases (Imat) and penalty
         dd = 3
@@ -1842,7 +1842,7 @@ def monotone_spline(
 
         # Monotone smoothing
         ws = np.zeros(N - 1)
-        weights_binned = weights_binned_.reshape(len(weights_binned_), 1)
+        weights_binned = weights_binned.reshape(len(weights_binned), 1)
         weights1 = 0.5 * weights_binned[1:, :] + 0.5 * weights_binned[:-1, :]
         weights3 = (
             0.25 * weights_binned[3:, :]
@@ -1854,13 +1854,11 @@ def monotone_spline(
         for it in range(30):
             Ws = np.diag(ws * kap)
             mon_cof = np.linalg.solve(
-                E + 
-                lam * D3.T @ np.diag(weights3) @ D3 # weights3
+                E
+                + lam * D3.T @ np.diag(weights3) @ D3
                 + D1.T @ (Ws * weights1) @ D1,
                 y_binned,
             )
-            print(ws)
-            print(mon_cof)
             ws_new = (D1 @ mon_cof < 0.0) * 1
             dw = np.sum(ws != ws_new)
             ws = ws_new
@@ -1872,36 +1870,20 @@ def monotone_spline(
         wsse_cstr = (weights_binned * ((y_cstr - y_binned) ** 2)).sum()
         if incl_uncstr:
             y_uncstr = np.linalg.solve(
-                E + lam * D3.T @ np.diag(weights3) @ D3, y_binned # weights3
+                E + lam * D3.T @ np.diag(weights3) @ D3, y_binned
             )
             wsse_uncstr = (weights_binned * ((y_uncstr - y_binned) ** 2)).sum()
         else:
             y_uncstr = None
             wsse_uncstr = None
 
-        # breakpoint()
-        # hist = HistGradientBoostingRegressor(max_depth = 1).fit(
-            # np.array([x_binned]).T, y_binned, weights_binned_)
-        # y_cstr2 = hist.predict(np.array([x_binned]).T)
-        # wsse_cstr2 = (weights_binned * ((y_cstr2 - y_binned) ** 2)).sum()
-        # iso = MultiIsotonicRegressor()
-        # iso = iso.fit(np.array([x_binned]).T, y_binned)
-        # y_cstr2 = iso.predict(np.array([x_binned]).T)
-        # wsse_cstr2 = (weights_binned * ((y_cstr2 - y_binned) ** 2)).sum()
-
-
-
-        print("Constrained: " + str(wsse_cstr))
-        # print("Constrained2: " + str(wsse_cstr2))
-        print("unconstrained: " + str(wsse_uncstr))
-
-        def mono_interp(x_vec, y_cstr_):
+        def mono_interp(x_vec):
             # replace last point in data with two copies further out to make smooth
             # extrapolation
             x_new = np.append(
                 x_binned[:-1], [1.005 * x_binned[-1], 1.01 * x_binned[-1]]
             )
-            y_cstr_new = np.append(y_cstr_[:-1], [y_cstr_[-1], y_cstr_[-1]])
+            y_cstr_new = np.append(y_cstr[:-1], [y_cstr[-1], y_cstr[-1]])
             # Create interpolating cubic spline for interior points
             inter_interpl = intp(x_new, y_cstr_new, kind="cubic")
             y_pred = np.zeros_like(x_vec)
@@ -1910,10 +1892,10 @@ def monotone_spline(
             x_inter = (x_vec >= x_binned.min()) & (x_vec <= x_new.max())
             y_pred[x_inter] = inter_interpl(x_vec[x_inter])
             # extrapolate the maximum for values above the maximum
-            y_pred[x_gt_max] = y_cstr_[-1]
+            y_pred[x_gt_max] = y_cstr[-1]
             # linear extrapolation of last two points for values below the min
-            slope = (y_cstr_[1] - y_cstr_[0]) / (x_binned[1] - x_binned[0])
-            intercept = y_cstr_[0] - slope * x_binned[0]
+            slope = (y_cstr[1] - y_cstr[0]) / (x_binned[1] - x_binned[0])
+            intercept = y_cstr[0] - slope * x_binned[0]
             y_pred[x_lt_min] = slope * x_vec[x_lt_min] + intercept
 
             return y_pred
@@ -1950,23 +1932,16 @@ def monotone_spline(
                     y_binned,
                     linestyle="None",
                     color="black",
-                    s=4,
+                    s=0.8,
                     alpha=0.7,
                     label="Binned data averages",
                 )
                 plt.plot(
                     x,
-                    mono_interp(x, y_cstr),
+                    mono_interp(x),
                     color="red",
                     alpha=1.0,
-                    label="Original monotonic smooth spline",
-                )
-                plt.plot(
-                    x,
-                    ygam,
-                    color="green",
-                    alpha=1.0,
-                    label="New monotonic smooth spline",
+                    label="Monotonic smooth spline",
                 )
                 if incl_uncstr:
                     plt.plot(
