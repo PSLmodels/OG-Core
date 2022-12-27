@@ -22,8 +22,6 @@ import ogcore.parameter_plots as pp
 from ogcore.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
 from ogcore import utils
 import warnings
-from sklearn.ensemble import HistGradientBoostingRegressor
-from ogcore.isotonic import MultiIsotonicRegressor
 from pygam import LinearGAM, s, te
 from matplotlib import cm
 import random
