@@ -1173,8 +1173,8 @@ def run_SS(p, client=None):
         )
     else:
         # Use the baseline solution to get starting values for the reform
-        baseline_ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
-        ss_solutions = utils.safe_read_pickle(baseline_ss_dir)
+        baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
+        ss_solutions = utils.safe_read_pickle(baseline_ss_path)
         if p.reform_use_baseline_solution:
             # use baseline solution as starting values if dimensions match
             try:
