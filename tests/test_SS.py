@@ -1011,7 +1011,7 @@ param_updates5 = {"initial_guess_r_SS": 0.035}
 filename5 = "run_SS_reform.pkl"
 param_updates6 = {
     "use_zeta": True,
-    "initial_guess_r_SS": 0.065,
+    "initial_guess_r_SS": 0.06,
     "initial_guess_TR_SS": 0.06,
 }
 filename6 = "run_SS_reform_use_zeta.pkl"
@@ -1145,8 +1145,8 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         p_base.update_specifications(param_updates_base)
         base_ss_outputs = SS.run_SS(p_base, client=dask_client)
         utils.mkdirs(os.path.join(baseline_dir, "SS"))
-        ss_dir = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
-        with open(ss_dir, "wb") as f:
+        ss_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_path, "wb") as f:
             pickle.dump(base_ss_outputs, f)
     # now run specification for test
     p = Specifications(
