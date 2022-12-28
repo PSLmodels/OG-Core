@@ -1103,46 +1103,100 @@ def run_SS(p, client=None):
             results
 
     """
+    # Create list of deviation factors for initial guesses of r and TR
+    dev_factor_list = [
+        [1.00, 1.0],
+        [0.95, 1.0],
+        [1.05, 1.0],
+        [0.90, 1.0],
+        [1.10, 1.0],
+        [0.85, 1.0],
+        [1.15, 1.0],
+        [0.80, 1.0],
+        [1.20, 1.0],
+        [0.75, 1.0],
+        [1.25, 1.0],
+        [0.70, 1.0],
+        [1.30, 1.0],
+        [1.00, 0.2],
+        [0.95, 0.2],
+        [1.05, 0.2],
+        [0.90, 0.2],
+        [1.10, 0.2],
+        [0.85, 0.2],
+        [1.15, 0.2],
+        [0.80, 0.2],
+        [1.20, 0.2],
+        [0.75, 0.2],
+        [1.25, 0.2],
+        [0.70, 0.2],
+        [1.30, 0.2],
+        [1.00, 0.6],
+        [0.95, 0.6],
+        [1.05, 0.6],
+        [0.90, 0.6],
+        [1.10, 0.6],
+        [0.85, 0.6],
+        [1.15, 0.6],
+        [0.80, 0.6],
+        [1.20, 0.6],
+        [0.75, 0.6],
+        [1.25, 0.6],
+        [0.70, 0.6],
+        [1.30, 0.6],
+    ]
+
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        r_p_guess = p.initial_guess_r_SS
-        rguess = p.initial_guess_r_SS
-        if p.use_zeta:
-            b_guess = np.ones((p.S, p.J)) * 0.0055
-            n_guess = np.ones((p.S, p.J)) * 0.4 * p.ltilde
-        else:
-            b_guess = np.ones((p.S, p.J)) * 0.07
-            n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
-        wguess = firm.get_w_from_r(rguess, p, "SS")
-        p_m_guess = np.ones(p.M)
-        TRguess = p.initial_guess_TR_SS
-        Yguess = TRguess / p.alpha_T[-1]
-        factorguess = p.initial_guess_factor_SS
-        BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
-        ss_params_baseline = (b_guess, n_guess, None, None, p, client)
-        if p.use_zeta:
-            BQguess = 0.12231465279007188
-            guesses = (
-                [r_p_guess, rguess, wguess]
-                + list(p_m_guess)
-                + [Yguess, BQguess, TRguess, factorguess]
-            )
-        else:
-            guesses = (
-                [r_p_guess, rguess, wguess]
-                + list(p_m_guess)
-                + [Yguess]
-                + list(BQguess)
-                + [TRguess, factorguess]
-            )
-        sol = opt.root(
-            SS_fsolve,
-            guesses,
-            args=ss_params_baseline,
-            method=p.SS_root_method,
-            tol=p.mindist_SS,
-        )
+        # Loop over initial guesses of r and TR until find a solution or until have
+        # gone through all guesses. This should usually solve in the first guess
+        SS_solved = False
+        k = 0
+        while not SS_solved and k < len(dev_factor_list) - 1:
+            for k, v in enumerate(dev_factor_list):
+                print("SS using initial guess factors for r and TR of", v[0],
+                      "and", v[1], ", respectively.")
+                r_p_guess = v[0] * p.initial_guess_r_SS
+                rguess = v[0] * p.initial_guess_r_SS
+                if p.use_zeta:
+                    b_guess = np.ones((p.S, p.J)) * 0.0055
+                    n_guess = np.ones((p.S, p.J)) * 0.4 * p.ltilde
+                else:
+                    b_guess = np.ones((p.S, p.J)) * 0.07
+                    n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
+                wguess = firm.get_w_from_r(rguess, p, "SS")
+                p_m_guess = np.ones(p.M)
+                TRguess = v[1] * p.initial_guess_TR_SS
+                Yguess = TRguess / p.alpha_T[-1]
+                factorguess = p.initial_guess_factor_SS
+                BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
+                ss_params_baseline = (b_guess, n_guess, None, None, p, client)
+                if p.use_zeta:
+                    BQguess = 0.12231465279007188
+                    guesses = (
+                        [r_p_guess, rguess, wguess]
+                        + list(p_m_guess)
+                        + [Yguess, BQguess, TRguess, factorguess]
+                    )
+                else:
+                    guesses = (
+                        [r_p_guess, rguess, wguess]
+                        + list(p_m_guess)
+                        + [Yguess]
+                        + list(BQguess)
+                        + [TRguess, factorguess]
+                    )
+                sol = opt.root(
+                    SS_fsolve,
+                    guesses,
+                    args=ss_params_baseline,
+                    method=p.SS_root_method,
+                    tol=p.mindist_SS,
+                )
+                if sol.success:
+                    SS_solved = True
+                    break
         if ENFORCE_SOLUTION_CHECKS and not sol.success:
             raise RuntimeError("Steady state equilibrium not found")
         r_p_ss = sol.x[0]
