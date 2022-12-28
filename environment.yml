@@ -21,3 +21,6 @@ dependencies:
 - requests
 - openpyxl
 - black
+- pip
+- pip:
+  - pygam

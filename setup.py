@@ -34,6 +34,8 @@ setuptools.setup(
         "distributed>=2.30.1",
         "paramtools>=0.15.0",
         "requests",
+        "pip",
+        "pygam",
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

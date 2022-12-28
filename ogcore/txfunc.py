@@ -1635,7 +1635,7 @@ def tax_func_estimate(
     return dict_params
 
 
-def avg_by_bin_2d(x, y, bins, weights = None):
+def avg_by_bin_multd(x, y, bins, weights = None):
     """
     Args:
         x (numpy array): 2d with dimensions n by m used for binning
@@ -1729,7 +1729,7 @@ def monotone_spline(
         if bins == None:
             x_binned, y_binned, weights_binned = x, y, weights
         else:
-            x_binned, y_binned, weights_binned = avg_by_bin_2d(x, y, bins, weights)
+            x_binned, y_binned, weights_binned = avg_by_bin_multd(x, y, bins, weights)
 
         # setup pygam parameters- in addition to 's' spline terms, can also have 't' tensor 
         # terms which are interactions between two variables. 't' terms also need monotonic constraints
@@ -1761,8 +1761,6 @@ def monotone_spline(
         else:
             y_uncstr = None
             wsse_uncstr = None
-        print("Constrained: " + str(wsse_cstr))
-        print("Unconstrained: " + str(wsse_uncstr))
 
         if show_plot:
             if x.shape[1] == 2:
