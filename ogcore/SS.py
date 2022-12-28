@@ -1155,8 +1155,13 @@ def run_SS(p, client=None):
         k = 0
         while not SS_solved and k < len(dev_factor_list) - 1:
             for k, v in enumerate(dev_factor_list):
-                print("SS using initial guess factors for r and TR of", v[0],
-                      "and", v[1], ", respectively.")
+                print(
+                    "SS using initial guess factors for r and TR of",
+                    v[0],
+                    "and",
+                    v[1],
+                    ", respectively.",
+                )
                 r_p_guess = v[0] * p.initial_guess_r_SS
                 rguess = v[0] * p.initial_guess_r_SS
                 if p.use_zeta:
