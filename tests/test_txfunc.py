@@ -777,10 +777,11 @@ def test_monotone_spline():
         wsse_uncstr1,
     ) = txfunc.monotone_spline(
         df[['total_labinc', 'total_capinc']].values, df['etr'].values, df['weight'].values, bins=[100, 100], lam=100, incl_uncstr=True, 
-            show_plot=True, method='pygam', splines=[100, 100], plot_cutoff=True, plot_start=25, plot_end=75
+            show_plot=False, method='pygam', splines=[100, 100], plot_start=25, plot_end=75
     )
     # Test whether mono_interp is a function
     assert hasattr(mono_interp1, "__call__")
+    # Not sure what baseline should be to add tests here for "correctness" of values
 
     # Simulate some data
     N = 100
@@ -806,7 +807,7 @@ def test_monotone_spline():
     # Test whether mono_interp gives the correct output
     x_vec_test = np.array([2.0, 5.0])
     y_vec_expected = np.array([0.69512331, 1.23822669])
-    y_monointerp = mono_interp2(x_vec_test, y_cstr2)
+    y_monointerp = mono_interp2(x_vec_test)
     assert np.allclose(y_monointerp, y_vec_expected)
 
     # Test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
