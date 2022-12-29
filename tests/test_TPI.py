@@ -643,7 +643,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
         except ValueError:
             print(
                 "Diff = ",
-                np.absolute(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max()
+                np.absolute(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
             assert np.allclose(
                 test_dict[k][: p.T, :, :],
