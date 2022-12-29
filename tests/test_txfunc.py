@@ -1,5 +1,6 @@
 import sys
-sys.path.append('/Users/praneet/developer/OG-Core/')
+
+sys.path.append("/Users/praneet/developer/OG-Core/")
 from ogcore import txfunc
 from distributed import Client, LocalCluster
 import pytest
@@ -735,7 +736,7 @@ def test_monotone_spline():
     np.random.seed(10)
 
     # another test case for pygam method:
-    
+
     # N = 100
     # xlo = 0.001
     # xhi = 2 * np.pi
@@ -753,18 +754,18 @@ def test_monotone_spline():
     # y = y0 + np.random.random(y0.shape) * 0.2
     # weights = np.ones(10000)
     # (
-        # mono_interp,
-        # y_cstr,
-        # wsse_cstr,
-        # y_uncstr,
-        # wsse_uncstr,
+    # mono_interp,
+    # y_cstr,
+    # wsse_cstr,
+    # y_uncstr,
+    # wsse_uncstr,
     # ) = txfunc.monotone_spline(
-        # X, y, weights, lam=100, incl_uncstr=True, show_plot=True, method='pygam'
+    # X, y, weights, lam=100, incl_uncstr=True, show_plot=True, method='pygam'
     # )
 
-    with open('test_io_data/micro_data_dict_for_tests.pkl', 'rb') as f:
-        data = pickle.load(f)['2030']
-    df = data[['total_labinc', 'total_capinc', 'etr', 'weight']]
+    with open("test_io_data/micro_data_dict_for_tests.pkl", "rb") as f:
+        data = pickle.load(f)["2030"]
+    df = data[["total_labinc", "total_capinc", "etr", "weight"]]
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.dropna(inplace=True)
 
@@ -776,8 +777,17 @@ def test_monotone_spline():
         y_uncstr1,
         wsse_uncstr1,
     ) = txfunc.monotone_spline(
-        df[['total_labinc', 'total_capinc']].values, df['etr'].values, df['weight'].values, bins=[100, 100], lam=100, incl_uncstr=True, 
-            show_plot=False, method='pygam', splines=[100, 100], plot_start=25, plot_end=75
+        df[["total_labinc", "total_capinc"]].values,
+        df["etr"].values,
+        df["weight"].values,
+        bins=[100, 100],
+        lam=100,
+        incl_uncstr=True,
+        show_plot=False,
+        method="pygam",
+        splines=[100, 100],
+        plot_start=25,
+        plot_end=75,
     )
     # Test whether mono_interp is a function
     assert hasattr(mono_interp1, "__call__")
@@ -799,7 +809,14 @@ def test_monotone_spline():
         y_uncstr2,
         wsse_uncstr2,
     ) = txfunc.monotone_spline(
-        x, y, weights, bins=10, lam=100, incl_uncstr=True, show_plot=False, method='eilers'
+        x,
+        y,
+        weights,
+        bins=10,
+        lam=100,
+        incl_uncstr=True,
+        show_plot=False,
+        method="eilers",
     )
     # Test whether mono_interp is a function
     assert hasattr(mono_interp2, "__call__")
@@ -845,4 +862,3 @@ def test_monotone_spline():
     assert np.allclose(wsse_cstr2, wsse_cstr_expected)
     assert np.allclose(y_uncstr2, y_uncstr_expected)
     assert np.allclose(wsse_uncstr2, wsse_uncstr_expected)
-        

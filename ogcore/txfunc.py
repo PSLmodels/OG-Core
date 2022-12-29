@@ -1635,28 +1635,30 @@ def tax_func_estimate(
     return dict_params
 
 
-def avg_by_bin_multd(x, y, bins, weights = None):
+def avg_by_bin_multd(x, y, bins, weights=None):
     """
     Args:
         x (numpy array): 2d with dimensions n by m used for binning
-        y (numpy array): 1d with length n 
+        y (numpy array): 1d with length n
         bins (numpy array): 1d with length m, each entry must divide n
             and is number of bins for corresponding column in x
-        weights (None or numpy array): 1d with length n specifying 
+        weights (None or numpy array): 1d with length n specifying
             weight of each observation. if None then array of ones
 
     Returns:
-        xNew (numpy array): 2d with second dimension m, first 
-            dimension is product of elements in bins, with each entry 
+        xNew (numpy array): 2d with second dimension m, first
+            dimension is product of elements in bins, with each entry
             representative of bin across all the features
         yNew (numpy array): 1d with length same as first dimension
-            of xWeight, weighted average of y's corresponding to each 
+            of xWeight, weighted average of y's corresponding to each
             entry of xWeight
         weightsNew (numpy array): 1d with length same as yNew, weight
             corresponding to each xNew, yNew row
     """
     if x.shape[1] != len(bins):
-        message = "Dimensions of x and bins don't match: {} != {}".format(x.shape[1], len(bins))
+        message = "Dimensions of x and bins don't match: {} != {}".format(
+            x.shape[1], len(bins)
+        )
         raise ValueError(message)
     else:
         size = np.prod(bins)
@@ -1671,9 +1673,13 @@ def avg_by_bin_multd(x, y, bins, weights = None):
             index = list(np.unravel_index(i, tupleBins))
             valid = np.ones(x.shape[0], dtype=bool)
             for j, v in enumerate(index):
-                valid &= (x[:, j] >= np.percentile(x[:, j], v*100/bins[j])) & (x[:, j] < np.percentile(x[:, j], (v+1)*100/bins[j]))
+                valid &= (
+                    x[:, j] >= np.percentile(x[:, j], v * 100 / bins[j])
+                ) & (x[:, j] < np.percentile(x[:, j], (v + 1) * 100 / bins[j]))
             if np.sum(valid) != 0:
-                xNew[i, :] = np.average(x[valid], axis=0, weights=weights[valid])
+                xNew[i, :] = np.average(
+                    x[valid], axis=0, weights=weights[valid]
+                )
                 yNew[i] = np.average(y[valid], axis=0, weights=weights[valid])
                 weightsNew[i] = np.sum(weights[valid])
         xNew = xNew[~(weightsNew == 0)]
@@ -1691,37 +1697,39 @@ def monotone_spline(
     kap=1e7,
     incl_uncstr=False,
     show_plot=False,
-    method='eilers',
+    method="eilers",
     splines=None,
     plot_start=0,
-    plot_end=100
+    plot_end=100,
 ):
     """
     New args:
         method (string): 'eilers' (old version) or 'pygam' (new version)
-        splines (None or array-like): for 'pygam' only (otherwise set None), 
+        splines (None or array-like): for 'pygam' only (otherwise set None),
             number of splines used for each feature, if None use default
-        plot_start/plot_end (number between 0, 100): for 'pygam' only if show_plot = True, 
+        plot_start/plot_end (number between 0, 100): for 'pygam' only if show_plot = True,
             start and end for percentile of data used in plot, can result in
             better visualizations if original data has strong outliers
 
     Returns:
-        xNew (numpy array): 2d with second dimension m, first 
-            dimension is product of elements in bins, with each entry 
+        xNew (numpy array): 2d with second dimension m, first
+            dimension is product of elements in bins, with each entry
             representative of bin across all the features
         yNew (numpy array): 1d with length same as first dimension
-            of xWeight, weighted average of y's corresponding to each 
+            of xWeight, weighted average of y's corresponding to each
             entry of xWeight
         weightsNew (numpy array): 1d with length same as yNew, weight
             corresponding to each xNew, yNew row
     """
 
-    if method == 'pygam':
+    if method == "pygam":
         if splines != None and len(splines) != x.shape[1]:
             err_msg = (
-                " pygam method requires splines to be None or " + 
-                " same length as # of columns in x, " + len(splines)
-                 + " != " + str(x.shape[1])
+                " pygam method requires splines to be None or "
+                + " same length as # of columns in x, "
+                + len(splines)
+                + " != "
+                + str(x.shape[1])
             )
             raise ValueError(err_msg)
 
@@ -1729,23 +1737,27 @@ def monotone_spline(
         if bins == None:
             x_binned, y_binned, weights_binned = x, y, weights
         else:
-            x_binned, y_binned, weights_binned = avg_by_bin_multd(x, y, bins, weights)
+            x_binned, y_binned, weights_binned = avg_by_bin_multd(
+                x, y, bins, weights
+            )
 
-        # setup pygam parameters- in addition to 's' spline terms, can also have 't' tensor 
+        # setup pygam parameters- in addition to 's' spline terms, can also have 't' tensor
         # terms which are interactions between two variables. 't' terms also need monotonic constraints
         # to satisfy previous constraints, they actually impose stronger restriction
 
         if splines == None:
-            tempCstr = s(0, constraints='monotonic_inc')
+            tempCstr = s(0, constraints="monotonic_inc")
             for i in range(1, x_binned.shape[1]):
-                tempCstr += s(i, constraints='monotonic_inc')
+                tempCstr += s(i, constraints="monotonic_inc")
             tempUncstr = s(0)
             for i in range(1, x_binned.shape[1]):
                 tempUncstr += s(i)
         else:
-            tempCstr = s(0, constraints='monotonic_inc', n_splines=splines[0])
+            tempCstr = s(0, constraints="monotonic_inc", n_splines=splines[0])
             for i in range(1, x_binned.shape[1]):
-                tempCstr += s(i, constraints='monotonic_inc', n_splines=splines[i])
+                tempCstr += s(
+                    i, constraints="monotonic_inc", n_splines=splines[i]
+                )
             tempUncstr = s(0, n_splines=splines[0])
             for i in range(1, x_binned.shape[1]):
                 tempUncstr += s(i, n_splines=splines[i])
@@ -1755,7 +1767,9 @@ def monotone_spline(
         y_cstr = gamCstr.predict(x_binned)
         wsse_cstr = (weights_binned * ((y_cstr - y_binned) ** 2)).sum()
         if incl_uncstr:
-            gamUncstr = LinearGAM(tempUncstr).fit(x_binned, y_binned, weights_binned)
+            gamUncstr = LinearGAM(tempUncstr).fit(
+                x_binned, y_binned, weights_binned
+            )
             y_uncstr = gamUncstr.predict(x_binned)
             wsse_uncstr = (weights_binned * ((y_uncstr - y_binned) ** 2)).sum()
         else:
@@ -1766,18 +1780,45 @@ def monotone_spline(
             if x.shape[1] == 2:
                 fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
                 # select data in [plot_start, end] percentile across both features
-                # this can be rewritten to generalize for n-dimensions, but didn't know how to plot that 
-                xactPlot = x[(x[:,0] >= np.percentile(x[:,0], plot_start)) & (x[:,0] <= np.percentile(x[:,0], plot_end)) & 
-                    (x[:,1] >= np.percentile(x[:,1], plot_start)) & (x[:,1] <= np.percentile(x[:,1], plot_end))]
-                yactPlot = y[(x[:,0] >= np.percentile(x[:,0], plot_start)) & (x[:,0] <= np.percentile(x[:,0], plot_end)) & 
-                    (x[:,1] >= np.percentile(x[:,1], plot_start)) & (x[:,1] <= np.percentile(x[:,1], plot_end))]
-                ax.scatter(xactPlot[:, 0], xactPlot[:, 1], yactPlot, color="black", s=0.8, alpha=0.25)
+                # this can be rewritten to generalize for n-dimensions, but didn't know how to plot that
+                xactPlot = x[
+                    (x[:, 0] >= np.percentile(x[:, 0], plot_start))
+                    & (x[:, 0] <= np.percentile(x[:, 0], plot_end))
+                    & (x[:, 1] >= np.percentile(x[:, 1], plot_start))
+                    & (x[:, 1] <= np.percentile(x[:, 1], plot_end))
+                ]
+                yactPlot = y[
+                    (x[:, 0] >= np.percentile(x[:, 0], plot_start))
+                    & (x[:, 0] <= np.percentile(x[:, 0], plot_end))
+                    & (x[:, 1] >= np.percentile(x[:, 1], plot_start))
+                    & (x[:, 1] <= np.percentile(x[:, 1], plot_end))
+                ]
+                ax.scatter(
+                    xactPlot[:, 0],
+                    xactPlot[:, 1],
+                    yactPlot,
+                    color="black",
+                    s=0.8,
+                    alpha=0.25,
+                )
 
-                x0 = np.linspace(np.percentile(x[:,0], plot_start),np.percentile(x[:,0], plot_end), 1000)
-                x1 = np.linspace(np.percentile(x[:,1], plot_start),np.percentile(x[:,1], plot_end), 1000)
+                x0 = np.linspace(
+                    np.percentile(x[:, 0], plot_start),
+                    np.percentile(x[:, 0], plot_end),
+                    1000,
+                )
+                x1 = np.linspace(
+                    np.percentile(x[:, 1], plot_start),
+                    np.percentile(x[:, 1], plot_end),
+                    1000,
+                )
                 X0, X1 = np.meshgrid(x0, x1)
-                yPred = gamCstr.predict(np.array([X0.flatten(), X1.flatten()]).T)
-                ax.plot_surface(X0, X1, yPred.reshape(x0.shape[0], -1), color = 'red')
+                yPred = gamCstr.predict(
+                    np.array([X0.flatten(), X1.flatten()]).T
+                )
+                ax.plot_surface(
+                    X0, X1, yPred.reshape(x0.shape[0], -1), color="red"
+                )
                 ax.set_label("Monotonic GAM spline with all data")
 
             if x.shape[1] == 1:
@@ -1813,11 +1854,13 @@ def monotone_spline(
 
         return interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr
 
-    if method == 'eilers':
+    if method == "eilers":
         # create binned and weighted x and y data
         if bins:
             if not np.isscalar(bins):
-                err_msg = "monotone_spline2 ERROR: bins value is not type scalar"
+                err_msg = (
+                    "monotone_spline2 ERROR: bins value is not type scalar"
+                )
                 raise ValueError(err_msg)
             N = bins
             x_binned, y_binned, weights_binned = utils.avg_by_bin(
