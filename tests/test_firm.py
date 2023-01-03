@@ -1,4 +1,3 @@
-from curses.ascii import SP
 from math import exp
 import pytest
 from ogcore import firm

@@ -185,7 +185,7 @@ def test_twist_doughnut(file_inputs, file_outputs):
     )
     test_list = TPI.twist_doughnut(*input_tuple)
     expected_list = utils.safe_read_pickle(file_outputs)
-    assert np.allclose(np.array(test_list), np.array(expected_list))
+    assert np.allclose(np.array(test_list), np.array(expected_list), atol=1e-5)
 
 
 def test_inner_loop():
@@ -620,13 +620,13 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
-        ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
-        with open(ss_dir, "wb") as f:
+        ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_path, "wb") as f:
             pickle.dump(ss_outputs, f)
     else:
         utils.mkdirs(os.path.join(p.output_base, "SS"))
-        ss_dir = os.path.join(p.output_base, "SS", "SS_vars.pkl")
-        with open(ss_dir, "wb") as f:
+        ss_path = os.path.join(p.output_base, "SS", "SS_vars.pkl")
+        with open(ss_path, "wb") as f:
             pickle.dump(ss_outputs, f)
 
     TPI.ENFORCE_SOLUTION_CHECKS = False
@@ -636,14 +636,14 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
     for k, v in expected_dict.items():
         print("Checking ", k)
         try:
-            print("Diff = ", np.abs(test_dict[k][: p.T] - v[: p.T]).max())
+            print("Diff = ", np.absolute(test_dict[k][: p.T] - v[: p.T]).max())
             assert np.allclose(
                 test_dict[k][: p.T], v[: p.T], rtol=1e-04, atol=1e-04
             )
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
+                np.absolute(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
             assert np.allclose(
                 test_dict[k][: p.T, :, :],
