@@ -455,7 +455,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="mkdirs"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.mkdirs">[docs]</a><span class="k">def</span> <span class="nf">mkdirs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes directories to save output.</span>
 
 <span class="sd">    Args:</span>
@@ -474,7 +474,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="pct_diff_func"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.pct_diff_func">[docs]</a><span class="k">def</span> <span class="nf">pct_diff_func</span><span class="p">(</span><span class="n">simul</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to calculate the absolute percent difference between data</span>
 <span class="sd">    moments and model moments.</span>
 
@@ -497,7 +497,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="convex_combo"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.convex_combo">[docs]</a><span class="k">def</span> <span class="nf">convex_combo</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes the convex combination of two variables, where nu is in [0,1].</span>
 
 <span class="sd">    Args:</span>
@@ -515,7 +515,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="read_file"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.read_file">[docs]</a><span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read the contents of &#39;path&#39;. If it does not exist, assume the file</span>
 <span class="sd">    is installed in a .egg file, and adjust accordingly.</span>
 
@@ -539,7 +539,7 @@ title="Open an issue"
 <div class="viewcode-block" id="pickle_file_compare"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.pickle_file_compare">[docs]</a><span class="k">def</span> <span class="nf">pickle_file_compare</span><span class="p">(</span>
     <span class="n">fname1</span><span class="p">,</span> <span class="n">fname2</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read two pickle files and unpickle each. We assume that each</span>
 <span class="sd">    resulting object is a dictionary. The values of each dict are either</span>
 <span class="sd">    numpy arrays or else types that are comparable with the == operator.</span>
@@ -570,7 +570,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="comp_array"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.comp_array">[docs]</a><span class="k">def</span> <span class="nf">comp_array</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare two arrays in the L inifinity norm. Return True if | a - b | &lt; tol,</span>
 <span class="sd">    False otherwise. If not equal, add items to the unequal list name: the name</span>
 <span class="sd">    of the value being compared</span>
@@ -618,7 +618,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="comp_scalar"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.comp_scalar">[docs]</a><span class="k">def</span> <span class="nf">comp_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare two scalars in the L inifinity norm. Return True if</span>
 <span class="sd">    abs(a - b) &lt; tol, False otherwise. If not equal, add items to the unequal</span>
 <span class="sd">    list.</span>
@@ -666,7 +666,7 @@ title="Open an issue"
     <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span>
     <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare two dictionaries. The values of each dict are either</span>
 <span class="sd">    numpy arrays or else types that are comparable with the `==` operator.</span>
 <span class="sd">    For arrays, they are considered the same if `|x - y| &lt; tol` in</span>
@@ -756,7 +756,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="to_timepath_shape"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.to_timepath_shape">[docs]</a><span class="k">def</span> <span class="nf">to_timepath_shape</span><span class="p">(</span><span class="n">some_array</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function takes an vector of length T and tiles it to fill a</span>
 <span class="sd">    Tx1x1 array for time path computations.</span>
 
@@ -772,7 +772,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_initial_path"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.get_initial_path">[docs]</a><span class="k">def</span> <span class="nf">get_initial_path</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function generates a path from point x1 to point xT such that</span>
 <span class="sd">    that the path x is a linear or quadratic function of time t.</span>
 
@@ -818,7 +818,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="safe_read_pickle"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.safe_read_pickle">[docs]</a><span class="k">def</span> <span class="nf">safe_read_pickle</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function reads a pickle from Python 2 into Python 2 or Python 3</span>
 
 <span class="sd">    Args:</span>
@@ -837,7 +837,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="rate_conversion"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.rate_conversion">[docs]</a><span class="k">def</span> <span class="nf">rate_conversion</span><span class="p">(</span><span class="n">annual_rate</span><span class="p">,</span> <span class="n">start_age</span><span class="p">,</span> <span class="n">end_age</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function converts annual rates to model period ratesself.</span>
 
 <span class="sd">    Args:</span>
@@ -855,7 +855,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="save_return_table"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.save_return_table">[docs]</a><span class="k">def</span> <span class="nf">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">output_type</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to save or return a table of data.</span>
 
 <span class="sd">    Args:</span>
@@ -901,12 +901,12 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="Inequality"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality">[docs]</a><span class="k">class</span> <span class="nc">Inequality</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class with methods to compute different measures of inequality.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">ability_weights</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            dist (Numpy array): distribution of endogenous variables</span>
 <span class="sd">                over age and lifetime income group, size, SxJ</span>
@@ -935,7 +935,7 @@ title="Open an issue"
         <span class="bp">self</span><span class="o">.</span><span class="n">cum_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Inequality.gini"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.gini">[docs]</a>    <span class="k">def</span> <span class="nf">gini</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;overall&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the Gini coefficient</span>
 
 <span class="sd">        Args:</span>
@@ -969,7 +969,7 @@ title="Open an issue"
         <span class="k">return</span> <span class="n">gini_coeff</span></div>
 
 <div class="viewcode-block" id="Inequality.var_of_logs"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.var_of_logs">[docs]</a>    <span class="k">def</span> <span class="nf">var_of_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the variance of logs</span>
 
 <span class="sd">        Args:</span>
@@ -990,7 +990,7 @@ title="Open an issue"
         <span class="k">return</span> <span class="n">var_ln_dist</span></div>
 
 <div class="viewcode-block" id="Inequality.ratio_pct1_pct2"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.ratio_pct1_pct2">[docs]</a>    <span class="k">def</span> <span class="nf">ratio_pct1_pct2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct1</span><span class="p">,</span> <span class="n">pct2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the pct1/pct2 percentile ratio</span>
 
 <span class="sd">        Args:</span>
@@ -1016,7 +1016,7 @@ title="Open an issue"
         <span class="k">return</span> <span class="n">pct_ratio</span></div>
 
 <div class="viewcode-block" id="Inequality.pct"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.pct">[docs]</a>    <span class="k">def</span> <span class="nf">pct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns value at given percentile</span>
 
 <span class="sd">        Args:</span>
@@ -1035,7 +1035,7 @@ title="Open an issue"
         <span class="k">return</span> <span class="n">value</span></div>
 
     <span class="k">def</span> <span class="nf">top_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pctile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the top X% share</span>
 
 <span class="sd">        Args:</span>
@@ -1065,7 +1065,7 @@ title="Open an issue"
     <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">bar_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prints a progress bar to the terminal when completing small tasks</span>
 <span class="sd">    of a larger job.</span>
 
@@ -1115,7 +1115,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="fetch_files_from_web"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.fetch_files_from_web">[docs]</a><span class="k">def</span> <span class="nf">fetch_files_from_web</span><span class="p">(</span><span class="n">file_urls</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fetches zip files from respective web addresses and saves them as</span>
 <span class="sd">    temporary files. Prints progress bar as it downloads the files.</span>
 
@@ -1173,7 +1173,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="not_connected"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.not_connected">[docs]</a><span class="k">def</span> <span class="nf">not_connected</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://www.google.com/&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks for internet connection status of machine.</span>
 
 <span class="sd">    Args:</span>
@@ -1196,7 +1196,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="avg_by_bin"><a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.avg_by_bin">[docs]</a><span class="k">def</span> <span class="nf">avg_by_bin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">eql_pctl</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For an x series and y series (vectors), this function computes vectors of</span>
 <span class="sd">    weighted average values in specified bins.</span>
 

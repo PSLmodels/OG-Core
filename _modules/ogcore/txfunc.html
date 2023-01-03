@@ -492,7 +492,7 @@ title="Open an issue"
     <span class="n">mtr_capital</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">for_estimation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates tax rates given income data and the parameters of the tax</span>
 <span class="sd">    functions.</span>
 
@@ -694,7 +694,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="wsumsq"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.wsumsq">[docs]</a><span class="k">def</span> <span class="nf">wsumsq</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function generates the weighted sum of squared deviations of</span>
 <span class="sd">    predicted values of tax rates (ETR, MTRx, or MTRy) from the tax</span>
 <span class="sd">    rates from the data for the Cobb-Douglas functional form of the tax</span>
@@ -737,7 +737,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="find_outliers"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.find_outliers">[docs]</a><span class="k">def</span> <span class="nf">find_outliers</span><span class="p">(</span><span class="n">sse_mat</span><span class="p">,</span> <span class="n">age_vec</span><span class="p">,</span> <span class="n">se_mult</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">varstr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function takes a matrix of sum of squared errors (SSE) from</span>
 <span class="sd">    tax function estimations for each age (s) in each year of the budget</span>
 <span class="sd">    window (t) and marks estimations that have outlier SSE.</span>
@@ -803,7 +803,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="replace_outliers"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.replace_outliers">[docs]</a><span class="k">def</span> <span class="nf">replace_outliers</span><span class="p">(</span><span class="n">param_list</span><span class="p">,</span> <span class="n">sse_big_mat</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function replaces outlier estimated tax function parameters</span>
 <span class="sd">    with linearly interpolated tax function tax function parameters</span>
 
@@ -881,7 +881,7 @@ title="Open an issue"
 <div class="viewcode-block" id="txfunc_est"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.txfunc_est">[docs]</a><span class="k">def</span> <span class="nf">txfunc_est</span><span class="p">(</span>
     <span class="n">df</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">rate_type</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span> <span class="n">numparams</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">graph</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function uses tax tax rate and income data for individuals of a</span>
 <span class="sd">    particular age (s) and a particular year (t) to estimate the</span>
 <span class="sd">    parameters of a Cobb-Douglas aggregation function of two ratios of</span>
@@ -1156,7 +1156,7 @@ title="Open an issue"
 <div class="viewcode-block" id="tax_data_sample"><a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.tax_data_sample">[docs]</a><span class="k">def</span> <span class="nf">tax_data_sample</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span> <span class="n">max_etr</span><span class="o">=</span><span class="n">MAX_ETR</span><span class="p">,</span> <span class="n">min_income</span><span class="o">=</span><span class="n">MIN_INCOME</span><span class="p">,</span> <span class="n">max_mtr</span><span class="o">=</span><span class="n">MAX_MTR</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to create sample tax data for estimation by dropping</span>
 <span class="sd">    observations with extreme values.</span>
 
@@ -1213,7 +1213,7 @@ title="Open an issue"
     <span class="n">output_dir</span><span class="p">,</span>
     <span class="n">numparams</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimates tax functions for a particular year.  Looped over.</span>
 
 <span class="sd">    Args:</span>
@@ -1705,7 +1705,7 @@ title="Open an issue"
     <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">tax_func_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function performs analysis on the source data from microsimulation</span>
 <span class="sd">    model and estimates functions for the effective tax rate (ETR), marginal</span>
 <span class="sd">    tax rate on labor income (MTRx), and marginal tax rate on capital income</span>

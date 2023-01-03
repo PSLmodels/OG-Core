@@ -448,7 +448,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="runner"><a class="viewcode-back" href="../../content/api/execute.html#ogcore.execute.runner">[docs]</a><span class="k">def</span> <span class="nf">runner</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">time_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function runs the OG-Core model, solving for the steady-state</span>
 <span class="sd">    and (optionally) the time path equilibrium.</span>
 
@@ -476,14 +476,14 @@ title="Open an issue"
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In runner, baseline is &quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">)</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">        Run SS</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ss_outputs</span> <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">run_SS</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
 <span class="sd">        Pickle SS results</span>
 <span class="sd">    ------------------------------------------------------------------------</span>
@@ -499,14 +499,14 @@ title="Open an issue"
         <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">p</span><span class="p">),</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">time_path</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
 <span class="sd">            Run the TPI simulation</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tpi_output</span> <span class="o">=</span> <span class="n">TPI</span><span class="o">.</span><span class="n">run_TPI</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
 
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ------------------------------------------------------------------------</span>
 <span class="sd">            Pickle TPI results</span>
 <span class="sd">        ------------------------------------------------------------------------</span>

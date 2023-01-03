@@ -454,7 +454,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_Y"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_Y">[docs]</a><span class="k">def</span> <span class="nf">get_Y</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates aggregate output (GDP) from aggregate capital stock,</span>
 <span class="sd">    aggregate labor, and CES production function parameters.</span>
 
@@ -607,7 +607,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_r"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_r">[docs]</a><span class="k">def</span> <span class="nf">get_r</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function computes the interest rate as a function of Y, K, and</span>
 <span class="sd">    parameters using the firm&#39;s first order condition for capital</span>
 <span class="sd">    demand.</span>
@@ -652,7 +652,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_w"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_w">[docs]</a><span class="k">def</span> <span class="nf">get_w</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function computes the wage as a function of Y, L, and</span>
 <span class="sd">    parameters using the firm&#39;s first order condition for labor demand.</span>
 
@@ -683,7 +683,7 @@ title="Open an issue"
 
 
 <span class="k">def</span> <span class="nf">get_KLratio_KLonly</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function solves for the capital-labor ratio given the interest</span>
 <span class="sd">    rate, r, and parameters when the production function is only a</span>
 <span class="sd">    function of K and L.  This is used in the get_w_from_r function.</span>
@@ -730,7 +730,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_KLratio"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_KLratio">[docs]</a><span class="k">def</span> <span class="nf">get_KLratio</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function solves for the capital-labor ratio given the interest</span>
 <span class="sd">    rate r wage w and parameters.</span>
 
@@ -760,7 +760,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_MPx"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_MPx">[docs]</a><span class="k">def</span> <span class="nf">get_MPx</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">share</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the marginal product of x (where x is K, L, or K_g)</span>
 
 <span class="sd">    .. math::</span>
@@ -796,7 +796,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_w_from_r"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_w_from_r">[docs]</a><span class="k">def</span> <span class="nf">get_w_from_r</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solve for a wage rate from a given interest rate.  N.B. this is only</span>
 <span class="sd">    appropriate if the production function only uses capital and labor</span>
 <span class="sd">    as inputs.  As such, this is not used for determining the domestic</span>
@@ -853,7 +853,7 @@ title="Open an issue"
 
 
 <span class="k">def</span> <span class="nf">get_K_KLonly</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates vector of aggregate capital when the production function</span>
 <span class="sd">    uses only K and L as inputs. Use with the open economy options.</span>
 
@@ -879,7 +879,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_L_from_Y"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_L_from_Y">[docs]</a><span class="k">def</span> <span class="nf">get_L_from_Y</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find aggregate labor L from output Y and wages w</span>
 
 <span class="sd">    .. math::</span>
@@ -909,7 +909,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_K"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K">[docs]</a><span class="k">def</span> <span class="nf">get_K</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get K from r, w, L.  For determining capital demand for open</span>
 <span class="sd">    economy case.</span>
 
@@ -936,7 +936,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_cost_of_capital"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_cost_of_capital">[docs]</a><span class="k">def</span> <span class="nf">get_cost_of_capital</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the cost of capital.</span>
 
 <span class="sd">    .. math::</span>
@@ -981,7 +981,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="get_pm"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_pm">[docs]</a><span class="k">def</span> <span class="nf">get_pm</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y_vec</span><span class="p">,</span> <span class="n">L_vec</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find prices for outputs from each industry.</span>
 
 <span class="sd">    .. math::</span>
@@ -1018,7 +1018,7 @@ title="Open an issue"
 
 
 <span class="k">def</span> <span class="nf">get_KY_ratio</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get capital output ratio from FOC for interest rate.</span>
 
 <span class="sd">    .. math::</span>
@@ -1062,7 +1062,7 @@ title="Open an issue"
 
 
 <div class="viewcode-block" id="solve_L"><a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.solve_L">[docs]</a><span class="k">def</span> <span class="nf">solve_L</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solve for labor supply from the production function</span>
 
 <span class="sd">    .. math::</span>
