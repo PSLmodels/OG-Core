@@ -25,7 +25,6 @@ setuptools.setup(
     include_packages=True,
     python_requires=">=3.7.7, <3.11",
     install_requires=[
-        "mkl>=2021.4.0",
         "psutil",
         "scipy>=1.7.1",
         "pandas>=1.2.5",
@@ -43,9 +42,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     tests_require=["pytest"],
