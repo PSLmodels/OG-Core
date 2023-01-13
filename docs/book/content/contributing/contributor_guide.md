@@ -186,6 +186,6 @@ A large set of plots that compare the changes among key variables from the basel
 (Sec_ContribFootnotes)=
 ## Footnotes
 
-[^recent_python]:The most recent version of Python from Anaconda is Python 3.9. `OG-Core` is currently tested to run on Python 3.8 through 3.10.
+[^recent_python]:The most recent version of Python from Anaconda is Python 3.9. `OG-Core` is currently tested to run on Python 3.9 through 3.10.
 
 [^commandline_note]:The dollar sign is the end of the command prompt on a Mac. If you are using the Windows operating system, this is usually the right angle bracket (>). No matter the symbol, you don't need to type it (or anything to its left, which shows the current working directory) at the command line before you enter a command; the prompt symbol and preceding characters should already be there.
