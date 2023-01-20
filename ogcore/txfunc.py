@@ -1183,10 +1183,10 @@ def tax_func_loop(
                     ] = lin_int_mtry[s_ind, :]
 
             elif (
-                NoData_cnt
-                > 0 & NoData_cnt
-                < s - s_min & tax_func_type
-                == "mono"
+                (NoData_cnt
+                > 0) & (NoData_cnt
+                < s - s_min) & (tax_func_type
+                == "mono")
             ):
                 # '''
                 # -------------------------------------------------------------
