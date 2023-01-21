@@ -1622,10 +1622,9 @@ title="Open an issue"
                     <span class="p">]</span> <span class="o">=</span> <span class="n">lin_int_mtry</span><span class="p">[</span><span class="n">s_ind</span><span class="p">,</span> <span class="p">:]</span>
 
             <span class="k">elif</span> <span class="p">(</span>
-                <span class="n">NoData_cnt</span>
-                <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="n">NoData_cnt</span>
-                <span class="o">&lt;</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span> <span class="o">&amp;</span> <span class="n">tax_func_type</span>
-                <span class="o">==</span> <span class="s2">&quot;mono&quot;</span>
+                <span class="p">(</span><span class="n">NoData_cnt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">NoData_cnt</span> <span class="o">&lt;</span> <span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;mono&quot;</span><span class="p">)</span>
             <span class="p">):</span>
                 <span class="c1"># &#39;&#39;&#39;</span>
                 <span class="c1"># -------------------------------------------------------------</span>
