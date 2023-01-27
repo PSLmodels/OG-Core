@@ -8,7 +8,7 @@ logo                     : '..//OG-Core_logo.png'
 ####################################################
 # Execution settings
 execute:
-  execute_notebooks      : cache
+  execute_notebooks      : force
 
 ####################################################
 # HTML-specific settings
