@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Financial Intermediary &#8212; OG-Core</title>
+    <title>Calibrating OG-Core &#8212; OG-Core</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -50,12 +50,10 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Market Clearing" href="market_clearing.html" />
-    <link rel="prev" title="Open Economy Options" href="open_economy.html" />
+    <link rel="next" title="Derivations" href="derivations.html" />
+    <link rel="prev" title="Equilibrium" href="equilibrium.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -252,8 +250,8 @@ const thebe_selector_output = ".output, .cell_output"
    Open Economy Options
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="financial.html">
    Financial Intermediary
   </a>
  </li>
@@ -272,8 +270,8 @@ const thebe_selector_output = ".output, .cell_output"
    Equilibrium
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="calibration.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    Calibrating OG-Core
   </a>
  </li>
@@ -403,7 +401,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/financial.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/calibration.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -431,7 +429,7 @@ title="Open an issue"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="../../_sources/content/theory/financial.md"
+        <a href="../../_sources/content/theory/calibration.md"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -491,6 +489,11 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detail-of-parameters-data-and-approaches-for-calibration">
+   Detail of parameters, data, and approaches for calibration
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#footnotes">
    Footnotes
   </a>
@@ -504,7 +507,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Financial Intermediary</h1>
+                <h1>Calibrating OG-Core</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -514,6 +517,11 @@ title="Print to PDF"
                         </div>
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detail-of-parameters-data-and-approaches-for-calibration">
+   Detail of parameters, data, and approaches for calibration
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#footnotes">
    Footnotes
@@ -529,40 +537,180 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="financial-intermediary">
-<span id="chap-finint"></span><h1>Financial Intermediary<a class="headerlink" href="#financial-intermediary" title="Permalink to this headline">#</a></h1>
-<p>Domestic household wealth <span class="math notranslate nohighlight">\(W^d_{t}=B_{t}\)</span> and foreign ownership of domestic assets <span class="math notranslate nohighlight">\(W^f_{t}\)</span>, both in terms of the numeraire good, are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.</p>
-<p>Foreign demand for government bonds is specified in section <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-g"><span class="std std-ref">Government bond market clearing</span></a> of the <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a> chapter:</p>
-<div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad2">
-<span class="eqno">(90)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Permalink to this equation">#</a></span>\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D, t}(D_{t+1} - D_{t}) \quad\forall t\]</div>
-<p>This leaves domestic investors to buy up the residual amount of government debt:</p>
-<div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad2">
-<span class="eqno">(90)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Permalink to this equation">#</a></span>\[  D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t\]</div>
-<p>We assume that debt dominates the capital markets, such that domestic investor demand for capital, <span class="math notranslate nohighlight">\(K^{d}_{t}\)</span> is given as:</p>
-<div class="math notranslate nohighlight" id="equation-eq-domestic-cap-demand">
-<span class="eqno">(91)<a class="headerlink" href="#equation-eq-domestic-cap-demand" title="Permalink to this equation">#</a></span>\[  K^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t\]</div>
-<p>Foreign demand for capital is given in <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-k"><span class="std std-ref">Private capital market clearing</span></a>, where <span class="math notranslate nohighlight">\(K^{f}_{t}\)</span> is an exogenous fraction of excess capital demand at the world interest rate:</p>
-<div class="math notranslate nohighlight" id="equation-eq-foreign-cap-demand">
-<span class="eqno">(92)<a class="headerlink" href="#equation-eq-foreign-cap-demand" title="Permalink to this equation">#</a></span>\[  K^{f}_t = \zeta_{K, t}ED^{K,r^*}_t \quad\forall t\]</div>
-<p>The total amount invested in the financial intermediary is thus:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}W_{t} &amp; = W^d_{t} + W^f_{t} \\
-    &amp; = D^d_t + K^d_t  + D^f_t + K^f_t \\
-    &amp; = D_t + K_t\end{split}\]</div>
-<p>Interest rates on private capital through the financial intermediary and on government bonds differ. The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return. As derived in <a class="reference internal" href="firms.html#equation-eqfirms-rkt">(51)</a> of Section <a class="reference internal" href="firms.html#eqfirmsposprofits"><span class="std std-ref">Positive Profits from Government Infrastructure Investment</span></a>, the presence of public infrastructure in the production function means that the returns to private factors of production (<span class="math notranslate nohighlight">\(r_t\)</span> and <span class="math notranslate nohighlight">\(w_t\)</span>) exhibit decreasing returns to scale.<a class="footnote-reference brackets" href="#moorepecoraro" id="id1">1</a> It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders. The return on capital is therefore the sum of the (after-tax) returns to private and public capital.</p>
-<div class="math notranslate nohighlight" id="equation-eq-rk">
-<span class="eqno">(93)<a class="headerlink" href="#equation-eq-rk" title="Permalink to this equation">#</a></span>\[  r_{K,t}  = r_{t} + \frac{\sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t}}{\sum_{m=1}^M K_{m,t}} \quad\forall t\]</div>
-<p>The return on the portfolio of assets held by the financial intermediary is thus a weighted average of the return to government debt <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> from <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(79)</a> and the adjusted return on private capital <span class="math notranslate nohighlight">\(r_{K,t}\)</span> from <a class="reference internal" href="#equation-eq-rk">(93)</a>.</p>
-<div class="math notranslate nohighlight" id="equation-eq-portfolio-return">
-<span class="eqno">(94)<a class="headerlink" href="#equation-eq-portfolio-return" title="Permalink to this equation">#</a></span>\[  r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t \quad\text{where}\quad K_t \equiv \sum_{m=1}^M K_{m,t}\]</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="calibrating-og-core">
+<span id="chap-calib"></span><h1>Calibrating OG-Core<a class="headerlink" href="#calibrating-og-core" title="Permalink to this headline">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model represents all the general model solution code for any overlapping generations model of a country or region. Although <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> has a <code class="docutils literal notranslate"><span class="pre">default_parameters.json</span></code> file that allows it to run independently, the preferred method for using <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is as a dependency to a country calibration repository. We recommend that another repository is made, such as <a class="reference external" href="https://github.com/PSLmodels/OG-USA"><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code></a> or <a class="reference external" href="https://github.com/EAPD-DRB/OG-ZAF/"><code class="docutils literal notranslate"><span class="pre">OG-ZAF</span></code></a> that uses <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> as its main computational foundation and engine and calibrates country-specific variables and functions in its own respective source code. This approach results in a working overlapping generations model consisting of a country-specific calibration repository plus a dependency on the general <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model logic and options.</p>
+<p><a class="reference internal" href="#tabcountrymodels"><span class="std std-numref">Table 5</span></a> is a list of country-specific calibrations of overlapping generations models that use <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> as a dependency from oldest to newest. Note that these models are in varying stages of completeness and maturity. It is true that a model is never really fully calibrated. The model maintainer is always updating calibrated values as new data become available. And the model maintainer can always search for better fit and better targeting strategies. As such, the only measures of model maturity of the country calibrations below is the date the repository was created.</p>
+<table class="table" id="tabcountrymodels">
+<caption><span class="caption-number">Table 5 </span><span class="caption-text"><strong>Country-specific calibrated OG models based on OG-Core.</strong></span><a class="headerlink" href="#tabcountrymodels" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Country</strong></p></th>
+<th class="head"><p><strong>Model name</strong></p></th>
+<th class="head"><p><strong>GitHub repo</strong></p></th>
+<th class="head"><p><strong>Documentation</strong></p></th>
+<th class="head"><p><strong>Date created</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>United States</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OG-USA</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/PSLmodels/OG-USA">https://github.com/PSLmodels/OG-USA</a></p></td>
+<td><p><a class="reference external" href="https://pslmodels.github.io/OG-USA">https://pslmodels.github.io/OG-USA</a></p></td>
+<td><p>May 25, 2014</p></td>
+</tr>
+<tr class="row-odd"><td><p>United Kingdom</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OG-UK</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/PSLmodels/OG-UK">https://github.com/PSLmodels/OG-UK</a></p></td>
+<td><p><a class="reference external" href="https://pslmodels.github.io/OG-UK">https://pslmodels.github.io/OG-UK</a></p></td>
+<td><p>Feb. 14, 2021</p></td>
+</tr>
+<tr class="row-even"><td><p>India</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OG-IND</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/Revenue-Academy/OG-IND">https://github.com/Revenue-Academy/OG-IND</a></p></td>
+<td><p><a class="reference external" href="https://revenue-academy.github.io/OG-IND">https://revenue-academy.github.io/OG-IND</a></p></td>
+<td><p>Jul. 17, 2022</p></td>
+</tr>
+<tr class="row-odd"><td><p>Malaysia</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OG-MYS</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/Revenue-Academy/OG-MYS">https://github.com/Revenue-Academy/OG-MYS</a></p></td>
+<td></td>
+<td><p>Jul. 17, 2022</p></td>
+</tr>
+<tr class="row-even"><td><p>South Africa</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OG-ZAF</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/EAPD-DRB/OG-ZAF">https://github.com/EAPD-DRB/OG-ZAF</a></p></td>
+<td><p><a class="reference external" href="https://eapd-drb.github.io/OG-ZAF">https://eapd-drb.github.io/OG-ZAF</a></p></td>
+<td><p>Oct. 9, 2022</p></td>
+</tr>
+</tbody>
+</table>
+<p>In the following section, we detail a list of items to calibrate for a country and what types of data and approaches might be available for those calibrations. Each of the country-specific models listed in <a class="reference internal" href="#tabcountrymodels"><span class="std std-numref">Table 5</span></a> will have varying degrees of calibration maturity and further varying degrees of documentation of their calibration. But the following section details all the areas where each of these models should be calibrated.</p>
+<section id="detail-of-parameters-data-and-approaches-for-calibration">
+<span id="seccaliblist"></span><h2>Detail of parameters, data, and approaches for calibration<a class="headerlink" href="#detail-of-parameters-data-and-approaches-for-calibration" title="Permalink to this headline">#</a></h2>
+<p><a class="reference internal" href="#tabcalibstrategy"><span class="std std-numref">Table 6</span></a> shows the data and calibration strategies for each parameter and parameter area of the model.</p>
+<table class="table" id="tabcalibstrategy">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text"><strong>Areas, parameters, and data strategies for calibrating country- or region-specific OG model based on OG-Core.</strong></span><a class="headerlink" href="#tabcalibstrategy" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>General item description</strong></p></th>
+<th class="head"><p><strong>Specific item description</strong></p></th>
+<th class="head"><p><strong>Data source</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Demographics</p></td>
+<td><p>Using UN population data</p></td>
+<td><p>Access to country demographics in UN Population Data Portal</p></td>
+</tr>
+<tr class="row-odd"><td><p>Demographics</p></td>
+<td><p>Other data source</p></td>
+<td><p>Custom interface between OG model and other data source. Data source must have the number of people by age, fertility rates by age, mortality rates by age (age bins are suitable and interpolation can be used).</p></td>
+</tr>
+<tr class="row-even"><td><p>Macroeconomic parameters</p></td>
+<td><p>Capital share of income, private/sovereign interest rate spread, long-run growth rate, debt-to-GDP ratios, transfer spending to GDP, government spending on goods and services to GDP, foreign purchases of government debt</p></td>
+<td><p>Capital and Labor cost data by industry. Average private borrowing rate/corporate bond yields, GDP time series, publicly held government debt time series, government transfer program spending, government spending (total non-transfer and infrastructure spending separately)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lifetime income profiles</p></td>
+<td><p>Approximate US profiles rescaled by Gini coefficient</p></td>
+<td><p>Gini coefficient for the country</p></td>
+</tr>
+<tr class="row-even"><td><p>Lifetime income profiles</p></td>
+<td><p>Estimate from micro data</p></td>
+<td><p>Individual panel data with earnings (wage, salaries, self-employment income before taxes), labor hours, and age (can impute labor hours if necessary)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Labor supply elasticities</p></td>
+<td><p>Constant</p></td>
+<td><p>Use existing estimates from the research literature. Or cross sectional or panel data with hours and wages.</p></td>
+</tr>
+<tr class="row-even"><td><p>Labor supply elasticities</p></td>
+<td><p>Age varying</p></td>
+<td><p>Use existing estimates from the research literature. Or cross sectional or panel data with hours and wages and age.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bequest motive</p></td>
+<td><p>Bequest motive</p></td>
+<td><p>Data on bequests given and/or bequests received similar to the US Survey of Consumer Finances. Other forms of information could allow us to rescale the US bequest distribution to match some moment from the target country.</p></td>
+</tr>
+<tr class="row-even"><td><p>Rate of time preference</p></td>
+<td><p>Constant</p></td>
+<td><p>Research empirical literature</p></td>
+</tr>
+<tr class="row-odd"><td><p>Rate of time preference</p></td>
+<td><p>Heterogeneous (match to MPCs and wealth distribution)</p></td>
+<td><p>Data on country marginal propensity to consume (e.g., US Consumer Expenditure Survey or PSID) and data on the distribution of wealth in the country</p></td>
+</tr>
+<tr class="row-even"><td><p>Composite consumption share parameters</p></td>
+<td><p>Stone-Geary sub-utility function</p></td>
+<td><p>Consumption by category data within the country (e.g., similar to the US Consumer Expenditure Survey)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hand-to-mouth consumers</p></td>
+<td><p>Calibrated separately from savers</p></td>
+<td><p>Cross-sectional or panel data with measures of income, wealth, consumption</p></td>
+</tr>
+<tr class="row-even"><td><p>Link PIT microsimulation model, produces effective tax rates and marginal tax rates by total income (even better is has both labor income and capital income breakdown)</p></td>
+<td><p>PIT model has Python API</p></td>
+<td><p>Microsimulation model with Python API</p></td>
+</tr>
+<tr class="row-odd"><td><p>Link PIT microsimulation model, produces effective tax rates and marginal tax rates by total income (even better is has both labor income and capital income breakdown)</p></td>
+<td><p>PIT model has command line interface</p></td>
+<td><p>Microsimulation model that can be executed from a terminal command line</p></td>
+</tr>
+<tr class="row-even"><td><p>Link PIT microsimulation model, produces effective tax rates and marginal tax rates by total income (even better is has both labor income and capital income breakdown)</p></td>
+<td><p>PIT model has another way to interact with it</p></td>
+<td><p>Microsimulation model is in another program like Excel that can be run with an executable or with other software</p></td>
+</tr>
+<tr class="row-odd"><td><p>Consumption tax rates</p></td>
+<td><p>Single rate</p></td>
+<td><p>Average consumption tax rates (e.g., time series with total revenue from consumption taxes and time series on GDP/national income)</p></td>
+</tr>
+<tr class="row-even"><td><p>Consumption tax rates</p></td>
+<td><p>Product-specific rates</p></td>
+<td><p>Consumption tax rates by product or industry category</p></td>
+</tr>
+<tr class="row-odd"><td><p>Public Pension system (exogenous retirement age)</p></td>
+<td><p>If one of [notional defined contribution, defined benefits, points system, US Social Security]</p></td>
+<td><p>Pension rules based on age, payout, retirement rules, spouse benefits</p></td>
+</tr>
+<tr class="row-even"><td><p>Public Pension system (exogenous retirement age)</p></td>
+<td><p>If pension system not mentioned above</p></td>
+<td><p>Pension rules based on age, payout, retirement rules, spouse benefits</p></td>
+</tr>
+<tr class="row-odd"><td><p>Production functions by industry</p></td>
+<td><p>More than one industry</p></td>
+<td><p>Time series of capital and labor demand by industry, output by industry</p></td>
+</tr>
+<tr class="row-even"><td><p>Calibrate METRs, capital cost recovery by industry with Cost of Capital Calculator</p></td>
+<td><p>Gather data on cost recovery policies and business tax system by country</p></td>
+<td><p>Tax code treatment of business income, depreciation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Calibrate METRs, capital cost recovery by industry with Cost of Capital Calculator</p></td>
+<td><p>Gather data on value of different types of assets by industry</p></td>
+<td><p>Time series or recent snapshot  of investment or asset holdings by asset type, tax treatment (e.g., corporation, partnership), and industry</p></td>
+</tr>
+<tr class="row-even"><td><p>Calibrate METRs, capital cost recovery by industry with Cost of Capital Calculator</p></td>
+<td><p>Link <a class="reference external" href="https://ccc.pslmodels.org/"><code class="docutils literal notranslate"><span class="pre">Cost-of-Capital-Calculator</span></code></a> to OG macro model</p></td>
+<td><p>No additional data requirements</p></td>
+</tr>
+<tr class="row-odd"><td><p>Infrastructure</p></td>
+<td><p>As share of gov’t spending and as share of firm production</p></td>
+<td><p>Current government infrastructure spending data plus time series of capital and labor demand by industry, output by industry</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="footnotes">
-<span id="secfinfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
-<hr class="footnotes docutils" />
-<dl class="footnote brackets">
-<dt class="label" id="moorepecoraro"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>See also <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id22" title="Rachel Moore and Brandon Pecoraro. Quantitative analysis of a wealth tax in the united states: exclusions, evasion, and expenditures. MPRA Paper 109120, University Library of Munich, Germany, https://ideas.repec.org/p/pra/mprapa/109120.html, 2021.">Moore and Pecoraro, 2021</a>]</span> for a similar treatment of government infrastructure investment, positive profits, and returns to the owners of capital.</p>
-</dd>
-</dl>
+<span id="seccalibfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
+<!-- [^citation_note]: See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`. -->
 </section>
 </section>
 
@@ -593,17 +741,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="open_economy.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="equilibrium.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Open Economy Options</p>
+            <p class="prev-next-title">Equilibrium</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="market_clearing.html" title="next page">
+    <a class='right-next' id="next-link" href="derivations.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Market Clearing</p>
+        <p class="prev-next-title">Derivations</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
