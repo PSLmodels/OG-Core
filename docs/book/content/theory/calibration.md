@@ -3,7 +3,7 @@
 
 The `OG-Core` model represents all the general model solution code for any overlapping generations model of a country or region. Although `OG-Core` has a `default_parameters.json` file that allows it to run independently, the preferred method for using `OG-Core` is as a dependency to a country calibration repository. We recommend that another repository is made, such as [`OG-USA`](https://github.com/PSLmodels/OG-USA) or [`OG-ZAF`](https://github.com/EAPD-DRB/OG-ZAF/) that uses `OG-Core` as its main computational foundation and engine and calibrates country-specific variables and functions in its own respective source code. This approach results in a working overlapping generations model consisting of a country-specific calibration repository plus a dependency on the general `OG-Core` model logic and options.
 
-{numref}`TabCountryModels` is a list of country-specific calibrations of overlapping generations models that use `OG-Core` as a dependency from oldest to newest. Note that these models are in varying stages of completeness and maturity. It is true that a model is never really fully calibrated. The model maintainer is always updating calibrated values as new data become available. And the modele maintainer can always search for better fit and better targeting strategies. As such, the only measures of model maturity of the country calibrations below is the date the repository was created.
+{numref}`TabCountryModels` is a list of country-specific calibrations of overlapping generations models that use `OG-Core` as a dependency from oldest to newest. Note that these models are in varying stages of completeness and maturity. It is true that a model is never really fully calibrated. The model maintainer is always updating calibrated values as new data become available. And the model maintainer can always search for better fit and better targeting strategies. As such, the only measures of model maturity of the country calibrations below is the date the repository was created.
 
 ```{list-table} **Country-specific calibrated OG models based on OG-Core.**
 :header-rows: 1
@@ -40,7 +40,7 @@ The `OG-Core` model represents all the general model solution code for any overl
   - Oct. 9, 2022
 ```
 
-In the following section, we detail a list of items to calibrate for a country and what types of data and approaches might be available for those calibrations. Each of the country-specific models listed in {numref}`TabCountryModels` will have varying degrees of calibration maturity and futher varying degrees of documentation of their calibration. But the following section details all the areas where each of these models should be calibrated.
+In the following section, we detail a list of items to calibrate for a country and what types of data and approaches might be available for those calibrations. Each of the country-specific models listed in {numref}`TabCountryModels` will have varying degrees of calibration maturity and further varying degrees of documentation of their calibration. But the following section details all the areas where each of these models should be calibrated.
 
 
 (SecCalibList)=
@@ -80,7 +80,7 @@ In the following section, we detail a list of items to calibrate for a country a
   - Data on bequests given and/or bequests received similar to the US Survey of Consumer Finances. Other forms of information could allow us to rescale the US bequest distribution to match some moment from the target country.
 * - Rate of time preference
   - Constant
-  - Research empiritcal literature
+  - Research empirical literature
 * - Rate of time preference
   - Heterogeneous (match to MPCs and wealth distribution)
   - Data on country marginal propensity to consume (e.g., US Consumer Expenditure Survey or PSID) and data on the distribution of wealth in the country
