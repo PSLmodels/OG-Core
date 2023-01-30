@@ -26,4 +26,4 @@ jobs:
           pip install sphinxcontrib-bibtex>=2.0.0
           python -m ipykernel install --user --name=ogcore-dev
           cd docs
-          jb build ./book
+          jb build ./docs/book
