@@ -19,6 +19,7 @@ parts:
   - file: content/theory/market_clearing
   - file: content/theory/stationarization
   - file: content/theory/equilibrium
+  - file: content/theory/calibration
 - caption: Appendix
   chapters:
   - file: content/theory/derivations

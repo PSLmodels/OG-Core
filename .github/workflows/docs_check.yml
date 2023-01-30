@@ -24,5 +24,6 @@ jobs:
           pip install -e .
           pip install jupyter-book>=0.11.3
           pip install sphinxcontrib-bibtex>=2.0.0
+          python -m ipykernel install --user --name=ogcore-dev
           cd docs
           jb build ./book
