@@ -263,7 +263,12 @@ p4 = p3.update_specifications({"r_gov_scale": [0.5], "r_gov_shift": [0.03]})
 
 @pytest.mark.parametrize(
     "r,p,method,r_gov_expected",
-    [(r, p1, "SS", r_gov1), (r, p2, "SS", r_gov2), (r, p3, "SS", r_gov3), (r, p3, "TPI", r_gov3)],
+    [
+        (r, p1, "SS", r_gov1),
+        (r, p2, "SS", r_gov2),
+        (r, p3, "SS", r_gov3),
+        (r, p3, "TPI", r_gov3),
+    ],
     ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI"],
 )
 def test_get_r_gov(r, p, method, r_gov_expected):
