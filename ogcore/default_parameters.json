@@ -829,9 +829,10 @@
         "section_1": "Fiscal Policy Parameters",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 1.0
+                "value": [1.0]
             }
         ],
         "validators": {
@@ -847,9 +848,10 @@
         "description": "Parameter to shift the market interest rate to find interest rate on government debt.",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 0.02
+                "value": [0.02]
             }
         ],
         "validators": {

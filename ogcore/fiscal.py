@@ -350,7 +350,7 @@ def get_TR(
     return new_TR
 
 
-def get_r_gov(r, p):
+def get_r_gov(r, p, method):
     r"""
     Determine the interest rate on government debt
 
@@ -367,7 +367,10 @@ def get_r_gov(r, p):
             time path or in the steady-state
 
     """
-    r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift, 0.00)
+    if method == "SS":
+        r_gov = np.maximum(p.r_gov_scale[-1] * r - p.r_gov_shift[-1], 0.00)
+    else:
+        r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift, 0.00)
 
     return r_gov
 
