@@ -994,7 +994,6 @@ test_data = [
     "bssmat,nssmat,cssmat,ltilde", test_data, ids=["passing", "failing"]
 )
 def test_constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
-
     household.constraint_checker_SS(bssmat, nssmat, cssmat, ltilde)
     assert True
 
@@ -1003,7 +1002,6 @@ def test_constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
     "bssmat,nssmat,cssmat,ltilde", test_data, ids=["passing", "failing"]
 )
 def test_constraint_checker_TPI(bssmat, nssmat, cssmat, ltilde):
-
     household.constraint_checker_TPI(bssmat, nssmat, cssmat, 10, ltilde)
     assert True
 

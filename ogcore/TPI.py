@@ -707,7 +707,6 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-
         outer_loop_vars = (r_p, r, w, p_m, BQ, TR, theta)
         # compute composite good price
         p_i = (

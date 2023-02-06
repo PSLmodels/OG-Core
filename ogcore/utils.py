@@ -158,7 +158,6 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
         return False
 
     else:
-
         if np.all(a < EPSILON) and np.all(b < EPSILON):
             return True
 
