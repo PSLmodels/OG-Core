@@ -662,7 +662,7 @@ def run_TPI(p, client=None):
     total_tax_revenue = np.ones(p.T + p.S) * ss_vars["total_tax_revenue"]
 
     # Compute other interest rates
-    r_gov = fiscal.get_r_gov(r, p)
+    r_gov = fiscal.get_r_gov(r, p, "TPI")
     r_p = np.ones_like(r) * ss_vars["r_p_ss"]
     MPKg = np.zeros((p.T, p.M))
     for m in range(p.M):
@@ -936,7 +936,7 @@ def run_TPI(p, client=None):
         )
         # For case where economy is small open econ
         rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
-        r_gov_new = fiscal.get_r_gov(rnew, p)
+        r_gov_new = fiscal.get_r_gov(rnew, p, "TPI")
         MPKg_vec = np.zeros((p.T, p.M))
         for m in range(p.M):
             MPKg_vec[:, m] = np.squeeze(

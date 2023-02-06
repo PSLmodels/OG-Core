@@ -310,7 +310,7 @@ def inner_loop(outer_loop_vars, p, client):
     B = aggr.get_B(bssmat, p, "SS", False)
 
     # Find gov't debt
-    r_gov = fiscal.get_r_gov(r, p)
+    r_gov = fiscal.get_r_gov(r, p, "SS")
     D, D_d, D_f, new_borrowing, _, new_borrowing_f = fiscal.get_D_ss(
         r_gov, Y, p
     )
@@ -361,7 +361,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r = firm.get_r(Y_vec[-1], K_vec[-1], p_m, p, "SS", -1)
     new_w = firm.get_w(Y_vec[-1], L_vec[-1], p_m, p, "SS")
 
-    new_r_gov = fiscal.get_r_gov(new_r, p)
+    new_r_gov = fiscal.get_r_gov(new_r, p, "SS")
     # now get accurate measure of debt service cost
     (
         D,
@@ -658,7 +658,7 @@ def SS_solver(
     K_vec_ss = new_K_vec
     L_vec_ss = new_L_vec
     Y_vec_ss = new_Y_vec
-    r_gov_ss = fiscal.get_r_gov(rss, p)
+    r_gov_ss = fiscal.get_r_gov(rss, p, "SS")
     p_m_ss = new_p_m
     p_i_ss = np.dot(p.io_matrix, p_m_ss)
     p_tilde_ss = aggr.get_ptilde(p_i_ss, p.tau_c[-1, :], p.alpha_c)

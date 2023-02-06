@@ -244,27 +244,30 @@ def test_get_TR(
 
 
 p1 = Specifications()
-p1.r_gov_scale = 0.5
-p1.r_gov_shift = 0.0
+p1.r_gov_scale = [0.5]
+p1.r_gov_shift = [0.0]
 p2 = Specifications()
-p2.r_gov_scale = 0.5
-p2.r_gov_shift = 0.01
+p2.r_gov_scale = [0.5]
+p2.r_gov_shift = [0.01]
 p3 = Specifications()
-p3.r_gov_scale = 0.5
-p3.r_gov_shift = 0.03
+p3.r_gov_scale = [0.5]
+p3.r_gov_shift = [0.03]
 r = 0.04
 r_gov1 = 0.02
 r_gov2 = 0.01
 r_gov3 = 0.0
+r_tpi = np.ones(320) * r
+r_gov_tpi = np.ones(320) * r_gov3
+p4 = p3.update_specifications({"r_gov_scale": [0.5], "r_gov_shift": [0.03]})
 
 
 @pytest.mark.parametrize(
-    "r,p,r_gov_expected",
-    [(r, p1, r_gov1), (r, p2, r_gov2), (r, p3, r_gov3)],
-    ids=["Scale only", "Scale and shift", "r_gov < 0"],
+    "r,p,method,r_gov_expected",
+    [(r, p1, "SS", r_gov1), (r, p2, "SS", r_gov2), (r, p3, "SS", r_gov3), (r, p3, "TPI", r_gov3)],
+    ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI"],
 )
-def test_get_r_gov(r, p, r_gov_expected):
-    r_gov = fiscal.get_r_gov(r, p)
+def test_get_r_gov(r, p, method, r_gov_expected):
+    r_gov = fiscal.get_r_gov(r, p, method)
     assert np.allclose(r_gov, r_gov_expected)
 
 

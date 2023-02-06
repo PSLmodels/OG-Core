@@ -143,6 +143,8 @@ class Specifications(paramtools.Parameters):
             "replacement_rate_adjust",
             "zeta_D",
             "zeta_K",
+            "r_gov_scale",
+            "r_gov_shift"
         ]
         for item in tp_param_list:
             this_attr = getattr(self, item)
