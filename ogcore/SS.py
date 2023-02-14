@@ -1237,10 +1237,17 @@ def run_SS(p, client=None):
         if p.reform_use_baseline_solution:
             # use baseline solution as starting values if dimensions match
             try:
+                print(
+                    "Shape HH = ",
+                    ss_solutions["bssmat_splus1"].shape,
+                    p.S,
+                    p.J,
+                )
+                print("Shape firm = ", ss_solutions["Y_vec_ss"].shape, p.M)
                 if ss_solutions["bssmat_splus1"].shape == (
                     p.S,
                     p.J,
-                ) and ss_solutions["Y_vec_ss"].shape == (p.M):
+                ) and np.squeeze(ss_solutions["Y_vec_ss"].shape) == (p.M):
                     print("Using previous solutions for SS")
                     (
                         b_guess,
@@ -1269,10 +1276,15 @@ def run_SS(p, client=None):
                     )
                     use_new_guesses = False
                 else:
+                    print(
+                        "Dimensions of previous solutions for SS do not match"
+                    )
                     use_new_guesses = True
             except KeyError:
+                print("KeyError: previous solutions for SS not found")
                 use_new_guesses = True
         else:
+            print("Using new guesses for SS")
             use_new_guesses = True
         if use_new_guesses:
             if p.use_zeta:
