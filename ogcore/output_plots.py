@@ -163,7 +163,7 @@ def plot_industry_aggregates(
     reform_tpi=None,
     reform_params=None,
     var_list=["Y_vec"],
-    ind_names_list = None,
+    ind_names_list=None,
     plot_type="pct_diff",
     num_years_to_plot=50,
     start_year=DEFAULT_START_YEAR,
@@ -236,7 +236,7 @@ def plot_industry_aggregates(
                 plt.plot(
                     year_vec,
                     plot_var[start_index : start_index + num_years_to_plot],
-                    label=var_label  + " " + ind_names_list[m],
+                    label=var_label + " " + ind_names_list[m],
                 )
             elif plot_type == "diff":
                 plot_var = reform_tpi[v][:, m] - base_tpi[v][:, m]
@@ -244,7 +244,7 @@ def plot_industry_aggregates(
                 plt.plot(
                     year_vec,
                     plot_var[start_index : start_index + num_years_to_plot],
-                    label=var_label  + " " + ind_names_list[m],
+                    label=var_label + " " + ind_names_list[m],
                 )
             elif plot_type == "levels":
                 plt.plot(
@@ -252,10 +252,7 @@ def plot_industry_aggregates(
                     base_tpi[v][
                         start_index : start_index + num_years_to_plot, m
                     ],
-                    label="Baseline "
-                    + var_label
-                    + " "
-                    + ind_names_list[m],
+                    label="Baseline " + var_label + " " + ind_names_list[m],
                 )
                 if reform_tpi:
                     plt.plot(
@@ -263,10 +260,7 @@ def plot_industry_aggregates(
                         reform_tpi[v][
                             start_index : start_index + num_years_to_plot, m
                         ],
-                        label="Reform "
-                        + var_label
-                        + " "
-                        + ind_names_list[m],
+                        label="Reform " + var_label + " " + ind_names_list[m],
                     )
                 ylabel = r"Model Units"
             elif plot_type == "forecast":
@@ -277,10 +271,7 @@ def plot_industry_aggregates(
                 plt.plot(
                     year_vec,
                     plot_var_base,
-                    label="Baseline "
-                    + var_label
-                    + " "
-                    + ind_names_list[m],
+                    label="Baseline " + var_label + " " + ind_names_list[m],
                 )
                 # Plot change from baseline forecast
                 pct_change = (
@@ -297,7 +288,7 @@ def plot_industry_aggregates(
                 plt.plot(
                     year_vec,
                     plot_var_reform,
-                    label="Reform " + var_label  + " " + ind_names_list[m],
+                    label="Reform " + var_label + " " + ind_names_list[m],
                 )
                 # making units labels will not work if multiple variables
                 # and they are in different units
