@@ -151,7 +151,7 @@ def plot_aggregates(
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
         fig_path1 = os.path.join(path)
-        plt.savefig(fig_path1, bbox_inches="tight")
+        plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
     else:
         return fig1
     plt.close()
@@ -163,6 +163,7 @@ def plot_industry_aggregates(
     reform_tpi=None,
     reform_params=None,
     var_list=["Y_vec"],
+    ind_names_list = None,
     plot_type="pct_diff",
     num_years_to_plot=50,
     start_year=DEFAULT_START_YEAR,
@@ -207,6 +208,11 @@ def plot_industry_aggregates(
     """
     assert isinstance(start_year, (int, np.integer))
     assert isinstance(num_years_to_plot, int)
+    dims = base_tpi[var_list[0]].shape[1]
+    if ind_names_list:
+        assert len(ind_names_list) == dims
+    else:
+        ind_names_list = [str(i) for i in range(dims)]
     # Make sure both runs cover same time period
     if reform_tpi:
         assert base_params.start_year == reform_params.start_year
@@ -217,7 +223,11 @@ def plot_industry_aggregates(
         assert reform_tpi is not None
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
-        for m in range(base_params.M):
+        if len(var_list) == 1:
+            var_label = ""
+        else:
+            var_label = VAR_LABELS[v]
+        for m in range(dims):
             if plot_type == "pct_diff":
                 plot_var = (
                     reform_tpi[v][:, m] - base_tpi[v][:, m]
@@ -226,7 +236,7 @@ def plot_industry_aggregates(
                 plt.plot(
                     year_vec,
                     plot_var[start_index : start_index + num_years_to_plot],
-                    label=VAR_LABELS[v] + "for industry " + str(m),
+                    label=var_label  + " " + ind_names_list[m],
                 )
             elif plot_type == "diff":
                 plot_var = reform_tpi[v][:, m] - base_tpi[v][:, m]
@@ -234,7 +244,7 @@ def plot_industry_aggregates(
                 plt.plot(
                     year_vec,
                     plot_var[start_index : start_index + num_years_to_plot],
-                    label=VAR_LABELS[v] + "for industry " + str(m),
+                    label=var_label  + " " + ind_names_list[m],
                 )
             elif plot_type == "levels":
                 plt.plot(
@@ -243,9 +253,9 @@ def plot_industry_aggregates(
                         start_index : start_index + num_years_to_plot, m
                     ],
                     label="Baseline "
-                    + VAR_LABELS[v]
-                    + "for industry "
-                    + str(m),
+                    + var_label
+                    + " "
+                    + ind_names_list[m],
                 )
                 if reform_tpi:
                     plt.plot(
@@ -254,9 +264,9 @@ def plot_industry_aggregates(
                             start_index : start_index + num_years_to_plot, m
                         ],
                         label="Reform "
-                        + VAR_LABELS[v]
-                        + "for industry "
-                        + str(m),
+                        + var_label
+                        + " "
+                        + ind_names_list[m],
                     )
                 ylabel = r"Model Units"
             elif plot_type == "forecast":
@@ -268,9 +278,9 @@ def plot_industry_aggregates(
                     year_vec,
                     plot_var_base,
                     label="Baseline "
-                    + VAR_LABELS[v]
-                    + "for industry "
-                    + str(m),
+                    + var_label
+                    + " "
+                    + ind_names_list[m],
                 )
                 # Plot change from baseline forecast
                 pct_change = (
@@ -287,7 +297,7 @@ def plot_industry_aggregates(
                 plt.plot(
                     year_vec,
                     plot_var_reform,
-                    label="Reform " + VAR_LABELS[v] + "for industry " + str(m),
+                    label="Reform " + var_label  + " " + ind_names_list[m],
                 )
                 # making units labels will not work if multiple variables
                 # and they are in different units
@@ -316,7 +326,7 @@ def plot_industry_aggregates(
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
         fig_path1 = os.path.join(path)
-        plt.savefig(fig_path1, bbox_inches="tight")
+        plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
     else:
         return fig1
     plt.close()
@@ -380,7 +390,7 @@ def ss_3Dplot(
     if plot_title:
         plt.title(plot_title)
     if path:
-        plt.savefig(path)
+        plt.savefig(path, dpi=300)
     else:
         return plt
 
@@ -502,7 +512,7 @@ def plot_gdp_ratio(
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
         fig_path1 = os.path.join(path)
-        plt.savefig(fig_path1, bbox_inches="tight")
+        plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
     else:
         return fig1
     plt.close()
@@ -576,7 +586,7 @@ def ability_bar(
         plt.title(plot_title, fontsize=15)
     if path:
         fig_path1 = os.path.join(path)
-        plt.savefig(fig_path1, bbox_inches="tight")
+        plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
     else:
         return fig
     plt.close()
@@ -630,7 +640,7 @@ def ability_bar_ss(
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
         fig_path1 = os.path.join(path)
-        plt.savefig(fig_path1, bbox_inches="tight")
+        plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
     else:
         return fig
     plt.close()
@@ -717,7 +727,7 @@ def tpi_profiles(
         plt.title(plot_title, fontsize=15)
     if path:
         fig_path1 = os.path.join(path)
-        plt.savefig(fig_path1, bbox_inches="tight")
+        plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
     else:
         return fig1
     plt.close()
@@ -797,7 +807,7 @@ def ss_profiles(
         plt.title(plot_title, fontsize=15)
     if path:
         fig_path1 = os.path.join(path)
-        plt.savefig(fig_path1, bbox_inches="tight")
+        plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
     else:
         return fig1
     plt.close()
@@ -1166,7 +1176,7 @@ def inequality_plot(
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
         fig_path1 = os.path.join(path)
-        plt.savefig(fig_path1, bbox_inches="tight")
+        plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
     else:
         return fig1
     plt.close()
