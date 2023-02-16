@@ -394,7 +394,7 @@ def plot_mort_rates_data(
         np.hstack([infmort_rate, mort_rates_all[min_yr - 1 : max_yr]]),
     )
     plt.axvline(x=max_yr, color="red", linestyle="-", linewidth=1)
-    plt.grid(b=True, which="major", color="0.65", linestyle="-")
+    plt.grid(visible=True, which="major", color="0.65", linestyle="-")
     # plt.title('Fitted mortality rate function by age ($rho_{s}$)',
     #     fontsize=20)
     plt.xlabel(r"Age $s$")
