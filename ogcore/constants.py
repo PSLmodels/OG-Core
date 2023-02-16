@@ -16,7 +16,7 @@ VAR_LABELS = {
     "B": "Wealth ($B_t$)",
     "I_total": "Investment ($I_t$)",
     "K": "Capital Stock ($K_t$)",
-    "Y_vec": "GDP ($Y_t$)",
+    "Y_vec": "Output ($Y_t$)",
     "C_vec": "Consumption ($C_t$)",
     "L_vec": "Labor ($L_t$)",
     "K_vec": "Capital Stock ($K_t$)",
