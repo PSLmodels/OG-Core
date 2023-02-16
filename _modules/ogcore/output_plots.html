@@ -595,7 +595,7 @@ title="Open an issue"
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig1</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -607,6 +607,7 @@ title="Open an issue"
     <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y_vec&quot;</span><span class="p">],</span>
+    <span class="n">ind_names_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;pct_diff&quot;</span><span class="p">,</span>
     <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
     <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
@@ -651,6 +652,11 @@ title="Open an issue"
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="n">dims</span> <span class="o">=</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">var_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ind_names_list</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind_names_list</span><span class="p">)</span> <span class="o">==</span> <span class="n">dims</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ind_names_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dims</span><span class="p">)]</span>
     <span class="c1"># Make sure both runs cover same time period</span>
     <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">start_year</span>
@@ -661,7 +667,11 @@ title="Open an issue"
         <span class="k">assert</span> <span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">M</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">var_label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">var_label</span> <span class="o">=</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dims</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;pct_diff&quot;</span><span class="p">:</span>
                 <span class="n">plot_var</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:,</span> <span class="n">m</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:,</span> <span class="n">m</span><span class="p">]</span>
@@ -670,7 +680,7 @@ title="Open an issue"
                 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                     <span class="n">year_vec</span><span class="p">,</span>
                     <span class="n">plot_var</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">],</span>
-                    <span class="n">label</span><span class="o">=</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;for industry &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">),</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">var_label</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">ind_names_list</span><span class="p">[</span><span class="n">m</span><span class="p">],</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;diff&quot;</span><span class="p">:</span>
                 <span class="n">plot_var</span> <span class="o">=</span> <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:,</span> <span class="n">m</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:,</span> <span class="n">m</span><span class="p">]</span>
@@ -678,7 +688,7 @@ title="Open an issue"
                 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                     <span class="n">year_vec</span><span class="p">,</span>
                     <span class="n">plot_var</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">],</span>
-                    <span class="n">label</span><span class="o">=</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;for industry &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">),</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">var_label</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">ind_names_list</span><span class="p">[</span><span class="n">m</span><span class="p">],</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;levels&quot;</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
@@ -686,10 +696,7 @@ title="Open an issue"
                     <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][</span>
                         <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">,</span> <span class="n">m</span>
                     <span class="p">],</span>
-                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Baseline &quot;</span>
-                    <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
-                    <span class="o">+</span> <span class="s2">&quot;for industry &quot;</span>
-                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">),</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Baseline &quot;</span> <span class="o">+</span> <span class="n">var_label</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">ind_names_list</span><span class="p">[</span><span class="n">m</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
                     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
@@ -697,10 +704,7 @@ title="Open an issue"
                         <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][</span>
                             <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years_to_plot</span><span class="p">,</span> <span class="n">m</span>
                         <span class="p">],</span>
-                        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reform &quot;</span>
-                        <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
-                        <span class="o">+</span> <span class="s2">&quot;for industry &quot;</span>
-                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reform &quot;</span> <span class="o">+</span> <span class="n">var_label</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">ind_names_list</span><span class="p">[</span><span class="n">m</span><span class="p">],</span>
                     <span class="p">)</span>
                 <span class="n">ylabel</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Model Units&quot;</span>
             <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;forecast&quot;</span><span class="p">:</span>
@@ -711,10 +715,7 @@ title="Open an issue"
                 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                     <span class="n">year_vec</span><span class="p">,</span>
                     <span class="n">plot_var_base</span><span class="p">,</span>
-                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Baseline &quot;</span>
-                    <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
-                    <span class="o">+</span> <span class="s2">&quot;for industry &quot;</span>
-                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">),</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Baseline &quot;</span> <span class="o">+</span> <span class="n">var_label</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">ind_names_list</span><span class="p">[</span><span class="n">m</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="c1"># Plot change from baseline forecast</span>
                 <span class="n">pct_change</span> <span class="o">=</span> <span class="p">(</span>
@@ -731,7 +732,7 @@ title="Open an issue"
                 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                     <span class="n">year_vec</span><span class="p">,</span>
                     <span class="n">plot_var_reform</span><span class="p">,</span>
-                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reform &quot;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;for industry &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">),</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reform &quot;</span> <span class="o">+</span> <span class="n">var_label</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">ind_names_list</span><span class="p">[</span><span class="n">m</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="c1"># making units labels will not work if multiple variables</span>
                 <span class="c1"># and they are in different units</span>
@@ -760,7 +761,7 @@ title="Open an issue"
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig1</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -824,7 +825,7 @@ title="Open an issue"
     <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">plt</span>
 
@@ -946,7 +947,7 @@ title="Open an issue"
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig1</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -1020,7 +1021,7 @@ title="Open an issue"
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -1074,7 +1075,7 @@ title="Open an issue"
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -1161,7 +1162,7 @@ title="Open an issue"
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig1</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -1241,7 +1242,7 @@ title="Open an issue"
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig1</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -1610,7 +1611,7 @@ title="Open an issue"
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">fig_path1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_path1</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig1</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
