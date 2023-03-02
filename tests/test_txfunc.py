@@ -1,6 +1,5 @@
 import sys
 
-sys.path.append("/Users/praneet/developer/OG-Core/")
 from ogcore import txfunc
 from distributed import Client, LocalCluster
 import pytest
