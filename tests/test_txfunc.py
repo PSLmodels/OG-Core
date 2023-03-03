@@ -762,8 +762,9 @@ def test_monotone_spline():
     # X, y, weights, lam=100, incl_uncstr=True, show_plot=True, method='pygam'
     # )
 
-    with open("test_io_data/micro_data_dict_for_tests.pkl", "rb") as f:
-        data = pickle.load(f)["2030"]
+    data = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
+    )["2030"]
     df = data[["total_labinc", "total_capinc", "etr", "weight"]]
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.dropna(inplace=True)
