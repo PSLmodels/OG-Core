@@ -765,7 +765,7 @@ def test_monotone_spline():
     data = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
     )["2030"]
-    df = data[["total_labinc", "total_capinc", "etr", "weight"]]
+    df = data[["total_labinc", "total_capinc", "etr", "weight"]].copy()
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.dropna(inplace=True)
 
@@ -781,7 +781,6 @@ def test_monotone_spline():
         df["etr"].values,
         df["weight"].values,
         bins=[100, 100],
-        lam=100,
         incl_uncstr=True,
         show_plot=False,
         method="pygam",
@@ -821,6 +820,8 @@ def test_monotone_spline():
     # Test whether mono_interp is a function
     assert hasattr(mono_interp2, "__call__")
 
+    # Test whether mono_interp is a function
+    assert hasattr(mono_interp2, "__call__")
     # Test whether mono_interp gives the correct output
     x_vec_test = np.array([2.0, 5.0])
     y_vec_expected = np.array([0.69512331, 1.23822669])

@@ -253,7 +253,9 @@ def get_tax_rates(
     elif tax_func_type == "mono":
         mono_interp = params[0]
         txrates = mono_interp(income)
-
+    elif tax_func_type == "mono2D":
+        mono_interp = params[0]
+        txrates = mono_interp([[X, Y]])
     return txrates
 
 
@@ -691,11 +693,23 @@ def txfunc_est(
         wsse = wsse_cstr
         params = mono_interp
         params_to_plot = params
+    elif tax_func_type == "mono2D":
+        mono_interp, _, wsse_cstr, _, _ = monotone_spline(
+            df[["total_labinc", "total_capinc"]].values,
+            df["etr"].values,
+            df["weight"].values,
+            bins=[100, 100],
+            method="pygam",
+            splines=[100, 100],
+        )
+        wsse = wsse_cstr
+        params = mono_interp
+        params_to_plot = params
     else:
         raise RuntimeError(
             "Choice of tax function is not in the set of"
             + " possible tax functions.  Please select"
-            + " from: DEP, DEP_totalinc, GS, linear."
+            + " from: DEP, DEP_totalinc, GS, linear, mono, mono2D."
         )
     if graph:
         pp.txfunc_graph(
@@ -1722,11 +1736,13 @@ def monotone_spline(
     """
 
     if method == "pygam":
+        if len(x.shape) == 1:
+            x = np.expand_dims(x, axis=1)
         if splines != None and len(splines) != x.shape[1]:
             err_msg = (
                 " pygam method requires splines to be None or "
                 + " same length as # of columns in x, "
-                + len(splines)
+                + str(len(splines))
                 + " != "
                 + str(x.shape[1])
             )
