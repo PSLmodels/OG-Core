@@ -694,6 +694,7 @@ def txfunc_est(
         params = mono_interp
         params_to_plot = params
     elif tax_func_type == "mono2D":
+        obs = df.shape[0]
         mono_interp, _, wsse_cstr, _, _ = monotone_spline(
             df[["total_labinc", "total_capinc"]].values,
             df["etr"].values,
@@ -1328,6 +1329,7 @@ def tax_func_estimate(
         "GS": 3,
         "linear": 1,
         "mono": 1,
+        "mono2D": 1,
     }
     numparams = int(tax_func_type_num_params_dict[tax_func_type])
     years_list = np.arange(start_year, end_yr + 1)
