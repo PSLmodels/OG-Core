@@ -16,6 +16,7 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
+import cloudpickle
 from scipy.interpolate import interp1d as intp
 import matplotlib.pyplot as plt
 import ogcore.parameter_plots as pp
@@ -696,9 +697,12 @@ def txfunc_est(
     elif tax_func_type == "mono2D":
         obs = df.shape[0]
         mono_interp, _, wsse_cstr, _, _ = monotone_spline(
-            df[["total_labinc", "total_capinc"]].values,
-            df["etr"].values,
-            df["weight"].values,
+            # df[["total_labinc", "total_capinc"]].values,
+            # df["etr"].values,
+            # df["weight"].values,
+            np.vstack((X,Y)).T,
+            # X, Y,
+            txrates, wgts,
             bins=[100, 100],
             method="pygam",
             splines=[100, 100],
@@ -1644,8 +1648,12 @@ def tax_func_estimate(
     )
 
     if tax_func_path:
-        with open(tax_func_path, "wb") as f:
-            pickle.dump(dict_params, f)
+        try:
+            with open(tax_func_path, "wb") as f:
+                pickle.dump(dict_params, f)
+        except AttributeError:
+            with open(tax_func_path, "wb") as f:
+                cloudpickle.dump(dict_params, f)
 
     return dict_params
 
