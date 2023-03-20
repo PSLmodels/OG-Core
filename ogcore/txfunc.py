@@ -1726,7 +1726,7 @@ def monotone_spline(
     plot_end=100,
 ):
     """
-    New args:
+    Args:
         method (string): 'eilers' or 'pygam'
         splines (None or array-like): for 'pygam' only (otherwise set None),
             number of splines used for each feature, if None use default
