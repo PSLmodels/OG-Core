@@ -91,7 +91,7 @@ class Specifications(paramtools.Parameters):
         )
         # determine length of budget window from individual income tax
         # parameters passed in
-        self.BW = self.etr_params.shape[0]
+        self.BW = len(self.etr_params.shape)
         # Find number of economically active periods of life
         self.E = int(
             self.starting_age
@@ -355,35 +355,28 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tax_params_to_TP:
             tax_to_set = getattr(self, item)
-            if tax_to_set.size == 1:
+            if len(tax_to_set.size) == 1  and isinstance(tax_to_set[0], float):
                 setattr(
                     self,
                     item,
-                    np.ones((self.T + self.S, self.S, self.J)) * tax_to_set,
+                    [[[tax_to_set] for i in range(self.S)] for t in range(self.T)],
                 )
-            elif tax_to_set.ndim == 3:
-                if tax_to_set.shape[0] > self.T + self.S:
-                    tax_to_set = tax_to_set[: self.T + self.S, :, :]
-                if tax_to_set.shape[0] < self.T + self.S:
-                    tax_to_set = np.append(
-                        tax_to_set[:, :, :],
-                        np.tile(
-                            tax_to_set[-1, :, :],
-                            (self.T + self.S - tax_to_set.shape[0], 1, 1),
-                        ),
-                        axis=0,
-                    )
-                if tax_to_set.shape[1] > self.S:
-                    tax_to_set = tax_to_set[:, : self.S, :]
-                if item == "tau_c":
-                    if tax_to_set.shape[2] > self.J:
-                        tax_to_set = tax_to_set[:, :, : self.J]
+            elif any([isinstance(tax_to_set[i][j], list) for i, v in enumerate(tax_to_set) for j, vv in enumerate(tax_to_set[i])]):
+                if len(tax_to_set) > self.T + self.S:
+                    tax_to_set = tax_to_set[: self.T + self.S]
+                if len(tax_to_set) < self.T + self.S:
+                    tax_params_to_add = [tax_to_set[-1]] * (self.T + self.S - len(tax_to_set))
+                    tax_to_set.extend(tax_params_to_add)
+                if len(tax_to_set[0]) > self.S:
+                    for t, v in enumerate(tax_to_set):
+                        tax_to_set[t] = tax_to_set[t][:self.S]
                 setattr(self, item, tax_to_set)
             else:
                 print(
                     "please give a "
                     + item
-                    + " that is a single element or 3-D array"
+                    + " that is a single element or nested lists of"
+                    + " lists that is three lists deep"
                 )
                 assert False
 

@@ -728,6 +728,7 @@ def SS_solver(
     #     np.reshape(p.mtry_params[-1, :, :], (p.S, 1, p.mtry_params.shape[2])),
     #     (1, p.J, 1),
     # )
+    num_params = len(p.etr_params[-1][0])
     etr_params_3D = [[[0 for i in range(num_params)] for j in range(p.J)] for i in range(p.S)]
     for s in range(p.S):
         for j in range(p.J):
