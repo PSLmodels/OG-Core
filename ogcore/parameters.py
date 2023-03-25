@@ -355,7 +355,9 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tax_params_to_TP:
             tax_to_set = getattr(self, item)
-            if len(tax_to_set.size) == 1  and isinstance(tax_to_set[0], float):
+            # TODO: avoid ParamTools conversion to array and remove the line below
+            tax_to_set = tax_to_set.tolist()
+            if len(tax_to_set) == 1  and isinstance(tax_to_set[0], float):
                 setattr(
                     self,
                     item,
