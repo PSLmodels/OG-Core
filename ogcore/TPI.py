@@ -156,8 +156,8 @@ def firstdoughnutring(
         theta[j],
         p.e[-1, j],
         p.rho[-1],
-        p.etr_params[0, -1, :],
-        p.mtry_params[0, -1, :],
+        p.etr_params[0][-1],
+        p.mtry_params[0][-1],
         None,
         j,
         p,
@@ -178,8 +178,8 @@ def firstdoughnutring(
         theta[j],
         p.chi_n[-1],
         p.e[-1, j],
-        p.etr_params[0, -1, :],
-        p.mtrx_params[0, -1, :],
+        p.etr_params[0][-1],
+        p.mtry_params[0][-1],
         None,
         j,
         p,
@@ -411,19 +411,29 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         length_diag = np.diag(p.etr_params[: p.S, :, 0], p.S - (s + 2)).shape[
             0
         ]
-        etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
-        mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
-        mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
-        for i in range(p.etr_params.shape[2]):
-            etr_params_to_use[:, i] = np.diag(
-                p.etr_params[: p.S, :, i], p.S - (s + 2)
-            )
-            mtrx_params_to_use[:, i] = np.diag(
-                p.mtrx_params[: p.S, :, i], p.S - (s + 2)
-            )
-            mtry_params_to_use[:, i] = np.diag(
-                p.mtry_params[: p.S, :, i], p.S - (s + 2)
-            )
+        # etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
+        # mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
+        # mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
+        etr_params_to_use = []
+        mtrx_params_to_use = []
+        mtry_params_to_use = []
+        # for i in range(p.etr_params.shape[2]):
+        #     etr_params_to_use[:, i] = np.diag(
+        #         p.etr_params[: p.S, :, i], p.S - (s + 2)
+        #     )
+        #     mtrx_params_to_use[:, i] = np.diag(
+        #         p.mtrx_params[: p.S, :, i], p.S - (s + 2)
+        #     )
+        #     mtry_params_to_use[:, i] = np.diag(
+        #         p.mtry_params[: p.S, :, i], p.S - (s + 2)
+        #     )
+        for i in range(len(p.etr_params[0][0])):  # where num_columns is the number of columns in the resulting array
+            diagonal = [p.etr_params[s][j][i] for j, s in enumerate(range(p.S-1, -1, -1))]
+            etr_params_to_use.append(diagonal)
+            diagonal = [p.mtrx_params[s][j][i] for j, s in enumerate(range(p.S-1, -1, -1))]
+            mtrx_params_to_use.append(diagonal)
+            diagonal = [p.mtry_params[s][j][i] for j, s in enumerate(range(p.S-1, -1, -1))]
+            mtry_params_to_use.append(diagonal)
         solutions = opt.root(
             twist_doughnut,
             list(b_guesses_to_use) + list(n_guesses_to_use),
@@ -1087,18 +1097,20 @@ def run_TPI(p, client=None):
         print("\tDistance:", TPIdist)
 
     # Compute effective and marginal tax rates for all agents
-    mtrx_params_4D = np.tile(
-        p.mtrx_params[: p.T, :, :].reshape(
-            p.T, p.S, 1, p.mtrx_params.shape[2]
-        ),
-        (1, 1, p.J, 1),
-    )
-    mtry_params_4D = np.tile(
-        p.mtry_params[: p.T, :, :].reshape(
-            p.T, p.S, 1, p.mtry_params.shape[2]
-        ),
-        (1, 1, p.J, 1),
-    )
+    # mtrx_params_4D = np.tile(
+    #     p.mtrx_params[: p.T, :, :].reshape(
+    #         p.T, p.S, 1, p.mtrx_params.shape[2]
+    #     ),
+    #     (1, 1, p.J, 1),
+    # )
+    # mtry_params_4D = np.tile(
+    #     p.mtry_params[: p.T, :, :].reshape(
+    #         p.T, p.S, 1, p.mtry_params.shape[2]
+    #     ),
+    #     (1, 1, p.J, 1),
+    # )
+    mtrx_params_4D = [[[p.mtrx_params[:p.T][s][j] for j in range(len(p.mtry_params[0][0]))] * p.J for s in range(p.S)]]
+    mtry_params_4D = [[[p.mtry_params[:p.T][s][j] for j in range(len(p.mtry_params[0][0]))] * p.J for s in range(p.S)]]
     labor_noncompliance_rate_3D = np.tile(
         np.reshape(
             p.labor_income_tax_noncompliance_rate[: p.T, :], (p.T, 1, p.J)
