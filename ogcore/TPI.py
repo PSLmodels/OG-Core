@@ -400,7 +400,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     b_mat[0, -1], n_mat[0, -1] = solutions.x[0], solutions.x[1]
 
     for s in range(p.S - 2):  # Upper triangle
-        ind2 = np.arange(s + 2)
+        # ind2 = np.arange(s + 2)
         b_guesses_to_use = np.diag(guesses_b[: p.S, :], p.S - (s + 2))
         n_guesses_to_use = np.diag(guesses_n[: p.S, :], p.S - (s + 2))
         theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S]
@@ -408,15 +408,12 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         tr_to_use = np.diag(tr[: p.S, :, j], p.S - (s + 2))
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
-        length_diag = np.diag(p.etr_params[: p.S, :, 0], p.S - (s + 2)).shape[
-            0
-        ]
+        # length_diag = np.diag(p.etr_params[: p.S, :, 0], p.S - (s + 2)).shape[
+        #     0
+        # ]
         # etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
         # mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
         # mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
-        etr_params_to_use = []
-        mtrx_params_to_use = []
-        mtry_params_to_use = []
         # for i in range(p.etr_params.shape[2]):
         #     etr_params_to_use[:, i] = np.diag(
         #         p.etr_params[: p.S, :, i], p.S - (s + 2)
@@ -427,13 +424,17 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         #     mtry_params_to_use[:, i] = np.diag(
         #         p.mtry_params[: p.S, :, i], p.S - (s + 2)
         #     )
-        for i in range(len(p.etr_params[0][0])):  # where num_columns is the number of columns in the resulting array
-            diagonal = [p.etr_params[s][j][i] for j, s in enumerate(range(p.S-1, -1, -1))]
-            etr_params_to_use.append(diagonal)
-            diagonal = [p.mtrx_params[s][j][i] for j, s in enumerate(range(p.S-1, -1, -1))]
-            mtrx_params_to_use.append(diagonal)
-            diagonal = [p.mtry_params[s][j][i] for j, s in enumerate(range(p.S-1, -1, -1))]
-            mtry_params_to_use.append(diagonal)
+        for s in range(p.S - 2):  # Upper triangle
+            num_params = len(p.etr_params[0][0])
+            etr_params_to_use = [[0 for j in range(num_params)] for i in range(s + 2)]
+            mtrx_params_to_use = [[0 for j in range(num_params)] for i in range(s + 2)]
+            mtry_params_to_use = [[0 for j in range(num_params)] for i in range(s + 2)]
+            for i in range(num_params):
+                for t in range(s + 2):
+                    etr_params_to_use[t][i] = p.etr_params[t][p.S - s - 2 + t][i]
+                    mtrx_params_to_use[t][i] = p.mtrx_params[t][p.S - s - 2 + t][i]
+                    mtry_params_to_use[t][i] = p.mtry_params[t][p.S - s - 2 + t][i]
+
         solutions = opt.root(
             twist_doughnut,
             list(b_guesses_to_use) + list(n_guesses_to_use),
@@ -473,19 +474,28 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         ubi_to_use = np.diag(ubi[t : t + p.S, :, j])
 
         # initialize array of diagonal elements
-        length_diag = np.diag(p.etr_params[t : t + p.S, :, 0]).shape[0]
-        etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
-        mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
-        mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
+        # length_diag = np.diag(p.etr_params[t : t + p.S, :, 0]).shape[0]
+        # etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
+        # mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
+        # mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
 
-        for i in range(p.etr_params.shape[2]):
-            etr_params_to_use[:, i] = np.diag(p.etr_params[t : t + p.S, :, i])
-            mtrx_params_to_use[:, i] = np.diag(
-                p.mtrx_params[t : t + p.S, :, i]
-            )
-            mtry_params_to_use[:, i] = np.diag(
-                p.mtry_params[t : t + p.S, :, i]
-            )
+        # for i in range(p.etr_params.shape[2]):
+        #     etr_params_to_use[:, i] = np.diag(p.etr_params[t : t + p.S, :, i])
+        #     mtrx_params_to_use[:, i] = np.diag(
+        #         p.mtrx_params[t : t + p.S, :, i]
+        #     )
+        #     mtry_params_to_use[:, i] = np.diag(
+        #         p.mtry_params[t : t + p.S, :, i]
+        #     )
+        num_params = len(p.etr_params[t][0])
+        etr_params_to_use = [[0 for j in range(num_params)] for i in range(p.S)]
+        mtrx_params_to_use = [[0 for j in range(num_params)] for i in range(p.S)]
+        mtry_params_to_use = [[0 for j in range(num_params)] for i in range(p.S)]
+        for i in range(num_params):
+            for s in range(p.S):
+                etr_params_to_use[s][i] = p.etr_params[t+s][s][i]
+                mtrx_params_to_use[s][i] = p.mtrx_params[t+s][s][i]
+                mtry_params_to_use[s][i] = p.mtry_params[t+s][s][i]
 
         solutions = opt.root(
             twist_doughnut,
@@ -763,12 +773,19 @@ def run_TPI(p, client=None):
         bmat_splus1 = np.zeros((p.T, p.S, p.J))
         bmat_splus1[:, :, :] = b_mat[: p.T, :, :]
 
-        etr_params_4D = np.tile(
-            p.etr_params[: p.T, :, :].reshape(
-                p.T, p.S, 1, p.etr_params.shape[2]
-            ),
-            (1, 1, p.J, 1),
-        )
+        # etr_params_4D = np.tile(
+        #     p.etr_params[: p.T, :, :].reshape(
+        #         p.T, p.S, 1, p.etr_params.shape[2]
+        #     ),
+        #     (1, 1, p.J, 1),
+        # )
+        etr_params_4D = [[[[0 for i in range(num_params)] for j in range(p.J)] for i in range(p.S)] for t in range(p.T)]
+        for t in range(p.T):
+            for s in range(p.S):
+                for j in range(p.J):
+                    for i in range(len(p.etr_params[-1][0])):
+                        etr_params_4D[t][s][j][i] = p.etr_params[t][s][i]
+
         bqmat = household.get_bq(BQ, None, p, "TPI")
         trmat = household.get_tr(TR, None, p, "TPI")
         tax_mat = tax.net_taxes(
