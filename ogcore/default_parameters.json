@@ -3,7 +3,8 @@
         "labels": {},
         "additional_members": {
            "section_1": {"type": "str"},
-           "section_2": {"type": "str"}
+           "section_2": {"type": "str"},
+           "array_first": {"type": "bool"}
          }
     },
     "frisch": {
@@ -3584,6 +3585,7 @@
         "notes": "",
         "type": "float",
         "number_dims": 3,
+        "array_first": false,
         "value": [
             {
                 "value": [
@@ -3605,6 +3607,7 @@
         "notes": "",
         "type": "float",
         "number_dims": 3,
+        "array_first": false,
         "value": [
             {
                 "value": [
@@ -3626,6 +3629,7 @@
         "notes": "",
         "type": "float",
         "number_dims": 3,
+        "array_first": false,
         "value": [
             {
                 "value": [
