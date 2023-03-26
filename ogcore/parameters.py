@@ -629,7 +629,7 @@ class Specifications(paramtools.Parameters):
                     if item in revision.keys():
                         tax_update_dict[item] = revision[item]
                         del revision[item]
-        except KeyError:
+        except (KeyError, TypeError):
             pass
         self.adjust(revision, raise_errors=raise_errors)
         # put tax values skipped over in the adjust method back in so
