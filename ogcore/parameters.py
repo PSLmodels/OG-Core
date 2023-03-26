@@ -3,6 +3,7 @@ import numpy as np
 import scipy.interpolate as si
 import pkg_resources
 import paramtools
+from itertools import chain
 
 # import ogcore
 from ogcore import elliptical_u_est
@@ -91,7 +92,7 @@ class Specifications(paramtools.Parameters):
         )
         # determine length of budget window from individual income tax
         # parameters passed in
-        self.BW = len(self.etr_params.shape)
+        self.BW = len(self.etr_params)
         # Find number of economically active periods of life
         self.E = int(
             self.starting_age
@@ -355,9 +356,11 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tax_params_to_TP:
             tax_to_set = getattr(self, item)
-            # TODO: avoid ParamTools conversion to array and remove the line below
-            tax_to_set = tax_to_set.tolist()
-            if len(tax_to_set) == 1  and isinstance(tax_to_set[0], float):
+            try:
+                tax_to_set = tax_to_set.tolist()
+            except AttributeError:
+                pass
+            if len(tax_to_set) == 1 and isinstance(tax_to_set[0], float):
                 setattr(
                     self,
                     item,
@@ -374,6 +377,7 @@ class Specifications(paramtools.Parameters):
                         tax_to_set[t] = tax_to_set[t][:self.S]
                 setattr(self, item, tax_to_set)
             else:
+                print("length = ", len(tax_to_set), type(tax_to_set))
                 print(
                     "please give a "
                     + item
@@ -616,7 +620,23 @@ class Specifications(paramtools.Parameters):
         """
         if not (isinstance(revision, dict) or isinstance(revision, str)):
             raise ValueError("ERROR: revision is not a dictionary or string")
+        # Skip over the adjust method if the tax paraemeters passed in
+        # are fucntions (e.g., in the case of tax_func_type = mono)
+        tax_update_dict = {}
+        try:
+            if revision["tax_func_type"] in ["mono", "mono2D"]:
+                for item in ["etr_params", "mtrx_params", "mtry_params"]:
+                    if item in revision.keys():
+                        tax_update_dict[item] = revision[item]
+                        del revision[item]
+        except KeyError:
+            pass
         self.adjust(revision, raise_errors=raise_errors)
+        # put tax values skipped over in the adjust method back in so
+        # they are in the parameters class.
+        if tax_update_dict != {}:
+            for key, value in tax_update_dict.items():
+                setattr(self, key, value)
         self.compute_default_params()
 
 
