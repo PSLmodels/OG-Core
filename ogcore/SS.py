@@ -276,7 +276,10 @@ def inner_loop(outer_loop_vars, p, client):
     #     (1, p.J, 1),
     # )
     num_params = len(p.etr_params[-1][0])
-    etr_params_3D = [[[0 for i in range(num_params)] for j in range(p.J)] for i in range(p.S)]
+    etr_params_3D = [
+        [[0 for i in range(num_params)] for j in range(p.J)]
+        for i in range(p.S)
+    ]
     for s in range(p.S):
         for j in range(p.J):
             for i in range(len(p.etr_params[-1][0])):
@@ -411,7 +414,10 @@ def inner_loop(outer_loop_vars, p, client):
     #     (1, p.J, 1),
     # )
     num_params = len(p.etr_params[-1][0])
-    etr_params_3D = [[[0 for i in range(num_params)] for j in range(p.J)] for i in range(p.S)]
+    etr_params_3D = [
+        [[0 for i in range(num_params)] for j in range(p.J)]
+        for i in range(p.S)
+    ]
     for s in range(p.S):
         for j in range(p.J):
             for i in range(len(p.etr_params[-1][0])):
@@ -741,9 +747,18 @@ def SS_solver(
     num_etr_params = len(p.etr_params[-1][0])
     num_mtrx_params = len(p.mtrx_params[-1][0])
     num_mtry_params = len(p.mtry_params[-1][0])
-    etr_params_3D = [[[0 for i in range(num_etr_params)] for j in range(p.J)] for i in range(p.S)]
-    mtrx_params_3D = [[[0 for i in range(num_mtrx_params)] for j in range(p.J)] for i in range(p.S)]
-    mtry_params_3D = [[[0 for i in range(num_mtry_params)] for j in range(p.J)] for i in range(p.S)]
+    etr_params_3D = [
+        [[0 for i in range(num_etr_params)] for j in range(p.J)]
+        for i in range(p.S)
+    ]
+    mtrx_params_3D = [
+        [[0 for i in range(num_mtrx_params)] for j in range(p.J)]
+        for i in range(p.S)
+    ]
+    mtry_params_3D = [
+        [[0 for i in range(num_mtry_params)] for j in range(p.J)]
+        for i in range(p.S)
+    ]
     for s in range(p.S):
         for j in range(p.J):
             for i in range(num_etr_params):

@@ -364,17 +364,28 @@ class Specifications(paramtools.Parameters):
                 setattr(
                     self,
                     item,
-                    [[[tax_to_set] for i in range(self.S)] for t in range(self.T)],
+                    [
+                        [[tax_to_set] for i in range(self.S)]
+                        for t in range(self.T)
+                    ],
                 )
-            elif any([isinstance(tax_to_set[i][j], list) for i, v in enumerate(tax_to_set) for j, vv in enumerate(tax_to_set[i])]):
+            elif any(
+                [
+                    isinstance(tax_to_set[i][j], list)
+                    for i, v in enumerate(tax_to_set)
+                    for j, vv in enumerate(tax_to_set[i])
+                ]
+            ):
                 if len(tax_to_set) > self.T + self.S:
                     tax_to_set = tax_to_set[: self.T + self.S]
                 if len(tax_to_set) < self.T + self.S:
-                    tax_params_to_add = [tax_to_set[-1]] * (self.T + self.S - len(tax_to_set))
+                    tax_params_to_add = [tax_to_set[-1]] * (
+                        self.T + self.S - len(tax_to_set)
+                    )
                     tax_to_set.extend(tax_params_to_add)
                 if len(tax_to_set[0]) > self.S:
                     for t, v in enumerate(tax_to_set):
-                        tax_to_set[t] = tax_to_set[t][:self.S]
+                        tax_to_set[t] = tax_to_set[t][: self.S]
                 setattr(self, item, tax_to_set)
             else:
                 print("length = ", len(tax_to_set), type(tax_to_set))

@@ -80,7 +80,9 @@ def get_tax_rates(
     Y2 = Y**2
     income = X + Y
     if tax_func_type != "mono":
-        params = np.array(params)  # easier to use arrays for calculations below, except when can't (bc lists of functions)
+        params = np.array(
+            params
+        )  # easier to use arrays for calculations below, except when can't (bc lists of functions)
     if tax_func_type == "GS":
         phi0, phi1, phi2 = (
             np.squeeze(params[..., 0]),
