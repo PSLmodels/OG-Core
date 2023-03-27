@@ -408,33 +408,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         tr_to_use = np.diag(tr[: p.S, :, j], p.S - (s + 2))
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
-        # length_diag = np.diag(p.etr_params[: p.S, :, 0], p.S - (s + 2)).shape[
-        #     0
-        # ]
-        # etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
-        # mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
-        # mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
-        # for i in range(p.etr_params.shape[2]):
-        #     etr_params_to_use[:, i] = np.diag(
-        #         p.etr_params[: p.S, :, i], p.S - (s + 2)
-        #     )
-        #     mtrx_params_to_use[:, i] = np.diag(
-        #         p.mtrx_params[: p.S, :, i], p.S - (s + 2)
-        #     )
-        #     mtry_params_to_use[:, i] = np.diag(
-        #         p.mtry_params[: p.S, :, i], p.S - (s + 2)
-        #     )
-
         num_params = len(p.etr_params[0][0])
-        # etr_params_to_use = [[0 for j in range(num_params)] for i in range(s + 2)]
-        # mtrx_params_to_use = [[0 for j in range(num_params)] for i in range(s + 2)]
-        # mtry_params_to_use = [[0 for j in range(num_params)] for i in range(s + 2)]
-        # for i in range(num_params):
-        #     for t in range(s + 2):
-        #         etr_params_to_use[t][i] = p.etr_params[t][p.S - t - 2][i]
-        #         mtrx_params_to_use[t][i] = p.mtrx_params[t][p.S - t - 2][i]
-        #         mtry_params_to_use[t][i] = p.mtry_params[t][p.S - t - 2][i]
-
         etr_params_to_use = [
             [0 for j in range(num_params)] for i in range(s + 2)
         ]
@@ -489,19 +463,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         ubi_to_use = np.diag(ubi[t : t + p.S, :, j])
 
         # initialize array of diagonal elements
-        # length_diag = np.diag(p.etr_params[t : t + p.S, :, 0]).shape[0]
-        # etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
-        # mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
-        # mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
-
-        # for i in range(p.etr_params.shape[2]):
-        #     etr_params_to_use[:, i] = np.diag(p.etr_params[t : t + p.S, :, i])
-        #     mtrx_params_to_use[:, i] = np.diag(
-        #         p.mtrx_params[t : t + p.S, :, i]
-        #     )
-        #     mtry_params_to_use[:, i] = np.diag(
-        #         p.mtry_params[t : t + p.S, :, i]
-        #     )
         num_params = len(p.etr_params[t][0])
         etr_params_to_use = [
             [0 for j in range(num_params)] for i in range(p.S)
@@ -1142,20 +1103,6 @@ def run_TPI(p, client=None):
         print("\tDistance:", TPIdist)
 
     # Compute effective and marginal tax rates for all agents
-    # mtrx_params_4D = np.tile(
-    #     p.mtrx_params[: p.T, :, :].reshape(
-    #         p.T, p.S, 1, p.mtrx_params.shape[2]
-    #     ),
-    #     (1, 1, p.J, 1),
-    # )
-    # mtry_params_4D = np.tile(
-    #     p.mtry_params[: p.T, :, :].reshape(
-    #         p.T, p.S, 1, p.mtry_params.shape[2]
-    #     ),
-    #     (1, 1, p.J, 1),
-    # )
-    # mtrx_params_4D = [[[p.mtrx_params[:p.T][s][j] for j in range(len(p.mtrx_params[0][0]))] * p.J for s in range(p.S)]]
-    # mtry_params_4D = [[[p.mtry_params[:p.T][s][j] for j in range(len(p.mtry_params[0][0]))] * p.J for s in range(p.S)]]
     num_params = len(p.mtrx_params[0][0])
     mtrx_params_4D = [
         [
