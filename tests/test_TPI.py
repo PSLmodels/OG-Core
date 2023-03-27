@@ -212,6 +212,9 @@ def test_inner_loop():
     )
 
     for i, v in enumerate(expected_tuple):
+        print('Test tuple: ', test_tuple[i])
+        print('Expected tuple: ', v)
+        print('index = ', i)
         assert np.allclose(test_tuple[i], v)
 
 
