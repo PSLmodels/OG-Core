@@ -260,10 +260,14 @@ def get_tax_rates(
             txrates = np.zeros_like(income)
             if np.isscalar(income):
                 txrates = params[0](income)
-            elif income.ndim == 1:  # I think only calls here are for loops over S (or just a single age)
+            elif (
+                income.ndim == 1
+            ):  # I think only calls here are for loops over S (or just a single age)
                 for s in range(income.shape[0]):
                     txrates[s] = params[s][0](income[s])
-            elif income.ndim == 2: # I think only calls here are for loops over S and J
+            elif (
+                income.ndim == 2
+            ):  # I think only calls here are for loops over S and J
                 for s in range(income.shape[0]):
                     for j in range(income.shape[1]):
                         txrates[s, j] = params[s][j][0](income[s, j])
@@ -271,7 +275,9 @@ def get_tax_rates(
                 for t in range(income.shape[0]):
                     for s in range(income.shape[1]):
                         for j in range(income.shape[2]):
-                            txrates[t, s, j] = params[t][s][j][0](income[t, s, j])
+                            txrates[t, s, j] = params[t][s][j][0](
+                                income[t, s, j]
+                            )
 
     return txrates
 
@@ -1672,9 +1678,7 @@ def monotone_spline(
             err_msg = "monotone_spline2 ERROR: bins value is not type scalar"
             raise ValueError(err_msg)
         N = int(bins)
-        x_binned, y_binned, weights_binned = utils.avg_by_bin(
-            x, y, weights, N
-        )
+        x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y, weights, N)
 
     elif not bins:
         N = len(x)

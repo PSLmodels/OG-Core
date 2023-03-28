@@ -357,8 +357,10 @@ class Specifications(paramtools.Parameters):
         for item in tax_params_to_TP:
             tax_to_set = getattr(self, item)
             try:
-                tax_to_set = tax_to_set.tolist() # in case parameters are numpy arrays
-            except AttributeError: # catches if they are lists already
+                tax_to_set = (
+                    tax_to_set.tolist()
+                )  # in case parameters are numpy arrays
+            except AttributeError:  # catches if they are lists already
                 pass
             if len(tax_to_set) == 1 and isinstance(tax_to_set[0], float):
                 setattr(
@@ -633,7 +635,7 @@ class Specifications(paramtools.Parameters):
         # Skip over the adjust method if the tax paraemeters passed in
         # are fucntions (e.g., in the case of tax_func_type = mono)
         tax_update_dict = {}
-        print('REVSISION KEYS = ', revision.keys())
+        print("REVSISION KEYS = ", revision.keys())
         print("TAX FUNC TYPE = ", self.tax_func_type)
         tax_func_params_functions = False
         try:
@@ -645,11 +647,11 @@ class Specifications(paramtools.Parameters):
             tax_func_params_functions = True
         if tax_func_params_functions:
             try:
-                print('TO HERE')
+                print("TO HERE")
                 for item in ["etr_params", "mtrx_params", "mtry_params"]:
-                    print('TO HERE1')
+                    print("TO HERE1")
                     if item in revision.keys():
-                        print('TO HERE2')
+                        print("TO HERE2")
                         tax_update_dict[item] = revision[item]
                         del revision[item]
             except (KeyError, TypeError):
@@ -658,7 +660,7 @@ class Specifications(paramtools.Parameters):
         # put tax values skipped over in the adjust method back in so
         # they are in the parameters class.
         if tax_update_dict != {}:
-            print('TO HERE 4')
+            print("TO HERE 4")
             for key, value in tax_update_dict.items():
                 setattr(self, key, value)
         self.compute_default_params()
