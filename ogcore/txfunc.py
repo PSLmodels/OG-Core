@@ -16,6 +16,7 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
+import cloudpickle
 from scipy.interpolate import interp1d as intp
 import matplotlib.pyplot as plt
 import ogcore.parameter_plots as pp
@@ -1630,7 +1631,10 @@ def tax_func_estimate(
 
     if tax_func_path:
         with open(tax_func_path, "wb") as f:
-            pickle.dump(dict_params, f)
+            try:
+                pickle.dump(dict_params, f)
+            except AttributeError:
+                cloudpickle.dump(dict_params, f)
 
     return dict_params
 
@@ -1650,9 +1654,9 @@ def monotone_spline(
         if not np.isscalar(bins):
             err_msg = "monotone_spline2 ERROR: bins value is not type scalar"
             raise ValueError(err_msg)
-        N = bins
+        N = int(bins)
         x_binned, y_binned, weights_binned = utils.avg_by_bin(
-            x, y, weights, bins
+            x, y, weights, N
         )
 
     elif not bins:
