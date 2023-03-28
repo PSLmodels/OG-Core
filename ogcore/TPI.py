@@ -409,20 +409,41 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
         num_params = len(p.etr_params[0][0])
+        # etr_params_to_use = [
+        #     [0 for j in range(num_params)] for i in range(s + 2)
+        # ]
+        # mtrx_params_to_use = [
+        #     [0 for j in range(num_params)] for i in range(s + 2)
+        # ]
+        # mtry_params_to_use = [
+        #     [0 for j in range(num_params)] for i in range(s + 2)
+        # ]
+        # for i in range(num_params):
+        #     for t in range(s + 2):
+        #         etr_params_to_use[t][i] = p.etr_params[t][p.S - s - 2 + t][i]
+        #         mtrx_params_to_use[t][i] = p.mtrx_params[t][p.S - s - 2 + t][i]
+        #         mtry_params_to_use[t][i] = p.mtry_params[t][p.S - s - 2 + t][i]
+        temp_etr = [
+            [p.etr_params[t][p.S - s - 2 + t][i] for i in range(num_params)]
+            for t in range(s + 2)
+        ]
         etr_params_to_use = [
-            [0 for j in range(num_params)] for i in range(s + 2)
+            [temp_etr[i][j] for j in range(num_params)] for i in range(s + 2)
+        ]
+        temp_mtrx = [
+            [p.mtrx_params[t][p.S - s - 2 + t][i] for i in range(num_params)]
+            for t in range(s + 2)
         ]
         mtrx_params_to_use = [
-            [0 for j in range(num_params)] for i in range(s + 2)
+            [temp_mtrx[i][j] for j in range(num_params)] for i in range(s + 2)
+        ]
+        temp_mtry = [
+            [p.mtry_params[t][p.S - s - 2 + t][i] for i in range(num_params)]
+            for t in range(s + 2)
         ]
         mtry_params_to_use = [
-            [0 for j in range(num_params)] for i in range(s + 2)
+            [temp_mtry[i][j] for j in range(num_params)] for i in range(s + 2)
         ]
-        for i in range(num_params):
-            for t in range(s + 2):
-                etr_params_to_use[t][i] = p.etr_params[t][p.S - s - 2 + t][i]
-                mtrx_params_to_use[t][i] = p.mtrx_params[t][p.S - s - 2 + t][i]
-                mtry_params_to_use[t][i] = p.mtry_params[t][p.S - s - 2 + t][i]
 
         solutions = opt.root(
             twist_doughnut,
@@ -464,20 +485,32 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
 
         # initialize array of diagonal elements
         num_params = len(p.etr_params[t][0])
+        # etr_params_to_use = [
+        #     [0 for j in range(num_params)] for i in range(p.S)
+        # ]
+        # mtrx_params_to_use = [
+        #     [0 for j in range(num_params)] for i in range(p.S)
+        # ]
+        # mtry_params_to_use = [
+        #     [0 for j in range(num_params)] for i in range(p.S)
+        # ]
+        # for i in range(num_params):
+        #     for s in range(p.S):
+        #         etr_params_to_use[s][i] = p.etr_params[t + s][s][i]
+        #         mtrx_params_to_use[s][i] = p.mtrx_params[t + s][s][i]
+        #         mtry_params_to_use[s][i] = p.mtry_params[t + s][s][i]
         etr_params_to_use = [
-            [0 for j in range(num_params)] for i in range(p.S)
+            [p.etr_params[t + s][s][i] for i in range(num_params)]
+            for s in range(p.S)
         ]
         mtrx_params_to_use = [
-            [0 for j in range(num_params)] for i in range(p.S)
+            [p.mtrx_params[t + s][s][i] for i in range(num_params)]
+            for s in range(p.S)
         ]
         mtry_params_to_use = [
-            [0 for j in range(num_params)] for i in range(p.S)
+            [p.mtry_params[t + s][s][i] for i in range(num_params)]
+            for s in range(p.S)
         ]
-        for i in range(num_params):
-            for s in range(p.S):
-                etr_params_to_use[s][i] = p.etr_params[t + s][s][i]
-                mtrx_params_to_use[s][i] = p.mtrx_params[t + s][s][i]
-                mtry_params_to_use[s][i] = p.mtry_params[t + s][s][i]
 
         solutions = opt.root(
             twist_doughnut,
@@ -762,18 +795,28 @@ def run_TPI(p, client=None):
         #     (1, 1, p.J, 1),
         # )
         num_params = len(p.etr_params[0][0])
+        # etr_params_4D = [
+        #     [
+        #         [[0 for i in range(num_params)] for j in range(p.J)]
+        #         for i in range(p.S)
+        #     ]
+        #     for t in range(p.T)
+        # ]
+        # for t in range(p.T):
+        #     for s in range(p.S):
+        #         for j in range(p.J):
+        #             for i in range(num_params):
+        #                 etr_params_4D[t][s][j][i] = p.etr_params[t][s][i]
         etr_params_4D = [
             [
-                [[0 for i in range(num_params)] for j in range(p.J)]
-                for i in range(p.S)
+                [
+                    [p.etr_params[t][s][i] for i in range(num_params)]
+                    for j in range(p.J)
+                ]
+                for s in range(p.S)
             ]
             for t in range(p.T)
         ]
-        for t in range(p.T):
-            for s in range(p.S):
-                for j in range(p.J):
-                    for i in range(num_params):
-                        etr_params_4D[t][s][j][i] = p.etr_params[t][s][i]
 
         bqmat = household.get_bq(BQ, None, p, "TPI")
         trmat = household.get_tr(TR, None, p, "TPI")
@@ -1104,26 +1147,56 @@ def run_TPI(p, client=None):
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
+    # mtrx_params_4D = [
+    #     [
+    #         [[0 for i in range(num_params)] for j in range(p.J)]
+    #         for i in range(p.S)
+    #     ]
+    #     for t in range(p.T)
+    # ]
+    # mtry_params_4D = [
+    #     [
+    #         [[0 for i in range(num_params)] for j in range(p.J)]
+    #         for i in range(p.S)
+    #     ]
+    #     for t in range(p.T)
+    # ]
+    # for t in range(p.T):
+    #     for s in range(p.S):
+    #         for j in range(p.J):
+    #             for i in range(num_params):
+    #                 mtrx_params_4D[t][s][j][i] = p.mtrx_params[t][s][i]
+    #                 mtry_params_4D[t][s][j][i] = p.mtry_params[t][s][i]
+    etr_params_4D = [
+        [
+            [
+                [p.etr_params[t][s][i] for i in range(num_params)]
+                for j in range(p.J)
+            ]
+            for s in range(p.S)
+        ]
+        for t in range(p.T)
+    ]
     mtrx_params_4D = [
         [
-            [[0 for i in range(num_params)] for j in range(p.J)]
-            for i in range(p.S)
+            [
+                [p.mtrx_params[t][s][i] for i in range(num_params)]
+                for j in range(p.J)
+            ]
+            for s in range(p.S)
         ]
         for t in range(p.T)
     ]
     mtry_params_4D = [
         [
-            [[0 for i in range(num_params)] for j in range(p.J)]
-            for i in range(p.S)
+            [
+                [p.mtry_params[t][s][i] for i in range(num_params)]
+                for j in range(p.J)
+            ]
+            for s in range(p.S)
         ]
         for t in range(p.T)
     ]
-    for t in range(p.T):
-        for s in range(p.S):
-            for j in range(p.J):
-                for i in range(num_params):
-                    mtrx_params_4D[t][s][j][i] = p.mtrx_params[t][s][i]
-                    mtry_params_4D[t][s][j][i] = p.mtry_params[t][s][i]
     labor_noncompliance_rate_3D = np.tile(
         np.reshape(
             p.labor_income_tax_noncompliance_rate[: p.T, :], (p.T, 1, p.J)

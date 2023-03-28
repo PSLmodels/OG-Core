@@ -271,14 +271,21 @@ def inner_loop(outer_loop_vars, p, client):
     theta = tax.replacement_rate_vals(nssmat, w, factor, None, p)
 
     num_params = len(p.etr_params[-1][0])
+    # etr_params_3D = [
+    #     [[0 for i in range(num_params)] for j in range(p.J)]
+    #     for i in range(p.S)
+    # ]
+    # for s in range(p.S):
+    #     for j in range(p.J):
+    #         for i in range(len(p.etr_params[-1][0])):
+    #             etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
     etr_params_3D = [
-        [[0 for i in range(num_params)] for j in range(p.J)]
-        for i in range(p.S)
+        [
+            [p.etr_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
     ]
-    for s in range(p.S):
-        for j in range(p.J):
-            for i in range(len(p.etr_params[-1][0])):
-                etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
 
     net_tax = tax.net_taxes(
         r_p,
@@ -409,14 +416,21 @@ def inner_loop(outer_loop_vars, p, client):
     #     (1, p.J, 1),
     # )
     num_params = len(p.etr_params[-1][0])
+    # etr_params_3D = [
+    #     [[0 for i in range(num_params)] for j in range(p.J)]
+    #     for i in range(p.S)
+    # ]
+    # for s in range(p.S):
+    #     for j in range(p.J):
+    #         for i in range(len(p.etr_params[-1][0])):
+    #             etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
     etr_params_3D = [
-        [[0 for i in range(num_params)] for j in range(p.J)]
-        for i in range(p.S)
+        [
+            [p.etr_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
     ]
-    for s in range(p.S):
-        for j in range(p.J):
-            for i in range(len(p.etr_params[-1][0])):
-                etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
 
     taxss = tax.net_taxes(
         new_r_p,
@@ -726,29 +740,48 @@ def SS_solver(
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
     # Compute effective and marginal tax rates for all agents
-    num_etr_params = len(p.etr_params[-1][0])
-    num_mtrx_params = len(p.mtrx_params[-1][0])
-    num_mtry_params = len(p.mtry_params[-1][0])
+    num_params = len(p.etr_params[-1][0])
+    # etr_params_3D = [
+    #     [[0 for i in range(num_etr_params)] for j in range(p.J)]
+    #     for i in range(p.S)
+    # ]
+    # mtrx_params_3D = [
+    #     [[0 for i in range(num_mtrx_params)] for j in range(p.J)]
+    #     for i in range(p.S)
+    # ]
+    # mtry_params_3D = [
+    #     [[0 for i in range(num_mtry_params)] for j in range(p.J)]
+    #     for i in range(p.S)
+    # ]
+    # for s in range(p.S):
+    #     for j in range(p.J):
+    #         for i in range(num_etr_params):
+    #             etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
+    #         for i in range(num_mtrx_params):
+    #             mtrx_params_3D[s][j][i] = p.mtrx_params[-1][s][i]
+    #         for i in range(num_mtry_params):
+    #             mtry_params_3D[s][j][i] = p.mtry_params[-1][s][i]
     etr_params_3D = [
-        [[0 for i in range(num_etr_params)] for j in range(p.J)]
-        for i in range(p.S)
+        [
+            [p.etr_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
     ]
     mtrx_params_3D = [
-        [[0 for i in range(num_mtrx_params)] for j in range(p.J)]
-        for i in range(p.S)
+        [
+            [p.mtrx_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
     ]
     mtry_params_3D = [
-        [[0 for i in range(num_mtry_params)] for j in range(p.J)]
-        for i in range(p.S)
+        [
+            [p.mtry_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
     ]
-    for s in range(p.S):
-        for j in range(p.J):
-            for i in range(num_etr_params):
-                etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
-            for i in range(num_mtrx_params):
-                mtrx_params_3D[s][j][i] = p.mtrx_params[-1][s][i]
-            for i in range(num_mtry_params):
-                mtry_params_3D[s][j][i] = p.mtry_params[-1][s][i]
 
     labor_noncompliance_rate_2D = np.tile(
         np.reshape(p.labor_income_tax_noncompliance_rate[-1, :], (1, p.J)),
