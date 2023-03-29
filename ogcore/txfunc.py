@@ -264,7 +264,7 @@ def get_tax_rates(
             ):
                 # for s in range(income.shape[0]):
                 #     txrates[s] = params[s][0](income[s])
-                if income.shape[0] == len(params):  # for case where loops over S
+                if (income.shape[0] == len(params)) and (len(params) > 1):  # for case where loops over S
                     txrates = [
                         params[s][0](income[s]) for s in range(income.shape[0])
                     ]
@@ -302,7 +302,7 @@ def get_tax_rates(
                     ]
                     for t in range(income.shape[0])
                 ]
-        np.array(txrates)
+        txrates = np.array(txrates)
     return txrates
 
 
