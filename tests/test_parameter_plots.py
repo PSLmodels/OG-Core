@@ -396,7 +396,7 @@ def test_plot_income_data_save_fig(tmpdir):
         "with data",
         "MTR capital income",
         "MTR labor income",
-        "Mono functions"
+        "Mono functions",
     ],
 )
 def test_plot_2D_taxfunc(

@@ -231,12 +231,12 @@ def twist_doughnut(
         j (int): index of ability type
         s (int): years of life remaining
         t (int): model period
-        etr_params (Numpy array): ETR function parameters,
-            size = sxsxnum_params
-        mtrx_params (Numpy array): labor income MTR function parameters,
-            size = sxsxnum_params
-        mtry_params (Numpy array): capital income MTR function
-            parameters, size = sxsxnum_params
+        etr_params (list): ETR function parameters,
+            list of lists with size = sxsxnum_params
+        mtrx_params (list): labor income MTR function parameters,
+            list of lists with size = sxsxnum_params
+        mtry_params (list): capital income MTR function
+            parameters, lists of lists with size = sxsxnum_params
         initial_b (Numpy array): savings of agents alive at T=0,
             size = SxJ
         p (OG-Core Specifications object): model parameters
@@ -409,20 +409,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
         num_params = len(p.etr_params[0][0])
-        # etr_params_to_use = [
-        #     [0 for j in range(num_params)] for i in range(s + 2)
-        # ]
-        # mtrx_params_to_use = [
-        #     [0 for j in range(num_params)] for i in range(s + 2)
-        # ]
-        # mtry_params_to_use = [
-        #     [0 for j in range(num_params)] for i in range(s + 2)
-        # ]
-        # for i in range(num_params):
-        #     for t in range(s + 2):
-        #         etr_params_to_use[t][i] = p.etr_params[t][p.S - s - 2 + t][i]
-        #         mtrx_params_to_use[t][i] = p.mtrx_params[t][p.S - s - 2 + t][i]
-        #         mtry_params_to_use[t][i] = p.mtry_params[t][p.S - s - 2 + t][i]
         temp_etr = [
             [p.etr_params[t][p.S - s - 2 + t][i] for i in range(num_params)]
             for t in range(s + 2)
@@ -485,20 +471,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
 
         # initialize array of diagonal elements
         num_params = len(p.etr_params[t][0])
-        # etr_params_to_use = [
-        #     [0 for j in range(num_params)] for i in range(p.S)
-        # ]
-        # mtrx_params_to_use = [
-        #     [0 for j in range(num_params)] for i in range(p.S)
-        # ]
-        # mtry_params_to_use = [
-        #     [0 for j in range(num_params)] for i in range(p.S)
-        # ]
-        # for i in range(num_params):
-        #     for s in range(p.S):
-        #         etr_params_to_use[s][i] = p.etr_params[t + s][s][i]
-        #         mtrx_params_to_use[s][i] = p.mtrx_params[t + s][s][i]
-        #         mtry_params_to_use[s][i] = p.mtry_params[t + s][s][i]
         etr_params_to_use = [
             [p.etr_params[t + s][s][i] for i in range(num_params)]
             for s in range(p.S)
@@ -788,25 +760,7 @@ def run_TPI(p, client=None):
         bmat_splus1 = np.zeros((p.T, p.S, p.J))
         bmat_splus1[:, :, :] = b_mat[: p.T, :, :]
 
-        # etr_params_4D = np.tile(
-        #     p.etr_params[: p.T, :, :].reshape(
-        #         p.T, p.S, 1, p.etr_params.shape[2]
-        #     ),
-        #     (1, 1, p.J, 1),
-        # )
         num_params = len(p.etr_params[0][0])
-        # etr_params_4D = [
-        #     [
-        #         [[0 for i in range(num_params)] for j in range(p.J)]
-        #         for i in range(p.S)
-        #     ]
-        #     for t in range(p.T)
-        # ]
-        # for t in range(p.T):
-        #     for s in range(p.S):
-        #         for j in range(p.J):
-        #             for i in range(num_params):
-        #                 etr_params_4D[t][s][j][i] = p.etr_params[t][s][i]
         etr_params_4D = [
             [
                 [
@@ -1147,26 +1101,6 @@ def run_TPI(p, client=None):
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
-    # mtrx_params_4D = [
-    #     [
-    #         [[0 for i in range(num_params)] for j in range(p.J)]
-    #         for i in range(p.S)
-    #     ]
-    #     for t in range(p.T)
-    # ]
-    # mtry_params_4D = [
-    #     [
-    #         [[0 for i in range(num_params)] for j in range(p.J)]
-    #         for i in range(p.S)
-    #     ]
-    #     for t in range(p.T)
-    # ]
-    # for t in range(p.T):
-    #     for s in range(p.S):
-    #         for j in range(p.J):
-    #             for i in range(num_params):
-    #                 mtrx_params_4D[t][s][j][i] = p.mtrx_params[t][s][i]
-    #                 mtry_params_4D[t][s][j][i] = p.mtry_params[t][s][i]
     etr_params_4D = [
         [
             [

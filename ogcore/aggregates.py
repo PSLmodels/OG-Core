@@ -309,7 +309,7 @@ def revenue(
         ubi (array_like): universal basic income household distributions
         theta (Numpy array): social security replacement rate for each
             lifetime income group
-        etr_params (Numpy array): parameters of the effective tax rate
+        etr_params (list): list of parameters of the effective tax rate
             functions
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or

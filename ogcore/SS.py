@@ -271,14 +271,6 @@ def inner_loop(outer_loop_vars, p, client):
     theta = tax.replacement_rate_vals(nssmat, w, factor, None, p)
 
     num_params = len(p.etr_params[-1][0])
-    # etr_params_3D = [
-    #     [[0 for i in range(num_params)] for j in range(p.J)]
-    #     for i in range(p.S)
-    # ]
-    # for s in range(p.S):
-    #     for j in range(p.J):
-    #         for i in range(len(p.etr_params[-1][0])):
-    #             etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
     etr_params_3D = [
         [
             [p.etr_params[-1][s][i] for i in range(num_params)]
@@ -410,20 +402,7 @@ def inner_loop(outer_loop_vars, p, client):
     new_p_i = np.dot(p.io_matrix, new_p_m)
     new_p_tilde = aggr.get_ptilde(new_p_i, p.tau_c[-1, :], p.alpha_c)
 
-    # TODO: return to this and tile lists if need to
-    # etr_params_3D = np.tile(
-    #     np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
-    #     (1, p.J, 1),
-    # )
     num_params = len(p.etr_params[-1][0])
-    # etr_params_3D = [
-    #     [[0 for i in range(num_params)] for j in range(p.J)]
-    #     for i in range(p.S)
-    # ]
-    # for s in range(p.S):
-    #     for j in range(p.J):
-    #         for i in range(len(p.etr_params[-1][0])):
-    #             etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
     etr_params_3D = [
         [
             [p.etr_params[-1][s][i] for i in range(num_params)]
@@ -741,26 +720,6 @@ def SS_solver(
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.etr_params[-1][0])
-    # etr_params_3D = [
-    #     [[0 for i in range(num_etr_params)] for j in range(p.J)]
-    #     for i in range(p.S)
-    # ]
-    # mtrx_params_3D = [
-    #     [[0 for i in range(num_mtrx_params)] for j in range(p.J)]
-    #     for i in range(p.S)
-    # ]
-    # mtry_params_3D = [
-    #     [[0 for i in range(num_mtry_params)] for j in range(p.J)]
-    #     for i in range(p.S)
-    # ]
-    # for s in range(p.S):
-    #     for j in range(p.J):
-    #         for i in range(num_etr_params):
-    #             etr_params_3D[s][j][i] = p.etr_params[-1][s][i]
-    #         for i in range(num_mtrx_params):
-    #             mtrx_params_3D[s][j][i] = p.mtrx_params[-1][s][i]
-    #         for i in range(num_mtry_params):
-    #             mtry_params_3D[s][j][i] = p.mtry_params[-1][s][i]
     etr_params_3D = [
         [
             [p.etr_params[-1][s][i] for i in range(num_params)]

@@ -361,9 +361,9 @@ def FOC_savings(
             lifetime income group
         e (Numpy array): effective labor units
         rho (Numpy array): mortality rates
-        etr_params (Numpy array): parameters of the effective tax rate
+        etr_params (list): parameters of the effective tax rate
             functions
-        mtry_params (Numpy array): parameters of the marginal tax rate
+        mtry_params (list): parameters of the marginal tax rate
             on capital income functions
         t (int): model period
         j (int): index of ability type
@@ -530,9 +530,9 @@ def FOC_labor(
         chi_n (Numpy array): utility weight on the disutility of labor
             supply
         e (Numpy array): effective labor units
-        etr_params (Numpy array): parameters of the effective tax rate
+        etr_params (list): parameters of the effective tax rate
             functions
-        mtrx_params (Numpy array): parameters of the marginal tax rate
+        mtrx_params (list): parameters of the marginal tax rate
             on labor income functions
         t (int): model period
         j (int): index of ability type

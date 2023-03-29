@@ -59,7 +59,7 @@ def get_tax_rates(
     functions.
 
     Args:
-        params (array_like or function): parameters of the tax function, or
+        params (list): list of parameters of the tax function, or
             nonparametric function for tax function type "mono"
         X (array_like): labor income data
         Y (array_like): capital income data
@@ -259,12 +259,12 @@ def get_tax_rates(
         else:
             if np.isscalar(income):
                 txrates = params[0](income)
-            elif (
-                income.ndim == 1
-            ):
+            elif income.ndim == 1:
                 # for s in range(income.shape[0]):
                 #     txrates[s] = params[s][0](income[s])
-                if (income.shape[0] == len(params)) and (len(params) > 1):  # for case where loops over S
+                if (income.shape[0] == len(params)) and (
+                    len(params) > 1
+                ):  # for case where loops over S
                     txrates = [
                         params[s][0](income[s]) for s in range(income.shape[0])
                     ]
