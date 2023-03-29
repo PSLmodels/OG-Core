@@ -264,14 +264,22 @@ def get_tax_rates(
             ):  # I think only calls here are for loops over S (or just a single age)
                 # for s in range(income.shape[0]):
                 #     txrates[s] = params[s][0](income[s])
-                txrates = [params[s][0](income[s]) for s in range(income.shape[0])]
+                txrates = [
+                    params[s][0](income[s]) for s in range(income.shape[0])
+                ]
             elif (
                 income.ndim == 2
             ):  # I think only calls here are for loops over S and J
                 # for s in range(income.shape[0]):
                 #     for j in range(income.shape[1]):
                 #         txrates[s, j] = params[s][j][0](income[s, j])
-                txrates = [[params[s][j][0](income[s, j]) for j in range(income.shape[1])] for s in range(income.shape[0])]
+                txrates = [
+                    [
+                        params[s][j][0](income[s, j])
+                        for j in range(income.shape[1])
+                    ]
+                    for s in range(income.shape[0])
+                ]
             else:  # to catch 3D arrays, looping over T, S, J
                 # for t in range(income.shape[0]):
                 #     for s in range(income.shape[1]):
@@ -279,7 +287,16 @@ def get_tax_rates(
                 #             txrates[t, s, j] = params[t][s][j][0](
                 #                 income[t, s, j]
                 #             )
-                txrates = [[[params[t][s][j][0](income[t, s, j]) for j in range(income.shape[2])] for s in range(income.shape[1])] for t in range(income.shape[0])]
+                txrates = [
+                    [
+                        [
+                            params[t][s][j][0](income[t, s, j])
+                            for j in range(income.shape[2])
+                        ]
+                        for s in range(income.shape[1])
+                    ]
+                    for t in range(income.shape[0])
+                ]
         np.array(txrates)
     return txrates
 
