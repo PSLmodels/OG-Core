@@ -639,7 +639,7 @@ class Specifications(paramtools.Parameters):
         try:
             if revision["tax_func_type"] in ["mono", "mono2D"]:
                 tax_func_params_functions = True
-        except KeyError:
+        except (KeyError, TypeError):
             pass
         if self.tax_func_type in ["mono", "mono2D"]:
             tax_func_params_functions = True
