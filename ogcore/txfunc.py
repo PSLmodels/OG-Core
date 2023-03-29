@@ -261,12 +261,17 @@ def get_tax_rates(
                 txrates = params[0](income)
             elif (
                 income.ndim == 1
-            ):  # I think only calls here are for loops over S (or just a single age)
+            ):
                 # for s in range(income.shape[0]):
                 #     txrates[s] = params[s][0](income[s])
-                txrates = [
-                    params[s][0](income[s]) for s in range(income.shape[0])
-                ]
+                if income.shape[0] == len(params):  # for case where loops over S
+                    txrates = [
+                        params[s][0](income[s]) for s in range(income.shape[0])
+                    ]
+                else:
+                    txrates = [
+                        params[0](income[i]) for i in range(income.shape[0])
+                    ]
             elif (
                 income.ndim == 2
             ):  # I think only calls here are for loops over S and J

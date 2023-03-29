@@ -1086,7 +1086,7 @@ def plot_2D_taxfunc(
     if len(tax_func_type) < len(tax_param_list):
         tax_func_type = [tax_func_type[0]] * len(tax_param_list)
     for i, v in enumerate(tax_func_type):
-        assert v in ["DEP", "DEP_totalinc", "GS", "linear"]
+        assert v in ["DEP", "DEP_totalinc", "GS", "linear", "mono"]
     assert rate_type in ["etr", "mtrx", "mtry"]
     assert len(tax_param_list) == len(labels)
 
@@ -1118,13 +1118,8 @@ def plot_2D_taxfunc(
     # get tax rates for each point in the income support and plot
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
-        if tax_func_type[i] == "mono":
-            tax_params = tax_params[rate_key][s][t][0]
-        else:
-            tax_param_array = np.array(tax_params[rate_key])
-            tax_params = tax_param_array[s, t, :]
+        tax_params = tax_params[rate_key][s][t]
         rates = txfunc.get_tax_rates(
-            # tax_params[rate_key][s, t, :],
             tax_params,
             X,
             Y,

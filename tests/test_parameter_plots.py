@@ -22,6 +22,9 @@ base_taxfunctions = utils.safe_read_pickle(
 GS_nonage_spec_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_GS_nonage.pkl")
 )
+mono_nonage_spec_taxfunctions = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
+)
 micro_data = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
 )
@@ -384,6 +387,7 @@ def test_plot_income_data_save_fig(tmpdir):
         (base_taxfunctions, 43, "DEP", "etr", True, [micro_data], None),
         (base_taxfunctions, 43, "DEP", "mtry", True, [micro_data], None),
         (base_taxfunctions, 43, "DEP", "mtrx", True, [micro_data], None),
+        (mono_nonage_spec_taxfunctions, None, "mono", "etr", True, None, None),
     ],
     ids=[
         "over_labinc=True",
@@ -392,6 +396,7 @@ def test_plot_income_data_save_fig(tmpdir):
         "with data",
         "MTR capital income",
         "MTR labor income",
+        "Mono functions"
     ],
 )
 def test_plot_2D_taxfunc(
