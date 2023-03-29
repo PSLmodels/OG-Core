@@ -635,8 +635,6 @@ class Specifications(paramtools.Parameters):
         # Skip over the adjust method if the tax paraemeters passed in
         # are fucntions (e.g., in the case of tax_func_type = mono)
         tax_update_dict = {}
-        print("REVSISION KEYS = ", revision.keys())
-        print("TAX FUNC TYPE = ", self.tax_func_type)
         tax_func_params_functions = False
         try:
             if revision["tax_func_type"] in ["mono", "mono2D"]:
@@ -647,11 +645,8 @@ class Specifications(paramtools.Parameters):
             tax_func_params_functions = True
         if tax_func_params_functions:
             try:
-                print("TO HERE")
                 for item in ["etr_params", "mtrx_params", "mtry_params"]:
-                    print("TO HERE1")
                     if item in revision.keys():
-                        print("TO HERE2")
                         tax_update_dict[item] = revision[item]
                         del revision[item]
             except (KeyError, TypeError):
@@ -660,7 +655,6 @@ class Specifications(paramtools.Parameters):
         # put tax values skipped over in the adjust method back in so
         # they are in the parameters class.
         if tax_update_dict != {}:
-            print("TO HERE 4")
             for key, value in tax_update_dict.items():
                 setattr(self, key, value)
         self.compute_default_params()
