@@ -16,6 +16,7 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
+import cloudpickle
 from scipy.interpolate import interp1d as intp
 import matplotlib.pyplot as plt
 import ogcore.parameter_plots as pp
@@ -58,7 +59,7 @@ def get_tax_rates(
     functions.
 
     Args:
-        params (array_like or function): parameters of the tax function, or
+        params (list): list of parameters of the tax function, or
             nonparametric function for tax function type "mono"
         X (array_like): labor income data
         Y (array_like): capital income data
@@ -79,6 +80,10 @@ def get_tax_rates(
     X2 = X**2
     Y2 = Y**2
     income = X + Y
+    if tax_func_type != "mono":
+        params = np.array(
+            params
+        )  # easier to use arrays for calculations below, except when can't (bc lists of functions)
     if tax_func_type == "GS":
         phi0, phi1, phi2 = (
             np.squeeze(params[..., 0]),
@@ -248,9 +253,56 @@ def get_tax_rates(
         rate = np.squeeze(params[..., 0])
         txrates = rate * np.ones_like(income)
     elif tax_func_type == "mono":
-        mono_interp = params[0]
-        txrates = mono_interp(income)
-
+        if for_estimation:
+            mono_interp = params[0]
+            txrates = mono_interp(income)
+        else:
+            if np.isscalar(income):
+                txrates = params[0](income)
+            elif income.ndim == 1:
+                # for s in range(income.shape[0]):
+                #     txrates[s] = params[s][0](income[s])
+                if (income.shape[0] == len(params)) and (
+                    len(params) > 1
+                ):  # for case where loops over S
+                    txrates = [
+                        params[s][0](income[s]) for s in range(income.shape[0])
+                    ]
+                else:
+                    txrates = [
+                        params[0](income[i]) for i in range(income.shape[0])
+                    ]
+            elif (
+                income.ndim == 2
+            ):  # I think only calls here are for loops over S and J
+                # for s in range(income.shape[0]):
+                #     for j in range(income.shape[1]):
+                #         txrates[s, j] = params[s][j][0](income[s, j])
+                txrates = [
+                    [
+                        params[s][j][0](income[s, j])
+                        for j in range(income.shape[1])
+                    ]
+                    for s in range(income.shape[0])
+                ]
+            else:  # to catch 3D arrays, looping over T, S, J
+                # for t in range(income.shape[0]):
+                #     for s in range(income.shape[1]):
+                #         for j in range(income.shape[2]):
+                #             txrates[t, s, j] = params[t][s][j][0](
+                #                 income[t, s, j]
+                #             )
+                txrates = [
+                    [
+                        [
+                            params[t][s][j][0](income[t, s, j])
+                            for j in range(income.shape[2])
+                        ]
+                        for s in range(income.shape[1])
+                    ]
+                    for t in range(income.shape[0])
+                ]
+        txrates = np.array(txrates)
     return txrates
 
 
@@ -686,7 +738,7 @@ def txfunc_est(
             income, txrates, wgts, bins=bin_num
         )
         wsse = wsse_cstr
-        params = mono_interp
+        params = [mono_interp]
         params_to_plot = params
     else:
         raise RuntimeError(
@@ -1626,7 +1678,10 @@ def tax_func_estimate(
 
     if tax_func_path:
         with open(tax_func_path, "wb") as f:
-            pickle.dump(dict_params, f)
+            try:
+                pickle.dump(dict_params, f)
+            except AttributeError:
+                cloudpickle.dump(dict_params, f)
 
     return dict_params
 
@@ -1646,10 +1701,8 @@ def monotone_spline(
         if not np.isscalar(bins):
             err_msg = "monotone_spline2 ERROR: bins value is not type scalar"
             raise ValueError(err_msg)
-        N = bins
-        x_binned, y_binned, weights_binned = utils.avg_by_bin(
-            x, y, weights, bins
-        )
+        N = int(bins)
+        x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y, weights, N)
 
     elif not bins:
         N = len(x)

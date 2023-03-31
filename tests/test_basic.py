@@ -66,7 +66,6 @@ def test_constant_demographics_TPI(tmpdir, dask_client):
     og_spec = {
         "constant_demographics": True,
         "budget_balance": True,
-        "zero_taxes": True,
         "maxiter": 2,
         "r_gov_shift": [0.0],
         "zeta_D": [0.0, 0.0],
@@ -84,14 +83,14 @@ def test_constant_demographics_TPI(tmpdir, dask_client):
     }
     spec.update_specifications(og_spec)
     spec.etr_params = np.zeros(
-        (spec.T + spec.S, spec.S, spec.etr_params.shape[2])
-    )
+        (spec.T + spec.S, spec.S, len(spec.etr_params[0][0]))
+    ).tolist()
     spec.mtrx_params = np.zeros(
-        (spec.T + spec.S, spec.S, spec.mtrx_params.shape[2])
-    )
+        (spec.T + spec.S, spec.S, len(spec.mtrx_params[0][0]))
+    ).tolist()
     spec.mtry_params = np.zeros(
-        (spec.T + spec.S, spec.S, spec.mtry_params.shape[2])
-    )
+        (spec.T + spec.S, spec.S, len(spec.mtry_params[0][0]))
+    ).tolist()
     # Run SS
     ss_outputs = SS.run_SS(spec, client=dask_client)
     # save SS results
@@ -123,7 +122,6 @@ def test_constant_demographics_TPI_small_open(tmpdir, dask_client):
     og_spec = {
         "constant_demographics": True,
         "budget_balance": True,
-        "zero_taxes": True,
         "maxiter": 2,
         "r_gov_shift": [0.0],
         "zeta_D": [0.0, 0.0],
@@ -141,14 +139,14 @@ def test_constant_demographics_TPI_small_open(tmpdir, dask_client):
     }
     spec.update_specifications(og_spec)
     spec.etr_params = np.zeros(
-        (spec.T + spec.S, spec.S, spec.etr_params.shape[2])
-    )
+        (spec.T + spec.S, spec.S, len(spec.etr_params[0][0]))
+    ).tolist()
     spec.mtrx_params = np.zeros(
-        (spec.T + spec.S, spec.S, spec.mtrx_params.shape[2])
-    )
+        (spec.T + spec.S, spec.S, len(spec.mtrx_params[0][0]))
+    ).tolist()
     spec.mtry_params = np.zeros(
-        (spec.T + spec.S, spec.S, spec.mtry_params.shape[2])
-    )
+        (spec.T + spec.S, spec.S, len(spec.mtry_params[0][0]))
+    ).tolist()
     # Run SS
     ss_outputs = SS.run_SS(spec, client=dask_client)
     # save SS results
