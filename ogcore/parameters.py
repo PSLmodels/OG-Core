@@ -3,7 +3,6 @@ import numpy as np
 import scipy.interpolate as si
 import pkg_resources
 import paramtools
-from itertools import chain
 
 # import ogcore
 from ogcore import elliptical_u_est
