@@ -1,48 +1,59 @@
 
+
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Contributor Guide &#8212; OG-Core</title>
-    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
@@ -50,61 +61,93 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/contributing/contributor_guide';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="API" href="../api/public_api.html" />
     <link rel="prev" title="OG-Core" href="../intro/intro.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    
-    <div class="container-fluid" id="banner"></div>
-
-    
-
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../../index.html">
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
       
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+      <div class="bd-sidebar-primary bd-sidebar">
         
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro/intro.html">
+  
+  
+  
+  
+    
+    
       
-      
-      <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">OG-Core</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/OG-Core_logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
@@ -113,502 +156,286 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Contributing to OG-Core
- </span>
-</p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Contributor Guide
-  </a>
- </li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Contributor Guide</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core API
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../api/public_api.html">
-   API
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/aggregates.html">
-     Aggregates Equations
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/elliptical_u_est.html">
-     Elliptical Utility Function Estimation
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/execute.html">
-     Model Execution Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/firm.html">
-     Firm Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/fiscal.html">
-     Fiscal Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/household.html">
-     Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_plots.html">
-     Output Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_tables.html">
-     Output Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_plots.html">
-     Parameter Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_tables.html">
-     Parameter Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameters.html">
-     Parameters Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/tax.html">
-     Tax Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/txfunc.html">
-     Tax Function Estimation Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/utils.html">
-     Utilities Functions
-    </a>
-   </li>
-  </ul>
- </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core Theory
- </span>
-</p>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/intro.html">
-   Model Overview
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/demographics.html">
-   Demographics
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/households.html">
-   Households
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/firms.html">
-   Firms
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/government.html">
-   Government
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/open_economy.html">
-   Open Economy Options
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/financial.html">
-   Financial Intermediary
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/market_clearing.html">
-   Market Clearing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/stationarization.html">
-   Stationarization
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/equilibrium.html">
-   Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/calibration.html">
-   Calibrating OG-Core
-  </a>
- </li>
+</li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Appendix
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../theory/derivations.html">
-   Derivations
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/demographics.html">Demographics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/households.html">Households</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/firms.html">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/market_clearing.html">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/stationarization.html">Stationarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equilibrium.html">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/calibration.html">Calibrating OG-Core</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  References
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../OGCore_references.html">
-   References
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/derivations.html">Derivations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Citations of OG-Core
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../citations.html">
-   Citations and use cases of OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../OGCore_references.html">References</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../citations.html">Citations and use cases of OG-Core</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/contributing/contributor_guide.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
 </div>
 
 
-          
-
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
-<div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
 
 
 
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/content/contributing/contributor_guide.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
   </span>
-
-</label>
-
-        
-    </div>
-    <div class="header-article__right">
-<button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
   <i class="fas fa-expand"></i>
   </span>
 
 </button>
 
-<div class="menu-dropdown menu-dropdown-repository-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Source repositories">
-      <i class="fab fa-github"></i>
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Source repository"
->
-  
+`);
+</script>
 
-<span class="headerbtn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="headerbtn__text-container">repository</span>
-</a>
-
-      </li>
-      
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/contributing/contributor_guide.html&body=Your%20issue%20content%20here."
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Open an issue"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="headerbtn__text-container">open issue</span>
-</a>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-
-<div class="menu-dropdown menu-dropdown-download-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Download this page">
-      <i class="fas fa-download"></i>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="../../_sources/content/contributing/contributor_guide.md"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download source file"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="headerbtn__text-container">.md</span>
-</a>
-
-      </li>
-      
-      <li>
-        
-<button onclick="printPdf(this)"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="left"
-title="Print to PDF"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="headerbtn__text-container">.pdf</span>
-</button>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-<label for="__page-toc"
-  class="headerbtn headerbtn-page-toc"
-  
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-list"></i>
-  </span>
-
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
 </label>
-
+</div></div>
+      
     </div>
+  
 </div>
-
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-    <div class="tocsection onthispage pt-5 pb-3">
-        <i class="fas fa-list"></i> Contents
-    </div>
-    <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#setup-python">
-   Setup Python
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#setup-git">
-   Setup Git
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#workflow">
-   Workflow
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#submitting-a-github-issue">
-     Submitting a GitHub Issue
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#submitting-a-github-pull-request">
-     Submitting a GitHub Pull Request
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#simple-usage">
-   Simple Usage
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
-
-    </nav>
 </div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Contributor Guide</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#setup-python">
-   Setup Python
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#setup-git">
-   Setup Git
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#workflow">
-   Workflow
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#submitting-a-github-issue">
-     Submitting a GitHub Issue
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#submitting-a-github-pull-request">
-     Submitting a GitHub Pull Request
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#simple-usage">
-   Simple Usage
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
+              
+              
 
-                        </nav>
-                    </div>
-                </div>
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Contributor Guide</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
             </div>
-            <main id="main-content" role="main">
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-python">Setup Python</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-git">Setup Git</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow">Workflow</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#submitting-a-github-issue">Submitting a GitHub Issue</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#submitting-a-github-pull-request">Submitting a GitHub Pull Request</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-usage">Simple Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section class="tex2jax_ignore mathjax_ignore" id="contributor-guide">
-<span id="chap-contribguide"></span><h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Permalink to this headline">#</a></h1>
+<span id="chap-contribguide"></span><h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Permalink to this heading">#</a></h1>
 <p>The purpose of this guide is to provide the necessary background such that you can make improvements to the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> and share them with others working on the model.</p>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> code is tracked by using <a class="reference external" href="https://help.github.com/articles/github-glossary/#git"><code class="docutils literal notranslate"><span class="pre">Git</span></code></a> version control software along with the <a class="reference external" href="https://github.com/">GitHub.com</a> web platform for <code class="docutils literal notranslate"><span class="pre">Git</span></code> workflow and collaboration. Following the next steps will get you up and running and contributing to the model even if you’ve never used <code class="docutils literal notranslate"><span class="pre">Git</span></code> or other version control software.</p>
 <p>If you have already completed the <a class="reference internal" href="#sec-setuppython"><span class="std std-ref">Setup Python</span></a> and <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> sections, you can skip to the <a class="reference internal" href="#sec-workflow"><span class="std std-ref">Workflow</span></a> section.</p>
 <section id="setup-python">
-<span id="sec-setuppython"></span><h2>Setup Python<a class="headerlink" href="#setup-python" title="Permalink to this headline">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is written in the Python programming language. Download and install the free and most recent Anaconda distribution of Python and associated libraries from <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda.com</a>.<a class="footnote-reference brackets" href="#recent-python" id="id1">1</a> You should do this even if you already have Python installed on your computer because the Anaconda distribution contains additional Python packages that are used by <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> (many of which are not included in other Python installations). You can install the Anaconda distribution without having administrative privileges on your computer and the Anaconda distribution will not interfere with any Python installation that came as part of your computer’s operating system.</p>
+<span id="sec-setuppython"></span><h2>Setup Python<a class="headerlink" href="#setup-python" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is written in the Python programming language. Download and install the free and most recent Anaconda distribution of Python and associated libraries from <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda.com</a>.<a class="footnote-reference brackets" href="#recent-python" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> You should do this even if you already have Python installed on your computer because the Anaconda distribution contains additional Python packages that are used by <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> (many of which are not included in other Python installations). You can install the Anaconda distribution without having administrative privileges on your computer and the Anaconda distribution will not interfere with any Python installation that came as part of your computer’s operating system.</p>
 </section>
 <section id="setup-git">
-<span id="sec-setupgit"></span><h2>Setup Git<a class="headerlink" href="#setup-git" title="Permalink to this headline">#</a></h2>
-<ol>
+<span id="sec-setupgit"></span><h2>Setup Git<a class="headerlink" href="#setup-git" title="Permalink to this heading">#</a></h2>
+<ol class="arabic">
 <li><p>Create a <a class="reference external" href="https://github.com/">GitHub</a> user account.</p></li>
 <li><p>Install Git on your local machine by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/set-up-git/">Git setup</a>.</p></li>
 <li><p>Tell Git to remember your GitHub password by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/caching-your-github-password-in-git/">password setup</a>.</p></li>
 <li><p>Sign in to GitHub and create your own <a class="reference external" href="https://help.github.com/articles/github-glossary/#remote">remote</a> <a class="reference external" href="https://help.github.com/articles/github-glossary/#repository">repository</a> (repo) of <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> by clicking <a class="reference external" href="https://help.github.com/articles/github-glossary/#fork">Fork</a> in the upper right corner of the <a class="reference external" href="https://github.com/PSLmodels/OG-Core">OG-Core GitHub page</a>. Select your username when asked “Where should we fork this repository?”</p></li>
 <li><p>From your command line on your local computer, navigate to the directory on your computer where you would like your local repo to reside.</p></li>
-<li><p>Create a local repo by entering at the command line the text after the $.<a class="footnote-reference brackets" href="#commandline-note" id="id2">2</a> This step creates a directory called <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> in the directory that you specified in the prior step:</p>
+<li><p>Create a local repo by entering at the command line the text after the $.<a class="footnote-reference brackets" href="#commandline-note" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> This step creates a directory called <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> in the directory that you specified in the prior step:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="p">[</span><span class="n">github</span><span class="o">-</span><span class="n">username</span><span class="p">]</span><span class="o">/</span><span class="n">OG</span><span class="o">-</span><span class="n">Core</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
@@ -639,7 +466,7 @@ Activate this environment as follows:</p>
 </li>
 </ol>
 <p>If you have made it this far, you’ve successfully made a remote copy (a
-fork) of the central <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repo. That remote repo is hosted on <a class="reference external" href="http://GitHub.com">GitHub.com</a> at <a class="reference external" href="https://github.com/PSLmodels/OG-Core">https://github.com/PSLmodels/OG-Core</a>. You have also created a local repo (a <a class="reference external" href="https://help.github.com/articles/github-glossary/#clone">clone</a>) that lives
+fork) of the central <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repo. That remote repo is hosted on <a class="reference external" href="http://GitHub.com">GitHub.com</a> at <a class="github reference external" href="https://github.com/PSLmodels/OG-Core">PSLmodels/OG-Core</a>. You have also created a local repo (a <a class="reference external" href="https://help.github.com/articles/github-glossary/#clone">clone</a>) that lives
 on your machine and only you can see; you will make your changes to
 the OG-Core model by editing the files in the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>
 directory on your machine and then submitting those changes to your
@@ -651,17 +478,17 @@ section introduces some standard Git practices and guides you through
 the contribution process.</p>
 </section>
 <section id="workflow">
-<span id="sec-workflow"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">#</a></h2>
+<span id="sec-workflow"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this heading">#</a></h2>
 <section id="submitting-a-github-issue">
-<span id="sec-githubissue"></span><h3>Submitting a GitHub Issue<a class="headerlink" href="#submitting-a-github-issue" title="Permalink to this headline">#</a></h3>
+<span id="sec-githubissue"></span><h3>Submitting a GitHub Issue<a class="headerlink" href="#submitting-a-github-issue" title="Permalink to this heading">#</a></h3>
 <p>GitHub “issues” are an excellent way to ask questions, include code examples, and tag specific GitHub users.</p>
 </section>
 <section id="submitting-a-github-pull-request">
-<span id="sec-githubpr"></span><h3>Submitting a GitHub Pull Request<a class="headerlink" href="#submitting-a-github-pull-request" title="Permalink to this headline">#</a></h3>
+<span id="sec-githubpr"></span><h3>Submitting a GitHub Pull Request<a class="headerlink" href="#submitting-a-github-pull-request" title="Permalink to this heading">#</a></h3>
 <p>The following text describes a typical workflow for changing
 <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>.  Different workflows may be necessary in some
 situations, in which case other contributors are here to help.</p>
-<ol>
+<ol class="arabic">
 <li><p>Before you edit the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> source code on your machine,
 make sure you have the latest version of the central OG-Core
 repository by executing the following <strong>four</strong> Git commands:</p>
@@ -729,9 +556,9 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
 </section>
 </section>
 <section id="simple-usage">
-<span id="sec-simpleusage"></span><h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Permalink to this headline">#</a></h2>
+<span id="sec-simpleusage"></span><h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> comes with an example run script <a class="reference external" href="https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py"><code class="docutils literal notranslate"><span class="pre">OG-Core/run_examples/run_ogcore_example.py</span></code></a>. Running this script will solve for the current-law baseline steady state and transition path solution of a calibrated version of an economy as well as a simple reform (increasing the corporate income tax rate) version of the model with its corresponding steady-state and transition path solution. This example script saves the full set of model output from both baseline and reform runs of the model. It also creates a large number of commonly used analytical figures and tables. This example run script is a nice foundation for using the model to run your own customized simulations. Below are the steps to running the example script.</p>
-<ol>
+<ol class="arabic">
 <li><p>Navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository in the terminal of your local machine and activate the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment. If you have not created the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment, follow steps 1-11 in Section <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> above.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>OG-Core$ conda activate ogcore-dev
 </pre></div>
@@ -748,16 +575,16 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
 <p>A large set of plots that compare the changes among key variables from the baseline simulation to the reform simulation are saved in the <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/run_example_plots</span></code> directory. And a <code class="docutils literal notranslate"><span class="pre">.csv</span></code>-file table of key macroeconomic variable changes over the budget window (10 years) and in the long-run steady state is saved at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/ogcore_example_output.csv</span></code>.</p>
 </section>
 <section id="footnotes">
-<span id="sec-contribfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
+<span id="sec-contribfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">#</a></h2>
 <hr class="footnotes docutils" />
-<dl class="footnote brackets">
-<dt class="label" id="recent-python"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>The most recent version of Python from Anaconda is Python 3.9. <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is currently tested to run on Python 3.9 through 3.10.</p>
-</dd>
-<dt class="label" id="commandline-note"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>The dollar sign is the end of the command prompt on a Mac. If you are using the Windows operating system, this is usually the right angle bracket (&gt;). No matter the symbol, you don’t need to type it (or anything to its left, which shows the current working directory) at the command line before you enter a command; the prompt symbol and preceding characters should already be there.</p>
-</dd>
-</dl>
+<aside class="footnote brackets" id="recent-python" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>The most recent version of Python from Anaconda is Python 3.9. <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is currently tested to run on Python 3.9 through 3.10.</p>
+</aside>
+<aside class="footnote brackets" id="commandline-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>The dollar sign is the end of the command prompt on a Mac. If you are using the Windows operating system, this is usually the right angle bracket (&gt;). No matter the symbol, you don’t need to type it (or anything to its left, which shows the current working directory) at the command line before you enter a command; the prompt symbol and preceding characters should already be there.</p>
+</aside>
 </section>
 </section>
 
@@ -781,50 +608,113 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
     </script>
     <script>kernelName = 'python3'</script>
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="../intro/intro.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">OG-Core</p>
-        </div>
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../intro/intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">OG-Core</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="../api/public_api.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="../api/public_api.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">API</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
-  
-    By Jason DeBacker and Richard W. Evans<br/>
-  
-      &copy; Copyright 2022.<br/>
-</p>
-        </footer>
-    </div>
-    
-</div>
-
-
       </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-python">Setup Python</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-git">Setup Git</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow">Workflow</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#submitting-a-github-issue">Submitting a GitHub Issue</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#submitting-a-github-pull-request">Submitting a GitHub Pull Request</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-usage">Simple Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

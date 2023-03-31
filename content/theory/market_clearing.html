@@ -1,48 +1,59 @@
 
+
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Market Clearing &#8212; OG-Core</title>
-    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
@@ -52,61 +63,93 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/theory/market_clearing';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Stationarization" href="stationarization.html" />
     <link rel="prev" title="Financial Intermediary" href="financial.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    
-    <div class="container-fluid" id="banner"></div>
-
-    
-
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../../index.html">
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
       
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+      <div class="bd-sidebar-primary bd-sidebar">
         
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro/intro.html">
+  
+  
+  
+  
+    
+    
       
-      
-      <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">OG-Core</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/OG-Core_logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
@@ -115,510 +158,285 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Contributing to OG-Core
- </span>
-</p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../contributing/contributor_guide.html">
-   Contributor Guide
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributor_guide.html">Contributor Guide</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core API
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../api/public_api.html">
-   API
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/aggregates.html">
-     Aggregates Equations
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/elliptical_u_est.html">
-     Elliptical Utility Function Estimation
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/execute.html">
-     Model Execution Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/firm.html">
-     Firm Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/fiscal.html">
-     Fiscal Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/household.html">
-     Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_plots.html">
-     Output Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_tables.html">
-     Output Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_plots.html">
-     Parameter Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_tables.html">
-     Parameter Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameters.html">
-     Parameters Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/tax.html">
-     Tax Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/txfunc.html">
-     Tax Function Estimation Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/utils.html">
-     Utilities Functions
-    </a>
-   </li>
-  </ul>
- </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core Theory
- </span>
-</p>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="intro.html">
-   Model Overview
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="demographics.html">
-   Demographics
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="households.html">
-   Households
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="firms.html">
-   Firms
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="government.html">
-   Government
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="open_economy.html">
-   Open Economy Options
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="financial.html">
-   Financial Intermediary
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Market Clearing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="stationarization.html">
-   Stationarization
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="equilibrium.html">
-   Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="calibration.html">
-   Calibrating OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demographics.html">Demographics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="households.html">Households</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firms.html">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stationarization.html">Stationarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equilibrium.html">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating OG-Core</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Appendix
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="derivations.html">
-   Derivations
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="derivations.html">Derivations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  References
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../OGCore_references.html">
-   References
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../OGCore_references.html">References</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Citations of OG-Core
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../citations.html">
-   Citations and use cases of OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../citations.html">Citations and use cases of OG-Core</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/market_clearing.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
 </div>
 
 
-          
-
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
-<div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
 
 
 
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/content/theory/market_clearing.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
   </span>
-
-</label>
-
-        
-    </div>
-    <div class="header-article__right">
-<button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
   <i class="fas fa-expand"></i>
   </span>
 
 </button>
 
-<div class="menu-dropdown menu-dropdown-repository-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Source repositories">
-      <i class="fab fa-github"></i>
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Source repository"
->
-  
+`);
+</script>
 
-<span class="headerbtn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="headerbtn__text-container">repository</span>
-</a>
-
-      </li>
-      
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/market_clearing.html&body=Your%20issue%20content%20here."
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Open an issue"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="headerbtn__text-container">open issue</span>
-</a>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-
-<div class="menu-dropdown menu-dropdown-download-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Download this page">
-      <i class="fas fa-download"></i>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="../../_sources/content/theory/market_clearing.md"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download source file"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="headerbtn__text-container">.md</span>
-</a>
-
-      </li>
-      
-      <li>
-        
-<button onclick="printPdf(this)"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="left"
-title="Print to PDF"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="headerbtn__text-container">.pdf</span>
-</button>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-<label for="__page-toc"
-  class="headerbtn headerbtn-page-toc"
-  
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-list"></i>
-  </span>
-
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
 </label>
-
+</div></div>
+      
     </div>
+  
 </div>
-
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-    <div class="tocsection onthispage pt-5 pb-3">
-        <i class="fas fa-list"></i> Contents
-    </div>
-    <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#market-clearing-conditions">
-   Market Clearing Conditions
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#labor-market-clearing">
-     Labor market clearing
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#capital-markets-generalities">
-     Capital markets generalities
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#government-bond-market-clearing">
-     Government bond market clearing
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#private-capital-market-clearing">
-     Private capital market clearing
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#goods-market-clearing">
-     Goods market clearing
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#total-bequests-law-of-motion">
-   Total Bequests Law of Motion
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
-
-    </nav>
 </div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Market Clearing</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#market-clearing-conditions">
-   Market Clearing Conditions
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#labor-market-clearing">
-     Labor market clearing
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#capital-markets-generalities">
-     Capital markets generalities
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#government-bond-market-clearing">
-     Government bond market clearing
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#private-capital-market-clearing">
-     Private capital market clearing
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#goods-market-clearing">
-     Goods market clearing
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#total-bequests-law-of-motion">
-   Total Bequests Law of Motion
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
+              
+              
 
-                        </nav>
-                    </div>
-                </div>
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Market Clearing</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
             </div>
-            <main id="main-content" role="main">
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#market-clearing-conditions">Market Clearing Conditions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#labor-market-clearing">Labor market clearing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#capital-markets-generalities">Capital markets generalities</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#government-bond-market-clearing">Government bond market clearing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#private-capital-market-clearing">Private capital market clearing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#goods-market-clearing">Goods market clearing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#total-bequests-law-of-motion">Total Bequests Law of Motion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section class="tex2jax_ignore mathjax_ignore" id="market-clearing">
-<span id="chap-markclr"></span><h1>Market Clearing<a class="headerlink" href="#market-clearing" title="Permalink to this headline">#</a></h1>
+<span id="chap-markclr"></span><h1>Market Clearing<a class="headerlink" href="#market-clearing" title="Permalink to this heading">#</a></h1>
 <p><span class="math notranslate nohighlight">\(M+3\)</span> markets must clear in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>—the labor market, the private capital market, the government bond market, and <span class="math notranslate nohighlight">\(M\)</span> goods markets. By Walras’ Law, we only need to use <span class="math notranslate nohighlight">\(M+2\)</span> of those market clearing conditions because the remaining one is redundant. In the model, we choose to use the labor, private capital, government bond market, and the first <span class="math notranslate nohighlight">\(M-1\)</span> goods market clearing conditions and to ignore the <span class="math notranslate nohighlight">\(M\)</span>th goods market clearing condition. But we present all <span class="math notranslate nohighlight">\(M+3\)</span> market clearing conditions here. Further, the redundant <span class="math notranslate nohighlight">\(M\)</span>th goods market clearing condition—sometimes referred to as the resource constraint—makes for a nice check on the solution method to see if everything worked.</p>
 <p>We also characterize here the law of motion for total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span>. Although it is not technically a market clearing condition, one could think of the bequests law of motion as the bequests market clearing condition.</p>
 <section id="market-clearing-conditions">
-<span id="secmarkclrmktclr"></span><h2>Market Clearing Conditions<a class="headerlink" href="#market-clearing-conditions" title="Permalink to this headline">#</a></h2>
+<span id="secmarkclrmktclr"></span><h2>Market Clearing Conditions<a class="headerlink" href="#market-clearing-conditions" title="Permalink to this heading">#</a></h2>
 <p>The sections below detail the labor, government debt, private capital, and <span class="math notranslate nohighlight">\(M\)</span> goods market clearing conditions of the model in the baseline case of a large partially open economy.</p>
 <section id="labor-market-clearing">
-<span id="secmarkclrmktclr-l"></span><h3>Labor market clearing<a class="headerlink" href="#labor-market-clearing" title="Permalink to this headline">#</a></h3>
+<span id="secmarkclrmktclr-l"></span><h3>Labor market clearing<a class="headerlink" href="#labor-market-clearing" title="Permalink to this heading">#</a></h3>
 <p>Labor market clearing <a class="reference internal" href="#equation-eqmarkclrlab">(95)</a> requires that aggregate labor demand <span class="math notranslate nohighlight">\(\sum_{m=1}^M L_{m,t}\)</span> measured in efficiency units equal the sum of household efficiency labor supplied <span class="math notranslate nohighlight">\(e_{j,s}n_{j,s,t}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrlab">
 <span class="eqno">(95)<a class="headerlink" href="#equation-eqmarkclrlab" title="Permalink to this equation">#</a></span>\[  \sum_{m=1}^M L_{m,t} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \omega_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t\]</div>
 </section>
 <section id="capital-markets-generalities">
-<span id="secmarkclrmktclr-capgen"></span><h3>Capital markets generalities<a class="headerlink" href="#capital-markets-generalities" title="Permalink to this headline">#</a></h3>
-<p>Before describing the government bond market and private capital market clearing conditions, respectively, we define some general capital market conditions relative to both markets. Both the government bond market and private capital market are characterized by interest rates that differ exogenously. As described in <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(79)</a>, the interest rate at which the government repays debt or earns on surpluses <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> differs from the marginal product of capital <span class="math notranslate nohighlight">\(r_t\)</span> by an exogenous wedge. And the marginal product of capital is determined in equilibrium <span class="math notranslate nohighlight">\(r_t\)</span> (except in the closed economy case). But we make a simplifying assumption that households are indifferent regarding the allocation of their savings between holding government debt or investing in private capital.<a class="footnote-reference brackets" href="#indif-kd-note" id="id1">1</a> And we assume that this indifference exists in spite of the difference in relative returns between <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> and <span class="math notranslate nohighlight">\(r_{K,t}\)</span>. We define total domestic household savings in a given period as <span class="math notranslate nohighlight">\(B_t\)</span>.</p>
+<span id="secmarkclrmktclr-capgen"></span><h3>Capital markets generalities<a class="headerlink" href="#capital-markets-generalities" title="Permalink to this heading">#</a></h3>
+<p>Before describing the government bond market and private capital market clearing conditions, respectively, we define some general capital market conditions relative to both markets. Both the government bond market and private capital market are characterized by interest rates that differ exogenously. As described in <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(79)</a>, the interest rate at which the government repays debt or earns on surpluses <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> differs from the marginal product of capital <span class="math notranslate nohighlight">\(r_t\)</span> by an exogenous wedge. And the marginal product of capital is determined in equilibrium <span class="math notranslate nohighlight">\(r_t\)</span> (except in the closed economy case). But we make a simplifying assumption that households are indifferent regarding the allocation of their savings between holding government debt or investing in private capital.<a class="footnote-reference brackets" href="#indif-kd-note" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> And we assume that this indifference exists in spite of the difference in relative returns between <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> and <span class="math notranslate nohighlight">\(r_{K,t}\)</span>. We define total domestic household savings in a given period as <span class="math notranslate nohighlight">\(B_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-bt">
 <span class="eqno">(96)<a class="headerlink" href="#equation-eqmarkclr-bt" title="Permalink to this equation">#</a></span>\[  B_t \equiv \sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\omega_{s-1,t-1}\lambda_j b_{j,s,t} + i_s\omega_{s,t-1}\lambda_j b_{j,s,t}\Bigr) \quad \forall t\]</div>
 <p>And total domestic household savings is constrained to be allocated between domestic private capital ownership <span class="math notranslate nohighlight">\(K^d_t\)</span> and domestic holdings of government bonds <span class="math notranslate nohighlight">\(D^d_t\)</span>.</p>
@@ -626,7 +444,7 @@ title="Print to PDF"
 <span class="eqno">(97)<a class="headerlink" href="#equation-eqmarkclr-domcapcnstr" title="Permalink to this equation">#</a></span>\[  K^d_t + D^d_t = B_t \quad \forall t\]</div>
 </section>
 <section id="government-bond-market-clearing">
-<span id="secmarkclrmktclr-g"></span><h3>Government bond market clearing<a class="headerlink" href="#government-bond-market-clearing" title="Permalink to this headline">#</a></h3>
+<span id="secmarkclrmktclr-g"></span><h3>Government bond market clearing<a class="headerlink" href="#government-bond-market-clearing" title="Permalink to this heading">#</a></h3>
 <p>The government in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> can run deficits or surpluses each period, as shown in equation <a class="reference internal" href="government.html#equation-equnbalgbcbudgconstr">(73)</a> in Section <a class="reference internal" href="government.html#secunbalgbcbudgconstr"><span class="std std-ref">Government Budget Constraint</span></a>. Because the government can borrow or save on net each period <span class="math notranslate nohighlight">\(D_t\)</span>, someone must lend or borrow those assets on the supply side.</p>
 <p>We assume that foreigners hold a fixed percentage of new domestic government debt issuance. Let <span class="math notranslate nohighlight">\(D_{t+1} - D_t\)</span> be the total new issuance government debt, and let <span class="math notranslate nohighlight">\(D^f_{t+1} - D^f_t\)</span> be the amount of those new issuances held by foreigners. We assume that foreign holdings of new government issuances of debt <span class="math notranslate nohighlight">\(D^f_{t+1}-D^f_t\)</span> are an exogenous percentage <span class="math notranslate nohighlight">\(\zeta_D\in[0,1]\)</span> of total new government debt issuances. This percentage <span class="math notranslate nohighlight">\(\zeta_D\)</span> is something we calibrate.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad">
@@ -637,7 +455,7 @@ title="Print to PDF"
 <p>We discuss the meaning of different permutations of the <span class="math notranslate nohighlight">\(\zeta_D\)</span> parameter corner solutions <span class="math notranslate nohighlight">\(\zeta_D=0\)</span> and <span class="math notranslate nohighlight">\(\zeta_D=1\)</span> in Chapter <a class="reference internal" href="open_economy.html#chap-smopecn"><span class="std std-ref">Open Economy Options</span></a>. If <span class="math notranslate nohighlight">\(\zeta_D=0\)</span>, we are assuming a closed economy government bond market in which all new government debt is held by domestic households and in which all government debt in the long-run (steady-state) is held by domestic households <span class="math notranslate nohighlight">\(\bar{D}^f=0\)</span>.</p>
 </section>
 <section id="private-capital-market-clearing">
-<span id="secmarkclrmktclr-k"></span><h3>Private capital market clearing<a class="headerlink" href="#private-capital-market-clearing" title="Permalink to this headline">#</a></h3>
+<span id="secmarkclrmktclr-k"></span><h3>Private capital market clearing<a class="headerlink" href="#private-capital-market-clearing" title="Permalink to this heading">#</a></h3>
 <p>Domestic firms in each industry <span class="math notranslate nohighlight">\(m\)</span> rent private capital <span class="math notranslate nohighlight">\(K_t\equiv\sum_{m=1}^M K_{m,t}\)</span> from domestic households <span class="math notranslate nohighlight">\(K^d_t\)</span> and from foreign investors <span class="math notranslate nohighlight">\(K^f_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-ktkdkf">
 <span class="eqno">(100)<a class="headerlink" href="#equation-eqmarkclr-ktkdkf" title="Permalink to this equation">#</a></span>\[ K_t = K^d_t + K^f_t \quad\forall t \quad\text{where}\quad K_t \equiv  \sum_{m=1}^M K_{m,t}\]</div>
@@ -651,7 +469,7 @@ title="Print to PDF"
 <p>For the intermediate specifications of <span class="math notranslate nohighlight">\(\zeta_K\in(0,1)\)</span>, foreigners provide a fraction of the excess demand defined in <a class="reference internal" href="#equation-eqmarkclr-exdemk">(101)</a>. This allows for partial inflows of foreign private capital, partial crowd-out of government spending on private investment, and partial adjustment of the domestic interest rate <span class="math notranslate nohighlight">\(r_t\)</span>. This latter set of model specifications could be characterized as large-open economy or partial capital mobility.</p>
 </section>
 <section id="goods-market-clearing">
-<span id="secmarkclrmktclr-goods"></span><h3>Goods market clearing<a class="headerlink" href="#goods-market-clearing" title="Permalink to this headline">#</a></h3>
+<span id="secmarkclrmktclr-goods"></span><h3>Goods market clearing<a class="headerlink" href="#goods-market-clearing" title="Permalink to this heading">#</a></h3>
 <p>All <span class="math notranslate nohighlight">\(M\)</span> industry goods markets must clear. Total demand of production good <span class="math notranslate nohighlight">\(m\)</span> for consumption can be written as a function of total household demand for each consumption good <span class="math notranslate nohighlight">\(i\)</span></p>
 <div class="math notranslate nohighlight" id="equation-eqmarkconsdemand">
 <span class="eqno">(103)<a class="headerlink" href="#equation-eqmarkconsdemand" title="Permalink to this equation">#</a></span>\[  C_{m,t} = \sum_{i=1}^{I} \pi_{i,m} C_{i,t} \quad\forall t \quad\text{and}\quad m=1,2,...M\]</div>
@@ -661,7 +479,7 @@ title="Print to PDF"
 <p>Because we make a simplifying assumption that only the <span class="math notranslate nohighlight">\(M\)</span>th industry output can be used as investment, government spending, or government debt, consumption demand equals total output of good <span class="math notranslate nohighlight">\(m\)</span> in the first <span class="math notranslate nohighlight">\(M-1\)</span> industries.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrgoods-mm1">
 <span class="eqno">(105)<a class="headerlink" href="#equation-eqmarkclrgoods-mm1" title="Permalink to this equation">#</a></span>\[  Y_{m,t} = C_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1\]</div>
-<p>The output of the <span class="math notranslate nohighlight">\(M\)</span>th industry can be used for private investment, infrastructure investment, government spending, and government debt.<a class="footnote-reference brackets" href="#m-ind" id="id2">2</a> As such, the market clearing condition in the <span class="math notranslate nohighlight">\(M\)</span>th industry will look more like the traditional <span class="math notranslate nohighlight">\(Y=C+I+G+NX\)</span> expression.<a class="footnote-reference brackets" href="#rcrates-note" id="id3">3</a></p>
+<p>The output of the <span class="math notranslate nohighlight">\(M\)</span>th industry can be used for private investment, infrastructure investment, government spending, and government debt.<a class="footnote-reference brackets" href="#m-ind" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> As such, the market clearing condition in the <span class="math notranslate nohighlight">\(M\)</span>th industry will look more like the traditional <span class="math notranslate nohighlight">\(Y=C+I+G+NX\)</span> expression.<a class="footnote-reference brackets" href="#rcrates-note" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrgoods-m">
 <span class="eqno">(106)<a class="headerlink" href="#equation-eqmarkclrgoods-m" title="Permalink to this equation">#</a></span>\[  Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) \quad\forall t\]</div>
 <p>where</p>
@@ -675,26 +493,27 @@ title="Print to PDF"
 </section>
 </section>
 <section id="total-bequests-law-of-motion">
-<span id="secmarkclrbq"></span><h2>Total Bequests Law of Motion<a class="headerlink" href="#total-bequests-law-of-motion" title="Permalink to this headline">#</a></h2>
+<span id="secmarkclrbq"></span><h2>Total Bequests Law of Motion<a class="headerlink" href="#total-bequests-law-of-motion" title="Permalink to this heading">#</a></h2>
 <p>Total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> are the collection of savings of household from the previous period who died at the end of the period. These savings are augmented by the interest rate because they are returned after being invested in the production process.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrbq">
 <span class="eqno">(108)<a class="headerlink" href="#equation-eqmarkclrbq" title="Permalink to this equation">#</a></span>\[  BQ_{t} = (1+r_{p,t})\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}b_{j,s,t}\right) \quad\forall t\]</div>
 <p>Because the form of the period utility function in <a class="reference internal" href="households.html#equation-eqhhperutil">(27)</a> ensures that <span class="math notranslate nohighlight">\(b_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>, total bequests will always be positive <span class="math notranslate nohighlight">\(BQ_{j,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(t\)</span>.</p>
 </section>
 <section id="footnotes">
-<span id="secmarkclr-footnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
+<span id="secmarkclr-footnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">#</a></h2>
 <hr class="footnotes docutils" />
-<dl class="footnote brackets">
-<dt class="label" id="indif-kd-note"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>By assuming that households are indifferent between the savings allocation to private capital <span class="math notranslate nohighlight">\(K^d_t\)</span> and government bonds <span class="math notranslate nohighlight">\(D^d_t\)</span>, we avoid the need for another state variable in the solution method. In our approach the allocation between the two types of capital is simply a residual of the exogenous proportion <span class="math notranslate nohighlight">\(\zeta_K\)</span> of total private captial <span class="math notranslate nohighlight">\(K_t\)</span> allocated to foreigners implied by equations <a class="reference internal" href="#equation-eqmarkclr-zetak">(102)</a> and <a class="reference internal" href="#equation-eqmarkclr-ktkdkf">(100)</a> and a residual of the exogenous proportion <span class="math notranslate nohighlight">\(\zeta_D\)</span> of total government bonds <span class="math notranslate nohighlight">\(D_t\)</span> allocated to foreigners implied by equations <a class="reference internal" href="#equation-eqmarkclr-zetad">(98)</a> and <a class="reference internal" href="#equation-eqmarkclr-dtdddf">(99)</a>.</p>
-</dd>
-<dt class="label" id="m-ind"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>Our assumption that only the <span class="math notranslate nohighlight">\(M\)</span>th industry output can be used as investment, government spending, and government debt is a strong one. However, it greatly simplifies our equilibrium solution method in the transition path. Intuitively, think of an economy that has two industries—delivery services and trucks. The delivery services industry uses trucks and labor to produce its output. The trucks industry uses trucks and labor to produce its output. Both industries face depreciation of their capital (trucks). But only in the trucks industry can the output be used for both consumption and investment.</p>
-</dd>
-<dt class="label" id="rcrates-note"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>Because we treat household return <span class="math notranslate nohighlight">\(r_{p,t}\)</span> as an average between the return on private capital <span class="math notranslate nohighlight">\(r_{K,t}\)</span> and the return on government bonds <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> in <a class="reference internal" href="financial.html#equation-eq-portfolio-return">(94)</a>, and because this return is actually given to households in the budget constraint <a class="reference internal" href="households.html#equation-eqhhbc">(22)</a>, it is required for market clearing that the return paid to foreign suppliers of private capital <span class="math notranslate nohighlight">\(K^f_t\)</span> and foreign holders of government bonds <span class="math notranslate nohighlight">\(D^f_t\)</span> be paid that same average return <span class="math notranslate nohighlight">\(r_{p,t}\)</span>.</p>
-</dd>
-</dl>
+<aside class="footnote brackets" id="indif-kd-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>By assuming that households are indifferent between the savings allocation to private capital <span class="math notranslate nohighlight">\(K^d_t\)</span> and government bonds <span class="math notranslate nohighlight">\(D^d_t\)</span>, we avoid the need for another state variable in the solution method. In our approach the allocation between the two types of capital is simply a residual of the exogenous proportion <span class="math notranslate nohighlight">\(\zeta_K\)</span> of total private captial <span class="math notranslate nohighlight">\(K_t\)</span> allocated to foreigners implied by equations <a class="reference internal" href="#equation-eqmarkclr-zetak">(102)</a> and <a class="reference internal" href="#equation-eqmarkclr-ktkdkf">(100)</a> and a residual of the exogenous proportion <span class="math notranslate nohighlight">\(\zeta_D\)</span> of total government bonds <span class="math notranslate nohighlight">\(D_t\)</span> allocated to foreigners implied by equations <a class="reference internal" href="#equation-eqmarkclr-zetad">(98)</a> and <a class="reference internal" href="#equation-eqmarkclr-dtdddf">(99)</a>.</p>
+</aside>
+<aside class="footnote brackets" id="m-ind" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Our assumption that only the <span class="math notranslate nohighlight">\(M\)</span>th industry output can be used as investment, government spending, and government debt is a strong one. However, it greatly simplifies our equilibrium solution method in the transition path. Intuitively, think of an economy that has two industries—delivery services and trucks. The delivery services industry uses trucks and labor to produce its output. The trucks industry uses trucks and labor to produce its output. Both industries face depreciation of their capital (trucks). But only in the trucks industry can the output be used for both consumption and investment.</p>
+</aside>
+<aside class="footnote brackets" id="rcrates-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Because we treat household return <span class="math notranslate nohighlight">\(r_{p,t}\)</span> as an average between the return on private capital <span class="math notranslate nohighlight">\(r_{K,t}\)</span> and the return on government bonds <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> in <a class="reference internal" href="financial.html#equation-eq-portfolio-return">(94)</a>, and because this return is actually given to households in the budget constraint <a class="reference internal" href="households.html#equation-eqhhbc">(22)</a>, it is required for market clearing that the return paid to foreign suppliers of private capital <span class="math notranslate nohighlight">\(K^f_t\)</span> and foreign holders of government bonds <span class="math notranslate nohighlight">\(D^f_t\)</span> be paid that same average return <span class="math notranslate nohighlight">\(r_{p,t}\)</span>.</p>
+</aside>
 </section>
 </section>
 
@@ -718,50 +537,114 @@ title="Print to PDF"
     </script>
     <script>kernelName = 'python3'</script>
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="financial.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Financial Intermediary</p>
-        </div>
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="financial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Financial Intermediary</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="stationarization.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="stationarization.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Stationarization</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
-  
-    By Jason DeBacker and Richard W. Evans<br/>
-  
-      &copy; Copyright 2022.<br/>
-</p>
-        </footer>
-    </div>
-    
-</div>
-
-
       </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#market-clearing-conditions">Market Clearing Conditions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#labor-market-clearing">Labor market clearing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#capital-markets-generalities">Capital markets generalities</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#government-bond-market-clearing">Government bond market clearing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#private-capital-market-clearing">Private capital market clearing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#goods-market-clearing">Goods market clearing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#total-bequests-law-of-motion">Total Bequests Law of Motion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

@@ -1,48 +1,59 @@
 
+
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Households &#8212; OG-Core</title>
-    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
@@ -52,61 +63,93 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/theory/households';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Firms" href="firms.html" />
     <link rel="prev" title="Demographics" href="demographics.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    
-    <div class="container-fluid" id="banner"></div>
-
-    
-
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../../index.html">
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
       
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+      <div class="bd-sidebar-primary bd-sidebar">
         
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro/intro.html">
+  
+  
+  
+  
+    
+    
       
-      
-      <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">OG-Core</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/OG-Core_logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
@@ -115,548 +158,279 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Contributing to OG-Core
- </span>
-</p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../contributing/contributor_guide.html">
-   Contributor Guide
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributor_guide.html">Contributor Guide</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core API
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../api/public_api.html">
-   API
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/aggregates.html">
-     Aggregates Equations
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/elliptical_u_est.html">
-     Elliptical Utility Function Estimation
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/execute.html">
-     Model Execution Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/firm.html">
-     Firm Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/fiscal.html">
-     Fiscal Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/household.html">
-     Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_plots.html">
-     Output Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_tables.html">
-     Output Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_plots.html">
-     Parameter Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_tables.html">
-     Parameter Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameters.html">
-     Parameters Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/tax.html">
-     Tax Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/txfunc.html">
-     Tax Function Estimation Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/utils.html">
-     Utilities Functions
-    </a>
-   </li>
-  </ul>
- </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core Theory
- </span>
-</p>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="intro.html">
-   Model Overview
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="demographics.html">
-   Demographics
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Households
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="firms.html">
-   Firms
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="government.html">
-   Government
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="open_economy.html">
-   Open Economy Options
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="financial.html">
-   Financial Intermediary
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="market_clearing.html">
-   Market Clearing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="stationarization.html">
-   Stationarization
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="equilibrium.html">
-   Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="calibration.html">
-   Calibrating OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demographics.html">Demographics</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Households</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firms.html">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="market_clearing.html">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stationarization.html">Stationarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equilibrium.html">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating OG-Core</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Appendix
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="derivations.html">
-   Derivations
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="derivations.html">Derivations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  References
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../OGCore_references.html">
-   References
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../OGCore_references.html">References</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Citations of OG-Core
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../citations.html">
-   Citations and use cases of OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../citations.html">Citations and use cases of OG-Core</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
-</div>
-
-
-          
-
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
-<div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
-
-
-
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
->
   
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
-  </span>
-
-</label>
-
-        
-    </div>
-    <div class="header-article__right">
-<div class="menu-dropdown menu-dropdown-launch-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Launch interactive content">
-      <i class="fas fa-rocket"></i>
-  </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="https://mybinder.org/v2/gh/PSLmodels/OG-Core/master?urlpath=tree/docs/book/content/theory/households.md"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Launch on Binder"
->
   
-
-<span class="headerbtn__icon-container">
-  
-    <img src="../../_static/images/logo_binder.svg">
-  </span>
-<span class="headerbtn__text-container">Binder</span>
-</a>
-
-      </li>
-      
-    </ul>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/households.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
 </div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/content/theory/households.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
 
 <button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
   <i class="fas fa-expand"></i>
   </span>
 
 </button>
 
-<div class="menu-dropdown menu-dropdown-repository-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Source repositories">
-      <i class="fab fa-github"></i>
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Source repository"
->
-  
+`);
+</script>
 
-<span class="headerbtn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="headerbtn__text-container">repository</span>
-</a>
-
-      </li>
-      
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/households.html&body=Your%20issue%20content%20here."
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Open an issue"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="headerbtn__text-container">open issue</span>
-</a>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-
-<div class="menu-dropdown menu-dropdown-download-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Download this page">
-      <i class="fas fa-download"></i>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="../../_sources/content/theory/households.ipynb"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download notebook file"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-code"></i>
-  </span>
-<span class="headerbtn__text-container">.ipynb</span>
-</a>
-
-      </li>
-      
-      <li>
-        <a href="../../_sources/content/theory/households.md"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download source file"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="headerbtn__text-container">.md</span>
-</a>
-
-      </li>
-      
-      <li>
-        
-<button onclick="printPdf(this)"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="left"
-title="Print to PDF"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="headerbtn__text-container">.pdf</span>
-</button>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-<label for="__page-toc"
-  class="headerbtn headerbtn-page-toc"
-  
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-list"></i>
-  </span>
-
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
 </label>
-
+</div></div>
+      
     </div>
+  
 </div>
-
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-    <div class="tocsection onthispage pt-5 pb-3">
-        <i class="fas fa-list"></i> Contents
-    </div>
-    <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#household-consumption">
-   Household Consumption
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#budget-constraint">
-   Budget Constraint
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#elliptical-disutility-of-labor-supply">
-   Elliptical Disutility of Labor Supply
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#optimality-conditions">
-   Optimality Conditions
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#factor-transforming-income-units">
-   Factor Transforming Income Units
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#the-distribution-of-bequests">
-   The Distribution of Bequests
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#expectations">
-   Expectations
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
-
-    </nav>
 </div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Households</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#household-consumption">
-   Household Consumption
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#budget-constraint">
-   Budget Constraint
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#elliptical-disutility-of-labor-supply">
-   Elliptical Disutility of Labor Supply
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#optimality-conditions">
-   Optimality Conditions
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#factor-transforming-income-units">
-   Factor Transforming Income Units
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#the-distribution-of-bequests">
-   The Distribution of Bequests
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#expectations">
-   Expectations
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
+              
+              
 
-                        </nav>
-                    </div>
-                </div>
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Households</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
             </div>
-            <main id="main-content" role="main">
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#household-consumption">Household Consumption</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#budget-constraint">Budget Constraint</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elliptical-disutility-of-labor-supply">Elliptical Disutility of Labor Supply</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimality-conditions">Optimality Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#factor-transforming-income-units">Factor Transforming Income Units</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-distribution-of-bequests">The Distribution of Bequests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#expectations">Expectations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section class="tex2jax_ignore mathjax_ignore" id="households">
-<span id="chap-house"></span><span id="glue"></span><h1>Households<a class="headerlink" href="#households" title="Permalink to this headline">#</a></h1>
+<span id="chap-house"></span><span id="glue"></span><h1>Households<a class="headerlink" href="#households" title="Permalink to this heading">#</a></h1>
 <p>In this section, we describe what is arguably the most important economic agent in the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model: the household. We model households in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> rather than individuals, because we want to abstract from the concepts of gender, marital status, and number of children. Furthermore, the household is the usual unit of account in tax data. Because <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is primarily a fiscal policy model, it is advantageous to have the most granular unit of account be the household.</p>
 <!-- This last sentence will not be true once we start carefully modeling government benefit programs, which focus on individual members of the household. -->
 <section id="household-consumption">
-<span id="sechh-cons"></span><h2>Household Consumption<a class="headerlink" href="#household-consumption" title="Permalink to this headline">#</a></h2>
+<span id="sechh-cons"></span><h2>Household Consumption<a class="headerlink" href="#household-consumption" title="Permalink to this heading">#</a></h2>
 <p>We describe the derivation and dynamics of the population distribution in the <a class="reference internal" href="demographics.html#chap-demog"><span class="std std-ref">Demographics</span></a> chapter in this documentation and in more detail in the calibration chapter on demographics in the country-specific repository documentation. A measure <span class="math notranslate nohighlight">\(\omega_{1,t}\)</span> of households is born each period, become economically relevant at age <span class="math notranslate nohighlight">\(s=E+1\)</span> if they survive to that age, and live for up to <span class="math notranslate nohighlight">\(E+S\)</span> periods (<span class="math notranslate nohighlight">\(S\)</span> economically active periods), with the population of age-<span class="math notranslate nohighlight">\(s\)</span> individuals in period <span class="math notranslate nohighlight">\(t\)</span> being <span class="math notranslate nohighlight">\(\omega_{s,t}\)</span>. Let the age of a household be indexed by <span class="math notranslate nohighlight">\(s = \{1,2,...E+S\}\)</span>.</p>
 <p>At birth, each household age <span class="math notranslate nohighlight">\(s=1\)</span> is randomly assigned one of <span class="math notranslate nohighlight">\(J\)</span> ability groups, indexed by <span class="math notranslate nohighlight">\(j\)</span>. Let <span class="math notranslate nohighlight">\(\lambda_j\)</span> represent the fraction of individuals in each ability group, such that <span class="math notranslate nohighlight">\(\sum_j\lambda_j=1\)</span>. Note that this implies that the distribution across ability types in each age is given by <span class="math notranslate nohighlight">\(\boldsymbol{\lambda}=[\lambda_1,\lambda_2,...\lambda_J]\)</span>. Once an household is born and assigned to an ability type, it remains that ability type for its entire lifetime. This is deterministic ability heterogeneity as described in the calibration chapter on the lifetime earnings process in the country-specific repository documentation. Let <span class="math notranslate nohighlight">\(e_{j,s}&gt;0\)</span> be a matrix of ability-levels such that an individual of ability type <span class="math notranslate nohighlight">\(j\)</span> will have lifetime abilities of <span class="math notranslate nohighlight">\([e_{j,1},e_{j,2},...e_{j,E+S}]\)</span>.</p>
 <p>Individuals in this economy choose how much to work each period <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> and how much to consume among <span class="math notranslate nohighlight">\(I\)</span> different consumption goods <span class="math notranslate nohighlight">\(c_{i,j,s,t}\)</span>. We assume that households aggregate these industry-specific consumption goods in their preferences into a composite consumption good <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> every period in every individual’s preferences according to the following Stone-Geary version of a Cobb-Douglas consumption aggregator,</p>
 <div class="math notranslate nohighlight" id="equation-eqhhcompcons">
 <span class="eqno">(10)<a class="headerlink" href="#equation-eqhhcompcons" title="Permalink to this equation">#</a></span>\[  c_{j,s,t} \equiv \prod_{i=1}^I \left(c_{i,j,s,t} - c_{min,i}\right)^{\alpha_i} \quad\forall j,s,t \quad\text{with}\quad \sum_{i=1}^I\alpha_i=1\]</div>
-<p>where <span class="math notranslate nohighlight">\(c_{min,i}\)</span> is the minimum consumption of good <span class="math notranslate nohighlight">\(i\)</span> allowed.<a class="footnote-reference brackets" href="#stonegeary" id="id1">1</a></p>
+<p>where <span class="math notranslate nohighlight">\(c_{min,i}\)</span> is the minimum consumption of good <span class="math notranslate nohighlight">\(i\)</span> allowed.<a class="footnote-reference brackets" href="#stonegeary" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <p>Assume that the non-normalized price of each individual consumption good is <span class="math notranslate nohighlight">\(\tilde{p}_{i,t}\)</span>. We can solve for the optimal good-<span class="math notranslate nohighlight">\(i\)</span> consumption demands <span class="math notranslate nohighlight">\(c_{i,j,s,t}\)</span> as a function of composite consumption <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> by minimizing the total after-tax expenditure on consumption given that individual consumption adds up to composite consumption according to <a class="reference internal" href="#equation-eqhhcompcons">(10)</a>. Letting <span class="math notranslate nohighlight">\(\tau^{c}_{i,t}\)</span> represent the consumption tax rate on goods of type <span class="math notranslate nohighlight">\(i\)</span>, the Lagrangian for this expenditure minimization problem is the following.</p>
 <div class="math notranslate nohighlight" id="equation-eqhhcostminlagr">
 <span class="eqno">(11)<a class="headerlink" href="#equation-eqhhcostminlagr" title="Permalink to this equation">#</a></span>\[  \mathcal{L} = \sum_{i=1}^I (1 + \tau^{c}_{i,t})\tilde{p}_{i,t}c_{i,j,s,t} + \lambda_{j,s,t}\Bigl[c_{j,s,t} - \prod_{i=1}^I \left(c_{i,j,s,t} - c_{min,i}\right)^{\alpha_i}\Bigr] \quad\forall j,s,t\]</div>
@@ -664,7 +438,7 @@ title="Print to PDF"
 <div class="math notranslate nohighlight" id="equation-eqhhcostminlagr2">
 <span class="eqno">(12)<a class="headerlink" href="#equation-eqhhcostminlagr2" title="Permalink to this equation">#</a></span>\[  \mathcal{L} = \sum_{i=1}^I(1 + \tau^{c}_{i,t}) \tilde{p}_{i,t}c_{i,j,s,t} + \tilde{p}_{j,s,t}\Bigl[c_{j,s,t} - \prod_{i=1}^I \left(c_{i,j,s,t} - c_{min,i}\right)^{\alpha_i}\Bigr] \quad\forall j,s,t\]</div>
 <p>Note that the price of composite consumption in period <span class="math notranslate nohighlight">\(t\)</span> can be different for each ability-<span class="math notranslate nohighlight">\(j\)</span> and age-<span class="math notranslate nohighlight">\(s\)</span> individual at this point.</p>
-<p>The <span class="math notranslate nohighlight">\(I+1\)</span> first order conditions of this constrained minimization problem are the following <span class="math notranslate nohighlight">\(i\)</span> first order conditions <a class="reference internal" href="#equation-eqhhfocci">(13)</a> plus the composite consumption aggregator <a class="reference internal" href="#equation-eqhhcompcons">(10)</a>.<a class="footnote-reference brackets" href="#consderiv" id="id2">2</a></p>
+<p>The <span class="math notranslate nohighlight">\(I+1\)</span> first order conditions of this constrained minimization problem are the following <span class="math notranslate nohighlight">\(i\)</span> first order conditions <a class="reference internal" href="#equation-eqhhfocci">(13)</a> plus the composite consumption aggregator <a class="reference internal" href="#equation-eqhhcompcons">(10)</a>.<a class="footnote-reference brackets" href="#consderiv" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p>
 <div class="math notranslate nohighlight" id="equation-eqhhfocci">
 <span class="eqno">(13)<a class="headerlink" href="#equation-eqhhfocci" title="Permalink to this equation">#</a></span>\[  (1 + \tau^{c}_{i,t})\tilde{p}_{i,t} = \alpha_i \tilde{p}_{j,s,t}\left(\frac{c_{j,s,t}}{c_{i,j,s,t} - c_{min,i}}\right) \quad\forall i,j,s,t\]</div>
 <p>Solving <a class="reference internal" href="#equation-eqhhfocci">(13)</a> for <span class="math notranslate nohighlight">\(c_{i,j,s,t}\)</span> gives the optimal demand function for consumption of good <span class="math notranslate nohighlight">\(i\)</span> by ability-<span class="math notranslate nohighlight">\(j\)</span> and age-<span class="math notranslate nohighlight">\(s\)</span> individual in period <span class="math notranslate nohighlight">\(t\)</span>.</p>
@@ -680,7 +454,7 @@ title="Print to PDF"
 <p>Consumption goods are determined from production goods through a fixed <span class="math notranslate nohighlight">\(I\times M\)</span> coefficient matrix, <span class="math notranslate nohighlight">\(\Pi^I\)</span>. Each element, <span class="math notranslate nohighlight">\(\pi_{i,m}\)</span>, of <span class="math notranslate nohighlight">\(\Pi^I\)</span> represents the fraction of good <span class="math notranslate nohighlight">\(i\)</span> that is made up of output from industry <span class="math notranslate nohighlight">\(m\)</span>. It follows that the prices of consumption goods can be expressed as a function of the prices of production goods and the fixed coefficient matrix <span class="math notranslate nohighlight">\(\Pi^I\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqhh-pi">
 <span class="eqno">(17)<a class="headerlink" href="#equation-eqhh-pi" title="Permalink to this equation">#</a></span>\[  \tilde{p}_{i,t} = \sum_{m=1}^M \pi_{i,m}\tilde{p}_{m,t} \quad\forall i,t\]</div>
-<p>We assume that the production good in industry <span class="math notranslate nohighlight">\(M\)</span> is the numeraire.<a class="footnote-reference brackets" href="#numeraire" id="id3">3</a> We can normalize the composite consumption price <span class="math notranslate nohighlight">\(\tilde{p}_t\)</span> and the remaining <span class="math notranslate nohighlight">\(M-1\)</span> output goods prices <span class="math notranslate nohighlight">\(\tilde{p}_{m,t}\)</span> for <span class="math notranslate nohighlight">\(m=1,2,...M-1\)</span> in every period <span class="math notranslate nohighlight">\(t\)</span> by dividing all the equations with prices by the industry-<span class="math notranslate nohighlight">\(M\)</span> price <span class="math notranslate nohighlight">\(\tilde{p}_{M,t}\)</span>. Similarly, we can divide through all the consumption good prices in every period, <span class="math notranslate nohighlight">\(\tilde{p}_{i,t}\)</span> for <span class="math notranslate nohighlight">\(i=1,2,...I\)</span> and rewrite the optimal consumption demand <a class="reference internal" href="#equation-eqhh-cidem">(14)</a> and composite price index <a class="reference internal" href="#equation-eqcomppnonnorm2">(16)</a> equations as the following functions of normalized prices,</p>
+<p>We assume that the production good in industry <span class="math notranslate nohighlight">\(M\)</span> is the numeraire.<a class="footnote-reference brackets" href="#numeraire" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> We can normalize the composite consumption price <span class="math notranslate nohighlight">\(\tilde{p}_t\)</span> and the remaining <span class="math notranslate nohighlight">\(M-1\)</span> output goods prices <span class="math notranslate nohighlight">\(\tilde{p}_{m,t}\)</span> for <span class="math notranslate nohighlight">\(m=1,2,...M-1\)</span> in every period <span class="math notranslate nohighlight">\(t\)</span> by dividing all the equations with prices by the industry-<span class="math notranslate nohighlight">\(M\)</span> price <span class="math notranslate nohighlight">\(\tilde{p}_{M,t}\)</span>. Similarly, we can divide through all the consumption good prices in every period, <span class="math notranslate nohighlight">\(\tilde{p}_{i,t}\)</span> for <span class="math notranslate nohighlight">\(i=1,2,...I\)</span> and rewrite the optimal consumption demand <a class="reference internal" href="#equation-eqhh-cidem">(14)</a> and composite price index <a class="reference internal" href="#equation-eqcomppnonnorm2">(16)</a> equations as the following functions of normalized prices,</p>
 <div class="math notranslate nohighlight" id="equation-eqhh-pi2">
 <span class="eqno">(18)<a class="headerlink" href="#equation-eqhh-pi2" title="Permalink to this equation">#</a></span>\[ p_{i,t} = \sum_{m=1}^M \pi_{i,m}p_{m,t} \quad\forall i,t\]</div>
 <div class="math notranslate nohighlight" id="equation-eqhh-cidem2">
@@ -693,7 +467,7 @@ title="Print to PDF"
 <p>where <span class="math notranslate nohighlight">\(p_{i,t}\)</span> and <span class="math notranslate nohighlight">\(p_t\)</span> defined in <a class="reference internal" href="#equation-eqpmpcompnormdef">(21)</a> are normalized consumption goods prices and normalized composite goods price, respectively, with the <span class="math notranslate nohighlight">\(M\)</span>th industry good being the numeraire.</p>
 </section>
 <section id="budget-constraint">
-<span id="sechhbc"></span><h2>Budget Constraint<a class="headerlink" href="#budget-constraint" title="Permalink to this headline">#</a></h2>
+<span id="sechhbc"></span><h2>Budget Constraint<a class="headerlink" href="#budget-constraint" title="Permalink to this heading">#</a></h2>
 <p>Because the household’s industry-specific demand problem from Section <a class="reference internal" href="#sechh-cons"><span class="std std-ref">Household Consumption</span></a> is characterized by equations <a class="reference internal" href="#equation-eqhhcompcons">(10)</a>, <a class="reference internal" href="#equation-eqhh-cidem2">(19)</a>, and <a class="reference internal" href="#equation-eqcomppnorm2">(20)</a> is determined by functions of composite consumption <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> and normalized industry prices <span class="math notranslate nohighlight">\(p_t\)</span> and <span class="math notranslate nohighlight">\(p_{i,t}\)</span>, we can write the individual’s utility maximization in terms of composite consumption <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span>. An ability-<span class="math notranslate nohighlight">\(j\)</span> and age-<span class="math notranslate nohighlight">\(s\)</span> individual faces the following per-period budget constraint.</p>
 <div class="math notranslate nohighlight" id="equation-eqhhbc">
 <span class="eqno">(22)<a class="headerlink" href="#equation-eqhhbc" title="Permalink to this equation">#</a></span>\[\begin{split}  p_t c_{j,s,t} + &amp;\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
@@ -710,12 +484,17 @@ title="Print to PDF"
 <p>where the effective tax rate can be a function of both labor income and capital income <span class="math notranslate nohighlight">\(\tau^{etr}_{s,t}(x_{j,s,t},y_{j,s,t})\)</span>. The calibration chapter on the microsimulation model and tax function estimation in the country-specific repository documentation details exactly how the model estimates these tax functions from microsimulation model data.</p>
 </section>
 <section id="elliptical-disutility-of-labor-supply">
-<span id="sechhelliputil"></span><h2>Elliptical Disutility of Labor Supply<a class="headerlink" href="#elliptical-disutility-of-labor-supply" title="Permalink to this headline">#</a></h2>
-<p>In <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>, the period utility function of each household is a function of consumption <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span>, savings <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span>, and labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>.<a class="footnote-reference brackets" href="#sav-util-note" id="id4">4</a> We detail this utility function, its justification, and functional form in Section <a class="reference internal" href="#sechheulers"><span class="std std-ref">Optimality Conditions</span></a>. With endogenous labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>, we must specify how labor enters an agent’s utility function and what are the constraints. Assume that each household is endowed with a measure of time <span class="math notranslate nohighlight">\(\tilde{l}\)</span> each period that it can choose to spend as either labor <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span> or leisure <span class="math notranslate nohighlight">\(l_{j,s,t}\in[0,\tilde{l}]\)</span>.</p>
+<span id="sechhelliputil"></span><h2>Elliptical Disutility of Labor Supply<a class="headerlink" href="#elliptical-disutility-of-labor-supply" title="Permalink to this heading">#</a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>, the period utility function of each household is a function of consumption <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span>, savings <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span>, and labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>.<a class="footnote-reference brackets" href="#sav-util-note" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> We detail this utility function, its justification, and functional form in Section <a class="reference internal" href="#sechheulers"><span class="std std-ref">Optimality Conditions</span></a>. With endogenous labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>, we must specify how labor enters an agent’s utility function and what are the constraints. Assume that each household is endowed with a measure of time <span class="math notranslate nohighlight">\(\tilde{l}\)</span> each period that it can choose to spend as either labor <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span> or leisure <span class="math notranslate nohighlight">\(l_{j,s,t}\in[0,\tilde{l}]\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqlabconstr">
 <span class="eqno">(24)<a class="headerlink" href="#equation-eqlabconstr" title="Permalink to this equation">#</a></span>\[n_{j,s,t} + l_{j,s,t} = \tilde{l} \quad\forall s, t\]</div>
 <p>The functional form for the utility of leisure or the disutility of labor supply has important implications for the computational tractability of the model. One difference of the household’s labor supply decision <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> from the consumption decision <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> is that the consumption decision only has a lower bound <span class="math notranslate nohighlight">\(c_{j,s,t}\geq 0\)</span> whereas the labor supply decision has both upper and lower bounds <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span>. <span id="id5">[<a class="reference internal" href="../OGCore_references.html#id19" title="Richard W. Evans and Kerk L. Phillips. Advantages of an ellipse when modeling leisure utility. Computational Economics, 51(3):513-533, March 2017.">Evans and Phillips, 2017</a>]</span> show that many of the traditional functional forms for the disutility of labor—Cobb-Douglas, constant Frisch elasticty, constant relative risk aversion (CRRA)—do not have Inada conditions on both the upper and lower bounds of labor supply. To solve these in a heterogeneous agent model would require occasionally binding constraints, which is a notoriously difficult computational problem.</p>
 <div class="cell tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell content</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myst_nb</span> <span class="kn">import</span> <span class="n">glue</span>
 <span class="kn">import</span> <span class="nn">ogcore.parameter_plots</span> <span class="k">as</span> <span class="nn">pp</span>
@@ -728,8 +507,9 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/households_1_1.png" src="../../_images/households_1_1.png" />
+<img alt="../../_images/74c68c5a12ad211229ba7ec78fc0f3a80d9c4324d8781eda3303feb168eaf2e8.png" src="../../_images/74c68c5a12ad211229ba7ec78fc0f3a80d9c4324d8781eda3303feb168eaf2e8.png" />
 </div>
+</details>
 </div>
 <figure class="align-default" id="figmducompar">
 <a class="reference internal image-reference" href="../../_images/EllipVsCFE_MargUtil.png"><img alt="../../_images/EllipVsCFE_MargUtil.png" src="../../_images/EllipVsCFE_MargUtil.png" style="height: 500px;" /></a>
@@ -744,17 +524,17 @@ title="Print to PDF"
 <div class="math notranslate nohighlight" id="equation-eqellipdisut">
 <span class="eqno">(26)<a class="headerlink" href="#equation-eqellipdisut" title="Permalink to this equation">#</a></span>\[v(n) = -b\left[1 - \left(\frac{n}{\tilde{l}}\right)^\upsilon\right]^{\frac{1}{\upsilon}}, \quad b,\upsilon&gt;0\]</div>
 <p>where <span class="math notranslate nohighlight">\(b&gt;0\)</span> is a scale parameter and <span class="math notranslate nohighlight">\(\upsilon&gt;0\)</span> is a curvature parameter. This functional form satisfies both <span class="math notranslate nohighlight">\(v'(n)&gt;0\)</span> and <span class="math notranslate nohighlight">\(v''(n)&gt;0\)</span> for all <span class="math notranslate nohighlight">\(n\in(0,1)\)</span>. Further, it has Inada conditions at both the upper and lower bounds of labor supply <span class="math notranslate nohighlight">\(\lim_{n\rightarrow 0}v'(n) = 0\)</span> and <span class="math notranslate nohighlight">\(\lim_{n\rightarrow \tilde{l}}v'(n) = -\infty\)</span>.</p>
-<p>Because it is the marginal disutility of labor supply that matters for household decision making, we want to choose the parameters of the elliptical disutility of labor supply function <span class="math notranslate nohighlight">\((b,\upsilon)\)</span> so that the elliptical marginal utilities match the marginal utilities of the CFE disutility of labor supply. Figure <a class="reference internal" href="#figmducompar"><span class="std std-numref">Fig. 1</span></a> shows the fit of marginal utilities for a Frisch elasticity of <span class="math notranslate nohighlight">\(\theta=0.9\)</span> and a total time endowment of <span class="math notranslate nohighlight">\(\tilde{l}=1.0\)</span>. The estimated elliptical utility parameters in this case are <span class="math notranslate nohighlight">\(b=0.527\)</span> and <span class="math notranslate nohighlight">\(\upsilon=1.497\)</span>.<a class="footnote-reference brackets" href="#frisch-note" id="id7">5</a></p>
+<p>Because it is the marginal disutility of labor supply that matters for household decision making, we want to choose the parameters of the elliptical disutility of labor supply function <span class="math notranslate nohighlight">\((b,\upsilon)\)</span> so that the elliptical marginal utilities match the marginal utilities of the CFE disutility of labor supply. Figure <a class="reference internal" href="#figmducompar"><span class="std std-numref">Fig. 1</span></a> shows the fit of marginal utilities for a Frisch elasticity of <span class="math notranslate nohighlight">\(\theta=0.9\)</span> and a total time endowment of <span class="math notranslate nohighlight">\(\tilde{l}=1.0\)</span>. The estimated elliptical utility parameters in this case are <span class="math notranslate nohighlight">\(b=0.527\)</span> and <span class="math notranslate nohighlight">\(\upsilon=1.497\)</span>.<a class="footnote-reference brackets" href="#frisch-note" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a></p>
 </section>
 <section id="optimality-conditions">
-<span id="sechheulers"></span><h2>Optimality Conditions<a class="headerlink" href="#optimality-conditions" title="Permalink to this headline">#</a></h2>
+<span id="sechheulers"></span><h2>Optimality Conditions<a class="headerlink" href="#optimality-conditions" title="Permalink to this heading">#</a></h2>
 <p>Households choose lifetime consumption <span class="math notranslate nohighlight">\(\{c_{j,s,t+s-1}\}_{s=1}^S\)</span>, labor supply <span class="math notranslate nohighlight">\(\{n_{j,s,t+s-1}\}_{s=1}^S\)</span>, and savings <span class="math notranslate nohighlight">\(\{b_{j,s+1,t+s}\}_{s=1}^{S}\)</span> to maximize lifetime utility, subject to the budget constraints and non negativity constraints. The household period utility function is the following.</p>
 <div class="math notranslate nohighlight" id="equation-eqhhperutil">
 <span class="eqno">(27)<a class="headerlink" href="#equation-eqhhperutil" title="Permalink to this equation">#</a></span>\[\begin{split}u(c_{j,s,t},n_{j,s,t},b_{j,s+1,t+1}) &amp;\equiv \frac{(c_{j,s,t})^{1-\sigma} - 1}{1-\sigma} + e^{g_y t(1-\sigma)}\chi^n_s\biggl(b\left[1 - \left(\frac{n_{j,s,t}}{\tilde{l}}\right)^\upsilon\right]^{\frac{1}{\upsilon}}\biggr) + \\
 &amp;\chi^b_j \rho_s \frac{(b_{j,s+1,t+1})^{1-\sigma} - 1}{1-\sigma} \quad\forall j,t \quad\text{and}\quad E+1 \leq s \leq E+S\end{split}\]</div>
 <p>The period utility function <a class="reference internal" href="#equation-eqhhperutil">(27)</a> is linearly separable in <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span>, <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>, and <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span>. The first term is a constant relative risk aversion (CRRA) utility of consumption. The second term is the elliptical disutility of labor described in Section <a class="reference internal" href="#sechhelliputil"><span class="std std-ref">Elliptical Disutility of Labor Supply</span></a>. The constant <span class="math notranslate nohighlight">\(\chi^n_s\)</span> adjusts the disutility of labor supply relative to consumption and can vary by age <span class="math notranslate nohighlight">\(s\)</span>, which is helpful for calibrating the model to match labor market moments. See the chapters in the Calibration section of this documentation for a discussion of the calibration.</p>
 <p>It is necessary to multiply the disutility of labor in <a class="reference internal" href="#equation-eqhhperutil">(27)</a> by <span class="math notranslate nohighlight">\(e^{g_y(1-\sigma)}\)</span> because labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> is stationary, but both consumption <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span> and savings <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span> are growing at the rate of technological progress (see Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>). The <span class="math notranslate nohighlight">\(e^{g_y(1-\sigma)}\)</span> term keeps the relative utility values of consumption, labor supply, and savings in the same units.</p>
-<p>The final term in the period utility function <a class="reference internal" href="#equation-eqhhperutil">(27)</a> is the “warm glow” bequest motive. It is a CRRA utility of savings, discounted by the mortality rate <span class="math notranslate nohighlight">\(\rho_s\)</span>.<a class="footnote-reference brackets" href="#iort-rates-note" id="id8">6</a>  Intuitively, it signifies the utility a household gets in the event that they don’t live to the next period with probability <span class="math notranslate nohighlight">\(\rho_s\)</span>. It is a utility of savings beyond its usual benefit of allowing for more consumption in the next period. This utility of bequests also has constant <span class="math notranslate nohighlight">\(\chi^b_j\)</span> which adjusts the utility of bequests relative to consumption and can vary by lifetime income group <span class="math notranslate nohighlight">\(j\)</span>. This is helpful for calibrating the model to match wealth distribution moments. See the calibration chapter on beqests in the country-specific repository documentation for a discussion of the calibration. Note that any bequest before age <span class="math notranslate nohighlight">\(E+S\)</span> is unintentional as it was bequeathed due an event of death that was uncertain. Intentional bequests are all bequests given in the final period of life in which death is certain <span class="math notranslate nohighlight">\(b_{j,E+S+1,t}\)</span>.</p>
+<p>The final term in the period utility function <a class="reference internal" href="#equation-eqhhperutil">(27)</a> is the “warm glow” bequest motive. It is a CRRA utility of savings, discounted by the mortality rate <span class="math notranslate nohighlight">\(\rho_s\)</span>.<a class="footnote-reference brackets" href="#iort-rates-note" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>  Intuitively, it signifies the utility a household gets in the event that they don’t live to the next period with probability <span class="math notranslate nohighlight">\(\rho_s\)</span>. It is a utility of savings beyond its usual benefit of allowing for more consumption in the next period. This utility of bequests also has constant <span class="math notranslate nohighlight">\(\chi^b_j\)</span> which adjusts the utility of bequests relative to consumption and can vary by lifetime income group <span class="math notranslate nohighlight">\(j\)</span>. This is helpful for calibrating the model to match wealth distribution moments. See the calibration chapter on beqests in the country-specific repository documentation for a discussion of the calibration. Note that any bequest before age <span class="math notranslate nohighlight">\(E+S\)</span> is unintentional as it was bequeathed due an event of death that was uncertain. Intentional bequests are all bequests given in the final period of life in which death is certain <span class="math notranslate nohighlight">\(b_{j,E+S+1,t}\)</span>.</p>
 <p>The household lifetime optimization problem is to choose consumption <span class="math notranslate nohighlight">\(c_{j,s,t}\)</span>, labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span>, and savings <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span> in every period of life to maximize expected discounted lifetime utility, subject to budget constraints and upper-bound and lower-bound constraints.</p>
 <div class="math notranslate nohighlight" id="equation-eqhhmaxprob">
 <span class="eqno">(28)<a class="headerlink" href="#equation-eqhhmaxprob" title="Permalink to this equation">#</a></span>\[  \max_{\{(c_{j,s,t}),(n_{j,s,t}),(b_{j,s+1,t+1})\}_{s=E+1}^{E+S}}\: \sum_{s=1}^S\beta_j^{s-1}\left[\Pi_{u=E+1}^{E+s}(1 - \rho_u)\right]u(c_{j,s,t+s-1},n_{j,s,t+s-1},b_{j,s+1,t+s})\]</div>
@@ -762,7 +542,7 @@ title="Print to PDF"
 <span class="eqno">(29)<a class="headerlink" href="#equation-eqhhbc2" title="Permalink to this equation">#</a></span>\[\begin{split}  \text{s.t.}\quad &amp;p_t c_{j,s,t} + \sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
   &amp;\quad (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{s,t} \\
   &amp;\qquad\text{and}\quad c_{j,s,t}\geq 0,\: n_{j,s,t} \in[0,\tilde{l}],\:\text{and}\: b_{j,1,t}=0 \quad\forall j, t, \:\text{and}\: E+1\leq s\leq E+S \nonumber\end{split}\]</div>
-<p>The nonnegativity constraint on consumption does not bind in equilibrium because of the Inada condition <span class="math notranslate nohighlight">\(\lim_{c\rightarrow 0}u_1(c,n,b') = \infty\)</span>, which implies consumption is always strictly positive in equilibrium <span class="math notranslate nohighlight">\(c_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>. The warm glow bequest motive in Equation <a class="reference internal" href="#equation-eqhhperutil">(27)</a> also has an Inada condition for savings at zero, so <span class="math notranslate nohighlight">\(b_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>. This is an implicit borrowing constraint.<a class="footnote-reference brackets" href="#constraint-note" id="id9">7</a> And note that the discount factor <span class="math notranslate nohighlight">\(\beta_j\)</span> has a <span class="math notranslate nohighlight">\(j\)</span> subscript for lifetime income group. We use heterogeneous discount factors following <span id="id10">[<a class="reference internal" href="../OGCore_references.html#id13" title="Christopher Carroll, Jiri Slacalek, Kiichi Tokuoka, and Matthew N. White. The distribution of wealth and the marginal propensity to consume. Quantitative Economics, 8(3):977-1020, November 2017.">Carroll <em>et al.</em>, 2017</a>]</span>. And finally, as discussed in Section <a class="reference internal" href="#sechhelliputil"><span class="std std-ref">Elliptical Disutility of Labor Supply</span></a>, the elliptical disutility of labor supply functional form in Equation <a class="reference internal" href="#equation-eqhhperutil">(27)</a> imposes Inada conditions on both the upper and lower bounds of labor supply such that labor supply is strictly interior in equilibrium <span class="math notranslate nohighlight">\(n_{j,s,t}\in(0,\tilde{l})\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<p>The nonnegativity constraint on consumption does not bind in equilibrium because of the Inada condition <span class="math notranslate nohighlight">\(\lim_{c\rightarrow 0}u_1(c,n,b') = \infty\)</span>, which implies consumption is always strictly positive in equilibrium <span class="math notranslate nohighlight">\(c_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>. The warm glow bequest motive in Equation <a class="reference internal" href="#equation-eqhhperutil">(27)</a> also has an Inada condition for savings at zero, so <span class="math notranslate nohighlight">\(b_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>. This is an implicit borrowing constraint.<a class="footnote-reference brackets" href="#constraint-note" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> And note that the discount factor <span class="math notranslate nohighlight">\(\beta_j\)</span> has a <span class="math notranslate nohighlight">\(j\)</span> subscript for lifetime income group. We use heterogeneous discount factors following <span id="id10">[<a class="reference internal" href="../OGCore_references.html#id13" title="Christopher Carroll, Jiri Slacalek, Kiichi Tokuoka, and Matthew N. White. The distribution of wealth and the marginal propensity to consume. Quantitative Economics, 8(3):977-1020, November 2017.">Carroll <em>et al.</em>, 2017</a>]</span>. And finally, as discussed in Section <a class="reference internal" href="#sechhelliputil"><span class="std std-ref">Elliptical Disutility of Labor Supply</span></a>, the elliptical disutility of labor supply functional form in Equation <a class="reference internal" href="#equation-eqhhperutil">(27)</a> imposes Inada conditions on both the upper and lower bounds of labor supply such that labor supply is strictly interior in equilibrium <span class="math notranslate nohighlight">\(n_{j,s,t}\in(0,\tilde{l})\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>.</p>
 <p>The household maximization problem can be further reduced by substituting in the household budget constraint, which binds with equality. This simplifies the household’s problem to choosing labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> and savings <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span> every period to maximize lifetime discounted expected utility. The <span class="math notranslate nohighlight">\(2S\)</span> first order conditions for every type-<span class="math notranslate nohighlight">\(j\)</span> household that characterize the its <span class="math notranslate nohighlight">\(S\)</span> optimal labor supply decisions and <span class="math notranslate nohighlight">\(S\)</span> optimal savings decisions are the following.</p>
 <div class="math notranslate nohighlight" id="equation-eqhheul-n">
 <span class="eqno">(30)<a class="headerlink" href="#equation-eqhheul-n" title="Permalink to this equation">#</a></span>\[\begin{split}  &amp;\frac{w_t e_{j,s}}{p_t}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = e^{g_y(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
@@ -779,7 +559,7 @@ title="Print to PDF"
 <span class="eqno">(34)<a class="headerlink" href="#equation-eqmtry-derive" title="Permalink to this equation">#</a></span>\[  \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t} b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{p,t} b_{j,s,t}}r_{p,t} = \tau^{mtry}_{s,t}r_{p,t}\]</div>
 </section>
 <section id="factor-transforming-income-units">
-<span id="sechhincfactor"></span><h2>Factor Transforming Income Units<a class="headerlink" href="#factor-transforming-income-units" title="Permalink to this headline">#</a></h2>
+<span id="sechhincfactor"></span><h2>Factor Transforming Income Units<a class="headerlink" href="#factor-transforming-income-units" title="Permalink to this heading">#</a></h2>
 <p>The tax functions <span class="math notranslate nohighlight">\(\tau^{etr}_{s,t}\)</span>, <span class="math notranslate nohighlight">\(\tau^{mtrx}_{s,t}\)</span>, and <span class="math notranslate nohighlight">\(\tau^{mtry}_{s,t}\)</span> are estimated in each country calibration model based on the currency units of the corresponding income data. However, the consumption units of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model or any of its country calibrations are not in the same units as income data. For this reason, we have to transform the model income units <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> by a <span class="math notranslate nohighlight">\(factor\)</span> so that they are in the same units as the income data on which the tax functions were estimated.</p>
 <p>The tax rate functions are each functions of capital income and labor income <span class="math notranslate nohighlight">\(\tau(x,y)\)</span>. In order to make the tax functions return accurate tax rates associated with the correct levels of income, we multiply the model income <span class="math notranslate nohighlight">\(x^I\)</span> and <span class="math notranslate nohighlight">\(y^I\)</span> by a <span class="math notranslate nohighlight">\(factor\)</span> so that they are in the same units as the real-world income data <span class="math notranslate nohighlight">\(\tau(factor\times x^I, factor\times y^I)\)</span>. We define the <span class="math notranslate nohighlight">\(factor\)</span> such that average steady-state household total income in the model times the <span class="math notranslate nohighlight">\(factor\)</span> equals the U.S. data average total income.</p>
 <div class="math notranslate nohighlight" id="equation-eqincfactor">
@@ -787,7 +567,7 @@ title="Print to PDF"
 <p>We do not know the steady-state wage, interest rate, household labor supply, and savings <em>ex ante</em>. So the income <span class="math notranslate nohighlight">\(factor\)</span> is an endogenous variable in the steady-state equilibrium computational solution. We hold the factor constant throughout the nonsteady-state equilibrium solution.</p>
 </section>
 <section id="the-distribution-of-bequests">
-<span id="sechhbequests"></span><h2>The Distribution of Bequests<a class="headerlink" href="#the-distribution-of-bequests" title="Permalink to this headline">#</a></h2>
+<span id="sechhbequests"></span><h2>The Distribution of Bequests<a class="headerlink" href="#the-distribution-of-bequests" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> allows for two parameterizations of the distribution of bequests.  Users can choose the bequest transmission process through two parameters: <code class="docutils literal notranslate"><span class="pre">use_zeta</span></code> and <code class="docutils literal notranslate"><span class="pre">zeta</span></code>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">use_zeta=False</span></code>, then bequests from households of lifetime earnings type <code class="docutils literal notranslate"><span class="pre">j</span></code> are distributed equality across households of type <code class="docutils literal notranslate"><span class="pre">j</span></code>.  That is:</p>
 <div class="math notranslate nohighlight" id="equation-eq-bq">
@@ -797,7 +577,7 @@ title="Print to PDF"
 <span class="eqno">(37)<a class="headerlink" href="#equation-eq-bq-use-zeta" title="Permalink to this equation">#</a></span>\[ bq_{j,s,t} = \boldsymbol{\zeta}_{t} BQ_{t}\]</div>
 </section>
 <section id="expectations">
-<span id="sechhexp"></span><h2>Expectations<a class="headerlink" href="#expectations" title="Permalink to this headline">#</a></h2>
+<span id="sechhexp"></span><h2>Expectations<a class="headerlink" href="#expectations" title="Permalink to this heading">#</a></h2>
 <p>To conclude the household’s problem, we must make an assumption about how the age-<span class="math notranslate nohighlight">\(s\)</span> household can forecast the time path of interest rates paid by firms (marginal product of capital), wages, and total bequests <span class="math notranslate nohighlight">\(\{r_u, w_u, BQ_u\}_{u=t}^{t+S-s}\)</span> over his remaining lifetime. As we will show in Chapter <a class="reference internal" href="equilibrium.html#chap-eqm"><span class="std std-ref">Equilibrium</span></a>, the equilibrium interest rate paid by firms (marginal product of capital) <span class="math notranslate nohighlight">\(r_t\)</span>, wage <span class="math notranslate nohighlight">\(w_t\)</span>, and total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> will be functions of the state vector <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}_t\)</span>, which turns out to be the entire distribution of savings in period <span class="math notranslate nohighlight">\(t\)</span>.</p>
 <p>Define <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}_t\)</span> as the distribution of household savings across households at time <span class="math notranslate nohighlight">\(t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqsavdist">
@@ -805,37 +585,43 @@ title="Print to PDF"
 <p>Let general beliefs about the future distribution of capital in period <span class="math notranslate nohighlight">\(t+u\)</span> be characterized by the operator <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> such that:</p>
 <div class="math notranslate nohighlight" id="equation-eqbeliefs">
 <span class="eqno">(39)<a class="headerlink" href="#equation-eqbeliefs" title="Permalink to this equation">#</a></span>\[  \boldsymbol{\Gamma}^e_{t+u} = \Omega^u\left(\boldsymbol{\Gamma}_t\right) \quad \forall t, \quad u\geq 1\]</div>
-<p>where the <span class="math notranslate nohighlight">\(e\)</span> superscript signifies that <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}^e_{t+u}\)</span> is the expected distribution of wealth at time <span class="math notranslate nohighlight">\(t+u\)</span> based on general beliefs <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> that are not constrained to be correct. <a class="footnote-reference brackets" href="#nssequilibrium-note" id="id11">8</a></p>
+<p>where the <span class="math notranslate nohighlight">\(e\)</span> superscript signifies that <span class="math notranslate nohighlight">\(\boldsymbol{\Gamma}^e_{t+u}\)</span> is the expected distribution of wealth at time <span class="math notranslate nohighlight">\(t+u\)</span> based on general beliefs <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> that are not constrained to be correct. <a class="footnote-reference brackets" href="#nssequilibrium-note" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a></p>
 </section>
 <section id="footnotes">
-<span id="sechhfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
+<span id="sechhfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">#</a></h2>
 <hr class="footnotes docutils" />
-<dl class="footnote brackets">
-<dt class="label" id="stonegeary"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>This functional form was originally proposed as a utility function by in a short comment by <span id="id12">[<a class="reference internal" href="../OGCore_references.html#id20" title="Roy C. Geary. A note on `a constant-utility index of the cost of living'. Review of Economics Studies, 18(1):65-66, 1950-51.">Geary, 1950-51</a>]</span> that aggregates differentiated goods into a scalar utility value. It is differentiated from Cobb-Douglas utility by the subsistence consumption amount in each term of the product. This function was further developed and operationalized by <span id="id13">[<a class="reference internal" href="../OGCore_references.html#id28" title="Richard Stone. Linear expenditure systems and demand analysis: an application to the pattern of british demand. The Economic Journal, 64(255):511-527, September 1954.">Stone, 1954</a>]</span>.</p>
-</dd>
-<dt class="label" id="consderiv"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>See section <a class="reference internal" href="derivations.html#secappderivhhcons"><span class="std std-ref">Household first order condition for industry-specific consumption demand</span></a> in the <a class="reference internal" href="derivations.html#chap-deriv"><span class="std std-ref">Derivations</span></a> Chapter for the derivation of the household industry-specific consumption demand.</p>
-</dd>
-<dt class="label" id="numeraire"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>We can normalize the model by any of the <span class="math notranslate nohighlight">\(I\)</span> consumption good prices <span class="math notranslate nohighlight">\(\tilde{p}_{i,t}\)</span>, any of the <span class="math notranslate nohighlight">\(M\)</span> industry-specific princes <span class="math notranslate nohighlight">\(\tilde{p}_{m,t}\)</span>, or we could normalize the model by the composite good price <span class="math notranslate nohighlight">\(\tilde{p}_t\)</span>. We choose to normalize by the <span class="math notranslate nohighlight">\(M\)</span>th industry good price <span class="math notranslate nohighlight">\(\tilde{p}_{M,t}\)</span> because that industry is the only one the output of which can be used as investment, government spending, or government debt. Furthermore, this nicely nests the case of one industry in which all the other industries share in consumption is set to zero <span class="math notranslate nohighlight">\(\alpha_m=0\)</span> for <span class="math notranslate nohighlight">\(m=1,2,...M-1\)</span>.</p>
-</dd>
-<dt class="label" id="sav-util-note"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
-<dd><p>Savings enters the period utility function to provide a “warm glow” bequest motive.</p>
-</dd>
-<dt class="label" id="frisch-note"><span class="brackets"><a class="fn-backref" href="#id7">5</a></span></dt>
-<dd><p><span id="id14">[<a class="reference internal" href="../OGCore_references.html#id25" title="William B. Peterman. Reconciling micro and macro estimates of the Frisch labor supply elasticity. Economic Inquiry, 54(1):100-120, January 2016.">Peterman, 2016</a>]</span> shows that in a U.S. macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor—such as <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>—a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates—which include both extensive and intensive margin agents—are observed.</p>
-</dd>
-<dt class="label" id="iort-rates-note"><span class="brackets"><a class="fn-backref" href="#id8">6</a></span></dt>
-<dd><p>See Section the mortality rate section of the calibration chapter on demographics in the country-specific repository documentation for a detailed discussion of mortality rates for the specific country calibration interfacing with <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>.</p>
-</dd>
-<dt class="label" id="constraint-note"><span class="brackets"><a class="fn-backref" href="#id9">7</a></span></dt>
-<dd><p>It is important to note that savings also has an implicit upper bound <span class="math notranslate nohighlight">\(b_{j,s,t}\leq k\)</span> above which consumption would be negative in current period. However, this upper bound on savings in taken care of by the Inada condition on consumption.</p>
-</dd>
-<dt class="label" id="nssequilibrium-note"><span class="brackets"><a class="fn-backref" href="#id11">8</a></span></dt>
-<dd><p>In Chapter <a class="reference internal" href="equilibrium.html#chap-eqm"><span class="std std-ref">Equilibrium</span></a> we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Section <a class="reference internal" href="equilibrium.html#seceqlbssdef"><span class="std std-ref">Stationary Steady-State Equilibrium Definition</span></a>.</p>
-</dd>
-</dl>
+<aside class="footnote brackets" id="stonegeary" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>This functional form was originally proposed as a utility function by in a short comment by <span id="id12">[<a class="reference internal" href="../OGCore_references.html#id20" title="Roy C. Geary. A note on `a constant-utility index of the cost of living'. Review of Economics Studies, 18(1):65-66, 1950-51.">Geary, 1950-51</a>]</span> that aggregates differentiated goods into a scalar utility value. It is differentiated from Cobb-Douglas utility by the subsistence consumption amount in each term of the product. This function was further developed and operationalized by <span id="id13">[<a class="reference internal" href="../OGCore_references.html#id28" title="Richard Stone. Linear expenditure systems and demand analysis: an application to the pattern of british demand. The Economic Journal, 64(255):511-527, September 1954.">Stone, 1954</a>]</span>.</p>
+</aside>
+<aside class="footnote brackets" id="consderiv" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>See section <a class="reference internal" href="derivations.html#secappderivhhcons"><span class="std std-ref">Household first order condition for industry-specific consumption demand</span></a> in the <a class="reference internal" href="derivations.html#chap-deriv"><span class="std std-ref">Derivations</span></a> Chapter for the derivation of the household industry-specific consumption demand.</p>
+</aside>
+<aside class="footnote brackets" id="numeraire" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>We can normalize the model by any of the <span class="math notranslate nohighlight">\(I\)</span> consumption good prices <span class="math notranslate nohighlight">\(\tilde{p}_{i,t}\)</span>, any of the <span class="math notranslate nohighlight">\(M\)</span> industry-specific princes <span class="math notranslate nohighlight">\(\tilde{p}_{m,t}\)</span>, or we could normalize the model by the composite good price <span class="math notranslate nohighlight">\(\tilde{p}_t\)</span>. We choose to normalize by the <span class="math notranslate nohighlight">\(M\)</span>th industry good price <span class="math notranslate nohighlight">\(\tilde{p}_{M,t}\)</span> because that industry is the only one the output of which can be used as investment, government spending, or government debt. Furthermore, this nicely nests the case of one industry in which all the other industries share in consumption is set to zero <span class="math notranslate nohighlight">\(\alpha_m=0\)</span> for <span class="math notranslate nohighlight">\(m=1,2,...M-1\)</span>.</p>
+</aside>
+<aside class="footnote brackets" id="sav-util-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Savings enters the period utility function to provide a “warm glow” bequest motive.</p>
+</aside>
+<aside class="footnote brackets" id="frisch-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">5</a><span class="fn-bracket">]</span></span>
+<p><span id="id14">[<a class="reference internal" href="../OGCore_references.html#id25" title="William B. Peterman. Reconciling micro and macro estimates of the Frisch labor supply elasticity. Economic Inquiry, 54(1):100-120, January 2016.">Peterman, 2016</a>]</span> shows that in a U.S. macro-model that has only an intensive margin of labor supply and no extensive margin and represents a broad composition of individuals supplying labor—such as <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>—a Frisch elasticity of around 0.9 is probably appropriate. He tests the implied macro elasticity when the assumed micro elasticities are small on the intensive margin but only macro aggregates—which include both extensive and intensive margin agents—are observed.</p>
+</aside>
+<aside class="footnote brackets" id="iort-rates-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">6</a><span class="fn-bracket">]</span></span>
+<p>See Section the mortality rate section of the calibration chapter on demographics in the country-specific repository documentation for a detailed discussion of mortality rates for the specific country calibration interfacing with <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>.</p>
+</aside>
+<aside class="footnote brackets" id="constraint-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">7</a><span class="fn-bracket">]</span></span>
+<p>It is important to note that savings also has an implicit upper bound <span class="math notranslate nohighlight">\(b_{j,s,t}\leq k\)</span> above which consumption would be negative in current period. However, this upper bound on savings in taken care of by the Inada condition on consumption.</p>
+</aside>
+<aside class="footnote brackets" id="nssequilibrium-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">8</a><span class="fn-bracket">]</span></span>
+<p>In Chapter <a class="reference internal" href="equilibrium.html#chap-eqm"><span class="std std-ref">Equilibrium</span></a> we will assume that beliefs are correct (rational expectations) for the non-steady-state equilibrium in Section <a class="reference internal" href="equilibrium.html#seceqlbssdef"><span class="std std-ref">Stationary Steady-State Equilibrium Definition</span></a>.</p>
+</aside>
 </section>
 </section>
 
@@ -859,50 +645,112 @@ title="Print to PDF"
     </script>
     <script>kernelName = 'ogcore-dev'</script>
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="demographics.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Demographics</p>
-        </div>
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="demographics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Demographics</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="firms.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="firms.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Firms</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
-  
-    By Jason DeBacker and Richard W. Evans<br/>
-  
-      &copy; Copyright 2022.<br/>
-</p>
-        </footer>
-    </div>
-    
-</div>
-
-
       </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#household-consumption">Household Consumption</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#budget-constraint">Budget Constraint</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elliptical-disutility-of-labor-supply">Elliptical Disutility of Labor Supply</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimality-conditions">Optimality Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#factor-transforming-income-units">Factor Transforming Income Units</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-distribution-of-bequests">The Distribution of Bequests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#expectations">Expectations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

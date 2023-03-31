@@ -1,48 +1,59 @@
 
+
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Equilibrium &#8212; OG-Core</title>
-    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
@@ -52,61 +63,93 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/theory/equilibrium';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Calibrating OG-Core" href="calibration.html" />
     <link rel="prev" title="Stationarization" href="stationarization.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    
-    <div class="container-fluid" id="banner"></div>
-
-    
-
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../../index.html">
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
       
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+      <div class="bd-sidebar-primary bd-sidebar">
         
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro/intro.html">
+  
+  
+  
+  
+    
+    
       
-      
-      <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">OG-Core</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/OG-Core_logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
@@ -115,515 +158,279 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Contributing to OG-Core
- </span>
-</p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../contributing/contributor_guide.html">
-   Contributor Guide
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributor_guide.html">Contributor Guide</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core API
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../api/public_api.html">
-   API
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/aggregates.html">
-     Aggregates Equations
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/elliptical_u_est.html">
-     Elliptical Utility Function Estimation
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/execute.html">
-     Model Execution Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/firm.html">
-     Firm Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/fiscal.html">
-     Fiscal Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/household.html">
-     Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_plots.html">
-     Output Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_tables.html">
-     Output Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_plots.html">
-     Parameter Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_tables.html">
-     Parameter Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameters.html">
-     Parameters Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/tax.html">
-     Tax Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/txfunc.html">
-     Tax Function Estimation Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/utils.html">
-     Utilities Functions
-    </a>
-   </li>
-  </ul>
- </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core Theory
- </span>
-</p>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="intro.html">
-   Model Overview
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="demographics.html">
-   Demographics
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="households.html">
-   Households
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="firms.html">
-   Firms
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="government.html">
-   Government
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="open_economy.html">
-   Open Economy Options
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="financial.html">
-   Financial Intermediary
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="market_clearing.html">
-   Market Clearing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="stationarization.html">
-   Stationarization
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="calibration.html">
-   Calibrating OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demographics.html">Demographics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="households.html">Households</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firms.html">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="market_clearing.html">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stationarization.html">Stationarization</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating OG-Core</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Appendix
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="derivations.html">
-   Derivations
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="derivations.html">Derivations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  References
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../OGCore_references.html">
-   References
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../OGCore_references.html">References</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Citations of OG-Core
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../citations.html">
-   Citations and use cases of OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../citations.html">Citations and use cases of OG-Core</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/equilibrium.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
 </div>
 
 
-          
-
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
-<div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
 
 
 
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/content/theory/equilibrium.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
   </span>
-
-</label>
-
-        
-    </div>
-    <div class="header-article__right">
-<button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
   <i class="fas fa-expand"></i>
   </span>
 
 </button>
 
-<div class="menu-dropdown menu-dropdown-repository-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Source repositories">
-      <i class="fab fa-github"></i>
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Source repository"
->
-  
+`);
+</script>
 
-<span class="headerbtn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="headerbtn__text-container">repository</span>
-</a>
-
-      </li>
-      
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/equilibrium.html&body=Your%20issue%20content%20here."
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Open an issue"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="headerbtn__text-container">open issue</span>
-</a>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-
-<div class="menu-dropdown menu-dropdown-download-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Download this page">
-      <i class="fas fa-download"></i>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="../../_sources/content/theory/equilibrium.md"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download source file"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="headerbtn__text-container">.md</span>
-</a>
-
-      </li>
-      
-      <li>
-        
-<button onclick="printPdf(this)"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="left"
-title="Print to PDF"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="headerbtn__text-container">.pdf</span>
-</button>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-<label for="__page-toc"
-  class="headerbtn headerbtn-page-toc"
-  
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-list"></i>
-  </span>
-
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
 </label>
-
+</div></div>
+      
     </div>
+  
 </div>
-
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-    <div class="tocsection onthispage pt-5 pb-3">
-        <i class="fas fa-list"></i> Contents
-    </div>
-    <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#stationary-steady-state-equilibirum">
-   Stationary Steady-State Equilibirum
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#stationary-steady-state-equilibrium-definition">
-     Stationary Steady-State Equilibrium Definition
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#steady-state-solution-method">
-     Steady-state solution method
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#steady-state-results-default-specification">
-     Steady-state results: default specification
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#stationary-non-steady-state-equilibrium">
-   Stationary Non-Steady-State Equilibrium
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#stationary-non-steady-state-equilibrium-definition">
-     Stationary Non-Steady-State Equilibrium Definition
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#stationary-non-steady-state-solution-method">
-     Stationary non-steady-state solution method
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#baseline-non-steady-state-results">
-     Baseline Non-steady-state Results
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
-
-    </nav>
 </div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Equilibrium</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#stationary-steady-state-equilibirum">
-   Stationary Steady-State Equilibirum
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#stationary-steady-state-equilibrium-definition">
-     Stationary Steady-State Equilibrium Definition
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#steady-state-solution-method">
-     Steady-state solution method
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#steady-state-results-default-specification">
-     Steady-state results: default specification
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#stationary-non-steady-state-equilibrium">
-   Stationary Non-Steady-State Equilibrium
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#stationary-non-steady-state-equilibrium-definition">
-     Stationary Non-Steady-State Equilibrium Definition
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#stationary-non-steady-state-solution-method">
-     Stationary non-steady-state solution method
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#baseline-non-steady-state-results">
-     Baseline Non-steady-state Results
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
+              
+              
 
-                        </nav>
-                    </div>
-                </div>
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Equilibrium</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
             </div>
-            <main id="main-content" role="main">
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-steady-state-equilibirum">Stationary Steady-State Equilibirum</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-steady-state-equilibrium-definition">Stationary Steady-State Equilibrium Definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#steady-state-solution-method">Steady-state solution method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#steady-state-results-default-specification">Steady-state results: default specification</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-non-steady-state-equilibrium">Stationary Non-Steady-State Equilibrium</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-non-steady-state-equilibrium-definition">Stationary Non-Steady-State Equilibrium Definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-non-steady-state-solution-method">Stationary non-steady-state solution method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-non-steady-state-results">Baseline Non-steady-state Results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section class="tex2jax_ignore mathjax_ignore" id="equilibrium">
-<span id="chap-eqm"></span><h1>Equilibrium<a class="headerlink" href="#equilibrium" title="Permalink to this headline">#</a></h1>
+<span id="chap-eqm"></span><h1>Equilibrium<a class="headerlink" href="#equilibrium" title="Permalink to this heading">#</a></h1>
 <p>The equilibrium for the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model is broadly characterized as the solution to the model for all possible periods from the current period <span class="math notranslate nohighlight">\(t=1\)</span> to infinity <span class="math notranslate nohighlight">\(t=\infty\)</span>. However, the solution algorithm for the equilibrium makes it useful to divide the equilibrium definition into two sub-definitions.</p>
 <p>The first equilibrium definition we characterize is the <a class="reference internal" href="#secsseqlb"><span class="std std-ref">Stationary Steady-State Equilibirum</span></a>. This is really a long-run equilibrium concept. It is where the economy settles down after a large number of periods into the future. The distributions in the economy (e.g., population, wealth, labor supply) have settled down and remain constant from some future period <span class="math notranslate nohighlight">\(t=\bar{T}\)</span> for the rest of time <span class="math notranslate nohighlight">\(t=\infty\)</span>.</p>
 <p>The second equilibrium definition we characterize is the <a class="reference internal" href="#secnsseqlb"><span class="std std-ref">Stationary Non-Steady-State Equilibrium</span></a>. This equilibrium concept is “non-steady-state” because it characterizes equilibrium in all time periods from the current period <span class="math notranslate nohighlight">\(t=1\)</span> to the period in which the economy has reached the steady-state <span class="math notranslate nohighlight">\(t=\bar{T}\)</span>. It is “non-steady-state” because the distributions in the economy (e.g., population, wealth, labor supply) are changing across time periods.</p>
 <section id="stationary-steady-state-equilibirum">
-<span id="secsseqlb"></span><h2>Stationary Steady-State Equilibirum<a class="headerlink" href="#stationary-steady-state-equilibirum" title="Permalink to this headline">#</a></h2>
+<span id="secsseqlb"></span><h2>Stationary Steady-State Equilibirum<a class="headerlink" href="#stationary-steady-state-equilibirum" title="Permalink to this heading">#</a></h2>
 <p>In this section, we define the stationary steady-state equilibrium of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model. Chapters <a class="reference internal" href="households.html#chap-house"><span class="std std-ref">Households</span></a> through <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a> derive the equations that characterize the equilibrium of the model. However, we cannot solve for any equilibrium of the model in the presence of nonstationarity in the variables. Nonstationarity in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> comes from productivity growth <span class="math notranslate nohighlight">\(g_y\)</span> in the production function <a class="reference internal" href="firms.html#equation-eqfirmscesprodfun">(40)</a>, population growth <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> as described in <a class="reference internal" href="demographics.html#equation-eqpopgrowthtil">(5)</a> the <a class="reference internal" href="demographics.html#chap-demog"><span class="std std-ref">Demographics</span></a>  chapter, and the potential for unbounded growth in government debt as described in Chapter <a class="reference internal" href="government.html#chap-unbalgbc"><span class="std std-ref">Government</span></a>.</p>
 <p>We implemented an automatic government budget closure rule using government spending <span class="math notranslate nohighlight">\(G_t\)</span> as the instrument that stabilizes the debt-to-GDP ratio at a long-term rate in <a class="reference internal" href="government.html#equation-equnbalgbcclosure-gt">(81)</a>. And we showed in Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a> how to stationarize all the other characterizing equations.</p>
 <p>We first give a general definition of the steady-state (long-run) equilibrium of the model. We then detail the computational algorithm for solving for the equilibrium in each distinct case of the model. There are three distinct cases or parameterization permutations of the model that have to do with the following specification choices.</p>
@@ -637,14 +444,14 @@ title="Print to PDF"
 <p>Our approach is to choose the minimum number of macroeconomic variables in an outer loop in order to be able to solve the household’s <span class="math notranslate nohighlight">\(2JS\)</span> Euler equations in terms of only the <span class="math notranslate nohighlight">\(\bar{n}_{j,s}\)</span> and <span class="math notranslate nohighlight">\(\bar{b}_{j,s+1}\)</span> variables directly, holding all other variables constant. The household system of Euler equations has a provable root solution and is orders of magnitude more tractable (less nonlinear) to solve holding these outer loop variables constant.</p>
 <p>The steady-state solution method for each of the cases above is associated with a solution method that has a subset of the following outer-loop variables <span class="math notranslate nohighlight">\(\{\bar{r}_p, \bar{r}, \bar{w}, \boldsymbol{\bar{p}}, \bar{Y}, \overline{TR}, \overline{BQ}, factor\}\)</span>.</p>
 <section id="stationary-steady-state-equilibrium-definition">
-<span id="seceqlbssdef"></span><h3>Stationary Steady-State Equilibrium Definition<a class="headerlink" href="#stationary-steady-state-equilibrium-definition" title="Permalink to this headline">#</a></h3>
+<span id="seceqlbssdef"></span><h3>Stationary Steady-State Equilibrium Definition<a class="headerlink" href="#stationary-steady-state-equilibrium-definition" title="Permalink to this heading">#</a></h3>
 <p>With the stationarized model, we can now define the stationary steady-state equilibrium. This equilibrium will be long-run values of the endogenous variables that are constant over time. In a perfect foresight model, the steady-state equilibrium is the state of the economy at which the model settles after a finite amount of time, regardless of the initial condition of the model. Once the model arrives at the steady-state, it stays there indefinitely unless it receives some type of shock or stimulus.</p>
 <p>These stationary values have all the components of growth, from productivity growth and population growth, removed as defined in <a class="reference internal" href="stationarization.html#tabstnrzstatvars"><span class="std std-numref">Table 3</span></a>. This is possible because the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span> and population growth rate series <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> are exogenous. We can transform the stationary equilibrium values of the variables back to their nonstationary values by reversing the identities in <a class="reference internal" href="stationarization.html#tabstnrzstatvars"><span class="std std-numref">Table 3</span></a>.</p>
 <p>We define a stationary steady-state equilibrium as the following.</p>
 <div class="note admonition">
 <p class="admonition-title"><strong>Definition: Stationary steady-state equilibrium</strong></p>
 <p>A non-autarkic stationary steady-state equilibrium in the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model is defined as constant allocations of stationary household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}=\bar{n}_{j,s}\)</span> and savings <span class="math notranslate nohighlight">\(\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(t\)</span>, and <span class="math notranslate nohighlight">\(E+1\leq s\leq E+S\)</span>, and constant prices <span class="math notranslate nohighlight">\(\hat{w}_t=\bar{w}\)</span>, <span class="math notranslate nohighlight">\(r_t=\bar{r}\)</span>,  <span class="math notranslate nohighlight">\(r_{p,t}=\bar{r}_p\)</span>, and <span class="math notranslate nohighlight">\(\boldsymbol{p_t}=\boldsymbol{\bar{p}}\)</span> for all <span class="math notranslate nohighlight">\(t\)</span> such that the following conditions hold:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>The population has reached its stationary steady-state distribution <span class="math notranslate nohighlight">\(\hat{\omega}_{s,t} = \bar{\omega}_s\)</span> for all <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(t\)</span> as characterized in Section <a class="reference internal" href="demographics.html#secdemogpopsstp"><span class="std std-ref">Population steady-state and transition path</span></a>,</p></li>
 <li><p>households optimize according to <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-n">(113)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-b">(114)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-bs">(115)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrz-cmdem2">(110)</a>,</p></li>
 <li><p>firms in each industry optimize according to <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-l">(118)</a> and <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-k">(119)</a>,</p></li>
@@ -654,19 +461,19 @@ title="Print to PDF"
 </div>
 </section>
 <section id="steady-state-solution-method">
-<span id="seceqlbsssoln"></span><h3>Steady-state solution method<a class="headerlink" href="#steady-state-solution-method" title="Permalink to this headline">#</a></h3>
+<span id="seceqlbsssoln"></span><h3>Steady-state solution method<a class="headerlink" href="#steady-state-solution-method" title="Permalink to this heading">#</a></h3>
 <p>The default specification of the model is the baseline specification (<code class="docutils literal notranslate"><span class="pre">baseline</span> <span class="pre">=</span> <span class="pre">True</span></code>) in which the government can run deficits and surpluses (<code class="docutils literal notranslate"><span class="pre">budget_balance</span> <span class="pre">=</span> <span class="pre">False</span></code>), in which the economy is a large partially open economy [<span class="math notranslate nohighlight">\(\zeta_D,\zeta_K\in(0,1)\)</span>], and in which baseline government spending <span class="math notranslate nohighlight">\(G\)</span> and transfers <span class="math notranslate nohighlight">\(TR\)</span> are not held at baseline levels (<code class="docutils literal notranslate"><span class="pre">baseline_spending</span> <span class="pre">=</span> <span class="pre">False</span></code>).  We describe the algorithm for this model configuration below and follow that with a description of how it is modified for alternative configurations.</p>
 <p>The computational algorithm for solving for the steady-state follows the steps below.</p>
-<ol>
+<ol class="arabic">
 <li><p>Use the techniques from Section <a class="reference internal" href="demographics.html#secdemogpopsstp"><span class="std std-ref">Population steady-state and transition path</span></a> to solve for the steady-state population distribution vector <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\omega}}\)</span> and steady-state growth rate <span class="math notranslate nohighlight">\(\bar{g}_n\)</span> of the exogenous population process.</p></li>
 <li><p>Choose an initial guess for the values of the steady-state interest rate (the after-tax marginal product of capital) <span class="math notranslate nohighlight">\(\bar{r}^i\)</span>, wage rate <span class="math notranslate nohighlight">\(\bar{w}^i\)</span>,  portfolio rate of return <span class="math notranslate nohighlight">\(\bar{r}_p^i\)</span>, output prices <span class="math notranslate nohighlight">\(\boldsymbol{\bar{p}}^i\)</span> (note that <span class="math notranslate nohighlight">\(\bar{p}_M =1\)</span> since it’s the numeraire good), total bequests <span class="math notranslate nohighlight">\(\overline{BQ}^{\,i}\)</span>, total household transfers <span class="math notranslate nohighlight">\(\overline{TR}^{\,i}\)</span>, and income multiplier <span class="math notranslate nohighlight">\(factor^i\)</span>, where superscript <span class="math notranslate nohighlight">\(i\)</span> is the index of the iteration number of the guess.</p>
-<ol>
+<ol class="arabic">
 <li><p>Given <span class="math notranslate nohighlight">\(\boldsymbol{\bar{p}}^i\)</span> find the price of consumption goods using <a class="reference internal" href="households.html#equation-eqhh-pi2">(18)</a></p></li>
 <li><p>From price of consumption goods, determine the price of the composite consmpution good, <span class="math notranslate nohighlight">\(\bar{p}\)</span> using equation <a class="reference internal" href="households.html#equation-eqcomppnorm2">(20)</a></p></li>
 <li><p>Using <a class="reference internal" href="government.html#equation-eq-tr">(66)</a> with <span class="math notranslate nohighlight">\(\overline{TR}^{\,i}\)</span>, find transfers to each household, <span class="math notranslate nohighlight">\(\overline{tr}_{j,s}^i\)</span></p></li>
 <li><p>Using the bequest transfer process, <a class="reference internal" href="households.html#equation-eq-bq">(36)</a> and aggregate bequests, <span class="math notranslate nohighlight">\(\overline{BQ}^{\,i}\)</span>, find <span class="math notranslate nohighlight">\(bq_{j,s}^i\)</span></p></li>
 <li><p>Given values <span class="math notranslate nohighlight">\(\bar{p}\)</span>, <span class="math notranslate nohighlight">\(\bar{r}_{p}^i\)</span>, <span class="math notranslate nohighlight">\(\bar{w}^i\)</span> <span class="math notranslate nohighlight">\(\overline{bq}_{j,s}^i\)</span>, <span class="math notranslate nohighlight">\(\overline{tr}_{j,s}^i\)</span>, and <span class="math notranslate nohighlight">\(factor^i\)</span>, solve for the steady-state household labor supply <span class="math notranslate nohighlight">\(\bar{n}_{j,s}\)</span> and savings <span class="math notranslate nohighlight">\(\bar{b}_{j,s+1}\)</span> decisions for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(E+1\leq s\leq E+S\)</span>.</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Each of the <span class="math notranslate nohighlight">\(j\in 1,2,...J\)</span> sets of <span class="math notranslate nohighlight">\(2S\)</span> steady-state Euler equations can be solved separately. <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> parallelizes this process using the maximum number of processors possible (up to <span class="math notranslate nohighlight">\(J\)</span> processors). Solve each system of Euler equations using a multivariate root-finder to solve the <span class="math notranslate nohighlight">\(2S\)</span> necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-n">(113)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-b">(114)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-bs">(115)</a> simultaneously for each <span class="math notranslate nohighlight">\(j\)</span>.</p></li>
 </ol>
 <div class="math notranslate nohighlight" id="equation-eqss-hhbc">
@@ -684,7 +491,7 @@ title="Print to PDF"
 <li><p>Determine from the quantity of the composite consumption good consumed by each household, <span class="math notranslate nohighlight">\(\bar{c}_{j,s}\)</span>, use equation <code class="xref eq docutils literal notranslate"><span class="pre">EqHH_cmDem</span></code> to determine consumption of each output good, <span class="math notranslate nohighlight">\(\bar{c}_{m,j,s}\)</span></p></li>
 <li><p>Using <span class="math notranslate nohighlight">\(\bar{c}_{m,j,s}\)</span> in <a class="reference internal" href="market_clearing.html#equation-eqcmt">(104)</a>, solve for aggregate consumption of each output good, <span class="math notranslate nohighlight">\(\bar{C}_{m}\)</span></p></li>
 <li><p>Given values for <span class="math notranslate nohighlight">\(\bar{n}_{j,s}\)</span> and <span class="math notranslate nohighlight">\(\bar{b}_{j,s+1}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(s\)</span>, solve for steady-state labor supply, <span class="math notranslate nohighlight">\(\bar{L}\)</span>, savings, <span class="math notranslate nohighlight">\(\bar{B}\)</span></p>
-<ol>
+<ol class="arabic">
 <li><p>Use <span class="math notranslate nohighlight">\(\bar{n}_{j,s}\)</span> and the steady-state version of the stationarized labor market clearing equation <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrlab">(138)</a> to get a value for <span class="math notranslate nohighlight">\(\bar{L}^{i}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqss-markclrlab">
 <span class="eqno">(155)<a class="headerlink" href="#equation-eqss-markclrlab" title="Permalink to this equation">#</a></span>\[  \bar{L} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \bar{\omega}_{s}\lambda_j e_{j,s}\bar{n}_{j,s}\]</div>
@@ -702,7 +509,7 @@ title="Print to PDF"
 <li><p>Using <span class="math notranslate nohighlight">\(\bar{Y}^i\)</span>, find government infrastructure investment, <span class="math notranslate nohighlight">\(\bar{I}_{g}\)</span> from <a class="reference internal" href="stationarization.html#equation-eqstnrz-igt">(129)</a></p></li>
 <li><p>Using the law of motion of the stock of infrastructure, <a class="reference internal" href="stationarization.html#equation-eqstnrz-kgmt">(131)</a>, and <span class="math notranslate nohighlight">\(\bar{I}_{g}\)</span>, solve for <span class="math notranslate nohighlight">\(\bar{K}_{g}^{i}\)</span></p></li>
 <li><p>Find output and factor demands for M-1 industries:</p>
-<ol>
+<ol class="arabic">
 <li><p>By <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-mm1">(105)</a>, <span class="math notranslate nohighlight">\(\hat{Y}_{m,t}=\hat{C}_{m,t}\)</span>, where <span class="math notranslate nohighlight">\(\hat{C}_{m,t}\)</span> is determined by <a class="reference internal" href="stationarization.html#equation-eqstnrzeqcmt">(148)</a></p></li>
 <li><p>The capital-output ratio can be determined from the FOC for the firms’ choice of capital: <span class="math notranslate nohighlight">\(\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}\)</span></p></li>
 <li><p>Capital demand can thus be found: <span class="math notranslate nohighlight">\(\bar{K}_{m} = \frac{\bar{K}_m}{\bar{Y}_m} * \bar{Y}_m\)</span></p></li>
@@ -717,11 +524,11 @@ title="Print to PDF"
 </ol>
 </li>
 <li><p>Determine factor demands and output for industry <span class="math notranslate nohighlight">\(M\)</span>:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p><span class="math notranslate nohighlight">\(\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}\)</span></p></li>
 <li><p>Find <span class="math notranslate nohighlight">\(\bar{K}_m^{r^*}\)</span> using the steady-state version of <a class="reference internal" href="firms.html#equation-eqfirmsmpkg-opt">(48)</a></p></li>
 <li><p>Find total capital supply, and the split between that from domestic and foreign households: <span class="math notranslate nohighlight">\(\bar{K}^{i'}\)</span>, <span class="math notranslate nohighlight">\(\bar{K}^d\)</span>, <span class="math notranslate nohighlight">\(\bar{K}^f\)</span>:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>We then use this to find foreign demand for domestic capital from <a class="reference internal" href="financial.html#equation-eq-foreign-cap-demand">(92)</a>: <span class="math notranslate nohighlight">\(\bar{K}^{f} = \bar{\zeta}_{K}\sum_{m=1}^{M}\bar{K}_m^{r^*}\)</span></p></li>
 <li><p>Using <span class="math notranslate nohighlight">\(\bar{D}^{d,i}\)</span> we can then find domestic investors’ holdings of private capital as the residual from their total asset holdings: , <span class="math notranslate nohighlight">\(\bar{K}^{d,i} = \bar{B}^i - \bar{D}^{d,i}\)</span></p></li>
 <li><p>Aggregate capital supply is then determined as <span class="math notranslate nohighlight">\(\bar{K}^{i'} = \bar{K}^{d,i} + \bar{K}^{f,i}\)</span>.</p></li>
@@ -736,7 +543,7 @@ title="Print to PDF"
 </ol>
 </li>
 <li><p>Given updated inner-loop values based on initial guesses for outer-loop variables <span class="math notranslate nohighlight">\(\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}\)</span>, solve for updated values of outer-loop variables <span class="math notranslate nohighlight">\(\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}\)</span> using the remaining equations:</p>
-<ol>
+<ol class="arabic">
 <li><p>Use <span class="math notranslate nohighlight">\(\bar{Y}_M^{i'}\)</span> and <span class="math notranslate nohighlight">\(\bar{K}_M^{i'}\)</span> in <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-k">(119)</a> to solve for updated value of the rental rate on private capital <span class="math notranslate nohighlight">\(\bar{r}^{i'}\)</span>.</p></li>
 <li><p>Use <span class="math notranslate nohighlight">\(\bar{Y}_M^{i'}\)</span> and <span class="math notranslate nohighlight">\(\bar{L}_M^{i}\)</span> in <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-l">(118)</a> to solve for updated value of the wage rate <span class="math notranslate nohighlight">\(\bar{w}^{i'}\)</span>.</p></li>
 <li><p>Use <span class="math notranslate nohighlight">\(\bar{r}^{i'}\)</span> in equations <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(79)</a> to get <span class="math notranslate nohighlight">\(\bar{r}_{gov}^{i'}\)</span></p></li>
@@ -752,12 +559,12 @@ title="Print to PDF"
 </ol>
 </li>
 <li><p>If the updated values of the outer-loop variables <span class="math notranslate nohighlight">\(\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}\)</span> are close enough to the initial guess for the outer-loop variables <span class="math notranslate nohighlight">\(\{\bar{r}_p^i, \bar{r}^i, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^i, \overline{TR}^i, factor^i\}\)</span> then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables <span class="math notranslate nohighlight">\(\{\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \boldsymbol{\bar{p}}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}\)</span> as a convex combination of the first initial guess <span class="math notranslate nohighlight">\(\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}\)</span> and the updated values <span class="math notranslate nohighlight">\(\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}\)</span> and repeat steps (2) through (4).</p>
-<ol>
+<ol class="arabic">
 <li><p>Define a tolerance <span class="math notranslate nohighlight">\(toler_{ss,out}\)</span> and a distance metric <span class="math notranslate nohighlight">\(\left\lVert\,\cdot\,\right\rVert\)</span> on the space of 5-tuples of outer-loop variables <span class="math notranslate nohighlight">\(\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i},  \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}\)</span>. If the distance between the original guess for the outer-loop variables and the updated values for the outer-loop variables is less-than-or-equal-to the tolerance value, then the steady-state equilibrium has been found and it is the fixed point values of the variables at this point in the iteration.</p>
 <div class="math notranslate nohighlight" id="equation-eqss-toldistdone">
 <span class="eqno">(160)<a class="headerlink" href="#equation-eqss-toldistdone" title="Permalink to this equation">#</a></span>\[\begin{split} &amp; \left\lVert\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert \\
  &amp;\qquad \leq toler_{ss,out}\end{split}\]</div>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Make sure that steady-state government spending is nonnegative <span class="math notranslate nohighlight">\(\bar{G}\geq 0\)</span>. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. <span class="math notranslate nohighlight">\(\bar{G}&lt;0\)</span> is a good indicator of unsustainable policies.</p></li>
 <li><p>Make sure that the resource constraint (goods market clearing) <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrgoods-m">(147)</a> is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.</p></li>
 <li><p>Make sure that the government budget constraint <a class="reference internal" href="stationarization.html#equation-eqstnrzgovbc">(128)</a> binds.</p></li>
@@ -765,7 +572,7 @@ title="Print to PDF"
 </ol>
 </li>
 <li><p>If the distance metric of the original value of the outer-loop variables and the updated values is greater than the tolerance <span class="math notranslate nohighlight">\(toler_{ss,out}\)</span>, then an updated initial guess for the outer-loop variables is made as a convex combination of the first guess and the updated guess and steps (2) through (4) are repeated.</p>
-<ol>
+<ol class="arabic">
 <li><p>The distance metric not being satisfied is the following condition.</p>
 <div class="math notranslate nohighlight" id="equation-eqss-toldistrepeat">
 <span class="eqno">(161)<a class="headerlink" href="#equation-eqss-toldistrepeat" title="Permalink to this equation">#</a></span>\[\begin{split}  &amp;\left\lVert\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'},  \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}_p^{i}, (\bar{r}^{i}, \bar{w}^{i},  \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert  \\
@@ -786,7 +593,7 @@ title="Print to PDF"
 <p>Under alternative model configurations, the solution algorithm changes slightly.  For example, when <code class="docutils literal notranslate"><span class="pre">baseline</span> <span class="pre">=</span> <span class="pre">False</span></code>, one need not solve for the <span class="math notranslate nohighlight">\(factor\)</span>, as it is determined in the baseline model solution.  When <code class="docutils literal notranslate"><span class="pre">budget_balance</span> <span class="pre">=</span> <span class="pre">True</span></code>, the guess of <span class="math notranslate nohighlight">\(\overline{TR}\)</span> in the outer loop is replaced by the guess of <span class="math notranslate nohighlight">\(\bar{Y}\)</span> and transfers are determined a residual from the government budget constraint given revenues and other spending policy.  When <code class="docutils literal notranslate"><span class="pre">baseline_spending</span> <span class="pre">=</span> <span class="pre">True</span></code>, <span class="math notranslate nohighlight">\(\overline{TR}\)</span> is determined from the baseline model solution and not updated in the outer loop described above.  In this case, <span class="math notranslate nohighlight">\(\bar{Y}\)</span> becomes an outer loop variable.</p>
 </section>
 <section id="steady-state-results-default-specification">
-<span id="secsseqlbresults"></span><h3>Steady-state results: default specification<a class="headerlink" href="#steady-state-results-default-specification" title="Permalink to this headline">#</a></h3>
+<span id="secsseqlbresults"></span><h3>Steady-state results: default specification<a class="headerlink" href="#steady-state-results-default-specification" title="Permalink to this heading">#</a></h3>
 <p>[TODO: Update the results in this section.] In this section, we use the baseline calibration described in Chapter <span class="xref std std-ref">Chap_Calibr</span>, which includes the baseline tax law from <code class="docutils literal notranslate"><span class="pre">Tax-Calculator</span></code>, to show some steady-state results from <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>. Figures <a class="reference internal" href="#figsseqlbhhcons"><span class="std std-numref">Fig. 4</span></a>, <a class="reference internal" href="#figsseqlbhhlab"><span class="std std-numref">Fig. 5</span></a>, and <a class="reference internal" href="#figsseqlbhhsave"><span class="std std-numref">Fig. 6</span></a> show the household steady-state variables by age <span class="math notranslate nohighlight">\(s\)</span> and lifetime income group <span class="math notranslate nohighlight">\(j\)</span>.</p>
 <figure class="align-default" id="figsseqlbhhcons">
 <a class="reference internal image-reference" href="../../_images/HHcons_SS.png"><img alt="../../_images/HHcons_SS.png" src="../../_images/HHcons_SS.png" style="height: 500px;" /></a>
@@ -809,12 +616,6 @@ title="Print to PDF"
 <p><a class="reference internal" href="#tabsseqlbaggrvars"><span class="std std-numref">Table 4</span></a> lists the steady-state prices and aggregate variable values along with some of the maximum error values from the characterizing equations.</p>
 <table class="table" id="tabsseqlbaggrvars">
 <caption><span class="caption-number">Table 4 </span><span class="caption-text"><strong>Steady-state prices, aggregate variables, and maximum errors</strong></span><a class="headerlink" href="#tabsseqlbaggrvars" title="Permalink to this table">#</a></caption>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Variable</p></th>
 <th class="head"><p>Value</p></th>
@@ -874,22 +675,22 @@ title="Print to PDF"
 </section>
 </section>
 <section id="stationary-non-steady-state-equilibrium">
-<span id="secnsseqlb"></span><h2>Stationary Non-Steady-State Equilibrium<a class="headerlink" href="#stationary-non-steady-state-equilibrium" title="Permalink to this headline">#</a></h2>
+<span id="secnsseqlb"></span><h2>Stationary Non-Steady-State Equilibrium<a class="headerlink" href="#stationary-non-steady-state-equilibrium" title="Permalink to this heading">#</a></h2>
 <p>In this section, we define the stationary non-steady-state equilibrium of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model. Chapters <a class="reference internal" href="households.html#chap-house"><span class="std std-ref">Households</span></a> through <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a> derive the equations that characterize the equilibrium of the model in their non-stationarized form. And chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a> derives the stationarized versions of the characterizing equations. The steady-state equilibrium definition in Section <a class="reference internal" href="#seceqlbssdef"><span class="std std-ref">Stationary Steady-State Equilibrium Definition</span></a> defines the long-run equilibrium where the economy settles down after many periods. The non-steady-state equilibrium in this section describes the equilibrium in all periods from the current period to the steady-state. We will need the steady-state solution from Section <a class="reference internal" href="#secsseqlb"><span class="std std-ref">Stationary Steady-State Equilibirum</span></a> to solve for the non-steady-state equilibrium transition path.</p>
 <section id="stationary-non-steady-state-equilibrium-definition">
-<span id="seceqlbnssdef"></span><h3>Stationary Non-Steady-State Equilibrium Definition<a class="headerlink" href="#stationary-non-steady-state-equilibrium-definition" title="Permalink to this headline">#</a></h3>
+<span id="seceqlbnssdef"></span><h3>Stationary Non-Steady-State Equilibrium Definition<a class="headerlink" href="#stationary-non-steady-state-equilibrium-definition" title="Permalink to this heading">#</a></h3>
 <p>We define a stationary non-steady-state equilibrium as the following.</p>
 <div class="note admonition">
 <p class="admonition-title"><strong>Definition: Stationary Non-steady-state functional equilibrium</strong></p>
 <p>A non-autarkic non-steady-state functional equilibrium in the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model is defined as stationary allocation functions of the state <span class="math notranslate nohighlight">\(\bigl\{n_{j,s,t} = \phi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}\)</span> and <span class="math notranslate nohighlight">\(\bigl\{\hat{b}_{j,s+1,t+1}=\psi_{j,s}\bigl(\boldsymbol{\hat{\Gamma}}_t\bigr)\bigr\}_{s=E+1}^{E+S}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(t\)</span> and stationary price functions <span class="math notranslate nohighlight">\(\hat{w}(\boldsymbol{\hat{\Gamma}}_t)\)</span>, <span class="math notranslate nohighlight">\(r(\boldsymbol{\hat{\Gamma}}_t)\)</span>, and <span class="math notranslate nohighlight">\(\boldsymbol{p}(\boldsymbol{\hat{\Gamma}}_t)\)</span>  for all <span class="math notranslate nohighlight">\(t\)</span> such that:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Households have symmetric beliefs <span class="math notranslate nohighlight">\(\Omega(\cdot)\)</span> about the evolution of the distribution of savings as characterized in <a class="reference internal" href="households.html#equation-eqbeliefs">(39)</a>, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),</p></li>
 </ol>
 <div class="math notranslate nohighlight">
 \[
   \boldsymbol{\hat{\Gamma}}_{t+u} = \boldsymbol{\hat{\Gamma}}^e_{t+u} = \Omega^u\left(\boldsymbol{\hat{\Gamma}}_t\right) \quad\forall t,\quad u\geq 1
 \]</div>
-<ol class="simple">
+<ol class="arabic simple" start="2">
 <li><p>Households optimize according to <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-n">(113)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-b">(114)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-bs">(115)</a>,</p></li>
 <li><p>Firms optimize according to <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-l">(118)</a> and <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-k">(119)</a>,</p></li>
 <li><p>Government activity behaves according to <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(79)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrzgovbc">(128)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrz-rate-p">(133)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrzclosurerule-gt">(135)</a>, and</p></li>
@@ -898,24 +699,24 @@ title="Print to PDF"
 </div>
 </section>
 <section id="stationary-non-steady-state-solution-method">
-<span id="seceqlbnsssoln"></span><h3>Stationary non-steady-state solution method<a class="headerlink" href="#stationary-non-steady-state-solution-method" title="Permalink to this headline">#</a></h3>
+<span id="seceqlbnsssoln"></span><h3>Stationary non-steady-state solution method<a class="headerlink" href="#stationary-non-steady-state-solution-method" title="Permalink to this heading">#</a></h3>
 <p>This section describes the computational algorithm for the solution method for the stationary non-steady-state equilibrium described in the <a class="reference internal" href="#seceqlbnssdef"><span class="std std-ref">Stationary Non-Steady-State Equilibrium Definition</span></a>. The default specification of the model is the baseline specification (<code class="docutils literal notranslate"><span class="pre">baseline</span> <span class="pre">=</span> <span class="pre">True</span></code>) in which the government can run deficits and surpluses (<code class="docutils literal notranslate"><span class="pre">budget_balance</span> <span class="pre">=</span> <span class="pre">False</span></code>), in which the economy is a large partially open economy [<span class="math notranslate nohighlight">\(\zeta_D,\zeta_K\in(0,1)\)</span>], and in which baseline government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> are not held constant until the closure rule (<code class="docutils literal notranslate"><span class="pre">baseline_spending</span> <span class="pre">=</span> <span class="pre">False</span></code>). We describe the algorithm for this model configuration below and follow that with a description of how it is modified for alternative configurations.</p>
 <p>The computational algorithm for the non-steady-state solution follows similar steps to the steady-state solution described in Section <a class="reference internal" href="#seceqlbsssoln"><span class="std std-ref">Steady-state solution method</span></a>. There is an outer-loop of guessed values of macroeconomic variables <span class="math notranslate nohighlight">\(\{r_{p,t}, r_t, w_t, \boldsymbol{p}_t, BQ_t, TR_t\}\)</span>, but in this case, we guess the entire transition path of those variables. Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.</p>
-<p>We call this solution algorithm the time path iteration (TPI) method or transition path iteration. This method was originally outlined in a series of papers between 1981 and 1985 <a class="footnote-reference brackets" href="#citation-note" id="id1">1</a> and in the seminal book <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id10" title="Alan J. Auerbach and Laurence J. Kotlikoff. Dynamic Fiscal Policy. Cambridge University Press, 1987.">Auerbach and Kotlikoff, 1987</a>]</span> [Chapter 4] for the perfect foresight case and in <span id="id3">[<a class="reference internal" href="../OGCore_references.html#id24" title="Shinichi Nishiyama and Kent Smetters. Does Social Security privatization produce efficiency gains? Quarterly Journal of Economics, 122(4):1677-1719, November 2007.">Nishiyama and Smetters, 2007</a>]</span> Appendix II and <span id="id4">[<a class="reference internal" href="../OGCore_references.html#id18" title="Richard W. Evans and Kerk L. Phillips. OLG life cycle model transition paths: alternate model forecast method. Computational Economics, 43(1):105-131, January 2014.">Evans and Phillips, 2014</a>]</span>[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see <span id="id5">[<a class="reference internal" href="../OGCore_references.html#id27" title="Nancy L. Stokey, Robert E. Lucas, Jr., and Edward C. Prescott. Recursive Methods in Economic Dynamics. Harvard University Press, 1989.">Stokey <em>et al.</em>, 1989</a>]</span> [Chapter 17]).</p>
+<p>We call this solution algorithm the time path iteration (TPI) method or transition path iteration. This method was originally outlined in a series of papers between 1981 and 1985 <a class="footnote-reference brackets" href="#citation-note" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and in the seminal book <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id10" title="Alan J. Auerbach and Laurence J. Kotlikoff. Dynamic Fiscal Policy. Cambridge University Press, 1987.">Auerbach and Kotlikoff, 1987</a>]</span> [Chapter 4] for the perfect foresight case and in <span id="id3">[<a class="reference internal" href="../OGCore_references.html#id24" title="Shinichi Nishiyama and Kent Smetters. Does Social Security privatization produce efficiency gains? Quarterly Journal of Economics, 122(4):1677-1719, November 2007.">Nishiyama and Smetters, 2007</a>]</span> Appendix II and <span id="id4">[<a class="reference internal" href="../OGCore_references.html#id18" title="Richard W. Evans and Kerk L. Phillips. OLG life cycle model transition paths: alternate model forecast method. Computational Economics, 43(1):105-131, January 2014.">Evans and Phillips, 2014</a>]</span>[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see <span id="id5">[<a class="reference internal" href="../OGCore_references.html#id27" title="Nancy L. Stokey, Robert E. Lucas, Jr., and Edward C. Prescott. Recursive Methods in Economic Dynamics. Harvard University Press, 1989.">Stokey <em>et al.</em>, 1989</a>]</span> [Chapter 17]).</p>
 <p>The key assumption is that the economy will reach the steady-state equilibrium <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\Gamma}}\)</span> described in <a class="reference internal" href="#seceqlbssdef"><span class="std std-ref">Stationary Steady-State Equilibrium Definition</span></a> in a finite number of periods <span class="math notranslate nohighlight">\(T&lt;\infty\)</span> regardless of the initial state <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span>. The first step in solving for the non-steady-state equilibrium transition path is to solve for the steady-state using the method described in Section <a class="reference internal" href="#seceqlbsssoln"><span class="std std-ref">Steady-state solution method</span></a>. After solving for the steady-state, one must then find a fixed point over the entire time path or transition path of endogenous objects that satisfies the characterizing equilibrium equations in every period.</p>
 <p>The stationary non-steady state (transition path) solution algorithm has following steps.</p>
-<ol>
+<ol class="arabic">
 <li><p>Use the techniques from Section <a class="reference internal" href="demographics.html#secdemogpopsstp"><span class="std std-ref">Population steady-state and transition path</span></a> to solve for the transition path of the stationarized population distribution matrix <span class="math notranslate nohighlight">\(\{\hat{\omega}_{s,t}\}_{s,t=E+1,1}^{E+S,T}\)</span> and population growth rate vector <span class="math notranslate nohighlight">\(\{\tilde{g}_{n,t}\}_{t=1}^T\)</span> of the exogenous population process.</p></li>
 <li><p>Compute the steady-state solution <span class="math notranslate nohighlight">\(\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}\)</span> corresponding to <a class="reference internal" href="#seceqlbssdef"><span class="std std-ref">Stationary Steady-State Equilibrium Definition</span></a> with the <a class="reference internal" href="#seceqlbsssoln"><span class="std std-ref">Steady-state solution method</span></a>.</p></li>
 <li><p>Given initial state of the economy <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span> and steady-state solutions <span class="math notranslate nohighlight">\(\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}\)</span>, guess transition paths of outer-loop macroeconomic variables <span class="math notranslate nohighlight">\(\{\boldsymbol{r}_p^i, \boldsymbol{r}^i, \boldsymbol{\hat{w}}^i, \boldsymbol{p}^i, \boldsymbol{\hat{BQ}}^i,\boldsymbol{\hat{TR}}^i\}\)</span> such that <span class="math notranslate nohighlight">\(\hat{BQ}_1^i\)</span> is consistent with <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span> and <span class="math notranslate nohighlight">\(\{r_{p,t}^i, r_t^i, \hat{w}_t^i, \boldsymbol{p}_t^i, \hat{BQ}_t^i, \hat{TR}_t^i\} = \{\bar{r}_p, \bar{r}, \bar{w}, \boldsymbol{\bar{p}}_t, \overline{BQ}, \overline{TR}\}\)</span> for all <span class="math notranslate nohighlight">\(t\geq T\)</span>.  We also make an initial guess regarding the amount of government debt in each period, <span class="math notranslate nohighlight">\(\boldsymbol{\hat{D}}^i\)</span>.  This will not enter the ``outer loop’’ variables, but is helpful in the first pass through the time path iteration algorithm.</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>If the economy is assumed to reach the steady state by period <span class="math notranslate nohighlight">\(T\)</span>, then we must be able to solve for every cohort’s decisions in period <span class="math notranslate nohighlight">\(T\)</span> including the decisions of agents in their first period of economically relevant life <span class="math notranslate nohighlight">\(s=E+S\)</span>. This means we need to guess time paths for the outer-loop variables that extend to period <span class="math notranslate nohighlight">\(t=T+S\)</span>. However, the values of the time path of outer-loop variables for every period <span class="math notranslate nohighlight">\(t\geq T\)</span> are simply equal to the steady-state values.</p></li>
 </ol>
 </li>
 <li><p>Using <a class="reference internal" href="government.html#equation-eq-tr">(66)</a> with <span class="math notranslate nohighlight">\(\boldsymbol{\hat{TR}}^{\,i}\)</span>, find transfers to each household, <span class="math notranslate nohighlight">\(\boldsymbol{\hat{tr}}_{j,s}^i\)</span></p></li>
 <li><p>Using the bequest transfer process, <a class="reference internal" href="households.html#equation-eq-bq">(36)</a> and aggregate bequests, <span class="math notranslate nohighlight">\(\boldsymbol{\hat{BQ}}^{\,i}\)</span>, find <span class="math notranslate nohighlight">\(\boldsymbol{\hat{bq}}_{j,s}^i\)</span></p></li>
 <li><p>Given time path guesses <span class="math notranslate nohighlight">\(\{\boldsymbol{r}_p^i, \boldsymbol{\hat{w}}^i, \boldsymbol{p}^i, \boldsymbol{\hat{bq}}^i, \boldsymbol{\hat{tr}}^i\}\)</span>, we can solve for each household’s lifetime decisions <span class="math notranslate nohighlight">\(\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(E+1\leq s \leq E+S\)</span>, and <span class="math notranslate nohighlight">\(1\leq t\leq T_2+S-1\)</span>.</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Given <span class="math notranslate nohighlight">\(\boldsymbol{p}^i\)</span> find the price of consumption goods using <a class="reference internal" href="households.html#equation-eqhh-pi2">(18)</a></p></li>
 <li><p>From price of consumption goods, determine the price of the composite consmpution good, <span class="math notranslate nohighlight">\(\bar{p}\)</span> using equation <a class="reference internal" href="households.html#equation-eqcomppnorm2">(20)</a></p></li>
 <li><p>The household problem can be solved with a multivariate root finder solving the <span class="math notranslate nohighlight">\(2S\)</span> equations and unknowns at once for each <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(1\leq t\leq T+S-1\)</span>. The root finder uses <span class="math notranslate nohighlight">\(2S\)</span> household Euler equations  <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-n">(113)</a>, <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-b">(114)</a>, and <a class="reference internal" href="stationarization.html#equation-eqstnrz-eul-bs">(115)</a> to solve for each household’s <span class="math notranslate nohighlight">\(2S\)</span> lifetime decisions. The household decision rules for each type and birth cohort are solved separately.</p></li>
@@ -925,7 +726,7 @@ title="Print to PDF"
 <li><p>Determine from the quantity of the composite consumption good consumed by each household, <span class="math notranslate nohighlight">\(\hat{c}_{j,s,t}\)</span>, use equation <code class="xref eq docutils literal notranslate"><span class="pre">EqHH_cmDem</span></code> to determine consumption of each output good, <span class="math notranslate nohighlight">\(\hat{c}_{m,j,s,t}\)</span></p></li>
 <li><p>Using <span class="math notranslate nohighlight">\(\hat{c}_{m,j,s,t}\)</span> in <a class="reference internal" href="market_clearing.html#equation-eqcmt">(104)</a>, solve for aggregate consumption of each output good, <span class="math notranslate nohighlight">\(\hat{C}_{m,t}\)</span></p></li>
 <li><p>Given values for <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> and <span class="math notranslate nohighlight">\(\hat{b}_{j,s+1,t+1}\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>, solve for aggregate labor supply, <span class="math notranslate nohighlight">\(\hat{L}_t\)</span>, and savings, <span class="math notranslate nohighlight">\(B_t\)</span> in each period</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Use <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> and the stationarized labor market clearing equation <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrlab">(138)</a> to get a value for <span class="math notranslate nohighlight">\(\hat{L}_t^{i}\)</span>.</p></li>
 <li><p>Use <span class="math notranslate nohighlight">\(\hat{b}_{j,s+1,t+1}\)</span> and the stationarized expression for total savings by domestic households <a class="reference internal" href="stationarization.html#equation-eqstnrz-bt">(139)</a>to solve for <span class="math notranslate nohighlight">\(\hat{B}_t^i\)</span>.</p></li>
 </ol>
@@ -938,7 +739,7 @@ title="Print to PDF"
 <li><p>Using <span class="math notranslate nohighlight">\(\hat{Y}_t^i\)</span>, find government infrastructure investment, <span class="math notranslate nohighlight">\(\hat{I}_{g,t}\)</span> from <a class="reference internal" href="stationarization.html#equation-eqstnrz-igt">(129)</a></p></li>
 <li><p>Using the law of motion of the stock of infrastructure, <a class="reference internal" href="stationarization.html#equation-eqstnrz-kgmt">(131)</a>, and <span class="math notranslate nohighlight">\(\hat{I}_{g,t}\)</span>, solve for <span class="math notranslate nohighlight">\(\hat{K}_{g,t}^{i}\)</span></p></li>
 <li><p>Find output and factor demands for M-1 industries:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>By <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-mm1">(105)</a>, <span class="math notranslate nohighlight">\(\hat{Y}_{m,t}=\hat{C}_{m,t}\)</span>, where <span class="math notranslate nohighlight">\(\hat{C}_{m,t}\)</span> is determined by <a class="reference internal" href="stationarization.html#equation-eqstnrzeqcmt">(148)</a></p></li>
 <li><p>The capital-output ratio can be determined from the FOC for the firms’ choice of capital: <span class="math notranslate nohighlight">\(\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \gamma_m\left[\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{(1-\tau^{corp}_{m,t})p_{m,t}({Z}_{m,t})^\frac{\varepsilon_m -1}{\varepsilon_m}}\right]^{-\varepsilon_m}\)</span></p></li>
 <li><p>Capital demand can thus be found: <span class="math notranslate nohighlight">\(\hat{K}_{m,t} = \frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} * \hat{Y}_{m,t}\)</span></p></li>
@@ -946,14 +747,14 @@ title="Print to PDF"
 </ol>
 <div class="math notranslate nohighlight" id="equation-eqtpi-solvel">
 <span class="eqno">(163)<a class="headerlink" href="#equation-eqtpi-solvel" title="Permalink to this equation">#</a></span>\[  \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}{Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\hat{K}_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}\]</div>
-<ol class="simple">
+<ol class="arabic simple" start="5">
 <li><p>Use the interest rate <span class="math notranslate nohighlight">\(r_t^*\)</span> and labor demand <span class="math notranslate nohighlight">\(\hat{L}_{m,t}\)</span> to solve for private capital demand at the world interest rate <span class="math notranslate nohighlight">\(\hat{K}_{m,t}^{r^*}\)</span> using <a class="reference internal" href="firms.html#equation-eqfirmsmpkg-opt">(48)</a></p></li>
 </ol>
 <div class="math notranslate nohighlight" id="equation-eqtp-mpkg">
 <span class="eqno">(164)<a class="headerlink" href="#equation-eqtp-mpkg" title="Permalink to this equation">#</a></span>\[  \hat{K}_{m,t}^{r^*} = \hat{L}_{m,t}\left(\frac{\hat{w}_t}{\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{1 - \bar{\tau}_{m,t}^b}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}\]</div>
 </li>
 <li><p>Determine factor demands and output for industry <span class="math notranslate nohighlight">\(M\)</span>:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p><span class="math notranslate nohighlight">\(\hat{L}_{M,t} = \hat{L}_t - \sum_{m=1}^{M-1}\hat{L}_{m,t}\)</span></p></li>
 <li><p>Find <span class="math notranslate nohighlight">\(\hat{K}_{m,t}^{r^*}\)</span> using <a class="reference internal" href="firms.html#equation-eqfirmsmpkg-opt">(48)</a></p></li>
 <li><p>Find total capital supply, and the split between that from domestic and foreign households: <span class="math notranslate nohighlight">\(\hat{K}_t^{i'}\)</span>, <span class="math notranslate nohighlight">\(\hat{K}_t^d\)</span>, <span class="math notranslate nohighlight">\(\hat{K}_t^f\)</span>:</p></li>
@@ -967,7 +768,7 @@ title="Print to PDF"
 <li><p>Find an updated path for GDP, <span class="math notranslate nohighlight">\(\hat{Y}_t^{i'} = \sum_{m=1}^{M} p_{m,t} \hat{Y}_{m,t}\)</span></p></li>
 <li><p>Find a updated path for <span class="math notranslate nohighlight">\(\hat{I}_{g,t}\)</span> and <span class="math notranslate nohighlight">\(\hat{K}_{g,t}\)</span> using  <span class="math notranslate nohighlight">\(\hat{Y}_t^{i'}\)</span>, equations <a class="reference internal" href="stationarization.html#equation-eqstnrz-igt">(129)</a> and <a class="reference internal" href="stationarization.html#equation-eqstnrz-kgmt">(131)</a></p></li>
 <li><p>Given updated inner-loop values based on initial guesses for outer-loop variables <span class="math notranslate nohighlight">\(\{r_{p,t}^i, r_t^i, \hat{w}_t^i, \boldsymbol{p}_t, \hat{BQ}_t^i, \hat{TR}_t^i\}\)</span>, solve for updated values of outer-loop variables <span class="math notranslate nohighlight">\(\{r_{p,t}^{i'}, r_t^{i'}, \hat{w}_t^{i'}, \boldsymbol{p}_t^{i'}, \hat{BQ}_t^{i'}, \hat{TR}_t^{i'}\}\)</span> using the remaining equations (for all periods <span class="math notranslate nohighlight">\(t\)</span> in the transition path):</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Use <span class="math notranslate nohighlight">\(\hat{Y}_{M,t}^{i'}\)</span> and <span class="math notranslate nohighlight">\(\hat{K}_{M,t}^{i'}\)</span> in <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-k">(119)</a> to solve for updated value of the rental rate on private capital <span class="math notranslate nohighlight">\(r_t^{i'}\)</span>.</p></li>
 <li><p>Use <span class="math notranslate nohighlight">\(\hat{Y}_{M,t}^{i'}\)</span> and <span class="math notranslate nohighlight">\(\hat{L}_{M,t}^{i}\)</span> in <a class="reference internal" href="stationarization.html#equation-eqstnrzfoc-l">(118)</a> to solve for updated value of the wage rate <span class="math notranslate nohighlight">\(\hat{w}_t^{i'}\)</span>.</p></li>
 <li><p>Use <span class="math notranslate nohighlight">\(r_t^{i'}\)</span> in equations <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(79)</a> to get <span class="math notranslate nohighlight">\(r_{gov,t}^{i'}\)</span></p></li>
@@ -979,7 +780,7 @@ title="Print to PDF"
 </ol>
 </li>
 <li><p>The updated values for the outer loop variables are then used to compute the percentage differences between the initial and implied values:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p><span class="math notranslate nohighlight">\(error_{r_p} = max\left\{\frac{r_{p,t}^{i'} - r_{p,t}^i}{r_{p,t}^i}\right\}_{t=0}^{T}\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(error_r = max\left\{\frac{r_{t}^{i'} - r_{t}^i}{r_{t}^i}\right\}_{t=0}^{T}\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(error_w = max\left\{\frac{\hat{w}_{t}^{i'} - \hat{w}_{t}^i}{\hat{w}_{t}^i}\right\}_{t=0}^{T}\)</span></p></li>
@@ -996,9 +797,9 @@ title="Print to PDF"
    &amp;\qquad \xi_{tpi}[\boldsymbol{r}_p^{i'}, \boldsymbol{r}^{i'}, \boldsymbol{\hat{w}}^{i'}, \boldsymbol{p}^{i'}, \boldsymbol{\hat{BQ}}^{i'},\boldsymbol{\hat{TR}}^{i'}] + ... \\
    &amp;\qquad (1-\xi_{tpi})[\boldsymbol{r}_p^{i}, \boldsymbol{r}^{i}, \boldsymbol{\hat{w}}^{i}, \boldsymbol{p}^{i}, \boldsymbol{\hat{BQ}}^{i},\boldsymbol{\hat{TR}}^{i}]
   \end{split}\]</div>
-<ol class="simple">
+<ol class="arabic simple" start="24">
 <li><p>If the maximum absolute error among the M-1+5 outer loop error terms is less-than-or-equal-to some small positive tolerance <span class="math notranslate nohighlight">\(toler_{tpi,out}\)</span> in each period along the transition path, <span class="math notranslate nohighlight">\(\max\big|\left(error_{r_p}, error_r, error_w, error_p, error_{bq},error_{tr}\right)\bigr| \leq toler_{tpi,out}\)</span> then the non-steady-state equilibrium has been found.</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Make sure that the resource constraint for industry <span class="math notranslate nohighlight">\(M\)</span> (goods market clearing) <a class="reference internal" href="stationarization.html#equation-eqstnrzmarkclrgoods-m">(147)</a> is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.</p></li>
 <li><p>Make sure that the government budget constraint <a class="reference internal" href="stationarization.html#equation-eqstnrzgovbc">(128)</a> binds.</p></li>
 <li><p>Make sure that all the <span class="math notranslate nohighlight">\((T+S)\times2JS\)</span> household Euler equations are solved to a satisfactory tolerance.</p></li>
@@ -1008,18 +809,17 @@ title="Print to PDF"
 <p>Under alternative model configurations, the solution algorithm changes slightly.  When <code class="docutils literal notranslate"><span class="pre">budget_balance</span> <span class="pre">=</span> <span class="pre">True</span></code>, the guess of <span class="math notranslate nohighlight">\(\boldsymbol{\hat{TR}}\)</span> in the outer loop is replaced by the guess of <span class="math notranslate nohighlight">\(\boldsymbol{\hat{Y}}\)</span> and transfers are determined a residual from the government budget constraint given revenues and other spending policy.  When <code class="docutils literal notranslate"><span class="pre">baseline_spending</span> <span class="pre">=</span> <span class="pre">True</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{\hat{TR}}\)</span> is determined from the baseline model solution and not updated in the outer loop described above.  In this case <span class="math notranslate nohighlight">\(\boldsymbol{\hat{Y}}\)</span> becomes variable that is updates in the outer loop.</p>
 </section>
 <section id="baseline-non-steady-state-results">
-<span id="secnsseqlbresults"></span><h3>Baseline Non-steady-state Results<a class="headerlink" href="#baseline-non-steady-state-results" title="Permalink to this headline">#</a></h3>
+<span id="secnsseqlbresults"></span><h3>Baseline Non-steady-state Results<a class="headerlink" href="#baseline-non-steady-state-results" title="Permalink to this heading">#</a></h3>
 <p>[TODO: Add baseline non-steady-state results here.]</p>
 </section>
 </section>
 <section id="footnotes">
-<span id="seceqlbfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
+<span id="seceqlbfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">#</a></h2>
 <hr class="footnotes docutils" />
-<dl class="footnote brackets">
-<dt class="label" id="citation-note"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>See <span id="id6">[<a class="reference internal" href="../OGCore_references.html#id8" title="Alan J. Auerbach, Laurence J. Kotlikoff, and Jonathan Skinner. The efficiency gains from dynamic tax reform. NBER Working Paper 819, National Bureau of Economic Research, December 1981.">Auerbach <em>et al.</em>, 1981</a>, <a class="reference internal" href="../OGCore_references.html#id9" title="Alan J. Auerbach, Laurence J. Kotlikoff, and Jonathan Skinner. The efficiency gains from dynamic tax reform. International Economic Review, 24(1):81-100, February 1983.">Auerbach <em>et al.</em>, 1983</a>]</span>, <span id="id7">[<a class="reference internal" href="../OGCore_references.html#id6" title="Alan J. Auerbach and Laurence J. Kotlikoff. An examination of empirical tests of Social Security and savings. In Elhanan Helpman, Assaf Razin, and Efraim Sadka, editors, Social Policy Evaluation: An Economic Perspective, chapter Chap. 8, pages pp. 161-179. Academic Press, 1983.">Auerbach and Kotlikoff, 1983</a>, <a class="reference internal" href="../OGCore_references.html#id5" title="Alan J. Auerbach and Laurence J. Kotlikoff. Investment versus savings incentives: the size of the bang for the buck and the potential for self-financing business tax cuts. In Lawrence. H. Meyer, editor, The Economic Consequences of Government Deficits, Economic Policy Conference Series, chapter Chap. 4, pages pp. 121-149. Kluwer-Nijhoff Publishing, 1983.">Auerbach and Kotlikoff, 1983</a>, <a class="reference internal" href="../OGCore_references.html#id4" title="Alan J. Auerbach and Laurence J. Kotlikoff. National savings, economic welfare, and the structure of taxation. In Martin Feldstein, editor, Behavioral Simulation Methods in Tax Policy Analysis, chapter Chap. 13, pages pp. 459-498. University of Chicago Press, 1983.">Auerbach and Kotlikoff, 1983</a>]</span>, and <span id="id8">[<a class="reference internal" href="../OGCore_references.html#id7" title="Alan J. Auerbach and Laurence J. Kotlikoff. Simulating alternative Social Security responses to the demographic transition. National Tax Journal, 38(2):153-168, June 1985.">Auerbach and Kotlikoff, 1985</a>]</span>.</p>
-</dd>
-</dl>
+<aside class="footnote brackets" id="citation-note" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>See <span id="id6">[<a class="reference internal" href="../OGCore_references.html#id8" title="Alan J. Auerbach, Laurence J. Kotlikoff, and Jonathan Skinner. The efficiency gains from dynamic tax reform. NBER Working Paper 819, National Bureau of Economic Research, December 1981.">Auerbach <em>et al.</em>, 1981</a>, <a class="reference internal" href="../OGCore_references.html#id9" title="Alan J. Auerbach, Laurence J. Kotlikoff, and Jonathan Skinner. The efficiency gains from dynamic tax reform. International Economic Review, 24(1):81-100, February 1983.">Auerbach <em>et al.</em>, 1983</a>]</span>, <span id="id7">[<a class="reference internal" href="../OGCore_references.html#id6" title="Alan J. Auerbach and Laurence J. Kotlikoff. An examination of empirical tests of Social Security and savings. In Elhanan Helpman, Assaf Razin, and Efraim Sadka, editors, Social Policy Evaluation: An Economic Perspective, chapter Chap. 8, pages pp. 161-179. Academic Press, 1983.">Auerbach and Kotlikoff, 1983</a>, <a class="reference internal" href="../OGCore_references.html#id5" title="Alan J. Auerbach and Laurence J. Kotlikoff. Investment versus savings incentives: the size of the bang for the buck and the potential for self-financing business tax cuts. In Lawrence. H. Meyer, editor, The Economic Consequences of Government Deficits, Economic Policy Conference Series, chapter Chap. 4, pages pp. 121-149. Kluwer-Nijhoff Publishing, 1983.">Auerbach and Kotlikoff, 1983</a>, <a class="reference internal" href="../OGCore_references.html#id4" title="Alan J. Auerbach and Laurence J. Kotlikoff. National savings, economic welfare, and the structure of taxation. In Martin Feldstein, editor, Behavioral Simulation Methods in Tax Policy Analysis, chapter Chap. 13, pages pp. 459-498. University of Chicago Press, 1983.">Auerbach and Kotlikoff, 1983</a>]</span>, and <span id="id8">[<a class="reference internal" href="../OGCore_references.html#id7" title="Alan J. Auerbach and Laurence J. Kotlikoff. Simulating alternative Social Security responses to the demographic transition. National Tax Journal, 38(2):153-168, June 1985.">Auerbach and Kotlikoff, 1985</a>]</span>.</p>
+</aside>
 </section>
 </section>
 
@@ -1043,50 +843,117 @@ title="Print to PDF"
     </script>
     <script>kernelName = 'python3'</script>
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="stationarization.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Stationarization</p>
-        </div>
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="stationarization.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Stationarization</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="calibration.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="calibration.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Calibrating OG-Core</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
-  
-    By Jason DeBacker and Richard W. Evans<br/>
-  
-      &copy; Copyright 2022.<br/>
-</p>
-        </footer>
-    </div>
-    
-</div>
-
-
       </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-steady-state-equilibirum">Stationary Steady-State Equilibirum</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-steady-state-equilibrium-definition">Stationary Steady-State Equilibrium Definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#steady-state-solution-method">Steady-state solution method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#steady-state-results-default-specification">Steady-state results: default specification</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-non-steady-state-equilibrium">Stationary Non-Steady-State Equilibrium</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-non-steady-state-equilibrium-definition">Stationary Non-Steady-State Equilibrium Definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-non-steady-state-solution-method">Stationary non-steady-state solution method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-non-steady-state-results">Baseline Non-steady-state Results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

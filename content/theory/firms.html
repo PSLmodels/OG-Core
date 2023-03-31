@@ -1,48 +1,59 @@
 
+
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Firms &#8212; OG-Core</title>
-    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
@@ -52,61 +63,93 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/theory/firms';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Government" href="government.html" />
     <link rel="prev" title="Households" href="households.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    
-    <div class="container-fluid" id="banner"></div>
-
-    
-
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../../index.html">
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
       
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+      <div class="bd-sidebar-primary bd-sidebar">
         
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro/intro.html">
+  
+  
+  
+  
+    
+    
       
-      
-      <img src="../../_static/OG-Core_logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">OG-Core</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/OG-Core_logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
@@ -115,455 +158,268 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Contributing to OG-Core
- </span>
-</p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../contributing/contributor_guide.html">
-   Contributor Guide
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributor_guide.html">Contributor Guide</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core API
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../api/public_api.html">
-   API
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/aggregates.html">
-     Aggregates Equations
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/elliptical_u_est.html">
-     Elliptical Utility Function Estimation
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/execute.html">
-     Model Execution Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/firm.html">
-     Firm Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/fiscal.html">
-     Fiscal Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/household.html">
-     Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_plots.html">
-     Output Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/output_tables.html">
-     Output Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_plots.html">
-     Parameter Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameter_tables.html">
-     Parameter Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/parameters.html">
-     Parameters Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/tax.html">
-     Tax Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/txfunc.html">
-     Tax Function Estimation Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/utils.html">
-     Utilities Functions
-    </a>
-   </li>
-  </ul>
- </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core Theory
- </span>
-</p>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="intro.html">
-   Model Overview
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="demographics.html">
-   Demographics
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="households.html">
-   Households
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Firms
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="government.html">
-   Government
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="open_economy.html">
-   Open Economy Options
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="financial.html">
-   Financial Intermediary
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="market_clearing.html">
-   Market Clearing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="stationarization.html">
-   Stationarization
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="equilibrium.html">
-   Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="calibration.html">
-   Calibrating OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demographics.html">Demographics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="households.html">Households</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="market_clearing.html">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stationarization.html">Stationarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equilibrium.html">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating OG-Core</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Appendix
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="derivations.html">
-   Derivations
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="derivations.html">Derivations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  References
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../OGCore_references.html">
-   References
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../OGCore_references.html">References</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Citations of OG-Core
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../citations.html">
-   Citations and use cases of OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="../citations.html">Citations and use cases of OG-Core</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/firms.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
 </div>
 
 
-          
-
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
-<div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
 
 
 
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/content/theory/firms.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
   </span>
-
-</label>
-
-        
-    </div>
-    <div class="header-article__right">
-<button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
   <i class="fas fa-expand"></i>
   </span>
 
 </button>
 
-<div class="menu-dropdown menu-dropdown-repository-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Source repositories">
-      <i class="fab fa-github"></i>
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Source repository"
->
-  
+`);
+</script>
 
-<span class="headerbtn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="headerbtn__text-container">repository</span>
-</a>
-
-      </li>
-      
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/theory/firms.html&body=Your%20issue%20content%20here."
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Open an issue"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="headerbtn__text-container">open issue</span>
-</a>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-
-<div class="menu-dropdown menu-dropdown-download-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Download this page">
-      <i class="fas fa-download"></i>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="../../_sources/content/theory/firms.md"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download source file"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="headerbtn__text-container">.md</span>
-</a>
-
-      </li>
-      
-      <li>
-        
-<button onclick="printPdf(this)"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="left"
-title="Print to PDF"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="headerbtn__text-container">.pdf</span>
-</button>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-<label for="__page-toc"
-  class="headerbtn headerbtn-page-toc"
-  
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-list"></i>
-  </span>
-
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
 </label>
-
+</div></div>
+      
     </div>
+  
 </div>
-
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-    <div class="tocsection onthispage pt-5 pb-3">
-        <i class="fas fa-list"></i> Contents
-    </div>
-    <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#production-function">
-   Production Function
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#optimality-conditions">
-   Optimality Conditions
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#positive-profits-from-government-infrastructure-investment">
-   Positive Profits from Government Infrastructure Investment
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
-
-    </nav>
 </div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Firms</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#production-function">
-   Production Function
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#optimality-conditions">
-   Optimality Conditions
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#positive-profits-from-government-infrastructure-investment">
-   Positive Profits from Government Infrastructure Investment
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#footnotes">
-   Footnotes
-  </a>
- </li>
-</ul>
+              
+              
 
-                        </nav>
-                    </div>
-                </div>
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Firms</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
             </div>
-            <main id="main-content" role="main">
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#production-function">Production Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimality-conditions">Optimality Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#positive-profits-from-government-infrastructure-investment">Positive Profits from Government Infrastructure Investment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section class="tex2jax_ignore mathjax_ignore" id="firms">
-<span id="chap-firms"></span><h1>Firms<a class="headerlink" href="#firms" title="Permalink to this headline">#</a></h1>
+<span id="chap-firms"></span><h1>Firms<a class="headerlink" href="#firms" title="Permalink to this heading">#</a></h1>
 <p>The production side of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model is populated by <span class="math notranslate nohighlight">\(M\)</span> industries indexed by <span class="math notranslate nohighlight">\(m=1,2,...M\)</span>, each of which industry has a unit measure of identical perfectly competitive firms that rent private capital <span class="math notranslate nohighlight">\(K_{m,t}\)</span> and public capital <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span> and hire labor <span class="math notranslate nohighlight">\(L_{m,t}\)</span> to produce output <span class="math notranslate nohighlight">\(Y_{m,t}\)</span>. Firms face a flat corporate income tax <span class="math notranslate nohighlight">\(\tau^{corp}_{m,t}\)</span> and can deduct capital expenses for tax purposes at a rate <span class="math notranslate nohighlight">\(\delta^\tau_{m,t}\)</span>. Tax parameters can vary by industry <span class="math notranslate nohighlight">\(m\)</span> and over time, <span class="math notranslate nohighlight">\(t\)</span>.</p>
 <section id="production-function">
-<span id="eqfirmsprodfunc"></span><h2>Production Function<a class="headerlink" href="#production-function" title="Permalink to this headline">#</a></h2>
+<span id="eqfirmsprodfunc"></span><h2>Production Function<a class="headerlink" href="#production-function" title="Permalink to this heading">#</a></h2>
 <p>Firms in each industry produce output <span class="math notranslate nohighlight">\(Y_{m,t}\)</span> using inputs of private capital <span class="math notranslate nohighlight">\(K_{m,t}\)</span>, public capital <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span>, and labor <span class="math notranslate nohighlight">\(L_{m,t}\)</span> according to a general constant elasticity (CES) of substitution production function,</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmscesprodfun">
 <span class="eqno">(40)<a class="headerlink" href="#equation-eqfirmscesprodfun" title="Permalink to this equation">#</a></span>\[\begin{split}  \begin{split}
@@ -572,18 +428,18 @@ title="Print to PDF"
     &amp;\quad\quad\quad\quad\quad(1-\gamma_m-\gamma_{g,m})^\frac{1}{\varepsilon_m}(e^{g_y t}L_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\biggr]^\frac{\varepsilon_m}{\varepsilon_m-1} \quad\forall m,t
   \end{split}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(Z_{m,t}\)</span> is an exogenous scale parameter (total factor productivity) that can be time dependent, <span class="math notranslate nohighlight">\(\gamma_m\)</span> represents private capital’s share of income, <span class="math notranslate nohighlight">\(\gamma_{g,m}\)</span> is public capital’s share of income, and <span class="math notranslate nohighlight">\(\varepsilon_m\)</span> is the constant elasticity of substitution among the two types of capital and labor. We have included constant productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span> as the rate of labor augmenting technological progress.</p>
-<p>A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for <span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span>.<a class="footnote-reference brackets" href="#kg0-case" id="id1">1</a></p>
+<p>A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for <span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span>.<a class="footnote-reference brackets" href="#kg0-case" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <div class="math notranslate nohighlight" id="equation-eqfirmscdprodfun">
 <span class="eqno">(41)<a class="headerlink" href="#equation-eqfirmscdprodfun" title="Permalink to this equation">#</a></span>\[  Y_{m,t} = Z_{m,t} (K_{m,t})^{\gamma_m} (K_{g,m,t})^{\gamma_{g,m}}(e^{g_y t}L_{m,t})^{1-\gamma_m-\gamma_{g,m}} \quad\forall m,t \quad\text{for}\quad \varepsilon_m=1\]</div>
 <p>Industry <span class="math notranslate nohighlight">\(M\)</span> in the model is unique in two respects.  First, we will define industry <span class="math notranslate nohighlight">\(M\)</span> goods as the numeraire in OG_Core.  Therefore, all quantities are in terms of industry <span class="math notranslate nohighlight">\(M\)</span> goods and all prices are relative to the price of a unit of industry <span class="math notranslate nohighlight">\(M\)</span> goods.  Second, the model solution is greatly simplified if just one production industry produces capital goods.  The assumption in OG-Core is that industry <span class="math notranslate nohighlight">\(M\)</span> is the only industry producing capital goods (though industry <span class="math notranslate nohighlight">\(M\)</span> goods can also be used for consumption).</p>
 </section>
 <section id="optimality-conditions">
-<span id="eqfirmsfoc"></span><h2>Optimality Conditions<a class="headerlink" href="#optimality-conditions" title="Permalink to this headline">#</a></h2>
+<span id="eqfirmsfoc"></span><h2>Optimality Conditions<a class="headerlink" href="#optimality-conditions" title="Permalink to this heading">#</a></h2>
 <p>The static per-period profit function of the representative firm in each industry <span class="math notranslate nohighlight">\(m\)</span> is the following.</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmsprofit">
 <span class="eqno">(42)<a class="headerlink" href="#equation-eqfirmsprofit" title="Permalink to this equation">#</a></span>\[\begin{split}  PR_{m,t} &amp;= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
   &amp;\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}K_{m,t} \quad\forall m,t\end{split}\]</div>
-<p>Gross income for the firms is <span class="math notranslate nohighlight">\(p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})\)</span>. Labor costs to the firm are <span class="math notranslate nohighlight">\(w_t L_{m,t}\)</span>, and capital costs are <span class="math notranslate nohighlight">\((r_t +\delta_{M,t})K_{m,t}\)</span>. The government supplies public capital <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span> to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is <span class="math notranslate nohighlight">\(r_t\)</span>. The per-period economic depreciation rate for private capital is <span class="math notranslate nohighlight">\(\delta_{M,t}\in[0,1]\)</span>.<a class="footnote-reference brackets" href="#delta-m" id="id2">2</a> The <span class="math notranslate nohighlight">\(\delta^\tau_{m,t}\)</span> parameter in the second-to-last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax. Note that the last term above represents the benefits from any investment tax credit <span class="math notranslate nohighlight">\(\tau^{inv}_{m,t}\)</span>. While this should be applied to all investment, firms in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> are making static decisions each period about the amount of capital to rent. We therefore proxy for investment with <span class="math notranslate nohighlight">\(\delta_{M,t}K_{m,t}\)</span>, which is accurate in the steady-state, but is an approximation over the transition to the steady-state.</p>
+<p>Gross income for the firms is <span class="math notranslate nohighlight">\(p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})\)</span>. Labor costs to the firm are <span class="math notranslate nohighlight">\(w_t L_{m,t}\)</span>, and capital costs are <span class="math notranslate nohighlight">\((r_t +\delta_{M,t})K_{m,t}\)</span>. The government supplies public capital <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span> to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is <span class="math notranslate nohighlight">\(r_t\)</span>. The per-period economic depreciation rate for private capital is <span class="math notranslate nohighlight">\(\delta_{M,t}\in[0,1]\)</span>.<a class="footnote-reference brackets" href="#delta-m" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> The <span class="math notranslate nohighlight">\(\delta^\tau_{m,t}\)</span> parameter in the second-to-last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax. Note that the last term above represents the benefits from any investment tax credit <span class="math notranslate nohighlight">\(\tau^{inv}_{m,t}\)</span>. While this should be applied to all investment, firms in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> are making static decisions each period about the amount of capital to rent. We therefore proxy for investment with <span class="math notranslate nohighlight">\(\delta_{M,t}K_{m,t}\)</span>, which is accurate in the steady-state, but is an approximation over the transition to the steady-state.</p>
 <p>Taxes enter the firm’s profit function <a class="reference internal" href="#equation-eqfirmsprofit">(42)</a> in two places. The first is the corporate income tax rate <span class="math notranslate nohighlight">\(\tau^{corp}_{m,t}\)</span>, which is a flat tax on corporate income that can vary by industry <span class="math notranslate nohighlight">\(m\)</span>. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only have a direct effect on the firms’ capital demand decision.</p>
 <p>The tax policy also enters the profit function <a class="reference internal" href="#equation-eqfirmsprofit">(42)</a> through depreciation deductions at rate <span class="math notranslate nohighlight">\(\delta^\tau_{m,t}\)</span>, which then lower corporate tax liability. When <span class="math notranslate nohighlight">\(\delta^\tau_{m,t}=0\)</span>, no depreciation expense is deducted from the firm’s tax liability. When <span class="math notranslate nohighlight">\(\delta^\tau_{m,t}=\delta_{M,t}\)</span>, all economic depreciation is deducted from corporate income. The investment tax credit is characterized by the parameter <span class="math notranslate nohighlight">\(\tau^{inv}_{m,t}\)</span> multiplied by a proxy for investment <span class="math notranslate nohighlight">\(\delta_{M,t}K_{m,t}\)</span> by industry <span class="math notranslate nohighlight">\(m\)</span>, which represents the percent of industry-specific capital that can be credited against profits.</p>
 <p>Firms take as given prices <span class="math notranslate nohighlight">\(p_{m,t}\)</span>, <span class="math notranslate nohighlight">\(w_t\)</span>, and <span class="math notranslate nohighlight">\(r_t\)</span> and the level of public capital supply <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span>. Taking the derivative of the profit function <a class="reference internal" href="#equation-eqfirmsprofit">(42)</a> with respect to labor <span class="math notranslate nohighlight">\(L_{m,t}\)</span> and setting it equal to zero (using the general CES form of the production function <a class="reference internal" href="#equation-eqfirmscesprodfun">(40)</a>) and taking the derivative of the profit function with respect to private capital <span class="math notranslate nohighlight">\(K_{m,t}\)</span> and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.</p>
@@ -594,11 +450,11 @@ title="Print to PDF"
 <p>Note that the presence of the public capital good creates economic rents. These rents will accrue to the owners of capital via the financial intermediary. See Section Chapter <a class="reference internal" href="financial.html#chap-finint"><span class="std std-ref">Financial Intermediary</span></a> for more details on the determination of the return to the household’s portfolio. Because public capital is exogenous to the firm’s decisions, the optimality condition for capital demand <a class="reference internal" href="#equation-eqfirmfoc-k">(44)</a> is only affected by public capital <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span> through the <span class="math notranslate nohighlight">\(Y_{m,t}\)</span> term.</p>
 </section>
 <section id="positive-profits-from-government-infrastructure-investment">
-<span id="eqfirmsposprofits"></span><h2>Positive Profits from Government Infrastructure Investment<a class="headerlink" href="#positive-profits-from-government-infrastructure-investment" title="Permalink to this headline">#</a></h2>
+<span id="eqfirmsposprofits"></span><h2>Positive Profits from Government Infrastructure Investment<a class="headerlink" href="#positive-profits-from-government-infrastructure-investment" title="Permalink to this heading">#</a></h2>
 <p>The CES production function in <a class="reference internal" href="#equation-eqfirmscesprodfun">(40)</a> exhibits constant returns to scale (CRS). A feature of CRS production functions is that gross revenue <span class="math notranslate nohighlight">\(Y_{m,t}\)</span> is a sum of the gross revenue attributed to each factor of production,</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmsmargreveq">
 <span class="eqno">(45)<a class="headerlink" href="#equation-eqfirmsmargreveq" title="Permalink to this equation">#</a></span>\[  Y_{m,t} = MPK_{m,t} K_{m,t} + MPK_{g,m,t} K_{g,m,t} + MPL_{m,t} L_{m,t} \quad\forall m,t\]</div>
-<p>where <span class="math notranslate nohighlight">\(MPK_{m,t}\)</span> is the marginal product of private capital in industry <span class="math notranslate nohighlight">\(m\)</span>, <span class="math notranslate nohighlight">\(MPK_{g,m,t}\)</span> is the marginal product of public capital, and <span class="math notranslate nohighlight">\(MPL_{m,t}\)</span> is the marginal product of labor.<a class="footnote-reference brackets" href="#mpfactors" id="id3">3</a> Each of the terms in <a class="reference internal" href="#equation-eqfirmsmargreveq">(45)</a> is growing at the macroeconomic variable rate of <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N_t}\)</span> (see the third column of <a class="reference internal" href="stationarization.html#tabstnrzstatvars"><span class="std std-numref">Table 3</span></a>). Firm profit maximization for private capital demand from equation <a class="reference internal" href="#equation-eqfirmfoc-k">(44)</a> implies that the marginal product of private capital is equal to the real cost of capital:</p>
+<p>where <span class="math notranslate nohighlight">\(MPK_{m,t}\)</span> is the marginal product of private capital in industry <span class="math notranslate nohighlight">\(m\)</span>, <span class="math notranslate nohighlight">\(MPK_{g,m,t}\)</span> is the marginal product of public capital, and <span class="math notranslate nohighlight">\(MPL_{m,t}\)</span> is the marginal product of labor.<a class="footnote-reference brackets" href="#mpfactors" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> Each of the terms in <a class="reference internal" href="#equation-eqfirmsmargreveq">(45)</a> is growing at the macroeconomic variable rate of <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N_t}\)</span> (see the third column of <a class="reference internal" href="stationarization.html#tabstnrzstatvars"><span class="std std-numref">Table 3</span></a>). Firm profit maximization for private capital demand from equation <a class="reference internal" href="#equation-eqfirmfoc-k">(44)</a> implies that the marginal product of private capital is equal to the real cost of capital:</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmsmpk-opt">
 <span class="eqno">(46)<a class="headerlink" href="#equation-eqfirmsmpk-opt" title="Permalink to this equation">#</a></span>\[  MPK_{m,t} =  \frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^\tau_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{p_{m,t}(1 - \tau^{corp}_{m,t})} \quad\forall m,t\]</div>
 <p>Firm profit maximization for labor demand from equation <a class="reference internal" href="#equation-eqfirmfoc-l">(43)</a> implies that the marginal product of labor is equal to the real wage rate:</p>
@@ -623,19 +479,20 @@ title="Print to PDF"
 <span class="eqno">(51)<a class="headerlink" href="#equation-eqfirms-rkt" title="Permalink to this equation">#</a></span>\[  r_{K,t} =  r_t + \frac{\sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t}}{\sum_{m=1}^M K_{m,t}} \quad\forall t\]</div>
 </section>
 <section id="footnotes">
-<span id="secfirmsfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">#</a></h2>
+<span id="secfirmsfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">#</a></h2>
 <hr class="footnotes docutils" />
-<dl class="footnote brackets">
-<dt class="label" id="kg0-case"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>It is important to note a special case of the Cobb-Douglas (<span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span>) production function that we have to manually restrict. The inputs of production of private capital <span class="math notranslate nohighlight">\(K_{m,t}\)</span> and labor <span class="math notranslate nohighlight">\(L_{m,t}\)</span> are endogenous and have characteristics of the model that naturally bound them away from zero. But public capital <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span>, although it is a function of endogenous variables in <a class="reference internal" href="government.html#equation-equnbalgbc-igt">(75)</a> and <a class="reference internal" href="government.html#equation-equnbalgbc-igmt">(76)</a>, can be exogenously set to zero as a policy parameter choice by setting <span class="math notranslate nohighlight">\(\alpha_{I,t}=0\)</span> or <span class="math notranslate nohighlight">\(\alpha_{I,m,t}=0\)</span>. In the Cobb-Douglas case of the production function <span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span> <a class="reference internal" href="#equation-eqfirmscdprodfun">(41)</a>, <span class="math notranslate nohighlight">\(K_{g,m,t}=0\)</span> would zero out production and break the model. In the case when <span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span> and <span class="math notranslate nohighlight">\(K_{g,m,t}=0\)</span>, we set <span class="math notranslate nohighlight">\(\gamma_{g,m}=0\)</span>, thereby restricting the production function to only depend on private capital <span class="math notranslate nohighlight">\(K_{m,t}\)</span> and labor <span class="math notranslate nohighlight">\(L_{m,t}\)</span>. This necessary restriction limits us from performing experiments in the model of the effect of changing <span class="math notranslate nohighlight">\(K_{g,m,t}=0\)</span> to <span class="math notranslate nohighlight">\(K_{g,m,t}&gt;0\)</span> or vice versa in the <span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span> case.</p>
-</dd>
-<dt class="label" id="delta-m"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>Because we are assuming that only the output of the <span class="math notranslate nohighlight">\(M\)</span>th industry can be used for investment, government spending, or government debt, and because that industry’s output is the numeraire, the only depreciation rate that matters or can be nonzero is that of the <span class="math notranslate nohighlight">\(M\)</span>th industry <span class="math notranslate nohighlight">\(\delta_{M,t}\)</span>.</p>
-</dd>
-<dt class="label" id="mpfactors"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>See Section <a class="reference internal" href="derivations.html#secappderivces"><span class="std std-ref">Properties of the CES Production Function</span></a> of the <a class="reference internal" href="derivations.html#chap-deriv"><span class="std std-ref">Derivations</span></a> Chapter for the derivations of the marginal product of private capital <span class="math notranslate nohighlight">\(MPK_{m,t}\)</span>, marginal product of public capital <span class="math notranslate nohighlight">\(MPk_{g,m,t}\)</span>, and marginal product of labor <span class="math notranslate nohighlight">\(MPL_{m,t}\)</span>.</p>
-</dd>
-</dl>
+<aside class="footnote brackets" id="kg0-case" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>It is important to note a special case of the Cobb-Douglas (<span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span>) production function that we have to manually restrict. The inputs of production of private capital <span class="math notranslate nohighlight">\(K_{m,t}\)</span> and labor <span class="math notranslate nohighlight">\(L_{m,t}\)</span> are endogenous and have characteristics of the model that naturally bound them away from zero. But public capital <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span>, although it is a function of endogenous variables in <a class="reference internal" href="government.html#equation-equnbalgbc-igt">(75)</a> and <a class="reference internal" href="government.html#equation-equnbalgbc-igmt">(76)</a>, can be exogenously set to zero as a policy parameter choice by setting <span class="math notranslate nohighlight">\(\alpha_{I,t}=0\)</span> or <span class="math notranslate nohighlight">\(\alpha_{I,m,t}=0\)</span>. In the Cobb-Douglas case of the production function <span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span> <a class="reference internal" href="#equation-eqfirmscdprodfun">(41)</a>, <span class="math notranslate nohighlight">\(K_{g,m,t}=0\)</span> would zero out production and break the model. In the case when <span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span> and <span class="math notranslate nohighlight">\(K_{g,m,t}=0\)</span>, we set <span class="math notranslate nohighlight">\(\gamma_{g,m}=0\)</span>, thereby restricting the production function to only depend on private capital <span class="math notranslate nohighlight">\(K_{m,t}\)</span> and labor <span class="math notranslate nohighlight">\(L_{m,t}\)</span>. This necessary restriction limits us from performing experiments in the model of the effect of changing <span class="math notranslate nohighlight">\(K_{g,m,t}=0\)</span> to <span class="math notranslate nohighlight">\(K_{g,m,t}&gt;0\)</span> or vice versa in the <span class="math notranslate nohighlight">\(\varepsilon_m=1\)</span> case.</p>
+</aside>
+<aside class="footnote brackets" id="delta-m" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Because we are assuming that only the output of the <span class="math notranslate nohighlight">\(M\)</span>th industry can be used for investment, government spending, or government debt, and because that industry’s output is the numeraire, the only depreciation rate that matters or can be nonzero is that of the <span class="math notranslate nohighlight">\(M\)</span>th industry <span class="math notranslate nohighlight">\(\delta_{M,t}\)</span>.</p>
+</aside>
+<aside class="footnote brackets" id="mpfactors" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>See Section <a class="reference internal" href="derivations.html#secappderivces"><span class="std std-ref">Properties of the CES Production Function</span></a> of the <a class="reference internal" href="derivations.html#chap-deriv"><span class="std std-ref">Derivations</span></a> Chapter for the derivations of the marginal product of private capital <span class="math notranslate nohighlight">\(MPK_{m,t}\)</span>, marginal product of public capital <span class="math notranslate nohighlight">\(MPk_{g,m,t}\)</span>, and marginal product of labor <span class="math notranslate nohighlight">\(MPL_{m,t}\)</span>.</p>
+</aside>
 </section>
 </section>
 
@@ -659,50 +516,108 @@ title="Print to PDF"
     </script>
     <script>kernelName = 'python3'</script>
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="households.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Households</p>
-        </div>
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="households.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Households</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="government.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="government.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Government</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
-  
-    By Jason DeBacker and Richard W. Evans<br/>
-  
-      &copy; Copyright 2022.<br/>
-</p>
-        </footer>
-    </div>
-    
-</div>
-
-
       </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#production-function">Production Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimality-conditions">Optimality Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#positive-profits-from-government-infrastructure-investment">Positive Profits from Government Infrastructure Investment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

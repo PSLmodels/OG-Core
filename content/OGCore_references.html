@@ -1,48 +1,59 @@
 
+
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>References &#8212; OG-Core</title>
-    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
@@ -50,61 +61,93 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/OGCore_references';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Citations and use cases of OG-Core" href="citations.html" />
     <link rel="prev" title="Derivations" href="theory/derivations.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay overlay-navbar" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
-<label class="overlay overlay-pagetoc" for="__page-toc">
-    <div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    
-    <div class="container-fluid" id="banner"></div>
-
-    
-
-    <div class="container-xl">
-      <div class="row">
-          
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-    <div class="bd-sidebar__content">
-        <div class="bd-sidebar__top"><div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../index.html">
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
       
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+      <div class="bd-sidebar-primary bd-sidebar">
         
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro/intro.html">
+  
+  
+  
+  
+    
+    
       
-      
-      <img src="../_static/OG-Core_logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">OG-Core</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
+    
+    
+    <img src="../_static/OG-Core_logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/OG-Core_logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
@@ -113,469 +156,362 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Contributing to OG-Core
- </span>
-</p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="contributing/contributor_guide.html">
-   Contributor Guide
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="contributing/contributor_guide.html">Contributor Guide</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core API
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="api/public_api.html">
-   API
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/aggregates.html">
-     Aggregates Equations
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/elliptical_u_est.html">
-     Elliptical Utility Function Estimation
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/execute.html">
-     Model Execution Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/firm.html">
-     Firm Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/fiscal.html">
-     Fiscal Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/household.html">
-     Household Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/output_plots.html">
-     Output Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/output_tables.html">
-     Output Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/parameter_plots.html">
-     Parameter Plotting Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/parameter_tables.html">
-     Parameter Table Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/parameters.html">
-     Parameters Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/tax.html">
-     Tax Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/txfunc.html">
-     Tax Function Estimation Functions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="api/utils.html">
-     Utilities Functions
-    </a>
-   </li>
-  </ul>
- </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html">Utilities Functions</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  OG-Core Theory
- </span>
-</p>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/intro.html">
-   Model Overview
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/demographics.html">
-   Demographics
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/households.html">
-   Households
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/firms.html">
-   Firms
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/government.html">
-   Government
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/open_economy.html">
-   Open Economy Options
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/financial.html">
-   Financial Intermediary
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/market_clearing.html">
-   Market Clearing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/stationarization.html">
-   Stationarization
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/equilibrium.html">
-   Equilibrium
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/calibration.html">
-   Calibrating OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="theory/intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/demographics.html">Demographics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/households.html">Households</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/firms.html">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/market_clearing.html">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/stationarization.html">Stationarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/equilibrium.html">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/calibration.html">Calibrating OG-Core</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Appendix
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="theory/derivations.html">
-   Derivations
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="theory/derivations.html">Derivations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  References
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   References
-  </a>
- </li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">References</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Citations of OG-Core
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="citations.html">
-   Citations and use cases of OG-Core
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="citations.html">Citations and use cases of OG-Core</a></li>
 </ul>
 
     </div>
 </nav></div>
-        <div class="bd-sidebar__bottom">
-             <!-- To handle the deprecated key -->
-            
-            <div class="navbar_extra_footer">
-            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-            </div>
-            
-        </div>
     </div>
-    <div id="rtd-footer-container"></div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/OGCore_references.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
 </div>
 
 
-          
-
-
-          
-<!-- A tiny helper pixel to detect if we've scrolled -->
-<div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-    
-    <div class="header-article row sticky-top noprint">
-        
 
 
 
-<div class="col py-1 d-flex header-article-main">
-    <div class="header-article__left">
-        
-        <label for="__navigation"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="right"
-title="Toggle navigation"
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/content/OGCore_references.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-bars"></i>
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
   </span>
-
-</label>
-
-        
-    </div>
-    <div class="header-article__right">
-<button onclick="toggleFullScreen()"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="bottom"
-title="Fullscreen mode"
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
 >
   
 
-<span class="headerbtn__icon-container">
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
   <i class="fas fa-expand"></i>
   </span>
 
 </button>
 
-<div class="menu-dropdown menu-dropdown-repository-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Source repositories">
-      <i class="fab fa-github"></i>
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Source repository"
->
-  
+`);
+</script>
 
-<span class="headerbtn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="headerbtn__text-container">repository</span>
-</a>
-
-      </li>
-      
-      <li>
-        <a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/OGCore_references.html&body=Your%20issue%20content%20here."
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Open an issue"
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="headerbtn__text-container">open issue</span>
-</a>
-
-      </li>
-      
-    </ul>
-  </div>
-</div>
-
-<div class="menu-dropdown menu-dropdown-download-buttons">
-  <button class="headerbtn menu-dropdown__trigger"
-      aria-label="Download this page">
-      <i class="fas fa-download"></i>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
   </button>
-  <div class="menu-dropdown__content">
-    <ul>
-      <li>
-        <a href="../_sources/content/OGCore_references.md"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Download source file"
->
-  
+`);
+</script>
 
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="headerbtn__text-container">.md</span>
-</a>
-
-      </li>
+</div></div>
       
-      <li>
-        
-<button onclick="printPdf(this)"
-  class="headerbtn"
-  data-toggle="tooltip"
-data-placement="left"
-title="Print to PDF"
->
+    </div>
   
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="headerbtn__text-container">.pdf</span>
-</button>
-
-      </li>
-      
-    </ul>
-  </div>
 </div>
+</div>
+              
+              
 
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>References</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
     </div>
 </div>
 
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-</div>
-    </div>
-    <div class="article row">
-        <div class="col pl-md-3 pl-lg-5 content-container">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>References</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                    </div>
-                </div>
-            </div>
-            <main id="main-content" role="main">
+              
                 
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section class="tex2jax_ignore mathjax_ignore" id="references">
-<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">#</a></h1>
+<h1>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
 <div class="docutils container" id="id1">
-<dl class="citation">
-<dt class="label" id="id2"><span class="brackets">Arm69</span></dt>
-<dd><p>Paul S. Armington. A theory of demand for products distinguished by place of production. <em>Staff Papers, International Monetary Fund</em>, 16(1):159–178, March 1969.</p>
-</dd>
-<dt class="label" id="id6"><span class="brackets">AK83a</span></dt>
-<dd><p>Alan J. Auerbach and Laurence J. Kotlikoff. An examination of empirical tests of Social Security and savings. In Elhanan Helpman, Assaf Razin, and Efraim Sadka, editors, <em>Social Policy Evaluation: An Economic Perspective</em>, chapter Chap. 8, pages pp. 161–179. Academic Press, 1983.</p>
-</dd>
-<dt class="label" id="id5"><span class="brackets">AK83b</span></dt>
-<dd><p>Alan J. Auerbach and Laurence J. Kotlikoff. Investment versus savings incentives: the size of the bang for the buck and the potential for self-financing business tax cuts. In Lawrence. H. Meyer, editor, <em>The Economic Consequences of Government Deficits</em>, Economic Policy Conference Series, chapter Chap. 4, pages pp. 121–149. Kluwer-Nijhoff Publishing, 1983.</p>
-</dd>
-<dt class="label" id="id4"><span class="brackets">AK83c</span></dt>
-<dd><p>Alan J. Auerbach and Laurence J. Kotlikoff. National savings, economic welfare, and the structure of taxation. In Martin Feldstein, editor, <em>Behavioral Simulation Methods in Tax Policy Analysis</em>, chapter Chap. 13, pages pp. 459–498. University of Chicago Press, 1983.</p>
-</dd>
-<dt class="label" id="id7"><span class="brackets">AK85</span></dt>
-<dd><p>Alan J. Auerbach and Laurence J. Kotlikoff. Simulating alternative Social Security responses to the demographic transition. <em>National Tax Journal</em>, 38(2):153–168, June 1985.</p>
-</dd>
-<dt class="label" id="id10"><span class="brackets">AK87</span></dt>
-<dd><p>Alan J. Auerbach and Laurence J. Kotlikoff. <em>Dynamic Fiscal Policy</em>. Cambridge University Press, 1987.</p>
-</dd>
-<dt class="label" id="id8"><span class="brackets">AKS81</span></dt>
-<dd><p>Alan J. Auerbach, Laurence J. Kotlikoff, and Jonathan Skinner. The efficiency gains from dynamic tax reform. NBER Working Paper 819, National Bureau of Economic Research, December 1981.</p>
-</dd>
-<dt class="label" id="id9"><span class="brackets">AKS83</span></dt>
-<dd><p>Alan J. Auerbach, Laurence J. Kotlikoff, and Jonathan Skinner. The efficiency gains from dynamic tax reform. <em>International Economic Review</em>, 24(1):81–100, February 1983.</p>
-</dd>
-<dt class="label" id="id11"><span class="brackets">BKL17</span></dt>
-<dd><p>Seth G. Benzell, Laurence J. Kotlikoff, and Guillermo LaGarda. Simulating business cash flow taxation: an illustration based on the “Better Way” corporate tax reform. NBER Working Paper 23675, National Bureau of Economic Research, August 2017.</p>
-</dd>
-<dt class="label" id="id13"><span class="brackets">CSTW17</span></dt>
-<dd><p>Christopher Carroll, Jiri Slacalek, Kiichi Tokuoka, and Matthew N. White. The distribution of wealth and the marginal propensity to consume. <em>Quantitative Economics</em>, 8(3):977–1020, November 2017.</p>
-</dd>
-<dt class="label" id="id14"><span class="brackets">DEP19</span></dt>
-<dd><p>Jason DeBacker, Richard W. Evans, and Kerk L. Phillips. Integrating microsimulation models of tax policy into a DGE macroeconomic model. <em>Public Finance Review</em>, 47(2):207–275, March 2019.</p>
-</dd>
-<dt class="label" id="id16"><span class="brackets">Eil03</span></dt>
-<dd><p>Paul H. C. Eilers. A perfect smoother. <em>Anals of Chemistry</em>, 75(14):3631–3636, July 2003.</p>
-</dd>
-<dt class="label" id="id17"><span class="brackets">Eil05</span></dt>
-<dd><p>Paul H. C. Eilers. Unimodal smoothing. <em>Joural of Chemometrics</em>, 19(?):317–328, ? 2005.</p>
-</dd>
-<dt class="label" id="id15"><span class="brackets">EM96</span></dt>
-<dd><p>Paul H. C. Eilers and Brian D. Marx. Flexible smoothing with b-splines and penalties. <em>Statistical Science</em>, 11(2):89–121, May 1996.</p>
-</dd>
-<dt class="label" id="id18"><span class="brackets">EP14</span></dt>
-<dd><p>Richard W. Evans and Kerk L. Phillips. OLG life cycle model transition paths: alternate model forecast method. <em>Computational Economics</em>, 43(1):105–131, January 2014.</p>
-</dd>
-<dt class="label" id="id19"><span class="brackets">EP17</span></dt>
-<dd><p>Richard W. Evans and Kerk L. Phillips. Advantages of an ellipse when modeling leisure utility. <em>Computational Economics</em>, 51(3):513–533, March 2017.</p>
-</dd>
-<dt class="label" id="id20"><span class="brackets">Gea51</span></dt>
-<dd><p>Roy C. Geary. A note on `a constant-utility index of the cost of living'. <em>Review of Economics Studies</em>, 18(1):65–66, 1950-51.</p>
-</dd>
-<dt class="label" id="id21"><span class="brackets">GS94</span></dt>
-<dd><p>Miguel Gouveia and Robert P. Strauss. Effective federal individual tax functions: an exploratory empirical analysis. <em>National Tax Journal</em>, 47(2):317–39, June 1994.</p>
-</dd>
-<dt class="label" id="id3"><span class="brackets">HLP14</span></dt>
-<dd><p>Erik Hurst, Geng Li, and Benjamin Pugsley. Are household surveys like tax forms? evidence from income underreporting of the self-employed. <em>The Review of Economics and Statistics</em>, 96(1):19–33, 2014. URL: <a class="reference external" href="https://EconPapers.repec.org/RePEc:tpr:restat:v:96:y:2014:i:1:p:19-33">https://EconPapers.repec.org/RePEc:tpr:restat:v:96:y:2014:i:1:p:19-33</a>.</p>
-</dd>
-<dt class="label" id="id22"><span class="brackets">MP21</span></dt>
-<dd><p>Rachel Moore and Brandon Pecoraro. Quantitative analysis of a wealth tax in the united states: exclusions, evasion, and expenditures. MPRA Paper 109120, University Library of Munich, Germany, https://ideas.repec.org/p/pra/mprapa/109120.html, 2021.</p>
-</dd>
-<dt class="label" id="id23"><span class="brackets">Nis15</span></dt>
-<dd><p>Shinichi Nishiyama. Fiscal policy effects in a heterogeneous-agent OLG economy with an aging population. <em>Journal of Economic Dynamics and Control</em>, 61:114–132, December 2015.</p>
-</dd>
-<dt class="label" id="id24"><span class="brackets">NS07</span></dt>
-<dd><p>Shinichi Nishiyama and Kent Smetters. Does Social Security privatization produce efficiency gains? <em>Quarterly Journal of Economics</em>, 122(4):1677–1719, November 2007.</p>
-</dd>
-<dt class="label" id="id25"><span class="brackets">Pet16</span></dt>
-<dd><p>William B. Peterman. Reconciling micro and macro estimates of the Frisch labor supply elasticity. <em>Economic Inquiry</em>, 54(1):100–120, January 2016.</p>
-</dd>
-<dt class="label" id="id26"><span class="brackets">Sol56</span></dt>
-<dd><p>Robert M. Solow. A contribution to the theory of economic growth. <em>Quarterly Journal of Economics</em>, 70(1):65–94, February 1956.</p>
-</dd>
-<dt class="label" id="id27"><span class="brackets">SLucasJrP89</span></dt>
-<dd><p>Nancy L. Stokey, Robert E. Lucas, Jr., and Edward C. Prescott. <em>Recursive Methods in Economic Dynamics</em>. Harvard University Press, 1989.</p>
-</dd>
-<dt class="label" id="id28"><span class="brackets">Sto54</span></dt>
-<dd><p>Richard Stone. Linear expenditure systems and demand analysis: an application to the pattern of british demand. <em>The Economic Journal</em>, 64(255):511–527, September 1954.</p>
-</dd>
-<dt class="label" id="id29"><span class="brackets">Suz83</span></dt>
-<dd><p>Kotaro Suzumura. Perron-Frobenius theorem on non-negative square matrices: an elementary proof. <em>Hitotsubashi Journal of Economics</em>, 24:137–141, 1983.</p>
-</dd>
-</dl>
+<div class="citation" id="id2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Arm69<span class="fn-bracket">]</span></span>
+<p>Paul S. Armington. A theory of demand for products distinguished by place of production. <em>Staff Papers, International Monetary Fund</em>, 16(1):159–178, March 1969.</p>
+</div>
+<div class="citation" id="id6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AK83a<span class="fn-bracket">]</span></span>
+<p>Alan J. Auerbach and Laurence J. Kotlikoff. An examination of empirical tests of Social Security and savings. In Elhanan Helpman, Assaf Razin, and Efraim Sadka, editors, <em>Social Policy Evaluation: An Economic Perspective</em>, chapter Chap. 8, pages pp. 161–179. Academic Press, 1983.</p>
+</div>
+<div class="citation" id="id5" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AK83b<span class="fn-bracket">]</span></span>
+<p>Alan J. Auerbach and Laurence J. Kotlikoff. Investment versus savings incentives: the size of the bang for the buck and the potential for self-financing business tax cuts. In Lawrence. H. Meyer, editor, <em>The Economic Consequences of Government Deficits</em>, Economic Policy Conference Series, chapter Chap. 4, pages pp. 121–149. Kluwer-Nijhoff Publishing, 1983.</p>
+</div>
+<div class="citation" id="id4" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AK83c<span class="fn-bracket">]</span></span>
+<p>Alan J. Auerbach and Laurence J. Kotlikoff. National savings, economic welfare, and the structure of taxation. In Martin Feldstein, editor, <em>Behavioral Simulation Methods in Tax Policy Analysis</em>, chapter Chap. 13, pages pp. 459–498. University of Chicago Press, 1983.</p>
+</div>
+<div class="citation" id="id7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AK85<span class="fn-bracket">]</span></span>
+<p>Alan J. Auerbach and Laurence J. Kotlikoff. Simulating alternative Social Security responses to the demographic transition. <em>National Tax Journal</em>, 38(2):153–168, June 1985.</p>
+</div>
+<div class="citation" id="id10" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AK87<span class="fn-bracket">]</span></span>
+<p>Alan J. Auerbach and Laurence J. Kotlikoff. <em>Dynamic Fiscal Policy</em>. Cambridge University Press, 1987.</p>
+</div>
+<div class="citation" id="id8" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AKS81<span class="fn-bracket">]</span></span>
+<p>Alan J. Auerbach, Laurence J. Kotlikoff, and Jonathan Skinner. The efficiency gains from dynamic tax reform. NBER Working Paper 819, National Bureau of Economic Research, December 1981.</p>
+</div>
+<div class="citation" id="id9" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AKS83<span class="fn-bracket">]</span></span>
+<p>Alan J. Auerbach, Laurence J. Kotlikoff, and Jonathan Skinner. The efficiency gains from dynamic tax reform. <em>International Economic Review</em>, 24(1):81–100, February 1983.</p>
+</div>
+<div class="citation" id="id11" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>BKL17<span class="fn-bracket">]</span></span>
+<p>Seth G. Benzell, Laurence J. Kotlikoff, and Guillermo LaGarda. Simulating business cash flow taxation: an illustration based on the “Better Way” corporate tax reform. NBER Working Paper 23675, National Bureau of Economic Research, August 2017.</p>
+</div>
+<div class="citation" id="id13" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>CSTW17<span class="fn-bracket">]</span></span>
+<p>Christopher Carroll, Jiri Slacalek, Kiichi Tokuoka, and Matthew N. White. The distribution of wealth and the marginal propensity to consume. <em>Quantitative Economics</em>, 8(3):977–1020, November 2017.</p>
+</div>
+<div class="citation" id="id14" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>DEP19<span class="fn-bracket">]</span></span>
+<p>Jason DeBacker, Richard W. Evans, and Kerk L. Phillips. Integrating microsimulation models of tax policy into a DGE macroeconomic model. <em>Public Finance Review</em>, 47(2):207–275, March 2019.</p>
+</div>
+<div class="citation" id="id16" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Eil03<span class="fn-bracket">]</span></span>
+<p>Paul H. C. Eilers. A perfect smoother. <em>Anals of Chemistry</em>, 75(14):3631–3636, July 2003.</p>
+</div>
+<div class="citation" id="id17" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Eil05<span class="fn-bracket">]</span></span>
+<p>Paul H. C. Eilers. Unimodal smoothing. <em>Joural of Chemometrics</em>, 19(?):317–328, ? 2005.</p>
+</div>
+<div class="citation" id="id15" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>EM96<span class="fn-bracket">]</span></span>
+<p>Paul H. C. Eilers and Brian D. Marx. Flexible smoothing with b-splines and penalties. <em>Statistical Science</em>, 11(2):89–121, May 1996.</p>
+</div>
+<div class="citation" id="id18" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>EP14<span class="fn-bracket">]</span></span>
+<p>Richard W. Evans and Kerk L. Phillips. OLG life cycle model transition paths: alternate model forecast method. <em>Computational Economics</em>, 43(1):105–131, January 2014.</p>
+</div>
+<div class="citation" id="id19" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>EP17<span class="fn-bracket">]</span></span>
+<p>Richard W. Evans and Kerk L. Phillips. Advantages of an ellipse when modeling leisure utility. <em>Computational Economics</em>, 51(3):513–533, March 2017.</p>
+</div>
+<div class="citation" id="id20" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Gea51<span class="fn-bracket">]</span></span>
+<p>Roy C. Geary. A note on `a constant-utility index of the cost of living'. <em>Review of Economics Studies</em>, 18(1):65–66, 1950-51.</p>
+</div>
+<div class="citation" id="id21" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>GS94<span class="fn-bracket">]</span></span>
+<p>Miguel Gouveia and Robert P. Strauss. Effective federal individual tax functions: an exploratory empirical analysis. <em>National Tax Journal</em>, 47(2):317–39, June 1994.</p>
+</div>
+<div class="citation" id="id3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>HLP14<span class="fn-bracket">]</span></span>
+<p>Erik Hurst, Geng Li, and Benjamin Pugsley. Are household surveys like tax forms? evidence from income underreporting of the self-employed. <em>The Review of Economics and Statistics</em>, 96(1):19–33, 2014. URL: <a class="reference external" href="https://EconPapers.repec.org/RePEc:tpr:restat:v:96:y:2014:i:1:p:19-33">https://EconPapers.repec.org/RePEc:tpr:restat:v:96:y:2014:i:1:p:19-33</a>.</p>
+</div>
+<div class="citation" id="id22" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>MP21<span class="fn-bracket">]</span></span>
+<p>Rachel Moore and Brandon Pecoraro. Quantitative analysis of a wealth tax in the united states: exclusions, evasion, and expenditures. MPRA Paper 109120, University Library of Munich, Germany, https://ideas.repec.org/p/pra/mprapa/109120.html, 2021.</p>
+</div>
+<div class="citation" id="id23" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Nis15<span class="fn-bracket">]</span></span>
+<p>Shinichi Nishiyama. Fiscal policy effects in a heterogeneous-agent OLG economy with an aging population. <em>Journal of Economic Dynamics and Control</em>, 61:114–132, December 2015.</p>
+</div>
+<div class="citation" id="id24" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>NS07<span class="fn-bracket">]</span></span>
+<p>Shinichi Nishiyama and Kent Smetters. Does Social Security privatization produce efficiency gains? <em>Quarterly Journal of Economics</em>, 122(4):1677–1719, November 2007.</p>
+</div>
+<div class="citation" id="id25" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Pet16<span class="fn-bracket">]</span></span>
+<p>William B. Peterman. Reconciling micro and macro estimates of the Frisch labor supply elasticity. <em>Economic Inquiry</em>, 54(1):100–120, January 2016.</p>
+</div>
+<div class="citation" id="id26" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Sol56<span class="fn-bracket">]</span></span>
+<p>Robert M. Solow. A contribution to the theory of economic growth. <em>Quarterly Journal of Economics</em>, 70(1):65–94, February 1956.</p>
+</div>
+<div class="citation" id="id27" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SLucasJrP89<span class="fn-bracket">]</span></span>
+<p>Nancy L. Stokey, Robert E. Lucas, Jr., and Edward C. Prescott. <em>Recursive Methods in Economic Dynamics</em>. Harvard University Press, 1989.</p>
+</div>
+<div class="citation" id="id28" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Sto54<span class="fn-bracket">]</span></span>
+<p>Richard Stone. Linear expenditure systems and demand analysis: an application to the pattern of british demand. <em>The Economic Journal</em>, 64(255):511–527, September 1954.</p>
+</div>
+<div class="citation" id="id29" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Suz83<span class="fn-bracket">]</span></span>
+<p>Kotaro Suzumura. Perron-Frobenius theorem on non-negative square matrices: an elementary proof. <em>Hitotsubashi Journal of Economics</em>, 24:137–141, 1983.</p>
+</div>
+</div>
 </div>
 </section>
 
@@ -599,50 +535,91 @@ title="Print to PDF"
     </script>
     <script>kernelName = 'python3'</script>
 
-              </div>
+                </article>
               
-            </main>
-            <footer class="footer-article noprint">
-                
-    <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="theory/derivations.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Derivations</p>
-        </div>
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="theory/derivations.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Derivations</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="citations.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="citations.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Citations and use cases of OG-Core</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-            </footer>
-        </div>
-    </div>
-    <div class="footer-content row">
-        <footer class="col footer"><p>
-  
-    By Jason DeBacker and Richard W. Evans<br/>
-  
-      &copy; Copyright 2022.<br/>
-</p>
-        </footer>
-    </div>
-    
-</div>
-
-
       </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
     </div>
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>
