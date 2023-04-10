@@ -53,4 +53,5 @@ ogcore/tests/OUTPUT_BASELINE/*
 ogcore/tests/OUTPUT_REFORM/*
 regression/OUTPUT_BASELINE/*
 regression/OUTPUT_REFORM*
+.vscode/
 *default.profraw

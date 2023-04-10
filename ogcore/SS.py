@@ -80,8 +80,8 @@ def euler_equation_solver(guesses, *args):
         theta,
         p.e[:, j],
         p.rho,
-        p.etr_params[-1, :, :],
-        p.mtry_params[-1, :, :],
+        p.etr_params[-1],
+        p.mtry_params[-1],
         None,
         j,
         p,
@@ -101,8 +101,8 @@ def euler_equation_solver(guesses, *args):
         theta,
         p.chi_n,
         p.e[:, j],
-        p.etr_params[-1, :, :],
-        p.mtrx_params[-1, :, :],
+        p.etr_params[-1],
+        p.mtrx_params[-1],
         None,
         j,
         p,
@@ -139,7 +139,7 @@ def euler_equation_solver(guesses, *args):
         False,
         "SS",
         p.e[:, j],
-        p.etr_params[-1, :, :],
+        p.etr_params[-1],
         p,
     )
     cons = household.get_cons(
@@ -270,10 +270,14 @@ def inner_loop(outer_loop_vars, p, client):
 
     theta = tax.replacement_rate_vals(nssmat, w, factor, None, p)
 
-    etr_params_3D = np.tile(
-        np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
-        (1, p.J, 1),
-    )
+    num_params = len(p.etr_params[-1][0])
+    etr_params_3D = [
+        [
+            [p.etr_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
+    ]
 
     net_tax = tax.net_taxes(
         r_p,
@@ -310,7 +314,7 @@ def inner_loop(outer_loop_vars, p, client):
     B = aggr.get_B(bssmat, p, "SS", False)
 
     # Find gov't debt
-    r_gov = fiscal.get_r_gov(r, p)
+    r_gov = fiscal.get_r_gov(r, p, "SS")
     D, D_d, D_f, new_borrowing, _, new_borrowing_f = fiscal.get_D_ss(
         r_gov, Y, p
     )
@@ -361,7 +365,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r = firm.get_r(Y_vec[-1], K_vec[-1], p_m, p, "SS", -1)
     new_w = firm.get_w(Y_vec[-1], L_vec[-1], p_m, p, "SS")
 
-    new_r_gov = fiscal.get_r_gov(new_r, p)
+    new_r_gov = fiscal.get_r_gov(new_r, p, "SS")
     # now get accurate measure of debt service cost
     (
         D,
@@ -398,10 +402,15 @@ def inner_loop(outer_loop_vars, p, client):
     new_p_i = np.dot(p.io_matrix, new_p_m)
     new_p_tilde = aggr.get_ptilde(new_p_i, p.tau_c[-1, :], p.alpha_c)
 
-    etr_params_3D = np.tile(
-        np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
-        (1, p.J, 1),
-    )
+    num_params = len(p.etr_params[-1][0])
+    etr_params_3D = [
+        [
+            [p.etr_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
+    ]
+
     taxss = tax.net_taxes(
         new_r_p,
         new_w,
@@ -658,7 +667,7 @@ def SS_solver(
     K_vec_ss = new_K_vec
     L_vec_ss = new_L_vec
     Y_vec_ss = new_Y_vec
-    r_gov_ss = fiscal.get_r_gov(rss, p)
+    r_gov_ss = fiscal.get_r_gov(rss, p, "SS")
     p_m_ss = new_p_m
     p_i_ss = np.dot(p.io_matrix, p_m_ss)
     p_tilde_ss = aggr.get_ptilde(p_i_ss, p.tau_c[-1, :], p.alpha_c)
@@ -710,18 +719,29 @@ def SS_solver(
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
     # Compute effective and marginal tax rates for all agents
-    etr_params_3D = np.tile(
-        np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
-        (1, p.J, 1),
-    )
-    mtrx_params_3D = np.tile(
-        np.reshape(p.mtrx_params[-1, :, :], (p.S, 1, p.mtrx_params.shape[2])),
-        (1, p.J, 1),
-    )
-    mtry_params_3D = np.tile(
-        np.reshape(p.mtry_params[-1, :, :], (p.S, 1, p.mtry_params.shape[2])),
-        (1, p.J, 1),
-    )
+    num_params = len(p.etr_params[-1][0])
+    etr_params_3D = [
+        [
+            [p.etr_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
+    ]
+    mtrx_params_3D = [
+        [
+            [p.mtrx_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
+    ]
+    mtry_params_3D = [
+        [
+            [p.mtry_params[-1][s][i] for i in range(num_params)]
+            for j in range(p.J)
+        ]
+        for s in range(p.S)
+    ]
+
     labor_noncompliance_rate_2D = np.tile(
         np.reshape(p.labor_income_tax_noncompliance_rate[-1, :], (1, p.J)),
         (p.S, 1),
@@ -1237,10 +1257,17 @@ def run_SS(p, client=None):
         if p.reform_use_baseline_solution:
             # use baseline solution as starting values if dimensions match
             try:
+                print(
+                    "Shape HH = ",
+                    ss_solutions["bssmat_splus1"].shape,
+                    p.S,
+                    p.J,
+                )
+                print("Shape firm = ", ss_solutions["Y_vec_ss"].shape, p.M)
                 if ss_solutions["bssmat_splus1"].shape == (
                     p.S,
                     p.J,
-                ) and ss_solutions["Y_vec_ss"].shape == (p.M):
+                ) and np.squeeze(ss_solutions["Y_vec_ss"].shape) == (p.M):
                     print("Using previous solutions for SS")
                     (
                         b_guess,
@@ -1269,10 +1296,15 @@ def run_SS(p, client=None):
                     )
                     use_new_guesses = False
                 else:
+                    print(
+                        "Dimensions of previous solutions for SS do not match"
+                    )
                     use_new_guesses = True
             except KeyError:
+                print("KeyError: previous solutions for SS not found")
                 use_new_guesses = True
         else:
+            print("Using new guesses for SS")
             use_new_guesses = True
         if use_new_guesses:
             if p.use_zeta:

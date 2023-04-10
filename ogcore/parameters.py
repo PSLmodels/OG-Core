@@ -91,7 +91,7 @@ class Specifications(paramtools.Parameters):
         )
         # determine length of budget window from individual income tax
         # parameters passed in
-        self.BW = self.etr_params.shape[0]
+        self.BW = len(self.etr_params)
         # Find number of economically active periods of life
         self.E = int(
             self.starting_age
@@ -143,6 +143,8 @@ class Specifications(paramtools.Parameters):
             "replacement_rate_adjust",
             "zeta_D",
             "zeta_K",
+            "r_gov_scale",
+            "r_gov_shift",
         ]
         for item in tp_param_list:
             this_attr = getattr(self, item)
@@ -353,35 +355,45 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tax_params_to_TP:
             tax_to_set = getattr(self, item)
-            if tax_to_set.size == 1:
+            try:
+                tax_to_set = (
+                    tax_to_set.tolist()
+                )  # in case parameters are numpy arrays
+            except AttributeError:  # catches if they are lists already
+                pass
+            if len(tax_to_set) == 1 and isinstance(tax_to_set[0], float):
                 setattr(
                     self,
                     item,
-                    np.ones((self.T + self.S, self.S, self.J)) * tax_to_set,
+                    [
+                        [[tax_to_set] for i in range(self.S)]
+                        for t in range(self.T)
+                    ],
                 )
-            elif tax_to_set.ndim == 3:
-                if tax_to_set.shape[0] > self.T + self.S:
-                    tax_to_set = tax_to_set[: self.T + self.S, :, :]
-                if tax_to_set.shape[0] < self.T + self.S:
-                    tax_to_set = np.append(
-                        tax_to_set[:, :, :],
-                        np.tile(
-                            tax_to_set[-1, :, :],
-                            (self.T + self.S - tax_to_set.shape[0], 1, 1),
-                        ),
-                        axis=0,
+            elif any(
+                [
+                    isinstance(tax_to_set[i][j], list)
+                    for i, v in enumerate(tax_to_set)
+                    for j, vv in enumerate(tax_to_set[i])
+                ]
+            ):
+                if len(tax_to_set) > self.T + self.S:
+                    tax_to_set = tax_to_set[: self.T + self.S]
+                if len(tax_to_set) < self.T + self.S:
+                    tax_params_to_add = [tax_to_set[-1]] * (
+                        self.T + self.S - len(tax_to_set)
                     )
-                if tax_to_set.shape[1] > self.S:
-                    tax_to_set = tax_to_set[:, : self.S, :]
-                if item == "tau_c":
-                    if tax_to_set.shape[2] > self.J:
-                        tax_to_set = tax_to_set[:, :, : self.J]
+                    tax_to_set.extend(tax_params_to_add)
+                if len(tax_to_set[0]) > self.S:
+                    for t, v in enumerate(tax_to_set):
+                        tax_to_set[t] = tax_to_set[t][: self.S]
                 setattr(self, item, tax_to_set)
             else:
                 print(
                     "please give a "
                     + item
-                    + " that is a single element or 3-D array"
+                    + " that is a single element or nested lists of"
+                    + " lists that is three lists deep"
                 )
                 assert False
 
@@ -619,7 +631,31 @@ class Specifications(paramtools.Parameters):
         """
         if not (isinstance(revision, dict) or isinstance(revision, str)):
             raise ValueError("ERROR: revision is not a dictionary or string")
+        # Skip over the adjust method if the tax paraemeters passed in
+        # are fucntions (e.g., in the case of tax_func_type = mono)
+        tax_update_dict = {}
+        tax_func_params_functions = False
+        try:
+            if revision["tax_func_type"] in ["mono", "mono2D"]:
+                tax_func_params_functions = True
+        except (KeyError, TypeError):
+            pass
+        if self.tax_func_type in ["mono", "mono2D"]:
+            tax_func_params_functions = True
+        if tax_func_params_functions:
+            try:
+                for item in ["etr_params", "mtrx_params", "mtry_params"]:
+                    if item in revision.keys():
+                        tax_update_dict[item] = revision[item]
+                        del revision[item]
+            except (KeyError, TypeError):
+                pass
         self.adjust(revision, raise_errors=raise_errors)
+        # put tax values skipped over in the adjust method back in so
+        # they are in the parameters class.
+        if tax_update_dict != {}:
+            for key, value in tax_update_dict.items():
+                setattr(self, key, value)
         self.compute_default_params()
 
 

@@ -568,6 +568,33 @@ param_updates8 = {
 filename8 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_Kg_nonzero_2.pkl"
 )
+# read in mono tax funcs (not age specific)
+dict_params = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
+)
+p = Specifications()
+etr_params = [[None] * p.S] * p.T
+mtrx_params = [[None] * p.S] * p.T
+mtry_params = [[None] * p.S] * p.T
+for s in range(p.S):
+    for t in range(p.T):
+        if t < p.BW:
+            etr_params[t][s] = dict_params["tfunc_etr_params_S"][t][s]
+            mtrx_params[t][s] = dict_params["tfunc_mtrx_params_S"][t][s]
+            mtry_params[t][s] = dict_params["tfunc_mtry_params_S"][t][s]
+        else:
+            etr_params[t][s] = dict_params["tfunc_etr_params_S"][-1][s]
+            mtrx_params[t][s] = dict_params["tfunc_mtrx_params_S"][-1][s]
+            mtry_params[t][s] = dict_params["tfunc_mtry_params_S"][-1][s]
+param_updates9 = {
+    "tax_func_type": "mono",
+    "etr_params": etr_params,
+    "mtrx_params": mtrx_params,
+    "mtry_params": mtry_params,
+}
+filename9 = os.path.join(
+    CUR_PATH, "test_io_data", "run_TPI_outputs_mono_2.pkl"
+)
 
 
 @pytest.mark.local
@@ -581,6 +608,7 @@ filename8 = os.path.join(
         (True, {}, filename1),
         (False, param_updates4, filename4),
         (True, param_updates8, filename8),
+        (True, param_updates9, filename9),
     ],
     ids=[
         "Baseline, balanced budget",
@@ -590,6 +618,7 @@ filename8 = os.path.join(
         "Baseline",
         "Reform, baseline spending",
         "Baseline, Kg>0",
+        "mono tax functions",
     ],
 )
 def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):

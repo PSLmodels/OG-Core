@@ -37,7 +37,7 @@ def plot_imm_rates(p, year=DEFAULT_START_YEAR, include_title=False, path=None):
         return fig
     else:
         fig_path = os.path.join(path, "imm_rates_orig")
-        plt.savefig(fig_path)
+        plt.savefig(fig_path, dpi=300)
 
 
 def plot_mort_rates(p, include_title=False, path=None):
@@ -66,7 +66,7 @@ def plot_mort_rates(p, include_title=False, path=None):
         return fig
     else:
         fig_path = os.path.join(path, "mortality_rates")
-        plt.savefig(fig_path)
+        plt.savefig(fig_path, dpi=300)
 
 
 def plot_pop_growth(
@@ -106,7 +106,7 @@ def plot_pop_growth(
         return fig
     else:
         fig_path = os.path.join(path, "pop_growth_rates")
-        plt.savefig(fig_path)
+        plt.savefig(fig_path, dpi=300)
 
 
 def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
@@ -145,7 +145,7 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
         return fig
     else:
         fig_path = os.path.join(path, "pop_distribution")
-        plt.savefig(fig_path)
+        plt.savefig(fig_path, dpi=300)
 
 
 def plot_ability_profiles(p, include_title=False, path=None):
@@ -233,7 +233,7 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
         return fig
     else:
         fig_path = os.path.join(path, "ellipse_v_CFE")
-        plt.savefig(fig_path)
+        plt.savefig(fig_path, dpi=300)
 
 
 def plot_chi_n(p, include_title=False, path=None):
@@ -259,7 +259,7 @@ def plot_chi_n(p, include_title=False, path=None):
         return fig
     else:
         fig_path = os.path.join(path, "chi_n_values")
-        plt.savefig(fig_path)
+        plt.savefig(fig_path, dpi=300)
 
 
 def plot_fert_rates(
@@ -332,7 +332,7 @@ def plot_fert_rates(
     # Save or return figure
     if output_dir:
         output_path = os.path.join(output_dir, "fert_rates")
-        plt.savefig(output_path)
+        plt.savefig(output_path, dpi=300)
         plt.close()
     else:
         return fig
@@ -394,7 +394,7 @@ def plot_mort_rates_data(
         np.hstack([infmort_rate, mort_rates_all[min_yr - 1 : max_yr]]),
     )
     plt.axvline(x=max_yr, color="red", linestyle="-", linewidth=1)
-    plt.grid(b=True, which="major", color="0.65", linestyle="-")
+    plt.grid(visible=True, which="major", color="0.65", linestyle="-")
     # plt.title('Fitted mortality rate function by age ($rho_{s}$)',
     #     fontsize=20)
     plt.xlabel(r"Age $s$")
@@ -411,7 +411,7 @@ def plot_mort_rates_data(
     # Save or return figure
     if output_dir:
         output_path = os.path.join(output_dir, "mort_rates")
-        plt.savefig(output_path)
+        plt.savefig(output_path, dpi=300)
         plt.close()
     else:
         return fig
@@ -455,7 +455,7 @@ def plot_omega_fixed(
     # Save or return figure
     if output_dir:
         output_path = os.path.join(output_dir, "OrigVsFixSSpop")
-        plt.savefig(output_path)
+        plt.savefig(output_path, dpi=300)
         plt.close()
     else:
         return fig
@@ -496,7 +496,7 @@ def plot_imm_fixed(
     # Save or return figure
     if output_dir:
         output_path = os.path.join(output_dir, "OrigVsAdjImm")
-        plt.savefig(output_path)
+        plt.savefig(output_path, dpi=300)
         plt.close()
     else:
         return fig
@@ -562,7 +562,7 @@ def plot_population_path(
     # Save or return figure
     if output_dir:
         output_path = os.path.join(output_dir, "PopDistPath")
-        plt.savefig(output_path)
+        plt.savefig(output_path, dpi=300)
         plt.close()
     else:
         return fig
@@ -853,7 +853,7 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir, round):
     plt.ylabel(r"SSE")
     graphname = "SSE_" + varstr + "_Round" + str(round)
     output_path = os.path.join(output_dir, graphname)
-    plt.savefig(output_path, bbox_inches="tight")
+    plt.savefig(output_path, bbox_inches="tight", dpi=300)
     plt.close()
 
 
@@ -889,7 +889,7 @@ def plot_income_data(
             plt.plot(ages, emat)
             filename = "ability_2D_lev" + filesuffix
             fullpath = os.path.join(output_dir, filename)
-            plt.savefig(fullpath)
+            plt.savefig(fullpath, dpi=300)
             plt.close()
 
             # Plot of 2D, J=1 in logs
@@ -897,7 +897,7 @@ def plot_income_data(
             plt.plot(ages, np.log(emat))
             filename = "ability_2D_log" + filesuffix
             fullpath = os.path.join(output_dir, filename)
-            plt.savefig(fullpath)
+            plt.savefig(fullpath, dpi=300)
             plt.close()
         else:
             # Plot of 3D, J>1 in levels
@@ -910,7 +910,7 @@ def plot_income_data(
             ax10.set_zlabel(r"ability $e_{j,s}$")
             filename = "ability_3D_lev" + filesuffix
             fullpath = os.path.join(output_dir, filename)
-            plt.savefig(fullpath)
+            plt.savefig(fullpath, dpi=300)
             plt.close()
 
             # Plot of 3D, J>1 in logs
@@ -928,7 +928,7 @@ def plot_income_data(
             ax11.set_zlabel(r"log ability $log(e_{j,s})$")
             filename = "ability_3D_log" + filesuffix
             fullpath = os.path.join(output_dir, filename)
-            plt.savefig(fullpath)
+            plt.savefig(fullpath, dpi=300)
             plt.close()
 
             if J <= 10:  # Restricted because of line and marker types
@@ -976,7 +976,7 @@ def plot_income_data(
                 ax.set_ylabel(r"log ability $log(e_{j,s})$")
                 filename = "ability_2D_log" + filesuffix
                 fullpath = os.path.join(output_dir, filename)
-                plt.savefig(fullpath)
+                plt.savefig(fullpath, dpi=300)
                 plt.close()
     else:
         if J <= 10:  # Restricted because of line and marker types
@@ -1086,7 +1086,7 @@ def plot_2D_taxfunc(
     if len(tax_func_type) < len(tax_param_list):
         tax_func_type = [tax_func_type[0]] * len(tax_param_list)
     for i, v in enumerate(tax_func_type):
-        assert v in ["DEP", "DEP_totalinc", "GS", "linear"]
+        assert v in ["DEP", "DEP_totalinc", "GS", "linear", "mono"]
     assert rate_type in ["etr", "mtrx", "mtry"]
     assert len(tax_param_list) == len(labels)
 
@@ -1118,13 +1118,8 @@ def plot_2D_taxfunc(
     # get tax rates for each point in the income support and plot
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
-        if tax_func_type[i] == "mono":
-            tax_params = tax_params[rate_key][s][t][0]
-        else:
-            tax_param_array = np.array(tax_params[rate_key])
-            tax_params = tax_param_array[s, t, :]
+        tax_params = tax_params[rate_key][s][t]
         rates = txfunc.get_tax_rates(
-            # tax_params[rate_key][s, t, :],
             tax_params,
             X,
             Y,
@@ -1189,4 +1184,4 @@ def plot_2D_taxfunc(
     if path is None:
         return fig
     else:
-        plt.savefig(path)
+        plt.savefig(path, dpi=300)

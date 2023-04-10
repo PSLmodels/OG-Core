@@ -8,7 +8,7 @@ logo                     : '..//OG-Core_logo.png'
 ####################################################
 # Execution settings
 execute:
-  execute_notebooks      : cache
+  execute_notebooks      : force
 
 ####################################################
 # HTML-specific settings
@@ -41,7 +41,7 @@ launch_buttons:
 # Information about where the book exists on the web
 repository:
   url                    : https://github.com/PSLmodels/OG-Core
-  path_to_book           : 'book'
+  path_to_book           : 'docs/book'
 
 #######################################################################################
 # Advanced and power-user settings

@@ -702,7 +702,6 @@ test_data = [(df1, "tex", 0), (df1, "json", 2), (df1, "html", 3)]
     "df,output_type,precision", test_data, ids=["tex", "json", "html"]
 )
 def test_save_return_table(df, output_type, precision):
-
     test_str = utils.save_return_table(df, output_type, None, precision)
     assert isinstance(test_str, str)
 
