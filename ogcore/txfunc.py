@@ -318,7 +318,8 @@ def get_tax_rates(
                     len(params) > 1
                 ):  # for case where loops over S
                     txrates = [
-                        params[s][0]([[X[s], Y]]) for s in range(income.shape[0])
+                        params[s][0]([[X[s], Y]])
+                        for s in range(income.shape[0])
                     ]
                 else:
                     txrates = [
@@ -329,17 +330,19 @@ def get_tax_rates(
                     len(params) > 1
                 ):  # for case where loops over S
                     txrates = [
-                        params[s][0]([[X, Y[s]]]) for s in range(income.shape[0])
+                        params[s][0]([[X, Y[s]]])
+                        for s in range(income.shape[0])
                     ]
                 else:
                     txrates = [
                         params[0](income[i]) for i in range(income.shape[0])
                     ]
             elif X.ndim == 1 and Y.ndim == 1:
-                if (X.shape[0] == Y.shape[0] == len(params)) and (len(params) > 1):
+                if (X.shape[0] == Y.shape[0] == len(params)) and (
+                    len(params) > 1
+                ):
                     txrates = [
-                        params[s][0]([[X[s], Y[s]]])
-                        for s in range(X.shape[0])
+                        params[s][0]([[X[s], Y[s]]]) for s in range(X.shape[0])
                     ]
                 else:
                     txrates = [
@@ -365,7 +368,7 @@ def get_tax_rates(
                     for t in range(income.shape[0])
                 ]
         txrates = np.array(txrates)
-        
+
     return txrates
 
 
@@ -809,9 +812,10 @@ def txfunc_est(
             # df[["total_labinc", "total_capinc"]].values,
             # df["etr"].values,
             # df["weight"].values,
-            np.vstack((X,Y)).T,
+            np.vstack((X, Y)).T,
             # X, Y,
-            txrates, wgts,
+            txrates,
+            wgts,
             bins=[100, 100],
             method="pygam",
             splines=[100, 100],
@@ -1841,7 +1845,7 @@ def monotone_spline(
         plot_start/plot_end (number between 0, 100): for 'pygam' only if show_plot = True,
             start and end for percentile of data used in plot, can result in
             better visualizations if original data has strong outliers
-    
+
 
     Returns:
         xNew (numpy array): 2d with second dimension m, first
@@ -1853,7 +1857,6 @@ def monotone_spline(
         weightsNew (numpy array): 1d with length same as yNew, weight
             corresponding to each xNew, yNew row
     """
-   
 
     if method == "pygam":
         if len(x.shape) == 1:
@@ -1993,10 +1996,14 @@ def monotone_spline(
         # create binned and weighted x and y data
         if bins:
             if not np.isscalar(bins):
-                err_msg = "monotone_spline2 ERROR: bins value is not type scalar"
+                err_msg = (
+                    "monotone_spline2 ERROR: bins value is not type scalar"
+                )
                 raise ValueError(err_msg)
             N = int(bins)
-            x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y, weights, N)
+            x_binned, y_binned, weights_binned = utils.avg_by_bin(
+                x, y, weights, N
+            )
 
         elif not bins:
             N = len(x)
