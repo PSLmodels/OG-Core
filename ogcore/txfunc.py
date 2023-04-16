@@ -307,8 +307,64 @@ def get_tax_rates(
                 ]
         txrates = np.array(txrates)
     elif tax_func_type == "mono2D":
-        mono_interp = params[0]
-        txrates = mono_interp([[X, Y]])
+        if for_estimation:
+            mono_interp = params[0]
+            txrates = mono_interp([[X, Y]])
+        else:
+            if np.isscalar(X) and np.isscalar(Y):
+                txrates = params[0]([[X, Y]])
+            elif X.ndim == 1 and np.isscalar(Y):
+                if (X.shape[0] == len(params)) and (
+                    len(params) > 1
+                ):  # for case where loops over S
+                    txrates = [
+                        params[s][0]([[X[s], Y]]) for s in range(income.shape[0])
+                    ]
+                else:
+                    txrates = [
+                        params[0](income[i]) for i in range(income.shape[0])
+                    ]
+            elif np.isscalar(X) and Y.ndim == 1:
+                if (Y.shape[0] == len(params)) and (
+                    len(params) > 1
+                ):  # for case where loops over S
+                    txrates = [
+                        params[s][0]([[X, Y[s]]]) for s in range(income.shape[0])
+                    ]
+                else:
+                    txrates = [
+                        params[0](income[i]) for i in range(income.shape[0])
+                    ]
+            elif X.ndim == 1 and Y.ndim == 1:
+                if (X.shape[0] == Y.shape[0] == len(params)) and (len(params) > 1):
+                    txrates = [
+                        params[s][0]([[X[s], Y[s]]])
+                        for s in range(X.shape[0])
+                    ]
+                else:
+                    txrates = [
+                        params[0]([[X[i], Y[i]]]) for i in range(X.shape[0])
+                    ]
+            elif X.ndim == 2 and Y.ndim == 2:
+                txrates = [
+                    [
+                        params[s][j][0]([[X[s, j], Y[s, j]]])
+                        for j in range(X.shape[1])
+                    ]
+                    for s in range(X.shape[0])
+                ]
+            else:  # to catch 3D arrays, looping over T, S, J
+                txrates = [
+                    [
+                        [
+                            params[t][s][j][0]([[X[t, s, j], Y[t, s, j]]])
+                            for j in range(income.shape[2])
+                        ]
+                        for s in range(income.shape[1])
+                    ]
+                    for t in range(income.shape[0])
+                ]
+        txrates = np.array(txrates)
         
     return txrates
 
