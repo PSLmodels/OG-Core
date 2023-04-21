@@ -367,7 +367,7 @@ def get_tax_rates(
                     ]
                     for t in range(income.shape[0])
                 ]
-        txrates = np.array(txrates)
+        txrates = np.squeeze(np.array(txrates))
 
     return txrates
 
@@ -821,7 +821,7 @@ def txfunc_est(
             splines=[100, 100],
         )
         wsse = wsse_cstr
-        params = mono_interp
+        params = [mono_interp]
         params_to_plot = params
     else:
         raise RuntimeError(
