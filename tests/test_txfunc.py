@@ -1,3 +1,5 @@
+import sys
+
 from ogcore import txfunc
 from distributed import Client, LocalCluster
 import pytest
@@ -731,6 +733,66 @@ def test_monotone_spline():
     """
     # Simulate some data
     np.random.seed(10)
+
+    # another test case for pygam method:
+
+    # N = 100
+    # xlo = 0.001
+    # xhi = 2 * np.pi
+    # x1 = np.arange(xlo, xhi, step=(xhi - xlo) / N)
+    # x2 = np.arange(xlo, xhi, step=(xhi - xlo) / N)
+    # x = np.array([x1, x2]).T
+    # X1, X2 = np.meshgrid(x1, x2)
+    # X1, X2 = X1.flatten(), X2.flatten()
+    # X = np.zeros((X1.shape[0], 2))
+    # X[:,0] = X1
+    # X[:,1] = X2
+    # y0 = np.exp(np.sin(X1)) * np.exp(np.cos(X2))
+    # y0 = np.cos(X1)/(1.01 + np.sin(X2))
+    # y0 = 1/(1 + np.exp(-(X1+X2)))
+    # y = y0 + np.random.random(y0.shape) * 0.2
+    # weights = np.ones(10000)
+    # (
+    # mono_interp,
+    # y_cstr,
+    # wsse_cstr,
+    # y_uncstr,
+    # wsse_uncstr,
+    # ) = txfunc.monotone_spline(
+    # X, y, weights, lam=100, incl_uncstr=True, show_plot=True, method='pygam'
+    # )
+
+    data = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
+    )["2030"]
+    df = data[["total_labinc", "total_capinc", "etr", "weight"]].copy()
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    df.dropna(inplace=True)
+
+    # Estimate monotonically increasing function on the data
+    (
+        mono_interp1,
+        y_cstr1,
+        wsse_cstr1,
+        y_uncstr1,
+        wsse_uncstr1,
+    ) = txfunc.monotone_spline(
+        df[["total_labinc", "total_capinc"]].values,
+        df["etr"].values,
+        df["weight"].values,
+        bins=[100, 100],
+        incl_uncstr=True,
+        show_plot=False,
+        method="pygam",
+        splines=[100, 100],
+        plot_start=25,
+        plot_end=75,
+    )
+    # Test whether mono_interp is a function
+    assert hasattr(mono_interp1, "__call__")
+    # Not sure what baseline should be to add tests here for "correctness" of values
+
+    # Simulate some data
     N = 100
     xlo = 0.001
     xhi = 2 * np.pi
@@ -739,23 +801,31 @@ def test_monotone_spline():
     y = y0 + np.random.randn(N) * 0.5
     weights = np.ones(N)
 
-    # Estimate monotonically increasing function on the data
     (
-        mono_interp,
-        y_cstr,
-        wsse_cstr,
-        y_uncstr,
-        wsse_uncstr,
+        mono_interp2,
+        y_cstr2,
+        wsse_cstr2,
+        y_uncstr2,
+        wsse_uncstr2,
     ) = txfunc.monotone_spline(
-        x, y, weights, bins=10, lam=100, incl_uncstr=True, show_plot=False
+        x,
+        y,
+        weights,
+        bins=10,
+        lam=100,
+        incl_uncstr=True,
+        show_plot=False,
+        method="eilers",
     )
     # Test whether mono_interp is a function
-    assert hasattr(mono_interp, "__call__")
+    assert hasattr(mono_interp2, "__call__")
 
+    # Test whether mono_interp is a function
+    assert hasattr(mono_interp2, "__call__")
     # Test whether mono_interp gives the correct output
     x_vec_test = np.array([2.0, 5.0])
     y_vec_expected = np.array([0.69512331, 1.23822669])
-    y_monointerp = mono_interp(x_vec_test)
+    y_monointerp = mono_interp2(x_vec_test)
     assert np.allclose(y_monointerp, y_vec_expected)
 
     # Test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
@@ -789,7 +859,7 @@ def test_monotone_spline():
         ]
     )
     wsse_uncstr_expected = 468.4894930349361
-    assert np.allclose(y_cstr, y_cstr_expected)
-    assert np.allclose(wsse_cstr, wsse_cstr_expected)
-    assert np.allclose(y_uncstr, y_uncstr_expected)
-    assert np.allclose(wsse_uncstr, wsse_uncstr_expected)
+    assert np.allclose(y_cstr2, y_cstr_expected)
+    assert np.allclose(wsse_cstr2, wsse_cstr_expected)
+    assert np.allclose(y_uncstr2, y_uncstr_expected)
+    assert np.allclose(wsse_uncstr2, wsse_uncstr_expected)

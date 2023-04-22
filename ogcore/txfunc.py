@@ -23,6 +23,9 @@ import ogcore.parameter_plots as pp
 from ogcore.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
 from ogcore import utils
 import warnings
+from pygam import LinearGAM, s, te
+from matplotlib import cm
+import random
 
 
 if not SHOW_RUNTIME:
@@ -303,6 +306,69 @@ def get_tax_rates(
                     for t in range(income.shape[0])
                 ]
         txrates = np.array(txrates)
+    elif tax_func_type == "mono2D":
+        if for_estimation:
+            mono_interp = params[0]
+            txrates = mono_interp([[X, Y]])
+        else:
+            if np.isscalar(X) and np.isscalar(Y):
+                txrates = params[0]([[X, Y]])
+            elif X.ndim == 1 and np.isscalar(Y):
+                if (X.shape[0] == len(params)) and (
+                    len(params) > 1
+                ):  # for case where loops over S
+                    txrates = [
+                        params[s][0]([[X[s], Y]])
+                        for s in range(income.shape[0])
+                    ]
+                else:
+                    txrates = [
+                        params[0](income[i]) for i in range(income.shape[0])
+                    ]
+            elif np.isscalar(X) and Y.ndim == 1:
+                if (Y.shape[0] == len(params)) and (
+                    len(params) > 1
+                ):  # for case where loops over S
+                    txrates = [
+                        params[s][0]([[X, Y[s]]])
+                        for s in range(income.shape[0])
+                    ]
+                else:
+                    txrates = [
+                        params[0](income[i]) for i in range(income.shape[0])
+                    ]
+            elif X.ndim == 1 and Y.ndim == 1:
+                if (X.shape[0] == Y.shape[0] == len(params)) and (
+                    len(params) > 1
+                ):
+                    txrates = [
+                        params[s][0]([[X[s], Y[s]]]) for s in range(X.shape[0])
+                    ]
+                else:
+                    txrates = [
+                        params[0]([[X[i], Y[i]]]) for i in range(X.shape[0])
+                    ]
+            elif X.ndim == 2 and Y.ndim == 2:
+                txrates = [
+                    [
+                        params[s][j][0]([[X[s, j], Y[s, j]]])
+                        for j in range(X.shape[1])
+                    ]
+                    for s in range(X.shape[0])
+                ]
+            else:  # to catch 3D arrays, looping over T, S, J
+                txrates = [
+                    [
+                        [
+                            params[t][s][j][0]([[X[t, s, j], Y[t, s, j]]])
+                            for j in range(income.shape[2])
+                        ]
+                        for s in range(income.shape[1])
+                    ]
+                    for t in range(income.shape[0])
+                ]
+        txrates = np.squeeze(np.array(txrates))
+
     return txrates
 
 
@@ -740,11 +806,28 @@ def txfunc_est(
         wsse = wsse_cstr
         params = [mono_interp]
         params_to_plot = params
+    elif tax_func_type == "mono2D":
+        obs = df.shape[0]
+        mono_interp, _, wsse_cstr, _, _ = monotone_spline(
+            # df[["total_labinc", "total_capinc"]].values,
+            # df["etr"].values,
+            # df["weight"].values,
+            np.vstack((X, Y)).T,
+            # X, Y,
+            txrates,
+            wgts,
+            bins=[100, 100],
+            method="pygam",
+            splines=[100, 100],
+        )
+        wsse = wsse_cstr
+        params = [mono_interp]
+        params_to_plot = params
     else:
         raise RuntimeError(
             "Choice of tax function is not in the set of"
             + " possible tax functions.  Please select"
-            + " from: DEP, DEP_totalinc, GS, linear."
+            + " from: DEP, DEP_totalinc, GS, linear, mono, mono2D."
         )
     if graph:
         pp.txfunc_graph(
@@ -1363,6 +1446,7 @@ def tax_func_estimate(
         "GS": 3,
         "linear": 1,
         "mono": 1,
+        "mono2D": 1,
     }
     numparams = int(tax_func_type_num_params_dict[tax_func_type])
     years_list = np.arange(start_year, end_yr + 1)
@@ -1686,6 +1770,59 @@ def tax_func_estimate(
     return dict_params
 
 
+def avg_by_bin_multd(x, y, bins, weights=None):
+    """
+    Args:
+        x (numpy array): 2d with dimensions n by m used for binning
+        y (numpy array): 1d with length n
+        bins (numpy array): 1d with length m, each entry must divide n
+            and is number of bins for corresponding column in x
+        weights (None or numpy array): 1d with length n specifying
+            weight of each observation. if None then array of ones
+
+    Returns:
+        xNew (numpy array): 2d with second dimension m, first
+            dimension is product of elements in bins, with each entry
+            representative of bin across all the features
+        yNew (numpy array): 1d with length same as first dimension
+            of xWeight, weighted average of y's corresponding to each
+            entry of xWeight
+        weightsNew (numpy array): 1d with length same as yNew, weight
+            corresponding to each xNew, yNew row
+    """
+    if x.shape[1] != len(bins):
+        message = "Dimensions of x and bins don't match: {} != {}".format(
+            x.shape[1], len(bins)
+        )
+        raise ValueError(message)
+    else:
+        size = np.prod(bins)
+        tupleBins = tuple(bins)
+        xNew = np.zeros((size, x.shape[1]), dtype=float)
+        yNew = np.zeros(size, dtype=float)
+        weightsNew = np.zeros(size, dtype=float)
+
+        # iterate through each of the final bins, which consists of bins for each feature
+        # for each, only retain entries falling in that bin
+        for i in range(size):
+            index = list(np.unravel_index(i, tupleBins))
+            valid = np.ones(x.shape[0], dtype=bool)
+            for j, v in enumerate(index):
+                valid &= (
+                    x[:, j] >= np.percentile(x[:, j], v * 100 / bins[j])
+                ) & (x[:, j] < np.percentile(x[:, j], (v + 1) * 100 / bins[j]))
+            if np.sum(valid) != 0:
+                xNew[i, :] = np.average(
+                    x[valid], axis=0, weights=weights[valid]
+                )
+                yNew[i] = np.average(y[valid], axis=0, weights=weights[valid])
+                weightsNew[i] = np.sum(weights[valid])
+        xNew = xNew[~(weightsNew == 0)]
+        yNew = yNew[~(weightsNew == 0)]
+        weightsNew = weightsNew[~(weightsNew == 0)]
+        return xNew, yNew, weightsNew
+
+
 def monotone_spline(
     x,
     y,
@@ -1695,140 +1832,307 @@ def monotone_spline(
     kap=1e7,
     incl_uncstr=False,
     show_plot=False,
+    method="eilers",
+    splines=None,
+    plot_start=0,
+    plot_end=100,
 ):
-    # create binned and weighted x and y data
-    if bins:
-        if not np.isscalar(bins):
-            err_msg = "monotone_spline2 ERROR: bins value is not type scalar"
-            raise ValueError(err_msg)
-        N = int(bins)
-        x_binned, y_binned, weights_binned = utils.avg_by_bin(x, y, weights, N)
+    """
+    Args:
+        method (string): 'eilers' or 'pygam'
+        splines (None or array-like): for 'pygam' only (otherwise set None),
+            number of splines used for each feature, if None use default
+        plot_start/plot_end (number between 0, 100): for 'pygam' only if show_plot = True,
+            start and end for percentile of data used in plot, can result in
+            better visualizations if original data has strong outliers
 
-    elif not bins:
-        N = len(x)
-        x_binned = x
-        y_binned = y
-        weights_binned = weights
 
-    # Prepare bases (Imat) and penalty
-    dd = 3
-    E = np.eye(N)
-    D3 = np.diff(E, n=dd, axis=0)
-    D1 = np.diff(E, n=1, axis=0)
+    Returns:
+        xNew (numpy array): 2d with second dimension m, first
+            dimension is product of elements in bins, with each entry
+            representative of bin across all the features
+        yNew (numpy array): 1d with length same as first dimension
+            of xWeight, weighted average of y's corresponding to each
+            entry of xWeight
+        weightsNew (numpy array): 1d with length same as yNew, weight
+            corresponding to each xNew, yNew row
+    """
 
-    # Monotone smoothing
-    ws = np.zeros(N - 1)
-    weights_binned = weights_binned.reshape(len(weights_binned), 1)
-    weights1 = 0.5 * weights_binned[1:, :] + 0.5 * weights_binned[:-1, :]
-    weights3 = (
-        0.25 * weights_binned[3:, :]
-        + 0.25 * weights_binned[2:-1, :]
-        + 0.25 * weights_binned[1:-2, :]
-        + 0.25 * weights_binned[:-3, :]
-    ).flatten()
-
-    for it in range(30):
-        Ws = np.diag(ws * kap)
-        mon_cof = np.linalg.solve(
-            E
-            + lam * D3.T @ np.diag(weights3) @ D3
-            + D1.T @ (Ws * weights1) @ D1,
-            y_binned,
-        )
-        ws_new = (D1 @ mon_cof < 0.0) * 1
-        dw = np.sum(ws != ws_new)
-        ws = ws_new
-        if dw == 0:
-            break
-
-    # Monotonic and non monotonic fits
-    y_cstr = mon_cof
-    wsse_cstr = (weights_binned * ((y_cstr - y_binned) ** 2)).sum()
-    if incl_uncstr:
-        y_uncstr = np.linalg.solve(
-            E + lam * D3.T @ np.diag(weights3) @ D3, y_binned
-        )
-        wsse_uncstr = (weights_binned * ((y_uncstr - y_binned) ** 2)).sum()
-    else:
-        y_uncstr = None
-        wsse_uncstr = None
-
-    def mono_interp(x_vec):
-        # replace last point in data with two copies further out to make smooth
-        # extrapolation
-        x_new = np.append(
-            x_binned[:-1], [1.005 * x_binned[-1], 1.01 * x_binned[-1]]
-        )
-        y_cstr_new = np.append(y_cstr[:-1], [y_cstr[-1], y_cstr[-1]])
-        # Create interpolating cubic spline for interior points
-        inter_interpl = intp(x_new, y_cstr_new, kind="cubic")
-        y_pred = np.zeros_like(x_vec)
-        x_lt_min = x_vec < x_binned.min()
-        x_gt_max = x_vec > x_new.max()
-        x_inter = (x_vec >= x_binned.min()) & (x_vec <= x_new.max())
-        y_pred[x_inter] = inter_interpl(x_vec[x_inter])
-        # extrapolate the maximum for values above the maximum
-        y_pred[x_gt_max] = y_cstr[-1]
-        # linear extrapolation of last two points for values below the min
-        slope = (y_cstr[1] - y_cstr[0]) / (x_binned[1] - x_binned[0])
-        intercept = y_cstr[0] - slope * x_binned[0]
-        y_pred[x_lt_min] = slope * x_vec[x_lt_min] + intercept
-
-        return y_pred
-
-    if show_plot:
-        plt.scatter(
-            x,
-            y,
-            linestyle="None",
-            color="gray",
-            s=0.8,
-            alpha=0.7,
-            label="All data",
-        )
-        if not bins:
-            plt.plot(
-                x,
-                y_cstr,
-                color="red",
-                alpha=1.0,
-                label="Monotonic smooth spline",
+    if method == "pygam":
+        if len(x.shape) == 1:
+            x = np.expand_dims(x, axis=1)
+        if splines != None and len(splines) != x.shape[1]:
+            err_msg = (
+                " pygam method requires splines to be None or "
+                + " same length as # of columns in x, "
+                + str(len(splines))
+                + " != "
+                + str(x.shape[1])
             )
-            if incl_uncstr:
+            raise ValueError(err_msg)
+
+        # bin data
+        if bins == None:
+            x_binned, y_binned, weights_binned = x, y, weights
+        else:
+            x_binned, y_binned, weights_binned = avg_by_bin_multd(
+                x, y, bins, weights
+            )
+
+        # setup pygam parameters- in addition to 's' spline terms, can also have 't' tensor
+        # terms which are interactions between two variables. 't' terms also need monotonic constraints
+        # to satisfy previous constraints, they actually impose stronger restriction
+
+        if splines == None:
+            tempCstr = s(0, constraints="monotonic_inc")
+            for i in range(1, x_binned.shape[1]):
+                tempCstr += s(i, constraints="monotonic_inc")
+            tempUncstr = s(0)
+            for i in range(1, x_binned.shape[1]):
+                tempUncstr += s(i)
+        else:
+            tempCstr = s(0, constraints="monotonic_inc", n_splines=splines[0])
+            for i in range(1, x_binned.shape[1]):
+                tempCstr += s(
+                    i, constraints="monotonic_inc", n_splines=splines[i]
+                )
+            tempUncstr = s(0, n_splines=splines[0])
+            for i in range(1, x_binned.shape[1]):
+                tempUncstr += s(i, n_splines=splines[i])
+
+        # fit data
+        gamCstr = LinearGAM(tempCstr).fit(x_binned, y_binned, weights_binned)
+        y_cstr = gamCstr.predict(x_binned)
+        wsse_cstr = (weights_binned * ((y_cstr - y_binned) ** 2)).sum()
+        if incl_uncstr:
+            gamUncstr = LinearGAM(tempUncstr).fit(
+                x_binned, y_binned, weights_binned
+            )
+            y_uncstr = gamUncstr.predict(x_binned)
+            wsse_uncstr = (weights_binned * ((y_uncstr - y_binned) ** 2)).sum()
+        else:
+            y_uncstr = None
+            wsse_uncstr = None
+
+        if show_plot:
+            if x.shape[1] == 2:
+                fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+                # select data in [plot_start, end] percentile across both features
+                # this can be rewritten to generalize for n-dimensions, but didn't know how to plot that
+                xactPlot = x[
+                    (x[:, 0] >= np.percentile(x[:, 0], plot_start))
+                    & (x[:, 0] <= np.percentile(x[:, 0], plot_end))
+                    & (x[:, 1] >= np.percentile(x[:, 1], plot_start))
+                    & (x[:, 1] <= np.percentile(x[:, 1], plot_end))
+                ]
+                yactPlot = y[
+                    (x[:, 0] >= np.percentile(x[:, 0], plot_start))
+                    & (x[:, 0] <= np.percentile(x[:, 0], plot_end))
+                    & (x[:, 1] >= np.percentile(x[:, 1], plot_start))
+                    & (x[:, 1] <= np.percentile(x[:, 1], plot_end))
+                ]
+                ax.scatter(
+                    xactPlot[:, 0],
+                    xactPlot[:, 1],
+                    yactPlot,
+                    color="black",
+                    s=0.8,
+                    alpha=0.25,
+                )
+
+                x0 = np.linspace(
+                    np.percentile(x[:, 0], plot_start),
+                    np.percentile(x[:, 0], plot_end),
+                    1000,
+                )
+                x1 = np.linspace(
+                    np.percentile(x[:, 1], plot_start),
+                    np.percentile(x[:, 1], plot_end),
+                    1000,
+                )
+                X0, X1 = np.meshgrid(x0, x1)
+                yPred = gamCstr.predict(
+                    np.array([X0.flatten(), X1.flatten()]).T
+                )
+                ax.plot_surface(
+                    X0, X1, yPred.reshape(x0.shape[0], -1), color="red"
+                )
+                ax.set_label("Monotonic GAM spline with all data")
+
+            if x.shape[1] == 1:
+                plt.scatter(
+                    x,
+                    y,
+                    linestyle="None",
+                    color="gray",
+                    s=0.8,
+                    alpha=0.7,
+                    label="All data",
+                )
                 plt.plot(
                     x,
-                    y_uncstr,
-                    color="blue",
+                    y_cstr,
+                    color="red",
                     alpha=1.0,
-                    label="Unconstrained smooth spline",
+                    label="Monotonic GAM spline",
                 )
-        else:
-            plt.scatter(
-                x_binned,
+                if incl_uncstr:
+                    plt.plot(
+                        x,
+                        y_uncstr,
+                        color="blue",
+                        alpha=1.0,
+                        label="Unconstrained GAM spline",
+                    )
+            plt.show()
+            plt.close()
+
+        def interp(x):
+            return gamCstr.predict(x)
+
+        return interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr
+
+    if method == "eilers":
+        # create binned and weighted x and y data
+        if bins:
+            if not np.isscalar(bins):
+                err_msg = (
+                    "monotone_spline2 ERROR: bins value is not type scalar"
+                )
+                raise ValueError(err_msg)
+            N = int(bins)
+            x_binned, y_binned, weights_binned = utils.avg_by_bin(
+                x, y, weights, N
+            )
+
+        elif not bins:
+            N = len(x)
+            x_binned = x
+            y_binned = y
+            weights_binned = weights
+
+        # Prepare bases (Imat) and penalty
+        dd = 3
+        E = np.eye(N)
+        D3 = np.diff(E, n=dd, axis=0)
+        D1 = np.diff(E, n=1, axis=0)
+
+        # Monotone smoothing
+        ws = np.zeros(N - 1)
+        weights_binned = weights_binned.reshape(len(weights_binned), 1)
+        weights1 = 0.5 * weights_binned[1:, :] + 0.5 * weights_binned[:-1, :]
+        weights3 = (
+            0.25 * weights_binned[3:, :]
+            + 0.25 * weights_binned[2:-1, :]
+            + 0.25 * weights_binned[1:-2, :]
+            + 0.25 * weights_binned[:-3, :]
+        ).flatten()
+
+        for it in range(30):
+            Ws = np.diag(ws * kap)
+            mon_cof = np.linalg.solve(
+                E
+                + lam * D3.T @ np.diag(weights3) @ D3
+                + D1.T @ (Ws * weights1) @ D1,
                 y_binned,
+            )
+            ws_new = (D1 @ mon_cof < 0.0) * 1
+            dw = np.sum(ws != ws_new)
+            ws = ws_new
+            if dw == 0:
+                break
+
+        # Monotonic and non monotonic fits
+        y_cstr = mon_cof
+        wsse_cstr = (weights_binned * ((y_cstr - y_binned) ** 2)).sum()
+        if incl_uncstr:
+            y_uncstr = np.linalg.solve(
+                E + lam * D3.T @ np.diag(weights3) @ D3, y_binned
+            )
+            wsse_uncstr = (weights_binned * ((y_uncstr - y_binned) ** 2)).sum()
+        else:
+            y_uncstr = None
+            wsse_uncstr = None
+
+        def mono_interp(x_vec):
+            # replace last point in data with two copies further out to make smooth
+            # extrapolation
+            x_new = np.append(
+                x_binned[:-1], [1.005 * x_binned[-1], 1.01 * x_binned[-1]]
+            )
+            y_cstr_new = np.append(y_cstr[:-1], [y_cstr[-1], y_cstr[-1]])
+            # Create interpolating cubic spline for interior points
+            inter_interpl = intp(x_new, y_cstr_new, kind="cubic")
+            y_pred = np.zeros_like(x_vec)
+            x_lt_min = x_vec < x_binned.min()
+            x_gt_max = x_vec > x_new.max()
+            x_inter = (x_vec >= x_binned.min()) & (x_vec <= x_new.max())
+            y_pred[x_inter] = inter_interpl(x_vec[x_inter])
+            # extrapolate the maximum for values above the maximum
+            y_pred[x_gt_max] = y_cstr[-1]
+            # linear extrapolation of last two points for values below the min
+            slope = (y_cstr[1] - y_cstr[0]) / (x_binned[1] - x_binned[0])
+            intercept = y_cstr[0] - slope * x_binned[0]
+            y_pred[x_lt_min] = slope * x_vec[x_lt_min] + intercept
+
+            return y_pred
+
+        if show_plot:
+            plt.scatter(
+                x,
+                y,
                 linestyle="None",
-                color="black",
+                color="gray",
                 s=0.8,
                 alpha=0.7,
-                label="Binned data averages",
+                label="All data",
             )
-            plt.plot(
-                x,
-                mono_interp(x),
-                color="red",
-                alpha=1.0,
-                label="Monotonic smooth spline",
-            )
-            if incl_uncstr:
+            if not bins:
                 plt.plot(
-                    x_binned,
-                    y_uncstr,
-                    color="blue",
+                    x,
+                    y_cstr,
+                    color="red",
                     alpha=1.0,
-                    label="Unconstrained smooth spline",
+                    label="Monotonic smooth spline",
                 )
-        plt.legend(loc="lower right")
-        plt.show()
-        plt.close()
+                if incl_uncstr:
+                    plt.plot(
+                        x,
+                        y_uncstr,
+                        color="blue",
+                        alpha=1.0,
+                        label="Unconstrained smooth spline",
+                    )
+            else:
+                plt.scatter(
+                    x_binned,
+                    y_binned,
+                    linestyle="None",
+                    color="black",
+                    s=0.8,
+                    alpha=0.7,
+                    label="Binned data averages",
+                )
+                plt.plot(
+                    x,
+                    mono_interp(x),
+                    color="red",
+                    alpha=1.0,
+                    label="Monotonic smooth spline",
+                )
+                if incl_uncstr:
+                    plt.plot(
+                        x_binned,
+                        y_uncstr,
+                        color="blue",
+                        alpha=1.0,
+                        label="Unconstrained smooth spline",
+                    )
+            plt.legend(loc="lower right")
+            plt.show()
+            plt.close()
 
-    return mono_interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr
+        return mono_interp, y_cstr, wsse_cstr, y_uncstr, wsse_uncstr
+
+    err_msg = method + " method not supported, must be 'eilers' or 'pygam'"
+    raise ValueError(err_msg)
