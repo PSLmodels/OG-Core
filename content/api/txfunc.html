@@ -485,6 +485,39 @@ deviations from the mean</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.txfunc.monotone_spline">
+<span class="sig-prename descclassname"><span class="pre">ogcore.txfunc.</span></span><span class="sig-name descname"><span class="pre">monotone_spline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incl_uncstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'eilers'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/txfunc.html#monotone_spline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.txfunc.monotone_spline" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>string</em>) – ‘eilers’ or ‘pygam’</p></li>
+<li><p><strong>splines</strong> (<em>None</em><em> or </em><em>array-like</em>) – for ‘pygam’ only (otherwise set None),
+number of splines used for each feature, if None use default</p></li>
+<li><p><strong>plot_start/plot_end</strong> (<em>number between 0</em><em>, </em><em>100</em>) – for ‘pygam’ only if show_plot = True,
+start and end for percentile of data used in plot, can result in
+better visualizations if original data has strong outliers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>2d with second dimension m, first</dt><dd><p>dimension is product of elements in bins, with each entry
+representative of bin across all the features</p>
+</dd>
+<dt>yNew (numpy array): 1d with length same as first dimension</dt><dd><p>of xWeight, weighted average of y’s corresponding to each
+entry of xWeight</p>
+</dd>
+<dt>weightsNew (numpy array): 1d with length same as yNew, weight</dt><dd><p>corresponding to each xNew, yNew row</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xNew (numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.txfunc.replace_outliers">
 <span class="sig-prename descclassname"><span class="pre">ogcore.txfunc.</span></span><span class="sig-name descname"><span class="pre">replace_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sse_big_mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/txfunc.html#replace_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.txfunc.replace_outliers" title="Permalink to this definition">#</a></dt>
 <dd><p>This function replaces outlier estimated tax function parameters
