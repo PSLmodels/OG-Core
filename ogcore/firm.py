@@ -1,4 +1,5 @@
 import numpy as np
+from ogcore import aggregates as aggr
 
 """
 ------------------------------------------------------------------------
@@ -679,3 +680,30 @@ def solve_L(Y, K, K_g, p, method, m=-1):
         ) ** (epsilon / (epsilon - 1))
 
     return L
+
+
+def adj_cost(K, Kp1, p, method):
+    r'''
+    Firm capital adjstment costs
+
+    ..math::
+        \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(\frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}{\frac{I_{t}}{K_{t}}}\biggl)
+
+    Args:
+        K (array-like): Current period capital stock
+        Kp1 (array-like): One-period ahead capital stock
+        p (OG-USA Parameters class object): Model parameters
+        method (str): 'SS' or 'TPI'
+
+    Returns
+        Psi (array-like): Capital adjustment costs per unit of investment
+    '''
+    if method == 'SS':
+        ac_method = "total_ss"
+    else:
+        ac_method = "total_tpi"
+    Inv = aggr.get_I(None, Kp1, K, p, ac_method)
+
+    Psi = ((p.psi / 2) * (Inv / K - p.mu) ** 2) / (Inv / K)
+
+    return Psi
