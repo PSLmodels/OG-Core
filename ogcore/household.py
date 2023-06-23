@@ -403,7 +403,7 @@ def FOC_savings(
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
         p_wealth = p.p_wealth[-1]
-        p_tilde = np.ones_like(p.rho) * p_tilde
+        p_tilde = np.ones_like(p.rho[-1,:]) * p_tilde
     elif method == "TPI_scalar":
         h_wealth = p.h_wealth[0]
         m_wealth = p.m_wealth[0]
