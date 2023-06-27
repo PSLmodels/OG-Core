@@ -33,17 +33,46 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 
   ```{math}
   :label: EqFirmsProfit
-    PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
-    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}K_{m,t} \quad\forall m,t
+    \pi(K_{m,t}, L_{m,t}) &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t} - \Psi(I_{m,t}, K_{m,t})\Bigr] -  \\
+    &\qquad\qquad\quad I_{m,t+1} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}I_{m,t} \quad\forall m,t
   ```
 
-  Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the second-to-last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax. Note that the last term above represents the benefits from any investment tax credit $\tau^{inv}_{m,t}$. While this should be applied to all investment, firms in `OG-Core` are making static decisions each period about the amount of capital to rent. We therefore proxy for investment with $\delta_{M,t}K_{m,t}$, which is accurate in the steady-state, but is an approximation over the transition to the steady-state.
+  Gross revenue for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and investment, $I_{m,t}$ contributes to the capital stock through the following law of motion:
+
+  ```{math}
+  :label: EqFirmsInvest
+    K_{m,t+1} = (1-\delta_M) K_{m,t} + I_{m,t} \quad\forall m,t
+  ```
+
+   The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the second-to-last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax. Note that the last term above represents the benefits from any investment tax credit $\tau^{inv}_{m,t}$.  We assume that capital adjustment costs, $\Psi(I_{m,t}, K_{m,t})$, are quadratic in the investment rate $I_{m,t}$ and the capital stock $K_{m,t}$ and are deductible from corporate income when determining taxable income.  The quadratic adjustment costs are given by the following function:
+
+  ```{math}
+    :label: EqFirmsAdjCosts
+    \Psi(I_{m,t}, K_{m,t}) = \frac{\psi}{2}\frac{\left(\frac{I_{m,t}}{K_{m,t}} - \mu_m \right)^2}{\frac{I_{m,t}}{K_{m,t}}} \quad\forall m,t
+  ```
+
+  The parameter $\mu_m = \delta_M + \bar{g}_n + g_y$, is the steady state investment rate.  Thus adjustment cost are zero in the steady state, but affect firms along the transition path.  The parameter $\psi$ governs the strength of the adjustment costs.
 
   Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_{m,t}$, which is a flat tax on corporate income that can vary by industry $m$. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only have a direct effect on the firms' capital demand decision.
 
-  The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_{m,t}$, which then lower corporate tax liability. When $\delta^\tau_{m,t}=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_{m,t}=\delta_{M,t}$, all economic depreciation is deducted from corporate income. The investment tax credit is characterized by the parameter $\tau^{inv}_{m,t}$ multiplied by a proxy for investment $\delta_{M,t}K_{m,t}$ by industry $m$, which represents the percent of industry-specific capital that can be credited against profits.
+  The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_{m,t}$, which then lower corporate tax liability. When $\delta^\tau_{m,t}=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_{m,t}=\delta_{M}$, all economic depreciation is deducted from corporate income. The investment tax credit is characterized by the parameter $\tau^{inv}_{m,t}$ multiplied by the amount of investment.  The tax basis for the capital stock, $K^\tau_{m,t}$ is determined through the following law of motion:
 
-  Firms take as given prices $p_{m,t}$, $w_t$, and $r_t$ and the level of public capital supply $K_{g,m,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_{m,t}$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to private capital $K_{m,t}$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
+  ```{math}
+  :label: EqFirmsKtau
+    K^{\tau}_{m,t} = (1-\delta^{\tau}_{m,t}) K^\tau_{m,t-1} + (1-\tau^{inv}_{m,t})I_{m,t} \quad\forall m,t
+  ```
+
+  Note the timing difference in the laws of motion for the tax basis for the capital stock and the capital stock. Investment is immediately deducted from the tax basis for the capital stock, where are there is a time to build in the physical capital stock (new investment doesn't become productive until the next period).
+
+  Firms take as given prices $p_{m,t}$, $w_t$, and $r_t$ and the level of public capital supply $K_{g,m,t}$. These firms are forward looking and maximize the present discounted value of profits:
+
+  ```{math}
+  :label: EqFirmsValue
+    \max_{I_{m,t}, K_{m,t+1}, L_{m,t}} V(K_{m,t}) =  \sum_{u=t}^\infty \prod_{v=t}^u \left(\frac{1}{1+r_v}\right) \pi(K_{m,u}, L_{m,u}) \quad\forall m,t
+  ```
+
+
+  Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_{m,t}$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to private capital $K_{m,t}$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
 
   ```{math}
   :label: EqFirmFOC_L
