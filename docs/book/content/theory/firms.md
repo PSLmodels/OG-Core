@@ -64,15 +64,22 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 
   Note the timing difference in the laws of motion for the tax basis for the capital stock and the capital stock. Investment is immediately deducted from the tax basis for the capital stock, where are there is a time to build in the physical capital stock (new investment doesn't become productive until the next period).
 
-  Firms take as given prices $p_{m,t}$, $w_t$, and $r_t$ and the level of public capital supply $K_{g,m,t}$. These firms are forward looking and maximize the present discounted value of profits:
+  Firms take as given prices $p_{m,t}$, $w_t$, and $r_t$ and the level of public capital supply $K_{g,m,t}$. These firms are forward looking and maximize the present discounted value of profits, where firms discount by the real interest rate $r_t$. The firm's problem is the following:
 
   ```{math}
   :label: EqFirmsValue
-    \max_{I_{m,t}, K_{m,t+1}, L_{m,t}} V(K_{m,t}) =  \sum_{u=t}^\infty \prod_{v=t}^u \left(\frac{1}{1+r_v}\right) \pi(K_{m,u}, L_{m,u}) \quad\forall m,t
+  \begin{split}
+    V(K_{m,t}, K^\tau_{m,t-1}) &=  \max_{\{I_{m,u}, K_{m,u+1},K^\tau_{m,u}, L_{m,u}\}_{u=t}^{\infty}}  \sum_{u=t}^\infty \left(\prod_{v=t}^u \frac{1}{1+r_v}\right) \pi(K_{m,u}, L_{m,u}) \quad\forall m,t,\\
+     \quad \text{subject to}: & \\
+      & \\
+      I_{m,t} &=  K_{m,t+1} - (1-\delta_M) K_{m,t} + I_{m,t} \quad\forall m,t \\
+       K^{\tau}_{m,t} &= (1-\delta^{\tau}_{m,t}) K^\tau_{m,t-1} + (1-\tau^{inv}_{m,t})I_{m,t} \quad\forall m,t
+
+  \end{split}
   ```
 
 
-  Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_{m,t}$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to private capital $K_{m,t}$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
+  Note that one can use the two law of motion for the physical capital stock and the tax basis of the capital stock to eliminate to choice variables: choosing $K_{m,u+1}$ will determine $I_{m,t}$ and $K^\tau_{m,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_{m,t}$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to private capital $K_{m,t+1}$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
 
   ```{math}
   :label: EqFirmFOC_L
@@ -81,13 +88,29 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 
   ```{math}
   :label: EqFirmFOC_K
-    r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{Y_{m,t}}{K_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t} \quad\forall m,t
+    r_{t+1} = \frac{(1 - \tau^{corp}_{m,t+1})\left(p_{m,t+1}(Z_{m,t+1})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{Y_{m,t+1}}{K_{m,t+1}}\right]^\frac{1}{\varepsilon_m} - \frac{\partial \Psi(I_{m,t+1},K_{m,t+1})}{\partial K_{m,t+1}}\right) + 1 - \delta_{m} + \tau^{corp}_{m,t+1}\delta^\tau_{m,t+1}\left[(1-\tau^{inv}_{m,t})(1-\delta^\tau_{m,t})-(1-\delta_m)(1-\tau^{inv}_{m,t+1})\right] - \tau^{inv}_{m,t+1}(1-\delta_{m})}{(1-\tau^{corp}_{m,t})\frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t+1}}+1 -\tau^{inv}_{m,t}-\tau^{corp}_{m,t}\delta^{\tau}_{m,t}(1-\tau^{inv}_{m,t})} - 1 \quad\forall m,t
+  ```
+
+  The derivatives of of the quadratic adjustment cost function are given by:
+
+  ```{math}
+  :label: EqFirmAdjCost_dKp1
+    \frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t+1}} = \frac{\psi}{2}\frac{\left(\frac{I_{m,t}}{K_{m,t}}- \mu_{m}\right)}{I_{t}}\left[1 -\mu\frac{K_{m,t}}{I_{m,t}}\right] \forall m,t
+  ```
+
+  and
+
+  ```{math}
+  :label: EqFirmAdjCost_dK
+    \frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t}} = \frac{-\psi}{2}\left(\frac{K_{m,t+1}}{I^2_{m,t}}\right)\left(\frac{I_{m,t}}{K_{m,t}}-\mu\right)\left(\frac{I_{m,t}}{K_{m,t}}+\mu\right) \forall m,t
   ```
 
   Note that the presence of the public capital good creates economic rents. These rents will accrue to the owners of capital via the financial intermediary. See Section Chapter {ref}`Chap_FinInt` for more details on the determination of the return to the household's portfolio. Because public capital is exogenous to the firm's decisions, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,m,t}$ through the $Y_{m,t}$ term.
 
 (EqFirmsPosProfits)=
 ## Positive Profits from Government Infrastructure Investment
+
+  NOTE: WITH DYNAMIC FIRMS AND ADJUSTMENT COSTS, THE MPK WILL LOOK DIFFERENT, BUT THE RESULT BELOW SHOULD STILL HOLD -- JUST NEED TO DO SOME MORE ALGEBRA TO SHOW -- AND IT'S COMPLICATED BECAUSE EQ 48 HAS MULIPLE PERIODS IN IT AND POLICY CHANGING OVER TIME.
 
   The CES production function in {eq}`EqFirmsCESprodfun` exhibits constant returns to scale (CRS). A feature of CRS production functions is that gross revenue $Y_{m,t}$ is a sum of the gross revenue attributed to each factor of production,
 
