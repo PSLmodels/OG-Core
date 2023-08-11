@@ -61,7 +61,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 2. Choose an initial guess for the values of the steady-state interest rate (the after-tax marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$,  portfolio rate of return $\bar{r}_p^i$, output prices $\boldsymbol{\bar{p}}^i$ (note that $\bar{p}_M =1$ since it's the numeraire good), total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
 
     1. Given $\boldsymbol{\bar{p}}^i$ find the price of consumption goods using {eq}`EqHH_pi2`
-    2. From price of consumption goods, determine the price of the composite consmpution good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
+    2. From price of consumption goods, determine the price of the composite consumption good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
     3. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}_{j,s}^i$
     4. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
     5. Given values $\bar{p}$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}^i$, $\overline{tr}_{j,s}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
@@ -113,12 +113,13 @@ The computational algorithm for solving for the steady-state follows the steps b
     14. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
     15. Find output and factor demands for M-1 industries:
         1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$, where $\hat{C}_{m,t}$ is determined by {eq}`EqStnrzEqCmt`
-        2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
-        3. Capital demand can thus be found: $\bar{K}_{m} = \frac{\bar{K}_m}{\bar{Y}_m} * \bar{Y}_m$
-        4. Labor demand can be found by inverting the production function:
+        <!-- 2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}$ -->
+        2. The labor-output ratio can be determined from the FOC for the firms' choice of labor: $\frac{\bar{Y}_m}{\bar{L}_m} = \left(\bar{Z}_m\right)^{\varepsilon_m - 1}\frac{(1-\gamma_m - \gamma_{g,m})}{(\bar{w}\bar{p}_m)}$
+        3. Labor demand can thus be found: $\bar{L}_{m} = \frac{\bar{L}_m}{\bar{Y}_m} * \bar{Y}_m$
+        4. Capital demand can be found by inverting the production function:
            ```{math}
-           :label: EqSS_solveL
-             \bar{L}_{m} = \left(\frac{\left(\frac{\bar{Y}_m}{\bar{Z}_m}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\bar{K}_m^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\bar{K}_{g,m}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
+           :label: EqSS_solveK
+             \bar{K}_{m} = \left(\frac{\left(\frac{\bar{Y}_m}{\bar{Z}_m}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}} \bar{K}_{g,m}^{\frac{\varepsilon_m-1}{\varepsilon_m}}- (1 - \gamma_{m} - \gamma_{g,m})^{\frac{1}{\varepsilon_m}}\bar{L}_m^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{\gamma_m^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
            ```
         5. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for private capital demand at the world interest rate $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
 
