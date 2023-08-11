@@ -146,7 +146,7 @@ The computational algorithm for solving for the steady-state follows the steps b
     3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
     4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
     5. Use $\boldsymbol{\overline{MPK}}_g^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{K}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
-    6. Use $\bar{Y}_m$, $\bar{L}_m$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{\bar{p}}^{i'}$
+    6. Use $\bar{Y}_m$, $\bar{K}_m$ in {eq}`EqStnrzFOC_K` to solve for the updates vector of output prices, $\boldsymbol{\bar{p}}^{i'}$
     7. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
     8. Use $\bar{Y}^{i'}$ in the long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
     9. Use $\bar{r}^{i'}$, $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
@@ -343,12 +343,12 @@ The stationary non-steady state (transition path) solution algorithm has followi
 16. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\hat{I}_{g,t}$, solve for $\hat{K}_{g,t}^{i}$
 17. Find output and factor demands for M-1 industries:
     1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$, where $\hat{C}_{m,t}$ is determined by {eq}`EqStnrzEqCmt`
-    2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \gamma_m\left[\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{(1-\tau^{corp}_{m,t})p_{m,t}({Z}_{m,t})^\frac{\varepsilon_m -1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
-    3. Capital demand can thus be found: $\hat{K}_{m,t} = \frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} * \hat{Y}_{m,t}$
-    4. Labor demand can be found by inverting the production function:
+    2. The labor-output ratio can be determined from the FOC for the firms' choice of labor: $\frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}} = \left(\hat{Z}_{m,t}\right)^{\varepsilon_m - 1}\frac{(1-\gamma_m - \gamma_{g,m})}{(\hat{w}_{t}p_{m,t})}$
+    3. Labor demand can thus be found: $\hat{L}_{m,t} = \frac{\hat{L}_{m,t}}{\hat{Y}_{m,t}} * \hat{Y}_{m,t}$
+    4. Capital demand can be found by inverting the production function:
       ```{math}
-      :label: EqTPI_solveL
-        \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}{Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\hat{K}_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
+      :label: EqTPI_solveK
+        \hat{K}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}{Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}- (1- \gamma_{m} - \gamma_{g,m})^{\frac{1}{\varepsilon_m}}\hat{L}_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{\gamma_m^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
       ```
     5. Use the interest rate $r_t^*$ and labor demand $\hat{L}_{m,t}$ to solve for private capital demand at the world interest rate $\hat{K}_{m,t}^{r^*}$ using {eq}`EqFirmsMPKg_opt`
       ```{math}
@@ -374,7 +374,7 @@ The stationary non-steady state (transition path) solution algorithm has followi
     3. Use $r_t^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $r_{gov,t}^{i'}$
     4. Use $\hat{K}_{g,t}^{i'}$ and $\hat{Y}_t^{i''}$ in in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $MPK_{g,m,t}^{i'}$
     5. Use $\boldsymbol{MPK}_{g,t}^{i'}$, $r_t^{i'}$, $r_{gov,t}^{i'}$, $\hat{D}_t^{i'}$, and $\hat{K}_t^{i'}$ to find the return on the households' investment portfolio, $r_{p,t}^{i'}$
-    6. Use $\hat{Y}_{m,t}$, $\hat{L}_{m,t}$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{p}_t^{i'}$
+    6. Use $\hat{Y}_{m,t}$, $\hat{K}_{m,t}$ (for $m<M$) in {eq}`EqStnrzFOC_K` to solve for the updates vector of prices, $\boldsymbol{p}_t^{i'}$
     7. Use $r_{p,t}^{i'}$ and $\hat{b}_{j,s,t}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\hat{BQ}_t^{i'}$.
     8. Use $\hat{Y}_t^{i'}$ in the aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\hat{TR}_t^{i'}$.
 
