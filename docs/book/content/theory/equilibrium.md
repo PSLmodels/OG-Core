@@ -332,8 +332,8 @@ The stationary non-steady state (transition path) solution algorithm has followi
 7. Determine from the quantity of the composite consumption good consumed by each household, $\hat{c}_{j,s,t}$, use equation {eq}`EqHH_cmDem` to determine consumption of each output good, $\hat{c}_{m,j,s,t}$
 8. Using $\hat{c}_{m,j,s,t}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\hat{C}_{m,t}$
 9.  Given values for $n_{j,s,t}$ and $\hat{b}_{j,s+1,t+1}$ for all $j$, $s$, and $t$, solve for aggregate labor supply, $\hat{L}_t$, and savings, $B_t$ in each period
-    1.  Use $n_{j,s,t}$ and the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\hat{L}_t^{i}$.
-    2.   Use $\hat{b}_{j,s+1,t+1}$ and the stationarized expression for total savings by domestic households {eq}`EqStnrz_Bt`to solve for $\hat{B}_t^i$.
+    1. Use $n_{j,s,t}$ and the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\hat{L}_t^{i}$.
+    2. Use $\hat{b}_{j,s+1,t+1}$ and the stationarized expression for total savings by domestic households {eq}`EqStnrz_Bt`to solve for $\hat{B}_t^i$.
 10. Solve for the exogenous government interest rate $r_{gov,t}^{i}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
 11. Use {eq}`EqStnrzTfer` to find $\hat{Y}_t^i$ from the guess of $\hat{TR}_t^i$
 12. Using the path of output from each industry, $\hat{Y}_{m,t}$, and the household savings and labor supply decisions, $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$, compute the path of stationarizaed total tax revenue, $\hat{Revenue}_{t}^{i}$.

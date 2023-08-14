@@ -49,6 +49,14 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
   - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
+* -
+  -
+  - $\hat{I}_{m,t}\equiv\frac{I_{m,t}}{e^{g_y t}\tilde{N}_t}$
+  -
+* -
+  -
+  - $\hat{K}^{\tau}_{m,t}\equiv\frac{K^{\tau}_{m,t}}{e^{g_y t}\tilde{N}_t}$
+  -
 ```
 
 The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHH_ciDem2`, {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab`, {eq}`EqMarkClr_DtDdDf`, {eq}`EqMarkClr_KtKdKf`, {eq}`EqMarkClrGoods_Mm1`, {eq}`EqMarkClrGoods_M`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` of Chapter {ref}`Chap_Eqm` to solve for the equilibria in the steady-state and transition path equilibrium definitions.
@@ -132,8 +140,41 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzProfit
-    \hat{PR}_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[F(\hat{K}_{m,t},\hat{K}_{g,m,t},\hat{L}_{m,t}) - \hat{w}_t \hat{L}_{m,t}\Bigr] - ... \\
-    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)\hat{K}_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\hat{K}_{m,t} \quad\forall m,t
+    \pi(\hat{K}_{m,t}, \hat{L}_{m,t}) &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(\hat{K}_{m,t},\hat{K}_{g,m,t},\hat{L}_{m,t}) - w_t \hat{L}_{m,t} - \Psi(\hat{I}_{m,t}, \hat{K}_{m,t})\Bigr] -  \\
+    &\qquad\qquad\quad \hat{I}_{m,t+1} + \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}^{\tau}_{m,t} + \tau^{inv}_{m,t}\hat{I}_{m,t} \quad\forall m,t
+  ```
+
+  The stationarized version of the law of motion for the capital stock for industry $m$ is given by:
+
+  ```{math}
+  :label: EqStnrz_Kgm
+    \hat{K}_{m,t+1} = \frac{(1 - \delta_M)\hat{K}_{m,t} + \hat{I}_{m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t
+  ```
+
+  And the analogous stationarized version of the law of motion for the tax basis of the capital stock is given by:
+
+  ```{math}
+  :label: EqStnrz_Ktaum
+    \hat{K}^{\tau}_{m,} = \frac{(1 - \delta^{\tau}_{m,t})\hat{K}^{\tau}_{m,t-1} + (1-\tau^{inv}_{m,t})\hat{I}_{m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t
+  ```
+
+The stationarized version of the capital adjustment cost function and it's first derivatives are given by:
+
+  ```{math}
+    :label: EqStnrzAdjCosts
+    \Psi(\hat{I}_{m,t}, \hat{K}_{m,t}) = \frac{\psi}{2}\frac{\left(\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}} - \mu_m \right)^2}{\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}}} \quad\forall m,t
+  ```
+
+  ```{math}
+  :label: EqStnrzAdjCost_dKp1
+    \frac{\partial \Psi(\hat{I}_{m,t},\hat{K}_{m,t})}{\partial \hat{K}_{m,t+1}} = \frac{\psi}{2}\frac{\left(\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}}- \mu_{m}\right)}{\hat{I}_{t}}\left[1 -\mu\frac{\hat{K}_{m,t}}{\hat{I}_{m,t}}\right] \forall m,t
+  ```
+
+  and
+
+  ```{math}
+  :label: EqStnrzAdjCost_dK
+    \frac{\partial \Psi(\hat{I}_{m,t},\hat{K}_{m,t})}{\partial \hat{K}_{m,t}} = \frac{-\psi}{2}\left(\frac{\hat{K}_{m,t+1}}{e^{g_y}(1+g_{n,t+1})\hat{I}^2_{m,t}}\right)\left(\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}}-\mu\right)\left(\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}}+\mu\right) \forall m,t
   ```
 
   The firms' first order equation for labor demand {eq}`EqFirmFOC_L` is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_{m,t}}{e^{g_y t}L_{m,t}}$ term on the right-hand-side by $\tilde{N}_t$.
@@ -147,7 +188,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzFOC_K
-    r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{\hat{Y}_{m,t}}{\hat{K}_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t} \quad\forall m,t
+    r_{t+1} = \frac{(1 - \tau^{corp}_{m,t+1})\left(p_{m,t+1}(Z_{m,t+1})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{\hat{Y}_{m,t+1}}{\hat{K}_{m,t+1}}\right]^\frac{1}{\varepsilon_m} - \frac{\partial \Psi(\hat{I}_{m,t+1},\hat{K}_{m,t+1})}{\partial \hat{K}_{m,t+1}}\right) + 1 - \delta_{m} + \tau^{corp}_{m,t+1}\delta^\tau_{m,t+1}\left[(1-\tau^{inv}_{m,t})(1-\delta^\tau_{m,t})-(1-\delta_m)(1-\tau^{inv}_{m,t+1})\right] - \tau^{inv}_{m,t+1}(1-\delta_{m})}{(1-\tau^{corp}_{m,t})\frac{\partial \Psi(\hat{I}_{m,t},\hat{K}_{m,t})}{\partial \hat{K}_{m,t+1}}+1 -\tau^{inv}_{m,t}-\tau^{corp}_{m,t}\delta^{\tau}_{m,t}(1-\tau^{inv}_{m,t})} - 1 \quad\forall m,t
   ```
 
   A stationary version of the firms' gross revenue attributed to each factor of production {eq}`EqFirmsMargRevEq` is found by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.

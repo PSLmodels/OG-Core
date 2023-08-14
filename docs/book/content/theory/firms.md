@@ -34,7 +34,7 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
   ```{math}
   :label: EqFirmsProfit
     \pi(K_{m,t}, L_{m,t}) &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t} - \Psi(I_{m,t}, K_{m,t})\Bigr] -  \\
-    &\qquad\qquad\quad I_{m,t+1} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}I_{m,t} \quad\forall m,t
+    &\qquad\qquad\quad I_{m,t+1} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K^{\tau}_{m,t} + \tau^{inv}_{m,t}I_{m,t} \quad\forall m,t
   ```
 
   Gross revenue for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and investment, $I_{m,t}$ contributes to the capital stock through the following law of motion:
