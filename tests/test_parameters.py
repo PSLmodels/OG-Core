@@ -186,3 +186,12 @@ def test_conditional_validator():
     new_specs = {"budget_balance": True, "baseline_spending": True}
     specs.update_specifications(new_specs, raise_errors=False)
     assert len(specs.errors) > 0
+
+
+def test_expand_taxfunc_params():
+    specs = Specifications()
+    new_specs = {"etr_params": [[[0.35]]]}
+    specs.update_specifications(new_specs)
+    assert len(specs.etr_params) == specs.T + specs.S
+    assert len(specs.etr_params[0]) == specs.S
+    assert specs.etr_params[0][0][0] == 0.35
