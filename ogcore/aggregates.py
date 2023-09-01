@@ -186,26 +186,32 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         if preTP:
             omega = p.omega_S_preTP
             pop_growth_rate = p.g_n[0]
+            rho = p.rho[0,:]
         else:
             omega = p.omega_SS
             pop_growth_rate = p.g_n_ss
+            rho = p.rho[-1,:]
         if j is not None:
-            BQ_presum = omega * p.rho * b_splus1 * p.lambdas[j]
+            BQ_presum = omega * rho * b_splus1 * p.lambdas[j]
         else:
-            BQ_presum = np.transpose(omega * (p.rho * p.lambdas)) * b_splus1
+            BQ_presum = np.transpose(omega * (rho * p.lambdas)) * b_splus1
         BQ = BQ_presum.sum(0)
         BQ *= (1.0 + r) / (1.0 + pop_growth_rate)
     elif method == "TPI":
         pop = np.append(
             p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0
         )
+        rho = np.append(
+            p.rho[0,:].reshape(1, p.S), p.rho[: p.T - 1, :], axis=0
+        )
+
         if j is not None:
-            BQ_presum = (b_splus1 * p.lambdas[j]) * (pop * p.rho)
+            BQ_presum = (b_splus1 * p.lambdas[j]) * (pop * rho)
             BQ = BQ_presum.sum(1)
             BQ *= (1.0 + r) / (1.0 + p.g_n[: p.T])
         else:
             BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
-                np.reshape(pop * p.rho, (p.T, p.S, 1)), (1, 1, p.J)
+                np.reshape(pop * rho, (p.T, p.S, 1)), (1, 1, p.J)
             )
             BQ = BQ_presum.sum(1)
             BQ *= np.tile(
