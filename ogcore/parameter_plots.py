@@ -1118,7 +1118,7 @@ def plot_2D_taxfunc(
     # get tax rates for each point in the income support and plot
     fig, ax = plt.subplots()
     for i, tax_params in enumerate(tax_param_list):
-        tax_params = tax_params[rate_key][s][t]
+        tax_params = tax_params[rate_key][t][s]
         rates = txfunc.get_tax_rates(
             tax_params,
             X,
