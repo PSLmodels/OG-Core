@@ -939,6 +939,7 @@ def test_solve_L(Y, K, Kg, p, method, expected):
     L = firm.solve_L(Y, K, Kg, p, method)
     assert np.allclose(L, expected, atol=1e-6)
 
+
 p1 = Specifications()
 p1.psi = 4.0
 p1.g_n_ss = 0.01
@@ -979,14 +980,18 @@ expected_dPsidK_3 = np.array([-0.805820108, -0.846107505, 2.657143029])
 expected_dPsidKp1_3 = np.array([0.479061039, 0.43588367, -62.31580895])
 
 
-@pytest.mark.parametrize('K,Kp1,p,method,expected',
-                         [(K_1, Kp1_1, p1, 'SS', expected_Psi_1),
-                         (K_2, Kp1_2, p2, 'SS', expected_Psi_2),
-                         (K_3, Kp1_3, p3, 'TPI', expected_Psi_3)],
-                         ids=['Zero cost', 'Non-zero cost', 'TPI'])
+@pytest.mark.parametrize(
+    "K,Kp1,p,method,expected",
+    [
+        (K_1, Kp1_1, p1, "SS", expected_Psi_1),
+        (K_2, Kp1_2, p2, "SS", expected_Psi_2),
+        (K_3, Kp1_3, p3, "TPI", expected_Psi_3),
+    ],
+    ids=["Zero cost", "Non-zero cost", "TPI"],
+)
 def test_adj_cost(K, Kp1, p, method, expected):
-    '''
+    """
     Test of the firm capital adjustment cost function.
-    '''
+    """
     test_val = firm.adj_cost(K, Kp1, p, method)
     assert np.allclose(test_val, expected)

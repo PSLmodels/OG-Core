@@ -683,7 +683,7 @@ def solve_L(Y, K, K_g, p, method, m=-1):
 
 
 def adj_cost(K, Kp1, p, method):
-    r'''
+    r"""
     Firm capital adjstment costs
 
     ..math::
@@ -697,8 +697,8 @@ def adj_cost(K, Kp1, p, method):
 
     Returns
         Psi (array-like): Capital adjustment costs per unit of investment
-    '''
-    if method == 'SS':
+    """
+    if method == "SS":
         ac_method = "total_ss"
     else:
         ac_method = "total_tpi"
