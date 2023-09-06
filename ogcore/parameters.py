@@ -387,6 +387,11 @@ class Specifications(paramtools.Parameters):
                 if len(tax_to_set[0]) > self.S:
                     for t, v in enumerate(tax_to_set):
                         tax_to_set[t] = tax_to_set[t][: self.S]
+                if len(tax_to_set[0]) < self.S:
+                    tax_params_to_add = [tax_to_set[:][-1]] * (
+                        self.S - len(tax_to_set[0])
+                    )
+                    tax_to_set[0].extend(tax_params_to_add)
                 setattr(self, item, tax_to_set)
             else:
                 print(

@@ -23,7 +23,7 @@ setuptools.setup(
         ]
     },
     include_packages=True,
-    python_requires=">=3.7.7, <3.11",
+    python_requires=">=3.7.7",
     install_requires=[
         "scipy>=1.7.1",
         "pandas>=1.2.5",
@@ -45,6 +45,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     tests_require=["pytest"],

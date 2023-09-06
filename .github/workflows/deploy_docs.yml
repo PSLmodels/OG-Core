@@ -16,9 +16,10 @@ jobs:
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: ogcore-dev
+          miniforge-variant: Mambaforge
+          activate-environment: ogusa-dev
           environment-file: environment.yml
-          python-version: 3.7
+          python-version: "3.10"
           auto-activate-base: false
 
       - name: Build # Build Jupyter Book
