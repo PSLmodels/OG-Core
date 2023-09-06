@@ -351,6 +351,7 @@ document.write(`
                   
   <h1>Source code for ogcore.firm</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">aggregates</span> <span class="k">as</span> <span class="n">aggr</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
@@ -1031,6 +1032,33 @@ document.write(`
         <span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">epsilon</span> <span class="o">/</span> <span class="p">(</span><span class="n">epsilon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">L</span></div>
+
+
+<span class="k">def</span> <span class="nf">adj_cost</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">Kp1</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Firm capital adjstment costs</span>
+
+<span class="sd">    ..math::</span>
+<span class="sd">        \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(\frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}{\frac{I_{t}}{K_{t}}}\biggl)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        K (array-like): Current period capital stock</span>
+<span class="sd">        Kp1 (array-like): One-period ahead capital stock</span>
+<span class="sd">        p (OG-USA Parameters class object): Model parameters</span>
+<span class="sd">        method (str): &#39;SS&#39; or &#39;TPI&#39;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        Psi (array-like): Capital adjustment costs per unit of investment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="n">ac_method</span> <span class="o">=</span> <span class="s2">&quot;total_ss&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ac_method</span> <span class="o">=</span> <span class="s2">&quot;total_tpi&quot;</span>
+    <span class="n">Inv</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_I</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">Kp1</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">ac_method</span><span class="p">)</span>
+
+    <span class="n">Psi</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">psi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Inv</span> <span class="o">/</span> <span class="n">K</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Inv</span> <span class="o">/</span> <span class="n">K</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Psi</span>
 </pre></div>
 
                 </article>
