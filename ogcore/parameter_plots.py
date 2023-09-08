@@ -1087,7 +1087,7 @@ def plot_2D_taxfunc(
     if len(tax_func_type) < len(tax_param_list):
         tax_func_type = [tax_func_type[0]] * len(tax_param_list)
     for i, v in enumerate(tax_func_type):
-        assert v in ["DEP", "DEP_totalinc", "GS", "linear", "mono"]
+        assert v in ["DEP", "DEP_totalinc", "GS", "linear", "mono", "mono2D"]
     assert rate_type in ["etr", "mtrx", "mtry"]
     assert len(tax_param_list) == len(labels)
 
