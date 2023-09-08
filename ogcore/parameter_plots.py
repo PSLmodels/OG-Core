@@ -1031,6 +1031,7 @@ def plot_2D_taxfunc(
     start_year,
     tax_param_list,
     age=None,
+    E = 21,  # Age at which agents become economically active in the model
     tax_func_type=["DEP"],
     rate_type="etr",
     over_labinc=True,
@@ -1093,7 +1094,8 @@ def plot_2D_taxfunc(
     # Set age and year to look at
     if age is not None:
         assert isinstance(age, int)
-        s = age - 21
+        assert age >= E
+        s = age - E  # Note: assumed age is given in E + model periods (but age below is also assumed to be calendar years)
     else:
         s = 0  # if not age-specific, all ages have the same values
     t = year - start_year
@@ -1138,9 +1140,7 @@ def plot_2D_taxfunc(
             "mtry": "mtr_capinc",
         }
         # censor data to range of the plot
-        print("OUTSIDE")
         for d, data in enumerate(data_list):
-            print("INSIDE")
             data_to_plot = data[str(year)].copy()
             if age is not None:
                 data_to_plot.drop(
@@ -1154,24 +1154,19 @@ def plot_2D_taxfunc(
             )
             # other censoring used in txfunc.py
             data_to_plot = txfunc.tax_data_sample(data_to_plot)
-            print(data_to_plot.describe())
             # set number of bins to 100 or bins of $1000 dollars
             n_bins = min(100, np.floor_divide(max_inc_amt, 1000))
             # need to compute weighted averages by group...
 
-            def wm(x):
+            def weighted_mean(x, cols, w="weight"):
                 try:
-                    np.average(x, weights=data_to_plot.loc[x.index, "weight"])
+                    return pd.Series(np.average(x[cols], weights=x[w], axis=0), cols)
                 except ZeroDivisionError:
                     return 0
 
             data_to_plot["inc_bin"] = pd.cut(data_to_plot[key1], n_bins)
-            groups = pd.DataFrame(
-                data_to_plot.groupby(["inc_bin"]).agg(
-                    rate=(rate_type_dict[rate_type], wm), income=(key1, wm)
-                )
-            )
-            plt.scatter(groups["income"], groups["rate"], alpha=0.1)
+            groups = data_to_plot.groupby("inc_bin", observed=True).apply(weighted_mean, [rate_type_dict[rate_type], key1])
+            plt.scatter(groups[key1], groups[rate_type_dict[rate_type]], alpha=0.1)
     # add legend, labels, etc to plot
     plt.legend(loc="center right")
     if title:
