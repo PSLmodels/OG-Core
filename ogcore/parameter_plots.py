@@ -1031,7 +1031,7 @@ def plot_2D_taxfunc(
     start_year,
     tax_param_list,
     age=None,
-    E = 21,  # Age at which agents become economically active in the model
+    E=21,  # Age at which agents become economically active in the model
     tax_func_type=["DEP"],
     rate_type="etr",
     over_labinc=True,
@@ -1095,7 +1095,9 @@ def plot_2D_taxfunc(
     if age is not None:
         assert isinstance(age, int)
         assert age >= E
-        s = age - E  # Note: assumed age is given in E + model periods (but age below is also assumed to be calendar years)
+        s = (
+            age - E
+        )  # Note: assumed age is given in E + model periods (but age below is also assumed to be calendar years)
     else:
         s = 0  # if not age-specific, all ages have the same values
     t = year - start_year
@@ -1160,13 +1162,19 @@ def plot_2D_taxfunc(
 
             def weighted_mean(x, cols, w="weight"):
                 try:
-                    return pd.Series(np.average(x[cols], weights=x[w], axis=0), cols)
+                    return pd.Series(
+                        np.average(x[cols], weights=x[w], axis=0), cols
+                    )
                 except ZeroDivisionError:
                     return 0
 
             data_to_plot["inc_bin"] = pd.cut(data_to_plot[key1], n_bins)
-            groups = data_to_plot.groupby("inc_bin", observed=True).apply(weighted_mean, [rate_type_dict[rate_type], key1])
-            plt.scatter(groups[key1], groups[rate_type_dict[rate_type]], alpha=0.1)
+            groups = data_to_plot.groupby("inc_bin", observed=True).apply(
+                weighted_mean, [rate_type_dict[rate_type], key1]
+            )
+            plt.scatter(
+                groups[key1], groups[rate_type_dict[rate_type]], alpha=0.1
+            )
     # add legend, labels, etc to plot
     plt.legend(loc="center right")
     if title:
