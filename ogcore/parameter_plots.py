@@ -1161,14 +1161,17 @@ def plot_2D_taxfunc(
 
             def wm(x):
                 try:
-                    np.average(x, weights=data_to_plot.loc[x.index, "weight"])
+                    np.average(
+                        x,
+                        weights=data_to_plot.loc[x.index, "weight"])
                 except ZeroDivisionError:
                     return 0
 
             data_to_plot["inc_bin"] = pd.cut(data_to_plot[key1], n_bins)
             groups = pd.DataFrame(
                 data_to_plot.groupby(["inc_bin"]).agg(
-                    rate=(rate_type_dict[rate_type], wm), income=(key1, wm)
+                    rate=(rate_type_dict[rate_type], wm),
+                    income=(key1, wm)
                 )
             )
             plt.scatter(groups["income"], groups["rate"], alpha=0.1)
