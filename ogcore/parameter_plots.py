@@ -40,7 +40,7 @@ def plot_imm_rates(p, year=DEFAULT_START_YEAR, include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_mort_rates(p, include_title=False, path=None):
+def plot_mort_rates(p, years=[DEFAULT_START_YEAR], include_title=False, path=None):
     """
     Create a plot of mortality rates from OG-Core parameterization.
 

@@ -79,7 +79,7 @@ def euler_equation_solver(guesses, *args):
         ubi,
         theta,
         p.e[:, j],
-        p.rho,
+        p.rho[-1, :],
         p.etr_params[-1],
         p.mtry_params[-1],
         None,
