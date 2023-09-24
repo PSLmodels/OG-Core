@@ -367,7 +367,8 @@ class Specifications(paramtools.Parameters):
                     )
                 else:
                     # case where user enters multiple years for one age
-                    # will assume they implied values the same across age
+                    # will assume they implied values the same across
+                    # time for all periods after the last year of values
                     this_attr = np.concatenate(
                         (
                             this_attr,
@@ -378,7 +379,6 @@ class Specifications(paramtools.Parameters):
                     this_attr = np.tile(
                         this_attr.reshape(self.T + self.S, 1), (1, self.S)
                     )
-                this_attr = np.squeeze(this_attr, axis=2)
             elif this_attr.ndim == 2:
                 if this_attr.shape[1] > 1 and this_attr.shape[1] != self.S:
                     print(
