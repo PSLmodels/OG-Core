@@ -40,6 +40,7 @@ def test_compute_default_params():
 param_updates1 = {
     "T": 4,
     "S": 3,
+    "rho": [[0.0, 0.0, 1.0]],
     "J": 1,
     "ubi_nom_017": 1000,
     "eta": np.ones((4, 3, 1)) / 12,
@@ -51,6 +52,7 @@ expected1 = np.ones((7, 3, 1)) * 2180
 param_updates2 = {
     "T": 4,
     "S": 3,
+    "rho": [[0.0, 0.0, 1.0]],
     "J": 1,
     "ubi_nom_017": 1000,
     "eta": np.ones((4, 3, 1)) / 12,
@@ -63,6 +65,7 @@ expected2 = np.ones((7, 3, 1)) * 2000
 param_updates3 = {
     "T": 4,
     "S": 3,
+    "rho": [[0.0, 0.0, 1.0]],
     "J": 1,
     "ubi_nom_017": 1000,
     "eta": np.ones((4, 3, 1)) / 12,
