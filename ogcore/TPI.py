@@ -262,7 +262,7 @@ def twist_doughnut(
     n_s = n_guess
     chi_n_s = p.chi_n[-length:]
     e_s = p.e[-length:, j]
-    rho_s = np.diag(p.rho[t : t + p.S, :], max(p.S - (s + 1), 0))
+    rho_s = np.diag(p.rho[t : t + p.S, :], max(p.S - length, 0))
 
     error1 = household.FOC_savings(
         r_s,
