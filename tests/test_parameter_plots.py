@@ -28,7 +28,10 @@ mono_nonage_spec_taxfunctions = utils.safe_read_pickle(
 micro_data = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
 )
-base_params.rho = np.tile(base_params.rho.reshape(1, base_params.S), (base_params.T + base_params.S, 1))
+base_params.rho = np.tile(
+    base_params.rho.reshape(1, base_params.S),
+    (base_params.T + base_params.S, 1),
+)
 
 
 def test_plot_imm_rates():

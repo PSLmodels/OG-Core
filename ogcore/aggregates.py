@@ -186,11 +186,11 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         if preTP:
             omega = p.omega_S_preTP
             pop_growth_rate = p.g_n[0]
-            rho = p.rho[0,:]
+            rho = p.rho[0, :]
         else:
             omega = p.omega_SS
             pop_growth_rate = p.g_n_ss
-            rho = p.rho[-1,:]
+            rho = p.rho[-1, :]
         if j is not None:
             BQ_presum = omega * rho * b_splus1 * p.lambdas[j]
         else:
@@ -202,7 +202,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
             p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0
         )
         rho = np.append(
-            p.rho[0,:].reshape(1, p.S), p.rho[: p.T - 1, :], axis=0
+            p.rho[0, :].reshape(1, p.S), p.rho[: p.T - 1, :], axis=0
         )
 
         if j is not None:
