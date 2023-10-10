@@ -6,9 +6,12 @@ from ogcore.parameters import Specifications
 
 
 p = Specifications()
+rho_vec = np.zeros((1, 40))
+rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
+    "rho": rho_vec.tolist(),
     "J": 2,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -43,9 +46,12 @@ def test_get_L(n, p, method, expected):
 
 
 p = Specifications()
+rho_vec = np.zeros((1, 40))
+rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
+    "rho": rho_vec.tolist(),
     "J": 2,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -120,9 +126,12 @@ def test_get_I(b_splus1, K_p1, K, p, method, expected):
 
 
 p = Specifications()
+rho_vec = np.zeros((1, 40))
+rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
+    "rho": rho_vec.tolist(),
     "J": 2,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -173,9 +182,12 @@ def test_get_B(b, p, method, PreTP, expected):
 
 
 p = Specifications()
+rho_vec = np.zeros((1, 40))
+rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
+    "rho": rho_vec.tolist(),
     "J": 2,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -184,7 +196,7 @@ new_param_values = {
     "omega": np.ones((160, 40)) / 40,
     "omega_SS": np.ones(40) / 40,
     "imm_rates": np.zeros((160, 40)),
-    "rho": np.zeros(40),
+    "rho": rho_vec.tolist(),
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -194,7 +206,7 @@ r = 0.5 + 0.5 * np.random.rand(p.T)
 b_splus1 = 0.06 + 7 * np.random.rand(p.T, p.S, p.J)
 pop = np.append(p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0)
 BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
-    np.reshape(p.rho * pop, (p.T, p.S, 1)), (1, 1, p.J)
+    np.reshape(p.rho[0, :] * pop, (p.T, p.S, 1)), (1, 1, p.J)
 )
 growth_adj = (1.0 + r) / (1.0 + p.g_n[: p.T])
 
@@ -251,9 +263,12 @@ def test_get_BQ(r, b_splus1, j, p, method, PreTP, expected):
 
 
 p = Specifications()
+rho_vec = np.zeros((1, 40))
+rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
+    "rho": rho_vec.tolist(),
     "J": 2,
     "M": 3,
     "labor_income_tax_noncompliance_rate": [[0.0]],
@@ -297,9 +312,12 @@ CI test of revenue() function
 """
 p = Specifications()
 num_tax_params = 12
+rho_vec = np.zeros((1, 20))
+rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 30,
     "S": 20,
+    "rho": rho_vec.tolist(),
     "J": 2,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -349,9 +367,12 @@ etr_params = 0.22 * random_state.rand(
 theta = 0.101 + (0.156 - 0.101) * random_state.rand(p.J)
 
 p3 = Specifications()
+rho_vec = np.zeros((1, 20))
+rho_vec[0, -1] = 1.0
 new_param_values3 = {
     "T": 30,
     "S": 20,
+    "rho": rho_vec.tolist(),
     "J": 2,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -380,9 +401,12 @@ Inv3 = p3.delta * K
 inv_tax_cred_rev3 = np.squeeze(p3.inv_tax_credit[: p3.T] * Inv3)
 
 p_u = Specifications()
+rho_vec = np.zeros((1, 20))
+rho_vec[0, -1] = 1.0
 new_param_values_ubi = {
     "T": 30,
     "S": 20,
+    "rho": rho_vec.tolist(),
     "J": 2,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],

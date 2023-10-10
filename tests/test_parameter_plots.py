@@ -28,6 +28,10 @@ mono_nonage_spec_taxfunctions = utils.safe_read_pickle(
 micro_data = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
 )
+base_params.rho = np.tile(
+    base_params.rho.reshape(1, base_params.S),
+    (base_params.T + base_params.S, 1),
+)
 
 
 def test_plot_imm_rates():
@@ -209,9 +213,9 @@ def test_plot_mort_rates_data():
     min_yr = 21
     max_yr = 100
     age_year_all = np.arange(min_yr, max_yr)
-    mort_rates = base_params.rho[1:]
-    mort_rates_all = base_params.rho[1:]
-    infmort_rate = base_params.rho[0]
+    mort_rates = base_params.rho[-1, 1:].squeeze()
+    mort_rates_all = base_params.rho[-1, 1:].squeeze()
+    infmort_rate = base_params.rho[0, 0]
     fig = parameter_plots.plot_mort_rates_data(
         totpers,
         min_yr,
@@ -230,9 +234,9 @@ def test_plot_mort_rates_data_save_fig(tmpdir):
     min_yr = 21
     max_yr = 100
     age_year_all = np.arange(min_yr, max_yr)
-    mort_rates = base_params.rho[1:]
-    mort_rates_all = base_params.rho[1:]
-    infmort_rate = base_params.rho[0]
+    mort_rates = base_params.rho[-1, 1:].squeeze()
+    mort_rates_all = base_params.rho[-1, 1:].squeeze()
+    infmort_rate = base_params.rho[0, 0]
     parameter_plots.plot_mort_rates_data(
         totpers,
         min_yr,

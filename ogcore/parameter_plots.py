@@ -40,7 +40,9 @@ def plot_imm_rates(p, year=DEFAULT_START_YEAR, include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_mort_rates(p, include_title=False, path=None):
+def plot_mort_rates(
+    p, years=[DEFAULT_START_YEAR], include_title=False, path=None
+):
     """
     Create a plot of mortality rates from OG-Core parameterization.
 
@@ -54,10 +56,13 @@ def plot_mort_rates(p, include_title=False, path=None):
 
     """
     age_per = np.linspace(p.E, p.E + p.S, p.S)
+    years = np.array(years) - p.start_year
     fig, ax = plt.subplots()
-    plt.plot(age_per, p.rho)
+    for y in years:
+        plt.plot(age_per, p.rho[y, :], label=str(y + p.start_year))
     plt.xlabel(r"Age $s$ (model periods)")
     plt.ylabel(r"Mortality Rates $\rho_{s}$")
+    plt.legend(loc="upper right")
     vals = ax.get_yticks()
     ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
     if include_title:
@@ -1031,6 +1036,7 @@ def plot_2D_taxfunc(
     start_year,
     tax_param_list,
     age=None,
+    E=21,  # Age at which agents become economically active in the model
     tax_func_type=["DEP"],
     rate_type="etr",
     over_labinc=True,
@@ -1086,14 +1092,17 @@ def plot_2D_taxfunc(
     if len(tax_func_type) < len(tax_param_list):
         tax_func_type = [tax_func_type[0]] * len(tax_param_list)
     for i, v in enumerate(tax_func_type):
-        assert v in ["DEP", "DEP_totalinc", "GS", "linear", "mono"]
+        assert v in ["DEP", "DEP_totalinc", "GS", "linear", "mono", "mono2D"]
     assert rate_type in ["etr", "mtrx", "mtry"]
     assert len(tax_param_list) == len(labels)
 
     # Set age and year to look at
     if age is not None:
         assert isinstance(age, int)
-        s = age - 21
+        assert age >= E
+        s = (
+            age - E
+        )  # Note: assumed age is given in E + model periods (but age below is also assumed to be calendar years)
     else:
         s = 0  # if not age-specific, all ages have the same values
     t = year - start_year
@@ -1138,9 +1147,7 @@ def plot_2D_taxfunc(
             "mtry": "mtr_capinc",
         }
         # censor data to range of the plot
-        print("OUTSIDE")
         for d, data in enumerate(data_list):
-            print("INSIDE")
             data_to_plot = data[str(year)].copy()
             if age is not None:
                 data_to_plot.drop(
@@ -1154,27 +1161,25 @@ def plot_2D_taxfunc(
             )
             # other censoring used in txfunc.py
             data_to_plot = txfunc.tax_data_sample(data_to_plot)
-            print(data_to_plot.describe())
             # set number of bins to 100 or bins of $1000 dollars
             n_bins = min(100, np.floor_divide(max_inc_amt, 1000))
             # need to compute weighted averages by group...
 
-            def wm(x):
+            def weighted_mean(x, cols, w="weight"):
                 try:
-                    np.average(
-                        x,
-                        weights=data_to_plot.loc[x.index, "weight"])
+                    return pd.Series(
+                        np.average(x[cols], weights=x[w], axis=0), cols
+                    )
                 except ZeroDivisionError:
                     return 0
 
             data_to_plot["inc_bin"] = pd.cut(data_to_plot[key1], n_bins)
-            groups = pd.DataFrame(
-                data_to_plot.groupby(["inc_bin"]).agg(
-                    rate=(rate_type_dict[rate_type], wm),
-                    income=(key1, wm)
-                )
+            groups = data_to_plot.groupby("inc_bin", observed=True).apply(
+                weighted_mean, [rate_type_dict[rate_type], key1]
             )
-            plt.scatter(groups["income"], groups["rate"], alpha=0.1)
+            plt.scatter(
+                groups[key1], groups[rate_type_dict[rate_type]], alpha=0.1
+            )
     # add legend, labels, etc to plot
     plt.legend(loc="center right")
     if title:
