@@ -40,7 +40,9 @@ def plot_imm_rates(p, year=DEFAULT_START_YEAR, include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_mort_rates(p, include_title=False, path=None):
+def plot_mort_rates(
+    p, years=[DEFAULT_START_YEAR], include_title=False, path=None
+):
     """
     Create a plot of mortality rates from OG-Core parameterization.
 
@@ -54,10 +56,13 @@ def plot_mort_rates(p, include_title=False, path=None):
 
     """
     age_per = np.linspace(p.E, p.E + p.S, p.S)
+    years = np.array(years) - p.start_year
     fig, ax = plt.subplots()
-    plt.plot(age_per, p.rho)
+    for y in years:
+        plt.plot(age_per, p.rho[y, :], label=str(y + p.start_year))
     plt.xlabel(r"Age $s$ (model periods)")
     plt.ylabel(r"Mortality Rates $\rho_{s}$")
+    plt.legend(loc="upper right")
     vals = ax.get_yticks()
     ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
     if include_title:

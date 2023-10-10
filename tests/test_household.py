@@ -97,6 +97,7 @@ expected1 = np.array([[1.66666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]])
 p2 = Specifications()
 p2.zeta = np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]])
 p2.S = 3
+p2.rho = np.array([[0.0, 0.0, 1.0]])
 p2.J = 2
 p2.T = 3
 p2.lambdas = np.array([0.6, 0.4])
@@ -115,6 +116,7 @@ expected3 = np.array(
 expected4 = np.array([[7.5, 10.0, 0.0], [2.4, 3.2, 0.0], [10.8, 14.4, 0.0]])
 p3 = Specifications()
 p3.S = 3
+p3.rho = np.array([[0.0, 0.0, 1.0]])
 p3.J = 2
 p3.T = 3
 p3.lambdas = np.array([0.6, 0.4])
@@ -183,6 +185,7 @@ TR1 = 2.5
 expected1 = np.array([[1.66666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]])
 p2 = Specifications()
 p2.S = 3
+p2.rho = np.array([[0.0, 0.0, 1.0]])
 p2.J = 2
 p2.T = 3
 p2.eta = np.tile(
@@ -259,6 +262,7 @@ p3.e = np.array([[1.0, 2.1], [0.4, 0.5], [1.6, 0.9]])
 p3.lambdas = np.array([0.4, 0.6])
 p3.g_y = 0.01
 p3.S = 3
+p3.rho = np.array([[0.0, 0.0, 1.0]])
 p3.J = 2
 r3 = 0.11
 w3 = 0.75
@@ -415,7 +419,7 @@ p1.beta = np.ones(p1.J) * 0.96
 p1.g_y = 0.03
 p1.chi_b = np.array([1.5])
 p1.tau_bq = np.array([0.0])
-p1.rho = np.array([0.1, 0.2, 1.0])
+p1.rho = np.array([[0.1, 0.2, 1.0]])
 p1.lambdas = np.array([1.0])
 p1.S = 3
 p1.T = 3
@@ -664,7 +668,7 @@ def test_FOC_savings(model_vars, params, expected):
             ubi,
             theta,
             params.e[:, j],
-            params.rho,
+            params.rho[-1, :],
             etr_params,
             mtry_params,
             t,
@@ -686,7 +690,7 @@ def test_FOC_savings(model_vars, params, expected):
             ubi,
             theta,
             np.squeeze(params.e),
-            params.rho,
+            params.rho[-1, :],
             etr_params,
             mtry_params,
             t,
@@ -970,6 +974,7 @@ def test_get_y():
     p = Specifications()
     # p.update_specifications({'S': 4, 'J': 1})
     p.S = 3
+    p.rho = np.array([[0.0, 0.0, 1.0]])
     p.e = np.array([0.99, 1.5, 0.2])
 
     test_y = household.get_y(r_p, w, b_s, n, p)
