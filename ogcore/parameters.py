@@ -576,7 +576,7 @@ class Specifications(paramtools.Parameters):
             self.g_n = np.zeros(self.T + self.S)
             surv_rate = np.ones_like(self.rho) - self.rho
             surv_rate1 = np.ones((self.S,))  # prob start at age S
-            surv_rate1[1:] = np.cumprod(self.surv_rate[-1, :-1], dtype=float)
+            surv_rate1[1:] = np.cumprod(surv_rate[-1, :-1], dtype=float)
             # number of each age alive at any time
             omega_SS = np.ones(self.S) * surv_rate1
             self.omega_SS = omega_SS / omega_SS.sum()
