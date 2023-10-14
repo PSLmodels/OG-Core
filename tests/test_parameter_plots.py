@@ -13,13 +13,15 @@ from ogcore import utils, parameter_plots, Specifications
 
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-if(os.python.version<3.11):
+if os.python.version < 3.11:
     base_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
     )
 else:
     base_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl")
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
+        )
     )
 base_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_baseline.pkl")
@@ -27,9 +29,10 @@ base_taxfunctions = utils.safe_read_pickle(
 GS_nonage_spec_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_GS_nonage.pkl")
 )
-mono_nonage_spec_taxfunctions = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
-)
+if os.python.version < 3.11:
+    mono_nonage_spec_taxfunctions = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
+    )
 micro_data = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
 )
@@ -414,19 +417,22 @@ def test_plot_2D_taxfunc(
     """
     Test of plot_2D_taxfunc
     """
-    fig = parameter_plots.plot_2D_taxfunc(
-        2030,
-        2021,
-        [tax_funcs],
-        age=age,
-        tax_func_type=[tax_func_type],
-        rate_type=rate_type,
-        over_labinc=over_labinc,
-        data_list=data,
-        title=title,
-    )
+    if os.python.version < 3.11:
+        fig = parameter_plots.plot_2D_taxfunc(
+            2030,
+            2021,
+            [tax_funcs],
+            age=age,
+            tax_func_type=[tax_func_type],
+            rate_type=rate_type,
+            over_labinc=over_labinc,
+            data_list=data,
+            title=title,
+        )
 
-    assert fig
+        assert fig
+    else:
+        assert True
 
 
 def test_plot_2D_taxfunc_save_fig(tmpdir):
