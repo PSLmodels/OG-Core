@@ -609,7 +609,7 @@ if sys.version_info[1] < 11:
             (False, param_updates4, filename4),
             (True, param_updates8, filename8),
             (True, param_updates9, filename9),
-        ],
+        ]
     id_list = [
         "Baseline, balanced budget",
         "Baseline, small open",
@@ -629,7 +629,7 @@ else:
             (True, {}, filename1),
             (False, param_updates4, filename4),
             (True, param_updates8, filename8),
-        ],
+        ]
     id_list = [
         "Baseline, balanced budget",
         "Baseline, small open",
@@ -644,7 +644,7 @@ else:
 @pytest.mark.local
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
-    test_list[0],
+    test_list,
     ids=id_list,
 )
 def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
