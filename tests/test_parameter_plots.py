@@ -427,6 +427,8 @@ else:
         "MTR capital income",
         "MTR labor income",
     ]
+
+
 @pytest.mark.parametrize(
     "tax_funcs,age,tax_func_type,rate_type,over_labinc,data,title",
     test_list,

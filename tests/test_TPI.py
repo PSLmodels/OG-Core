@@ -601,15 +601,15 @@ if sys.version_info[1] < 11:
 
 if sys.version_info[1] < 11:
     test_list = [
-            (True, param_updates2, filename2),
-            (True, param_updates5, filename5),
-            (True, param_updates6, filename6),
-            (True, param_updates7, filename7),
-            (True, {}, filename1),
-            (False, param_updates4, filename4),
-            (True, param_updates8, filename8),
-            (True, param_updates9, filename9),
-        ]
+        (True, param_updates2, filename2),
+        (True, param_updates5, filename5),
+        (True, param_updates6, filename6),
+        (True, param_updates7, filename7),
+        (True, {}, filename1),
+        (False, param_updates4, filename4),
+        (True, param_updates8, filename8),
+        (True, param_updates9, filename9),
+    ]
     id_list = [
         "Baseline, balanced budget",
         "Baseline, small open",
@@ -622,14 +622,14 @@ if sys.version_info[1] < 11:
     ]
 else:
     test_list = [
-            (True, param_updates2, filename2),
-            (True, param_updates5, filename5),
-            (True, param_updates6, filename6),
-            (True, param_updates7, filename7),
-            (True, {}, filename1),
-            (False, param_updates4, filename4),
-            (True, param_updates8, filename8),
-        ]
+        (True, param_updates2, filename2),
+        (True, param_updates5, filename5),
+        (True, param_updates6, filename6),
+        (True, param_updates7, filename7),
+        (True, {}, filename1),
+        (False, param_updates4, filename4),
+        (True, param_updates8, filename8),
+    ]
     id_list = [
         "Baseline, balanced budget",
         "Baseline, small open",
