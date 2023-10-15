@@ -608,7 +608,7 @@ if sys.version_info[1] < 11:
             (True, {}, filename1),
             (False, param_updates4, filename4),
             (True, param_updates8, filename8),
-            # (True, param_updates9, filename9),
+            (True, param_updates9, filename9),
         ],
     id_list = [
         "Baseline, balanced budget",
@@ -618,7 +618,7 @@ if sys.version_info[1] < 11:
         "Baseline",
         "Reform, baseline spending",
         "Baseline, Kg>0",
-        # "mono tax functions",
+        "mono tax functions",
     ]
 else:
     test_list = [
