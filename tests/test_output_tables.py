@@ -156,6 +156,12 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
         base_params.etr_params = base_params.etr_params.tolist()
     if isinstance(reform_params.etr_params, np.ndarray):
         reform_params.etr_params = reform_params.etr_params.tolist()
+    print("M = ", base_params.M, reform_params.M)
+    print(
+        "Shape of M implied by output = ",
+        base_tpi["p_m"].shape,
+        reform_tpi["p_m"].shape,
+    )
     df = output_tables.dynamic_revenue_decomposition(
         base_params,
         base_tpi,
