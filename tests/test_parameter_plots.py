@@ -391,9 +391,8 @@ def test_plot_income_data_save_fig(tmpdir):
     assert isinstance(img3, np.ndarray)
 
 
-@pytest.mark.parametrize(
-    "tax_funcs,age,tax_func_type,rate_type,over_labinc,data,title",
-    [
+if sys.version_info[1] < 11:
+    test_list = [
         (base_taxfunctions, 43, "DEP", "etr", True, None, None),
         (base_taxfunctions, 43, "DEP", "etr", False, None, "Test title"),
         (GS_nonage_spec_taxfunctions, None, "GS", "etr", True, None, None),
@@ -401,8 +400,8 @@ def test_plot_income_data_save_fig(tmpdir):
         (base_taxfunctions, 43, "DEP", "mtry", True, [micro_data], None),
         (base_taxfunctions, 43, "DEP", "mtrx", True, [micro_data], None),
         (mono_nonage_spec_taxfunctions, None, "mono", "etr", True, None, None),
-    ],
-    ids=[
+    ]
+    id_list = [
         "over_labinc=True",
         "over_labinc=False",
         "Non age-specific",
@@ -410,7 +409,28 @@ def test_plot_income_data_save_fig(tmpdir):
         "MTR capital income",
         "MTR labor income",
         "Mono functions",
-    ],
+    ]
+else:
+    test_list = [
+        (base_taxfunctions, 43, "DEP", "etr", True, None, None),
+        (base_taxfunctions, 43, "DEP", "etr", False, None, "Test title"),
+        (GS_nonage_spec_taxfunctions, None, "GS", "etr", True, None, None),
+        (base_taxfunctions, 43, "DEP", "etr", True, [micro_data], None),
+        (base_taxfunctions, 43, "DEP", "mtry", True, [micro_data], None),
+        (base_taxfunctions, 43, "DEP", "mtrx", True, [micro_data], None),
+    ]
+    id_list = [
+        "over_labinc=True",
+        "over_labinc=False",
+        "Non age-specific",
+        "with data",
+        "MTR capital income",
+        "MTR labor income",
+    ]
+@pytest.mark.parametrize(
+    "tax_funcs,age,tax_func_type,rate_type,over_labinc,data,title",
+    test_list,
+    ids=id_list,
 )
 def test_plot_2D_taxfunc(
     tax_funcs, age, tax_func_type, rate_type, over_labinc, data, title
