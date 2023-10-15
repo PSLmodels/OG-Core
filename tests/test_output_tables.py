@@ -149,6 +149,13 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
     reform_params.capital_income_tax_noncompliance_rate = np.zeros(
         (reform_params.T, reform_params.J)
     )
+    # check if tax parameters are a numpy array
+    # this is relevant for cached parameter arrays saved before
+    # tax params were put in lists
+    if isinstance(base_params.etr_params, np.ndarray):
+        base_params.etr_params = base_params.etr_params.tolist()
+    if isinstance(reform_params.etr_params, np.ndarray):
+        reform_params.etr_params = reform_params.etr_params.tolist()
     df = output_tables.dynamic_revenue_decomposition(
         base_params,
         base_tpi,
