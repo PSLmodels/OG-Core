@@ -5,6 +5,7 @@ Tests of parameter_plots.py module
 from tracemalloc import start
 import pytest
 import os
+import sys
 import numpy as np
 import scipy.interpolate as si
 import matplotlib.image as mpimg
@@ -13,7 +14,7 @@ from ogcore import utils, parameter_plots, Specifications
 
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-if os.python.version < 3.11:
+if sys.version_info[1] < 11:
     base_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
     )
@@ -29,7 +30,7 @@ base_taxfunctions = utils.safe_read_pickle(
 GS_nonage_spec_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_GS_nonage.pkl")
 )
-if os.python.version < 3.11:
+if sys.version_info[1] < 11:
     mono_nonage_spec_taxfunctions = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
     )
@@ -417,7 +418,7 @@ def test_plot_2D_taxfunc(
     """
     Test of plot_2D_taxfunc
     """
-    if os.python.version < 3.11:
+    if sys.version_info[1] < 11:
         fig = parameter_plots.plot_2D_taxfunc(
             2030,
             2021,

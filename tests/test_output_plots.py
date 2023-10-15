@@ -4,6 +4,7 @@ Tests of output_plots.py module
 
 import pytest
 import os
+import sys
 import numpy as np
 import matplotlib.image as mpimg
 from ogcore import utils, output_plots
@@ -17,7 +18,7 @@ base_ss = utils.safe_read_pickle(
 base_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TPI_vars_baseline.pkl")
 )
-if os.python.version < 3.11:
+if sys.version_info[1] < 11:
     base_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
     )
@@ -33,7 +34,7 @@ reform_ss = utils.safe_read_pickle(
 reform_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TPI_vars_reform.pkl")
 )
-if os.python.version < 3.11:
+if sys.version_info[1] < 11:
     reform_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_reform.pkl")
     )

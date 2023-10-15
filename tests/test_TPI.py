@@ -4,6 +4,7 @@ import pytest
 import pickle
 import numpy as np
 import os
+import sys
 import json
 from ogcore import SS, TPI, utils
 import ogcore.aggregates as aggr
@@ -570,7 +571,7 @@ filename8 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_Kg_nonzero_2.pkl"
 )
 # read in mono tax funcs (not age specific)
-if os.python.version < 3.11:
+if sys.version_info[1] < 11:
     dict_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
     )
@@ -598,7 +599,7 @@ filename9 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_mono_2.pkl"
 )
 
-if os.python.version < 3.11:
+if sys.version_info[1] < 11:
     test_list = (
         [
             (True, param_updates2, filename2),
