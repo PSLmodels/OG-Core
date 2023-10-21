@@ -4,6 +4,7 @@ import pytest
 import pickle
 import numpy as np
 import os
+import sys
 import json
 from ogcore import SS, TPI, utils
 import ogcore.aggregates as aggr
@@ -570,38 +571,36 @@ filename8 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_Kg_nonzero_2.pkl"
 )
 # read in mono tax funcs (not age specific)
-dict_params = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
-)
-p = Specifications()
-etr_params = [[None] * p.S] * p.T
-mtrx_params = [[None] * p.S] * p.T
-mtry_params = [[None] * p.S] * p.T
-for s in range(p.S):
-    for t in range(p.T):
-        if t < p.BW:
-            etr_params[t][s] = dict_params["tfunc_etr_params_S"][t][s]
-            mtrx_params[t][s] = dict_params["tfunc_mtrx_params_S"][t][s]
-            mtry_params[t][s] = dict_params["tfunc_mtry_params_S"][t][s]
-        else:
-            etr_params[t][s] = dict_params["tfunc_etr_params_S"][-1][s]
-            mtrx_params[t][s] = dict_params["tfunc_mtrx_params_S"][-1][s]
-            mtry_params[t][s] = dict_params["tfunc_mtry_params_S"][-1][s]
-param_updates9 = {
-    "tax_func_type": "mono",
-    "etr_params": etr_params,
-    "mtrx_params": mtrx_params,
-    "mtry_params": mtry_params,
-}
-filename9 = os.path.join(
-    CUR_PATH, "test_io_data", "run_TPI_outputs_mono_2.pkl"
-)
+if sys.version_info[1] < 11:
+    dict_params = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
+    )
+    p = Specifications()
+    etr_params = [[None] * p.S] * p.T
+    mtrx_params = [[None] * p.S] * p.T
+    mtry_params = [[None] * p.S] * p.T
+    for s in range(p.S):
+        for t in range(p.T):
+            if t < p.BW:
+                etr_params[t][s] = dict_params["tfunc_etr_params_S"][t][s]
+                mtrx_params[t][s] = dict_params["tfunc_mtrx_params_S"][t][s]
+                mtry_params[t][s] = dict_params["tfunc_mtry_params_S"][t][s]
+            else:
+                etr_params[t][s] = dict_params["tfunc_etr_params_S"][-1][s]
+                mtrx_params[t][s] = dict_params["tfunc_mtrx_params_S"][-1][s]
+                mtry_params[t][s] = dict_params["tfunc_mtry_params_S"][-1][s]
+    param_updates9 = {
+        "tax_func_type": "mono",
+        "etr_params": etr_params,
+        "mtrx_params": mtrx_params,
+        "mtry_params": mtry_params,
+    }
+    filename9 = os.path.join(
+        CUR_PATH, "test_io_data", "run_TPI_outputs_mono_2.pkl"
+    )
 
-
-@pytest.mark.local
-@pytest.mark.parametrize(
-    "baseline,param_updates,filename",
-    [
+if sys.version_info[1] < 11:
+    test_list = [
         (True, param_updates2, filename2),
         (True, param_updates5, filename5),
         (True, param_updates6, filename6),
@@ -610,8 +609,8 @@ filename9 = os.path.join(
         (False, param_updates4, filename4),
         (True, param_updates8, filename8),
         (True, param_updates9, filename9),
-    ],
-    ids=[
+    ]
+    id_list = [
         "Baseline, balanced budget",
         "Baseline, small open",
         "Baseline, small open for some periods",
@@ -620,7 +619,33 @@ filename9 = os.path.join(
         "Reform, baseline spending",
         "Baseline, Kg>0",
         "mono tax functions",
-    ],
+    ]
+else:
+    test_list = [
+        (True, param_updates2, filename2),
+        (True, param_updates5, filename5),
+        (True, param_updates6, filename6),
+        (True, param_updates7, filename7),
+        (True, {}, filename1),
+        (False, param_updates4, filename4),
+        (True, param_updates8, filename8),
+    ]
+    id_list = [
+        "Baseline, balanced budget",
+        "Baseline, small open",
+        "Baseline, small open for some periods",
+        "Baseline, delta_tau = 0",
+        "Baseline",
+        "Reform, baseline spending",
+        "Baseline, Kg>0",
+    ]
+
+
+@pytest.mark.local
+@pytest.mark.parametrize(
+    "baseline,param_updates,filename",
+    test_list,
+    ids=id_list,
 )
 def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
     """

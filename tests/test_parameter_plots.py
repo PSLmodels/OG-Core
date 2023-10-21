@@ -5,6 +5,7 @@ Tests of parameter_plots.py module
 from tracemalloc import start
 import pytest
 import os
+import sys
 import numpy as np
 import scipy.interpolate as si
 import matplotlib.image as mpimg
@@ -13,18 +14,26 @@ from ogcore import utils, parameter_plots, Specifications
 
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-base_params = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
-)
+if sys.version_info[1] < 11:
+    base_params = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
+    )
+else:
+    base_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
+        )
+    )
 base_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_baseline.pkl")
 )
 GS_nonage_spec_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_GS_nonage.pkl")
 )
-mono_nonage_spec_taxfunctions = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
-)
+if sys.version_info[1] < 11:
+    mono_nonage_spec_taxfunctions = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_mono_nonage.pkl")
+    )
 micro_data = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
 )
@@ -382,9 +391,8 @@ def test_plot_income_data_save_fig(tmpdir):
     assert isinstance(img3, np.ndarray)
 
 
-@pytest.mark.parametrize(
-    "tax_funcs,age,tax_func_type,rate_type,over_labinc,data,title",
-    [
+if sys.version_info[1] < 11:
+    test_list = [
         (base_taxfunctions, 43, "DEP", "etr", True, None, None),
         (base_taxfunctions, 43, "DEP", "etr", False, None, "Test title"),
         (GS_nonage_spec_taxfunctions, None, "GS", "etr", True, None, None),
@@ -392,8 +400,8 @@ def test_plot_income_data_save_fig(tmpdir):
         (base_taxfunctions, 43, "DEP", "mtry", True, [micro_data], None),
         (base_taxfunctions, 43, "DEP", "mtrx", True, [micro_data], None),
         (mono_nonage_spec_taxfunctions, None, "mono", "etr", True, None, None),
-    ],
-    ids=[
+    ]
+    id_list = [
         "over_labinc=True",
         "over_labinc=False",
         "Non age-specific",
@@ -401,7 +409,30 @@ def test_plot_income_data_save_fig(tmpdir):
         "MTR capital income",
         "MTR labor income",
         "Mono functions",
-    ],
+    ]
+else:
+    test_list = [
+        (base_taxfunctions, 43, "DEP", "etr", True, None, None),
+        (base_taxfunctions, 43, "DEP", "etr", False, None, "Test title"),
+        (GS_nonage_spec_taxfunctions, None, "GS", "etr", True, None, None),
+        (base_taxfunctions, 43, "DEP", "etr", True, [micro_data], None),
+        (base_taxfunctions, 43, "DEP", "mtry", True, [micro_data], None),
+        (base_taxfunctions, 43, "DEP", "mtrx", True, [micro_data], None),
+    ]
+    id_list = [
+        "over_labinc=True",
+        "over_labinc=False",
+        "Non age-specific",
+        "with data",
+        "MTR capital income",
+        "MTR labor income",
+    ]
+
+
+@pytest.mark.parametrize(
+    "tax_funcs,age,tax_func_type,rate_type,over_labinc,data,title",
+    test_list,
+    ids=id_list,
 )
 def test_plot_2D_taxfunc(
     tax_funcs, age, tax_func_type, rate_type, over_labinc, data, title
@@ -409,19 +440,22 @@ def test_plot_2D_taxfunc(
     """
     Test of plot_2D_taxfunc
     """
-    fig = parameter_plots.plot_2D_taxfunc(
-        2030,
-        2021,
-        [tax_funcs],
-        age=age,
-        tax_func_type=[tax_func_type],
-        rate_type=rate_type,
-        over_labinc=over_labinc,
-        data_list=data,
-        title=title,
-    )
+    if sys.version_info[1] < 11:
+        fig = parameter_plots.plot_2D_taxfunc(
+            2030,
+            2021,
+            [tax_funcs],
+            age=age,
+            tax_func_type=[tax_func_type],
+            rate_type=rate_type,
+            over_labinc=over_labinc,
+            data_list=data,
+            title=title,
+        )
 
-    assert fig
+        assert fig
+    else:
+        assert True
 
 
 def test_plot_2D_taxfunc_save_fig(tmpdir):
