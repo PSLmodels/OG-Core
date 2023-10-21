@@ -967,18 +967,27 @@ document.write(`
         <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;SS&quot;</span><span class="p">)</span>
     <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">year_list</span><span class="p">}</span>
     <span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span> <span class="o">=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">J</span>
-    <span class="n">base_etr_params_4D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-        <span class="n">base_params</span><span class="o">.</span><span class="n">etr_params</span><span class="p">[:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-            <span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">etr_params</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="p">),</span>
-        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="p">)</span>
-    <span class="n">reform_etr_params_4D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-        <span class="n">reform_params</span><span class="o">.</span><span class="n">etr_params</span><span class="p">[:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-            <span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">etr_params</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="p">),</span>
-        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="p">)</span>
+    <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">etr_params</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">base_etr_params_4D</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="p">[</span>
+                <span class="p">[</span><span class="n">base_params</span><span class="o">.</span><span class="n">etr_params</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_params</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">reform_etr_params_4D</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="p">[</span>
+                <span class="p">[</span><span class="n">reform_params</span><span class="o">.</span><span class="n">etr_params</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_params</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="p">]</span>
     <span class="n">tax_rev_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;indiv&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;biz&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="p">{}}</span>
     <span class="n">indiv_liab</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Baseline IIT + payroll tax liability</span>
