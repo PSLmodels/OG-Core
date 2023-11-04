@@ -6,7 +6,7 @@ import paramtools
 
 # import ogcore
 from ogcore import elliptical_u_est
-from ogcore.utils import rate_conversion
+from ogcore.utils import rate_conversion, extrapolate_arrays
 from ogcore.constants import BASELINE_DIR
 
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -173,240 +173,32 @@ class Specifications(paramtools.Parameters):
             "inv_tax_credit",
         ]
         for item in tp_param_list2:
-            this_attr = getattr(self, item)
-            if this_attr.ndim == 1:
-                # case where enter single number, so assume constant
-                # across years and industries
-                if this_attr.shape[0] == 1:
-                    this_attr = (
-                        np.ones((self.T + self.S, self.M)) * this_attr[0]
-                    )
-                # case where user enters just one year for all industries
-                if this_attr.shape[0] == self.M:
-                    this_attr = np.tile(
-                        this_attr.reshape(1, self.M), (self.T + self.S, 1)
-                    )
-                else:
-                    # case where user enters multiple years for one industry
-                    # will assume they implied values the same across industries
-                    this_attr = np.concatenate(
-                        (
-                            this_attr,
-                            np.ones((self.T + self.S - this_attr.size))
-                            * this_attr[-1],
-                        )
-                    )
-                    this_attr = np.tile(
-                        this_attr.reshape(self.T + self.S, 1), (1, self.M)
-                    )
-                this_attr = np.squeeze(this_attr, axis=2)
-            elif this_attr.ndim == 2:
-                if this_attr.shape[1] > 1 and this_attr.shape[1] != self.M:
-                    print(
-                        "please provide values of "
-                        + item
-                        + " for each industry (or one if common across "
-                        + "industries}"
-                    )
-                    assert False
-                if this_attr.shape[1] == 1:
-                    this_attr = np.tile(
-                        this_attr.reshape(this_attr.shape[0], 1), (1, self.M)
-                    )
-                if this_attr.shape[0] > self.T + self.S:
-                    this_attr = this_attr[: self.T + self.S, :]
-                this_attr = np.concatenate(
-                    (
-                        this_attr,
-                        np.ones(
-                            (
-                                self.T + self.S - this_attr.shape[0],
-                                this_attr.shape[1],
-                            )
-                        )
-                        * this_attr[-1, :],
-                    )
-                )
-            setattr(self, item, this_attr)
+            param_in = getattr(self, item)
+            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.M), item=item)
+            setattr(self, item, param_out)
         # Deal with parameters that vary across consumption good and over time
         tp_param_list3 = ["tau_c"]
         for item in tp_param_list3:
-            this_attr = getattr(self, item)
-            if this_attr.ndim == 1:
-                # case where enter single number, so assume constant
-                # across years and industries
-                if this_attr.shape[0] == 1:
-                    this_attr = (
-                        np.ones((self.T + self.S, self.I)) * this_attr[0]
-                    )
-                # case where user enters just one year for all industries
-                if this_attr.shape[0] == self.I:
-                    this_attr = np.tile(
-                        this_attr.reshape(1, self.I), (self.T + self.S, 1)
-                    )
-                else:
-                    # case where user enters multiple years for one industry
-                    # will assume they implied values the same across industries
-                    this_attr = np.concatenate(
-                        (
-                            this_attr,
-                            np.ones((self.T + self.S - this_attr.size))
-                            * this_attr[-1],
-                        )
-                    )
-                    this_attr = np.tile(
-                        this_attr.reshape(self.T + self.S, 1), (1, self.I)
-                    )
-                this_attr = np.squeeze(this_attr, axis=2)
-            elif this_attr.ndim == 2:
-                if this_attr.shape[1] > 1 and this_attr.shape[1] != self.I:
-                    print(
-                        "please provide values of "
-                        + item
-                        + " for each industry (or one if common across "
-                        + "industries"
-                    )
-                    assert False
-                if this_attr.shape[1] == 1:
-                    this_attr = np.tile(
-                        this_attr.reshape(this_attr.shape[0], 1), (1, self.I)
-                    )
-                if this_attr.shape[0] > self.T + self.S:
-                    this_attr = this_attr[: self.T + self.S, :]
-                this_attr = np.concatenate(
-                    (
-                        this_attr,
-                        np.ones(
-                            (
-                                self.T + self.S - this_attr.shape[0],
-                                this_attr.shape[1],
-                            )
-                        )
-                        * this_attr[-1, :],
-                    )
-                )
-            setattr(self, item, this_attr)
+            param_in = getattr(self, item)
+            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.I), item=item)
+            setattr(self, item, param_out)
         # Deal with parameters that vary across J and over time
         tp_param_list3 = [
             "labor_income_tax_noncompliance_rate",
             "capital_income_tax_noncompliance_rate",
         ]
         for item in tp_param_list3:
-            this_attr = getattr(self, item)
-            if this_attr.ndim == 1:
-                # case where enter single number, so assume constant
-                # across years and J
-                if this_attr.shape[0] == 1:
-                    this_attr = (
-                        np.ones((self.T + self.S, self.J)) * this_attr[0]
-                    )
-                # case where user enters just one year for all J
-                if this_attr.shape[0] == self.J:
-                    this_attr = np.tile(
-                        this_attr.reshape(1, self.J), (self.T + self.S, 1)
-                    )
-                else:
-                    # case where user enters multiple years for one J
-                    # will assume they implied values the same across J
-                    this_attr = np.concatenate(
-                        (
-                            this_attr,
-                            np.ones((self.T + self.S - this_attr.size))
-                            * this_attr[-1],
-                        )
-                    )
-                    this_attr = np.tile(
-                        this_attr.reshape(self.T + self.S, 1), (1, self.J)
-                    )
-                this_attr = np.squeeze(this_attr, axis=2)
-            elif this_attr.ndim == 2:
-                if this_attr.shape[1] > 1 and this_attr.shape[1] != self.J:
-                    print(
-                        "please provide values of "
-                        + item
-                        + " for each j (or one if common across "
-                        + "ability groups)"
-                    )
-                    assert False
-                if this_attr.shape[1] == 1:
-                    this_attr = np.tile(
-                        this_attr.reshape(this_attr.shape[0], 1), (1, self.J)
-                    )
-                if this_attr.shape[0] > self.T + self.S:
-                    this_attr = this_attr[: self.T + self.S, :]
-                this_attr = np.concatenate(
-                    (
-                        this_attr,
-                        np.ones(
-                            (
-                                self.T + self.S - this_attr.shape[0],
-                                this_attr.shape[1],
-                            )
-                        )
-                        * this_attr[-1, :],
-                    )
-                )
-            setattr(self, item, this_attr)
+            param_in = getattr(self, item)
+            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.J), item=item)
+            setattr(self, item, param_out)
         # Deal with parameters that vary across age and over time
         tp_param_list4 = [
             "rho",
         ]
         for item in tp_param_list4:
-            this_attr = getattr(self, item)
-            if this_attr.ndim == 1:
-                # case where enter single number, so assume constant
-                # across years and age
-                if this_attr.shape[0] == 1:
-                    this_attr = (
-                        np.ones((self.T + self.S, self.S)) * this_attr[0]
-                    )
-                # case where user enters just one year for all ages
-                if this_attr.shape[0] == self.S:
-                    this_attr = np.tile(
-                        this_attr.reshape(1, self.S), (self.T + self.S, 1)
-                    )
-                else:
-                    # case where user enters multiple years for one age
-                    # will assume they implied values the same across
-                    # time for all periods after the last year of values
-                    this_attr = np.concatenate(
-                        (
-                            this_attr,
-                            np.ones((self.T + self.S - this_attr.size))
-                            * this_attr[-1],
-                        )
-                    )
-                    this_attr = np.tile(
-                        this_attr.reshape(self.T + self.S, 1), (1, self.S)
-                    )
-            elif this_attr.ndim == 2:
-                if this_attr.shape[1] > 1 and this_attr.shape[1] != self.S:
-                    print(
-                        "please provide values of "
-                        + item
-                        + " for each age (or one if common across "
-                        + "S}"
-                    )
-                    assert False
-                if this_attr.shape[1] == 1:
-                    this_attr = np.tile(
-                        this_attr.reshape(this_attr.shape[0], 1), (1, self.S)
-                    )
-                if this_attr.shape[0] > self.T + self.S:
-                    this_attr = this_attr[: self.T + self.S, :]
-                this_attr = np.concatenate(
-                    (
-                        this_attr,
-                        np.ones(
-                            (
-                                self.T + self.S - this_attr.shape[0],
-                                this_attr.shape[1],
-                            )
-                        )
-                        * this_attr[-1, :],
-                    )
-                )
-            setattr(self, item, this_attr)
+            param_in = getattr(self, item)
+            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.S), item=item)
+            setattr(self, item, param_out)
         # Deal with tax parameters that maybe age and time specific
         tax_params_to_TP = [
             "etr_params",
