@@ -908,67 +908,82 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
     Returns:
         param_out (array_like): reshape parameter for use in OG-Core
     """
-    assert something here: that input array be single value or match up with at least one dim
-    if param_in.ndim == 1:
-        # case where enter single number, so assume constant
-        # across all dimensions
-        if param_in.shape[0] == 1:
-            param_out = (
-                np.ones((dims)) * param_in[0]
-            )
-        # case where user enters just one year for all types in 2nd dim
-        if param_in.shape[0] == dims[1]:
-            param_in = np.tile(
-                param_in.reshape(1, dims[1]), (dims[0], 1)
-            )
-        else:
-            # case where user enters multiple years, but not full time
-            # path
-            # will assume they implied values the same across 2nd dim
-            # and will fill in all periods
-            param_in = np.concatenate(
-                (
-                    param_in,
-                    np.ones((dims[0] - param_in.size))
-                    * param_in[-1],
-                )
-            )
-            param_in = np.tile(
-                param_in.reshape(dims[0], 1), (1, dims[1])
-            )
-        param_out = np.squeeze(param_in, axis=2)
-    elif param_in.ndim == 2:
-        # case where enter values along 2 dimensions, but those aren't
-        # complete
-        if param_in.shape[1] > 1 and param_in.shape[1] != dims[1]:
-            print(
-                "please provide values of "
-                + item
-                + " for element in the 2nd dimension (or enter a "
-                + "constant if the value is common across elements in "
-                + "the second dimension}"
-            )
-            assert False
-        if param_in.shape[1] == 1:
-            # Case where enter just one value along the 2nd dim, will
-            # assume constant across it
-            param_in = np.tile(
-                param_in.reshape(param_in.shape[0], 1), (1, dims[1])
-            )
-        if param_in.shape[0] > dims[0]:
-            # Case where enter a number of values along the time
-            # dimension that exceeds the length of the time path
-            param_in = param_in[: dims[0], :]
+    if len(dims) == 1:
+        # this is the case for 1D arrays, they vary over the time path
+        if param_in.ndim > 1:
+            param_in = np.squeeze(param_in, axis=1)
+        if param_in.size > dims[0]:
+            param_in = param_in[: dims[0]]
         param_out = np.concatenate(
             (
                 param_in,
-                np.ones(
-                    (
-                        dims[0] - param_in.shape[0],
-                        param_in.shape[1],
-                    )
-                )
-                * param_in[-1, :],
+                np.ones((dims[0] - param_in.size))
+                * param_in[-1],
             )
         )
+    elif len(dims) == 2:
+        # this is the case for 2D arrays, they vary over the time path
+        # and and some other dimension (e.g., by industry)
+        if param_in.ndim == 1:
+            # case where enter single number, so assume constant
+            # across all dimensions
+            if param_in.shape[0] == 1:
+                param_out = (
+                    np.ones((dims)) * param_in[0]
+                )
+            # case where user enters just one year for all types in 2nd dim
+            if param_in.shape[0] == dims[1]:
+                param_in = np.tile(
+                    param_in.reshape(1, dims[1]), (dims[0], 1)
+                )
+            else:
+                # case where user enters multiple years, but not full time
+                # path
+                # will assume they implied values the same across 2nd dim
+                # and will fill in all periods
+                param_in = np.concatenate(
+                    (
+                        param_in,
+                        np.ones((dims[0] - param_in.size))
+                        * param_in[-1],
+                    )
+                )
+                param_in = np.tile(
+                    param_in.reshape(dims[0], 1), (1, dims[1])
+                )
+            param_out = np.squeeze(param_in, axis=2)
+        elif param_in.ndim == 2:
+            # case where enter values along 2 dimensions, but those aren't
+            # complete
+            if param_in.shape[1] > 1 and param_in.shape[1] != dims[1]:
+                print(
+                    "please provide values of "
+                    + item
+                    + " for element in the 2nd dimension (or enter a "
+                    + "constant if the value is common across elements in "
+                    + "the second dimension}"
+                )
+                assert False
+            if param_in.shape[1] == 1:
+                # Case where enter just one value along the 2nd dim, will
+                # assume constant across it
+                param_in = np.tile(
+                    param_in.reshape(param_in.shape[0], 1), (1, dims[1])
+                )
+            if param_in.shape[0] > dims[0]:
+                # Case where enter a number of values along the time
+                # dimension that exceeds the length of the time path
+                param_in = param_in[: dims[0], :]
+            param_out = np.concatenate(
+                (
+                    param_in,
+                    np.ones(
+                        (
+                            dims[0] - param_in.shape[0],
+                            param_in.shape[1],
+                        )
+                    )
+                    * param_in[-1, :],
+                )
+            )
     return param_out

@@ -797,11 +797,12 @@ test_data = [
     (np.array([[2.3]]), (4, 3), np.ones((4,3)) * 2.3),
     (np.array([[2.3, 2.3, 2.3]]), (4, 3), np.ones((4,3)) * 2.3),
     (np.array([[2.3], [2.3], [2.3]]), (4, 3), np.ones((4,3)) * 2.3),
+    (np.array([2.3, 2.3]), (4,), np.ones(4) * 2.3),
 ]
 
 
 @pytest.mark.parametrize(
-    "param_in,dims,expected", test_data, ids=["scalar in", "1D in", "2D in"]
+    "param_in,dims,expected", test_data, ids=["scalar in", "1D in", "2D in", "1D out"]
 )
 def test_extrapolate_arrays(param_in, dims, expected):
     """

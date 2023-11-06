@@ -121,7 +121,7 @@ class Specifications(paramtools.Parameters):
         )
 
         # set fraction of income taxes from payroll to zero initially
-        # will be updated when function tax function parameters
+        # will be updated when read in tax function parameters
         if self.T + self.S > self.BW:
             self.frac_tax_payroll = np.append(
                 self.frac_tax_payroll,
@@ -147,24 +147,9 @@ class Specifications(paramtools.Parameters):
             "r_gov_shift",
         ]
         for item in tp_param_list:
-            this_attr = getattr(self, item)
-            if this_attr.ndim > 1:
-                this_attr = np.squeeze(this_attr, axis=1)
-            # the next if statement is a quick fix to avoid having to
-            # update all these time varying parameters if change T or S
-            # ideally, the default json values are read in again and the
-            # extension done is done again here with those defaults and
-            # the new T and S values...
-            if this_attr.size > self.T + self.S:
-                this_attr = this_attr[: self.T + self.S]
-            this_attr = np.concatenate(
-                (
-                    this_attr,
-                    np.ones((self.T + self.S - this_attr.size))
-                    * this_attr[-1],
-                )
-            )
-            setattr(self, item, this_attr)
+            param_in = getattr(self, item)
+            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, ), item=item)
+            setattr(self, item, param_out)
         # Deal with parameters that vary across industry and over time
         tp_param_list2 = [
             "Z",
