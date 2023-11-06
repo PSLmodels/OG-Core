@@ -242,70 +242,9 @@ class Specifications(paramtools.Parameters):
         # Try to deal with size of eta.  It may vary by S, J, T, but
         # want to allow user to enter one that varies by only S, S and J,
         # S and T, or T and S and J.
-        eta_to_set = getattr(self, "eta")
-        # this is the case that vary only by S
-        if eta_to_set.ndim == 1:
-            assert eta_to_set.shape[0] == self.S
-            eta_to_set = np.tile(
-                (
-                    np.tile(eta_to_set.reshape(self.S, 1), (1, self.J))
-                    / self.J
-                ).reshape(1, self.S, self.J),
-                (self.T + self.S, 1, 1),
-            )
-        # this could be where vary by S and J or T and S
-        elif eta_to_set.ndim == 2:
-            # case if S by J input
-            if eta_to_set.shape[0] == self.S:
-                eta_to_set = np.tile(
-                    eta_to_set.reshape(1, self.S, self.J),
-                    (self.T + self.S, 1, 1),
-                )
-                eta_to_set = eta_to_set = np.concatenate(
-                    (
-                        eta_to_set,
-                        np.tile(
-                            eta_to_set[-1, :, :].reshape(1, self.S, self.J),
-                            (self.S, 1, 1),
-                        ),
-                    ),
-                    axis=0,
-                )
-            # case if T by S input
-            elif eta_to_set.shape[0] == self.T:
-                eta_to_set = (
-                    np.tile(
-                        eta_to_set.reshape(self.T, self.S, 1), (1, 1, self.J)
-                    )
-                    / self.J
-                )
-                eta_to_set = eta_to_set = np.concatenate(
-                    (
-                        eta_to_set,
-                        np.tile(
-                            eta_to_set[-1, :, :].reshape(1, self.S, self.J),
-                            (self.S, 1, 1),
-                        ),
-                    ),
-                    axis=0,
-                )
-            else:
-                print("Eta dimensions are: ", self.eta.shape)
-                print("please give an eta that is either SxJ or TxS")
-                assert False
-        # this is the case where vary by S, J, T
-        elif eta_to_set.ndim == 3:
-            eta_to_set = eta_to_set = np.concatenate(
-                (
-                    eta_to_set,
-                    np.tile(
-                        eta_to_set[-1, :, :].reshape(1, self.S, self.J),
-                        (self.S, 1, 1),
-                    ),
-                ),
-                axis=0,
-            )
-        setattr(self, "eta", eta_to_set)
+        param_in = getattr(self, "eta")
+        param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.S, self.J), item="eta")
+        setattr(self, item, param_out)
 
         # make sure zeta matrix sums to one (e.g., default off due to rounding)
         self.zeta = self.zeta / self.zeta.sum()

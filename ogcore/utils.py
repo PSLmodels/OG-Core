@@ -923,7 +923,7 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
         )
     elif len(dims) == 2:
         # this is the case for 2D arrays, they vary over the time path
-        # and and some other dimension (e.g., by industry)
+        # and some other dimension (e.g., by industry)
         if param_in.ndim == 1:
             # case where enter single number, so assume constant
             # across all dimensions
@@ -986,4 +986,69 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                     * param_in[-1, :],
                 )
             )
+    elif len(dims) == 3:
+        # this is the case for 3D arrays, they vary over the time path
+        # and two other dimensions (e.g., by age and ability type)
+        if param_in.ndim == 1:
+            assert param_in.shape[0] == dims[1]
+            param_out = np.tile(
+                (
+                    np.tile(param_in.reshape(dims[1], 1), (1, dims[2]))
+                    / dims[2]
+                ).reshape(1, dims[1], dims[2]),
+                (dims[0], 1, 1),
+            )
+        # this could be where vary by S and J or T and S
+        elif param_in.ndim == 2:
+            # case if S by J input
+            if param_in.shape[0] == dims[1]:
+                param_in = np.tile(
+                    param_in.reshape(1, dims[1], dims[2]),
+                    (dims[0] - dims[1], 1, 1),
+                )
+                param_out = np.concatenate(
+                    (
+                        param_in,
+                        np.tile(
+                            param_in[-1, :, :].reshape(1, dims[1], dims[2]),
+                            (dims[1], 1, 1),
+                        ),
+                    ),
+                    axis=0,
+                )
+            # case if T by S input
+            elif param_in.shape[0] == dims[0] - dims[1]:
+                param_in = (
+                    np.tile(
+                        param_in.reshape(dims[0] - dims[1], dims[1], 1), (1, 1, dims[2])
+                    )
+                    / dims[2]
+                )
+                param_out = np.concatenate(
+                    (
+                        param_in,
+                        np.tile(
+                            param_in[-1, :, :].reshape(1, dims[1], dims[2]),
+                            (dims[1], 1, 1),
+                        ),
+                    ),
+                    axis=0,
+                )
+            else:
+                print(item + " dimensions are: ", param_in.shape)
+                print("please give an " + item + " that is either SxJ or TxS")
+                assert False
+        # this is the case where vary by T, S, J
+        elif param_in.ndim == 3:
+            param_out = np.concatenate(
+                (
+                    param_in,
+                    np.tile(
+                        param_in[-1, :, :].reshape(1, dims[1], dims[2]),
+                        (dims[1], 1, 1),
+                    ),
+                ),
+                axis=0,
+            )
+
     return param_out
