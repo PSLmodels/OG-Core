@@ -148,7 +148,9 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, ), item=item)
+            param_out = extrapolate_arrays(
+                param_in, dims=(self.T + self.S,), item=item
+            )
             setattr(self, item, param_out)
         # Deal with parameters that vary across industry and over time
         tp_param_list2 = [
@@ -159,13 +161,17 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list2:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.M), item=item)
+            param_out = extrapolate_arrays(
+                param_in, dims=(self.T + self.S, self.M), item=item
+            )
             setattr(self, item, param_out)
         # Deal with parameters that vary across consumption good and over time
         tp_param_list3 = ["tau_c"]
         for item in tp_param_list3:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.I), item=item)
+            param_out = extrapolate_arrays(
+                param_in, dims=(self.T + self.S, self.I), item=item
+            )
             setattr(self, item, param_out)
         # Deal with parameters that vary across J and over time
         tp_param_list3 = [
@@ -174,7 +180,9 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list3:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.J), item=item)
+            param_out = extrapolate_arrays(
+                param_in, dims=(self.T + self.S, self.J), item=item
+            )
             setattr(self, item, param_out)
         # Deal with parameters that vary across age and over time
         tp_param_list4 = [
@@ -182,7 +190,9 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list4:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.S), item=item)
+            param_out = extrapolate_arrays(
+                param_in, dims=(self.T + self.S, self.S), item=item
+            )
             setattr(self, item, param_out)
         # Deal with tax parameters that maybe age and time specific
         tax_params_to_TP = [
@@ -243,7 +253,9 @@ class Specifications(paramtools.Parameters):
         # want to allow user to enter one that varies by only S, S and J,
         # S and T, or T and S and J.
         param_in = getattr(self, "eta")
-        param_out = extrapolate_arrays(param_in, dims=(self.T + self.S, self.S, self.J), item="eta")
+        param_out = extrapolate_arrays(
+            param_in, dims=(self.T + self.S, self.S, self.J), item="eta"
+        )
         setattr(self, item, param_out)
 
         # make sure zeta matrix sums to one (e.g., default off due to rounding)

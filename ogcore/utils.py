@@ -917,8 +917,7 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
         param_out = np.concatenate(
             (
                 param_in,
-                np.ones((dims[0] - param_in.size))
-                * param_in[-1],
+                np.ones((dims[0] - param_in.size)) * param_in[-1],
             )
         )
     elif len(dims) == 2:
@@ -928,14 +927,10 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
             # case where enter single number, so assume constant
             # across all dimensions
             if param_in.shape[0] == 1:
-                param_out = (
-                    np.ones((dims)) * param_in[0]
-                )
+                param_out = np.ones((dims)) * param_in[0]
             # case where user enters just one year for all types in 2nd dim
             if param_in.shape[0] == dims[1]:
-                param_in = np.tile(
-                    param_in.reshape(1, dims[1]), (dims[0], 1)
-                )
+                param_in = np.tile(param_in.reshape(1, dims[1]), (dims[0], 1))
             else:
                 # case where user enters multiple years, but not full time
                 # path
@@ -944,13 +939,10 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                 param_in = np.concatenate(
                     (
                         param_in,
-                        np.ones((dims[0] - param_in.size))
-                        * param_in[-1],
+                        np.ones((dims[0] - param_in.size)) * param_in[-1],
                     )
                 )
-                param_in = np.tile(
-                    param_in.reshape(dims[0], 1), (1, dims[1])
-                )
+                param_in = np.tile(param_in.reshape(dims[0], 1), (1, dims[1]))
             param_out = np.squeeze(param_in, axis=2)
         elif param_in.ndim == 2:
             # case where enter values along 2 dimensions, but those aren't
@@ -1020,7 +1012,8 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
             elif param_in.shape[0] == dims[0] - dims[1]:
                 param_in = (
                     np.tile(
-                        param_in.reshape(dims[0] - dims[1], dims[1], 1), (1, 1, dims[2])
+                        param_in.reshape(dims[0] - dims[1], dims[1], 1),
+                        (1, 1, dims[2]),
                     )
                     / dims[2]
                 )
