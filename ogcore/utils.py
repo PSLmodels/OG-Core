@@ -982,6 +982,7 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
         # this is the case for 3D arrays, they vary over the time path
         # and two other dimensions (e.g., by age and ability type)
         if param_in.ndim == 1:
+            # case if S x 1 input
             assert param_in.shape[0] == dims[1]
             param_out = np.tile(
                 (
@@ -1031,8 +1032,8 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                 print(item + " dimensions are: ", param_in.shape)
                 print("please give an " + item + " that is either SxJ or TxS")
                 assert False
-        # this is the case where vary by T, S, J
         elif param_in.ndim == 3:
+            # this is the case where input varies by T, S, J
             param_out = np.concatenate(
                 (
                     param_in,

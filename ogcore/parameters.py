@@ -256,7 +256,7 @@ class Specifications(paramtools.Parameters):
         param_out = extrapolate_arrays(
             param_in, dims=(self.T + self.S, self.S, self.J), item="eta"
         )
-        setattr(self, item, param_out)
+        setattr(self, "eta", param_out)
 
         # make sure zeta matrix sums to one (e.g., default off due to rounding)
         self.zeta = self.zeta / self.zeta.sum()
