@@ -4,6 +4,7 @@ Tests of parameter_table.py module
 
 import pytest
 import os
+import sys
 from ogcore import utils, parameter_tables
 from ogcore.parameters import Specifications
 
@@ -11,9 +12,16 @@ from ogcore.parameters import Specifications
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
-base_params = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
-)
+if sys.version_info[1] < 11:
+    base_params = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
+    )
+else:
+    base_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
+        )
+    )
 base_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_baseline.pkl")
 )

@@ -6,8 +6,11 @@ from ogcore.parameters import Specifications
 
 
 p = Specifications()
+rho_vec = np.zeros((1, 4))
+rho_vec[0, -1] = 1.0
 new_param_values = {
     "S": 4,
+    "rho": rho_vec.tolist(),
     "lambdas": [1.0],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -64,8 +67,11 @@ def test_replacement_rate_vals(n, w, factor, j, p, expected):
 
 b1 = np.array([0.1, 0.5, 0.9])
 p1 = Specifications()
+rho_vec = np.zeros((1, 3))
+rho_vec[0, -1] = 1.0
 new_param_values = {
     "S": 3,
+    "rho": rho_vec.tolist(),
     "lambdas": [1.0],
     "J": 1,
     "T": 3,
@@ -81,6 +87,7 @@ expected1 = np.array([0.14285714, 0.6, 0.93103448])
 p2 = Specifications()
 new_param_values2 = {
     "S": 3,
+    "rho": rho_vec.tolist(),
     "lambdas": [1.0],
     "J": 1,
     "T": 3,
@@ -113,6 +120,7 @@ b1 = np.array([0.2, 0.6, 0.8])
 p1 = Specifications()
 new_param_values = {
     "S": 3,
+    "rho": rho_vec.tolist(),
     "lambdas": [1.0],
     "J": 1,
     "T": 3,
@@ -129,6 +137,7 @@ b2 = np.array([0.1, 0.5, 0.9])
 p2 = Specifications()
 new_param_values2 = {
     "S": 3,
+    "rho": rho_vec.tolist(),
     "lambdas": [1.0],
     "J": 1,
     "T": 3,
@@ -866,6 +875,7 @@ new_param_values1 = {
     "inv_tax_credit": [[0.02]],
     "T": 3,
     "S": 3,
+    "rho": rho_vec.tolist(),
     "eta": (np.ones((3, p1.J)) / (3 * p1.J)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -1193,6 +1203,7 @@ new_param_values_ubi = {
     "T": 3,
     "S": 3,
     "J": 2,
+    "rho": rho_vec.tolist(),
     "lambdas": [0.65, 0.35],
     "eta": (np.ones((3, 2)) / (3 * 2)),
     "ubi_nom_017": 1000,

@@ -887,3 +887,162 @@ def avg_by_bin(x, y, weights=None, bins=10, eql_pctl=True):
         raise ValueError(err_msg)
 
     return x_binned, y_binned, weights_binned
+
+
+def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
+    """
+    Extrapolates input values to fit model dimensions. Using this allows
+    users to input smaller dimensional arrays and have the model infer
+    that they want these extrapolated.
+
+    Example: User enters a constant for total factor productivity, Z_mt.
+    This function will create an array of size TxM where TFP is the same
+    for all industries in all years.
+
+    Args:
+        param_in (array_like): input parameter value
+        dims (tuple): size of each dimension param_out should take, note
+            that the first dimension is always T+S
+        item (str): parameter name, used to inform user if exception
+
+    Returns:
+        param_out (array_like): reshape parameter for use in OG-Core
+    """
+    if len(dims) == 1:
+        # this is the case for 1D arrays, they vary over the time path
+        if param_in.ndim > 1:
+            param_in = np.squeeze(param_in, axis=1)
+        if param_in.size > dims[0]:
+            param_in = param_in[: dims[0]]
+        param_out = np.concatenate(
+            (
+                param_in,
+                np.ones((dims[0] - param_in.size)) * param_in[-1],
+            )
+        )
+    elif len(dims) == 2:
+        # this is the case for 2D arrays, they vary over the time path
+        # and some other dimension (e.g., by industry)
+        if param_in.ndim == 1:
+            # case where enter single number, so assume constant
+            # across all dimensions
+            if param_in.shape[0] == 1:
+                param_out = np.ones((dims)) * param_in[0]
+            # case where user enters just one year for all types in 2nd dim
+            if param_in.shape[0] == dims[1]:
+                param_in = np.tile(param_in.reshape(1, dims[1]), (dims[0], 1))
+            else:
+                # case where user enters multiple years, but not full time
+                # path
+                # will assume they implied values the same across 2nd dim
+                # and will fill in all periods
+                param_in = np.concatenate(
+                    (
+                        param_in,
+                        np.ones((dims[0] - param_in.size)) * param_in[-1],
+                    )
+                )
+                param_in = np.tile(param_in.reshape(dims[0], 1), (1, dims[1]))
+            param_out = np.squeeze(param_in, axis=2)
+        elif param_in.ndim == 2:
+            # case where enter values along 2 dimensions, but those aren't
+            # complete
+            if param_in.shape[1] > 1 and param_in.shape[1] != dims[1]:
+                print(
+                    "please provide values of "
+                    + item
+                    + " for element in the 2nd dimension (or enter a "
+                    + "constant if the value is common across elements in "
+                    + "the second dimension}"
+                )
+                assert False
+            if param_in.shape[1] == 1:
+                # Case where enter just one value along the 2nd dim, will
+                # assume constant across it
+                param_in = np.tile(
+                    param_in.reshape(param_in.shape[0], 1), (1, dims[1])
+                )
+            if param_in.shape[0] > dims[0]:
+                # Case where enter a number of values along the time
+                # dimension that exceeds the length of the time path
+                param_in = param_in[: dims[0], :]
+            param_out = np.concatenate(
+                (
+                    param_in,
+                    np.ones(
+                        (
+                            dims[0] - param_in.shape[0],
+                            param_in.shape[1],
+                        )
+                    )
+                    * param_in[-1, :],
+                )
+            )
+    elif len(dims) == 3:
+        # this is the case for 3D arrays, they vary over the time path
+        # and two other dimensions (e.g., by age and ability type)
+        if param_in.ndim == 1:
+            # case if S x 1 input
+            assert param_in.shape[0] == dims[1]
+            param_out = np.tile(
+                (
+                    np.tile(param_in.reshape(dims[1], 1), (1, dims[2]))
+                    / dims[2]
+                ).reshape(1, dims[1], dims[2]),
+                (dims[0], 1, 1),
+            )
+        # this could be where vary by S and J or T and S
+        elif param_in.ndim == 2:
+            # case if S by J input
+            if param_in.shape[0] == dims[1]:
+                param_in = np.tile(
+                    param_in.reshape(1, dims[1], dims[2]),
+                    (dims[0] - dims[1], 1, 1),
+                )
+                param_out = np.concatenate(
+                    (
+                        param_in,
+                        np.tile(
+                            param_in[-1, :, :].reshape(1, dims[1], dims[2]),
+                            (dims[1], 1, 1),
+                        ),
+                    ),
+                    axis=0,
+                )
+            # case if T by S input
+            elif param_in.shape[0] == dims[0] - dims[1]:
+                param_in = (
+                    np.tile(
+                        param_in.reshape(dims[0] - dims[1], dims[1], 1),
+                        (1, 1, dims[2]),
+                    )
+                    / dims[2]
+                )
+                param_out = np.concatenate(
+                    (
+                        param_in,
+                        np.tile(
+                            param_in[-1, :, :].reshape(1, dims[1], dims[2]),
+                            (dims[1], 1, 1),
+                        ),
+                    ),
+                    axis=0,
+                )
+            else:
+                print(item + " dimensions are: ", param_in.shape)
+                print("please give an " + item + " that is either SxJ or TxS")
+                assert False
+        elif param_in.ndim == 3:
+            # this is the case where input varies by T, S, J
+            param_out = np.concatenate(
+                (
+                    param_in,
+                    np.tile(
+                        param_in[-1, :, :].reshape(1, dims[1], dims[2]),
+                        (dims[1], 1, 1),
+                    ),
+                ),
+                axis=0,
+            )
+
+    return param_out

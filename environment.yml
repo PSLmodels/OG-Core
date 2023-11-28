@@ -2,10 +2,9 @@ name: ogcore-dev
 channels:
 - conda-forge
 dependencies:
-- python>=3.7.7, <3.11  # This restriction can be removed as soon as we test Python 3.11
+- python>=3.7.7
 - ipython
 - setuptools
-- psutil
 - scipy>=1.7.1
 - pandas>=1.2.5
 - matplotlib

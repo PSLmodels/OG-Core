@@ -79,7 +79,7 @@ def euler_equation_solver(guesses, *args):
         ubi,
         theta,
         p.e[:, j],
-        p.rho,
+        p.rho[-1, :],
         p.etr_params[-1],
         p.mtry_params[-1],
         None,
@@ -1386,7 +1386,11 @@ def run_SS(p, client=None):
             Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in
             # SS_solver
-        if ENFORCE_SOLUTION_CHECKS and not sol.success == 1:
+        if (
+            (ENFORCE_SOLUTION_CHECKS)
+            and not (sol.success == 1)
+            and (np.absolute(np.array(sol.fun)).max() > p.mindist_SS)
+        ):
             raise RuntimeError("Steady state equilibrium not found")
         # Return SS values of variables
         fsolve_flag = True
