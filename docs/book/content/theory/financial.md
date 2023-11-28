@@ -3,7 +3,7 @@
 
 # Financial Intermediary
 
-Domestic household wealth $W^d_{t}=B_{t}$ and foreign ownership of domestic assets $W^f_{t}$, both in terms of the numeraire good, are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.
+Domestic household wealth $W^d_{t}=B_{t}$ and foreign ownership of domestic assets $W^f_{t}$, both in terms of the numeraire good, are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private equity in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.
 
 Foreign demand for government bonds is specified in section {ref}`SecMarkClrMktClr_G` of the {ref}`Chap_MarkClr` chapter:
 
@@ -19,14 +19,14 @@ This leaves domestic investors to buy up the residual amount of government debt:
     D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t
   ```
 
-We assume that debt dominates the capital markets, such that domestic investor demand for capital, $K^{d}_{t}$ is given as:
+We assume that debt dominates the capital markets, such that domestic investor demand for equity, $V^{d}_{t}$ is given as:
 
   ```{math}
   :label: eq_domestic_cap_demand
-    K^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t
+    V^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t
   ```
 
-Foreign demand for capital is given in {ref}`SecMarkClrMktClr_K`, where $K^{f}_{t}$ is an exogenous fraction of excess capital demand at the world interest rate:
+Foreign demand for equity is given in {ref}`SecMarkClrMktClr_K`, where $V^{f}_{t}$ is an exogenous fraction of excess capital demand at the world interest rate:
 
   ```{math}
   :label: eq_foreign_cap_demand
