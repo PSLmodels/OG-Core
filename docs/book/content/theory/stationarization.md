@@ -405,7 +405,7 @@ The stationarized version of the capital adjustment cost function and it's first
   ```{math}
   :label: EqStnrzMarkClrGoods_M
     \hat{Y}_{M,t} &= \hat{C}_{M,t} + \hat{I}_{M,t} + \hat{I}_{g,t} + \hat{G}_t + r_{p,t} \hat{K}^f_t + r_{p,t}\hat{D}^f_t ... \\
-    &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) \quad\forall t
+    &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) + \hat{\Psi}_{M,t} \quad\forall t
   ```
   where
   ```{math}
@@ -418,6 +418,11 @@ The stationarized version of the capital adjustment cost function and it's first
     \hat{I}_{M,t} &\equiv e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\sum_{m=1}^M \hat{K}_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M \hat{K}_{m,t} \quad\forall t \\
     &= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\hat{K}_{t+1} - (1 - \delta_{M,t})\hat{K}_t \\
     &= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)(\hat{K}^d_{t+1} + \hat{K}^f_{t+1}) - (1 - \delta_{M,t})(\hat{K}^d_t + \hat{K}^f_t)
+  ```
+  and
+  ```{math}
+  :label: EqStnrzMarkClrGoods_IMt
+    \hat{\Psi}_{M,t} &\equiv \sum_{m=1}^M \Psi(\hat{I}_{m,t},\hat{K}_{m,t}) \quad\forall t \\
   ```
 
   We stationarize the law of motion for total bequests $BQ_t$ in {eq}`EqMarkClrBQ` by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the population levels in the summation are from period $t-1$, we must multiply and divide the summed term by $\tilde{N}_{t-1}$ leaving the term in the denominator of $1+\tilde{g}_{n,t}$.

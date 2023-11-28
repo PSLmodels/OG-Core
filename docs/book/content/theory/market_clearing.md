@@ -111,11 +111,11 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
     Y_{m,t} = C_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1
   ```
 
-  The output of the $M$th industry can be used for private investment, infrastructure investment, government spending, and government debt.[^M_ind] As such, the market clearing condition in the $M$th industry will look more like the traditional $Y=C+I+G+NX$ expression.[^RCrates_note]
+  The output of the $M$th industry can be used for private investment, infrastructure investment, government spending, and government debt.[^M_ind] As such, the market clearing condition in the $M$th industry will look more like the traditional $Y=C+I+G+NX$ expression.[^RCrates_note] Note also that adjustment costs are paid in units of capital, which is the same units as the output of the $M$th industry. Therefore we must include the adjustment costs in the market clearing condition for the $M$th industry.
 
   ```{math}
   :label: EqMarkClrGoods_M
-    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) \quad\forall t
+    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr)  + \Psi_{M,t} \quad\forall t
   ```
   where
   ```{math}
@@ -123,6 +123,11 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
     I_{M,t} &\equiv \sum_{m=1}^M K_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M K_{m,t} \quad\forall t \\
     &= K_{t+1} - (1 - \delta_{M,t})K_t \\
     &= (K^d_{t+1} + K^f_{t+1}) - (1 - \delta_{M,t})(K^d_t + K^f_t)
+  ```
+and
+  ```{math}
+  :label: EqMarkClrGoods_IMt
+    \Psi_{M,t} &\equiv \sum_{m=1}^M \Psi(I_{m,t},K_{m,t}) \quad\forall t \\
   ```
 
   In the partially open economy, we must add to the right-hand-side of {eq}`EqMarkClrGoods_M` the output paid to the foreign owners of capital $r_{p,t} K^f_t$ and to the foreign holders of government debt $r_{p,t}D^f_t$. And we must subtract off the foreign inflow component $K^f_{t+1} - K^f_t$ from private capital investment as shown in the first term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. You can see in the definition of private investment {eq}`EqMarkClrGoods_IMt` where this amount of foreign capital is part of $I_{M,t}$.
