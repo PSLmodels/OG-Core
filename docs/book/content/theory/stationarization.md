@@ -389,12 +389,12 @@ The stationarized version of the capital adjustment cost function and it's first
 
   ```{math}
   :label: EqStnrz_ExDemK
-    \hat{ED}^{K,r^*}_t \equiv \hat{K}^{r^*}_t - \hat{K}^d_t \quad\forall t \quad\text{where}\quad \hat{K}^{r^*}_t \equiv \sum_{m=1}^M \hat{K}^{r^*}_{m,t}
+    \hat{ES}^{K,r^*}_t \equiv \hat{V}^{r^*}_t - \hat{V}^d_t \quad\forall t \quad\text{where}\quad \hat{V}^{r^*}_t \equiv \sum_{m=1}^M \hat{V}^{r^*}_{m,t}
   ```
 
   ```{math}
   :label: EqStnrz_zetaK
-    \hat{K}^{f}_t = \zeta_{K}\hat{ED}^{K,r^*}_t \quad\forall t
+    \hat{V}^{f}_t = \zeta_{K}\hat{ES}^{V,r^*}_t \quad\forall t
   ```
 
   We stationarize the goods market clearing equations for the first $M-1$ industries {eq}`EqMarkClrGoods_Mm1` and for the $M$th industry {eq}`EqMarkClrGoods_M` by dividing both sides by $e^{g_y t}\tilde{N}_t$. On the right-hand-side, we must multiply and divide the $K^d_{t+1}$ term and the $D^f_{t+1}$ term, respectively, by $e^{g_y(t+1)}\tilde{N}_{t+1}$ leaving the coefficient $e^{g_y}(1+\tilde{g}_{n,t+1})$.
