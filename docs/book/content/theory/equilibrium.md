@@ -126,24 +126,24 @@ The computational algorithm for solving for the steady-state follows the steps b
 
           ```{math}
            :label: EqSS_MPK_tau
-             \bar{K}_m^{\tau} = \frac{(1-\tau^{inv})\delta_m \var{K}_{m}}{\delta^{\tau}_m}
+             \bar{K}_m^{\tau} = \frac{(1-\tau^{inv})\delta_m \bar{K}_{m}}{\delta^{\tau}_m}
            ```
         6. Find $\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)$ using the steady-state version of {eq}`EqFirmsProfit`
-        7. Find the value of the firm in steady-state as $\bar{V}_{m} = \frac{$\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)$}{(1+\bar{r})}$
+        7. Find the value of the firm in steady-state as: $\bar{V}_{m} = \frac{\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)}{(1+\bar{r})}$
         8. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for the value of the firm the world interest rate $\bar{V}_m^{r^*}$:
             1. Use $\bar{Y}_{m}$, $\bar{r}^*$, and $\bar{L}_m$ in {eq}`EqStnrzFOC_K` to solve for $\bar{K}_m^{r^*}$.
-            2. Solve for $\bar{K}_m^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_m \var{K}^{r^*}_{m}}{\delta^{\tau}_m}$
+            2. Solve for $\bar{K}_m^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_m \bar{K}^{r^*}_{m}}{\delta^{\tau}_m}$
             3. Find $\pi(\bar{K}^{r^*}_m, \bar{K}^{\tau, r^*}_m, \bar{L}_m)$ using the steady-state version of {eq}`EqFirmsProfit`
-            4. Find the value of the firm in steady-state under the world interest rate as $\bar{V}^{r^*}_{m} = \frac{\pi(\bar{K}^{r^*}_m, \bar{K}^{\tau , r^*}_m, \bar{L}_m)$}{(1+\bar{r}^*)}$
+            4. Find the value of the firm in steady-state under the world interest rate as $\bar{V}^{r^*}_{m} = \frac{\pi(\bar{K}^{r^*}_m, \bar{K}^{\tau , r^*}_m, \bar{L}_m)}{(1+\bar{r}^*)}$
     17. Determine factor demands and output for industry $M$:
         1. $\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}$
         2. Use $\bar{L}_{M}$ and $\bar{r}$ {eq}`EqStnrzFOC_K` to solve for $\bar{K}_M$. NOTE: may not be an analytical solution here so might have to use a root finder...
         3. Use the production function to find $\bar{Y}_M$.
-        4. Solve for $\bar{K}_M^{\tau} = \frac{(1-\tau^{inv})\delta_M \var{K}^_{M}}{\delta^{\tau}_M}$
+        4. Solve for $\bar{K}_M^{\tau} = \frac{(1-\tau^{inv})\delta_M \bar{K}_{M}}{\delta^{\tau}_M}$
         5. Find $\pi(\bar{K}_M, \bar{K}^{\tau}_M, \bar{L}_M)$ using the steady-state version of {eq}`EqFirmsProfit`
         6. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_M$ to solve for the value of the firm the world interest rate $\bar{V}_M^{r^*}$:
             1. Use $\bar{L}_{M}$ and $\bar{r}^*$ {eq}`EqStnrzFOC_K` to solve for $\bar{K}_M^{r^*}$. NOTE: may not be an analytical solution here so might have to use a root finder...
-            2. Solve for $\bar{K}_M^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_M \var{K}^{r^*}_{M}}{\delta^{\tau}_M}$
+            2. Solve for $\bar{K}_M^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_M \bar{K}^{r^*}_{M}}{\delta^{\tau}_M}$
             3. Find $\bar{pi}_M^{i'}=\pi(\bar{K}^{r^*}_M, \bar{K}^{\tau, r^*}_M, \bar{L}_M)$ using the steady-state version of {eq}`EqFirmsProfit`
             4. Find the value of the firm in steady-state under the world interest rate as $\bar{V}^{r^*}_{M} = \frac{\pi(\bar{K}^{r^*}_M, \bar{K}^{\tau , r^*}_M, \bar{L}_M)}{(1+\bar{r}^*)}$
         7. Find total supply of equity, and the split between that from domestic and foreign equity holdings: $\bar{V}^{i'}$, $\bar{V}^d$, $\bar{V}^f$:
@@ -185,9 +185,9 @@ The computational algorithm for solving for the steady-state follows the steps b
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
-	      1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
-	      2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
-	      3. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
+	      2. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
+	      3. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
+	      4. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
     2. If the distance metric of the original value of the outer-loop variables and the updated values is greater than the tolerance $toler_{ss,out}$, then an updated initial guess for the outer-loop variables is made as a convex combination of the first guess and the updated guess and steps (2) through (4) are repeated.
 
