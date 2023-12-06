@@ -122,27 +122,45 @@ The computational algorithm for solving for the steady-state follows the steps b
            :label: EqSS_solveK
              \bar{K}_{m} = \left(\frac{\left(\frac{\bar{Y}_m}{\bar{Z}_m}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}} \bar{K}_{g,m}^{\frac{\varepsilon_m-1}{\varepsilon_m}}- (1 - \gamma_{m} - \gamma_{g,m})^{\frac{1}{\varepsilon_m}}\bar{L}_m^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{\gamma_m^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
            ```
-        5. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for private capital demand at the world interest rate $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmFOC_K`. NEED TO UPDATE EQ'N BELOW...
+        5. The tax basis of the capital stock can be solved for using the steady-state version of the law of motion for the tax basis of the capital stock:
 
-           ```{math}
-           :label: EqSS_MPKg
-             \bar{K}_m^{r^*} = \bar{L}_m\left(\frac{\bar{w}}{\frac{\bar{r} + \bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{1 - \bar{\tau}^{corp}_m}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
+          ```{math}
+           :label: EqSS_MPK_tau
+             \bar{K}_m^{\tau} = \frac{(1-\tau^{inv})\delta_m \var{K}_{m}}{\delta^{\tau}_m}
            ```
-        6. Use $\bar{K}_m^{r^*}$ and $\bar{r}^*$ to find the value of equity at the world interest rate, $\bar{V}^*_m$. NOTE, ALOS NEED TO HAVE THE TAX BASIS FOR THE CAPITAL STOCK DETERMINED...
+        6. Find $\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)$ using the steady-state version of {eq}`EqFirmsProfit`
+        7. Find the value of the firm in steady-state as $\bar{V}_{m} = \frac{$\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)$}{(1+\bar{r})}$
+        8. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for the value of the firm the world interest rate $\bar{V}_m^{r^*}$:
+            1. Use $\bar{Y}_{m}$, $\bar{r}^*$, and $\bar{L}_m$ in {eq}`EqStnrzFOC_K` to solve for $\bar{K}_m^{r^*}$.
+            2. Solve for $\bar{K}_m^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_m \var{K}^{r^*}_{m}}{\delta^{\tau}_m}$
+            3. Find $\pi(\bar{K}^{r^*}_m, \bar{K}^{\tau, r^*}_m, \bar{L}_m)$ using the steady-state version of {eq}`EqFirmsProfit`
+            4. Find the value of the firm in steady-state under the world interest rate as $\bar{V}^{r^*}_{m} = \frac{\pi(\bar{K}^{r^*}_m, \bar{K}^{\tau , r^*}_m, \bar{L}_m)$}{(1+\bar{r}^*)}$
     17. Determine factor demands and output for industry $M$:
-        1.  $\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}$
-        2.  Find $\bar{V}_m^{r^*}$ using the steady-state version of {eq}`EqFirmFOC_K` (TODO: CHECK THIS)
-        3.  Find total supply of equity, and the split between that from domestic and foreign households: $\bar{V}^{i'}$, $\bar{V}^d$, $\bar{V}^f$:
-            1.  Use $\bar{V}_m^{r^*}$ to find foreign demand for domestic equity {eq}`eq_foreign_cap_demand`: $\bar{V}^{f} = \bar{\zeta}_{K}\sum_{m=1}^{M}\bar{V}_m^{r^*}$
-            2.  Using $\bar{D}^{d,i}$ we can then find domestic investors' holdings of equity as the residual from their total asset holdings: , $\bar{V}^{d,i} = \bar{B}^i - \bar{D}^{d,i}$
-            3.  Aggregate demand for equities is then determined as $\bar{V}^{i'} = \bar{V}^{d,i} + \bar{V}^{f,i}$.
-        4.  Solve for $\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}$ TODO: Update this. Need to use V to find K, I think...  maybe that marginal q = average q?  Also, need to somewhere compute $\bar{\pi}_m^i$... this can also help to find V...
-        5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M$.
+        1. $\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}$
+        2. Use $\bar{L}_{M}$ and $\bar{r}$ {eq}`EqStnrzFOC_K` to solve for $\bar{K}_M$. NOTE: may not be an analytical solution here so might have to use a root finder...
+        3. Use the production function to find $\bar{Y}_M$.
+        4. Solve for $\bar{K}_M^{\tau} = \frac{(1-\tau^{inv})\delta_M \var{K}^_{M}}{\delta^{\tau}_M}$
+        5. Find $\pi(\bar{K}_M, \bar{K}^{\tau}_M, \bar{L}_M)$ using the steady-state version of {eq}`EqFirmsProfit`
+        6. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_M$ to solve for the value of the firm the world interest rate $\bar{V}_M^{r^*}$:
+            1. Use $\bar{L}_{M}$ and $\bar{r}^*$ {eq}`EqStnrzFOC_K` to solve for $\bar{K}_M^{r^*}$. NOTE: may not be an analytical solution here so might have to use a root finder...
+            2. Solve for $\bar{K}_M^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_M \var{K}^{r^*}_{M}}{\delta^{\tau}_M}$
+            3. Find $\bar{pi}_M^{i'}=\pi(\bar{K}^{r^*}_M, \bar{K}^{\tau, r^*}_M, \bar{L}_M)$ using the steady-state version of {eq}`EqFirmsProfit`
+            4. Find the value of the firm in steady-state under the world interest rate as $\bar{V}^{r^*}_{M} = \frac{\pi(\bar{K}^{r^*}_M, \bar{K}^{\tau , r^*}_M, \bar{L}_M)}{(1+\bar{r}^*)}$
+        7. Find total supply of equity, and the split between that from domestic and foreign equity holdings: $\bar{V}^{i'}$, $\bar{V}^d$, $\bar{V}^f$:
+            1. Use $\bar{V}_m^{r^*}$ to find foreign demand for domestic equity {eq}`eq_foreign_cap_demand`: $\bar{V}^{f} = \bar{\zeta}_{K}\sum_{m=1}^{M}\bar{ES}_m^{r^*} = \bar{\zeta}_{K}\sum_{m=1}^{M}(\bar{V}_m^{r^*} - \bar{V}_m$
+            2. Using $\bar{D}^{d,i}$ we can then find domestic investors' holdings of equity as the residual from their total asset holdings: , $\bar{V}^{d,i} = \bar{B}^i - \bar{D}^{d,i}$
+            3. Aggregate demand for equities is then determined as $\bar{V}^{i'} = \bar{V}^{d,i} + \bar{V}^{f,i}$.
+        8. Use the equity market clearing condition, {eq}`EqStnrz_VtVdVf`, to find the value of the $M$th firm, $\bar{V}_M$:
+
+            ```{math}
+           :label: EqSS_V_M
+             \bar{V}_m = \bar{V}^{i'} - \sum_{m=1}^{M-1}\bar{V}_{m}
+           ```
     18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m$.
     19. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
 
-    1. Use $\bar{Y}_M^{i'}$ and $\bar{K}_M^{i'}$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
+    1. Use $\bar{pi}_M^{i'}$ and $\bar{V}_M^{i'}$ in {eq}`EqFirmsExpectedReturn` to solve for updated value of the pre-tax return on equity, $\bar{r}^{i'}$.
     2. Use $\bar{Y}_M^{i'}$ and $\bar{L}_M^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
     3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
     4. Use $\boldsymbol{\overline{\Pi}}^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{V}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
