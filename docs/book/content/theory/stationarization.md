@@ -383,13 +383,13 @@ The stationarized version of the capital adjustment cost function and it's first
   The private capital market clearing equation {eq}`EqMarkClr_KtKdKf` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$, as is the expression for excess demand at the world interest rate {eq}`EqMarkClr_ExDemK` and the exogenous expression for foreign private capital flows {eq}`EqMarkClr_zetaK`.
 
   ```{math}
-  :label: EqStnrz_KtKdKf
-    \hat{K}_t = \hat{K}^d_t + \hat{K}^f_t \quad\forall t \quad\text{where}\quad \hat{K_t} \equiv \sum_{m=1}^M \hat{K}_{m,t}
+  :label: EqStnrz_VtVdVf
+    \hat{V}_t = \hat{V}^d_t + \hat{V}^f_t \quad\forall t \quad\text{where}\quad \hat{V_t} \equiv \sum_{m=1}^M \hat{V}_{m,t}
   ```
 
   ```{math}
   :label: EqStnrz_ExDemK
-    \hat{ES}^{K,r^*}_t \equiv \hat{V}^{r^*}_t - \hat{V}^d_t \quad\forall t \quad\text{where}\quad \hat{V}^{r^*}_t \equiv \sum_{m=1}^M \hat{V}^{r^*}_{m,t}
+    \hat{ES}^{V,r^*}_t \equiv \hat{V}^{r^*}_t - \hat{V}^d_t \quad\forall t \quad\text{where}\quad \hat{V}^{r^*}_t \equiv \sum_{m=1}^M \hat{V}^{r^*}_{m,t}
   ```
 
   ```{math}
