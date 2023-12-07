@@ -684,7 +684,7 @@ def solve_L(Y, K, K_g, p, method, m=-1):
 
 def adj_cost(K, Kp1, p, method):
     r"""
-    Firm capital adjstment costs
+    Firm capital adjustment costs
 
     ..math::
         \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(\frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}{\frac{I_{t}}{K_{t}}}\biggl)
@@ -707,3 +707,59 @@ def adj_cost(K, Kp1, p, method):
     Psi = ((p.psi / 2) * (Inv / K - p.mu) ** 2) / (Inv / K)
 
     return Psi
+
+
+def adj_cost_dK(K, Kp1, p, method):
+    r"""
+    The derivative of firm capital adjustment costs with respect to the
+    capital stock.
+
+    ..math::
+        \frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t}} = \frac{-\psi}{2}\left(\frac{K_{m,t+1}}{I^2_{m,t}}\right)\left(\frac{I_{m,t}}{K_{m,t}}-\mu\right)\left(\frac{I_{m,t}}{K_{m,t}}+\mu\right) \forall m,t
+
+    Args:
+        K (array-like): Current period capital stock
+        Kp1 (array-like): One-period ahead capital stock
+        p (OG-USA Parameters class object): Model parameters
+        method (str): 'SS' or 'TPI'
+
+    Returns
+        dPsi (array-like): The derivative of capital adjustment costs
+    """
+    if method == "SS":
+        ac_method = "total_ss"
+    else:
+        ac_method = "total_tpi"
+    Inv = aggr.get_I(None, Kp1, K, p, ac_method)
+
+    dPsi = ((-1 * p.psi / 2) * (Kp1 / Inv ** 2) * (Inv / K - p.mu) * (Inv / K + p.mu))
+
+    return dPsi
+
+
+def adj_cost_dKp1(K, Kp1, p, method):
+    r"""
+    The derivative of firm capital adjustment costs with respect to next
+    periods capital stock.
+
+    ..math::
+        \frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t+1}} = \frac{\psi}{2}\frac{\left(\frac{I_{m,t}}{K_{m,t}}- \mu_{m}\right)}{I_{t}}\left[1 -\mu\frac{K_{m,t}}{I_{m,t}}\right] \forall m,t
+
+    Args:
+        K (array-like): Current period capital stock
+        Kp1 (array-like): One-period ahead capital stock
+        p (OG-USA Parameters class object): Model parameters
+        method (str): 'SS' or 'TPI'
+
+    Returns
+        dPsi (array-like): The derivative of capital adjustment costs
+    """
+    if method == "SS":
+        ac_method = "total_ss"
+    else:
+        ac_method = "total_tpi"
+    Inv = aggr.get_I(None, Kp1, K, p, ac_method)
+
+    dPsi = ((p.psi / 2) * ((Inv / K - p.mu) / Inv) * (1 - p.mu * (K / Inv)))
+
+    return dPsi
