@@ -164,7 +164,7 @@ The computational algorithm for solving for the steady-state follows the steps b
     2. Use $\bar{Y}_M^{i'}$ and $\bar{L}_M^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
     3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
     4. Use $\boldsymbol{\overline{\Pi}}^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{V}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
-    5. Use $\bar{Y}_m$, $\bar{K}_m$ in {eq}`EqStnrzFOC_K` to solve for the updates vector of output prices, $\boldsymbol{\bar{p}}^{i'}$
+    5. Use $\bar{Y}_m$, $\bar{K}_m$ in {eq}`EqStnrzFOC_K` to solve for the updated vector of output prices, $\boldsymbol{\bar{p}}^{i'}$
     6. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
     7. Use $\bar{Y}^{i'}$ in the long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
     8. Use $\bar{r}^{i'}$, $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
