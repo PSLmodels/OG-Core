@@ -152,10 +152,11 @@ The computational algorithm for solving for the steady-state follows the steps b
             3. Aggregate demand for equities is then determined as $\bar{V}^{i'} = \bar{V}^{d,i} + \bar{V}^{f,i}$.
         8. Use the equity market clearing condition, {eq}`EqStnrz_VtVdVf`, to find the value of the $M$th firm, $\bar{V}_M$:
 
-            ```{math}
+          ```{math}
            :label: EqSS_V_M
              \bar{V}_m = \bar{V}^{i'} - \sum_{m=1}^{M-1}\bar{V}_{m}
-           ```
+          ```
+
     18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m$.
     19. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
@@ -165,6 +166,12 @@ The computational algorithm for solving for the steady-state follows the steps b
     3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
     4. Use $\boldsymbol{\overline{\Pi}}^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{V}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
     5. Use $\bar{Y}_m$, $\bar{K}_m$ in {eq}`EqStnrzFOC_K` to solve for the updated vector of output prices, $\boldsymbol{\bar{p}}^{i'}$
+
+          ```{math}
+           :label: EqSS_p_m
+             p_{m,t}=\frac{\left(\frac{\left(1+r_{t}\right)\left((1-\tau^{b}_{m,t-1})\frac{\partial \psi(K_{m,t}, K_{m,t-1})}{\partial K_{m,t}} + 1 - \tau^{inv}_{m,t-1}-\tau^{b}_{m,t-1}\delta^{\tau}_{m,t-1}(1-\tau^{inv}_{m,t})\right)-1 + \delta_m - \tau^{b}_{m,t}\delta^{\tau}_{m,t}\left((1-\tau^{inv}_{m,t-1})(1-\delta^{\tau}_{m,t-1})-(1-\delta_m)(1-\tau^{inv}_{m,t})\right) + \tau^{inv}_{m,t}(1-\delta_m)}{(1-\tau_{m,t}^{b})} \right) + \frac{\partial \psi(K_{m,t+1},K_{m,t})}{\partial K_{m,t}}}{Z_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}\left(\gamma_m \frac{Y_{m,t}}{K_{m,t}}\right)^{\frac{1}{\varepsilon_m}}}
+          ```
+
     6. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
     7. Use $\bar{Y}^{i'}$ in the long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
     8. Use $\bar{r}^{i'}$, $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
@@ -185,9 +192,9 @@ The computational algorithm for solving for the steady-state follows the steps b
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
-	      2. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
-	      3. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
-	      4. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
+	      1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
+	      2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
+	      3. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
     2. If the distance metric of the original value of the outer-loop variables and the updated values is greater than the tolerance $toler_{ss,out}$, then an updated initial guess for the outer-loop variables is made as a convex combination of the first guess and the updated guess and steps (2) through (4) are repeated.
 
