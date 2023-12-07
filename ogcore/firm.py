@@ -497,7 +497,7 @@ def get_K(r, w, L, p, method, m=-1):
     return K
 
 
-def get_cost_of_capital(r, p, method, m=-1):
+def get_cost_of_capital(r, K, Kp1, Km1, p, method, m=-1):
     r"""
     Compute the cost of capital.
 
@@ -517,43 +517,95 @@ def get_cost_of_capital(r, p, method, m=-1):
     if m is None:
         if method == "SS":
             tau_b = p.tau_b[-1, :]
+            tau_b_m1 = tau_b
             delta_tau = p.delta_tau[-1, :]
+            delta_tau_m1 = delta_tau
             tau_inv = p.inv_tax_credit[-1, :]
+            tau_inv_m1 = tau_inv
         else:
             tau_b = p.tau_b[: p.T, :]
+            # tau_b_m1 =  p.tau_b[: p.T - 1, :]  Append what to the front of this??
             delta_tau = p.delta_tau[: p.T, :]
             tau_inv = p.inv_tax_credit[: p.T, :]
             r = r.reshape(p.T, 1)
     else:
         if method == "SS":
             tau_b = p.tau_b[-1, m]
+            tau_b_m1 = tau_b
             delta_tau = p.delta_tau[-1, m]
+            delta_tau_m1 = delta_tau
             tau_inv = p.inv_tax_credit[-1, m]
+            tau_inv_m1 = tau_inv
         else:
             tau_b = p.tau_b[: p.T, m]
             delta_tau = p.delta_tau[: p.T, m]
             tau_inv = p.inv_tax_credit[: p.T, m]
             r = r.reshape(p.T)
 
-    cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv * p.delta) / (
+    # cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv * p.delta) / (
+    #     1 - tau_b
+    # )
+    dPsidKp1_t = adj_cost_dKp1(Km1, K, p, method)
+    dPsidK_t = adj_cost_dK(K, Kp1, p, method)
+    cost_of_capital = (
+        (1 + r) * (((1-tau_b_m1) * dPsidKp1_t) + 1 -
+        tau_inv_m1 - tau_b_m1 * delta_tau_m1 * (1 - tau_inv_m1)) -1 + p.delta - tau_b * delta_tau * ((1 - tau_inv_m1) * (1 - delta_tau_m1) - (1 - p.delta) * (1 - tau_inv)) + tau_inv* (1 - p.delta)) / (
         1 - tau_b
-    )
+    ) + dPsidK_t
 
     return cost_of_capital
 
 
-def get_pm(w, Y_vec, L_vec, p, method):
+# def get_pm(w, Y_vec, L_vec, p, method):
+#     r"""
+#     Find prices for outputs from each industry.
+
+#     .. math::
+#          p_{m,t}=\frac{w_{t}}{\left((1-\gamma_m-\gamma_{g,m})
+#         \frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right)^{\varepsilon_m}}
+
+#     Args:
+#         w (array_like): the wage rate
+#         Y_vec (array_like): output for each industry
+#         L_vec (array_like): labor demand for each industry
+#         p (OG-Core Specifications object): model parameters
+#         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+
+#     Returns:
+#         p_m (array_like): output prices for each industry
+#     """
+#     if method == "SS":
+#         Y = Y_vec.reshape(1, p.M)
+#         L = L_vec.reshape(1, p.M)
+#         T = 1
+#     else:
+#         Y = Y_vec.reshape((p.T, p.M))
+#         L = L_vec.reshape((p.T, p.M))
+#         T = p.T
+#     p_m = np.zeros((T, p.M))
+#     for m in range(p.M):  # TODO: try to get rid of this loop
+#         MPL = get_MPx(
+#             Y[:, m], L[:, m], 1 - p.gamma[m] - p.gamma_g[m], p, method, m
+#         ).reshape(T)
+#         p_m[:, m] = w / MPL
+#     if method == "SS":
+#         p_m = p_m.reshape(p.M)
+#     return p_m
+
+
+def get_pm(w, Y_vec, K_vec, Kp1_vec, Km1_vec, p, method):
     r"""
     Find prices for outputs from each industry.
 
     .. math::
-         p_{m,t}=\frac{w_{t}}{\left((1-\gamma_m-\gamma_{g,m})
-        \frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right)^{\varepsilon_m}}
+         p_{m,t}=\frac{\left(\frac{\left(1+r_{t}\right)\left((1-\tau^{b}_{m,t-1})\frac{\partial \psi(K_{m,t}, K_{m,t-1})}{\partial K_{m,t}} + 1 - \tau^{inv}_{m,t-1}-\tau^{b}_{m,t-1}\delta^{\tau}_{m,t-1}(1-\tau^{inv}_{m,t})\right)-1 + \delta_m - \tau^{b}_{m,t}\delta^{\tau}_{m,t}\left((1-\tau^{inv}_{m,t-1})(1-\delta^{\tau}_{m,t-1})-(1-\delta_m)(1-\tau^{inv}_{m,t})\right) + \tau^{inv}_{m,t}(1-\delta_m)}{(1-\tau_{m,t}^{b})} \right) + \frac{\partial \psi(K_{m,t+1},K_{m,t})}{\partial K_{m,t}}}{Z_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}\left(\gamma_m \frac{Y_{m,t}}{K_{m,t}}\right)^{\frac{1}{\varepsilon_m}}}
 
     Args:
         w (array_like): the wage rate
         Y_vec (array_like): output for each industry
-        L_vec (array_like): labor demand for each industry
+        K_vec (array_like): capital demand for each industry
+        K_vec (array_like): capital demand for each industry one period ahead
+        K_vec (array_like): capital demand for each industry one period prior
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
@@ -562,18 +614,23 @@ def get_pm(w, Y_vec, L_vec, p, method):
     """
     if method == "SS":
         Y = Y_vec.reshape(1, p.M)
-        L = L_vec.reshape(1, p.M)
+        K = K_vec.reshape(1, p.M)
+        Kp1 = Kp1_vec.reshape(1, p.M)
+        Km1 = Km1_vec.reshape(1, p.M)
         T = 1
     else:
         Y = Y_vec.reshape((p.T, p.M))
-        L = L_vec.reshape((p.T, p.M))
+        K = K_vec.reshape((p.T, p.M))
+        Kp1 = Kp1_vec.reshape((p.T, p.M))
+        Km1 = Km1_vec.reshape((p.T, p.M))
         T = p.T
     p_m = np.zeros((T, p.M))
     for m in range(p.M):  # TODO: try to get rid of this loop
-        MPL = get_MPx(
-            Y[:, m], L[:, m], 1 - p.gamma[m] - p.gamma_g[m], p, method, m
+        MPK = get_MPx(
+            Y[:, m], K[:, m], 1 - p.gamma[m] - p.gamma_g[m], p, method, m
         ).reshape(T)
-        p_m[:, m] = w / MPL
+        get_cost_of_capital = get_cost_of_capital(r, p, method, m)
+        p_m[:, m] = cost_of_capital / MPK
     if method == "SS":
         p_m = p_m.reshape(p.M)
     return p_m
@@ -763,3 +820,56 @@ def adj_cost_dKp1(K, Kp1, p, method):
     dPsi = ((p.psi / 2) * ((Inv / K - p.mu) / Inv) * (1 - p.mu * (K / Inv)))
 
     return dPsi
+
+
+def profits(r, w, K, L, Y, K_tau, p_m, p, method, m=-1):
+    """
+    Accounting profits for the firm.
+
+    ..math::
+        \pi_{m,t} = (1 - tau_b) * \left(p_{m,t}Y_{m,t} - w_{t}L_{m,t} -
+        \Psi(I_{m,t},K_{m,t})\right) - I_{m,t} +
+        \tau^b_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t} +
+        \tau^{inv}_{m,t}I_{m,t} \forall m,t
+
+    Args:
+
+    Returns:
+        profits (array-like): Per period profits of the firm
+    """
+    if m is None:
+        if method == "SS":
+            tau_b = p.tau_b[-1, :]
+            tau_b_m1 = tau_b
+            delta_tau = p.delta_tau[-1, :]
+            delta_tau_m1 = delta_tau
+            tau_inv = p.inv_tax_credit[-1, :]
+            tau_inv_m1 = tau_inv
+        else:
+            tau_b = p.tau_b[: p.T, :]
+            # tau_b_m1 =  p.tau_b[: p.T - 1, :]  Append what to the front of this??
+            delta_tau = p.delta_tau[: p.T, :]
+            tau_inv = p.inv_tax_credit[: p.T, :]
+            r = r.reshape(p.T, 1)
+    else:
+        if method == "SS":
+            tau_b = p.tau_b[-1, m]
+            tau_b_m1 = tau_b
+            delta_tau = p.delta_tau[-1, m]
+            delta_tau_m1 = delta_tau
+            tau_inv = p.inv_tax_credit[-1, m]
+            tau_inv_m1 = tau_inv
+        else:
+            tau_b = p.tau_b[: p.T, m]
+            delta_tau = p.delta_tau[: p.T, m]
+            tau_inv = p.inv_tax_credit[: p.T, m]
+            r = r.reshape(p.T)
+    if method == "SS":
+        ac_method = "total_ss"
+    else:
+        ac_method = "total_tpi"
+    Psi = adj_cost(K, K, p, method)
+    Inv = aggr.get_I(None, Kp1, K, p, ac_method)
+    profits = (1 - tau_b) * (p_m * Y - w * L - Psi) - Inv + tau_b * delta_tau * K_tau + tau_inv * Inv
+
+    return profits
