@@ -10,7 +10,7 @@ import numpy as np
 import scipy.optimize as opt
 import pandas as pd
 import matplotlib.pyplot as plt
-from ogusa.utils import get_legacy_session
+from ogcore.utils import get_legacy_session
 from ogcore import parameter_plots as pp
 
 START_YEAR = 2023
@@ -136,6 +136,10 @@ def get_fert(
     )
     # put in vector
     fert_rates = df.value.values
+    print("Fert rates shape = ", fert_rates.shape)
+    # the shape here is 2730
+    # need to figure out how to put this output into a 2D array
+    quit()
     # fill in with zeros for ages  < 15 and > 49
     # NOTE: this assumes min_year < 15 and max_age > 49
     fert_rates = np.append(fert_rates, np.zeros(max_age - 49))
@@ -452,9 +456,14 @@ def get_pop_objs(
     T=320,
     min_age=0,
     max_age=100,
-    data_year=START_YEAR - 1,
+    initial_data_year=START_YEAR - 1,
+    final_data_year=2100,
     model_year=START_YEAR,
     country_id=UN_COUNTRY_CODE,
+    imm_rates = None,
+    mort_rates = None,
+    fert_rates = None,
+    pop_dist = None,
     GraphDiag=True,
 ):
     """
@@ -470,9 +479,20 @@ def get_pop_objs(
         min_age (int): age in years at which agents are born, >= 0
         max_age (int): age in years at which agents die with certainty,
             >= 4
+        initial_data_year (int): initial year of UN data to use
+            (not relevant if have user provided data)
+        final_data_year (int): final year of UN data to use
         model_year (int): current year for which analysis will begin,
             >= 2016
         country_id (str): country id for UN data
+        imm_rates (array_like): user provided immigration rates, last
+            dimension is of length E+S
+        mort_rates (array_like): user provided mortality rates, last
+            dimension is of length E+S
+        fert_rates (array_like): user provided fertility rates, last
+            dimension is of length E+S
+        pop_dist (array_like): user provided population distribution, last
+            dimension is of length E+S
         GraphDiag (bool): =True if want graphical output and printed
                 diagnostics
 
@@ -494,22 +514,60 @@ def get_pop_objs(
     """
     print("Model year = ", model_year, " Data year = ", data_year)
     assert model_year >= 2011 and model_year <= 2100
-    assert data_year >= 2011 and data_year <= 2100
+    assert initial_data_year >= 2011 and initial_data_year <= 2100
+    assert final_data_year >= 2011 and final_data_year <= 2100
+    # Ensure that the last year of data used is before SS transition assumed
+    # Really, it will need to be well before this
+    assert final_data_year < model_year + (T - S)
     # need data year to be before model year to get omega_S_preTP
-    assert data_year < model_year
+    assert initial_data_year < model_year
 
     # Get fertility, mortality, and immigration rates
     # will be used to generate population distribution in future years
-    fert_rates = get_fert(
-        E + S, min_age, max_age, country_id, data_year, data_year
-    )
-    mort_rates, infmort_rate = get_mort(
-        E + S, min_age, max_age, country_id, data_year, data_year
-    )
-    mort_rates_S = mort_rates[-S:]
-    imm_rates_orig = get_imm_rates(
-        E + S, min_age, max_age, country_id, data_year, data_year
-    )
+    if fert_rates is None:
+        # get fert rates from UN data from initial year to data year
+        fert_rates = get_fert(
+            E + S, min_age, max_age, country_id, initial_data_year,
+            final_data_year
+        )
+    else:
+        # ensure that user provided fert_rates are of the correct shape
+        assert fert_rates.shape[0] < T
+        assert fert_rates.shape[-1] == E + S
+    # Extrapolate fertility rates for the rest of the transition path
+    # the implicit assumption is that they are constant after the
+    # last year of UN or user provided data
+    fert_rates = np.hstack(fert_rates, np.tile(fert_rates[-1, :], T - fert_rates.shape[0]))
+    if mort_rates is None:
+        # get mort rates from UN data from initial year to data year
+        mort_rates, infmort_rate = get_mort(
+            E + S, min_age, max_age, country_id, initial_data_year,
+            final_data_year
+        )
+    # mort_rates_S = mort_rates[-S:]  #TODO: think about this line
+    else:
+        # ensure that user provided mort_rates are of the correct shape
+        assert mort_rates.shape[0] < T
+        assert mort_rates.shape[-1] == E + S
+        infmort_rate = mort_rates[:, 0]
+    # Extrapolate mortality rates for the rest of the transition path
+    # the implicit assumption is that they are constant after the
+    # last year of UN or user provided data
+    mort_rates = np.hstack(mort_rates, np.tile(mort_rates[-1, :], T - mort_rates.shape[0]))
+    if imm_rates is None:
+        imm_rates_orig = get_imm_rates(
+            E + S, min_age, max_age, country_id, initial_data_year,
+            final_data_year
+        )
+    else:
+        # ensure that user provided imm_rates are of the correct shape
+        assert imm_rates.shape[0] < T
+        assert imm_rates.shape[-1] == E + S
+        imm_rates_orig = imm_rates
+    # Extrapolate immigration rates for the rest of the transition path
+    # the implicit assumption is that they are constant after the
+    # last year of UN or user provided data
+    imm_rates_orig = np.hstack(imm_rates_orig, np.tile(imm_rates_orig[-1, :], T - imm_rates_orig.shape[0]))
     OMEGA_orig = np.zeros((E + S, E + S))
     OMEGA_orig[0, :] = (1 - infmort_rate) * fert_rates + np.hstack(
         (imm_rates_orig[0], np.zeros(E + S - 1))
