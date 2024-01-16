@@ -618,7 +618,7 @@ test_data = [
 
 
 @pytest.mark.parametrize(
-    "model_vars,params,expected",
+    "model_vars,in_params,expected",
     test_data,
     ids=[
         "SS",
@@ -631,7 +631,7 @@ test_data = [
         "TPI, j=0, noncomply",
     ],
 )
-def test_FOC_savings(model_vars, params, expected):
+def test_FOC_savings(model_vars, in_params, expected):
     # Test FOC condition for household's choice of savings
     (
         r,
@@ -650,6 +650,7 @@ def test_FOC_savings(model_vars, params, expected):
         j,
         method,
     ) = model_vars
+    params = copy.deepcopy(in_params)
     # reshape e matrix to be 3D
     params.e = np.tile(params.e.reshape(1, params.S, params.J), (params.T, 1, 1))
     if method == "TPI":

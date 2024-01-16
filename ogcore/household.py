@@ -387,7 +387,7 @@ def FOC_savings(
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
-            e = p.e[t : t + length, :length, j]
+            e = np.diag(p.e[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         chi_b = p.chi_b
         beta = p.beta
@@ -402,7 +402,8 @@ def FOC_savings(
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
                 t : t + length, :
             ]
-            e = p.e[t : t + length, :length, :]
+            e = np.diag(p.e[t : t + p.S, :, :], max(p.S - length, 0))
+    e = np.squeeze(e)
     if method == "SS":
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
