@@ -650,6 +650,8 @@ def test_FOC_savings(model_vars, params, expected):
         j,
         method,
     ) = model_vars
+    # reshape e matrix to be 3D
+    params.e = np.tile(params.e.reshape(1, params.S, params.J), (params.T, 1, 1))
     if method == "TPI":
         p_tilde = np.ones_like(w)
     else:
@@ -667,7 +669,6 @@ def test_FOC_savings(model_vars, params, expected):
             tr,
             ubi,
             theta,
-            params.e[:, j],
             params.rho[-1, :],
             etr_params,
             mtry_params,
@@ -689,7 +690,6 @@ def test_FOC_savings(model_vars, params, expected):
             tr,
             ubi,
             theta,
-            np.squeeze(params.e),
             params.rho[-1, :],
             etr_params,
             mtry_params,
@@ -933,6 +933,8 @@ def test_FOC_labor(model_vars, params, expected):
         j,
         method,
     ) = model_vars
+    # reshape e matrix for 3D
+    params.e = np.tile(params.e.reshape(1, params.S, params.J), (params.T, 1, 1))
     if method == "TPI":
         p_tilde = np.ones_like(w)
     else:
@@ -950,7 +952,6 @@ def test_FOC_labor(model_vars, params, expected):
         ubi,
         theta,
         params.chi_n,
-        params.e[:, j],
         etr_params,
         mtrx_params,
         t,
@@ -976,8 +977,10 @@ def test_get_y():
     p.S = 3
     p.rho = np.array([[0.0, 0.0, 1.0]])
     p.e = np.array([0.99, 1.5, 0.2])
+    p.e = np.tile(p.e.reshape(1, p.S, 1), (p.T, 1, 1))
 
-    test_y = household.get_y(r_p, w, b_s, n, p)
+    test_y = household.get_y(r_p, w, b_s, n, p, "SS")
+    # TODO: test with "TPI"
 
     assert np.allclose(test_y, expected_y)
 
