@@ -34,9 +34,9 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
 
     """
     if j is not None:
-        e = p.e[:, j]
+        e = p.e[-1, :, j]  # Only computes using SS earnings
     else:
-        e = p.e
+        e = p.e[-1, :, :]  # Only computes using SS earnings
     # adjust number of calendar years AIME computed from int model periods
     equiv_periods = int(round((p.S / 80.0) * p.AIME_num_years)) - 1
     if e.ndim == 2:
