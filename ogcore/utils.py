@@ -997,7 +997,7 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
             if param_in.shape[0] == dims[1]:
                 param_in = np.tile(
                     param_in.reshape(1, dims[1], dims[2]),
-                    (dims[0] - dims[1], 1, 1),
+                    (dims[0], 1, 1),
                 )
                 param_out = np.concatenate(
                     (
