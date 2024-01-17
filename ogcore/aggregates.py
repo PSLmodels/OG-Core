@@ -33,7 +33,7 @@ def get_L(n, p, method):
 
     """
     if method == "SS":
-        L_presum = p.e * np.transpose(p.omega_SS * p.lambdas) * n
+        L_presum = p.e[-1, :, :] * np.transpose(p.omega_SS * p.lambdas) * n
         L = L_presum.sum()
     elif method == "TPI":
         L_presum = (n * (p.e * np.squeeze(p.lambdas))) * np.tile(

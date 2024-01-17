@@ -29,7 +29,7 @@ for t in range(p.T):
     for i in range(p.S):
         for k in range(p.J):
             L_loop[t, i, k] *= (
-                p.omega[t, i] * p.lambdas[k] * n[t, i, k] * p.e[i, k]
+                p.omega[t, i] * p.lambdas[k] * n[t, i, k] * p.e[0, i, k]
             )
 expected1 = L_loop[-1, :, :].sum()
 expected2 = L_loop.sum(1).sum(1)
@@ -53,6 +53,7 @@ new_param_values = {
     "S": 40,
     "rho": rho_vec.tolist(),
     "J": 2,
+    "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
@@ -133,6 +134,7 @@ new_param_values = {
     "S": 40,
     "rho": rho_vec.tolist(),
     "J": 2,
+    "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
@@ -189,6 +191,7 @@ new_param_values = {
     "S": 40,
     "rho": rho_vec.tolist(),
     "J": 2,
+    "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
@@ -270,6 +273,7 @@ new_param_values = {
     "S": 40,
     "rho": rho_vec.tolist(),
     "J": 2,
+    "e": np.ones((40, 2)),
     "M": 3,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -319,6 +323,7 @@ new_param_values = {
     "S": 20,
     "rho": rho_vec.tolist(),
     "J": 2,
+    "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
@@ -374,6 +379,7 @@ new_param_values3 = {
     "S": 20,
     "rho": rho_vec.tolist(),
     "J": 2,
+    "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
@@ -408,6 +414,7 @@ new_param_values_ubi = {
     "S": 20,
     "rho": rho_vec.tolist(),
     "J": 2,
+    "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
