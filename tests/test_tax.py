@@ -53,14 +53,17 @@ test_data = [
 
 
 @pytest.mark.parametrize(
-    "n,w,factor,j,p,expected",
+    "n,w,factor,j,p_in,expected",
     test_data,
     ids=["1D e", "2D e", "AIME case 2", "AIME case 3", "Min PIA case"],
 )
-def test_replacement_rate_vals(n, w, factor, j, p, expected):
+def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
     # Test replacement rate function, making sure to trigger all three
     # cases of AIME
-
+    # make e 3D
+    p = copy.deepcopy(p_in)
+    # p.e = np.tile(np.reshape(p.e, (1, p.S, p.J)), (p.T, 1, 1))
+    p.e = np.tile(np.reshape(p.e, (1, p.e.shape[0], p.e.shape[1])), (p.T, 1, 1))
     theta = tax.replacement_rate_vals(n, w, factor, j, p)
     assert np.allclose(theta, expected)
 
