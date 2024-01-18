@@ -29,7 +29,7 @@ for t in range(p.T):
     for i in range(p.S):
         for k in range(p.J):
             L_loop[t, i, k] *= (
-                p.omega[t, i] * p.lambdas[k] * n[t, i, k] * p.e[0, i, k]
+                p.omega[t, i] * p.lambdas[k] * n[t, i, k] * p.e[t, i, k]
             )
 expected1 = L_loop[-1, :, :].sum()
 expected2 = L_loop.sum(1).sum(1)
