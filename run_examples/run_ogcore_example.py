@@ -73,6 +73,8 @@ def main():
     )
     # Update parameters for baseline from default json file
     p.update_specifications(og_spec)
+    # make e matrix 3D
+    p.e = np.tile(p.e.reshape(1, p.S, p.J), (p.T, 1, 1))
 
     start_time = time.time()
     runner(p, time_path=True, client=client)
