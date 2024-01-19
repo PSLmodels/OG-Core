@@ -584,6 +584,9 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
     for i, v in enumerate(expected_tuple):
         print("Max diff = ", np.absolute(test_tuple[i] - v).max())
         print("Checking item = ", i)
+        if np.absolute(test_tuple[i] - v).max() > 1.0:
+            print('test_value = ', test_tuple[i])
+            print('expected_value = ', v)
 
     for i, v in enumerate(expected_tuple):
         print("Max diff = ", np.absolute(test_tuple[i] - v).max())

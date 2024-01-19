@@ -291,7 +291,7 @@ def inner_loop(outer_loop_vars, p, client):
         None,
         False,
         "SS",
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         p,
     )
@@ -304,7 +304,7 @@ def inner_loop(outer_loop_vars, p, client):
         nssmat,
         bq,
         net_tax,
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         p,
     )
     c_i = household.get_ci(c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c)
@@ -381,7 +381,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r, new_r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, "SS"
     )
     average_income_model = (
-        (new_r_p * b_s + new_w * p.e[-1, :, :] * nssmat)
+        (new_r_p * b_s + new_w * np.squeeze(p.e[-1, :, :]) * nssmat)
         * p.omega_SS.reshape(p.S, 1)
         * p.lambdas.reshape(1, p.J)
     ).sum()
@@ -423,7 +423,7 @@ def inner_loop(outer_loop_vars, p, client):
         None,
         False,
         "SS",
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         p,
     )
@@ -436,7 +436,7 @@ def inner_loop(outer_loop_vars, p, client):
         nssmat,
         new_bq,
         taxss,
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         p,
     )
     (
@@ -465,6 +465,7 @@ def inner_loop(outer_loop_vars, p, client):
         ubi,
         theta,
         etr_params_3D,
+        np.squeeze(p.e[-1, :, :]),
         p,
         None,
         "SS",
@@ -480,6 +481,9 @@ def inner_loop(outer_loop_vars, p, client):
         debt_service,
         p,
     )
+    print('Agg tax = ', total_tax_revenue)
+    print('Agg pension outlays = ', agg_pension_outlays)
+    print('Agg UBI outlays = ', UBI_outlays)
     new_TR = fiscal.get_TR(
         Y,
         TR,
@@ -755,7 +759,7 @@ def SS_solver(
         nssmat,
         factor,
         True,
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         mtry_params_3D,
         capital_noncompliance_rate_2D,
@@ -768,7 +772,7 @@ def SS_solver(
         nssmat,
         factor,
         False,
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         mtrx_params_3D,
         labor_noncompliance_rate_2D,
@@ -780,7 +784,7 @@ def SS_solver(
         bssmat_s,
         nssmat,
         factor,
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         labor_noncompliance_rate_2D,
         capital_noncompliance_rate_2D,
@@ -801,7 +805,7 @@ def SS_solver(
         None,
         False,
         "SS",
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         p,
     )
@@ -814,7 +818,7 @@ def SS_solver(
         nssmat,
         bqssmat,
         taxss,
-        p.e[-1, :, :],
+        np.squeeze(p.e[-1, :, :]),
         p,
     )
     yss_before_tax_mat = household.get_y(r_p_ss, wss, bssmat_s, nssmat, p, "SS")
@@ -858,6 +862,7 @@ def SS_solver(
         ubissmat,
         theta,
         etr_params_3D,
+        np.squeeze(p.e[-1, :, :]),
         p,
         None,
         "SS",

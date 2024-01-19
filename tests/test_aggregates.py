@@ -363,6 +363,7 @@ ubi = np.zeros((p.T, p.S, p.J))
 factor = 140000.0
 # update parameters instance with new values for test
 p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
+p.e = np.tile(p.e.reshape(1, p.S, p.J), (p.T, 1, 1))
 p.omega = 0.039 * random_state.rand(p.T * p.S * 1).reshape(p.T, p.S)
 p.omega = p.omega / p.omega.sum(axis=1).reshape(p.T, 1)
 p.omega_SS = p.omega[-1, :]
@@ -460,9 +461,8 @@ K_u = 0.957 + (1.163 - 0.957) * random_state.rand(p_u.T).reshape(p_u.T, 1)
 factor_u = 140000.0
 ubi_u = p_u.ubi_nom_array / factor_u
 # update parameters instance with new values for test
-p_u.e = 0.263 + (2.024 - 0.263) * random_state.rand(p_u.S * p_u.J).reshape(
-    p_u.S, p_u.J
-)
+p_u.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
+p_u.e = np.tile(p_u.e.reshape(1, p_u.S, p_u.J), (p_u.T, 1, 1))
 p_u.omega = 0.039 * random_state.rand(p_u.T * p_u.S * 1).reshape(p_u.T, p_u.S)
 p_u.omega = p_u.omega / p_u.omega.sum(axis=1).reshape(p_u.T, 1)
 p_u.omega_SS = p_u.omega[-1, :]
@@ -596,6 +596,7 @@ test_data = [
         ubi[0, :, :],
         theta,
         etr_params[-1, :, :, :],
+        p.e[-1, :, :],
         p,
         None,
         "SS",
@@ -616,6 +617,7 @@ test_data = [
         ubi,
         theta,
         etr_params,
+        p.e,
         p,
         None,
         "TPI",
@@ -636,6 +638,7 @@ test_data = [
         ubi,
         theta,
         etr_params,
+        p.e,
         p3,
         None,
         "TPI",
@@ -656,6 +659,7 @@ test_data = [
         ubi_u[0, :, :],
         theta_u,
         etr_params_u[-1, :, :, :],
+        p.e[0, :, :],
         p_u,
         None,
         "SS",
@@ -676,6 +680,7 @@ test_data = [
         ubi_u,
         theta_u,
         etr_params_u,
+        p.e,
         p_u,
         None,
         "TPI",
@@ -685,7 +690,7 @@ test_data = [
 
 
 @pytest.mark.parametrize(
-    "r,w,b,n,bq,c,Y,L,K,p_m,factor,ubi,theta,etr_params,p,m,method,expected",
+    "r,w,b,n,bq,c,Y,L,K,p_m,factor,ubi,theta,etr_params,e,p,m,method,expected",
     test_data,
     ids=["SS", "TPI", "TPI, replace rate adjust", "SS UBI>0", "TPI UBI>0"],
 )
@@ -704,6 +709,7 @@ def test_revenue(
     ubi,
     theta,
     etr_params,
+    e,
     p,
     m,
     method,
@@ -727,6 +733,7 @@ def test_revenue(
         ubi,
         theta,
         etr_params,
+        e,
         p,
         m,
         method,
