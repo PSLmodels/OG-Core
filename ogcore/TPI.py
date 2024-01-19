@@ -259,7 +259,6 @@ def twist_doughnut(
     p_tilde_s = p_tilde[t : t + length]
     n_s = n_guess
     chi_n_s = p.chi_n[-length:]
-    e_s = np.diag(p.e[t : t + p.S, :, j], max(p.S - length, 0))
     rho_s = np.diag(p.rho[t : t + p.S, :], max(p.S - length, 0))
 
     error1 = household.FOC_savings(
@@ -274,7 +273,6 @@ def twist_doughnut(
         tr,
         ubi,
         theta,
-        e_s,
         rho_s,
         etr_params,
         mtry_params,
@@ -297,7 +295,6 @@ def twist_doughnut(
         ubi,
         theta,
         chi_n_s,
-        e_s,
         etr_params,
         mtrx_params,
         t,

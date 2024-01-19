@@ -405,7 +405,6 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[-1, :]
             )
-
     income = r * b + w * e * n
     labor_income = w * e * n
     T_I = (
