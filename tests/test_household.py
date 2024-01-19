@@ -652,7 +652,9 @@ def test_FOC_savings(model_vars, in_params, expected):
     ) = model_vars
     params = copy.deepcopy(in_params)
     # reshape e matrix to be 3D
-    params.e = np.tile(params.e.reshape(1, params.S, params.J), (params.T, 1, 1))
+    params.e = np.tile(
+        params.e.reshape(1, params.S, params.J), (params.T, 1, 1)
+    )
     if method == "TPI":
         p_tilde = np.ones_like(w)
     else:
@@ -935,7 +937,9 @@ def test_FOC_labor(model_vars, params, expected):
         method,
     ) = model_vars
     # reshape e matrix for 3D
-    params.e = np.tile(params.e.reshape(1, params.S, params.J), (params.T, 1, 1))
+    params.e = np.tile(
+        params.e.reshape(1, params.S, params.J), (params.T, 1, 1)
+    )
     if method == "TPI":
         p_tilde = np.ones_like(w)
     else:

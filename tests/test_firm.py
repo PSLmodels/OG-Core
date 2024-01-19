@@ -732,7 +732,7 @@ new_param_values2 = {
     "epsilon": [1.0],
     "Z": [[2.0]],
     "T": 3,
-    "e": p2.e[0, :, :]
+    "e": p2.e[0, :, :],
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -778,7 +778,7 @@ new_param_values1 = {
     "adjustment_factor_for_cit_receipts": [1.0],
     "c_corp_share_of_assets": 1.0,
     "T": 3,
-    "e": p1.e[0, :, :]
+    "e": p1.e[0, :, :],
 }
 # update parameters instance with new values for test
 p1.update_specifications(new_param_values1)
@@ -793,7 +793,7 @@ new_param_values2 = {
     "adjustment_factor_for_cit_receipts": [1.0],
     "c_corp_share_of_assets": 1.0,
     "T": 3,
-    "e": p2.e[0, :, :]
+    "e": p2.e[0, :, :],
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -810,7 +810,7 @@ new_param_values3 = {
     "c_corp_share_of_assets": 1.0,
     "T": 3,
     "M": 2,
-    "e": p3.e[0, :, :]
+    "e": p3.e[0, :, :],
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -920,7 +920,7 @@ new_param_values5 = {
     "c_corp_share_of_assets": 1.0,
     "initial_Kg_ratio": 0.01,
     "T": 3,
-    "e": p5.e[0, :, :]
+    "e": p5.e[0, :, :],
 }
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
@@ -938,7 +938,7 @@ new_param_values6 = {
     "c_corp_share_of_assets": 1.0,
     "initial_Kg_ratio": 0.01,
     "T": 3,
-    "e": p6.e[0, :, :]
+    "e": p6.e[0, :, :],
 }
 # update parameters instance with new values for test
 p6.update_specifications(new_param_values6)

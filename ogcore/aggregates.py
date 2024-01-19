@@ -33,7 +33,11 @@ def get_L(n, p, method):
 
     """
     if method == "SS":
-        L_presum = np.squeeze(p.e[-1, :, :]) * np.transpose(p.omega_SS * p.lambdas) * n
+        L_presum = (
+            np.squeeze(p.e[-1, :, :])
+            * np.transpose(p.omega_SS * p.lambdas)
+            * n
+        )
         L = L_presum.sum()
     elif method == "TPI":
         L_presum = (n * (p.e * np.squeeze(p.lambdas))) * np.tile(
@@ -341,7 +345,7 @@ def revenue(
 
     """
     inc_pay_tax_liab = tax.income_tax_liab(
-        r, w, b, n, factor, 0, None, method, e, etr_params,p
+        r, w, b, n, factor, 0, None, method, e, etr_params, p
     )
     pension_benefits = tax.pension_amount(
         w, n, theta, 0, None, False, method, e, p

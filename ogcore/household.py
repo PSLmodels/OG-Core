@@ -387,7 +387,13 @@ def FOC_savings(
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
-            e_long = np.concatenate((p.e, np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1))), axis = 0)
+            e_long = np.concatenate(
+                (
+                    p.e,
+                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
+                ),
+                axis=0,
+            )
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         chi_b = p.chi_b
@@ -403,7 +409,13 @@ def FOC_savings(
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
                 t : t + length, :
             ]
-            e_long = np.concatenate((p.e, np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1))), axis = 0)
+            e_long = np.concatenate(
+                (
+                    p.e,
+                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
+                ),
+                axis=0,
+            )
             e = np.diag(e_long[t : t + p.S, :, :], max(p.S - length, 0))
     e = np.squeeze(e)
     if method == "SS":
@@ -567,7 +579,13 @@ def FOC_labor(
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
-            e_long = np.concatenate((p.e, np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1))), axis = 0)
+            e_long = np.concatenate(
+                (
+                    p.e,
+                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
+                ),
+                axis=0,
+            )
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         if method == "SS":
@@ -580,7 +598,13 @@ def FOC_labor(
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, :
             ]
-            e_long = np.concatenate((p.e, np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1))), axis = 0)
+            e_long = np.concatenate(
+                (
+                    p.e,
+                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
+                ),
+                axis=0,
+            )
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     if method == "SS":
         tau_payroll = p.tau_payroll[-1]

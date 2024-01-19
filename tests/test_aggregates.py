@@ -461,7 +461,9 @@ K_u = 0.957 + (1.163 - 0.957) * random_state.rand(p_u.T).reshape(p_u.T, 1)
 factor_u = 140000.0
 ubi_u = p_u.ubi_nom_array / factor_u
 # update parameters instance with new values for test
-p_u.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
+p_u.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(
+    p.S, p.J
+)
 p_u.e = np.tile(p_u.e.reshape(1, p_u.S, p_u.J), (p_u.T, 1, 1))
 p_u.omega = 0.039 * random_state.rand(p_u.T * p_u.S * 1).reshape(p_u.T, p_u.S)
 p_u.omega = p_u.omega / p_u.omega.sum(axis=1).reshape(p_u.T, 1)

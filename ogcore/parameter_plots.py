@@ -914,7 +914,12 @@ def plot_income_data(
             # Plot of 3D, J>1 in levels
             fig10, ax10 = plt.subplots(subplot_kw={"projection": "3d"})
             ax10.plot_surface(
-                age_mesh, abil_mesh, emat[t, :, :], rstride=8, cstride=1, cmap=cmap1
+                age_mesh,
+                abil_mesh,
+                emat[t, :, :],
+                rstride=8,
+                cstride=1,
+                cmap=cmap1,
             )
             ax10.set_xlabel(r"age-$s$")
             ax10.set_ylabel(r"ability type -$j$")

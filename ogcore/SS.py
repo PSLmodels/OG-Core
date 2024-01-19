@@ -481,9 +481,9 @@ def inner_loop(outer_loop_vars, p, client):
         debt_service,
         p,
     )
-    print('Agg tax = ', total_tax_revenue)
-    print('Agg pension outlays = ', agg_pension_outlays)
-    print('Agg UBI outlays = ', UBI_outlays)
+    print("Agg tax = ", total_tax_revenue)
+    print("Agg pension outlays = ", agg_pension_outlays)
+    print("Agg UBI outlays = ", UBI_outlays)
     new_TR = fiscal.get_TR(
         Y,
         TR,
@@ -821,7 +821,9 @@ def SS_solver(
         np.squeeze(p.e[-1, :, :]),
         p,
     )
-    yss_before_tax_mat = household.get_y(r_p_ss, wss, bssmat_s, nssmat, p, "SS")
+    yss_before_tax_mat = household.get_y(
+        r_p_ss, wss, bssmat_s, nssmat, p, "SS"
+    )
     Css = aggr.get_C(cssmat, p, "SS")
     c_i_ss_mat = household.get_ci(
         cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c

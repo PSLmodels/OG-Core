@@ -818,7 +818,7 @@ def run_TPI(p, client=None):
             bmat_s[: p.T, :, :],
             n_mat[: p.T, :, :],
             p,
-            "TPI"
+            "TPI",
         )
 
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")

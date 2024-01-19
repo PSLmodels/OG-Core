@@ -64,7 +64,9 @@ def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
     # make e 3D
     p = copy.deepcopy(p_in)
     # p.e = np.tile(np.reshape(p.e, (1, p.S, p.J)), (p.T, 1, 1))
-    p.e = np.tile(np.reshape(p.e, (1, p.e.shape[0], p.e.shape[1])), (p.T, 1, 1))
+    p.e = np.tile(
+        np.reshape(p.e, (1, p.e.shape[0], p.e.shape[1])), (p.T, 1, 1)
+    )
     theta = tax.replacement_rate_vals(n, w, factor, j, p)
     assert np.allclose(theta, expected)
 
