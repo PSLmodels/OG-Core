@@ -378,10 +378,10 @@ def FOC_savings(
         beta = p.beta[j]
         if method == "SS":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, j]
-            e = p.e[-1, :, j]
+            e = np.squeeze(p.e[-1, :, j])
         elif method == "TPI_scalar":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, j]
-            e = p.e[0, :, j]
+            e = np.squeeze(p.e[0, :, j])
         else:
             length = r.shape[0]
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
@@ -393,10 +393,10 @@ def FOC_savings(
         beta = p.beta
         if method == "SS":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, :]
-            e = p.e[-1, :, :]
+            e = np.squeeze(p.e[-1, :, :])
         elif method == "TPI_scalar":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, :]
-            e = p.e[0, :, :]
+            e = np.squeeze(p.e[0, :, :])
         else:
             length = r.shape[0]
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
@@ -558,10 +558,10 @@ def FOC_labor(
     if j is not None:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, j]
-            e = p.e[-1, :, j]
+            e = np.squeeze(p.e[-1, :, j])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, j]
-            e = p.e[0, :, j]
+            e = np.squeeze(p.e[0, -1, j])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, j
@@ -570,10 +570,10 @@ def FOC_labor(
     else:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, :]
-            e = p.e[-1, :, :]
+            e = np.squeeze(p.e[-1, :, :])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, :]
-            e = p.e[0, :, :]
+            e = np.squeeze(p.e[0, -1, :])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, :
