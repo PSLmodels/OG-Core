@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import matplotlib
+from cycler import cycler
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
@@ -268,31 +269,28 @@ def plot_chi_n(p, include_title=False, path=None):
 
 
 def plot_fert_rates(
-    fert_func,
-    age_midp,
-    totpers,
-    min_yr,
-    max_yr,
-    fert_data,
     fert_rates,
+    start_year=DEFAULT_START_YEAR,
+    years_to_plot=[DEFAULT_START_YEAR],
+    totpers=100,
+    min_yr=0,
+    max_yr=100,
+    source="United Nations, World Population Prospects",
     output_dir=None,
 ):
     """
-    Plot fertility rates from the data along with smoothed function to
-    use for model fertility rates.
+    Plot fertility rates from the data
 
     Args:
-        fert_func (Scipy interpolation object): interpolated fertility
-            rates
-        age_midp (NumPy array): midpoint of age for each age group in
-            data
+        fert_rates (NumPy array): fertility rates for each of
+            totpers
+        start_year (int): first year of data
+        years_to_plot (list): list of years to plot
         totpers (int): total number of agent life periods (E+S), >= 3
         min_yr (int): age in years at which agents are born, >= 0
         max_yr (int): age in years at which agents die with certainty,
             >= 4
-        fert_data (NumPy array): fertility rates by age group from data
-        fert_rates (NumPy array): fitted fertility rates for each of
-            totpers
+        source (str): data source for fertility rates
         output_dir (str): path to save figure to, if None then figure
             is returned
 
@@ -300,28 +298,13 @@ def plot_fert_rates(
         fig (Matplotlib plot object): plot of fertility rates
 
     """
-    # Generate finer age vector and fertility rate vector for
-    # graphing cubic spline interpolating function
-    age_fine_pred = np.linspace(age_midp[0], age_midp[-1], 300)
-    fert_fine_pred = fert_func(age_fine_pred)
-    age_fine = np.hstack((min_yr, age_fine_pred, max_yr))
-    fert_fine = np.hstack((0, fert_fine_pred, 0))
-    age_mid_new = np.linspace(
-        np.float64(max_yr) / totpers, max_yr, totpers
-    ) - (0.5 * np.float64(max_yr) / totpers)
-
+    # create line styles to cycle through
+    plt.rc('axes', prop_cycle=(cycler('linestyle', [':', '-.', '-', '--'])))
     fig, ax = plt.subplots()
-    plt.scatter(age_midp, fert_data, s=70, c="blue", marker="o", label="Data")
-    plt.scatter(
-        age_mid_new,
-        fert_rates,
-        s=40,
-        c="red",
-        marker="d",
-        label="Model period (integrated)",
-    )
-    plt.plot(age_fine, fert_fine, label="Cubic spline")
-    # plt.title('Fitted fertility rate function by age ($f_{s}$)',
+    for y in years_to_plot:
+        i = start_year - y
+        plt.plot(fert_rates[i, :], c="blue", label="Year " + str(y))
+    # plt.title('Fertility rates by age ($f_{s}$)',
     #     fontsize=20)
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Fertility rate $f_{s}$")
@@ -329,8 +312,7 @@ def plot_fert_rates(
     plt.text(
         -5,
         -0.023,
-        "Source: National Vital Statistics Reports, "
-        + "Volume 64, Number 1, January 15, 2015.",
+        "Source: " + source,
         fontsize=9,
     )
     plt.tight_layout(rect=(0, 0.035, 1, 1))
@@ -340,21 +322,22 @@ def plot_fert_rates(
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
+        fig.show()
         return fig
 
 
 def plot_mort_rates_data(
-    totpers,
-    min_yr,
-    max_yr,
-    age_year_all,
-    mort_rates_all,
-    infmort_rate,
     mort_rates,
+    start_year=DEFAULT_START_YEAR,
+    years_to_plot=[DEFAULT_START_YEAR],
+    totpers=100,
+    min_yr=0,
+    max_yr=100,
+    source="United Nations, World Population Prospects",
     output_dir=None,
 ):
     """
-    Plots mortality rates from the model and data.
+    Plots mortality rates from the data.
 
     Args:
         totpers (int): total number of agent life periods (E+S), >= 3
@@ -374,51 +357,31 @@ def plot_mort_rates_data(
         fig (Matplotlib plot object): plot of mortality rates
 
     """
-    age_mid_new = np.linspace(
-        np.float64(max_yr) / totpers, max_yr, totpers
-    ) - (0.5 * np.float64(max_yr) / totpers)
+    # create line styles to cycle through
+    plt.rc('axes', prop_cycle=(cycler('linestyle', [':', '-.', '-', '--'])))
     fig, ax = plt.subplots()
-    plt.scatter(
-        np.hstack([0, age_year_all]),
-        np.hstack([infmort_rate, mort_rates_all]),
-        s=20,
-        c="blue",
-        marker="o",
-        label="Data",
-    )
-    plt.scatter(
-        np.hstack([0, age_mid_new]),
-        np.hstack([infmort_rate, mort_rates]),
-        s=40,
-        c="red",
-        marker="d",
-        label="Model period (cumulative)",
-    )
-    plt.plot(
-        np.hstack([0, age_year_all[min_yr - 1 : max_yr]]),
-        np.hstack([infmort_rate, mort_rates_all[min_yr - 1 : max_yr]]),
-    )
-    plt.axvline(x=max_yr, color="red", linestyle="-", linewidth=1)
-    plt.grid(visible=True, which="major", color="0.65", linestyle="-")
-    # plt.title('Fitted mortality rate function by age ($rho_{s}$)',
+    for y in years_to_plot:
+        i = start_year - y
+        plt.plot(mort_rates[i, :], c="blue", label="Year " + str(y))
+    # plt.title('Fertility rates by age ($f_{s}$)',
     #     fontsize=20)
     plt.xlabel(r"Age $s$")
-    plt.ylabel(r"Mortality rate $\rho_{s}$")
+    plt.ylabel(r"Mortality rate $rho_{s}$")
     plt.legend(loc="upper left")
     plt.text(
         -5,
-        -0.2,
-        "Source: Actuarial Life table, 2011 Social Security "
-        + "Administration.",
+        -0.223,
+        "Source: " + source,
         fontsize=9,
     )
-    plt.tight_layout(rect=(0, 0.03, 1, 1))
+    plt.tight_layout(rect=(0, 0.035, 1, 1))
     # Save or return figure
     if output_dir:
         output_path = os.path.join(output_dir, "mort_rates")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
+        fig.show()
         return fig
 
 
