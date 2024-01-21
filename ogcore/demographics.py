@@ -110,6 +110,7 @@ def get_fert(
     start_year=START_YEAR,
     end_year=END_YEAR,
     graph=False,
+    plot_path=None,
 ):
     """
     This function generates a vector of fertility rates by model period
@@ -124,61 +125,45 @@ def get_fert(
         start_year (int): start year for UN data
         end_year (int): end year for UN data
         graph (bool): =True if want graphical output
+        plot_path (str): path to save fertility rate plot
 
     Returns:
-        fert_rates (Numpy array): fertility rates for each model period
-            of life
+        fert_rates (Numpy array): fertility rates for each year of data
+            and model age
+        fig (Matplotlib Figure): figure object if graph=True and plot_path=None
 
     """
-    # Read UN data
-    df = get_un_data(
-        "68", country_id=country_id, start_year=start_year, end_year=end_year
-    )
-    # put in vector
-    fert_rates = df.value.values
-    print("Fert rates shape = ", fert_rates.shape)
-    # the shape here is 2730
-    # need to figure out how to put this output into a 2D array
-    quit()
-    # fill in with zeros for ages  < 15 and > 49
-    # NOTE: this assumes min_year < 15 and max_age > 49
-    fert_rates = np.append(fert_rates, np.zeros(max_age - 49))
-    fert_rates = np.append(np.zeros(15 - min_age), fert_rates)
-    # divide by 1000 because fertility rates are number of births per
-    # 1000 woman and we want births per person (might update to account
-    # from fraction men more correctly - below assumes 50/50 men and women)
-    fert_rates = fert_rates / 2000
-    # Rebin data in the case that model period not equal to one calendar
-    # year
-    fert_rates = pop_rebin(fert_rates, totpers)
+    # initialize fert rates array
+    fert_rates_2D = np.zeros((end_year + 1 -start_year, totpers))
+    # Read UN data, 1 year at a time
+    for y in range(start_year, end_year + 1):
+        df = get_un_data(
+            "68", country_id=country_id, start_year=y, end_year=y
+        )
+        # put in vector
+        fert_rates = df.value.values
+        # fill in with zeros for ages  < 15 and > 49
+        # NOTE: this assumes min_year < 15 and max_age > 49
+        fert_rates = np.append(fert_rates, np.zeros(max_age - 49))
+        fert_rates = np.append(np.zeros(15 - min_age), fert_rates)
+        # divide by 1000 because fertility rates are number of births per
+        # 1000 woman and we want births per person (might update to account
+        # from fraction men more correctly - below assumes 50/50 men and women)
+        fert_rates = fert_rates / 2000
+        # Rebin data in the case that model period not equal to one calendar
+        # year
+        fert_rates = pop_rebin(fert_rates, totpers)
+        fert_rates_2D[y - start_year, :] = fert_rates
 
-    # if graph:  # need to fix plot function for new data output
-    #     pp.plot_fert_rates(fert_rates, age_midp, totpers, min_age, max_age,
-    #                        fert_rates, fert_rates, output_dir=OUTPUT_DIR)
-
+    # Create plots if needed
     if graph:
-        output_dir = OUTPUT_DIR
-        # Using pyplot here until update to OG-Core mort rates plotting function
-        plt.plot(
-            np.arange(totpers),
-            fert_rates,
-        )
-        plt.xlabel(r"Age $s$")
-        plt.ylabel(r"Fertility rate")
-        plt.legend(loc="upper left")
-        fontdict = {"fontsize": 9}
-        plt.text(
-            -5,
-            -0.2,
-            "Source: United Nations Population Prospects.",
-            **fontdict,
-        )
-        plt.tight_layout(rect=(0, 0.03, 1, 1))
-        output_path = os.path.join(output_dir, "fert_rates")
-        plt.savefig(output_path)
-        plt.close()
-
-    return fert_rates
+        if plot_path:
+            pp.plot_fert_rates(fert_rates_2D, start_year, [start_year, end_year], totpers, min_age, max_age,
+                           output_dir=plot_path)
+            return fert_rates_2D
+        else:
+            fig = pp.plot_fert_rates(fert_rates_2D, start_year, [start_year, end_year], totpers, min_age, max_age)
+            return fert_rates_2D, fig
 
 
 def get_mort(
@@ -189,6 +174,7 @@ def get_mort(
     start_year=START_YEAR,
     end_year=END_YEAR,
     graph=False,
+    plot_path=None,
 ):
     """
     This function generates a vector of mortality rates by model period
@@ -203,56 +189,42 @@ def get_mort(
         start_year (int): start year for UN data
         end_year (int): end year for UN data
         graph (bool): =True if want graphical output
+        plot_path (str): path to save mortality rate plot
 
     Returns:
-        mort_rates (Numpy array) mortality rates that correspond to each
-            period of life
-        infmort_rate (scalar): infant mortality rate
+        mort_rates (Numpy array) mortality rates for each year of data
+            and model age
+        fig (Matplotlib Figure): figure object if graph=True and plot_path=None
 
     """
+    mort_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
     # Read UN data
-    df = get_un_data(
-        "80", country_id=country_id, start_year=start_year, end_year=end_year
-    )
-    # put in vector
-    mort_rates_data = df.value.values
-    # In UN data, mortality rates for 0 year olds are the infant
-    # mortality rates
-    infmort_rate = mort_rates_data[0]
-    # Rebin data in the case that model period not equal to one calendar
-    # year
-    mort_rates = pop_rebin(mort_rates_data[1:], totpers)
+    for y in range(start_year, end_year + 1):
+        df = get_un_data(
+            "80", country_id=country_id, start_year=y, end_year=y
+        )
+        # put in vector
+        mort_rates_data = df.value.values
+        # In UN data, mortality rates for 0 year olds are the infant
+        # mortality rates
+        infmort_rate = mort_rates_data[0]
+        # Rebin data in the case that model period not equal to one calendar
+        # year
+        mort_rates = pop_rebin(mort_rates_data[1:], totpers)
+        # Mortality rate in last period is set to 1
+        mort_rates[-1] = 1
+        # put in 2D array
+        mort_rates_2D[y - start_year, :] = mort_rates
 
-    # Mortality rate in last period is set to 1
-    mort_rates[-1] = 1
-
+    # Create plots if needed
     if graph:
-        output_dir = OUTPUT_DIR
-        # Using pyplot here until update to OG-Core mort rates plotting function
-        plt.plot(
-            df.age.values,
-            mort_rates_data,
-        )
-        plt.xlabel(r"Age $s$")
-        plt.ylabel(r"Mortality rate $\rho_{s}$")
-        plt.legend(loc="upper left")
-        fontdict = {"fontsize": 9}
-        plt.text(
-            -5,
-            -0.2,
-            "Source: United Nations Population Prospects.",
-            **fontdict,
-        )
-        plt.tight_layout(rect=(0, 0.03, 1, 1))
-        # Save or return figure
-        if output_dir:
-            output_path = os.path.join(output_dir, "mort_rates")
-            plt.savefig(output_path)
-            plt.close()
+        if plot_path:
+            pp.plot_mort_rates_data(mort_rates_2D, start_year, [start_year, end_year], totpers, min_age, max_age,
+                           output_dir=plot_path)
+            return mort_rates, infmort_rate
         else:
-            plt.show()
-
-    return mort_rates, infmort_rate
+            fig = pp.plot_mort_rates_data(mort_rates_2D, start_year, [start_year, end_year], totpers, min_age, max_age)
+            return mort_rates, infmort_rate, fig
 
 
 def pop_rebin(curr_pop_dist, totpers_new):
