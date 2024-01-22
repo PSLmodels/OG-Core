@@ -484,7 +484,7 @@ def get_pop_objs(
                 path, length T + S
 
     """
-    print("Model year = ", model_year, " Data year = ", data_year)
+    print("Model year = ", model_year, ", Inital Data year = ", initial_data_year, ", Final Data year = ", final_data_year)
     assert model_year >= 2011 and model_year <= 2100
     assert initial_data_year >= 2011 and initial_data_year <= 2100
     assert final_data_year >= 2011 and final_data_year <= 2100
@@ -526,6 +526,7 @@ def get_pop_objs(
     # the implicit assumption is that they are constant after the
     # last year of UN or user provided data
     mort_rates = np.hstack(mort_rates, np.tile(mort_rates[-1, :], T - mort_rates.shape[0]))
+    mort_rates_S = mort_rates
     if imm_rates is None:
         imm_rates_orig = get_imm_rates(
             E + S, min_age, max_age, country_id, initial_data_year,
@@ -560,7 +561,7 @@ def get_pop_objs(
     # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E + S, T + S))
     pop_data = get_un_data(
-        "47", country_id=country_id, start_year=data_year, end_year=data_year
+        "47", country_id=country_id, start_year=inital_data_year, end_year=initial_data_year
     )
     # TODO: allow one to read in multiple years of UN forecast then
     # extrapolate from the end of that
@@ -580,7 +581,7 @@ def get_pop_objs(
         -S:
     ].sum()  # g_n in data year
     pop_past = pop_curr
-    for per in range(model_year - data_year):
+    for per in range(model_year - initial_data_year):
         pop_next = np.dot(OMEGA_orig, pop_curr)
         g_n_curr = (pop_next[-S:].sum() - pop_curr[-S:].sum()) / pop_curr[
             -S:
