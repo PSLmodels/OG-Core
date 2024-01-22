@@ -324,7 +324,6 @@ def FOC_savings(
     tr,
     ubi,
     theta,
-    e,
     rho,
     etr_params,
     mtry_params,
@@ -359,7 +358,6 @@ def FOC_savings(
         ubi (Numpy array): universal basic income payment
         theta (Numpy array): social security replacement rate for each
             lifetime income group
-        e (Numpy array): effective labor units
         rho (Numpy array): mortality rates
         etr_params (list): parameters of the effective tax rate
             functions
@@ -380,25 +378,46 @@ def FOC_savings(
         beta = p.beta[j]
         if method == "SS":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, j]
+            e = np.squeeze(p.e[-1, :, j])
         elif method == "TPI_scalar":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, j]
+            e = np.squeeze(p.e[0, :, j])
         else:
             length = r.shape[0]
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
+            e_long = np.concatenate(
+                (
+                    p.e,
+                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
+                ),
+                axis=0,
+            )
+            e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         chi_b = p.chi_b
         beta = p.beta
         if method == "SS":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, :]
+            e = np.squeeze(p.e[-1, :, :])
         elif method == "TPI_scalar":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, :]
+            e = np.squeeze(p.e[0, :, :])
         else:
             length = r.shape[0]
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
                 t : t + length, :
             ]
+            e_long = np.concatenate(
+                (
+                    p.e,
+                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
+                ),
+                axis=0,
+            )
+            e = np.diag(e_long[t : t + p.S, :, :], max(p.S - length, 0))
+    e = np.squeeze(e)
     if method == "SS":
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
@@ -412,7 +431,6 @@ def FOC_savings(
         h_wealth = p.h_wealth[t]
         m_wealth = p.m_wealth[t]
         p_wealth = p.p_wealth[t]
-
     taxes = tax.net_taxes(
         r,
         w,
@@ -493,7 +511,6 @@ def FOC_labor(
     ubi,
     theta,
     chi_n,
-    e,
     etr_params,
     mtrx_params,
     t,
@@ -554,21 +571,41 @@ def FOC_labor(
     if j is not None:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, j]
+            e = np.squeeze(p.e[-1, :, j])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, j]
+            e = np.squeeze(p.e[0, -1, j])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
+            e_long = np.concatenate(
+                (
+                    p.e,
+                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
+                ),
+                axis=0,
+            )
+            e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, :]
+            e = np.squeeze(p.e[-1, :, :])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, :]
+            e = np.squeeze(p.e[0, -1, :])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, :
             ]
+            e_long = np.concatenate(
+                (
+                    p.e,
+                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
+                ),
+                axis=0,
+            )
+            e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     if method == "SS":
         tau_payroll = p.tau_payroll[-1]
     elif method == "TPI_scalar":  # for 1st donut ring only
@@ -625,7 +662,7 @@ def FOC_labor(
     return FOC_error
 
 
-def get_y(r_p, w, b_s, n, p):
+def get_y(r_p, w, b_s, n, p, method):
     r"""
     Compute household income before taxes.
 
@@ -638,9 +675,13 @@ def get_y(r_p, w, b_s, n, p):
         b_s (Numpy array): household savings coming into the period
         n (Numpy array): household labor supply
         p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
     """
-
-    y = r_p * b_s + w * p.e * n
+    if method == "SS":
+        e = np.squeeze(p.e[-1, :, :])
+    elif method == "TPI":
+        e = p.e
+    y = r_p * b_s + w * e * n
 
     return y
 

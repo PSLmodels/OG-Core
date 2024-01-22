@@ -41,19 +41,19 @@ param_updates1 = {
     "T": 4,
     "S": 3,
     "rho": [[0.0, 0.0, 1.0]],
-    "J": 1,
+    "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
     "eta": np.ones((4, 3, 1)) / 12,
     "ubi_nom_1864": 1200,
     "ubi_nom_65p": 400,
     "ubi_growthadj": True,
 }
-expected1 = np.ones((7, 3, 1)) * 2180
+expected1 = np.ones((7, 3, 7)) * 2180
 param_updates2 = {
     "T": 4,
     "S": 3,
     "rho": [[0.0, 0.0, 1.0]],
-    "J": 1,
+    "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
     "eta": np.ones((4, 3, 1)) / 12,
     "ubi_nom_1864": 1200,
@@ -61,12 +61,12 @@ param_updates2 = {
     "ubi_nom_65p": 400,
     "ubi_growthadj": True,
 }
-expected2 = np.ones((7, 3, 1)) * 2000
+expected2 = np.ones((7, 3, 7)) * 2000
 param_updates3 = {
     "T": 4,
     "S": 3,
     "rho": [[0.0, 0.0, 1.0]],
-    "J": 1,
+    "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
     "eta": np.ones((4, 3, 1)) / 12,
     "ubi_nom_1864": 1200,

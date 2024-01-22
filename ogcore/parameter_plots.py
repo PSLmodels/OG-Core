@@ -153,24 +153,27 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_ability_profiles(p, include_title=False, path=None):
+def plot_ability_profiles(p, t=None, include_title=False, path=None):
     """
     Create a plot of earnings ability profiles.
 
     Args:
         p (OG-Core Specifications class): parameters object
+        t (int): model period for year, if None, then plot ability matrix for SS
         path (string): path to save figure to
 
     Returns:
         fig (Matplotlib plot object): plot of earnings ability profiles
 
     """
+    if t is None:
+        t = -1
     age_vec = np.arange(p.starting_age, p.starting_age + p.S)
     fig, ax = plt.subplots()
     cm = plt.get_cmap("coolwarm")
     ax.set_prop_cycle(color=[cm(1.0 * i / p.J) for i in range(p.J)])
     for j in range(p.J):
-        plt.plot(age_vec, p.e[:, j], label=GROUP_LABELS[p.J][j])
+        plt.plot(age_vec, p.e[t, :, j], label=GROUP_LABELS[p.J][j])
     plt.xlabel(r"Age")
     plt.ylabel(r"Earnings ability")
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
@@ -863,7 +866,7 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir, round):
 
 
 def plot_income_data(
-    ages, abil_midp, abil_pcts, emat, output_dir=None, filesuffix=""
+    ages, abil_midp, abil_pcts, emat, t=None, output_dir=None, filesuffix=""
 ):
     """
     This function graphs ability matrix in 3D, 2D, log, and nolog
@@ -875,13 +878,16 @@ def plot_income_data(
         abil_pcts (Numpy array): percent of population in each lifetime
             income group, length J
         emat (Numpy array): effective labor units by age and lifetime
-            income group, size SxJ
+            income group, size TxSxJ
+        t (int): model period for year, if None, then plot SS values
         filesuffix (str): suffix to be added to plot files
 
     Returns:
         None
 
     """
+    if t is None:
+        t = -1
     J = abil_midp.shape[0]
     abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
     cmap1 = matplotlib.cm.get_cmap("summer")
@@ -891,7 +897,7 @@ def plot_income_data(
         if J == 1:
             # Plot of 2D, J=1 in levels
             plt.figure()
-            plt.plot(ages, emat)
+            plt.plot(ages, emat[t, :, :])
             filename = "ability_2D_lev" + filesuffix
             fullpath = os.path.join(output_dir, filename)
             plt.savefig(fullpath, dpi=300)
@@ -899,7 +905,7 @@ def plot_income_data(
 
             # Plot of 2D, J=1 in logs
             plt.figure()
-            plt.plot(ages, np.log(emat))
+            plt.plot(ages, np.log(emat[t, :, :]))
             filename = "ability_2D_log" + filesuffix
             fullpath = os.path.join(output_dir, filename)
             plt.savefig(fullpath, dpi=300)
@@ -908,7 +914,12 @@ def plot_income_data(
             # Plot of 3D, J>1 in levels
             fig10, ax10 = plt.subplots(subplot_kw={"projection": "3d"})
             ax10.plot_surface(
-                age_mesh, abil_mesh, emat, rstride=8, cstride=1, cmap=cmap1
+                age_mesh,
+                abil_mesh,
+                emat[t, :, :],
+                rstride=8,
+                cstride=1,
+                cmap=cmap1,
             )
             ax10.set_xlabel(r"age-$s$")
             ax10.set_ylabel(r"ability type -$j$")
@@ -923,7 +934,7 @@ def plot_income_data(
             ax11.plot_surface(
                 age_mesh,
                 abil_mesh,
-                np.log(emat),
+                np.log(emat[t, :, :]),
                 rstride=8,
                 cstride=1,
                 cmap=cmap1,
@@ -960,7 +971,7 @@ def plot_income_data(
                     if j <= 3:
                         ax.plot(
                             ages,
-                            np.log(emat[:, j]),
+                            np.log(emat[t, :, j]),
                             label=this_label,
                             linestyle=linestyles[j],
                             color="black",
@@ -968,7 +979,7 @@ def plot_income_data(
                     elif j > 3:
                         ax.plot(
                             ages,
-                            np.log(emat[:, j]),
+                            np.log(emat[t, :, j]),
                             label=this_label,
                             marker=markers[j - 4],
                             color="black",
@@ -1008,7 +1019,7 @@ def plot_income_data(
                 if j <= 3:
                     ax.plot(
                         ages,
-                        np.log(emat[:, j]),
+                        np.log(emat[t, :, j]),
                         label=this_label,
                         linestyle=linestyles[j],
                         color="black",
@@ -1016,7 +1027,7 @@ def plot_income_data(
                 elif j > 3:
                     ax.plot(
                         ages,
-                        np.log(emat[:, j]),
+                        np.log(emat[t, :, j]),
                         label=this_label,
                         marker=markers[j - 4],
                         color="black",
