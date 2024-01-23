@@ -160,9 +160,6 @@ def get_fert(
                 fert_rates_2D,
                 start_year,
                 [start_year, end_year],
-                totpers,
-                min_age,
-                max_age,
                 output_dir=plot_path,
             )
             return fert_rates_2D
@@ -171,9 +168,6 @@ def get_fert(
                 fert_rates_2D,
                 start_year,
                 [start_year, end_year],
-                totpers,
-                min_age,
-                max_age,
             )
             return fert_rates_2D, fig
     else:
@@ -235,9 +229,6 @@ def get_mort(
                 mort_rates_2D,
                 start_year,
                 [start_year, end_year],
-                totpers,
-                min_age,
-                max_age,
                 output_dir=plot_path,
             )
             return mort_rates_2D, infmort_rate
@@ -246,9 +237,6 @@ def get_mort(
                 mort_rates_2D,
                 start_year,
                 [start_year, end_year],
-                totpers,
-                min_age,
-                max_age,
             )
             return mort_rates_2D, infmort_rate, fig
     else:
