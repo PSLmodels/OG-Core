@@ -1076,4 +1076,3 @@ def get_legacy_session():
     session = requests.session()
     session.mount("https://", CustomHttpAdapter(ctx))
     return session
-

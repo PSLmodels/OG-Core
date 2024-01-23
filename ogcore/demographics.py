@@ -134,12 +134,10 @@ def get_fert(
 
     """
     # initialize fert rates array
-    fert_rates_2D = np.zeros((end_year + 1 -start_year, totpers))
+    fert_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
     # Read UN data, 1 year at a time
     for y in range(start_year, end_year + 1):
-        df = get_un_data(
-            "68", country_id=country_id, start_year=y, end_year=y
-        )
+        df = get_un_data("68", country_id=country_id, start_year=y, end_year=y)
         # put in vector
         fert_rates = df.value.values
         # fill in with zeros for ages  < 15 and > 49
@@ -158,12 +156,28 @@ def get_fert(
     # Create plots if needed
     if graph:
         if plot_path:
-            pp.plot_fert_rates(fert_rates_2D, start_year, [start_year, end_year], totpers, min_age, max_age,
-                           output_dir=plot_path)
+            pp.plot_fert_rates(
+                fert_rates_2D,
+                start_year,
+                [start_year, end_year],
+                totpers,
+                min_age,
+                max_age,
+                output_dir=plot_path,
+            )
             return fert_rates_2D
         else:
-            fig = pp.plot_fert_rates(fert_rates_2D, start_year, [start_year, end_year], totpers, min_age, max_age)
+            fig = pp.plot_fert_rates(
+                fert_rates_2D,
+                start_year,
+                [start_year, end_year],
+                totpers,
+                min_age,
+                max_age,
+            )
             return fert_rates_2D, fig
+    else:
+        return fert_rates_2D
 
 
 def get_mort(
@@ -200,9 +214,7 @@ def get_mort(
     mort_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
     # Read UN data
     for y in range(start_year, end_year + 1):
-        df = get_un_data(
-            "80", country_id=country_id, start_year=y, end_year=y
-        )
+        df = get_un_data("80", country_id=country_id, start_year=y, end_year=y)
         # put in vector
         mort_rates_data = df.value.values
         # In UN data, mortality rates for 0 year olds are the infant
@@ -219,12 +231,28 @@ def get_mort(
     # Create plots if needed
     if graph:
         if plot_path:
-            pp.plot_mort_rates_data(mort_rates_2D, start_year, [start_year, end_year], totpers, min_age, max_age,
-                           output_dir=plot_path)
-            return mort_rates, infmort_rate
+            pp.plot_mort_rates_data(
+                mort_rates_2D,
+                start_year,
+                [start_year, end_year],
+                totpers,
+                min_age,
+                max_age,
+                output_dir=plot_path,
+            )
+            return mort_rates_2D, infmort_rate
         else:
-            fig = pp.plot_mort_rates_data(mort_rates_2D, start_year, [start_year, end_year], totpers, min_age, max_age)
-            return mort_rates, infmort_rate, fig
+            fig = pp.plot_mort_rates_data(
+                mort_rates_2D,
+                start_year,
+                [start_year, end_year],
+                totpers,
+                min_age,
+                max_age,
+            )
+            return mort_rates_2D, infmort_rate, fig
+    else:
+        return mort_rates_2D, infmort_rate
 
 
 def pop_rebin(curr_pop_dist, totpers_new):
@@ -273,10 +301,13 @@ def get_imm_rates(
     totpers=100,
     min_age=0,
     max_age=100,
+    fert_rates=None,
+    mort_rates=None,
     country_id=UN_COUNTRY_CODE,
     start_year=START_YEAR,
     end_year=END_YEAR,
     graph=False,
+    plot_path=None,
 ):
     """
     Calculate immigration rates by age as a residual given population
@@ -299,91 +330,77 @@ def get_imm_rates(
             each period of life, length E+S
 
     """
+    imm_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
+    if fert_rates is None:
+        # get fert rates from UN data from initial year to data year
+        fert_rates = get_fert(
+            totpers, min_age, max_age, country_id, start_year, end_year
+        )
+    else:
+        # ensure that user provided fert_rates and mort rates of same size
+        assert fert_rates.shape == mort_rates.shape
+    if mort_rates is None:
+        # get mort rates from UN data from initial year to data year
+        mort_rates, infmort_rate = get_mort(
+            totpers, min_age, max_age, country_id, start_year, end_year
+        )
+    else:
+        # ensure that user provided fert_rates and mort rates of same size
+        assert fert_rates.shape == mort_rates.shape
     # Read UN data
-    num_years = 4  # note that code below only uses four years, in future, this should be more flexbile
-    imm_start_year = (
-        start_year - num_years
-    )  # year to start finding residual imm rate
-    imm_end_year = (
-        start_year + num_years - 1
-    )  # last year to find residual imm rate
-    df = get_un_data(
-        "47",
-        country_id=country_id,
-        start_year=imm_start_year,
-        end_year=imm_end_year,
-    )
-
-    # separate pop dist by year and put into dictionary of arrays
-    pop_dict = {}
-    for t in range(num_years):
-        pop_dist = df[
+    for y in range(start_year, end_year + 1):
+        # need to read UN population data by age for each year
+        df = get_un_data("47", country_id=country_id, start_year=y, end_year=y)
+        pop_t = df[
             (df.year == start_year + t) & (df.age <= 100) & (df.age > 0)
         ].value.values
-        pop_dict[t] = pop_rebin(pop_dist, totpers)
-        pop_dict[t] = pop_dist
+        pop_t = pop_rebin(pop_t, totpers)
+        df = get_un_data(
+            "47", country_id=country_id, start_year=y + 1, end_year=y + 1
+        )
+        pop_tp1 = df.value.values
+        pop_tp1 = pop_rebin(pop_tp1, totpers)
 
-    # Create num_years - 1 years of estimated immigration rates for youngest age
-    # individuals
-    imm_mat = np.zeros((num_years - 1, totpers))
-    pop_list = []
-    for t in range(num_years):
-        pop_list.append(pop_dict[t][0])
-    pop11vec = np.array(pop_list[:-1])
-    pop21vec = np.array(pop_list[1:])
-    fert_rates = get_fert(
-        totpers, min_age, max_age, country_id, start_year, end_year, False
-    )
-    mort_rates, infmort_rate = get_mort(
-        totpers, min_age, max_age, country_id, start_year, end_year, False
-    )
-    newbornvec = np.dot(
-        fert_rates, np.vstack((pop_dict[0], pop_dict[1], pop_dict[2])).T
-    )
-    imm_mat[:, 0] = (pop21vec - (1 - infmort_rate) * newbornvec) / pop11vec
-    # Estimate num_years - 1 years of immigration rates for all other-aged
-    # individuals
-    pop_mat_dict = {}
-    pop_mat_dict[0] = np.vstack(
-        (pop_dict[0][:-1], pop_dict[1][:-1], pop_dict[2][:-1])
-    )
-    pop_mat_dict[1] = np.vstack(
-        (pop_dict[0][1:], pop_dict[1][1:], pop_dict[2][1:])
-    )
-    pop_mat_dict[2] = np.vstack(
-        (pop_dict[1][1:], pop_dict[2][1:], pop_dict[3][1:])
-    )
-    mort_mat = np.tile(mort_rates[:-1], (num_years - 1, 1))
-    imm_mat[:, 1:] = (
-        pop_mat_dict[2] - (1 - mort_mat) * pop_mat_dict[0]
-    ) / pop_mat_dict[1]
-    # Final estimated immigration rates are the averages over 3 years
-    imm_rates = imm_mat.mean(axis=0)
+        # initiize imm_rate vector
+        imm_rates = np.zeros(totpers)
+        # back out imm rates by age for each year
+        newbornvec = np.dot(fert_rates, pop_t)
+        # new born imm_rate
+        imm_rates[0] = (pop_tp1[0] - (1 - mort_rates[0]) * newbornvec) / pop_t[
+            0
+        ]
+        # all other age imm_rates
+        imm_rates[1:] = (
+            pop_tp1[1:] - (1 - mort_rates[1:]) * pop_t[1:]
+        ) / pop_t[1:]
 
+        imm_rates_2D[y - start_year, :] = imm_rates
+
+    # Create plots if needed
     if graph:
-        output_dir = OUTPUT_DIR
-        # Using pyplot here until update to OG-Core mort rates plotting function
-        plt.plot(
-            np.arange(totpers),
-            imm_rates,
-            label="Estimated",
-        )
-        plt.xlabel(r"Age $s$")
-        plt.ylabel(r"Immigration Rates")
-        plt.legend(loc="upper left")
-        fontdict = {"fontsize": 9}
-        plt.text(
-            -5,
-            -0.2,
-            "Source: United Nations Population Prospects.",
-            **fontdict,
-        )
-        plt.tight_layout(rect=(0, 0.03, 1, 1))
-        output_path = os.path.join(output_dir, "imm_rates_w_un_data.png")
-        plt.savefig(output_path)
-        plt.close()
-
-    return imm_rates
+        if plot_path:
+            pp.plot_imm_rates(
+                imm_rates_2D,
+                start_year,
+                [start_year, end_year],
+                totpers,
+                min_age,
+                max_age,
+                output_dir=plot_path,
+            )
+            return imm_rates_2D
+        else:
+            fig = pp.plot_imm_rates(
+                imm_rates_2D,
+                start_year,
+                [start_year, end_year],
+                totpers,
+                min_age,
+                max_age,
+            )
+            return imm_rates_2D, fig
+    else:
+        return imm_rates_2D
 
 
 def immsolve(imm_rates, *args):
@@ -432,10 +449,10 @@ def get_pop_objs(
     final_data_year=2100,
     model_year=START_YEAR,
     country_id=UN_COUNTRY_CODE,
-    imm_rates = None,
-    mort_rates = None,
-    fert_rates = None,
-    pop_dist = None,
+    imm_rates=None,
+    mort_rates=None,
+    fert_rates=None,
+    pop_dist=None,
     GraphDiag=True,
 ):
     """
@@ -484,7 +501,14 @@ def get_pop_objs(
                 path, length T + S
 
     """
-    print("Model year = ", model_year, ", Inital Data year = ", initial_data_year, ", Final Data year = ", final_data_year)
+    print(
+        "Model year = ",
+        model_year,
+        ", Inital Data year = ",
+        initial_data_year,
+        ", Final Data year = ",
+        final_data_year,
+    )
     assert model_year >= 2011 and model_year <= 2100
     assert initial_data_year >= 2011 and initial_data_year <= 2100
     assert final_data_year >= 2011 and final_data_year <= 2100
@@ -499,9 +523,14 @@ def get_pop_objs(
     if fert_rates is None:
         # get fert rates from UN data from initial year to data year
         fert_rates = get_fert(
-            E + S, min_age, max_age, country_id, initial_data_year,
-            final_data_year
+            E + S,
+            min_age,
+            max_age,
+            country_id,
+            initial_data_year,
+            final_data_year,
         )
+        print("Fert rates shape = ", fert_rates.shape)
     else:
         # ensure that user provided fert_rates are of the correct shape
         assert fert_rates.shape[0] < T
@@ -509,13 +538,27 @@ def get_pop_objs(
     # Extrapolate fertility rates for the rest of the transition path
     # the implicit assumption is that they are constant after the
     # last year of UN or user provided data
-    fert_rates = np.hstack(fert_rates, np.tile(fert_rates[-1, :], T - fert_rates.shape[0]))
+    fert_rates = np.concatenate(
+        (
+            fert_rates,
+            np.tile(
+                fert_rates[-1, :].reshape(1, E + S),
+                (T - fert_rates.shape[0], 1),
+            ),
+        ),
+        axis=0,
+    )
     if mort_rates is None:
         # get mort rates from UN data from initial year to data year
         mort_rates, infmort_rate = get_mort(
-            E + S, min_age, max_age, country_id, initial_data_year,
-            final_data_year
+            E + S,
+            min_age,
+            max_age,
+            country_id,
+            initial_data_year,
+            final_data_year,
         )
+        print("Mort rates shape = ", mort_rates.shape)
     # mort_rates_S = mort_rates[-S:]  #TODO: think about this line
     else:
         # ensure that user provided mort_rates are of the correct shape
@@ -525,12 +568,26 @@ def get_pop_objs(
     # Extrapolate mortality rates for the rest of the transition path
     # the implicit assumption is that they are constant after the
     # last year of UN or user provided data
-    mort_rates = np.hstack(mort_rates, np.tile(mort_rates[-1, :], T - mort_rates.shape[0]))
-    mort_rates_S = mort_rates
+    mort_rates = np.concatenate(
+        (
+            mort_rates,
+            np.tile(
+                mort_rates[-1, :].reshape(1, E + S),
+                (T - mort_rates.shape[0], 1),
+            ),
+        ),
+        axis=0,
+    )
+    mort_rates_S = mort_rates[:, E:]
+    print("mort rates S shape = ", mort_rates_S.shape)
     if imm_rates is None:
         imm_rates_orig = get_imm_rates(
-            E + S, min_age, max_age, country_id, initial_data_year,
-            final_data_year
+            E + S,
+            min_age,
+            max_age,
+            country_id,
+            initial_data_year,
+            final_data_year,
         )
     else:
         # ensure that user provided imm_rates are of the correct shape
@@ -540,7 +597,10 @@ def get_pop_objs(
     # Extrapolate immigration rates for the rest of the transition path
     # the implicit assumption is that they are constant after the
     # last year of UN or user provided data
-    imm_rates_orig = np.hstack(imm_rates_orig, np.tile(imm_rates_orig[-1, :], T - imm_rates_orig.shape[0]))
+    imm_rates_orig = np.hstack(
+        imm_rates_orig,
+        np.tile(imm_rates_orig[-1, :], T - imm_rates_orig.shape[0]),
+    )
     OMEGA_orig = np.zeros((E + S, E + S))
     OMEGA_orig[0, :] = (1 - infmort_rate) * fert_rates + np.hstack(
         (imm_rates_orig[0], np.zeros(E + S - 1))
@@ -561,7 +621,10 @@ def get_pop_objs(
     # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E + S, T + S))
     pop_data = get_un_data(
-        "47", country_id=country_id, start_year=inital_data_year, end_year=initial_data_year
+        "47",
+        country_id=country_id,
+        start_year=inital_data_year,
+        end_year=initial_data_year,
     )
     # TODO: allow one to read in multiple years of UN forecast then
     # extrapolate from the end of that

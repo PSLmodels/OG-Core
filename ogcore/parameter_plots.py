@@ -9,36 +9,55 @@ from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
 
 
-def plot_imm_rates(p, year=DEFAULT_START_YEAR, include_title=False, path=None):
+def plot_imm_rates(
+    imm_rates,
+    start_year=DEFAULT_START_YEAR,
+    years_to_plot=[DEFAULT_START_YEAR],
+    source="United Nations, World Population Prospects",
+    output_dir=None,
+):
     """
-    Create a plot of immigration rates from OG-Core parameterization.
+    Plot fertility rates from the data
 
     Args:
-        p (OG-Core Specifications class): parameters object
-        year (integer): year of mortality ratese to plot
-        include_title (bool): whether to include a title in the plot
-        path (string): path to save figure to
+        imm_rates (NumPy array): immigration rates for each of
+            totpers
+        start_year (int): first year of data
+        years_to_plot (list): list of years to plot
+        source (str): data source for fertility rates
+        output_dir (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
-        fig (Matplotlib plot object): plot of immigration rates
+        fig (Matplotlib plot object): plot of fertility rates
 
     """
-    assert isinstance(year, int)
-    age_per = np.linspace(p.E, p.E + p.S, p.S)
+    # create line styles to cycle through
+    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
-    plt.scatter(age_per, p.imm_rates[year - p.start_year, :], s=40, marker="d")
-    plt.plot(age_per, p.imm_rates[year - p.start_year, :])
-    plt.xlabel(r"Age $s$ (model periods)")
-    plt.ylabel(r"Imm. rate $i_{s}$")
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.2%}".format(x) for x in vals])
-    if include_title:
-        plt.title("Immigration Rates in " + str(year))
-    if path is None:
-        return fig
+    for y in years_to_plot:
+        i = start_year - y
+        plt.plot(imm_rates[i, :], c="blue", label="Year " + str(y))
+    # plt.title('Fertility rates by age ($f_{s}$)',
+    #     fontsize=20)
+    plt.xlabel(r"Age $s$")
+    plt.ylabel(r"Immigration rate $i_{s}$")
+    plt.legend(loc="upper right")
+    plt.text(
+        -5,
+        -0.023,
+        "Source: " + source,
+        fontsize=9,
+    )
+    plt.tight_layout(rect=(0, 0.035, 1, 1))
+    # Save or return figure
+    if output_dir:
+        output_path = os.path.join(output_dir, "imm_rates")
+        plt.savefig(output_path, dpi=300)
+        plt.close()
     else:
-        fig_path = os.path.join(path, "imm_rates_orig")
-        plt.savefig(fig_path, dpi=300)
+        fig.show()
+        return fig
 
 
 def plot_mort_rates(
@@ -272,9 +291,6 @@ def plot_fert_rates(
     fert_rates,
     start_year=DEFAULT_START_YEAR,
     years_to_plot=[DEFAULT_START_YEAR],
-    totpers=100,
-    min_yr=0,
-    max_yr=100,
     source="United Nations, World Population Prospects",
     output_dir=None,
 ):
@@ -286,10 +302,6 @@ def plot_fert_rates(
             totpers
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
-        totpers (int): total number of agent life periods (E+S), >= 3
-        min_yr (int): age in years at which agents are born, >= 0
-        max_yr (int): age in years at which agents die with certainty,
-            >= 4
         source (str): data source for fertility rates
         output_dir (str): path to save figure to, if None then figure
             is returned
@@ -299,7 +311,7 @@ def plot_fert_rates(
 
     """
     # create line styles to cycle through
-    plt.rc('axes', prop_cycle=(cycler('linestyle', [':', '-.', '-', '--'])))
+    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -330,9 +342,6 @@ def plot_mort_rates_data(
     mort_rates,
     start_year=DEFAULT_START_YEAR,
     years_to_plot=[DEFAULT_START_YEAR],
-    totpers=100,
-    min_yr=0,
-    max_yr=100,
     source="United Nations, World Population Prospects",
     output_dir=None,
 ):
@@ -340,16 +349,11 @@ def plot_mort_rates_data(
     Plots mortality rates from the data.
 
     Args:
-        totpers (int): total number of agent life periods (E+S), >= 3
-        min_yr (int): age in years at which agents are born, >= 0
-        max_yr (int): age in years at which agents die with certainty,
-            >= 4
-        age_year_all (array_like): ages in mortality rate data
-        mort_rates_all (array_like): mortality rates by age from data,
-            average across males and females
-        infmort_rate (scalar): infant mortality rate
-        mort_rates (array_like): fitted mortality rates for each of
+        mort_rates (array_like): mortality rates for each of
             totpers
+        start_year (int): first year of data
+        years_to_plot (list): list of years to plot
+        source (str): data source for fertility rates
         output_dir (str): path to save figure to, if None then figure
             is returned
 
@@ -358,7 +362,7 @@ def plot_mort_rates_data(
 
     """
     # create line styles to cycle through
-    plt.rc('axes', prop_cycle=(cycler('linestyle', [':', '-.', '-', '--'])))
+    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
