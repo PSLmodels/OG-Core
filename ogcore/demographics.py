@@ -339,27 +339,25 @@ def get_imm_rates(
     for y in range(start_year, end_year + 1):
         # need to read UN population data by age for each year
         df = get_un_data("47", country_id=country_id, start_year=y, end_year=y)
-        pop_t = df[
-            (df.year == start_year + t) & (df.age <= 100) & (df.age > 0)
-        ].value.values
+        pop_t = df[(df.age <= 100) & (df.age > 0)].value.values
         pop_t = pop_rebin(pop_t, totpers)
         df = get_un_data(
             "47", country_id=country_id, start_year=y + 1, end_year=y + 1
         )
-        pop_tp1 = df.value.values
+        pop_tp1 = df[(df.age <= 100) & (df.age > 0)].value.values
         pop_tp1 = pop_rebin(pop_tp1, totpers)
 
-        # initiize imm_rate vector
+        # initialize imm_rate vector
         imm_rates = np.zeros(totpers)
         # back out imm rates by age for each year
-        newbornvec = np.dot(fert_rates, pop_t)
+        newbornvec = np.dot(fert_rates[y - start_year, :], pop_t)
         # new born imm_rate
-        imm_rates[0] = (pop_tp1[0] - (1 - mort_rates[0]) * newbornvec) / pop_t[
+        imm_rates[0] = (pop_tp1[0] - (1 - mort_rates[y - start_year, 0]) * newbornvec) / pop_t[
             0
         ]
         # all other age imm_rates
         imm_rates[1:] = (
-            pop_tp1[1:] - (1 - mort_rates[1:]) * pop_t[1:]
+            pop_tp1[1:] - (1 - mort_rates[y - start_year, 1:]) * pop_t[1:]
         ) / pop_t[1:]
 
         imm_rates_2D[y - start_year, :] = imm_rates
