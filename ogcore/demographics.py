@@ -590,6 +590,7 @@ def get_pop_objs(
         axis=0,
     )
     # Create the transition matrix for the population distribution
+    # from T0 going forward (i.e., past when we have data on forecasts)
     OMEGA_orig = np.zeros((E + S, E + S))
     OMEGA_orig[0, :] = (1 - infmort_rate) * fert_rates[-1, :] + np.hstack(
         (imm_rates_orig[-1, 0], np.zeros(E + S - 1))
@@ -631,10 +632,13 @@ def get_pop_objs(
         pop_2D[y - initial_data_year, :] = pop_EpS
 
     # Generate time path of the population distribution after final year of data
-    omega_path_lev[:, 0] = pop_curr.copy()
-    for per in range(1, T + S):
+    omega_path_lev = np.zeros((T + S, E + S))
+    pop_curr = pop_2D[T0, :]
+    omega_path_lev[:T0, :] = pop_2D
+    omega_path_lev[T0, 0] = pop_curr
+    for per in range(T0 + 1, T + S):
         pop_next = np.dot(OMEGA_orig, pop_curr)
-        omega_path_lev[:, per] = pop_next.copy()
+        omega_path_lev[per, :] = pop_next.copy()
         pop_curr = pop_next.copy()
 
     # Force the population distribution after 1.5*S periods to be the
