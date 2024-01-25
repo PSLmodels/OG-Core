@@ -154,7 +154,6 @@ def firstdoughnutring(
         np.array([tr]),
         np.array([ubi]),
         theta[j],
-        p.e[-1, j],
         p.rho[0, -1],
         p.etr_params[0][-1],
         p.mtry_params[0][-1],
@@ -177,7 +176,6 @@ def firstdoughnutring(
         np.array([ubi]),
         theta[j],
         p.chi_n[-1],
-        p.e[-1, j],
         p.etr_params[0][-1],
         p.mtrx_params[0][-1],
         None,
@@ -261,7 +259,6 @@ def twist_doughnut(
     p_tilde_s = p_tilde[t : t + length]
     n_s = n_guess
     chi_n_s = p.chi_n[-length:]
-    e_s = p.e[-length:, j]
     rho_s = np.diag(p.rho[t : t + p.S, :], max(p.S - length, 0))
 
     error1 = household.FOC_savings(
@@ -276,7 +273,6 @@ def twist_doughnut(
         tr,
         ubi,
         theta,
-        e_s,
         rho_s,
         etr_params,
         mtry_params,
@@ -299,7 +295,6 @@ def twist_doughnut(
         ubi,
         theta,
         chi_n_s,
-        e_s,
         etr_params,
         mtrx_params,
         t,
@@ -823,6 +818,7 @@ def run_TPI(p, client=None):
             bmat_s[: p.T, :, :],
             n_mat[: p.T, :, :],
             p,
+            "TPI",
         )
 
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
@@ -908,6 +904,7 @@ def run_TPI(p, client=None):
             ubi[: p.T, :, :],
             theta,
             etr_params_4D,
+            p.e,
             p,
             None,
             "TPI",
@@ -1014,6 +1011,7 @@ def run_TPI(p, client=None):
             ubi[: p.T, :, :],
             theta,
             etr_params_4D,
+            p.e,
             p,
             None,
             "TPI",
@@ -1143,7 +1141,7 @@ def run_TPI(p, client=None):
         ),
         (1, p.S, 1),
     )
-    e_3D = np.tile(p.e.reshape(1, p.S, p.J), (p.T, 1, 1))
+    e_3D = p.e
     mtry_path = tax.MTR_income(
         r_p_path[: p.T],
         wpath[: p.T],

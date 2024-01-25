@@ -997,19 +997,9 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
         elif param_in.ndim == 2:
             # case if S by J input
             if param_in.shape[0] == dims[1]:
-                param_in = np.tile(
+                param_out = np.tile(
                     param_in.reshape(1, dims[1], dims[2]),
-                    (dims[0] - dims[1], 1, 1),
-                )
-                param_out = np.concatenate(
-                    (
-                        param_in,
-                        np.tile(
-                            param_in[-1, :, :].reshape(1, dims[1], dims[2]),
-                            (dims[1], 1, 1),
-                        ),
-                    ),
-                    axis=0,
+                    (dims[0], 1, 1),
                 )
             # case if T by S input
             elif param_in.shape[0] == dims[0] - dims[1]:
@@ -1036,16 +1026,19 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                 assert False
         elif param_in.ndim == 3:
             # this is the case where input varies by T, S, J
-            param_out = np.concatenate(
-                (
-                    param_in,
-                    np.tile(
-                        param_in[-1, :, :].reshape(1, dims[1], dims[2]),
-                        (dims[1], 1, 1),
+            if param_in.shape[0] > dims[0]:
+                param_out = param_in[: dims[0], :, :]
+            else:
+                param_out = np.concatenate(
+                    (
+                        param_in,
+                        np.tile(
+                            param_in[-1, :, :].reshape(1, dims[1], dims[2]),
+                            (dims[0] - param_in.shape[0], 1, 1),
+                        ),
                     ),
-                ),
-                axis=0,
-            )
+                    axis=0,
+                )
 
     return param_out
 
