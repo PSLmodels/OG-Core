@@ -352,7 +352,9 @@ def get_imm_rates(
         # back out imm rates by age for each year
         newborns = np.dot(fert_rates[y - start_year, :], pop_t)
         # new born imm_rate
-        imm_rates[0] = (pop_tp1[0] - (1 - mort_rates[y - start_year, 0]) * newborns) / pop_t[0]
+        imm_rates[0] = (
+            pop_tp1[0] - (1 - mort_rates[y - start_year, 0]) * newborns
+        ) / pop_t[0]
         # all other age imm_rates
         imm_rates[1:] = (
             pop_tp1[1:] - (1 - mort_rates[y - start_year, :-1]) * pop_t[:-1]
@@ -424,7 +426,7 @@ def get_pop_objs(
     min_age=0,
     max_age=100,
     initial_data_year=START_YEAR - 1,
-    final_data_year=START_YEAR + 100, # as default data year goes until T1
+    final_data_year=START_YEAR + 100,  # as default data year goes until T1
     country_id=UN_COUNTRY_CODE,
     imm_rates=None,
     mort_rates=None,
@@ -477,7 +479,9 @@ def get_pop_objs(
 
     """
     # TODO: this function does not generalize with T.  It assumes one model period is equal to one calendar year in the time dimesion (it does adjust for S, however)
-    T0 = final_data_year - initial_data_year + 1  # number of periods until constant fertility and mortality rates
+    T0 = (
+        final_data_year - initial_data_year + 1
+    )  # number of periods until constant fertility and mortality rates
     print(
         ", Inital Data year = ",
         initial_data_year,
@@ -631,7 +635,8 @@ def get_pop_objs(
         end_year=initial_data_year - 1,
     )
     pre_pop_sample = pre_pop_data[
-        (pre_pop_data["age"] >= min_age - 1) & (pre_pop_data["age"] <= max_age - 1)
+        (pre_pop_data["age"] >= min_age - 1)
+        & (pre_pop_data["age"] <= max_age - 1)
     ]
     pre_pop = pre_pop_sample.value.values
     pre_pop_EpS = pop_rebin(pre_pop, E + S)
@@ -651,7 +656,9 @@ def get_pop_objs(
     # steady-state distribution by adjusting immigration rates, holding
     # constant mortality, fertility, and SS growth rates
     imm_tol = 1e-14
-    fixper = int(1.5 * S)  # TODO: probably move out 1.5*S to sometime after/relative to T0 (final data year)
+    fixper = int(
+        1.5 * S
+    )  # TODO: probably move out 1.5*S to sometime after/relative to T0 (final data year)
     omega_SSfx = omega_path_lev[fixper, :] / omega_path_lev[fixper, :].sum()
     imm_objs = (
         fert_rates[fixper, :],
@@ -681,10 +688,9 @@ def get_pop_objs(
         - omega_path_lev[:-1, -S:].sum(axis=1)
     ) / omega_path_lev[:-1, -S:].sum(axis=1)
     g_n_path[0] = (
-        omega_path_lev[0, -S:].sum()
-        - pre_pop_EpS[-S:].sum()
+        omega_path_lev[0, -S:].sum() - pre_pop_EpS[-S:].sum()
     ) / pre_pop_EpS[-S:].sum()
-    g_n_path[fixper + 1:] = g_n_SS
+    g_n_path[fixper + 1 :] = g_n_SS
     omega_S_preTP = pre_pop_EpS[-S:] / pre_pop_EpS[-S:].sum()
     # imm_rates_mat = np.hstack(
     #     (
@@ -839,17 +845,17 @@ def get_pop_objs(
             S,
             output_dir=OUTPUT_DIR,
         )
-# TODO: get dimensions right in what follows:
-        # pp.plot_population_path(
-        #     age_per_EpS,
-        #     pop_pct,
-        #     omega_path_lev,
-        #     omega_SSfx,
-        #     initial_data_year,
-        #     E,
-        #     S,
-        #     output_dir=OUTPUT_DIR,
-        # )
+        # TODO: get dimensions right in what follows:
+        pp.plot_population_path(
+            age_per_EpS,
+            pop_pct,
+            omega_path_lev,
+            omega_SSfx,
+            initial_data_year,
+            initial_data_year,
+            S,
+            output_dir=OUTPUT_DIR,
+        )
 
     # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
     # mort_rates_S, and g_n_path
