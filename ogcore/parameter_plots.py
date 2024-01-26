@@ -493,7 +493,7 @@ def plot_population_path(
     Args:
         age_per_EpS (array_like): list of ages over which to plot
             population distribution
-        pop_2013_pct (array_like): population distribution in 2013
+        initial_pop_pct (array_like): initial year population distribution
         omega_path_lev (Numpy array): number of households by age
             over the transition path
         omega_SSfx (Numpy array): number of households by age
@@ -513,20 +513,20 @@ def plot_population_path(
     plt.plot(age_per_EpS, initial_pop_pct, label=str(data_year) + " pop.")
     plt.plot(
         age_per_EpS,
-        (omega_path_lev[:, 0] / omega_path_lev[:, 0].sum()),
+        (omega_path_lev[0, :] / omega_path_lev[0, :].sum()),
         label=str(curr_year) + " pop.",
     )
     plt.plot(
         age_per_EpS,
         (
-            omega_path_lev[:, int(0.5 * S)]
-            / omega_path_lev[:, int(0.5 * S)].sum()
+            omega_path_lev[int(0.5 * S), :]
+            / omega_path_lev[int(0.5 * S), :].sum()
         ),
         label="T=" + str(int(0.5 * S)) + " pop.",
     )
     plt.plot(
         age_per_EpS,
-        (omega_path_lev[:, int(S)] / omega_path_lev[:, int(S)].sum()),
+        (omega_path_lev[int(S), :] / omega_path_lev[int(S), :].sum()),
         label="T=" + str(int(S)) + " pop.",
     )
     plt.plot(age_per_EpS, omega_SSfx, label="Adj. SS pop.")
