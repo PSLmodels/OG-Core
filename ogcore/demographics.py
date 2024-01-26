@@ -488,7 +488,8 @@ def get_pop_objs(
     assert final_data_year >= 2011 and final_data_year <= 2100
     # Ensure that the last year of data used is before SS transition assumed
     # Really, it will need to be well before this
-    assert final_data_year < initial_data_year + (T0 + 1 - S)
+    assert final_data_year > initial_data_year
+    assert final_data_year < initial_data_year + T
 
     # Get fertility, mortality, and immigration rates
     # will be used to generate population distribution in future years
@@ -515,11 +516,12 @@ def get_pop_objs(
             fert_rates,
             np.tile(
                 fert_rates[-1, :].reshape(1, E + S),
-                (T0 - fert_rates.shape[0], 1),
+                (T - fert_rates.shape[0], 1),
             ),
         ),
         axis=0,
     )
+    print("Fert rates shape after tile = ", fert_rates.shape)
     if mort_rates is None:
         # get mort rates from UN data from initial year to data year
         mort_rates, infmort_rate = get_mort(
@@ -545,7 +547,7 @@ def get_pop_objs(
             mort_rates,
             np.tile(
                 mort_rates[-1, :].reshape(1, E + S),
-                (T0 - mort_rates.shape[0], 1),
+                (T - mort_rates.shape[0], 1),
             ),
         ),
         axis=0,
@@ -575,7 +577,7 @@ def get_pop_objs(
             imm_rates_orig,
             np.tile(
                 imm_rates_orig[-1, :].reshape(1, E + S),
-                (T0 - imm_rates_orig.shape[0], 1),
+                (T - imm_rates_orig.shape[0], 1),
             ),
         ),
         axis=0,
@@ -629,7 +631,7 @@ def get_pop_objs(
         end_year=initial_data_year - 1,
     )
     pre_pop_sample = pre_pop_data[
-        (pre_pop["age"] >= min_age - 1) & (pre_pop["age"] <= max_age - 1)
+        (pre_pop_data["age"] >= min_age - 1) & (pre_pop_data["age"] <= max_age - 1)
     ]
     pre_pop = pre_pop_sample.value.values
     pre_pop_EpS = pop_rebin(pre_pop, E + S)
@@ -637,10 +639,10 @@ def get_pop_objs(
 
     # Generate time path of the population distribution after final year of data
     omega_path_lev = np.zeros((T + S, E + S))
-    pop_curr = pop_2D[T0, :]
+    pop_curr = pop_2D[-1, :]
     omega_path_lev[:T0, :] = pop_2D
-    omega_path_lev[T0, 0] = pop_curr
-    for per in range(T0 + 1, T + S):
+    # omega_path_lev[T0, :] = pop_curr
+    for per in range(T0, T + S):
         pop_next = np.dot(OMEGA_orig, pop_curr)
         omega_path_lev[per, :] = pop_next.copy()
         pop_curr = pop_next.copy()
@@ -652,23 +654,23 @@ def get_pop_objs(
     fixper = int(1.5 * S)  # TODO: probably move out 1.5*S to sometime after/relative to T0 (final data year)
     omega_SSfx = omega_path_lev[fixper, :] / omega_path_lev[fixper, :].sum()
     imm_objs = (
-        fert_rates,
-        mort_rates,
+        fert_rates[fixper, :],
+        mort_rates[fixper, :],
         infmort_rate,
         omega_path_lev[fixper, :],
         g_n_SS,
     )
     imm_fulloutput = opt.fsolve(
         immsolve,
-        imm_rates_orig,
+        imm_rates_orig[fixper, :],
         args=(imm_objs),
         full_output=True,
         xtol=imm_tol,
     )
     imm_rates_adj = imm_fulloutput[0]
     imm_diagdict = imm_fulloutput[1]
-    omega_path_S = omega_path_lev[:, -S:] / np.tile(
-        omega_path_lev[:, -S:].sum(axis=1), (1, S)
+    omega_path_S = omega_path_lev[:, -S:] / (
+        omega_path_lev[:, -S:].sum(axis=1).reshape((T + S, 1))
     )
     omega_path_S[fixper:, :] = np.tile(
         omega_path_S[fixper, :].reshape((1, S)), (T + S - fixper, 1)
@@ -684,13 +686,23 @@ def get_pop_objs(
     ) / pre_pop_EpS[-S:].sum()
     g_n_path[fixper + 1:] = g_n_SS
     omega_S_preTP = pre_pop_EpS[-S:] / pre_pop_EpS[-S:].sum()
-    imm_rates_mat = np.hstack(
+    # imm_rates_mat = np.hstack(
+    #     (
+    #         np.tile(np.reshape(imm_rates_orig[E:], (1, S)), (fixper, 1)),
+    #         np.tile(
+    #             np.reshape(imm_rates_adj[E:], (1, S)), (T + S - fixper, 1)
+    #         ),
+    #     )
+    # )
+    imm_rates_mat = np.concatenate(
         (
-            np.tile(np.reshape(imm_rates_orig[E:], (1, S)), (fixper, 1)),
+            imm_rates_orig[:fixper, E:],
             np.tile(
-                np.reshape(imm_rates_adj[E:], (1, S)), (T + S - fixper, 1)
+                imm_rates_adj[E:].reshape(1, S),
+                (T - fixper, 1),
             ),
-        )
+        ),
+        axis=0,
     )
 
     if GraphDiag:
@@ -763,10 +775,10 @@ def get_pop_objs(
         # adjusted OMEGA matrix equals the steady-state growth rate of
         # the original OMEGA matrix
         OMEGA2 = np.zeros((E + S, E + S))
-        OMEGA2[0, :] = (1 - infmort_rate) * fert_rates + np.hstack(
+        OMEGA2[0, :] = (1 - infmort_rate) * fert_rates[-1, :] + np.hstack(
             (imm_rates_adj[0], np.zeros(E + S - 1))
         )
-        OMEGA2[1:, :-1] += np.diag(1 - mort_rates[:-1])
+        OMEGA2[1:, :-1] += np.diag(1 - mort_rates[-1, :-1])
         OMEGA2[1:, 1:] += np.diag(imm_rates_adj[1:])
         eigvalues2, eigvectors2 = np.linalg.eig(OMEGA2)
         g_n_SS_adj = (eigvalues[np.isreal(eigvalues2)].real).max() - 1
@@ -821,22 +833,23 @@ def get_pop_objs(
         )
         pp.plot_imm_fixed(
             age_per_EpS,
-            imm_rates_orig,
+            imm_rates_orig[fixper - 1, :],
             imm_rates_adj,
             E,
             S,
             output_dir=OUTPUT_DIR,
         )
-        pp.plot_population_path(
-            age_per_EpS,
-            pop_pct,
-            omega_path_lev,
-            omega_SSfx,
-            initial_data_year
-            E,
-            S,
-            output_dir=OUTPUT_DIR,
-        )
+# TODO: get dimensions right in what follows:
+        # pp.plot_population_path(
+        #     age_per_EpS,
+        #     pop_pct,
+        #     omega_path_lev,
+        #     omega_SSfx,
+        #     initial_data_year,
+        #     E,
+        #     S,
+        #     output_dir=OUTPUT_DIR,
+        # )
 
     # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
     # mort_rates_S, and g_n_path
