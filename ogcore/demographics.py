@@ -860,12 +860,12 @@ def get_pop_objs(
     # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
     # mort_rates_S, and g_n_path
     pop_dict = {
-        "omega": omega_path_S.T,
+        "omega": omega_path_S,
         "g_n_ss": g_n_SS,
         "omega_SS": omega_SSfx[-S:] / omega_SSfx[-S:].sum(),
         "rho": [mort_rates_S],
         "g_n": g_n_path,
-        "imm_rates": imm_rates_mat.T,
+        "imm_rates": imm_rates_mat,
         "omega_S_preTP": omega_S_preTP,
     }
 
