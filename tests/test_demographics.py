@@ -46,13 +46,15 @@ def test_pop_smooth():
     # in that period
     assert np.all(
         np.abs(
-            pop_dict["omega"][:fixper-2, :] - pop_dict["omega"][1:fixper -1, :]
+            pop_dict["omega"][: fixper - 2, :]
+            - pop_dict["omega"][1 : fixper - 1, :]
         )
         < 0.003
     )
     assert np.all(
         np.abs(
-            pop_dict["omega"][fixper:-1, :] - pop_dict["omega"][fixper+1:, :]
+            pop_dict["omega"][fixper:-1, :]
+            - pop_dict["omega"][fixper + 1 :, :]
         )
         < 0.0001
     )
@@ -84,15 +86,11 @@ def test_pop_growth_smooth():
     # to achieve the SS more quickly so the min dist is not super small
     # in that period
     assert np.all(
-        np.abs(
-            pop_dict["g_n"][:fixper-2] - pop_dict["g_n"][1:fixper -1]
-        )
+        np.abs(pop_dict["g_n"][: fixper - 2] - pop_dict["g_n"][1 : fixper - 1])
         < 0.003
     )
     assert np.all(
-        np.abs(
-            pop_dict["g_n"][fixper:-1] - pop_dict["g_n"][fixper+1:]
-        )
+        np.abs(pop_dict["g_n"][fixper:-1] - pop_dict["g_n"][fixper + 1 :])
         < 0.003
     )
 
@@ -115,13 +113,15 @@ def test_imm_smooth():
     # in that period
     assert np.all(
         np.abs(
-            pop_dict["imm_rates"][:fixper-2, :] - pop_dict["imm_rates"][1:fixper -1, :]
+            pop_dict["imm_rates"][: fixper - 2, :]
+            - pop_dict["imm_rates"][1 : fixper - 1, :]
         )
         < 0.0001
     )
     assert np.all(
         np.abs(
-            pop_dict["imm_rates"][fixper:-1, :] - pop_dict["imm_rates"][fixper+1:, :]
+            pop_dict["imm_rates"][fixper:-1, :]
+            - pop_dict["imm_rates"][fixper + 1 :, :]
         )
         < 0.0001
     )
