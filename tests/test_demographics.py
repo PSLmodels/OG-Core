@@ -183,7 +183,7 @@ def test_custom_series():
     S = 80
     T = int(round(4.0 * S))
     start_year = 2019
-    fert_rates = np.ones((1, S)) * 0.01
+    imm_rates = np.ones((1, E + S)) * 0.01
     pop_dict = demographics.get_pop_objs(
         E,
         S,
@@ -193,9 +193,10 @@ def test_custom_series():
         start_year - 1,
         start_year,
         GraphDiag=False,
-        fert_rates=fert_rates,
+        imm_rates=imm_rates,
     )
-    assert np.allclose(pop_dict["fert_rates"][0, :], fert_rates)
+    assert np.allclose(pop_dict["imm_rates"][0, :], imm_rates[0, E:])
+
 
 # Test that SS solved for
 def test_SS_dist():
