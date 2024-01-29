@@ -507,7 +507,6 @@ def get_pop_objs(
             initial_data_year,
             final_data_year,
         )
-        print("Fert rates shape = ", fert_rates.shape)
     else:
         # ensure that user provided fert_rates are of the correct shape
         assert fert_rates.shape[0] < T0
@@ -525,7 +524,6 @@ def get_pop_objs(
         ),
         axis=0,
     )
-    print("Fert rates shape after tile = ", fert_rates.shape)
     if mort_rates is None:
         # get mort rates from UN data from initial year to data year
         mort_rates, infmort_rate = get_mort(
@@ -536,7 +534,6 @@ def get_pop_objs(
             initial_data_year,
             final_data_year,
         )
-        print("Mort rates shape = ", mort_rates.shape)
     # mort_rates_S = mort_rates[-S:]  #TODO: think about this line
     else:
         # ensure that user provided mort_rates are of the correct shape
