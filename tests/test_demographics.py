@@ -76,7 +76,7 @@ def test_get_fert():
     """
     S = 100
     fert_rates = demographics.get_fert(S, 0, 100, graph=False)
-    assert fert_rates.shape[0] == S
+    assert fert_rates.shape[1] == S
 
 
 def test_get_mort():
@@ -85,7 +85,7 @@ def test_get_mort():
     """
     S = 100
     mort_rates, infmort_rate = demographics.get_mort(S, 0, 100, graph=False)
-    assert mort_rates.shape[0] == S
+    assert mort_rates.shape[1] == S
 
 
 def test_infant_mort():
@@ -114,4 +114,4 @@ def test_get_imm_rates():
     """
     S = 100
     imm_rates = demographics.get_imm_rates(S, 0, 100)
-    assert imm_rates.shape[0] == S
+    assert imm_rates.shape[1] == S
