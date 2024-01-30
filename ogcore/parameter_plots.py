@@ -13,8 +13,9 @@ def plot_imm_rates(
     imm_rates,
     start_year=DEFAULT_START_YEAR,
     years_to_plot=[DEFAULT_START_YEAR],
+    include_title=False,
     source="United Nations, World Population Prospects",
-    output_dir=None,
+    path=None,
 ):
     """
     Plot fertility rates from the data
@@ -25,7 +26,7 @@ def plot_imm_rates(
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
         source (str): data source for fertility rates
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -50,6 +51,8 @@ def plot_imm_rates(
         fontsize=9,
     )
     plt.tight_layout(rect=(0, 0.035, 1, 1))
+    if include_title:
+        plt.title("Immigration Rates")
     # Save or return figure
     if output_dir:
         output_path = os.path.join(output_dir, "imm_rates")
@@ -295,7 +298,7 @@ def plot_fert_rates(
     start_year=DEFAULT_START_YEAR,
     years_to_plot=[DEFAULT_START_YEAR],
     source="United Nations, World Population Prospects",
-    output_dir=None,
+    path=None,
 ):
     """
     Plot fertility rates from the data
@@ -306,7 +309,7 @@ def plot_fert_rates(
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
         source (str): data source for fertility rates
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -346,7 +349,7 @@ def plot_mort_rates_data(
     start_year=DEFAULT_START_YEAR,
     years_to_plot=[DEFAULT_START_YEAR],
     source="United Nations, World Population Prospects",
-    output_dir=None,
+    path=None,
 ):
     """
     Plots mortality rates from the data.
@@ -357,7 +360,7 @@ def plot_mort_rates_data(
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
         source (str): data source for fertility rates
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -393,7 +396,7 @@ def plot_mort_rates_data(
 
 
 def plot_omega_fixed(
-    age_per_EpS, omega_SS_orig, omega_SSfx, E, S, output_dir=None
+    age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None
 ):
     """
     Plot the steady-state population distribution implied by the data
@@ -411,7 +414,7 @@ def plot_omega_fixed(
             after adjustment to immigration rates
         E (int): age at which household becomes economically active
         S (int): number of years which household is economically active
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -437,7 +440,7 @@ def plot_omega_fixed(
 
 
 def plot_imm_fixed(
-    age_per_EpS, imm_rates_orig, imm_rates_adj, E, S, output_dir=None
+    age_per_EpS, imm_rates_orig, imm_rates_adj, E, S, path=None
 ):
     """
     Plot the immigration rates implied by the data on population,
@@ -452,7 +455,7 @@ def plot_imm_fixed(
         imm_rates_adj (Numpy array): adjusted immigration rates by age
         E (int): age at which household becomes economically active
         S (int): number of years which household is economically active
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -485,7 +488,7 @@ def plot_population_path(
     data_year,
     curr_year,
     S,
-    output_dir=None,
+    path=None,
 ):
     """
     Plot the distribution of the population over age for various years.
@@ -501,7 +504,7 @@ def plot_population_path(
         data_year (int): year of data for initial_pop_pct
         curr_year (int): current year in the model
         S (int): number of years which household is economically active
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -554,7 +557,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
             rates
         s (int): age of individual, >= 21
         t (int): year of analysis, >= 2016
-        output_dir (str): output directory for saving plot files
+        path (str): output directory for saving plot files
 
     Returns:
         None
@@ -689,7 +692,7 @@ def txfunc_graph(
         tax_func_type (str): functional form of tax functions
         params_to_plot (array_like or function): tax function parameters or
             nonparametric function
-        output_dir (str): output directory for saving plot files
+        path (str): output directory for saving plot files
 
     Returns:
         None
@@ -804,7 +807,7 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir, round):
             size is BW x S
         start_year (int): first year of budget window
         varstr (str): name of tax function being evaluated
-        output_dir (str): path to save graph to
+        path (str): path to save graph to
         round (int): which round of sweeping for outliers (0, 1, or 2)
 
     Returns:
@@ -833,7 +836,7 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir, round):
 
 
 def plot_income_data(
-    ages, abil_midp, abil_pcts, emat, t=None, output_dir=None, filesuffix=""
+    ages, abil_midp, abil_pcts, emat, t=None, path=None, filesuffix=""
 ):
     """
     This function graphs ability matrix in 3D, 2D, log, and nolog
