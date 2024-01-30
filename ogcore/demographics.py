@@ -160,7 +160,7 @@ def get_fert(
                 fert_rates_2D,
                 start_year,
                 [start_year, end_year],
-                output_dir=plot_path,
+                path=plot_path,
             )
             return fert_rates_2D
         else:
@@ -229,7 +229,7 @@ def get_mort(
                 mort_rates_2D,
                 start_year,
                 [start_year, end_year],
-                output_dir=plot_path,
+                path=plot_path,
             )
             return mort_rates_2D, infmort_rate
         else:
@@ -369,7 +369,7 @@ def get_imm_rates(
                 imm_rates_2D,
                 start_year,
                 [start_year, end_year],
-                output_dir=plot_path,
+                path=plot_path,
             )
             return imm_rates_2D
         else:
@@ -832,7 +832,7 @@ def get_pop_objs(
         # plots
         age_per_EpS = np.arange(1, E + S + 1)
         pp.plot_omega_fixed(
-            age_per_EpS, omega_SS_orig, omega_SSfx, E, S, output_dir=OUTPUT_DIR
+            age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=OUTPUT_DIR
         )
         pp.plot_imm_fixed(
             age_per_EpS,
@@ -840,7 +840,7 @@ def get_pop_objs(
             imm_rates_adj,
             E,
             S,
-            output_dir=OUTPUT_DIR,
+            path=OUTPUT_DIR,
         )
         # TODO: get dimensions right in what follows:
         pp.plot_population_path(
@@ -851,7 +851,7 @@ def get_pop_objs(
             initial_data_year,
             initial_data_year,
             S,
-            output_dir=OUTPUT_DIR,
+            path=OUTPUT_DIR,
         )
 
     # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
