@@ -944,7 +944,9 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                         np.ones((dims[0] - param_in.size)) * param_in[-1],
                     )
                 )
-                param_out = np.tile(param_out.reshape(dims[0], 1), (1, dims[1]))
+                param_out = np.tile(
+                    param_out.reshape(dims[0], 1), (1, dims[1])
+                )
         elif param_in.ndim == 2:
             # case where enter values along 2 dimensions, but those aren't
             # complete

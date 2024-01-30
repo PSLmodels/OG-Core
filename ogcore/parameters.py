@@ -331,7 +331,9 @@ class Specifications(paramtools.Parameters):
             reshape_chi_n = np.zeros((self.T + self.S, self.S))
             for t in range(self.chi_n.shape[0]):
                 self.chi_n_interp = si.interp1d(
-                    self.age_midp_80, np.squeeze(self.chi_n[t, :]), kind="cubic"
+                    self.age_midp_80,
+                    np.squeeze(self.chi_n[t, :]),
+                    kind="cubic",
                 )
                 self.newstep = 80.0 / self.S
                 self.age_midp_S = np.linspace(
