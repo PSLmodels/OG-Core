@@ -262,6 +262,12 @@ class Specifications(paramtools.Parameters):
             param_in, dims=(self.T, self.S, self.J), item="e"
         )
         setattr(self, "e", param_out)
+        # Extrapolate chi_n over T + S
+        param_in = getattr(self, "chi_n")
+        param_out = extrapolate_arrays(
+            param_in, dims=(self.T + self.S, self.S), item="chi_n"
+        )
+        setattr(self, "chi_n", param_out)
 
         # make sure zeta matrix sums to one (e.g., default off due to rounding)
         self.zeta = self.zeta / self.zeta.sum()
@@ -320,16 +326,19 @@ class Specifications(paramtools.Parameters):
             self.omega_S_preTP = self.omega_SS
 
         # Interpolate chi_n and create omega_SS_80 if necessary
-        if self.S < 80 and len(self.chi_n) == 80:
+        if self.S < 80 and self.chi_n.shape[1] == 80:
             self.age_midp_80 = np.linspace(20.5, 99.5, 80)
-            self.chi_n_interp = si.interp1d(
-                self.age_midp_80, np.squeeze(self.chi_n), kind="cubic"
-            )
-            self.newstep = 80.0 / self.S
-            self.age_midp_S = np.linspace(
-                20 + 0.5 * self.newstep, 100 - 0.5 * self.newstep, self.S
-            )
-            self.chi_n = self.chi_n_interp(self.age_midp_S)
+            reshape_chi_n = np.zeros((self.T + self.S, self.S))
+            for t in range(self.chi_n.shape[0]):
+                self.chi_n_interp = si.interp1d(
+                    self.age_midp_80, np.squeeze(self.chi_n[t, :]), kind="cubic"
+                )
+                self.newstep = 80.0 / self.S
+                self.age_midp_S = np.linspace(
+                    20 + 0.5 * self.newstep, 100 - 0.5 * self.newstep, self.S
+                )
+                reshape_chi_n[t, :] = self.chi_n_interp(self.age_midp_S)
+            self.chi_n = reshape_chi_n
 
         # Create time series of stationarized UBI transfers
         self.ubi_nom_array = self.get_ubi_nom_objs()
