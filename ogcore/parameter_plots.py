@@ -395,9 +395,7 @@ def plot_mort_rates_data(
         return fig
 
 
-def plot_omega_fixed(
-    age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None
-):
+def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None):
     """
     Plot the steady-state population distribution implied by the data
     on fertility and mortality rates versus the the steady-state
