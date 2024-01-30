@@ -128,6 +128,30 @@ class Specifications(paramtools.Parameters):
                 np.ones(self.T + self.S - self.BW) * self.frac_tax_payroll[-1],
             )
 
+        # Interpolate chi_n and create omega_SS_80 if necessary
+        if self.S < 80 and self.chi_n.shape[-1] == 80:
+            self.age_midp_80 = np.linspace(20.5, 99.5, 80)
+            reshape_chi_n = np.zeros((self.T + self.S, self.S))
+            for t in range(self.T + self.S):
+                if self.chi_n.ndim == 1:
+                    self.chi_n_interp = si.interp1d(
+                        self.age_midp_80,
+                        np.squeeze(self.chi_n),
+                        kind="cubic",
+                    )
+                else:
+                    self.chi_n_interp = si.interp1d(
+                        self.age_midp_80,
+                        np.squeeze(self.chi_n[t, :]),
+                        kind="cubic",
+                    )
+                self.newstep = 80.0 / self.S
+                self.age_midp_S = np.linspace(
+                    20 + 0.5 * self.newstep, 100 - 0.5 * self.newstep, self.S
+                )
+                reshape_chi_n[t, :] = self.chi_n_interp(self.age_midp_S)
+            self.chi_n = reshape_chi_n
+
         # Extend parameters that may vary over the time path
         tp_param_list = [
             "alpha_G",
@@ -324,23 +348,6 @@ class Specifications(paramtools.Parameters):
                 np.reshape(self.omega_SS, (1, self.S)), (self.T + self.S, 1)
             )
             self.omega_S_preTP = self.omega_SS
-
-        # Interpolate chi_n and create omega_SS_80 if necessary
-        if self.S < 80 and self.chi_n.shape[1] == 80:
-            self.age_midp_80 = np.linspace(20.5, 99.5, 80)
-            reshape_chi_n = np.zeros((self.T + self.S, self.S))
-            for t in range(self.chi_n.shape[0]):
-                self.chi_n_interp = si.interp1d(
-                    self.age_midp_80,
-                    np.squeeze(self.chi_n[t, :]),
-                    kind="cubic",
-                )
-                self.newstep = 80.0 / self.S
-                self.age_midp_S = np.linspace(
-                    20 + 0.5 * self.newstep, 100 - 0.5 * self.newstep, self.S
-                )
-                reshape_chi_n[t, :] = self.chi_n_interp(self.age_midp_S)
-            self.chi_n = reshape_chi_n
 
         # Create time series of stationarized UBI transfers
         self.ubi_nom_array = self.get_ubi_nom_objs()
