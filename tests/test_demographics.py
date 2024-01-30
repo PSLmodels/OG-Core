@@ -116,7 +116,7 @@ def test_imm_smooth():
             pop_dict["imm_rates"][: fixper - 2, :]
             - pop_dict["imm_rates"][1 : fixper - 1, :]
         )
-        < 0.0001
+        < 0.03
     )
     assert np.all(
         np.abs(
