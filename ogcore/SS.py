@@ -98,7 +98,7 @@ def euler_equation_solver(guesses, *args):
         tr,
         ubi,
         theta,
-        p.chi_n,
+        p.chi_n[-1, :],
         p.etr_params[-1],
         p.mtrx_params[-1],
         None,

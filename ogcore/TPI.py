@@ -175,7 +175,7 @@ def firstdoughnutring(
         np.array([tr]),
         np.array([ubi]),
         theta[j],
-        p.chi_n[-1],
+        p.chi_n[0, -1],
         p.etr_params[0][-1],
         p.mtrx_params[0][-1],
         None,
@@ -258,7 +258,7 @@ def twist_doughnut(
     r_s = r[t : t + length]
     p_tilde_s = p_tilde[t : t + length]
     n_s = n_guess
-    chi_n_s = p.chi_n[-length:]
+    chi_n_s = np.diag(p.chi_n[t : t + p.S, :], max(p.S - length, 0))
     rho_s = np.diag(p.rho[t : t + p.S, :], max(p.S - length, 0))
 
     error1 = household.FOC_savings(
