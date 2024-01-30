@@ -54,8 +54,8 @@ def plot_imm_rates(
     if include_title:
         plt.title("Immigration Rates")
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "imm_rates")
+    if path:
+        output_path = os.path.join(path, "imm_rates")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -335,8 +335,8 @@ def plot_fert_rates(
     )
     plt.tight_layout(rect=(0, 0.035, 1, 1))
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "fert_rates")
+    if path:
+        output_path = os.path.join(path, "fert_rates")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -386,8 +386,8 @@ def plot_mort_rates_data(
     )
     plt.tight_layout(rect=(0, 0.035, 1, 1))
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "mort_rates")
+    if path:
+        output_path = os.path.join(path, "mort_rates")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -431,8 +431,8 @@ def plot_omega_fixed(
     plt.xlim((0, E + S + 1))
     plt.legend(loc="upper right")
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "OrigVsFixSSpop")
+    if path:
+        output_path = os.path.join(path, "OrigVsFixSSpop")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -472,8 +472,8 @@ def plot_imm_fixed(
     plt.xlim((0, E + S + 1))
     plt.legend(loc="upper center")
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "OrigVsAdjImm")
+    if path:
+        output_path = os.path.join(path, "OrigVsAdjImm")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -538,8 +538,8 @@ def plot_population_path(
     plt.ylabel(r"Pop. dist'n $\omega_{s}$")
     plt.legend(loc="lower left")
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "PopDistPath")
+    if path:
+        output_path = os.path.join(path, "PopDistPath")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -861,15 +861,15 @@ def plot_income_data(
     J = abil_midp.shape[0]
     abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
     cmap1 = matplotlib.cm.get_cmap("summer")
-    if output_dir:
+    if path:
         # Make sure that directory is created
-        utils.mkdirs(output_dir)
+        utils.mkdirs(path)
         if J == 1:
             # Plot of 2D, J=1 in levels
             plt.figure()
             plt.plot(ages, emat[t, :, :])
             filename = "ability_2D_lev" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
+            fullpath = os.path.join(path, filename)
             plt.savefig(fullpath, dpi=300)
             plt.close()
 
@@ -877,7 +877,7 @@ def plot_income_data(
             plt.figure()
             plt.plot(ages, np.log(emat[t, :, :]))
             filename = "ability_2D_log" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
+            fullpath = os.path.join(path, filename)
             plt.savefig(fullpath, dpi=300)
             plt.close()
         else:
@@ -895,7 +895,7 @@ def plot_income_data(
             ax10.set_ylabel(r"ability type -$j$")
             ax10.set_zlabel(r"ability $e_{j,s}$")
             filename = "ability_3D_lev" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
+            fullpath = os.path.join(path, filename)
             plt.savefig(fullpath, dpi=300)
             plt.close()
 
@@ -913,7 +913,7 @@ def plot_income_data(
             ax11.set_ylabel(r"ability type -$j$")
             ax11.set_zlabel(r"log ability $log(e_{j,s})$")
             filename = "ability_3D_log" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
+            fullpath = os.path.join(path, filename)
             plt.savefig(fullpath, dpi=300)
             plt.close()
 
@@ -961,7 +961,7 @@ def plot_income_data(
                 ax.set_xlabel(r"age-$s$")
                 ax.set_ylabel(r"log ability $log(e_{j,s})$")
                 filename = "ability_2D_log" + filesuffix
-                fullpath = os.path.join(output_dir, filename)
+                fullpath = os.path.join(path, filename)
                 plt.savefig(fullpath, dpi=300)
                 plt.close()
     else:
