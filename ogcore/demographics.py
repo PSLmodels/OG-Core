@@ -4,6 +4,7 @@ Functions for generating demographic objects necessary for the OG-USA
 model
 ------------------------------------------------------------------------
 """
+
 # Import packages
 import os
 import numpy as np
