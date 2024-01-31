@@ -13,7 +13,7 @@ def test_get_pop_objs():
     start_year = 2019
 
     pop_dict = demographics.get_pop_objs(
-        E, S, T, 1, 100, start_year - 1, start_year, GraphDiag=False
+        E, S, T, 0, 99, start_year - 1, start_year, GraphDiag=False
     )
 
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-1, :])
@@ -32,8 +32,8 @@ def test_pop_smooth():
         E,
         S,
         T,
-        1,
-        100,
+        0,
+        99,
         start_year - 1,
         start_year,
         country_id="840",
@@ -73,8 +73,8 @@ def test_pop_growth_smooth():
         E,
         S,
         T,
-        1,
-        100,
+        0,
+        99,
         start_year - 1,
         start_year,
         country_id="840",
@@ -105,7 +105,7 @@ def test_imm_smooth():
     start_year = 2019
     fixper = int(1.5 * S)
     pop_dict = demographics.get_pop_objs(
-        E, S, T, 1, 100, start_year - 1, start_year, GraphDiag=False
+        E, S, T, 0, 99, start_year - 1, start_year, GraphDiag=False
     )
     # assert diffs are small
     # note that in the "fixper" we impost a jump in immigration rates
@@ -132,7 +132,7 @@ def test_get_fert():
     Test of function to get fertility rates from data
     """
     S = 100
-    fert_rates = demographics.get_fert(S, 0, 100, graph=False)
+    fert_rates = demographics.get_fert(S, 0, 99, graph=False)
     assert fert_rates.shape[1] == S
 
 
@@ -141,7 +141,7 @@ def test_get_mort():
     Test of function to get mortality rates from data
     """
     S = 100
-    mort_rates, infmort_rate = demographics.get_mort(S, 0, 100, graph=False)
+    mort_rates, infmort_rate = demographics.get_mort(S, 0, 99, graph=False)
     assert mort_rates.shape[1] == S
 
 
@@ -149,7 +149,7 @@ def test_infant_mort():
     """
     Test of function to get mortality rates from data
     """
-    mort_rates, infmort_rate = demographics.get_mort(100, 0, 100, graph=False)
+    mort_rates, infmort_rate = demographics.get_mort(100, 0, 99, graph=False)
     # check that infant mortality equals rate hardcoded into
     # demographics.py
     assert infmort_rate == 0.00491958
@@ -170,7 +170,7 @@ def test_get_imm_rates():
     Test of function to solve for immigration rates from population data
     """
     S = 100
-    imm_rates = demographics.get_imm_rates(S, 0, 100)
+    imm_rates = demographics.get_imm_rates(S, 0, 99)
     assert imm_rates.shape[1] == S
 
 
@@ -188,8 +188,8 @@ def test_custom_series():
         E,
         S,
         T,
-        1,
-        100,
+        0,
+        99,
         start_year - 1,
         start_year,
         GraphDiag=False,
@@ -210,7 +210,7 @@ def test_SS_dist():
     start_year = 2019
 
     pop_dict = demographics.get_pop_objs(
-        E, S, T, 1, 100, start_year - 1, start_year, GraphDiag=False
+        E, S, T, 0, 99, start_year - 1, start_year, GraphDiag=False
     )
     # Assert that S reached by period T
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-S, :])
