@@ -93,7 +93,7 @@ def get_un_data(
         df.loc[df.age == "100+", "age"] = 100
         df.age = df.age.astype(int)
         df.year = df.year.astype(int)
-        df = df[df.age < 100] # need to drop 100+ age category
+        df = df[df.age < 100]  # need to drop 100+ age category
     else:
         print(
             f"Failed to retrieve population data. HTTP status code: {response.status_code}"
@@ -564,8 +564,12 @@ def get_pop_objs(
         ),
         axis=0,
     )
-    infmort_rates = np.concatenate((
-        infmort_rates, np.tile(infmort_rates[-1], (T - infmort_rates.shape[0]))))
+    infmort_rates = np.concatenate(
+        (
+            infmort_rates,
+            np.tile(infmort_rates[-1], (T - infmort_rates.shape[0])),
+        )
+    )
     mort_rates_S = mort_rates[:, E:]
     if imm_rates is None:
         imm_rates_orig = get_imm_rates(
@@ -616,7 +620,6 @@ def get_pop_objs(
     ].real
     omega_SS_orig = eigvec_raw / eigvec_raw.sum()
 
-
     # TODO: add a "if pop_dist is None" and an else statement below
     # so that it reads in user provided data
     # BUT, will want a test to make sure pop data consistent with fert, mort, imm rates...
@@ -651,8 +654,7 @@ def get_pop_objs(
         end_year=initial_data_year - 1,
     )
     pre_pop_sample = pre_pop_data[
-        (pre_pop_data["age"] >= min_age)
-        & (pre_pop_data["age"] <= max_age)
+        (pre_pop_data["age"] >= min_age) & (pre_pop_data["age"] <= max_age)
     ]
     pre_pop = pre_pop_sample.value.values
     pre_pop_EpS = pop_rebin(pre_pop, E + S)
