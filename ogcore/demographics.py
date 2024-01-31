@@ -268,10 +268,8 @@ def pop_rebin(curr_pop_dist, totpers_new):
 
     # Number of periods in original data
     totpers_orig = len(curr_pop_dist)
-    print("CHECK lengths", totpers_new, totpers_orig)
     if int(totpers_new) == totpers_orig:
         curr_pop_new = curr_pop_dist
-        print("SAme length, ", totpers_new)
     elif int(totpers_new) < totpers_orig:
         num_sub_bins = float(10000)
         curr_pop_sub = np.repeat(
@@ -286,7 +284,6 @@ def pop_rebin(curr_pop_dist, totpers_new):
             curr_pop_new[i] = curr_pop_sub[beg_sub_bin:end_sub_bin].sum()
         # Return curr_pop_new to single precision float (float32)
         # datatype
-        print("dfif length", totpers_new, totpers_orig)
         curr_pop_new = np.float32(curr_pop_new)
 
     return curr_pop_new
@@ -567,8 +564,6 @@ def get_pop_objs(
         ),
         axis=0,
     )
-    print("Inf mort rates = ", infmort_rates)
-    print("Infmort rates shape", infmort_rates.shape)
     infmort_rates = np.concatenate((
         infmort_rates, np.tile(infmort_rates[-1], (T - infmort_rates.shape[0]))))
     mort_rates_S = mort_rates[:, E:]
@@ -637,7 +632,6 @@ def get_pop_objs(
             start_year=y,
             end_year=y,
         )
-        print("pop data ages = ", pop_data.age.min(), pop_data.age.max())
         pop_data_sample = pop_data[
             (pop_data["age"] >= min_age) & (pop_data["age"] <= max_age)
         ]
@@ -645,7 +639,6 @@ def get_pop_objs(
         # Generate the current population distribution given that E+S might
         # be less than max_age-min_age+1
         # age_per_EpS = np.arange(1, E + S + 1)
-        print("SHAPING: ", min_age, max_age, E+S, pop.shape)
         pop_EpS = pop_rebin(pop, E + S)
         pop_pct = pop_EpS / pop_EpS.sum()
         pop_2D[y - initial_data_year, :] = pop_EpS
