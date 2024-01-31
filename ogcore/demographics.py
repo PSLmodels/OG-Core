@@ -93,7 +93,7 @@ def get_un_data(
         df.loc[df.age == "100+", "age"] = 100
         df.age = df.age.astype(int)
         df.year = df.year.astype(int)
-        df = df[df.age <= 100]
+        df = df[df.age < 100] # need to drop 100+ age category
     else:
         print(
             f"Failed to retrieve population data. HTTP status code: {response.status_code}"
@@ -106,7 +106,7 @@ def get_un_data(
 def get_fert(
     totpers=100,
     min_age=0,
-    max_age=100,
+    max_age=99,
     country_id=UN_COUNTRY_CODE,
     start_year=START_YEAR,
     end_year=END_YEAR,
@@ -178,7 +178,7 @@ def get_fert(
 def get_mort(
     totpers=100,
     min_age=0,
-    max_age=100,
+    max_age=99,
     country_id=UN_COUNTRY_CODE,
     start_year=START_YEAR,
     end_year=END_YEAR,
@@ -207,6 +207,7 @@ def get_mort(
 
     """
     mort_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
+    infmort_rate_vec = np.zeros(end_year + 1 - start_year)
     # Read UN data
     for y in range(start_year, end_year + 1):
         df = get_un_data("80", country_id=country_id, start_year=y, end_year=y)
@@ -217,11 +218,12 @@ def get_mort(
         infmort_rate = mort_rates_data[0]
         # Rebin data in the case that model period not equal to one calendar
         # year
-        mort_rates = pop_rebin(mort_rates_data[1:], totpers)
-        # Mortality rate in last period is set to 1
-        mort_rates[-1] = 1
+        # make mort rates those from age 1-100 and set to 1 for age 100
+        mort_rates_data = np.append(mort_rates_data[1:], 1.0)
+        mort_rates = pop_rebin(mort_rates_data, totpers)
         # put in 2D array
         mort_rates_2D[y - start_year, :] = mort_rates
+        infmort_rate_vec[y - start_year] = infmort_rate
 
     # Create plots if needed
     if graph:
@@ -232,16 +234,16 @@ def get_mort(
                 [start_year, end_year],
                 path=plot_path,
             )
-            return mort_rates_2D, infmort_rate
+            return mort_rates_2D, infmort_rate_vec
         else:
             fig = pp.plot_mort_rates_data(
                 mort_rates_2D,
                 start_year,
                 [start_year, end_year],
             )
-            return mort_rates_2D, infmort_rate, fig
+            return mort_rates_2D, infmort_rate_vec, fig
     else:
-        return mort_rates_2D, infmort_rate
+        return mort_rates_2D, infmort_rate_vec
 
 
 def pop_rebin(curr_pop_dist, totpers_new):
@@ -263,10 +265,13 @@ def pop_rebin(curr_pop_dist, totpers_new):
     """
     # Number of periods in original data
     assert totpers_new >= 3
+
     # Number of periods in original data
     totpers_orig = len(curr_pop_dist)
+    print("CHECK lengths", totpers_new, totpers_orig)
     if int(totpers_new) == totpers_orig:
         curr_pop_new = curr_pop_dist
+        print("SAme length, ", totpers_new)
     elif int(totpers_new) < totpers_orig:
         num_sub_bins = float(10000)
         curr_pop_sub = np.repeat(
@@ -281,6 +286,7 @@ def pop_rebin(curr_pop_dist, totpers_new):
             curr_pop_new[i] = curr_pop_sub[beg_sub_bin:end_sub_bin].sum()
         # Return curr_pop_new to single precision float (float32)
         # datatype
+        print("dfif length", totpers_new, totpers_orig)
         curr_pop_new = np.float32(curr_pop_new)
 
     return curr_pop_new
@@ -289,9 +295,10 @@ def pop_rebin(curr_pop_dist, totpers_new):
 def get_imm_rates(
     totpers=100,
     min_age=0,
-    max_age=100,
+    max_age=99,
     fert_rates=None,
     mort_rates=None,
+    infmort_rates=None,
     country_id=UN_COUNTRY_CODE,
     start_year=START_YEAR,
     end_year=END_YEAR,
@@ -330,22 +337,24 @@ def get_imm_rates(
         assert fert_rates.shape == mort_rates.shape
     if mort_rates is None:
         # get mort rates from UN data from initial year to data year
-        mort_rates, infmort_rate = get_mort(
+        mort_rates, infmort_rates = get_mort(
             totpers, min_age, max_age, country_id, start_year, end_year
         )
     else:
         # ensure that user provided fert_rates and mort rates of same size
         assert fert_rates.shape == mort_rates.shape
+        assert infmort_rates is not None
+        assert infmort_rates.shape[0] == mort_rates.shape[0]
     # Read UN data
     for y in range(start_year, end_year + 1):
         # need to read UN population data by age for each year
         df = get_un_data("47", country_id=country_id, start_year=y, end_year=y)
-        pop_t = df[(df.age <= 100) & (df.age > 0)].value.values
+        pop_t = df[(df.age < 100) & (df.age >= 0)].value.values
         pop_t = pop_rebin(pop_t, totpers)
         df = get_un_data(
             "47", country_id=country_id, start_year=y + 1, end_year=y + 1
         )
-        pop_tp1 = df[(df.age <= 100) & (df.age > 0)].value.values
+        pop_tp1 = df[(df.age < 100) & (df.age >= 0)].value.values
         pop_tp1 = pop_rebin(pop_tp1, totpers)
 
         # initialize imm_rate vector
@@ -354,7 +363,7 @@ def get_imm_rates(
         newborns = np.dot(fert_rates[y - start_year, :], pop_t)
         # new born imm_rate
         imm_rates[0] = (
-            pop_tp1[0] - (1 - mort_rates[y - start_year, 0]) * newborns
+            pop_tp1[0] - (1 - infmort_rates[y - start_year]) * newborns
         ) / pop_t[0]
         # all other age imm_rates
         imm_rates[1:] = (
@@ -397,7 +406,7 @@ def immsolve(imm_rates, *args):
     Args:
         imm_rates (Numpy array):immigration rates that correspond to
             each period of life, length E+S
-        args (tuple): (fert_rates, mort_rates, infmort_rate, omega_cur,
+        args (tuple): (fert_rates, mort_rates, infmort_rates, omega_cur,
             g_n_SS)
 
     Returns:
@@ -405,11 +414,11 @@ def immsolve(imm_rates, *args):
             omega_cur_pct, length E+S
 
     """
-    fert_rates, mort_rates, infmort_rate, omega_cur_lev, g_n_SS = args
+    fert_rates, mort_rates, infmort_rates, omega_cur_lev, g_n_SS = args
     omega_cur_pct = omega_cur_lev / omega_cur_lev.sum()
     totpers = len(fert_rates)
     OMEGA = np.zeros((totpers, totpers))
-    OMEGA[0, :] = (1 - infmort_rate) * fert_rates + np.hstack(
+    OMEGA[0, :] = (1 - infmort_rates) * fert_rates + np.hstack(
         (imm_rates[0], np.zeros(totpers - 1))
     )
     OMEGA[1:, :-1] += np.diag(1 - mort_rates[:-1])
@@ -425,12 +434,13 @@ def get_pop_objs(
     S=80,
     T=320,
     min_age=0,
-    max_age=100,
+    max_age=99,
     initial_data_year=START_YEAR - 1,
     final_data_year=START_YEAR + 100,  # as default data year goes until T1
     country_id=UN_COUNTRY_CODE,
     imm_rates=None,
     mort_rates=None,
+    infmort_rates=None,
     fert_rates=None,
     pop_dist=None,
     GraphDiag=True,
@@ -456,6 +466,7 @@ def get_pop_objs(
             dimension is of length E+S
         mort_rates (array_like): user provided mortality rates, last
             dimension is of length E+S
+        infmort_rates (array_like): user provided infant mortality rates
         fert_rates (array_like): user provided fertility rates, last
             dimension is of length E+S
         pop_dist (array_like): user provided population distribution, last
@@ -489,6 +500,7 @@ def get_pop_objs(
         ", Final Data year = ",
         final_data_year,
     )
+    assert E + S <= max_age - min_age + 1
     assert initial_data_year >= 2011 and initial_data_year <= 2100
     assert final_data_year >= 2011 and final_data_year <= 2100
     # Ensure that the last year of data used is before SS transition assumed
@@ -527,7 +539,7 @@ def get_pop_objs(
     )
     if mort_rates is None:
         # get mort rates from UN data from initial year to data year
-        mort_rates, infmort_rate = get_mort(
+        mort_rates, infmort_rates = get_mort(
             E + S,
             min_age,
             max_age,
@@ -540,7 +552,8 @@ def get_pop_objs(
         # ensure that user provided mort_rates are of the correct shape
         assert mort_rates.shape[0] < T0
         assert mort_rates.shape[-1] == E + S
-        infmort_rate = mort_rates[:, 0]
+        assert infmort_rates is not None
+        assert infmort_rates.shape[0] == mort_rates.shape[0]
     # Extrapolate mortality rates for the rest of the transition path
     # the implicit assumption is that they are constant after the
     # last year of UN or user provided data
@@ -554,6 +567,10 @@ def get_pop_objs(
         ),
         axis=0,
     )
+    print("Inf mort rates = ", infmort_rates)
+    print("Infmort rates shape", infmort_rates.shape)
+    infmort_rates = np.concatenate((
+        infmort_rates, np.tile(infmort_rates[-1], (T - infmort_rates.shape[0]))))
     mort_rates_S = mort_rates[:, E:]
     if imm_rates is None:
         imm_rates_orig = get_imm_rates(
@@ -562,6 +579,7 @@ def get_pop_objs(
             max_age,
             fert_rates,
             mort_rates,
+            infmort_rates,
             country_id,
             initial_data_year,
             final_data_year,
@@ -587,7 +605,7 @@ def get_pop_objs(
     # Create the transition matrix for the population distribution
     # from T0 going forward (i.e., past when we have data on forecasts)
     OMEGA_orig = np.zeros((E + S, E + S))
-    OMEGA_orig[0, :] = (1 - infmort_rate) * fert_rates[-1, :] + np.hstack(
+    OMEGA_orig[0, :] = (1 - infmort_rates[-1]) * fert_rates[-1, :] + np.hstack(
         (imm_rates_orig[-1, 0], np.zeros(E + S - 1))
     )
     OMEGA_orig[1:, :-1] += np.diag(1 - mort_rates[-1, :-1])
@@ -603,6 +621,11 @@ def get_pop_objs(
     ].real
     omega_SS_orig = eigvec_raw / eigvec_raw.sum()
 
+
+    # TODO: add a "if pop_dist is None" and an else statement below
+    # so that it reads in user provided data
+    # BUT, will want a test to make sure pop data consistent with fert, mort, imm rates...
+
     # Generate time path of the nonstationary population distribution
     # Get path up to end of data year
     pop_2D = np.zeros((final_data_year + 1 - initial_data_year, E + S))
@@ -614,13 +637,15 @@ def get_pop_objs(
             start_year=y,
             end_year=y,
         )
+        print("pop data ages = ", pop_data.age.min(), pop_data.age.max())
         pop_data_sample = pop_data[
-            (pop_data["age"] >= min_age - 1) & (pop_data["age"] <= max_age - 1)
+            (pop_data["age"] >= min_age) & (pop_data["age"] <= max_age)
         ]
         pop = pop_data_sample.value.values
         # Generate the current population distribution given that E+S might
         # be less than max_age-min_age+1
         # age_per_EpS = np.arange(1, E + S + 1)
+        print("SHAPING: ", min_age, max_age, E+S, pop.shape)
         pop_EpS = pop_rebin(pop, E + S)
         pop_pct = pop_EpS / pop_EpS.sum()
         pop_2D[y - initial_data_year, :] = pop_EpS
@@ -633,8 +658,8 @@ def get_pop_objs(
         end_year=initial_data_year - 1,
     )
     pre_pop_sample = pre_pop_data[
-        (pre_pop_data["age"] >= min_age - 1)
-        & (pre_pop_data["age"] <= max_age - 1)
+        (pre_pop_data["age"] >= min_age)
+        & (pre_pop_data["age"] <= max_age)
     ]
     pre_pop = pre_pop_sample.value.values
     pre_pop_EpS = pop_rebin(pre_pop, E + S)
@@ -661,7 +686,7 @@ def get_pop_objs(
     imm_objs = (
         fert_rates[fixper, :],
         mort_rates[fixper, :],
-        infmort_rate,
+        infmort_rates[fixper],
         omega_path_lev[fixper, :],
         g_n_SS,
     )
@@ -690,14 +715,6 @@ def get_pop_objs(
     ) / pre_pop_EpS[-S:].sum()
     g_n_path[fixper + 1 :] = g_n_SS
     omega_S_preTP = pre_pop_EpS[-S:] / pre_pop_EpS[-S:].sum()
-    # imm_rates_mat = np.hstack(
-    #     (
-    #         np.tile(np.reshape(imm_rates_orig[E:], (1, S)), (fixper, 1)),
-    #         np.tile(
-    #             np.reshape(imm_rates_adj[E:], (1, S)), (T + S - fixper, 1)
-    #         ),
-    #     )
-    # )
     imm_rates_mat = np.concatenate(
         (
             imm_rates_orig[:fixper, E:],
@@ -779,7 +796,7 @@ def get_pop_objs(
         # adjusted OMEGA matrix equals the steady-state growth rate of
         # the original OMEGA matrix
         OMEGA2 = np.zeros((E + S, E + S))
-        OMEGA2[0, :] = (1 - infmort_rate) * fert_rates[-1, :] + np.hstack(
+        OMEGA2[0, :] = (1 - infmort_rates[-1]) * fert_rates[-1, :] + np.hstack(
             (imm_rates_adj[0], np.zeros(E + S - 1))
         )
         OMEGA2[1:, :-1] += np.diag(1 - mort_rates[-1, :-1])
