@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from ogcore import demographics
 
 
@@ -206,6 +207,86 @@ def test_custom_series():
     )
     assert np.allclose(pop_dict["imm_rates"][0, :], imm_rates[0, E:])
 
+
+def test_custom_series_all():
+    """
+    Test of the get pop objects function when passing in custom series
+    for fertility, mortality, immigration, and population
+    """
+    E = 20
+    S = 80
+    T = int(round(4.0 * S))
+    start_year = 2019
+    fert_rates = demographics.get_fert(E + S, 0, 99, start_year=start_year, end_year=start_year+1, graph=False)
+    mort_rates, infmort_rates = demographics.get_mort(E+ S, 0, 99, start_year=start_year, end_year=start_year+1, graph=False)
+    imm_rates = demographics.get_imm_rates(E+S, 0, 99, fert_rates=fert_rates, mort_rates=mort_rates, infmort_rates=infmort_rates, start_year=start_year, end_year=start_year+1, graph=False)
+    pop_dist = np.zeros((2, E+S))
+    for t in range(pop_dist.shape[0]):
+        df = demographics.get_un_data("47", start_year=start_year + t, end_year=start_year + t)
+        pop = df[(df.age < 100) & (df.age >= 0)].value.values
+        pop_dist[t, :] = demographics.pop_rebin(pop, E+S)
+    df = demographics.get_un_data("47", start_year=start_year-1, end_year=start_year-1)
+    pop = df[(df.age < 100) & (df.age >= 0)].value.values
+    pre_pop_dist = demographics.pop_rebin(pop, E+S)
+    pop_dict = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year,
+        final_data_year=start_year + 1,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        pop_dist=pop_dist,
+        pre_pop_dist=pre_pop_dist,
+        GraphDiag=False,
+    )
+    assert pop_dict is not None
+
+
+def test_custom_series_fail():
+    """
+    Test of the get pop objects function when passing in custom series
+    for fertility, mortality, immigration, and population
+
+    This test gives a pop dist that doesn't result from the fert, mort,
+    and immigration rates.  This should raise an error.
+    """
+    with pytest.raises(Exception) as e_info:
+        E = 20
+        S = 80
+        T = int(round(4.0 * S))
+        start_year = 2019
+        fert_rates = demographics.get_fert(E + S, 0, 99, start_year=start_year, end_year=start_year+1, graph=False)
+        mort_rates, infmort_rates = demographics.get_mort(E+ S, 0, 99, start_year=start_year, end_year=start_year+1, graph=False)
+        imm_rates = np.ones((2, E + S)) * 0.01
+        pop_dist = np.zeros((2, E+S))
+        for t in range(pop_dist.shape[0]):
+            df = demographics.get_un_data("47", start_year=start_year + t, end_year=start_year + t)
+            pop = df[(df.age < 100) & (df.age >= 0)].value.values
+            pop_dist[t, :] = demographics.pop_rebin(pop, E+S)
+        df = demographics.get_un_data("47", start_year=start_year-1, end_year=start_year-1)
+        pop = df[(df.age < 100) & (df.age >= 0)].value.values
+        pre_pop_dist = demographics.pop_rebin(pop, E+S)
+        pop_dict = demographics.get_pop_objs(
+            E,
+            S,
+            T,
+            0,
+            99,
+            initial_data_year=start_year,
+            final_data_year=start_year + 1,
+            fert_rates=fert_rates,
+            mort_rates=mort_rates,
+            infmort_rates=infmort_rates,
+            imm_rates=imm_rates,
+            pop_dist=pop_dist,
+            pre_pop_dist=pre_pop_dist,
+            GraphDiag=False,
+        )
 
 # Test that SS solved for
 def test_SS_dist():
