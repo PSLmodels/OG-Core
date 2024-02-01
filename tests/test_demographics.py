@@ -112,15 +112,21 @@ def test_imm_smooth():
     # note that in the "fixper" we impost a jump in immigration rates
     # to achieve the SS more quickly so the min dist is not super small
     # in that period
-    print("Max diff before = ", np.abs(
+    print(
+        "Max diff before = ",
+        np.abs(
             pop_dict["imm_rates"][: fixper - 2, :]
             - pop_dict["imm_rates"][1 : fixper - 1, :]
-        ).max())
+        ).max(),
+    )
 
-    print("Max diff after = ", np.abs(
+    print(
+        "Max diff after = ",
+        np.abs(
             pop_dict["imm_rates"][fixper:-1, :]
             - pop_dict["imm_rates"][fixper + 1 :, :]
-        ).max())
+        ).max(),
+    )
     assert np.all(
         np.abs(
             pop_dict["imm_rates"][: fixper - 2, :]
@@ -131,7 +137,7 @@ def test_imm_smooth():
     assert np.all(
         np.abs(
             pop_dict["imm_rates"][fixper:-1, :]
-            - pop_dict["imm_rates"][fixper + 1:, :]
+            - pop_dict["imm_rates"][fixper + 1 :, :]
         )
         < 0.00001
     )
@@ -217,17 +223,45 @@ def test_custom_series_all():
     S = 80
     T = int(round(4.0 * S))
     start_year = 2019
-    fert_rates = demographics.get_fert(E + S, 0, 99, start_year=start_year, end_year=start_year+1, graph=False)
-    mort_rates, infmort_rates = demographics.get_mort(E+ S, 0, 99, start_year=start_year, end_year=start_year+1, graph=False)
-    imm_rates = demographics.get_imm_rates(E+S, 0, 99, fert_rates=fert_rates, mort_rates=mort_rates, infmort_rates=infmort_rates, start_year=start_year, end_year=start_year+1, graph=False)
-    pop_dist = np.zeros((2, E+S))
+    fert_rates = demographics.get_fert(
+        E + S,
+        0,
+        99,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+    mort_rates, infmort_rates = demographics.get_mort(
+        E + S,
+        0,
+        99,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+    imm_rates = demographics.get_imm_rates(
+        E + S,
+        0,
+        99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+    pop_dist = np.zeros((2, E + S))
     for t in range(pop_dist.shape[0]):
-        df = demographics.get_un_data("47", start_year=start_year + t, end_year=start_year + t)
+        df = demographics.get_un_data(
+            "47", start_year=start_year + t, end_year=start_year + t
+        )
         pop = df[(df.age < 100) & (df.age >= 0)].value.values
-        pop_dist[t, :] = demographics.pop_rebin(pop, E+S)
-    df = demographics.get_un_data("47", start_year=start_year-1, end_year=start_year-1)
+        pop_dist[t, :] = demographics.pop_rebin(pop, E + S)
+    df = demographics.get_un_data(
+        "47", start_year=start_year - 1, end_year=start_year - 1
+    )
     pop = df[(df.age < 100) & (df.age >= 0)].value.values
-    pre_pop_dist = demographics.pop_rebin(pop, E+S)
+    pre_pop_dist = demographics.pop_rebin(pop, E + S)
     pop_dict = demographics.get_pop_objs(
         E,
         S,
@@ -260,17 +294,35 @@ def test_custom_series_fail():
         S = 80
         T = int(round(4.0 * S))
         start_year = 2019
-        fert_rates = demographics.get_fert(E + S, 0, 99, start_year=start_year, end_year=start_year+1, graph=False)
-        mort_rates, infmort_rates = demographics.get_mort(E+ S, 0, 99, start_year=start_year, end_year=start_year+1, graph=False)
+        fert_rates = demographics.get_fert(
+            E + S,
+            0,
+            99,
+            start_year=start_year,
+            end_year=start_year + 1,
+            graph=False,
+        )
+        mort_rates, infmort_rates = demographics.get_mort(
+            E + S,
+            0,
+            99,
+            start_year=start_year,
+            end_year=start_year + 1,
+            graph=False,
+        )
         imm_rates = np.ones((2, E + S)) * 0.01
-        pop_dist = np.zeros((2, E+S))
+        pop_dist = np.zeros((2, E + S))
         for t in range(pop_dist.shape[0]):
-            df = demographics.get_un_data("47", start_year=start_year + t, end_year=start_year + t)
+            df = demographics.get_un_data(
+                "47", start_year=start_year + t, end_year=start_year + t
+            )
             pop = df[(df.age < 100) & (df.age >= 0)].value.values
-            pop_dist[t, :] = demographics.pop_rebin(pop, E+S)
-        df = demographics.get_un_data("47", start_year=start_year-1, end_year=start_year-1)
+            pop_dist[t, :] = demographics.pop_rebin(pop, E + S)
+        df = demographics.get_un_data(
+            "47", start_year=start_year - 1, end_year=start_year - 1
+        )
         pop = df[(df.age < 100) & (df.age >= 0)].value.values
-        pre_pop_dist = demographics.pop_rebin(pop, E+S)
+        pre_pop_dist = demographics.pop_rebin(pop, E + S)
         pop_dict = demographics.get_pop_objs(
             E,
             S,
@@ -287,6 +339,7 @@ def test_custom_series_fail():
             pre_pop_dist=pre_pop_dist,
             GraphDiag=False,
         )
+
 
 # Test that SS solved for
 def test_SS_dist():

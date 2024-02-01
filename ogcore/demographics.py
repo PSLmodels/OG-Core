@@ -347,7 +347,9 @@ def get_imm_rates(
     for y in range(start_year, end_year + 1):
         if pop_dist is None:
             # need to read UN population data by age for each year
-            df = get_un_data("47", country_id=country_id, start_year=y, end_year=y)
+            df = get_un_data(
+                "47", country_id=country_id, start_year=y, end_year=y
+            )
             pop_t = df[(df.age < 100) & (df.age >= 0)].value.values
             pop_t = pop_rebin(pop_t, totpers)
             df = get_un_data(
@@ -441,7 +443,7 @@ def get_pop_objs(
     initial_data_year=START_YEAR - 1,
     final_data_year=START_YEAR + 2,  # as default data year goes until T1
     country_id=UN_COUNTRY_CODE,
-    imm_rates=None, #TODO: change order of these args to be consistent with other functions
+    imm_rates=None,  # TODO: change order of these args to be consistent with other functions
     mort_rates=None,
     infmort_rates=None,
     fert_rates=None,
@@ -513,7 +515,9 @@ def get_pop_objs(
     # Really, it will need to be well before this
     assert final_data_year > initial_data_year
     assert final_data_year < initial_data_year + T
-    assert T > 2 * T0  # ensure time path 2x as long as allows rates to fluctuate
+    assert (
+        T > 2 * T0
+    )  # ensure time path 2x as long as allows rates to fluctuate
 
     # Get fertility, mortality, and immigration rates
     # will be used to generate population distribution in future years
@@ -682,10 +686,12 @@ def get_pop_objs(
             # find newborns next period
             newborns = np.dot(fert_rates[t - 1, :], pop_counter_2D[t - 1, :])
 
-            pop_counter_2D[t, 0] =  (1 - infmort_rates[t-1]) * newborns + imm_rates[t-1,0] * pop_counter_2D[t-1, 0]
+            pop_counter_2D[t, 0] = (
+                1 - infmort_rates[t - 1]
+            ) * newborns + imm_rates[t - 1, 0] * pop_counter_2D[t - 1, 0]
             pop_counter_2D[t, 1:] = (
-                pop_counter_2D[t - 1, :-1] * (1 - mort_rates[t - 1, :-1]) +
-                pop_counter_2D[t - 1, 1:] * imm_rates_orig[t - 1, 1:]
+                pop_counter_2D[t - 1, :-1] * (1 - mort_rates[t - 1, :-1])
+                + pop_counter_2D[t - 1, 1:] * imm_rates_orig[t - 1, 1:]
             )
         # Check that counterfactual pop dist is close to pop dist given
         assert np.allclose(pop_counter_2D, pop_dist)
@@ -712,9 +718,7 @@ def get_pop_objs(
     # steady-state distribution by adjusting immigration rates, holding
     # constant mortality, fertility, and SS growth rates
     imm_tol = 1e-14
-    fixper = int(
-        1.5 * S + T0
-    )
+    fixper = int(1.5 * S + T0)
     omega_SSfx = omega_path_lev[fixper, :] / omega_path_lev[fixper, :].sum()
     imm_objs = (
         fert_rates[fixper, :],
