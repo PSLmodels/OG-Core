@@ -103,7 +103,7 @@ def test_imm_smooth():
     S = 80
     T = int(round(4.0 * S))
     start_year = 2019
-    fixper = int(1.5 * S)
+    fixper = int(1.5 * S + 2)
     pop_dict = demographics.get_pop_objs(
         E, S, T, 0, 99, start_year - 1, start_year, GraphDiag=False
     )
@@ -111,6 +111,15 @@ def test_imm_smooth():
     # note that in the "fixper" we impost a jump in immigration rates
     # to achieve the SS more quickly so the min dist is not super small
     # in that period
+    print("Max diff before = ", np.abs(
+            pop_dict["imm_rates"][: fixper - 2, :]
+            - pop_dict["imm_rates"][1 : fixper - 1, :]
+        ).max())
+
+    print("Max diff after = ", np.abs(
+            pop_dict["imm_rates"][fixper:-1, :]
+            - pop_dict["imm_rates"][fixper + 1 :, :]
+        ).max())
     assert np.all(
         np.abs(
             pop_dict["imm_rates"][: fixper - 2, :]
@@ -121,9 +130,9 @@ def test_imm_smooth():
     assert np.all(
         np.abs(
             pop_dict["imm_rates"][fixper:-1, :]
-            - pop_dict["imm_rates"][fixper + 1 :, :]
+            - pop_dict["imm_rates"][fixper + 1:, :]
         )
-        < 0.0001
+        < 0.00001
     )
 
 
@@ -183,15 +192,15 @@ def test_custom_series():
     S = 80
     T = int(round(4.0 * S))
     start_year = 2019
-    imm_rates = np.ones((1, E + S)) * 0.01
+    imm_rates = np.ones((2, E + S)) * 0.01
     pop_dict = demographics.get_pop_objs(
         E,
         S,
         T,
         0,
         99,
-        start_year - 1,
         start_year,
+        start_year + 1,
         GraphDiag=False,
         imm_rates=imm_rates,
     )
