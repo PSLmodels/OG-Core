@@ -43,7 +43,7 @@ def plot_imm_rates(
     #     fontsize=20)
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Immigration rate $i_{s}$")
-    plt.legend(loc="upper right")
+    plt.legend(loc="upper left")
     plt.text(
         -5,
         -0.023,
@@ -480,11 +480,11 @@ def plot_imm_fixed(
 
 def plot_population_path(
     age_per_EpS,
-    initial_pop_pct,
     omega_path_lev,
     omega_SSfx,
-    data_year,
-    curr_year,
+    start_year,
+    year1,
+    year2,
     S,
     path=None,
 ):
@@ -499,8 +499,10 @@ def plot_population_path(
             over the transition path
         omega_SSfx (Numpy array): number of households by age
             in the SS
-        data_year (int): year of data for initial_pop_pct
-        curr_year (int): current year in the model
+        start_year (int): first year of data (so can get index of year1
+            and year2)
+        year1 (int): first year of data to plot
+        year2 (int): second year of data to plot
         S (int): number of years which household is economically active
         path (str): path to save figure to, if None then figure
             is returned
@@ -511,11 +513,11 @@ def plot_population_path(
 
     """
     fig, ax = plt.subplots()
-    plt.plot(age_per_EpS, initial_pop_pct, label=str(data_year) + " pop.")
+    plt.plot(age_per_EpS, (omega_path_lev[start_year - year1, :] / omega_path_lev[start_year - year1, :].sum()), label=str(year1) + " pop.")
     plt.plot(
         age_per_EpS,
-        (omega_path_lev[0, :] / omega_path_lev[0, :].sum()),
-        label=str(curr_year) + " pop.",
+        (omega_path_lev[start_year - year2, :] / omega_path_lev[start_year - year2, :].sum()),
+        label=str(year2) + " pop.",
     )
     plt.plot(
         age_per_EpS,
