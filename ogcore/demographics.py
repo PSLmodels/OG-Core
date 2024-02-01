@@ -357,8 +357,6 @@ def get_imm_rates(
             pop_tp1 = pop_rebin(pop_tp1, totpers)
         else:
             # Make sure shape conforms
-            print("POP dist = ", pop_dist)
-            print("MORT rates = ", mort_rates)
             assert pop_dist.shape == mort_rates.shape
             pop_t = pop_dist[y - start_year, :]
             pop_tp1 = pop_dist[y - start_year + 1, :]
@@ -443,7 +441,7 @@ def get_pop_objs(
     initial_data_year=START_YEAR - 1,
     final_data_year=START_YEAR + 2,  # as default data year goes until T1
     country_id=UN_COUNTRY_CODE,
-    imm_rates=None,
+    imm_rates=None, #TODO: change order of these args to be consistent with other functions
     mort_rates=None,
     infmort_rates=None,
     fert_rates=None,
@@ -503,7 +501,7 @@ def get_pop_objs(
         final_data_year - initial_data_year + 1
     )  # number of periods until constant fertility and mortality rates
     print(
-        ", Inital Data year = ",
+        "Demographics data: Initial Data year = ",
         initial_data_year,
         ", Final Data year = ",
         final_data_year,
@@ -679,18 +677,18 @@ def get_pop_objs(
         # mortality, and immigration rates
         len_pop_dist = pop_dist.shape[0]
         pop_counter_2D = np.zeros((len_pop_dist, E + S))
-        pop_counter_2D[0. :] = pop_dist[0, :]
+        pop_counter_2D[0, :] = pop_dist[0, :]
         for t in range(1, len_pop_dist):
             # find newborns next period
-            newborns = pop_counter_2D[t - 1, :].dot(fert_rates[t - 1, :])
+            newborns = np.dot(fert_rates[t - 1, :], pop_counter_2D[t - 1, :])
 
-            pop_counter_2D[t, 0] =  (1 - infmort_rates[t]) * newborns + imm_rates[t-1,0] * pop_counter_2D[t-1, -1]
+            pop_counter_2D[t, 0] =  (1 - infmort_rates[t-1]) * newborns + imm_rates[t-1,0] * pop_counter_2D[t-1, 0]
             pop_counter_2D[t, 1:] = (
                 pop_counter_2D[t - 1, :-1] * (1 - mort_rates[t - 1, :-1]) +
                 pop_counter_2D[t - 1, 1:] * imm_rates_orig[t - 1, 1:]
             )
         # Check that counterfactual pop dist is close to pop dist given
-        assert np.allclose(pop_counter_2D, pop_dist, tol=1e-6)
+        assert np.allclose(pop_counter_2D, pop_dist)
         # Create 2D array of population distribution
         pop_2D = np.zeros((T0, E + S))
         for t in range(T0):
