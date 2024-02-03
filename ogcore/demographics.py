@@ -267,9 +267,9 @@ def get_pop(
     """
     # Generate time path of the nonstationary population distribution
     # Get path up to end of data year
-    pop_2D = np.zeros((end_year + 1 - start_year, E + S))
+    pop_2D = np.zeros((end_year + 1 - start_year + 1, E + S))
     # Read UN data
-    for y in range(start_year, end_year + 1):
+    for y in range(start_year, end_year + 2):
         pop_data = get_un_data(
             "47",
             country_id=country_id,
@@ -414,7 +414,7 @@ def get_imm_rates(
             pop_tp1 = pop_rebin(pop_tp1, totpers)
         else:
             # Make sure shape conforms
-            assert pop_dist.shape == mort_rates.shape
+            assert pop_dist.shape[1] == mort_rates.shape[1]
             pop_t = pop_dist[y - start_year, :]
             pop_tp1 = pop_dist[y - start_year + 1, :]
         # initialize imm_rate vector
@@ -655,18 +655,6 @@ def get_pop_objs(
         for t in range(T0):
             pop_EpS = pop_rebin(pop_dist[t, :], E + S)
             pop_2D[t, :] = pop_EpS
-    # Extrapolate population distribution for the rest of the transition path
-    # TODO: consider deleting, this may not be necessary
-    # pop_2D = np.concatenate(
-    #         (
-    #             pop_2D,
-    #             np.tile(
-    #                 pop_2D[-1, :].reshape(1, E + S),
-    #                 (T - pop_2D.shape[0], 1),
-    #             ),
-    #         ),
-    #         axis=0,
-    #     )
     # Get percentage distribution for S periods for pre-TP period
     pre_pop_EpS = pop_rebin(pre_pop, E + S)
     # Get immigration rates if not provided
@@ -678,7 +666,7 @@ def get_pop_objs(
             fert_rates,
             mort_rates,
             infmort_rates,
-            None,  # TODO: will put pop dist here we reorg
+            pop_2D,
             country_id,
             initial_data_year,
             final_data_year,
@@ -744,8 +732,8 @@ def get_pop_objs(
     # Generate time path of the population distribution after final
     # year of data
     omega_path_lev = np.zeros((T + S, E + S))
-    pop_curr = pop_2D[-1, :]
-    omega_path_lev[:T0, :] = pop_2D
+    pop_curr = pop_2D[T0, :]
+    omega_path_lev[:T0, :] = pop_2D[:T0, :]
     # omega_path_lev[T0, :] = pop_curr
     for per in range(T0, T + S):
         pop_next = np.dot(OMEGA_orig, pop_curr)
