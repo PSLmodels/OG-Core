@@ -14,7 +14,14 @@ def test_get_pop_objs():
     start_year = 2019
 
     pop_dict = demographics.get_pop_objs(
-        E, S, T, 0, 99, start_year - 1, start_year, GraphDiag=False
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
+        GraphDiag=False,
     )
 
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-1, :])
@@ -35,8 +42,8 @@ def test_pop_smooth():
         T,
         0,
         99,
-        start_year - 1,
-        start_year,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
         country_id="840",
         GraphDiag=False,
     )
@@ -76,8 +83,8 @@ def test_pop_growth_smooth():
         T,
         0,
         99,
-        start_year - 1,
-        start_year,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
         country_id="840",
         GraphDiag=False,
     )
@@ -86,6 +93,7 @@ def test_pop_growth_smooth():
     # note that in the "fixper" we impost a jump in immigration rates
     # to achieve the SS more quickly so the min dist is not super small
     # in that period
+    print("first few of g_n = ", pop_dict["g_n"][:5])
     assert np.all(
         np.abs(pop_dict["g_n"][: fixper - 2] - pop_dict["g_n"][1 : fixper - 1])
         < 0.003
@@ -106,7 +114,14 @@ def test_imm_smooth():
     start_year = 2019
     fixper = int(1.5 * S + 2)
     pop_dict = demographics.get_pop_objs(
-        E, S, T, 0, 99, start_year - 1, start_year, GraphDiag=False
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
+        GraphDiag=False,
     )
     # assert diffs are small
     # note that in the "fixper" we impost a jump in immigration rates
@@ -206,8 +221,8 @@ def test_custom_series():
         T,
         0,
         99,
-        start_year,
-        start_year + 1,
+        initial_data_year=start_year,
+        final_data_year=start_year + 1,
         GraphDiag=False,
         imm_rates=imm_rates,
     )
@@ -250,7 +265,7 @@ def test_custom_series_all():
         end_year=start_year + 1,
         graph=False,
     )
-    pop_dist = np.zeros((2, E + S))
+    pop_dist = np.zeros((3, E + S))
     for t in range(pop_dist.shape[0]):
         df = demographics.get_un_data(
             "47", start_year=start_year + t, end_year=start_year + t
@@ -268,14 +283,14 @@ def test_custom_series_all():
         T,
         0,
         99,
-        initial_data_year=start_year,
-        final_data_year=start_year + 1,
         fert_rates=fert_rates,
         mort_rates=mort_rates,
         infmort_rates=infmort_rates,
         imm_rates=imm_rates,
         pop_dist=pop_dist,
         pre_pop_dist=pre_pop_dist,
+        initial_data_year=start_year,
+        final_data_year=start_year + 1,
         GraphDiag=False,
     )
     assert pop_dict is not None
@@ -329,14 +344,14 @@ def test_custom_series_fail():
             T,
             0,
             99,
-            initial_data_year=start_year,
-            final_data_year=start_year + 1,
             fert_rates=fert_rates,
             mort_rates=mort_rates,
             infmort_rates=infmort_rates,
             imm_rates=imm_rates,
             pop_dist=pop_dist,
             pre_pop_dist=pre_pop_dist,
+            initial_data_year=start_year,
+            final_data_year=start_year + 1,
             GraphDiag=False,
         )
 
@@ -353,7 +368,14 @@ def test_SS_dist():
     start_year = 2019
 
     pop_dict = demographics.get_pop_objs(
-        E, S, T, 0, 99, start_year - 1, start_year, GraphDiag=False
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
+        GraphDiag=False,
     )
     # Assert that S reached by period T
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-S, :])
