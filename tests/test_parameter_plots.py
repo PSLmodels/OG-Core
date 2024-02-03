@@ -308,31 +308,29 @@ def test_plot_population_path():
     curr_year = base_params.start_year
     fig = parameter_plots.plot_population_path(
         age_per_EpS,
-        initial_pop_pct,
         omega_path_lev,
         omega_SSfx,
         data_year,
         curr_year,
+        curr_year + 5,
         S,
     )
     assert fig
 
 
 def test_plot_population_path_save_fig(tmpdir):
-    E = 0
     S = base_params.S
     age_per_EpS = np.arange(21, S + 21)
-    pop_2013_pct = base_params.omega[0, :]
     omega_path_lev = base_params.omega
     omega_SSfx = base_params.omega_SS
     curr_year = base_params.start_year
     parameter_plots.plot_population_path(
         age_per_EpS,
-        pop_2013_pct,
         omega_path_lev,
         omega_SSfx,
         curr_year,
-        E,
+        curr_year + 3,
+        curr_year + 50,
         S,
         path=tmpdir,
     )
