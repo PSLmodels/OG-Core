@@ -641,7 +641,15 @@ def get_pop_objs(
     mort_rates_S = mort_rates[:, E:]
     # Get population distribution if not provided
     if pop_dist is None:
-        pop_2D, pre_pop = get_pop(E, S, min_age, max_age, country_id, initial_data_year, final_data_year)
+        pop_2D, pre_pop = get_pop(
+            E,
+            S,
+            min_age,
+            max_age,
+            country_id,
+            initial_data_year,
+            final_data_year,
+        )
     else:
         # Check first dims of pop_dist as input by user
         assert pop_dist.shape[0] == T0
