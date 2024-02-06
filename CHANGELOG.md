@@ -5,37 +5,165 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - 2023-10-26 15:00:00
+## [0.11.0] - 2024-02-06 15:00:00
 
 ### Added
 
-- Simple update of version in `setup.py` and `cs-config/cs_config/functions.py` to make sure that the `publish_to_pypi.yml` GitHub Action works
-- Removes Windows OS tests from `build_and_test.yml`, which are not working right now for some reason.
+- Allow `chi_n` parameter to vary over the time path (PR #897)
+- Create a demographics module in OG-Core (PR #896)
+- Create a time varying ability matrix (PR # 895)
+- Simplify the extrapolation of arrays over the time path (PR #891)
 
-## [0.1.1] - 2023-10-25 17:00:00
 
-### Added
-
-- Updates `README.md`
-- Changes `check_black.yml` to `check_format.yml`
-- Updates other GH Action files: `build_and_test.yml`, `docs_check.yml`, and `deploy_docs.yml`
-- Updates `publish_to_pypi.yml`
-- Adds changes from PRs [#73](https://github.com/PSLmodels/OG-USA/pull/73) and [#67](https://github.com/PSLmodels/OG-USA/pull/67)
-
-## [0.1.0] - 2023-07-19 12:00:00
+## [0.10.10] - 2023-10-25 17:00:00
 
 ### Added
 
-- Restarts the release numbering to follow semantic versioning and the OG-USA version numbering as separate from the OG-Core version numbering.
-- Adds restriction `python<3.11` to `environment.yml` and `setup.py`.
-- Changes the format of `setup.py`.
-- Updates `build_and_test.yml` to test Python 3.9 and 3.10.
-- Updates some GH Action script versions in `check_black.yml`.
-- Updates the Python version to 3.10 in  `docs_check.yml` and `deploy_docs.yml`.
-- Updated the `LICENSE` file to one that GitHub recognizes.
-- Updates the `run_og_usa.py` run script.
-- Updates some tests and associated data.
-- Pins the version of `rpy2` package in `environment.yml` and `setup.py`
+- Remove `surve_rate` parameter (PR #886)
+- Updates to `plot_2D_taxfunc` (PR #881)
+
+
+## [0.10.9] - 2023-09-08 12:00:00
+
+### Added
+
+- PR #880 standardize the time path output length
+- PR #878 fix tax function indexing, dimensions, and plotting. This PR also enables Python 3.11.
+- PR #875 remove unused dependency
+
+
+## [0.10.8] - 2023-04-22 12:00:00
+
+### Added
+
+- Adds a 2D monotonic smoothing spline tax function estimation to `txfunc.py`
+- Changes the tax function parameters objects from NumPy arrays to lists in order to accomodate the nonparametric functions that get passed with the `mono` and `mono2D` options
+
+
+## [0.10.7] - 2023-03-31 12:00:00
+
+### Added
+
+- Uses lists to pass and access effective tax rate objects `etr_params` and marginal tax rate objects `mtrx_params` and `mtry_params`
+
+
+## [0.10.6] - 2023-02-15 12:00:00
+
+### Added
+
+- Uses 300 dpi when saving plots to disk
+- Better labels of the `plot_industry_aggregates` plots
+
+
+## [0.10.5] - 2023-02-14 12:00:00
+
+### Added
+
+- Fix to `SS.py` to use baseline solution on reform run if dimensions match
+- Fix to `test_basic.py` dimensions for `r_gov_scale`
+
+
+## [0.10.4] - 2023-02-06 12:00:00
+
+### Added
+
+- New calibration section to documentation (PR #850)
+- Allow government risk premia to vary across time path for parameters `r_gov_shift` and `r_gov_scale` (PR #852)
+
+
+## [0.10.3] - 2023-01-21 12:00:00
+
+### Added
+
+- Bug fixes for new tax function parameter estimation
+
+
+## [0.10.2] - 2023-01-12 12:00:00
+
+### Added
+
+- Adds a new minimum value to the `r_gov_shift` parameter of -0.3
+
+
+## [0.10.1] - 2023-01-05 12:00:00
+
+### Added
+
+- Removes hard coded year label in parameter_plots.plot_population_path() (PR #825)
+- Fixes documentation (PR # 827)
+- Adds "mono" specification to default_parameter.json and test_parameters.py (PR #830)
+- Restricts Python version to be < 3.11 and removes the mkl dependency in environment.yml and setup.py (PR #833 and #840)
+- Updates CI testing to include Mac, Windows, and Linux operating systems and Python 3.9 and 3.10, and solves some CI test issues (PR #836)
+- Increases the maximum values for r_gov_shift and r_gov_scale in default_parameters.json (PR #838)
+- Removes the mkl dependency from environment.yml and setup.py (PR #840)
+
+
+## [0.10.0] - 2022-09-27 12:00:00
+
+### Added
+
+- Adds matrix of tax noncompliance parameters to households (PR #816)
+- Incorporate input/output matrix mapping production goods to consumption goods (PR #818)
+- Adds a new monotonic tax function estimation method to txfunc.py (PR #819)
+
+
+## [0.9.2] - 2022-08-21 12:00:00
+
+### Added
+
+- Updates the form of the investments tax credit to be on a proxy for investment (depreciated capital) in order to satisfy theoretical requirements of static firms in each industry.
+- Update the documentation
+- Update the requirement for the m_wealth parameter in the wealth tax function to be strictly greater than zero.
+
+
+## [0.9.1] - 2022-07-22 12:00:00
+
+### Added
+
+- Adds an investment tax credit parameter to the model
+- Adds a boolean that allows the option to compute a reform using a stored baseline solution rather than recomputing the baseline
+
+
+## [0.9.0] - 2022-06-30 12:00:00
+
+### Added
+
+- Adds multiple production industries to the model
+
+
+## [0.8.2] - 2022-06-01 12:00:00
+
+### Added
+
+- Formatting of source code with black
+- Last tag before extension of model to include multiple industries
+
+
+## [0.8.1] - 2022-04-01 12:00:00
+
+### Added
+
+- Updates PyPI.org packaging setup and includes auto-publishing GH Action (PRs #790, #795, and #797)
+- Cleans up documentation issues and old erroneous references to ogusa package (PR #797)
+
+
+## [0.8.0] - 2022-02-18 12:00:00
+
+### Added
+
+- Adds a public capital good (i.e., infrastructure) used to produce private goods and services
+- Adds a financial intermediary that links domestic and foreign savings to investment
+- Improves multiprocessing with Dask
+- Updates documentation
+- Moves testing files outside of the ogcore package source files directory
+- Tests functionality with Python 3.10.
+
+
+## [0.7.0] - 2021-08-30 12:00:00
+
+### Added
+
+- This is the first release of the OG-Core model (formerly the OG-USA model)
 
 
 ## Previous versions
@@ -47,5 +175,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-[0.1.2]: https://github.com/PSLmodels/OG-USA/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/PSLmodels/OG-USA/compare/v0.1.0...v0.1.1
+[0.11.0]: https://github.com/PSLmodels/OG-Core/compare/v0.10.10...v0.11.0
+[0.10.10]: https://github.com/PSLmodels/OG-Core/compare/v0.10.9...v0.10.10
+[0.10.9]: https://github.com/PSLmodels/OG-Core/compare/v0.10.8...v0.10.9
+[0.10.8]: https://github.com/PSLmodels/OG-Core/compare/v0.10.7...v0.10.8
+[0.10.7]: https://github.com/PSLmodels/OG-Core/compare/v0.10.6...v0.10.7
+[0.10.6]: https://github.com/PSLmodels/OG-Core/compare/v0.10.5...v0.10.6
+[0.10.5]: https://github.com/PSLmodels/OG-Core/compare/v0.10.4...v0.10.5
+[0.10.4]: https://github.com/PSLmodels/OG-Core/compare/v0.10.3...v0.10.4
+[0.10.3]: https://github.com/PSLmodels/OG-Core/compare/v0.10.2...v0.10.3
+[0.10.2]: https://github.com/PSLmodels/OG-Core/compare/v0.10.1...v0.10.2
+[0.10.1]: https://github.com/PSLmodels/OG-Core/compare/v0.10.0...v0.10.1
+[0.10.0]: https://github.com/PSLmodels/OG-Core/compare/v0.9.2...v0.10.0
+[0.9.2]: https://github.com/PSLmodels/OG-Core/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/PSLmodels/OG-Core/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/PSLmodels/OG-Core/compare/v0.8.2...v0.9.0
+[0.8.2]: https://github.com/PSLmodels/OG-Core/compare/v0.8.1...v0.8.2
+[0.8.1]: https://github.com/PSLmodels/OG-Core/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/PSLmodels/OG-Core/compare/v0.7.0...v0.8.0
