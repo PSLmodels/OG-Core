@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Firm Functions &#8212; OG-Core</title>
   
@@ -29,39 +28,43 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/firm';</script>
@@ -162,7 +165,18 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -416,7 +430,20 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.firm">ogcore.firm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.firm">ogcore.firm</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_K"><code class="docutils literal notranslate"><span class="pre">get_K()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_KLratio"><code class="docutils literal notranslate"><span class="pre">get_KLratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_L_from_Y"><code class="docutils literal notranslate"><span class="pre">get_L_from_Y()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_MPx"><code class="docutils literal notranslate"><span class="pre">get_MPx()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_Y"><code class="docutils literal notranslate"><span class="pre">get_Y()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_cost_of_capital"><code class="docutils literal notranslate"><span class="pre">get_cost_of_capital()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_pm"><code class="docutils literal notranslate"><span class="pre">get_pm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_r"><code class="docutils literal notranslate"><span class="pre">get_r()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_w"><code class="docutils literal notranslate"><span class="pre">get_w()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_w_from_r"><code class="docutils literal notranslate"><span class="pre">get_w_from_r()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.solve_L"><code class="docutils literal notranslate"><span class="pre">solve_L()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -429,13 +456,13 @@ document.write(`
                 <article class="bd-article">
                   
   <section id="firm-functions">
-<span id="firm"></span><h1>Firm Functions<a class="headerlink" href="#firm-functions" title="Permalink to this heading">#</a></h1>
+<span id="firm"></span><h1>Firm Functions<a class="headerlink" href="#firm-functions" title="Link to this heading">#</a></h1>
 <p><strong>firm.py modules</strong></p>
 <section id="module-ogcore.firm">
-<span id="ogcore-firm"></span><h2>ogcore.firm<a class="headerlink" href="#module-ogcore.firm" title="Permalink to this heading">#</a></h2>
+<span id="ogcore-firm"></span><h2>ogcore.firm<a class="headerlink" href="#module-ogcore.firm" title="Link to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_K">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K" title="Link to this definition">#</a></dt>
 <dd><p>Get K from r, w, L.  For determining capital demand for open
 economy case.</p>
 <div class="math notranslate nohighlight">
@@ -463,7 +490,7 @@ economy case.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_KLratio">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_KLratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_KLratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_KLratio" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_KLratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_KLratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_KLratio" title="Link to this definition">#</a></dt>
 <dd><p>This function solves for the capital-labor ratio given the interest
 rate r wage w and parameters.</p>
 <div class="math notranslate nohighlight">
@@ -493,7 +520,7 @@ rate r wage w and parameters.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_L_from_Y">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_L_from_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_L_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_L_from_Y" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_L_from_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_L_from_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_L_from_Y" title="Link to this definition">#</a></dt>
 <dd><p>Find aggregate labor L from output Y and wages w</p>
 <div class="math notranslate nohighlight">
 \[L_{t} = \frac{(1 - \gamma - \gamma_g) Z_{t}^{\varepsilon-1}
@@ -519,7 +546,7 @@ Y_{t}}{w_{t}^{\varepsilon}}\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_MPx">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_MPx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">share</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_MPx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_MPx" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_MPx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">share</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_MPx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_MPx" title="Link to this definition">#</a></dt>
 <dd><p>Compute the marginal product of x (where x is K, L, or K_g)</p>
 <div class="math notranslate nohighlight">
 \[MPx = Z_t^\frac{\varepsilon-1}{\varepsilon}\left[(share)
@@ -547,7 +574,7 @@ Y_{t}}{w_{t}^{\varepsilon}}\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_Y">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_Y" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_Y" title="Link to this definition">#</a></dt>
 <dd><p>Generates aggregate output (GDP) from aggregate capital stock,
 aggregate labor, and CES production function parameters.</p>
 <div class="math notranslate nohighlight">
@@ -579,7 +606,7 @@ aggregate labor, and CES production function parameters.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_cost_of_capital">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_cost_of_capital</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_cost_of_capital"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_cost_of_capital" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_cost_of_capital</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_cost_of_capital"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_cost_of_capital" title="Link to this definition">#</a></dt>
 <dd><p>Compute the cost of capital.</p>
 <div class="math notranslate nohighlight">
 \[\rho_{m,t} = \frac{r_{t} + \delta_{M,t} - \tau^{b}_{m,t}
@@ -604,7 +631,7 @@ aggregate labor, and CES production function parameters.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_pm">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_pm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_pm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_pm" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_pm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_pm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_pm" title="Link to this definition">#</a></dt>
 <dd><p>Find prices for outputs from each industry.</p>
 <div class="math notranslate nohighlight">
 \[p_{m,t}=\frac{w_{t}}{\left((1-\gamma_m-\gamma_{g,m})
@@ -630,7 +657,7 @@ aggregate labor, and CES production function parameters.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_r">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_r" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_r" title="Link to this definition">#</a></dt>
 <dd><p>This function computes the interest rate as a function of Y, K, and
 parameters using the firm’s first order condition for capital
 demand.</p>
@@ -661,7 +688,7 @@ demand.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_w">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_w</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_w"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_w" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_w</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_w"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_w" title="Link to this definition">#</a></dt>
 <dd><p>This function computes the wage as a function of Y, L, and
 parameters using the firm’s first order condition for labor demand.</p>
 <div class="math notranslate nohighlight">
@@ -690,7 +717,7 @@ parameters using the firm’s first order condition for labor demand.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_w_from_r">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_w_from_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_w_from_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_w_from_r" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_w_from_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_w_from_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_w_from_r" title="Link to this definition">#</a></dt>
 <dd><p>Solve for a wage rate from a given interest rate.  N.B. this is only
 appropriate if the production function only uses capital and labor
 as inputs.  As such, this is not used for determining the domestic
@@ -725,7 +752,7 @@ the open economy demand for capital.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.solve_L">
-<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">solve_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#solve_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.solve_L" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">solve_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#solve_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.solve_L" title="Link to this definition">#</a></dt>
 <dd><p>Solve for labor supply from the production function</p>
 <div class="math notranslate nohighlight">
 \[\hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}
@@ -824,7 +851,20 @@ compute L for all industries)</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.firm">ogcore.firm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.firm">ogcore.firm</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_K"><code class="docutils literal notranslate"><span class="pre">get_K()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_KLratio"><code class="docutils literal notranslate"><span class="pre">get_KLratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_L_from_Y"><code class="docutils literal notranslate"><span class="pre">get_L_from_Y()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_MPx"><code class="docutils literal notranslate"><span class="pre">get_MPx()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_Y"><code class="docutils literal notranslate"><span class="pre">get_Y()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_cost_of_capital"><code class="docutils literal notranslate"><span class="pre">get_cost_of_capital()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_pm"><code class="docutils literal notranslate"><span class="pre">get_pm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_r"><code class="docutils literal notranslate"><span class="pre">get_r()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_w"><code class="docutils literal notranslate"><span class="pre">get_w()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_w_from_r"><code class="docutils literal notranslate"><span class="pre">get_w_from_r()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.solve_L"><code class="docutils literal notranslate"><span class="pre">solve_L()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

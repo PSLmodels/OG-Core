@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Elliptical Utility Function Estimation &#8212; OG-Core</title>
   
@@ -29,39 +28,43 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/elliptical_u_est';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -160,7 +163,18 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -416,6 +430,13 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.elliptical_u_est">ogcore.elliptical_u_est</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constant-frisch-elasticity-function-with-the-input-frisch-elasticity">constant Frisch elasticity function with the input Frisch elasticity.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.CFE_mu"><code class="docutils literal notranslate"><span class="pre">CFE_mu()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.CFE_u"><code class="docutils literal notranslate"><span class="pre">CFE_u()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.elliptical_mu"><code class="docutils literal notranslate"><span class="pre">elliptical_mu()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.elliptical_u"><code class="docutils literal notranslate"><span class="pre">elliptical_u()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.estimation"><code class="docutils literal notranslate"><span class="pre">estimation()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.sumsq"><code class="docutils literal notranslate"><span class="pre">sumsq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.sumsq_MU"><code class="docutils literal notranslate"><span class="pre">sumsq_MU()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -430,15 +451,16 @@ document.write(`
                 <article class="bd-article">
                   
   <section id="elliptical-utility-function-estimation">
-<span id="elliptical-u-est"></span><h1>Elliptical Utility Function Estimation<a class="headerlink" href="#elliptical-utility-function-estimation" title="Permalink to this heading">#</a></h1>
+<span id="elliptical-u-est"></span><h1>Elliptical Utility Function Estimation<a class="headerlink" href="#elliptical-utility-function-estimation" title="Link to this heading">#</a></h1>
 <p><strong>elliptical_u_est.py modules</strong></p>
 <section id="module-ogcore.elliptical_u_est">
-<span id="ogcore-elliptical-u-est"></span><h2>ogcore.elliptical_u_est<a class="headerlink" href="#module-ogcore.elliptical_u_est" title="Permalink to this heading">#</a></h2>
+<span id="ogcore-elliptical-u-est"></span><h2>ogcore.elliptical_u_est<a class="headerlink" href="#module-ogcore.elliptical_u_est" title="Link to this heading">#</a></h2>
 <section id="constant-frisch-elasticity-function-with-the-input-frisch-elasticity">
-<h3>constant Frisch elasticity function with the input Frisch elasticity.<a class="headerlink" href="#constant-frisch-elasticity-function-with-the-input-frisch-elasticity" title="Permalink to this heading">#</a></h3>
+<h3>constant Frisch elasticity function with the input Frisch elasticity.<a class="headerlink" href="#constant-frisch-elasticity-function-with-the-input-frisch-elasticity" title="Link to this heading">#</a></h3>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.elliptical_u_est.CFE_mu">
-<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">CFE_mu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#CFE_mu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.CFE_mu" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">CFE_mu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#CFE_mu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.CFE_mu" title="Link to this definition">#</a></dt>
 <dd><p>Marginal disutility of labor supply from the constant Frisch
 elasticity utility function</p>
 <dl class="field-list simple">
@@ -460,7 +482,7 @@ elasticity utility function</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.elliptical_u_est.CFE_u">
-<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">CFE_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#CFE_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.CFE_u" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">CFE_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#CFE_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.CFE_u" title="Link to this definition">#</a></dt>
 <dd><p>Disutility of labor supply from the constant Frisch elasticity
 utility function.</p>
 <dl class="field-list simple">
@@ -482,7 +504,7 @@ utility function.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.elliptical_u_est.elliptical_mu">
-<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">elliptical_mu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#elliptical_mu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.elliptical_mu" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">elliptical_mu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#elliptical_mu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.elliptical_mu" title="Link to this definition">#</a></dt>
 <dd><p>Marginal disutility of labor supply from the elliptical utility
 function</p>
 <dl class="field-list simple">
@@ -506,7 +528,7 @@ function</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.elliptical_u_est.elliptical_u">
-<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">elliptical_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#elliptical_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.elliptical_u" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">elliptical_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#elliptical_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.elliptical_u" title="Link to this definition">#</a></dt>
 <dd><p>Disutility of labor supply from the elliptical utility function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -530,7 +552,7 @@ function</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.elliptical_u_est.estimation">
-<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">estimation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frisch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#estimation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.estimation" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">estimation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frisch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_tilde</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#estimation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.estimation" title="Link to this definition">#</a></dt>
 <dd><p>This function estimates the parameters of an elliptical utility
 funcion that fits a constant frisch elasticty function.</p>
 <dl class="field-list simple">
@@ -556,7 +578,7 @@ upsilon_MU_til (scalar): estimated upsilon from ellipitical</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.elliptical_u_est.sumsq">
-<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">sumsq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">objs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#sumsq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.sumsq" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">sumsq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">objs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#sumsq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.sumsq" title="Link to this definition">#</a></dt>
 <dd><p>This function generates the sum of squared deviations between the
 constant Frisch elasticity function and the elliptical utility
 function.</p>
@@ -579,7 +601,7 @@ function.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.elliptical_u_est.sumsq_MU">
-<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">sumsq_MU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">objs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#sumsq_MU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.sumsq_MU" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.elliptical_u_est.</span></span><span class="sig-name descname"><span class="pre">sumsq_MU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">objs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/elliptical_u_est.html#sumsq_MU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.elliptical_u_est.sumsq_MU" title="Link to this definition">#</a></dt>
 <dd><p>This function generates the sum of squared deviations between the
 marginals of the constant Frisch elasticity function and the
 elliptical utility function</p>
@@ -600,7 +622,6 @@ elliptical utility function</p>
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 
@@ -670,6 +691,13 @@ elliptical utility function</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.elliptical_u_est">ogcore.elliptical_u_est</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constant-frisch-elasticity-function-with-the-input-frisch-elasticity">constant Frisch elasticity function with the input Frisch elasticity.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.CFE_mu"><code class="docutils literal notranslate"><span class="pre">CFE_mu()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.CFE_u"><code class="docutils literal notranslate"><span class="pre">CFE_u()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.elliptical_mu"><code class="docutils literal notranslate"><span class="pre">elliptical_mu()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.elliptical_u"><code class="docutils literal notranslate"><span class="pre">elliptical_u()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.estimation"><code class="docutils literal notranslate"><span class="pre">estimation()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.sumsq"><code class="docutils literal notranslate"><span class="pre">sumsq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.elliptical_u_est.sumsq_MU"><code class="docutils literal notranslate"><span class="pre">sumsq_MU()</span></code></a></li>
 </ul>
 </li>
 </ul>

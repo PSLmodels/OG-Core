@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Contributor Guide &#8212; OG-Core</title>
   
@@ -29,39 +28,43 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/contributing/contributor_guide';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -160,7 +163,18 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -435,16 +449,16 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="contributor-guide">
-<span id="chap-contribguide"></span><h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Permalink to this heading">#</a></h1>
+<span id="chap-contribguide"></span><h1>Contributor Guide<a class="headerlink" href="#contributor-guide" title="Link to this heading">#</a></h1>
 <p>The purpose of this guide is to provide the necessary background such that you can make improvements to the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> and share them with others working on the model.</p>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> code is tracked by using <a class="reference external" href="https://help.github.com/articles/github-glossary/#git"><code class="docutils literal notranslate"><span class="pre">Git</span></code></a> version control software along with the <a class="reference external" href="https://github.com/">GitHub.com</a> web platform for <code class="docutils literal notranslate"><span class="pre">Git</span></code> workflow and collaboration. Following the next steps will get you up and running and contributing to the model even if you’ve never used <code class="docutils literal notranslate"><span class="pre">Git</span></code> or other version control software.</p>
 <p>If you have already completed the <a class="reference internal" href="#sec-setuppython"><span class="std std-ref">Setup Python</span></a> and <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> sections, you can skip to the <a class="reference internal" href="#sec-workflow"><span class="std std-ref">Workflow</span></a> section.</p>
 <section id="setup-python">
-<span id="sec-setuppython"></span><h2>Setup Python<a class="headerlink" href="#setup-python" title="Permalink to this heading">#</a></h2>
+<span id="sec-setuppython"></span><h2>Setup Python<a class="headerlink" href="#setup-python" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is written in the Python programming language. Download and install the free and most recent Anaconda distribution of Python and associated libraries from <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda.com</a>.<a class="footnote-reference brackets" href="#recent-python" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> You should do this even if you already have Python installed on your computer because the Anaconda distribution contains additional Python packages that are used by <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> (many of which are not included in other Python installations). You can install the Anaconda distribution without having administrative privileges on your computer and the Anaconda distribution will not interfere with any Python installation that came as part of your computer’s operating system.</p>
 </section>
 <section id="setup-git">
-<span id="sec-setupgit"></span><h2>Setup Git<a class="headerlink" href="#setup-git" title="Permalink to this heading">#</a></h2>
+<span id="sec-setupgit"></span><h2>Setup Git<a class="headerlink" href="#setup-git" title="Link to this heading">#</a></h2>
 <ol class="arabic">
 <li><p>Create a <a class="reference external" href="https://github.com/">GitHub</a> user account.</p></li>
 <li><p>Install Git on your local machine by following steps 1-4 on <a class="reference external" href="https://help.github.com/articles/set-up-git/">Git setup</a>.</p></li>
@@ -494,13 +508,13 @@ section introduces some standard Git practices and guides you through
 the contribution process.</p>
 </section>
 <section id="workflow">
-<span id="sec-workflow"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this heading">#</a></h2>
+<span id="sec-workflow"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Link to this heading">#</a></h2>
 <section id="submitting-a-github-issue">
-<span id="sec-githubissue"></span><h3>Submitting a GitHub Issue<a class="headerlink" href="#submitting-a-github-issue" title="Permalink to this heading">#</a></h3>
+<span id="sec-githubissue"></span><h3>Submitting a GitHub Issue<a class="headerlink" href="#submitting-a-github-issue" title="Link to this heading">#</a></h3>
 <p>GitHub “issues” are an excellent way to ask questions, include code examples, and tag specific GitHub users.</p>
 </section>
 <section id="submitting-a-github-pull-request">
-<span id="sec-githubpr"></span><h3>Submitting a GitHub Pull Request<a class="headerlink" href="#submitting-a-github-pull-request" title="Permalink to this heading">#</a></h3>
+<span id="sec-githubpr"></span><h3>Submitting a GitHub Pull Request<a class="headerlink" href="#submitting-a-github-pull-request" title="Link to this heading">#</a></h3>
 <p>The following text describes a typical workflow for changing
 <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>.  Different workflows may be necessary in some
 situations, in which case other contributors are here to help.</p>
@@ -572,7 +586,7 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
 </section>
 </section>
 <section id="simple-usage">
-<span id="sec-simpleusage"></span><h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Permalink to this heading">#</a></h2>
+<span id="sec-simpleusage"></span><h2>Simple Usage<a class="headerlink" href="#simple-usage" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> comes with an example run script <a class="reference external" href="https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py"><code class="docutils literal notranslate"><span class="pre">OG-Core/run_examples/run_ogcore_example.py</span></code></a>. Running this script will solve for the current-law baseline steady state and transition path solution of a calibrated version of an economy as well as a simple reform (increasing the corporate income tax rate) version of the model with its corresponding steady-state and transition path solution. This example script saves the full set of model output from both baseline and reform runs of the model. It also creates a large number of commonly used analytical figures and tables. This example run script is a nice foundation for using the model to run your own customized simulations. Below are the steps to running the example script.</p>
 <ol class="arabic">
 <li><p>Navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository in the terminal of your local machine and activate the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment. If you have not created the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment, follow steps 1-11 in Section <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> above.</p>
@@ -591,15 +605,17 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
 <p>A large set of plots that compare the changes among key variables from the baseline simulation to the reform simulation are saved in the <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/run_example_plots</span></code> directory. And a <code class="docutils literal notranslate"><span class="pre">.csv</span></code>-file table of key macroeconomic variable changes over the budget window (10 years) and in the long-run steady state is saved at the following path <code class="docutils literal notranslate"><span class="pre">/OG-Core/run_examples/ogcore_example_output.csv</span></code>.</p>
 </section>
 <section id="footnotes">
-<span id="sec-contribfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">#</a></h2>
+<span id="sec-contribfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Link to this heading">#</a></h2>
 <hr class="footnotes docutils" />
-<aside class="footnote brackets" id="recent-python" role="note">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="recent-python" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>The most recent version of Python from Anaconda is Python 3.9. <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> is currently tested to run on Python 3.9 through 3.10.</p>
 </aside>
-<aside class="footnote brackets" id="commandline-note" role="note">
+<aside class="footnote brackets" id="commandline-note" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>The dollar sign is the end of the command prompt on a Mac. If you are using the Windows operating system, this is usually the right angle bracket (&gt;). No matter the symbol, you don’t need to type it (or anything to its left, which shows the current working directory) at the command line before you enter a command; the prompt symbol and preceding characters should already be there.</p>
+</aside>
 </aside>
 </section>
 </section>

@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Parameter Plotting Functions &#8212; OG-Core</title>
   
@@ -29,39 +28,43 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/parameter_plots';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -160,7 +163,18 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -414,7 +428,25 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.parameter_plots">ogcore.parameter_plots</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.parameter_plots">ogcore.parameter_plots</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.gen_3Dscatters_hist"><code class="docutils literal notranslate"><span class="pre">gen_3Dscatters_hist()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_2D_taxfunc"><code class="docutils literal notranslate"><span class="pre">plot_2D_taxfunc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_ability_profiles"><code class="docutils literal notranslate"><span class="pre">plot_ability_profiles()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_chi_n"><code class="docutils literal notranslate"><span class="pre">plot_chi_n()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_elliptical_u"><code class="docutils literal notranslate"><span class="pre">plot_elliptical_u()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_fert_rates"><code class="docutils literal notranslate"><span class="pre">plot_fert_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_imm_fixed"><code class="docutils literal notranslate"><span class="pre">plot_imm_fixed()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_imm_rates"><code class="docutils literal notranslate"><span class="pre">plot_imm_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_income_data"><code class="docutils literal notranslate"><span class="pre">plot_income_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_mort_rates"><code class="docutils literal notranslate"><span class="pre">plot_mort_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_mort_rates_data"><code class="docutils literal notranslate"><span class="pre">plot_mort_rates_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_omega_fixed"><code class="docutils literal notranslate"><span class="pre">plot_omega_fixed()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_pop_growth"><code class="docutils literal notranslate"><span class="pre">plot_pop_growth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_population_path"><code class="docutils literal notranslate"><span class="pre">plot_population_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.txfunc_graph"><code class="docutils literal notranslate"><span class="pre">txfunc_graph()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.txfunc_sse_plot"><code class="docutils literal notranslate"><span class="pre">txfunc_sse_plot()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -427,13 +459,13 @@ document.write(`
                 <article class="bd-article">
                   
   <section id="parameter-plotting-functions">
-<span id="parameter-plots"></span><h1>Parameter Plotting Functions<a class="headerlink" href="#parameter-plotting-functions" title="Permalink to this heading">#</a></h1>
+<span id="parameter-plots"></span><h1>Parameter Plotting Functions<a class="headerlink" href="#parameter-plotting-functions" title="Link to this heading">#</a></h1>
 <p><strong>parameter_plots.py modules</strong></p>
 <section id="module-ogcore.parameter_plots">
-<span id="ogcore-parameter-plots"></span><h2>ogcore.parameter_plots<a class="headerlink" href="#module-ogcore.parameter_plots" title="Permalink to this heading">#</a></h2>
+<span id="ogcore-parameter-plots"></span><h2>ogcore.parameter_plots<a class="headerlink" href="#module-ogcore.parameter_plots" title="Link to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.gen_3Dscatters_hist">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">gen_3Dscatters_hist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#gen_3Dscatters_hist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.gen_3Dscatters_hist" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">gen_3Dscatters_hist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#gen_3Dscatters_hist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.gen_3Dscatters_hist" title="Link to this definition">#</a></dt>
 <dd><p>Create 3-D scatterplots and corresponding 3D histogram of ETR, MTRx,
 and MTRy as functions of labor income and capital income with
 truncated data in the income dimension</p>
@@ -444,7 +476,7 @@ truncated data in the income dimension</p>
 rates</p></li>
 <li><p><strong>s</strong> (<em>int</em>) – age of individual, &gt;= 21</p></li>
 <li><p><strong>t</strong> (<em>int</em>) – year of analysis, &gt;= 2016</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – output directory for saving plot files</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – output directory for saving plot files</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -455,7 +487,7 @@ rates</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_2D_taxfunc">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_2D_taxfunc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_param_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">21</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['DEP']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'etr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">over_labinc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_inc_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_inc_amt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['1st</span> <span class="pre">Functions']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_2D_taxfunc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_2D_taxfunc" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_2D_taxfunc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_param_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">21</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['DEP']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'etr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">over_labinc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_inc_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_inc_amt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['1st</span> <span class="pre">Functions']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_2D_taxfunc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_2D_taxfunc" title="Link to this definition">#</a></dt>
 <dd><p>This function plots OG-Core tax functions in two dimensions.
 The tax rates are plotted over capital or labor income, as
 entered by the user.</p>
@@ -500,7 +532,7 @@ returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_ability_profiles">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_ability_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_ability_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_ability_profiles" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_ability_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_ability_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_ability_profiles" title="Link to this definition">#</a></dt>
 <dd><p>Create a plot of earnings ability profiles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -521,7 +553,7 @@ returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_chi_n">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_chi_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_chi_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_chi_n" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_chi_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_chi_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_chi_n" title="Link to this definition">#</a></dt>
 <dd><p>Create a plot of showing the values of the chi_n parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -541,7 +573,7 @@ returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_elliptical_u">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_elliptical_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_MU</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_elliptical_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_elliptical_u" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_elliptical_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_MU</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_elliptical_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_elliptical_u" title="Link to this definition">#</a></dt>
 <dd><p>Create a plot of showing the fit of the elliptical utility function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -563,24 +595,17 @@ levels</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_fert_rates">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_fert_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fert_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age_midp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">totpers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_yr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_yr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fert_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fert_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_fert_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_fert_rates" title="Permalink to this definition">#</a></dt>
-<dd><p>Plot fertility rates from the data along with smoothed function to
-use for model fertility rates.</p>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_fert_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fert_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2021]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_fert_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_fert_rates" title="Link to this definition">#</a></dt>
+<dd><p>Plot fertility rates from the data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fert_func</strong> (<em>Scipy interpolation object</em>) – interpolated fertility
-rates</p></li>
-<li><p><strong>age_midp</strong> (<em>NumPy array</em>) – midpoint of age for each age group in
-data</p></li>
-<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
-<li><p><strong>min_yr</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
-<li><p><strong>max_yr</strong> (<em>int</em>) – age in years at which agents die with certainty,
-&gt;= 4</p></li>
-<li><p><strong>fert_data</strong> (<em>NumPy array</em>) – fertility rates by age group from data</p></li>
-<li><p><strong>fert_rates</strong> (<em>NumPy array</em>) – fitted fertility rates for each of
+<li><p><strong>fert_rates</strong> (<em>NumPy array</em>) – fertility rates for each of
 totpers</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+<li><p><strong>start_year</strong> (<em>int</em>) – first year of data</p></li>
+<li><p><strong>years_to_plot</strong> (<em>list</em>) – list of years to plot</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – data source for fertility rates</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
 </ul>
 </dd>
@@ -595,7 +620,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_imm_fixed">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_imm_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_adj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_imm_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_imm_fixed" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_imm_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_adj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_imm_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_imm_fixed" title="Link to this definition">#</a></dt>
 <dd><p>Plot the immigration rates implied by the data on population,
 mortality, and fertility versus the adjusted immigration rates
 needed to achieve a stationary distribution of the population in a
@@ -609,7 +634,7 @@ population distribution</p></li>
 <li><p><strong>imm_rates_adj</strong> (<em>Numpy array</em>) – adjusted immigration rates by age</p></li>
 <li><p><strong>E</strong> (<em>int</em>) – age at which household becomes economically active</p></li>
 <li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+<li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
 </ul>
 </dd>
@@ -628,19 +653,22 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_imm_rates">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_imm_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_imm_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_imm_rates" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a plot of immigration rates from OG-Core parameterization.</p>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_imm_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imm_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2021]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_imm_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_imm_rates" title="Link to this definition">#</a></dt>
+<dd><p>Plot fertility rates from the data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>p</strong> (<em>OG-Core Specifications class</em>) – parameters object</p></li>
-<li><p><strong>year</strong> (<em>integer</em>) – year of mortality ratese to plot</p></li>
-<li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
-<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+<li><p><strong>imm_rates</strong> (<em>NumPy array</em>) – immigration rates for each of
+totpers</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – first year of data</p></li>
+<li><p><strong>years_to_plot</strong> (<em>list</em>) – list of years to plot</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – data source for fertility rates</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
+is returned</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>plot of immigration rates</p>
+<dd class="field-even"><p>plot of fertility rates</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>fig (Matplotlib plot object)</p>
@@ -650,7 +678,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_income_data">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_income_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abil_midp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abil_pcts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filesuffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_income_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_income_data" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_income_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abil_midp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abil_pcts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filesuffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_income_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_income_data" title="Link to this definition">#</a></dt>
 <dd><p>This function graphs ability matrix in 3D, 2D, log, and nolog</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -674,7 +702,7 @@ income group, size TxSxJ</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_mort_rates">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_mort_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2021]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_mort_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_mort_rates" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_mort_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2021]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_mort_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_mort_rates" title="Link to this definition">#</a></dt>
 <dd><p>Create a plot of mortality rates from OG-Core parameterization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -695,22 +723,17 @@ income group, size TxSxJ</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_mort_rates_data">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_mort_rates_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totpers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_yr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_yr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age_year_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mort_rates_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infmort_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mort_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_mort_rates_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_mort_rates_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Plots mortality rates from the model and data.</p>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_mort_rates_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mort_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2021]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_mort_rates_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_mort_rates_data" title="Link to this definition">#</a></dt>
+<dd><p>Plots mortality rates from the data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
-<li><p><strong>min_yr</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
-<li><p><strong>max_yr</strong> (<em>int</em>) – age in years at which agents die with certainty,
-&gt;= 4</p></li>
-<li><p><strong>age_year_all</strong> (<em>array_like</em>) – ages in mortality rate data</p></li>
-<li><p><strong>mort_rates_all</strong> (<em>array_like</em>) – mortality rates by age from data,
-average across males and females</p></li>
-<li><p><strong>infmort_rate</strong> (<em>scalar</em>) – infant mortality rate</p></li>
-<li><p><strong>mort_rates</strong> (<em>array_like</em>) – fitted mortality rates for each of
+<li><p><strong>mort_rates</strong> (<em>array_like</em>) – mortality rates for each of
 totpers</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+<li><p><strong>start_year</strong> (<em>int</em>) – first year of data</p></li>
+<li><p><strong>years_to_plot</strong> (<em>list</em>) – list of years to plot</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – data source for fertility rates</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
 </ul>
 </dd>
@@ -725,7 +748,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_omega_fixed">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_omega_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SS_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_omega_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_omega_fixed" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_omega_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SS_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_omega_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_omega_fixed" title="Link to this definition">#</a></dt>
 <dd><p>Plot the steady-state population distribution implied by the data
 on fertility and mortality rates versus the the steady-state
 population distribution after adjusting immigration rates so that
@@ -742,7 +765,7 @@ without adjustment to immigration rates</p></li>
 after adjustment to immigration rates</p></li>
 <li><p><strong>E</strong> (<em>int</em>) – age at which household becomes economically active</p></li>
 <li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+<li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
 </ul>
 </dd>
@@ -761,7 +784,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_pop_growth">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_pop_growth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_pop_growth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_pop_growth" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_pop_growth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_pop_growth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_pop_growth" title="Link to this definition">#</a></dt>
 <dd><p>Create a plot of population growth rates by year.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -784,22 +807,24 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_population_path">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_pop_pct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_path_lev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population_path" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_path_lev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population_path" title="Link to this definition">#</a></dt>
 <dd><p>Plot the distribution of the population over age for various years.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>age_per_EpS</strong> (<em>array_like</em>) – list of ages over which to plot
 population distribution</p></li>
-<li><p><strong>pop_2013_pct</strong> (<em>array_like</em>) – population distribution in 2013</p></li>
+<li><p><strong>initial_pop_pct</strong> (<em>array_like</em>) – initial year population distribution</p></li>
 <li><p><strong>omega_path_lev</strong> (<em>Numpy array</em>) – number of households by age
 over the transition path</p></li>
 <li><p><strong>omega_SSfx</strong> (<em>Numpy array</em>) – number of households by age
 in the SS</p></li>
-<li><p><strong>data_year</strong> (<em>int</em>) – year of data for initial_pop_pct</p></li>
-<li><p><strong>curr_year</strong> (<em>int</em>) – current year in the model</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – first year of data (so can get index of year1
+and year2)</p></li>
+<li><p><strong>year1</strong> (<em>int</em>) – first year of data to plot</p></li>
+<li><p><strong>year2</strong> (<em>int</em>) – second year of data to plot</p></li>
 <li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – path to save figure to, if None then figure
+<li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
 </ul>
 </dd>
@@ -818,7 +843,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.txfunc_graph">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">txfunc_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">txrates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_to_plot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#txfunc_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.txfunc_graph" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">txfunc_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">txrates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_func_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_to_plot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#txfunc_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.txfunc_graph" title="Link to this definition">#</a></dt>
 <dd><p>This function creates a 3D plot of the fitted tax function against
 the data.</p>
 <dl class="field-list simple">
@@ -835,7 +860,7 @@ rates</p></li>
 <li><p><strong>tax_func_type</strong> (<em>str</em>) – functional form of tax functions</p></li>
 <li><p><strong>params_to_plot</strong> (<em>array_like</em><em> or </em><em>function</em>) – tax function parameters or
 nonparametric function</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – output directory for saving plot files</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – output directory for saving plot files</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -846,7 +871,7 @@ nonparametric function</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.txfunc_sse_plot">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">txfunc_sse_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sse_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varstr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#txfunc_sse_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.txfunc_sse_plot" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">txfunc_sse_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sse_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varstr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#txfunc_sse_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.txfunc_sse_plot" title="Link to this definition">#</a></dt>
 <dd><p>Plot sum of squared errors of tax functions over age for each year
 of budget window.</p>
 <dl class="field-list simple">
@@ -857,7 +882,7 @@ of budget window.</p>
 size is BW x S</p></li>
 <li><p><strong>start_year</strong> (<em>int</em>) – first year of budget window</p></li>
 <li><p><strong>varstr</strong> (<em>str</em>) – name of tax function being evaluated</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – path to save graph to</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – path to save graph to</p></li>
 <li><p><strong>round</strong> (<em>int</em>) – which round of sweeping for outliers (0, 1, or 2)</p></li>
 </ul>
 </dd>
@@ -934,7 +959,25 @@ size is BW x S</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.parameter_plots">ogcore.parameter_plots</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.parameter_plots">ogcore.parameter_plots</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.gen_3Dscatters_hist"><code class="docutils literal notranslate"><span class="pre">gen_3Dscatters_hist()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_2D_taxfunc"><code class="docutils literal notranslate"><span class="pre">plot_2D_taxfunc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_ability_profiles"><code class="docutils literal notranslate"><span class="pre">plot_ability_profiles()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_chi_n"><code class="docutils literal notranslate"><span class="pre">plot_chi_n()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_elliptical_u"><code class="docutils literal notranslate"><span class="pre">plot_elliptical_u()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_fert_rates"><code class="docutils literal notranslate"><span class="pre">plot_fert_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_imm_fixed"><code class="docutils literal notranslate"><span class="pre">plot_imm_fixed()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_imm_rates"><code class="docutils literal notranslate"><span class="pre">plot_imm_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_income_data"><code class="docutils literal notranslate"><span class="pre">plot_income_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_mort_rates"><code class="docutils literal notranslate"><span class="pre">plot_mort_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_mort_rates_data"><code class="docutils literal notranslate"><span class="pre">plot_mort_rates_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_omega_fixed"><code class="docutils literal notranslate"><span class="pre">plot_omega_fixed()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_pop_growth"><code class="docutils literal notranslate"><span class="pre">plot_pop_growth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_population_path"><code class="docutils literal notranslate"><span class="pre">plot_population_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.txfunc_graph"><code class="docutils literal notranslate"><span class="pre">txfunc_graph()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.txfunc_sse_plot"><code class="docutils literal notranslate"><span class="pre">txfunc_sse_plot()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

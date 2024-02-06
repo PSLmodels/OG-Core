@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Household Functions &#8212; OG-Core</title>
   
@@ -29,39 +28,43 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/household';</script>
@@ -162,7 +165,18 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -418,6 +432,16 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.household">ogcore.household</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Household functions.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.FOC_labor"><code class="docutils literal notranslate"><span class="pre">FOC_labor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.FOC_savings"><code class="docutils literal notranslate"><span class="pre">FOC_savings()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.constraint_checker_SS"><code class="docutils literal notranslate"><span class="pre">constraint_checker_SS()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.constraint_checker_TPI"><code class="docutils literal notranslate"><span class="pre">constraint_checker_TPI()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_bq"><code class="docutils literal notranslate"><span class="pre">get_bq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_cons"><code class="docutils literal notranslate"><span class="pre">get_cons()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_tr"><code class="docutils literal notranslate"><span class="pre">get_tr()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_y"><code class="docutils literal notranslate"><span class="pre">get_y()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.marg_ut_cons"><code class="docutils literal notranslate"><span class="pre">marg_ut_cons()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.marg_ut_labor"><code class="docutils literal notranslate"><span class="pre">marg_ut_labor()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -432,15 +456,16 @@ document.write(`
                 <article class="bd-article">
                   
   <section id="household-functions">
-<span id="household"></span><h1>Household Functions<a class="headerlink" href="#household-functions" title="Permalink to this heading">#</a></h1>
+<span id="household"></span><h1>Household Functions<a class="headerlink" href="#household-functions" title="Link to this heading">#</a></h1>
 <p><strong>household.py modules</strong></p>
 <section id="module-ogcore.household">
-<span id="ogcore-household"></span><h2>ogcore.household<a class="headerlink" href="#module-ogcore.household" title="Permalink to this heading">#</a></h2>
+<span id="ogcore-household"></span><h2>ogcore.household<a class="headerlink" href="#module-ogcore.household" title="Link to this heading">#</a></h2>
 <section id="id1">
-<h3>Household functions.<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<h3>Household functions.<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.FOC_labor">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">FOC_labor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtrx_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#FOC_labor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.FOC_labor" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">FOC_labor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtrx_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#FOC_labor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.FOC_labor" title="Link to this definition">#</a></dt>
 <dd><p>Computes errors for the FOC for labor supply in the steady
 state.  This function is usually looped through over J, so it does
 one lifetime income group at a time.</p>
@@ -491,7 +516,7 @@ on labor income functions</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.FOC_savings">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">FOC_savings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtry_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#FOC_savings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.FOC_savings" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">FOC_savings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtry_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#FOC_savings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.FOC_savings" title="Link to this definition">#</a></dt>
 <dd><p>Computes Euler errors for the FOC for savings in the steady state.
 This function is usually looped through over J, so it does one
 lifetime income group at a time.</p>
@@ -540,7 +565,7 @@ on capital income functions</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.constraint_checker_SS">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">constraint_checker_SS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltilde</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#constraint_checker_SS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.constraint_checker_SS" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">constraint_checker_SS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltilde</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#constraint_checker_SS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.constraint_checker_SS" title="Link to this definition">#</a></dt>
 <dd><p>Checks constraints on consumption, savings, and labor supply in the
 steady state.</p>
 <dl class="field-list simple">
@@ -563,7 +588,7 @@ steady state.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.constraint_checker_TPI">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">constraint_checker_TPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltilde</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#constraint_checker_TPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.constraint_checker_TPI" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">constraint_checker_TPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ltilde</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#constraint_checker_TPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.constraint_checker_TPI" title="Link to this definition">#</a></dt>
 <dd><p>Checks constraints on consumption, savings, and labor supply along
 the transition path. Does this for each period t separately.</p>
 <dl class="field-list simple">
@@ -587,7 +612,7 @@ the transition path. Does this for each period t separately.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.get_bq">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_bq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_bq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_bq" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_bq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_bq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_bq" title="Link to this definition">#</a></dt>
 <dd><p>Calculate bequests to each household.</p>
 <div class="math notranslate nohighlight">
 \[bq_{j,s,t} = \zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
@@ -612,7 +637,7 @@ the transition path. Does this for each period t separately.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.get_cons">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_cons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_tax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_cons" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_cons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_tax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_cons" title="Link to this definition">#</a></dt>
 <dd><p>Calculate household consumption.</p>
 <div class="math notranslate nohighlight">
 \[c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t}
@@ -644,7 +669,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.get_tr">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_tr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_tr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_tr" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_tr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_tr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_tr" title="Link to this definition">#</a></dt>
 <dd><p>Calculate transfers to each household.</p>
 <div class="math notranslate nohighlight">
 \[tr_{j,s,t} = \zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
@@ -669,7 +694,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.get_y">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_y" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_y" title="Link to this definition">#</a></dt>
 <dd><p>Compute household income before taxes.</p>
 <div class="math notranslate nohighlight">
 \[y_{j,s,t} = r_{p,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}\]</div>
@@ -689,7 +714,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.marg_ut_cons">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">marg_ut_cons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#marg_ut_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.marg_ut_cons" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">marg_ut_cons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#marg_ut_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.marg_ut_cons" title="Link to this definition">#</a></dt>
 <dd><p>Compute the marginal utility of consumption.</p>
 <div class="math notranslate nohighlight">
 \[MU_{c} = c^{-\sigma}\]</div>
@@ -711,7 +736,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.marg_ut_labor">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">marg_ut_labor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#marg_ut_labor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.marg_ut_labor" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">marg_ut_labor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#marg_ut_labor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.marg_ut_labor" title="Link to this definition">#</a></dt>
 <dd><p>Compute the marginal disutility of labor.</p>
 <div class="math notranslate nohighlight">
 \[MDU_{l} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)
@@ -735,7 +760,6 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 
@@ -805,6 +829,16 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.household">ogcore.household</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Household functions.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.FOC_labor"><code class="docutils literal notranslate"><span class="pre">FOC_labor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.FOC_savings"><code class="docutils literal notranslate"><span class="pre">FOC_savings()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.constraint_checker_SS"><code class="docutils literal notranslate"><span class="pre">constraint_checker_SS()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.constraint_checker_TPI"><code class="docutils literal notranslate"><span class="pre">constraint_checker_TPI()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_bq"><code class="docutils literal notranslate"><span class="pre">get_bq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_cons"><code class="docutils literal notranslate"><span class="pre">get_cons()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_tr"><code class="docutils literal notranslate"><span class="pre">get_tr()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_y"><code class="docutils literal notranslate"><span class="pre">get_y()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.marg_ut_cons"><code class="docutils literal notranslate"><span class="pre">marg_ut_cons()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.marg_ut_labor"><code class="docutils literal notranslate"><span class="pre">marg_ut_labor()</span></code></a></li>
 </ul>
 </li>
 </ul>
