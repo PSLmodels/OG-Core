@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Create a demographics module in OG-Core (PR #896)
 - Create a time varying ability matrix (PR # 895)
 - Simplify the extrapolation of arrays over the time path (PR #891)
+- Update the copyright year of documentation to 2024
 
 
 ## [0.10.10] - 2023-10-25 17:00:00
