@@ -481,9 +481,6 @@ def inner_loop(outer_loop_vars, p, client):
         debt_service,
         p,
     )
-    print("Agg tax = ", total_tax_revenue)
-    print("Agg pension outlays = ", agg_pension_outlays)
-    print("Agg UBI outlays = ", UBI_outlays)
     new_TR = fiscal.get_TR(
         Y,
         TR,

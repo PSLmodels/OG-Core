@@ -11,6 +11,8 @@ import pandas as pd
 import pickle
 from pkg_resources import resource_stream, Requirement
 import importlib.resources
+import urllib3
+import ssl
 
 EPSILON = 1e-10  # tolerance or comparison functions
 
@@ -1039,3 +1041,31 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                 )
 
     return param_out
+
+
+class CustomHttpAdapter(requests.adapters.HTTPAdapter):
+    """
+    The UN Data Portal server doesn't support "RFC 5746 secure renegotiation". This causes and error when the client is using OpenSSL 3, which enforces that standard by default.
+    The fix is to create a custom SSL context that allows for legacy connections. This defines a function get_legacy_session() that should be used instead of requests().
+    """
+
+    # "Transport adapter" that allows us to use custom ssl_context.
+    def __init__(self, ssl_context=None, **kwargs):
+        self.ssl_context = ssl_context
+        super().__init__(**kwargs)
+
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = urllib3.poolmanager.PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_context=self.ssl_context,
+        )
+
+
+def get_legacy_session():
+    ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+    ctx.options |= 0x4  # OP_LEGACY_SERVER_CONNECT  #in Python 3.12 you will be able to switch from 0x4 to ssl.OP_LEGACY_SERVER_CONNECT.
+    session = requests.session()
+    session.mount("https://", CustomHttpAdapter(ctx))
+    return session
