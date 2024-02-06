@@ -1308,15 +1308,15 @@ def tax_func_loop(
                     (NoData_cnt, 1)
                 ) * (x1_mtry - x0_mtry)
                 for s_ind in range(NoData_cnt):
-                    etrparam_list[s - NoData_cnt - min_age + s_ind] = (
-                        lin_int_etr[s_ind, :]
-                    )
-                    mtrxparam_list[s - NoData_cnt - min_age + s_ind] = (
-                        lin_int_mtrx[s_ind, :]
-                    )
-                    mtryparam_list[s - NoData_cnt - min_age + s_ind] = (
-                        lin_int_mtry[s_ind, :]
-                    )
+                    etrparam_list[
+                        s - NoData_cnt - min_age + s_ind
+                    ] = lin_int_etr[s_ind, :]
+                    mtrxparam_list[
+                        s - NoData_cnt - min_age + s_ind
+                    ] = lin_int_mtrx[s_ind, :]
+                    mtryparam_list[
+                        s - NoData_cnt - min_age + s_ind
+                    ] = lin_int_mtry[s_ind, :]
 
             elif (
                 (NoData_cnt > 0)

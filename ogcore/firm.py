@@ -96,7 +96,12 @@ def get_Y(K, K_g, L, p, method, m=-1):
                     * (L ** ((epsilon - 1) / epsilon))
                 )
             ) ** (epsilon / (epsilon - 1))
-            Y2 = Z * (K**gamma) * (K_g**gamma_g) * (L ** (1 - gamma - gamma_g))
+            Y2 = (
+                Z
+                * (K**gamma)
+                * (K_g**gamma_g)
+                * (L ** (1 - gamma - gamma_g))
+            )
             Y[epsilon == 1] = Y2[epsilon == 1]
     else:  # TPI case
         if m is not None:
@@ -152,7 +157,12 @@ def get_Y(K, K_g, L, p, method, m=-1):
                     * (L ** ((epsilon - 1) / epsilon))
                 )
             ) ** (epsilon / (epsilon - 1))
-            Y2 = Z * (K**gamma) * (K_g**gamma_g) * (L ** (1 - gamma - gamma_g))
+            Y2 = (
+                Z
+                * (K**gamma)
+                * (K_g**gamma_g)
+                * (L ** (1 - gamma - gamma_g))
+            )
             Y[:, epsilon == 1] = Y2[:, epsilon == 1]
 
     return Y
@@ -453,7 +463,9 @@ def get_L_from_Y(w, Y, p, method):
         Z = p.Z[-1]
     else:
         Z = p.Z[: p.T]
-    L = ((1 - p.gamma - p.gamma_g) * Z ** (p.epsilon - 1) * Y) / (w**p.epsilon)
+    L = ((1 - p.gamma - p.gamma_g) * Z ** (p.epsilon - 1) * Y) / (
+        w**p.epsilon
+    )
 
     return L
 
@@ -654,7 +666,9 @@ def solve_L(Y, K, K_g, p, method, m=-1):
             K_g[K_g == 0] = 1.0
             gamma_g = 0
     if epsilon == 1.0:
-        L = (Y / (Z * K**gamma * K_g**gamma_g)) ** (1 / (1 - gamma - gamma_g))
+        L = (Y / (Z * K**gamma * K_g**gamma_g)) ** (
+            1 / (1 - gamma - gamma_g)
+        )
     else:
         L = (
             (
