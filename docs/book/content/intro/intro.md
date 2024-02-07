@@ -1,6 +1,12 @@
 (Chap_Intro)=
 # OG-Core
 
+| | |
+| --- | --- |
+| Org | [![PSL cataloged](https://img.shields.io/badge/PSL-cataloged-a0a0a0.svg)](https://www.PSLmodels.org) [![OS License: CCO-1.0](https://img.shields.io/badge/OS%20License-CCO%201.0-yellow)](https://github.com/PSLmodels/OG-Core/blob/master/LICENSE) [![Jupyter Book Badge](https://jupyterbook.org/badge.svg)](https://pslmodels.github.io/OG-Core/) |
+| Package | [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3916/) [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3108/) [![Python 3.11](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3118/) [![PyPI Latest Release](https://img.shields.io/pypi/v/ogcore.svg)](https://pypi.org/project/ogcore/) [![PyPI Downloads](https://img.shields.io/pypi/dm/ogcore.svg?label=PyPI%20downloads)](https://pypi.org/project/ogcore/) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) |
+| Testing | ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/build_and_test.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/deploy_docs.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/check_black.yml/badge.svg?branch=master) [![Codecov](https://codecov.io/gh/PSLmodels/OG-Core/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-Core) |
+
 `OG-Core` is the core logic for a country-agnostic overlapping-generations (OG) model of an economy that allows for dynamic general equilibrium analysis of fiscal policy. The source code is openly available for download or collaboration at the GitHub repository [www.github.com/PSLmodels/OG-Core](https://github.com/PSLmodels/OG-Core), or you can click on the GitHub icon at the top right of this page.
 
 The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Although `OG-Core` can be run independently based on default parameter values (currently representing something similar to the United States), it is meant to be a dependency of a country-specific calibration. This documentation contains the following major sections, which are regularly updated.
