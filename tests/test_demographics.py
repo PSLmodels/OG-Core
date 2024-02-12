@@ -380,3 +380,31 @@ def test_SS_dist():
     # Assert that S reached by period T
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-S, :])
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-1, :])
+
+
+# Test all time path variables returned are of T+S length in the time dimension
+def test_time_path_length():
+    """
+    Test of the that omega_SS is found by period T (so in SS for last
+    S periods of the T+S transition path)
+    """
+    E = 20
+    S = 80
+    T = int(round(4.0 * S))
+    start_year = 2019
+
+    pop_dict = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
+        GraphDiag=False,
+    )
+    # Assert that S reached by period T
+    assert pop_dict["omega"].shape[0] == T + S
+    assert pop_dict["g_n"].shape[0] == T + S
+    assert pop_dict["imm_rates"].shape[0] == T + S
+    assert pop_dict["rho"].shape[0] == T + S
