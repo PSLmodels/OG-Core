@@ -309,7 +309,8 @@ def get_pop(
                 end_year=start_year - 1,
             )
             pre_pop_sample = pre_pop_data[
-                (pre_pop_data["age"] >= min_age) & (pre_pop_data["age"] <= max_age)
+                (pre_pop_data["age"] >= min_age)
+                & (pre_pop_data["age"] <= max_age)
             ]
             pre_pop = pre_pop_sample.value.values
         else:
@@ -322,12 +323,17 @@ def get_pop(
                 end_year=start_year,
             )
             initial_pop_sample = initial_pop_data[
-                (pre_pop_data["age"] >= min_age) & (pre_pop_data["age"] <= max_age)
+                (pre_pop_data["age"] >= min_age)
+                & (pre_pop_data["age"] <= max_age)
             ]
             initial_pop = initial_pop_sample.value.values
         # Check that have all necessary inputs to infer the population
         # distribution
-        assert not [x for x in (fert_rates, mort_rates, infmort_rates, imm_rates) if x is None]
+        assert not [
+            x
+            for x in (fert_rates, mort_rates, infmort_rates, imm_rates)
+            if x is None
+        ]
         len_pop_dist = end_year + 1 - start_year
         pop_2D = np.zeros((len_pop_dist, E + S))
         # set initial population distribution in the counterfactual to
@@ -336,9 +342,9 @@ def get_pop(
         for t in range(1, len_pop_dist):
             # find newborns next period
             newborns = np.dot(fert_rates[t - 1, :], pop_2D[t - 1, :])
-            pop_2D[t, 0] = (
-                1 - infmort_rates[t - 1]
-            ) * newborns + imm_rates[t - 1, 0] * pop_2D[t - 1, 0]
+            pop_2D[t, 0] = (1 - infmort_rates[t - 1]) * newborns + imm_rates[
+                t - 1, 0
+            ] * pop_2D[t - 1, 0]
             pop_2D[t, 1:] = (
                 pop_2D[t - 1, :-1] * (1 - mort_rates[t - 1, :-1])
                 + pop_2D[t - 1, 1:] * imm_rates[t - 1, 1:]
@@ -734,7 +740,7 @@ def get_pop_objs(
     mort_rates_S = mort_rates[:, E:]
     # Get population distribution if not provided
     # or if just provide initial pop and infer_pop=True
-    if (pop_dist is None) or (pop_dist is not None and infer_pop):
+    if (pop_dist is None) or (pop_dist is not None and infer_pop is True):
         if infer_pop:
             if pop_dist is not None:
                 initial_pop = pop_dist[0, :].reshape(1, pop_dist.shape[-1])
@@ -762,9 +768,9 @@ def get_pop_objs(
                 S,
                 min_age,
                 max_age,
-                country_id,
-                initial_data_year,
-                final_data_year,
+                country_id=country_id,
+                start_year=initial_data_year,
+                end_year=final_data_year,
             )
     else:
         # Check first dims of pop_dist as input by user
