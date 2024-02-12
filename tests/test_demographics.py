@@ -536,4 +536,5 @@ def test_infer_pop_nones():
     )
     assert pop_dict is not None
 
+
 # Can I test if population is consistent from preTP to initial pop?
