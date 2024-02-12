@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.1] - 2024-02-12 15:00:00
+
+### Added
+
+- Updated `setup.py` Python version requirement to be `python_requires=">=3.7.7, <3.12"`
+
 ## [0.11.0] - 2024-02-06 15:00:00
 
 ### Added
@@ -176,6 +182,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+[0.11.1]: https://github.com/PSLmodels/OG-Core/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/PSLmodels/OG-Core/compare/v0.10.10...v0.11.0
 [0.10.10]: https://github.com/PSLmodels/OG-Core/compare/v0.10.9...v0.10.10
 [0.10.9]: https://github.com/PSLmodels/OG-Core/compare/v0.10.8...v0.10.9
