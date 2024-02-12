@@ -623,7 +623,7 @@ def get_pop_objs(
             fert_rates,
             np.tile(
                 fert_rates[-1, :].reshape(1, E + S),
-                (T - fert_rates.shape[0], 1),
+                (T + S - fert_rates.shape[0], 1),
             ),
         ),
         axis=0,
@@ -653,7 +653,7 @@ def get_pop_objs(
             mort_rates,
             np.tile(
                 mort_rates[-1, :].reshape(1, E + S),
-                (T - mort_rates.shape[0], 1),
+                (T + S - mort_rates.shape[0], 1),
             ),
         ),
         axis=0,
@@ -661,7 +661,7 @@ def get_pop_objs(
     infmort_rates = np.concatenate(
         (
             infmort_rates,
-            np.tile(infmort_rates[-1], (T - infmort_rates.shape[0])),
+            np.tile(infmort_rates[-1], (T + S - infmort_rates.shape[0])),
         )
     )
     mort_rates_S = mort_rates[:, E:]
@@ -678,6 +678,8 @@ def get_pop_objs(
         )
     else:
         # Check first dims of pop_dist as input by user
+        print("pop_dist.shape = ", pop_dist.shape)
+        print("T0 = ", T0)
         assert pop_dist.shape[0] == T0 + 1  # population needs to be
         # one year longer in order to find immigration rates
         assert pop_dist.shape[-1] == E + S
@@ -719,7 +721,7 @@ def get_pop_objs(
             imm_rates_orig,
             np.tile(
                 imm_rates_orig[-1, :].reshape(1, E + S),
-                (T - imm_rates_orig.shape[0], 1),
+                (T + S - imm_rates_orig.shape[0], 1),
             ),
         ),
         axis=0,
@@ -817,7 +819,7 @@ def get_pop_objs(
             imm_rates_orig[:fixper, E:],
             np.tile(
                 imm_rates_adj[E:].reshape(1, S),
-                (T - fixper, 1),
+                (T + S - fixper, 1),
             ),
         ),
         axis=0,
@@ -968,13 +970,12 @@ def get_pop_objs(
             path=OUTPUT_DIR,
         )
 
-    # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
-    # mort_rates_S, and g_n_path
+    # Return objects in a dictionary
     pop_dict = {
         "omega": omega_path_S,
         "g_n_ss": g_n_SS,
         "omega_SS": omega_SSfx[-S:] / omega_SSfx[-S:].sum(),
-        "rho": [mort_rates_S],
+        "rho": mort_rates_S,
         "g_n": g_n_path,
         "imm_rates": imm_rates_mat,
         "omega_S_preTP": omega_S_preTP,
