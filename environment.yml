@@ -3,6 +3,7 @@ channels:
 - conda-forge
 dependencies:
 - python>=3.7.7, <3.12
+- numpy
 - ipython
 - setuptools
 - scipy>=1.7.1
@@ -12,6 +13,13 @@ dependencies:
 - dask-core>=2.30.0
 - distributed>=2.30.1
 - paramtools>=0.15.0
+- sphinx
+- sphinx-argparse
+- sphinxcontrib-bibtex>=2.0.0
+- sphinx-math-dollar
+- pydata-sphinx-theme
+- jupyter-book>=0.11.3
+- jupyter
 - pytest>=6.0
 - pytest-xdist
 - pylint
@@ -22,3 +30,4 @@ dependencies:
 - pip
 - pip:
   - pygam
+  - linecheck
