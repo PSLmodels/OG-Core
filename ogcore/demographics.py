@@ -823,25 +823,84 @@ def get_pop_objs(
     )
     # If the population distribution was given, check it for consistency
     # with the fertility, mortality, and immigration rates
-    if pop_dist is not None and not infer_pop:
-        len_pop_dist = pop_dist.shape[0]
-        pop_counter_2D = np.zeros((len_pop_dist, E + S))
-        # set initial population distribution in the counterfactual to
-        # the first year of the user provided distribution
-        pop_counter_2D[0, :] = pop_dist[0, :]
-        for t in range(1, len_pop_dist):
-            # find newborns next period
-            newborns = np.dot(fert_rates[t - 1, :], pop_counter_2D[t - 1, :])
+    # if pop_dist is not None and not infer_pop:
+    # len_pop_dist = pop_dist.shape[0]
+    # pop_counter_2D = np.zeros((len_pop_dist, E + S))
+    len_pop_dist = pop_2D.shape[0]
+    pop_counter_2D = np.zeros((len_pop_dist, E + S))
+    # set initial population distribution in the counterfactual to
+    # the first year of the user provided distribution
+    # pop_counter_2D[0, :] = pop_dist[0, :]
+    pop_counter_2D[0, :] = pop_2D[0, :]
+    for t in range(1, len_pop_dist):
+        # find newborns next period
+        # newborns = np.dot(fert_rates[t - 1, :], pop_counter_2D[t - 1, :])
 
-            pop_counter_2D[t, 0] = (
-                1 - infmort_rates[t - 1]
-            ) * newborns + imm_rates[t - 1, 0] * pop_counter_2D[t - 1, 0]
-            pop_counter_2D[t, 1:] = (
-                pop_counter_2D[t - 1, :-1] * (1 - mort_rates[t - 1, :-1])
-                + pop_counter_2D[t - 1, 1:] * imm_rates_orig[t - 1, 1:]
+        # pop_counter_2D[t, 0] = (
+        #     1 - infmort_rates[t - 1]
+        # ) * newborns + imm_rates[t - 1, 0] * pop_counter_2D[t - 1, 0]
+        # pop_counter_2D[t, 1:] = (
+        #     pop_counter_2D[t - 1, :-1] * (1 - mort_rates[t - 1, :-1])
+        #     + pop_counter_2D[t - 1, 1:] * imm_rates_orig[t - 1, 1:]
+        # )
+        newborns = np.dot(fert_rates[t - 1, :], pop_counter_2D[t - 1, :])
+
+        pop_counter_2D[t, 0] = (
+            1 - infmort_rates[t - 1]
+        ) * newborns + imm_rates_orig[t - 1, 0] * pop_counter_2D[t - 1, 0]
+        pop_counter_2D[t, 1:] = (
+            pop_counter_2D[t - 1, :-1] * (1 - mort_rates[t - 1, :-1])
+            + pop_counter_2D[t - 1, 1:] * imm_rates_orig[t - 1, 1:]
+        )
+    # Check that counterfactual pop dist is close to pop dist given
+    # assert np.allclose(pop_counter_2D, pop_dist)
+    assert np.allclose(pop_counter_2D, pop_2D)
+
+    """"
+    CHANGE - in OG-Core, we are implicitLy assuming pre-TP rates of mortality,
+    fertility, and immigration are the same as the period 0 rates.
+
+    So let's just infer the pre-pop_dist from those.
+    """
+    pop1 = pop_2D[0, :]
+    fert0 = fert_rates[0, :]
+    mort0 = mort_rates[0, :]
+    infmort0 = infmort_rates[0]
+    imm0 = imm_rates_orig[0, :]
+    pre_pop_guess = pop1.copy()
+    # I can't solve this analytically, so set up a system of equation
+    # to solve
+    def pre_pop_solve(pre_pop_guess, pop1, fert0, mort0, infmort0, imm0):
+        pre_pop = pre_pop_guess
+        errors = np.zeros(E + S)
+        errors[0] = (pop1[0] - ((
+                1 - infmort0
+            ) * (fert0 * pre_pop).sum() + imm0[0] * pre_pop[0]))
+        errors[1:] = (pop1[1:] - (
+                pre_pop[:-1] * (1 - mort0[:-1])
+                + pre_pop[1:] * imm0[1:])
             )
-        # Check that counterfactual pop dist is close to pop dist given
-        assert np.allclose(pop_counter_2D, pop_dist)
+        # print("Max error = ", np.abs(errors).max())
+        return errors
+    opt_res = opt.root(pre_pop_solve, pre_pop_guess, args=(pop1, fert0, mort0, infmort0, imm0), method='lm')
+    pre_pop = opt_res.x
+    print("Success? ", opt_res.success, ", Max diff = ", np.abs(opt_res.fun).max())
+    pre_pop_EpS = pop_rebin(pre_pop, E + S)
+
+    # Check result
+    initial_pop_counter = np.zeros(E + S)
+    newborns = (fert_rates[0, :] * pre_pop[:]).sum()
+    initial_pop_counter[0] = (
+        1 - infmort_rates[0]
+    ) * newborns + imm_rates_orig[0, 0] * pre_pop[0]
+    initial_pop_counter[1:] = (
+        pre_pop[:-1] * (1 - mort_rates[0, :-1])
+        + pre_pop[1:] * imm_rates_orig[0, 1:]
+    )
+    # Test that using pre pop get to pop in period 1
+    print("Max diff = ", np.abs(pop_2D[0, :] - initial_pop_counter).max())
+    # assert np.allclose(initial_pop_counter, pop_2D[0, :])
+
     # Create the transition matrix for the population distribution
     # from T0 going forward (i.e., past when we have data on forecasts)
     OMEGA_orig = np.zeros((E + S, E + S))
@@ -907,7 +966,7 @@ def get_pop_objs(
     g_n_path[0] = (
         omega_path_lev[0, -S:].sum() - pre_pop_EpS[-S:].sum()
     ) / pre_pop_EpS[-S:].sum()
-    g_n_path[fixper + 1 :] = g_n_SS
+    g_n_path[fixper + 1:] = g_n_SS
     omega_S_preTP = pre_pop_EpS[-S:] / pre_pop_EpS[-S:].sum()
     imm_rates_mat = np.concatenate(
         (
