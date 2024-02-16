@@ -868,23 +868,34 @@ def get_pop_objs(
     infmort0 = infmort_rates[0]
     imm0 = imm_rates_orig[0, :]
     pre_pop_guess = pop1.copy()
+
     # I can't solve this analytically, so set up a system of equation
     # to solve
     def pre_pop_solve(pre_pop_guess, pop1, fert0, mort0, infmort0, imm0):
         pre_pop = pre_pop_guess
         errors = np.zeros(E + S)
-        errors[0] = (pop1[0] - ((
-                1 - infmort0
-            ) * (fert0 * pre_pop).sum() + imm0[0] * pre_pop[0]))
-        errors[1:] = (pop1[1:] - (
-                pre_pop[:-1] * (1 - mort0[:-1])
-                + pre_pop[1:] * imm0[1:])
-            )
+        errors[0] = pop1[0] - (
+            (1 - infmort0) * (fert0 * pre_pop).sum() + imm0[0] * pre_pop[0]
+        )
+        errors[1:] = pop1[1:] - (
+            pre_pop[:-1] * (1 - mort0[:-1]) + pre_pop[1:] * imm0[1:]
+        )
         # print("Max error = ", np.abs(errors).max())
         return errors
-    opt_res = opt.root(pre_pop_solve, pre_pop_guess, args=(pop1, fert0, mort0, infmort0, imm0), method='lm')
+
+    opt_res = opt.root(
+        pre_pop_solve,
+        pre_pop_guess,
+        args=(pop1, fert0, mort0, infmort0, imm0),
+        method="lm",
+    )
     pre_pop = opt_res.x
-    print("Success? ", opt_res.success, ", Max diff = ", np.abs(opt_res.fun).max())
+    print(
+        "Success? ",
+        opt_res.success,
+        ", Max diff = ",
+        np.abs(opt_res.fun).max(),
+    )
     pre_pop_EpS = pop_rebin(pre_pop, E + S)
 
     # Check result
@@ -966,7 +977,7 @@ def get_pop_objs(
     g_n_path[0] = (
         omega_path_lev[0, -S:].sum() - pre_pop_EpS[-S:].sum()
     ) / pre_pop_EpS[-S:].sum()
-    g_n_path[fixper + 1:] = g_n_SS
+    g_n_path[fixper + 1 :] = g_n_SS
     omega_S_preTP = pre_pop_EpS[-S:] / pre_pop_EpS[-S:].sum()
     imm_rates_mat = np.concatenate(
         (
