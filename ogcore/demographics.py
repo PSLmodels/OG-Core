@@ -672,7 +672,7 @@ def get_pop_objs(
     assert (
         T > 2 * T0
     )  # ensure time path 2x as long as allows rates to fluctuate
-    if imm_rates is not None:
+    if imm_rates is not None and pop_dist is None:
         assert (
             infer_pop is True
         )  # if pass immigration rates, need to infer population
