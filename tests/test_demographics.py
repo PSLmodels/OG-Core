@@ -225,7 +225,7 @@ def test_custom_series():
         final_data_year=start_year + 1,
         GraphDiag=False,
         imm_rates=imm_rates,
-        infer_pop=True
+        infer_pop=True,
     )
     assert np.allclose(pop_dict["imm_rates"][0, :], imm_rates[0, E:])
 

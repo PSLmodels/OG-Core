@@ -671,9 +671,11 @@ def get_pop_objs(
     assert final_data_year < initial_data_year + T
     assert (
         T > 2 * T0
-    ) # ensure time path 2x as long as allows rates to fluctuate
+    )  # ensure time path 2x as long as allows rates to fluctuate
     if imm_rates is not None:
-        assert infer_pop is True  # if pass immigration rates, need to infer population
+        assert (
+            infer_pop is True
+        )  # if pass immigration rates, need to infer population
 
     # Get fertility rates if not provided
     if fert_rates is None:
