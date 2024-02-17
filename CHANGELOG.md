@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.2] - 2024-02-17 12:00:00
+
+### Added
+
+- Updates `demographics.py` with more functionality across the time path.
+- Allow the user to have the population distribution from the initial period forward inferred from given fertility, mortality, and immigration rates (functionality to infer immigration from a given evolution of the population is retained, the user specifies what they want to do via arguments to the relevant function calls).
+- Extends all series returned from the get_pop_objs() function over the full transition path of T+S periods (except those that apply only to a single period).
+- Addresses Issues #900 and #899
+
 ## [0.11.1] - 2024-02-12 15:00:00
 
 ### Added
@@ -182,6 +191,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+[0.11.2]: https://github.com/PSLmodels/OG-Core/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/PSLmodels/OG-Core/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/PSLmodels/OG-Core/compare/v0.10.10...v0.11.0
 [0.10.10]: https://github.com/PSLmodels/OG-Core/compare/v0.10.9...v0.10.10
