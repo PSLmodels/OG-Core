@@ -225,6 +225,7 @@ def test_custom_series():
         final_data_year=start_year + 1,
         GraphDiag=False,
         imm_rates=imm_rates,
+        infer_pop=True,
     )
     assert np.allclose(pop_dict["imm_rates"][0, :], imm_rates[0, E:])
 
@@ -380,3 +381,161 @@ def test_SS_dist():
     # Assert that S reached by period T
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-S, :])
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-1, :])
+
+
+# Test all time path variables returned are of T+S length in the time dimension
+def test_time_path_length():
+    """
+    Test of the that omega_SS is found by period T (so in SS for last
+    S periods of the T+S transition path)
+    """
+    E = 20
+    S = 80
+    T = int(round(4.0 * S))
+    start_year = 2019
+
+    pop_dict = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
+        GraphDiag=False,
+    )
+    # Assert that S reached by period T
+    assert pop_dict["omega"].shape[0] == T + S
+    assert pop_dict["g_n"].shape[0] == T + S
+    assert pop_dict["imm_rates"].shape[0] == T + S
+    assert pop_dict["rho"].shape[0] == T + S
+
+
+# test of get pop when infer population
+def test_infer_pop():
+    """
+    Test of the get pop objects function when passing in custom series
+    for fertility, mortality, immigration, and population
+    """
+    E = 20
+    S = 80
+    T = int(round(4.0 * S))
+    start_year = 2019
+    fert_rates = demographics.get_fert(
+        E + S,
+        0,
+        99,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+    mort_rates, infmort_rates = demographics.get_mort(
+        E + S,
+        0,
+        99,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+    imm_rates = demographics.get_imm_rates(
+        E + S,
+        0,
+        99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+    pop_dist = np.zeros((3, E + S))
+    for t in range(pop_dist.shape[0]):
+        df = demographics.get_un_data(
+            "47", start_year=start_year + t, end_year=start_year + t
+        )
+        pop = df[(df.age < 100) & (df.age >= 0)].value.values
+        pop_dist[t, :] = demographics.pop_rebin(pop, E + S)
+    df = demographics.get_un_data(
+        "47", start_year=start_year - 1, end_year=start_year - 1
+    )
+    pop = df[(df.age < 100) & (df.age >= 0)].value.values
+    pre_pop_dist = demographics.pop_rebin(pop, E + S)
+    pop_dict = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        pop_dist=pop_dist[0, :].reshape(1, E + S),
+        pre_pop_dist=pre_pop_dist,
+        initial_data_year=start_year,
+        final_data_year=start_year + 1,
+        GraphDiag=False,
+    )
+    assert pop_dict is not None
+
+
+# test of get pop when infer population, but don't pass initial pop or pre_pop
+def test_infer_pop_nones():
+    """
+    Test of the get pop objects function when passing in custom series
+    for fertility, mortality, immigration, and population
+    """
+    E = 20
+    S = 80
+    T = int(round(4.0 * S))
+    start_year = 2019
+    fert_rates = demographics.get_fert(
+        E + S,
+        0,
+        99,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+    mort_rates, infmort_rates = demographics.get_mort(
+        E + S,
+        0,
+        99,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+    imm_rates = demographics.get_imm_rates(
+        E + S,
+        0,
+        99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        start_year=start_year,
+        end_year=start_year + 1,
+        graph=False,
+    )
+
+    pop_dict = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        pop_dist=None,
+        pre_pop_dist=None,
+        initial_data_year=start_year,
+        final_data_year=start_year + 1,
+        GraphDiag=False,
+    )
+    assert pop_dict is not None
+
+
+# Can I test if population is consistent from preTP to initial pop?
