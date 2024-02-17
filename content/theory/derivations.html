@@ -1,12 +1,13 @@
 
+
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="../../" >
+<html lang="en" data-content_root="" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Derivations &#8212; OG-Core</title>
   
@@ -28,35 +29,39 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/theory/derivations';</script>
@@ -157,18 +162,7 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item">
-
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
-        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -439,46 +433,46 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="derivations">
-<span id="chap-deriv"></span><h1>Derivations<a class="headerlink" href="#derivations" title="Link to this heading">#</a></h1>
+<span id="chap-deriv"></span><h1>Derivations<a class="headerlink" href="#derivations" title="Permalink to this heading">#</a></h1>
 <p>This appendix contains derivations from the theory in the body of this book.</p>
 <section id="household-first-order-condition-for-industry-specific-consumption-demand">
-<span id="secappderivhhcons"></span><h2>Household first order condition for industry-specific consumption demand<a class="headerlink" href="#household-first-order-condition-for-industry-specific-consumption-demand" title="Link to this heading">#</a></h2>
+<span id="secappderivhhcons"></span><h2>Household first order condition for industry-specific consumption demand<a class="headerlink" href="#household-first-order-condition-for-industry-specific-consumption-demand" title="Permalink to this heading">#</a></h2>
 <p>The derivation for the household first order condition for industry-specific consumption demand <a class="reference internal" href="households.html#equation-eqhhfocci">(13)</a> is the following:</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivhhconsfoc">
-<span class="eqno">(165)<a class="headerlink" href="#equation-eqappderivhhconsfoc" title="Link to this equation">#</a></span>\[\begin{split}  \tilde{p}_{i,t} = \tilde{p}_{j,s,t}\alpha_m(c_{i,j,s,t} - c_{min,i})^{\alpha_i-1}\prod_{u\neq i}^I\left(c_{u,j,s,t} - c_{min,u}\right)^{\alpha_u} \\
+<span class="eqno">(165)<a class="headerlink" href="#equation-eqappderivhhconsfoc" title="Permalink to this equation">#</a></span>\[\begin{split}  \tilde{p}_{i,t} = \tilde{p}_{j,s,t}\alpha_m(c_{i,j,s,t} - c_{min,i})^{\alpha_i-1}\prod_{u\neq i}^I\left(c_{u,j,s,t} - c_{min,u}\right)^{\alpha_u} \\
   \tilde{p}_{i,t}(c_{i,j,s,t} - c_{min,i}) = \tilde{p}_{j,s,t}\alpha_i(c_{i,j,s,t} - c_{min,i})^{\alpha_i}\prod_{u\neq i}^I\left(c_{u,j,s,t} - c_{min,u}\right)^{\alpha_u} \\
   \tilde{p}_{i,t}(c_{i,j,s,t} - c_{min,i}) = \tilde{p}_{j,s,t}\alpha_i\prod_{i=1}^I\left(c_{i,j,s,t} - c_{min,i}\right)^{\alpha_i} = \alpha_i \tilde{p}_{j,s,t}c_{j,s,t}\end{split}\]</div>
 </section>
 <section id="properties-of-the-ces-production-function">
-<span id="secappderivces"></span><h2>Properties of the CES Production Function<a class="headerlink" href="#properties-of-the-ces-production-function" title="Link to this heading">#</a></h2>
+<span id="secappderivces"></span><h2>Properties of the CES Production Function<a class="headerlink" href="#properties-of-the-ces-production-function" title="Permalink to this heading">#</a></h2>
 <p>The constant elasticity of substitution (CES) production function of capital and labor was introduced by <span id="id1">[<a class="reference internal" href="../OGCore_references.html#id26" title="Robert M. Solow. A contribution to the theory of economic growth. Quarterly Journal of Economics, 70(1):65-94, February 1956.">Solow, 1956</a>]</span> and further extended to a consumption aggregator by <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id2" title="Paul S. Armington. A theory of demand for products distinguished by place of production. Staff Papers, International Monetary Fund, 16(1):159-178, March 1969.">Armington, 1969</a>]</span>. The CES production function of private capital <span class="math notranslate nohighlight">\(K\)</span>, public capital <span class="math notranslate nohighlight">\(K_g\)</span> and labor <span class="math notranslate nohighlight">\(L\)</span> we use in Chapter <a class="reference internal" href="firms.html#chap-firms"><span class="std std-ref">Firms</span></a> is the following,</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivcesprodfun">
-<span class="eqno">(166)<a class="headerlink" href="#equation-eqappderivcesprodfun" title="Link to this equation">#</a></span>\[\begin{split}  Y &amp;= F(K, K_g, L) \\
+<span class="eqno">(166)<a class="headerlink" href="#equation-eqappderivcesprodfun" title="Permalink to this equation">#</a></span>\[\begin{split}  Y &amp;= F(K, K_g, L) \\
   &amp;\equiv Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_g)^\frac{1}{\varepsilon}(K_g)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_g)^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(Y\)</span> is aggregate output (GDP), <span class="math notranslate nohighlight">\(Z\)</span> is total factor productivity, <span class="math notranslate nohighlight">\(\gamma\)</span> is a share parameter that represents private capital’s share of income in the Cobb-Douglas case (<span class="math notranslate nohighlight">\(\varepsilon=1\)</span>), <span class="math notranslate nohighlight">\(\gamma_g\)</span> is public capital’s share of income, and <span class="math notranslate nohighlight">\(\varepsilon\)</span> is the elasticity of substitution between capital and labor. The stationary version of this production function is given in Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>. We drop the <span class="math notranslate nohighlight">\(m\)</span> and <span class="math notranslate nohighlight">\(t\)</span> subscripts, the ``<span class="math notranslate nohighlight">\(\:\,\hat{}\,\:\)</span>’’ stationary notation, and use the stationarized version of the production function for simplicity.</p>
 <p>The Cobb-Douglas production function is a nested case of the general CES production function with unit elasticity <span class="math notranslate nohighlight">\(\varepsilon=1\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-cobbdoug">
-<span class="eqno">(167)<a class="headerlink" href="#equation-eqappderivces-cobbdoug" title="Link to this equation">#</a></span>\[  Y = Z(K)^\gamma(K_{g})^{\gamma_{g}}(L)^{1-\gamma-\gamma_{g}}\]</div>
+<span class="eqno">(167)<a class="headerlink" href="#equation-eqappderivces-cobbdoug" title="Permalink to this equation">#</a></span>\[  Y = Z(K)^\gamma(K_{g})^{\gamma_{g}}(L)^{1-\gamma-\gamma_{g}}\]</div>
 <p>The marginal productivity of private capital <span class="math notranslate nohighlight">\(MPK\)</span> is the derivative of the production function with respect to private capital <span class="math notranslate nohighlight">\(K\)</span>. Let the variable <span class="math notranslate nohighlight">\(\Omega\)</span> represent the expression inside the square brackets in the production function <a class="reference internal" href="#equation-eqappderivcesprodfun">(166)</a>.</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-mpk">
-<span class="eqno">(168)<a class="headerlink" href="#equation-eqappderivces-mpk" title="Link to this equation">#</a></span>\[\begin{split}  MPK &amp;\equiv \frac{\partial F}{\partial K} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\gamma^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(K)^{-\frac{1}{\varepsilon}} \\
+<span class="eqno">(168)<a class="headerlink" href="#equation-eqappderivces-mpk" title="Permalink to this equation">#</a></span>\[\begin{split}  MPK &amp;\equiv \frac{\partial F}{\partial K} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\gamma^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(K)^{-\frac{1}{\varepsilon}} \\
   &amp;= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{\gamma}{K}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{\gamma}{K}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
   &amp;= (Z)^\frac{\varepsilon-1}{\varepsilon}\left(\gamma\frac{Y}{K}\right)^\frac{1}{\varepsilon}\end{split}\]</div>
 <p>The marginal productivity of public capital <span class="math notranslate nohighlight">\(MPK_g\)</span> is the derivative of the production function with respect to public capital <span class="math notranslate nohighlight">\(K_g\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-mpkg">
-<span class="eqno">(169)<a class="headerlink" href="#equation-eqappderivces-mpkg" title="Link to this equation">#</a></span>\[\begin{split}  MPK_g &amp;\equiv \frac{\partial F}{\partial K_g} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\gamma_g^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(K_g)^{-\frac{1}{\varepsilon}} \\
+<span class="eqno">(169)<a class="headerlink" href="#equation-eqappderivces-mpkg" title="Permalink to this equation">#</a></span>\[\begin{split}  MPK_g &amp;\equiv \frac{\partial F}{\partial K_g} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\gamma_g^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(K_g)^{-\frac{1}{\varepsilon}} \\
   &amp;= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{\gamma_g}{K_g}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{\gamma_g}{K_g}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
   &amp;= (Z)^\frac{\varepsilon-1}{\varepsilon}\left(\gamma_g\frac{Y}{K_g}\right)^\frac{1}{\varepsilon}\end{split}\]</div>
 <p>The marginal productivity of labor <span class="math notranslate nohighlight">\(MPL\)</span> is the derivative of the production function with respect to labor <span class="math notranslate nohighlight">\(L\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-mpl">
-<span class="eqno">(170)<a class="headerlink" href="#equation-eqappderivces-mpl" title="Link to this equation">#</a></span>\[\begin{split}  MPL &amp;\equiv \frac{\partial F}{\partial L} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}(1-\gamma-\gamma_g)^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(L)^{-\frac{1}{\varepsilon}} \\
+<span class="eqno">(170)<a class="headerlink" href="#equation-eqappderivces-mpl" title="Permalink to this equation">#</a></span>\[\begin{split}  MPL &amp;\equiv \frac{\partial F}{\partial L} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}(1-\gamma-\gamma_g)^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(L)^{-\frac{1}{\varepsilon}} \\
   &amp;= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{1-\gamma-\gamma_g}{L}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{1-\gamma-\gamma_g}{L}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
   &amp;= (Z)^\frac{\varepsilon-1}{\varepsilon}\left([1-\gamma-\gamma_g]\frac{Y}{L}\right)^\frac{1}{\varepsilon}\end{split}\]</div>
 <section id="wages-as-a-function-of-interest-rates">
-<span id="secappderivceswr"></span><h3>Wages as a function of interest rates<a class="headerlink" href="#wages-as-a-function-of-interest-rates" title="Link to this heading">#</a></h3>
+<span id="secappderivceswr"></span><h3>Wages as a function of interest rates<a class="headerlink" href="#wages-as-a-function-of-interest-rates" title="Permalink to this heading">#</a></h3>
 <p>The below shows that with the addition of public capital as a third factor of production, wages and interest rates are more than a function of the capital labor ratio.  This means that in the solution method for <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> we will need to guess both the interest rate <span class="math notranslate nohighlight">\(r_t\)</span> and wage <span class="math notranslate nohighlight">\(w_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-yl">
-<span class="eqno">(171)<a class="headerlink" href="#equation-eqappderivces-yl" title="Link to this equation">#</a></span>\[\begin{split}\begin{split}
+<span class="eqno">(171)<a class="headerlink" href="#equation-eqappderivces-yl" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{split}
     Y &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
     &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon}\left(\frac{L^\frac{\varepsilon-1}{\varepsilon}}{L^\frac{\varepsilon-1}{\varepsilon}}\right) + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon}\left(\frac{L^\frac{\varepsilon-1}{\varepsilon}}{L^\frac{\varepsilon-1}{\varepsilon}}\right) + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
     \\
@@ -486,7 +480,7 @@ document.write(`
     \Rightarrow\quad \frac{Y}{L} &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}\left(\frac{K}{L}\right)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{L}\right)^\frac{\varepsilon-1}{\varepsilon}+ (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
 \end{split}\end{split}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-yk">
-<span class="eqno">(172)<a class="headerlink" href="#equation-eqappderivces-yk" title="Link to this equation">#</a></span>\[\begin{split}\begin{split}
+<span class="eqno">(172)<a class="headerlink" href="#equation-eqappderivces-yk" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{split}
     Y &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
     &amp;= Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}(K_{g})^\frac{\varepsilon-1}{\varepsilon}\left(\frac{K^\frac{\varepsilon-1}{\varepsilon}}{K^\frac{\varepsilon-1}{\varepsilon}}\right) + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\left(\frac{K^\frac{\varepsilon-1}{\varepsilon}}{K^\frac{\varepsilon-1}{\varepsilon}}\right)\biggr]^\frac{\varepsilon}{\varepsilon-1}\\
     &amp;= ZK\biggl[(\gamma)^\frac{1}{\varepsilon} + (\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{K_{g}}{K}\right)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}\left(\frac{L}{K}\right)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1} \\
@@ -494,15 +488,15 @@ document.write(`
 \end{split}\end{split}\]</div>
 <p>Solving for the firm’s first order conditions for capital and labor demand from profit maximization <a class="reference internal" href="stationarization.html#equation-eqstnrzprofit">(117)</a> gives the following equations in their respective stationarized forms from Chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>.</p>
 <div class="math notranslate nohighlight" id="equation-eqfirmfoc-l-der">
-<span class="eqno">(173)<a class="headerlink" href="#equation-eqfirmfoc-l-der" title="Link to this equation">#</a></span>\[    w = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y}{L}\right]^\frac{1}{\varepsilon}\]</div>
+<span class="eqno">(173)<a class="headerlink" href="#equation-eqfirmfoc-l-der" title="Permalink to this equation">#</a></span>\[    w = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_{g})\frac{Y}{L}\right]^\frac{1}{\varepsilon}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqfirmfoc-k-der">
-<span class="eqno">(174)<a class="headerlink" href="#equation-eqfirmfoc-k-der" title="Link to this equation">#</a></span>\[    r = (1 - \tau^{corp})(Z)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y}{K}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau\]</div>
+<span class="eqno">(174)<a class="headerlink" href="#equation-eqfirmfoc-k-der" title="Permalink to this equation">#</a></span>\[    r = (1 - \tau^{corp})(Z)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y}{K}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau\]</div>
 <p>As can be seen from <a class="reference internal" href="#equation-eqfirmfoc-l-der">(173)</a> and <a class="reference internal" href="#equation-eqfirmfoc-k-der">(174)</a>, the wage <span class="math notranslate nohighlight">\(w\)</span> and interest rate <span class="math notranslate nohighlight">\(r\)</span> are functions of <span class="math notranslate nohighlight">\(Y/L\)</span> and <span class="math notranslate nohighlight">\(Y/K\)</span>, respectively. Equations <a class="reference internal" href="#equation-eqappderivces-yl">(171)</a> and <a class="reference internal" href="#equation-eqappderivces-yk">(172)</a> show that both <span class="math notranslate nohighlight">\(Y/L\)</span> and <span class="math notranslate nohighlight">\(Y/K\)</span> are functions of the capital-labor ratio <span class="math notranslate nohighlight">\(K/L\)</span>, the public-capital-labor ratio, <span class="math notranslate nohighlight">\(K_{g}/L\)</span>, and the public-private capital ratio, <span class="math notranslate nohighlight">\(K/K_{g}\)</span>. We cannot solve these equations for <span class="math notranslate nohighlight">\(r\)</span> and <span class="math notranslate nohighlight">\(w\)</span> solely as functions of the same ratios.</p>
 <p>In the Cobb-Douglas unit elasticity case (<span class="math notranslate nohighlight">\(\varepsilon=1\)</span>) of the CES production function, the first order conditions are:</p>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-cdfocl">
-<span class="eqno">(175)<a class="headerlink" href="#equation-eqappderivces-cdfocl" title="Link to this equation">#</a></span>\[  \text{if}\:\:\,\varepsilon=1:\quad w = (1-\gamma-\gamma_g)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}}\]</div>
+<span class="eqno">(175)<a class="headerlink" href="#equation-eqappderivces-cdfocl" title="Permalink to this equation">#</a></span>\[  \text{if}\:\:\,\varepsilon=1:\quad w = (1-\gamma-\gamma_g)Z\left(\frac{K}{L}\right)^\gamma \left(\frac{K_{g}}{L}\right)^{\gamma_{g}}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqappderivces-cdfock">
-<span class="eqno">(176)<a class="headerlink" href="#equation-eqappderivces-cdfock" title="Link to this equation">#</a></span>\[ \text{if}\:\:\:\varepsilon=1:\quad r = (1 - \tau^{corp})\gamma Z\left(\frac{K_{g}}{K}\right)^{\gamma_{g}}\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}} - \delta + \tau^{corp}\delta^\tau\]</div>
+<span class="eqno">(176)<a class="headerlink" href="#equation-eqappderivces-cdfock" title="Permalink to this equation">#</a></span>\[ \text{if}\:\:\:\varepsilon=1:\quad r = (1 - \tau^{corp})\gamma Z\left(\frac{K_{g}}{K}\right)^{\gamma_{g}}\left(\frac{L}{K}\right)^{1-\gamma-\gamma_{g}} - \delta + \tau^{corp}\delta^\tau\]</div>
 <p>Again, even if this simple case, we cannot solve for <span class="math notranslate nohighlight">\(r\)</span> as a function of <span class="math notranslate nohighlight">\(w\)</span> for the reasons above.</p>
 </section>
 </section>

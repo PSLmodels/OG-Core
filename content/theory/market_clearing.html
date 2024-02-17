@@ -1,12 +1,13 @@
 
+
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="../../" >
+<html lang="en" data-content_root="" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Market Clearing &#8212; OG-Core</title>
   
@@ -28,35 +29,39 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/theory/market_clearing';</script>
@@ -157,18 +162,7 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item">
-
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
-        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -444,69 +438,69 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="market-clearing">
-<span id="chap-markclr"></span><h1>Market Clearing<a class="headerlink" href="#market-clearing" title="Link to this heading">#</a></h1>
+<span id="chap-markclr"></span><h1>Market Clearing<a class="headerlink" href="#market-clearing" title="Permalink to this heading">#</a></h1>
 <p><span class="math notranslate nohighlight">\(M+3\)</span> markets must clear in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>—the labor market, the private capital market, the government bond market, and <span class="math notranslate nohighlight">\(M\)</span> goods markets. By Walras’ Law, we only need to use <span class="math notranslate nohighlight">\(M+2\)</span> of those market clearing conditions because the remaining one is redundant. In the model, we choose to use the labor, private capital, government bond market, and the first <span class="math notranslate nohighlight">\(M-1\)</span> goods market clearing conditions and to ignore the <span class="math notranslate nohighlight">\(M\)</span>th goods market clearing condition. But we present all <span class="math notranslate nohighlight">\(M+3\)</span> market clearing conditions here. Further, the redundant <span class="math notranslate nohighlight">\(M\)</span>th goods market clearing condition—sometimes referred to as the resource constraint—makes for a nice check on the solution method to see if everything worked.</p>
 <p>We also characterize here the law of motion for total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span>. Although it is not technically a market clearing condition, one could think of the bequests law of motion as the bequests market clearing condition.</p>
 <section id="market-clearing-conditions">
-<span id="secmarkclrmktclr"></span><h2>Market Clearing Conditions<a class="headerlink" href="#market-clearing-conditions" title="Link to this heading">#</a></h2>
+<span id="secmarkclrmktclr"></span><h2>Market Clearing Conditions<a class="headerlink" href="#market-clearing-conditions" title="Permalink to this heading">#</a></h2>
 <p>The sections below detail the labor, government debt, private capital, and <span class="math notranslate nohighlight">\(M\)</span> goods market clearing conditions of the model in the baseline case of a large partially open economy.</p>
 <section id="labor-market-clearing">
-<span id="secmarkclrmktclr-l"></span><h3>Labor market clearing<a class="headerlink" href="#labor-market-clearing" title="Link to this heading">#</a></h3>
+<span id="secmarkclrmktclr-l"></span><h3>Labor market clearing<a class="headerlink" href="#labor-market-clearing" title="Permalink to this heading">#</a></h3>
 <p>Labor market clearing <a class="reference internal" href="#equation-eqmarkclrlab">(95)</a> requires that aggregate labor demand <span class="math notranslate nohighlight">\(\sum_{m=1}^M L_{m,t}\)</span> measured in efficiency units equal the sum of household efficiency labor supplied <span class="math notranslate nohighlight">\(e_{j,s}n_{j,s,t}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrlab">
-<span class="eqno">(95)<a class="headerlink" href="#equation-eqmarkclrlab" title="Link to this equation">#</a></span>\[  \sum_{m=1}^M L_{m,t} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \omega_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t\]</div>
+<span class="eqno">(95)<a class="headerlink" href="#equation-eqmarkclrlab" title="Permalink to this equation">#</a></span>\[  \sum_{m=1}^M L_{m,t} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \omega_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t\]</div>
 </section>
 <section id="capital-markets-generalities">
-<span id="secmarkclrmktclr-capgen"></span><h3>Capital markets generalities<a class="headerlink" href="#capital-markets-generalities" title="Link to this heading">#</a></h3>
+<span id="secmarkclrmktclr-capgen"></span><h3>Capital markets generalities<a class="headerlink" href="#capital-markets-generalities" title="Permalink to this heading">#</a></h3>
 <p>Before describing the government bond market and private capital market clearing conditions, respectively, we define some general capital market conditions relative to both markets. Both the government bond market and private capital market are characterized by interest rates that differ exogenously. As described in <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(79)</a>, the interest rate at which the government repays debt or earns on surpluses <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> differs from the marginal product of capital <span class="math notranslate nohighlight">\(r_t\)</span> by an exogenous wedge. And the marginal product of capital is determined in equilibrium <span class="math notranslate nohighlight">\(r_t\)</span> (except in the closed economy case). But we make a simplifying assumption that households are indifferent regarding the allocation of their savings between holding government debt or investing in private capital.<a class="footnote-reference brackets" href="#indif-kd-note" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> And we assume that this indifference exists in spite of the difference in relative returns between <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> and <span class="math notranslate nohighlight">\(r_{K,t}\)</span>. We define total domestic household savings in a given period as <span class="math notranslate nohighlight">\(B_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-bt">
-<span class="eqno">(96)<a class="headerlink" href="#equation-eqmarkclr-bt" title="Link to this equation">#</a></span>\[  B_t \equiv \sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\omega_{s-1,t-1}\lambda_j b_{j,s,t} + i_s\omega_{s,t-1}\lambda_j b_{j,s,t}\Bigr) \quad \forall t\]</div>
+<span class="eqno">(96)<a class="headerlink" href="#equation-eqmarkclr-bt" title="Permalink to this equation">#</a></span>\[  B_t \equiv \sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\omega_{s-1,t-1}\lambda_j b_{j,s,t} + i_s\omega_{s,t-1}\lambda_j b_{j,s,t}\Bigr) \quad \forall t\]</div>
 <p>And total domestic household savings is constrained to be allocated between domestic private capital ownership <span class="math notranslate nohighlight">\(K^d_t\)</span> and domestic holdings of government bonds <span class="math notranslate nohighlight">\(D^d_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-domcapcnstr">
-<span class="eqno">(97)<a class="headerlink" href="#equation-eqmarkclr-domcapcnstr" title="Link to this equation">#</a></span>\[  K^d_t + D^d_t = B_t \quad \forall t\]</div>
+<span class="eqno">(97)<a class="headerlink" href="#equation-eqmarkclr-domcapcnstr" title="Permalink to this equation">#</a></span>\[  K^d_t + D^d_t = B_t \quad \forall t\]</div>
 </section>
 <section id="government-bond-market-clearing">
-<span id="secmarkclrmktclr-g"></span><h3>Government bond market clearing<a class="headerlink" href="#government-bond-market-clearing" title="Link to this heading">#</a></h3>
+<span id="secmarkclrmktclr-g"></span><h3>Government bond market clearing<a class="headerlink" href="#government-bond-market-clearing" title="Permalink to this heading">#</a></h3>
 <p>The government in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> can run deficits or surpluses each period, as shown in equation <a class="reference internal" href="government.html#equation-equnbalgbcbudgconstr">(73)</a> in Section <a class="reference internal" href="government.html#secunbalgbcbudgconstr"><span class="std std-ref">Government Budget Constraint</span></a>. Because the government can borrow or save on net each period <span class="math notranslate nohighlight">\(D_t\)</span>, someone must lend or borrow those assets on the supply side.</p>
 <p>We assume that foreigners hold a fixed percentage of new domestic government debt issuance. Let <span class="math notranslate nohighlight">\(D_{t+1} - D_t\)</span> be the total new issuance government debt, and let <span class="math notranslate nohighlight">\(D^f_{t+1} - D^f_t\)</span> be the amount of those new issuances held by foreigners. We assume that foreign holdings of new government issuances of debt <span class="math notranslate nohighlight">\(D^f_{t+1}-D^f_t\)</span> are an exogenous percentage <span class="math notranslate nohighlight">\(\zeta_D\in[0,1]\)</span> of total new government debt issuances. This percentage <span class="math notranslate nohighlight">\(\zeta_D\)</span> is something we calibrate.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad">
-<span class="eqno">(98)<a class="headerlink" href="#equation-eqmarkclr-zetad" title="Link to this equation">#</a></span>\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t}) \quad\forall t\]</div>
+<span class="eqno">(98)<a class="headerlink" href="#equation-eqmarkclr-zetad" title="Permalink to this equation">#</a></span>\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D}(D_{t+1} - D_{t}) \quad\forall t\]</div>
 <p>The government debt market clearing condition is the following, where total domestic government debt <span class="math notranslate nohighlight">\(D_t\)</span> equals the amount of that debt held by domestic households <span class="math notranslate nohighlight">\(D^d_t\)</span> plus the amount of that debt held by foreign households <span class="math notranslate nohighlight">\(D^f_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-dtdddf">
-<span class="eqno">(99)<a class="headerlink" href="#equation-eqmarkclr-dtdddf" title="Link to this equation">#</a></span>\[  D_t = D^d_t + D^f_t \quad\forall t\]</div>
+<span class="eqno">(99)<a class="headerlink" href="#equation-eqmarkclr-dtdddf" title="Permalink to this equation">#</a></span>\[  D_t = D^d_t + D^f_t \quad\forall t\]</div>
 <p>We discuss the meaning of different permutations of the <span class="math notranslate nohighlight">\(\zeta_D\)</span> parameter corner solutions <span class="math notranslate nohighlight">\(\zeta_D=0\)</span> and <span class="math notranslate nohighlight">\(\zeta_D=1\)</span> in Chapter <a class="reference internal" href="open_economy.html#chap-smopecn"><span class="std std-ref">Open Economy Options</span></a>. If <span class="math notranslate nohighlight">\(\zeta_D=0\)</span>, we are assuming a closed economy government bond market in which all new government debt is held by domestic households and in which all government debt in the long-run (steady-state) is held by domestic households <span class="math notranslate nohighlight">\(\bar{D}^f=0\)</span>.</p>
 </section>
 <section id="private-capital-market-clearing">
-<span id="secmarkclrmktclr-k"></span><h3>Private capital market clearing<a class="headerlink" href="#private-capital-market-clearing" title="Link to this heading">#</a></h3>
+<span id="secmarkclrmktclr-k"></span><h3>Private capital market clearing<a class="headerlink" href="#private-capital-market-clearing" title="Permalink to this heading">#</a></h3>
 <p>Domestic firms in each industry <span class="math notranslate nohighlight">\(m\)</span> rent private capital <span class="math notranslate nohighlight">\(K_t\equiv\sum_{m=1}^M K_{m,t}\)</span> from domestic households <span class="math notranslate nohighlight">\(K^d_t\)</span> and from foreign investors <span class="math notranslate nohighlight">\(K^f_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-ktkdkf">
-<span class="eqno">(100)<a class="headerlink" href="#equation-eqmarkclr-ktkdkf" title="Link to this equation">#</a></span>\[ K_t = K^d_t + K^f_t \quad\forall t \quad\text{where}\quad K_t \equiv  \sum_{m=1}^M K_{m,t}\]</div>
+<span class="eqno">(100)<a class="headerlink" href="#equation-eqmarkclr-ktkdkf" title="Permalink to this equation">#</a></span>\[ K_t = K^d_t + K^f_t \quad\forall t \quad\text{where}\quad K_t \equiv  \sum_{m=1}^M K_{m,t}\]</div>
 <p>Assume that there exists some exogenous world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span>. We assume that foreign capital supply <span class="math notranslate nohighlight">\(K^f_t\)</span> is an exogenous percentage <span class="math notranslate nohighlight">\(\zeta_K\in[0,1]\)</span> of the excess total domestic private capital demand <span class="math notranslate nohighlight">\(ED^{K,r^*}_t\)</span> that would exist if domestic private capital demand were determined by the exogenous world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span> and domestic private capital supply were determined by the model consistent return on household savings <span class="math notranslate nohighlight">\(r_{p,t}\)</span>. This percentage <span class="math notranslate nohighlight">\(\zeta_K\)</span> is something we calibrate. Define excess total domestic capital demand at the exogenous world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span> as <span class="math notranslate nohighlight">\(ED^{K,r^*}_t\)</span>, where <span class="math notranslate nohighlight">\(K^{r^*}_t\equiv\sum_{m=1}^M K^{r^*}_{m,t}\)</span> is the capital demand by domestic firms at the world interest rate <span class="math notranslate nohighlight">\(r^*_t\)</span>, and <span class="math notranslate nohighlight">\(K^{d}_t\)</span> is the domestic supply of private capital to firms, which is modeled as being a function of the actual rate faced by households <span class="math notranslate nohighlight">\(r_{p,t}\)</span>. Then our measure of excess demand at the world interest rate is the following.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-exdemk">
-<span class="eqno">(101)<a class="headerlink" href="#equation-eqmarkclr-exdemk" title="Link to this equation">#</a></span>\[  ED^{K,r^*}_t \equiv K^{r^*}_t - K^d_t \quad\forall t \quad\text{where}\quad K^{r^*}_t\equiv \sum_{m=1}^M K^{r^*}_{m,t}\]</div>
+<span class="eqno">(101)<a class="headerlink" href="#equation-eqmarkclr-exdemk" title="Permalink to this equation">#</a></span>\[  ED^{K,r^*}_t \equiv K^{r^*}_t - K^d_t \quad\forall t \quad\text{where}\quad K^{r^*}_t\equiv \sum_{m=1}^M K^{r^*}_{m,t}\]</div>
 <p>Then we assume that total foreign private capital supply <span class="math notranslate nohighlight">\(K^f_t\)</span> is a fixed fraction of this excess capital demand at the world interest rate <span class="math notranslate nohighlight">\(r^*\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-zetak">
-<span class="eqno">(102)<a class="headerlink" href="#equation-eqmarkclr-zetak" title="Link to this equation">#</a></span>\[  K^{f}_t = \zeta_{K}ED^{K,r^*}_t \quad\forall t\]</div>
+<span class="eqno">(102)<a class="headerlink" href="#equation-eqmarkclr-zetak" title="Permalink to this equation">#</a></span>\[  K^{f}_t = \zeta_{K}ED^{K,r^*}_t \quad\forall t\]</div>
 <p>This approach nicely nests the small open economy specification discussed in Section <a class="reference internal" href="open_economy.html#secsmallopen"><span class="std std-ref">Small Open Economy</span></a> of Chapter <a class="reference internal" href="open_economy.html#chap-smopecn"><span class="std std-ref">Open Economy Options</span></a> in which <span class="math notranslate nohighlight">\(\zeta_K=1\)</span>, foreigners flexibly supply all the excess demand for private capital, the marginal product of capital is fixed at the exogenous world interest rate <span class="math notranslate nohighlight">\(r^*\)</span>, and domestic households face the least amount of crowd out by government debt. The opposite extreme is the closed private capital market assumption of <span class="math notranslate nohighlight">\(\zeta_K=0\)</span> in which <span class="math notranslate nohighlight">\(K^f_t=0\)</span> and households must supply all the capital demanded in the domestic market. In this specification, the interest rate is the most flexible and adjusts to equilibrate domestic private capital supply <span class="math notranslate nohighlight">\(K^d_t\)</span> with private capital demand <span class="math notranslate nohighlight">\(K_t\)</span>.</p>
 <p>For the intermediate specifications of <span class="math notranslate nohighlight">\(\zeta_K\in(0,1)\)</span>, foreigners provide a fraction of the excess demand defined in <a class="reference internal" href="#equation-eqmarkclr-exdemk">(101)</a>. This allows for partial inflows of foreign private capital, partial crowd-out of government spending on private investment, and partial adjustment of the domestic interest rate <span class="math notranslate nohighlight">\(r_t\)</span>. This latter set of model specifications could be characterized as large-open economy or partial capital mobility.</p>
 </section>
 <section id="goods-market-clearing">
-<span id="secmarkclrmktclr-goods"></span><h3>Goods market clearing<a class="headerlink" href="#goods-market-clearing" title="Link to this heading">#</a></h3>
+<span id="secmarkclrmktclr-goods"></span><h3>Goods market clearing<a class="headerlink" href="#goods-market-clearing" title="Permalink to this heading">#</a></h3>
 <p>All <span class="math notranslate nohighlight">\(M\)</span> industry goods markets must clear. Total demand of production good <span class="math notranslate nohighlight">\(m\)</span> for consumption can be written as a function of total household demand for each consumption good <span class="math notranslate nohighlight">\(i\)</span></p>
 <div class="math notranslate nohighlight" id="equation-eqmarkconsdemand">
-<span class="eqno">(103)<a class="headerlink" href="#equation-eqmarkconsdemand" title="Link to this equation">#</a></span>\[  C_{m,t} = \sum_{i=1}^{I} \pi_{i,m} C_{i,t} \quad\forall t \quad\text{and}\quad m=1,2,...M\]</div>
+<span class="eqno">(103)<a class="headerlink" href="#equation-eqmarkconsdemand" title="Permalink to this equation">#</a></span>\[  C_{m,t} = \sum_{i=1}^{I} \pi_{i,m} C_{i,t} \quad\forall t \quad\text{and}\quad m=1,2,...M\]</div>
 <p>where</p>
 <div class="math notranslate nohighlight" id="equation-eqcmt">
-<span class="eqno">(104)<a class="headerlink" href="#equation-eqcmt" title="Link to this equation">#</a></span>\[  C_{i,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{i,j,s,t} \quad\forall i,t\]</div>
+<span class="eqno">(104)<a class="headerlink" href="#equation-eqcmt" title="Permalink to this equation">#</a></span>\[  C_{i,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{i,j,s,t} \quad\forall i,t\]</div>
 <p>Because we make a simplifying assumption that only the <span class="math notranslate nohighlight">\(M\)</span>th industry output can be used as investment, government spending, or government debt, consumption demand equals total output of good <span class="math notranslate nohighlight">\(m\)</span> in the first <span class="math notranslate nohighlight">\(M-1\)</span> industries.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrgoods-mm1">
-<span class="eqno">(105)<a class="headerlink" href="#equation-eqmarkclrgoods-mm1" title="Link to this equation">#</a></span>\[  Y_{m,t} = C_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1\]</div>
+<span class="eqno">(105)<a class="headerlink" href="#equation-eqmarkclrgoods-mm1" title="Permalink to this equation">#</a></span>\[  Y_{m,t} = C_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1\]</div>
 <p>The output of the <span class="math notranslate nohighlight">\(M\)</span>th industry can be used for private investment, infrastructure investment, government spending, and government debt.<a class="footnote-reference brackets" href="#m-ind" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> As such, the market clearing condition in the <span class="math notranslate nohighlight">\(M\)</span>th industry will look more like the traditional <span class="math notranslate nohighlight">\(Y=C+I+G+NX\)</span> expression.<a class="footnote-reference brackets" href="#rcrates-note" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrgoods-m">
-<span class="eqno">(106)<a class="headerlink" href="#equation-eqmarkclrgoods-m" title="Link to this equation">#</a></span>\[  Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) \quad\forall t\]</div>
+<span class="eqno">(106)<a class="headerlink" href="#equation-eqmarkclrgoods-m" title="Permalink to this equation">#</a></span>\[  Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) \quad\forall t\]</div>
 <p>where</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrgoods-imt">
-<span class="eqno">(107)<a class="headerlink" href="#equation-eqmarkclrgoods-imt" title="Link to this equation">#</a></span>\[\begin{split}  I_{M,t} &amp;\equiv \sum_{m=1}^M K_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M K_{m,t} \quad\forall t \\
+<span class="eqno">(107)<a class="headerlink" href="#equation-eqmarkclrgoods-imt" title="Permalink to this equation">#</a></span>\[\begin{split}  I_{M,t} &amp;\equiv \sum_{m=1}^M K_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M K_{m,t} \quad\forall t \\
   &amp;= K_{t+1} - (1 - \delta_{M,t})K_t \\
   &amp;= (K^d_{t+1} + K^f_{t+1}) - (1 - \delta_{M,t})(K^d_t + K^f_t)\end{split}\]</div>
 <p>In the partially open economy, we must add to the right-hand-side of <a class="reference internal" href="#equation-eqmarkclrgoods-m">(106)</a> the output paid to the foreign owners of capital <span class="math notranslate nohighlight">\(r_{p,t} K^f_t\)</span> and to the foreign holders of government debt <span class="math notranslate nohighlight">\(r_{p,t}D^f_t\)</span>. And we must subtract off the foreign inflow component <span class="math notranslate nohighlight">\(K^f_{t+1} - K^f_t\)</span> from private capital investment as shown in the first term in parentheses on the right-hand-side of <a class="reference internal" href="#equation-eqmarkclrgoods-m">(106)</a>. You can see in the definition of private investment <a class="reference internal" href="#equation-eqmarkclrgoods-imt">(107)</a> where this amount of foreign capital is part of <span class="math notranslate nohighlight">\(I_{M,t}\)</span>.</p>
@@ -515,28 +509,26 @@ document.write(`
 </section>
 </section>
 <section id="total-bequests-law-of-motion">
-<span id="secmarkclrbq"></span><h2>Total Bequests Law of Motion<a class="headerlink" href="#total-bequests-law-of-motion" title="Link to this heading">#</a></h2>
+<span id="secmarkclrbq"></span><h2>Total Bequests Law of Motion<a class="headerlink" href="#total-bequests-law-of-motion" title="Permalink to this heading">#</a></h2>
 <p>Total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> are the collection of savings of household from the previous period who died at the end of the period. These savings are augmented by the interest rate because they are returned after being invested in the production process.</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclrbq">
-<span class="eqno">(108)<a class="headerlink" href="#equation-eqmarkclrbq" title="Link to this equation">#</a></span>\[  BQ_{t} = (1+r_{p,t})\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}b_{j,s,t}\right) \quad\forall t\]</div>
+<span class="eqno">(108)<a class="headerlink" href="#equation-eqmarkclrbq" title="Permalink to this equation">#</a></span>\[  BQ_{t} = (1+r_{p,t})\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\omega_{s-1,t-1}b_{j,s,t}\right) \quad\forall t\]</div>
 <p>Because the form of the period utility function in <a class="reference internal" href="households.html#equation-eqhhperutil">(27)</a> ensures that <span class="math notranslate nohighlight">\(b_{j,s,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span>, <span class="math notranslate nohighlight">\(s\)</span>, and <span class="math notranslate nohighlight">\(t\)</span>, total bequests will always be positive <span class="math notranslate nohighlight">\(BQ_{j,t}&gt;0\)</span> for all <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(t\)</span>.</p>
 </section>
 <section id="footnotes">
-<span id="secmarkclr-footnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Link to this heading">#</a></h2>
+<span id="secmarkclr-footnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">#</a></h2>
 <hr class="footnotes docutils" />
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="indif-kd-note" role="doc-footnote">
+<aside class="footnote brackets" id="indif-kd-note" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>By assuming that households are indifferent between the savings allocation to private capital <span class="math notranslate nohighlight">\(K^d_t\)</span> and government bonds <span class="math notranslate nohighlight">\(D^d_t\)</span>, we avoid the need for another state variable in the solution method. In our approach the allocation between the two types of capital is simply a residual of the exogenous proportion <span class="math notranslate nohighlight">\(\zeta_K\)</span> of total private captial <span class="math notranslate nohighlight">\(K_t\)</span> allocated to foreigners implied by equations <a class="reference internal" href="#equation-eqmarkclr-zetak">(102)</a> and <a class="reference internal" href="#equation-eqmarkclr-ktkdkf">(100)</a> and a residual of the exogenous proportion <span class="math notranslate nohighlight">\(\zeta_D\)</span> of total government bonds <span class="math notranslate nohighlight">\(D_t\)</span> allocated to foreigners implied by equations <a class="reference internal" href="#equation-eqmarkclr-zetad">(98)</a> and <a class="reference internal" href="#equation-eqmarkclr-dtdddf">(99)</a>.</p>
 </aside>
-<aside class="footnote brackets" id="m-ind" role="doc-footnote">
+<aside class="footnote brackets" id="m-ind" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Our assumption that only the <span class="math notranslate nohighlight">\(M\)</span>th industry output can be used as investment, government spending, and government debt is a strong one. However, it greatly simplifies our equilibrium solution method in the transition path. Intuitively, think of an economy that has two industries—delivery services and trucks. The delivery services industry uses trucks and labor to produce its output. The trucks industry uses trucks and labor to produce its output. Both industries face depreciation of their capital (trucks). But only in the trucks industry can the output be used for both consumption and investment.</p>
 </aside>
-<aside class="footnote brackets" id="rcrates-note" role="doc-footnote">
+<aside class="footnote brackets" id="rcrates-note" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>Because we treat household return <span class="math notranslate nohighlight">\(r_{p,t}\)</span> as an average between the return on private capital <span class="math notranslate nohighlight">\(r_{K,t}\)</span> and the return on government bonds <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> in <a class="reference internal" href="financial.html#equation-eq-portfolio-return">(94)</a>, and because this return is actually given to households in the budget constraint <a class="reference internal" href="households.html#equation-eqhhbc">(22)</a>, it is required for market clearing that the return paid to foreign suppliers of private capital <span class="math notranslate nohighlight">\(K^f_t\)</span> and foreign holders of government bonds <span class="math notranslate nohighlight">\(D^f_t\)</span> be paid that same average return <span class="math notranslate nohighlight">\(r_{p,t}\)</span>.</p>
-</aside>
 </aside>
 </section>
 </section>

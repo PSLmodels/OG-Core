@@ -1,12 +1,13 @@
 
+
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="../../" >
+<html lang="en" data-content_root="" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Stationarization &#8212; OG-Core</title>
   
@@ -28,35 +29,39 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/theory/stationarization';</script>
@@ -157,18 +162,7 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item">
-
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
-        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -438,11 +432,11 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="stationarization">
-<span id="chap-stnrz"></span><h1>Stationarization<a class="headerlink" href="#stationarization" title="Link to this heading">#</a></h1>
+<span id="chap-stnrz"></span><h1>Stationarization<a class="headerlink" href="#stationarization" title="Permalink to this heading">#</a></h1>
 <p>The previous chapters derive all the equations necessary to solve for the steady-state and nonsteady-state equilibria of this model. However, because labor productivity is growing at rate <span class="math notranslate nohighlight">\(g_y\)</span> as can be seen in the firms’ production function <a class="reference internal" href="firms.html#equation-eqfirmscesprodfun">(40)</a> and the population is growing at rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> as defined in <a class="reference internal" href="demographics.html#equation-eqpopgrowthtil">(5)</a>, the model is not stationary. Different endogenous variables of the model are growing at different rates. We have already specified three potential budget closure rules <a class="reference internal" href="government.html#equation-equnbalgbcclosure-gt">(81)</a>, <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trt">(82)</a>, and <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trgt">(84)</a> using some combination of government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> that stationarize the debt-to-GDP ratio.</p>
 <p><a class="reference internal" href="#tabstnrzstatvars"><span class="std std-numref">Table 3</span></a> lists the definitions of stationary versions of all the endogenous variables. Variables with a ``<span class="math notranslate nohighlight">\(\:\,\hat{}\,\:\)</span>’’ signify stationary variables. The first column of variables are growing at the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span>. These variables are most closely associated with individual variables. The second column of variables are growing at the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span>. These variables are most closely associated with population values. The third column of variables are growing at both the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span> and the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span>. These variables are most closely associated with aggregate variables. The last column shows that the interest rates <span class="math notranslate nohighlight">\(r_t\)</span>, <span class="math notranslate nohighlight">\(r_{p,t}\)</span> and <span class="math notranslate nohighlight">\(r_{gov,t}\)</span>, and household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> are already stationary.</p>
 <table class="table" id="tabstnrzstatvars">
-<caption><span class="caption-number">Table 3 </span><span class="caption-text"><strong>Stationary variable definitions.</strong> Note: The interest rate <span class="math notranslate nohighlight">\(r_t\)</span> in firm first order condition is already stationary because <span class="math notranslate nohighlight">\(Y_{m,t}\)</span> and <span class="math notranslate nohighlight">\(K_{m,t}\)</span> grow at the same rate and <span class="math notranslate nohighlight">\(p_{m,t}\)</span> is stationary. Household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span> is stationary.</span><a class="headerlink" href="#tabstnrzstatvars" title="Link to this table">#</a></caption>
+<caption><span class="caption-number">Table 3 </span><span class="caption-text"><strong>Stationary variable definitions.</strong> Note: The interest rate <span class="math notranslate nohighlight">\(r_t\)</span> in firm first order condition is already stationary because <span class="math notranslate nohighlight">\(Y_{m,t}\)</span> and <span class="math notranslate nohighlight">\(K_{m,t}\)</span> grow at the same rate and <span class="math notranslate nohighlight">\(p_{m,t}\)</span> is stationary. Household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span> is stationary.</span><a class="headerlink" href="#tabstnrzstatvars" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Sources of growth</strong></p></th>
 <th class="head"></th>
@@ -500,14 +494,14 @@ document.write(`
 </table>
 <p>The usual definition of equilibrium would be allocations and prices such that households optimize <a class="reference internal" href="households.html#equation-eqhh-cidem2">(19)</a>, <a class="reference internal" href="households.html#equation-eqhheul-n">(30)</a>, <a class="reference internal" href="households.html#equation-eqhheul-b">(31)</a>, and <a class="reference internal" href="households.html#equation-eqhheul-bs">(32)</a>, firms optimize <a class="reference internal" href="firms.html#equation-eqfirmfoc-l">(43)</a> and <a class="reference internal" href="firms.html#equation-eqfirmfoc-k">(44)</a>, and markets clear <a class="reference internal" href="market_clearing.html#equation-eqmarkclrlab">(95)</a>, <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-dtdddf">(99)</a>, <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-ktkdkf">(100)</a>, <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-mm1">(105)</a>, <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-m">(106)</a>, and <a class="reference internal" href="market_clearing.html#equation-eqmarkclrbq">(108)</a>. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections <a class="reference internal" href="equilibrium.html#seceqlbsssoln"><span class="std std-ref">Steady-state solution method</span></a> and <a class="reference internal" href="equilibrium.html#seceqlbnsssoln"><span class="std std-ref">Stationary non-steady-state solution method</span></a> of Chapter <a class="reference internal" href="equilibrium.html#chap-eqm"><span class="std std-ref">Equilibrium</span></a> to solve for the equilibria in the steady-state and transition path equilibrium definitions.</p>
 <section id="stationarized-household-equations">
-<span id="secstnrzhh"></span><h2>Stationarized Household Equations<a class="headerlink" href="#stationarized-household-equations" title="Link to this heading">#</a></h2>
+<span id="secstnrzhh"></span><h2>Stationarized Household Equations<a class="headerlink" href="#stationarized-household-equations" title="Permalink to this heading">#</a></h2>
 <p>The stationary versions of the household industry-specific goods preferences and demand equations are obtained by dividing both sides of the equations by the productivity growth rate <span class="math notranslate nohighlight">\(e^{g_y t}\)</span>,</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzcompcons">
-<span class="eqno">(109)<a class="headerlink" href="#equation-eqstnrzcompcons" title="Link to this equation">#</a></span>\[  \hat{c}_{j,s,t} \equiv \prod_{i=1}^I \left(\hat{c}_{i,j,s,t} - \hat{c}_{min,i,t}\right)^{\alpha_i} \quad\forall j,s,t \quad\text{with}\quad \sum_{i=1}^I\alpha_i=1\]</div>
+<span class="eqno">(109)<a class="headerlink" href="#equation-eqstnrzcompcons" title="Permalink to this equation">#</a></span>\[  \hat{c}_{j,s,t} \equiv \prod_{i=1}^I \left(\hat{c}_{i,j,s,t} - \hat{c}_{min,i,t}\right)^{\alpha_i} \quad\forall j,s,t \quad\text{with}\quad \sum_{i=1}^I\alpha_i=1\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-cmdem2">
-<span class="eqno">(110)<a class="headerlink" href="#equation-eqstnrz-cmdem2" title="Link to this equation">#</a></span>\[  \hat{c}_{i,j,s,t} = \alpha_i\left(\frac{p_{i,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,i,t} \quad\forall i,j,s,t\]</div>
+<span class="eqno">(110)<a class="headerlink" href="#equation-eqstnrz-cmdem2" title="Permalink to this equation">#</a></span>\[  \hat{c}_{i,j,s,t} = \alpha_i\left(\frac{p_{i,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,i,t} \quad\forall i,j,s,t\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-cmin">
-<span class="eqno">(111)<a class="headerlink" href="#equation-eqstnrz-cmin" title="Link to this equation">#</a></span>\[\begin{split}  \hat{c}_{min,i,t} \equiv
+<span class="eqno">(111)<a class="headerlink" href="#equation-eqstnrz-cmin" title="Permalink to this equation">#</a></span>\[\begin{split}  \hat{c}_{min,i,t} \equiv
   \begin{cases}
     \frac{c_{min,i}}{e^{g_y t}} \quad\text{for}\quad t &lt; T \\
     \frac{c_{min,i}}{e^{g_y T}} \quad\text{for}\quad t \geq T
@@ -516,98 +510,98 @@ document.write(`
 <p>Note that the only way to stationarize the consumption aggregator <a class="reference internal" href="#equation-eqstnrzcompcons">(109)</a> and consumption demand <a class="reference internal" href="#equation-eqstnrz-cmdem2">(110)</a> is to divide <span class="math notranslate nohighlight">\(c_{min,i}\)</span> by the growth rate <span class="math notranslate nohighlight">\(e^{g_y t}\)</span>. However, <span class="math notranslate nohighlight">\(c_{min,i}\)</span> is already stationary. It is constant for each <span class="math notranslate nohighlight">\(m\)</span>. Therefore, the version of <span class="math notranslate nohighlight">\(\hat{c}_{min,i,t}\)</span> divided by <span class="math notranslate nohighlight">\(e^{g_y t}\)</span> would be changing over time (nonstationary) for <span class="math notranslate nohighlight">\(g_y\neq 0\)</span>. For this reason, we define <span class="math notranslate nohighlight">\(\hat{c}_{min,i,t}\)</span> in <a class="reference internal" href="#equation-eqstnrz-cmin">(111)</a> as being constant after the steady-state period <span class="math notranslate nohighlight">\(T\)</span> at whatever value it reaches at that period. In most cases with <span class="math notranslate nohighlight">\(g_y&gt;0\)</span>, that value will be close to zero. But we use <span class="math notranslate nohighlight">\(\bar{c}_{min,i} = c_{min,i}/e^{g_y T}\)</span> from <a class="reference internal" href="#equation-eqstnrz-cmin">(111)</a> as the steady-state value of <span class="math notranslate nohighlight">\(c_{min,i}\)</span>.</p>
 <p>The stationary version of the household budget constraint <a class="reference internal" href="households.html#equation-eqhhbc">(22)</a> is found by dividing both sides of the equation by <span class="math notranslate nohighlight">\(e^{g_y t}\)</span>. For the savings term <span class="math notranslate nohighlight">\(b_{j,s+1,t+1}\)</span>, we must also multiply by <span class="math notranslate nohighlight">\(e^{g_y(t+1)}\)</span>, which leaves an <span class="math notranslate nohighlight">\(e^{g_y} = \frac{e^{g_y(t+1)}}{e^{g_y t}}\)</span> in front of the stationarized variable.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzhhbc">
-<span class="eqno">(112)<a class="headerlink" href="#equation-eqstnrzhhbc" title="Link to this equation">#</a></span>\[\begin{split}  p_t\hat{c}_{j,s,t} + &amp;\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
+<span class="eqno">(112)<a class="headerlink" href="#equation-eqstnrzhhbc" title="Permalink to this equation">#</a></span>\[\begin{split}  p_t\hat{c}_{j,s,t} + &amp;\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
   &amp;(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \\
   &amp;\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
   &amp;\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad \hat{b}_{j,E+1,t}=0\quad\forall j,t\end{split}\]</div>
 <p>Because total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> and total government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population <span class="math notranslate nohighlight">\(\tilde{N}_t\)</span>. This stationarizes total bequests <span class="math notranslate nohighlight">\(\hat{BQ}_t\)</span>, total transfers <span class="math notranslate nohighlight">\(\hat{TR}_t\)</span>, and the respective population level in the denominator <span class="math notranslate nohighlight">\(\hat{\omega}_{s,t}\)</span>.</p>
 <p>We stationarize the Euler equations for labor supply <a class="reference internal" href="households.html#equation-eqhheul-n">(30)</a> by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y(1-\sigma)}\)</span>. On the left-hand-side, <span class="math notranslate nohighlight">\(e^{g_y}\)</span> stationarizes the wage <span class="math notranslate nohighlight">\(\hat{w}_t\)</span> and <span class="math notranslate nohighlight">\(e^{-\sigma g_y}\)</span> goes inside the parentheses and stationarizes consumption <span class="math notranslate nohighlight">\(\hat{c}_{j,s,t}\)</span>. On the right-and-side, the <span class="math notranslate nohighlight">\(e^{g_y(1-\sigma)}\)</span> terms cancel out.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-eul-n">
-<span class="eqno">(113)<a class="headerlink" href="#equation-eqstnrz-eul-n" title="Link to this equation">#</a></span>\[\begin{split}  &amp;\frac{\hat{w}_t e_{j,s}}{p_t}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(\hat{c}_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
+<span class="eqno">(113)<a class="headerlink" href="#equation-eqstnrz-eul-n" title="Permalink to this equation">#</a></span>\[\begin{split}  &amp;\frac{\hat{w}_t e_{j,s}}{p_t}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(\hat{c}_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
   &amp;\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\\end{split}\]</div>
 <p>We stationarize the Euler equations for savings <a class="reference internal" href="households.html#equation-eqhheul-b">(31)</a> and <a class="reference internal" href="households.html#equation-eqhheul-bs">(32)</a> by dividing both sides of the respective equations by <span class="math notranslate nohighlight">\(e^{-\sigma g_y t}\)</span>. On the right-hand-side of the equation, we then need to multiply and divide both terms by <span class="math notranslate nohighlight">\(e^{-\sigma g_y(t+1)}\)</span>, which leaves a multiplicative coefficient <span class="math notranslate nohighlight">\(e^{-\sigma g_y}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-eul-b">
-<span class="eqno">(114)<a class="headerlink" href="#equation-eqstnrz-eul-b" title="Link to this equation">#</a></span>\[\begin{split}  \frac{(\hat{c}_{j,s,t})^{-\sigma}}{p_t} &amp;= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \\
+<span class="eqno">(114)<a class="headerlink" href="#equation-eqstnrz-eul-b" title="Permalink to this equation">#</a></span>\[\begin{split}  \frac{(\hat{c}_{j,s,t})^{-\sigma}}{p_t} &amp;= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \\
   &amp;\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
   &amp;\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\\end{split}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-eul-bs">
-<span class="eqno">(115)<a class="headerlink" href="#equation-eqstnrz-eul-bs" title="Link to this equation">#</a></span>\[  \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S\]</div>
+<span class="eqno">(115)<a class="headerlink" href="#equation-eqstnrz-eul-bs" title="Permalink to this equation">#</a></span>\[  \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S\]</div>
 </section>
 <section id="stationarized-firms-equations">
-<span id="secstnrzfirms"></span><h2>Stationarized Firms Equations<a class="headerlink" href="#stationarized-firms-equations" title="Link to this heading">#</a></h2>
+<span id="secstnrzfirms"></span><h2>Stationarized Firms Equations<a class="headerlink" href="#stationarized-firms-equations" title="Permalink to this heading">#</a></h2>
 <p>The nonstationary production function <a class="reference internal" href="firms.html#equation-eqfirmscesprodfun">(40)</a> for each industry can be stationarized by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}\)</span>. This stationarizes output <span class="math notranslate nohighlight">\(\hat{Y}_{m,t}\)</span> on the left-hand-side. Because the general CES production function is homogeneous of degree 1, <span class="math notranslate nohighlight">\(F(xK,xK_g,xL) = xF(K,K_g,L)\)</span>, the right-hand-side of the production function is also stationarized by dividing by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzcesprodfun">
-<span class="eqno">(116)<a class="headerlink" href="#equation-eqstnrzcesprodfun" title="Link to this equation">#</a></span>\[\begin{split}  \begin{split}
+<span class="eqno">(116)<a class="headerlink" href="#equation-eqstnrzcesprodfun" title="Permalink to this equation">#</a></span>\[\begin{split}  \begin{split}
     \hat{Y}_{m,t} &amp;= F(\hat{K}_{m,t}, \hat{K}_{g,m,t}, \hat{L}_{m,t}) \\
     &amp;\equiv Z_{m,t}\biggl[(\gamma_m)^\frac{1}{\varepsilon_m}(\hat{K}_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m} + (\gamma_{g,m})^\frac{1}{\varepsilon_m}(\hat{K}_{g,m,t})^\frac{\varepsilon_m-1}{\varepsilon_m} + ... \\
     &amp;\qquad\qquad\qquad (1-\gamma_m-\gamma_{g,m})^\frac{1}{\varepsilon_m}(\hat{L}_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\biggr]^\frac{\varepsilon_m}{\varepsilon_m-1} \quad\forall m,t
   \end{split}\end{split}\]</div>
 <p>Notice that the growth term multiplied by the labor input drops out in this stationarized version of the production function. We stationarize the nonstationary profit function <a class="reference internal" href="firms.html#equation-eqfirmsprofit">(42)</a> in the same way, by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzprofit">
-<span class="eqno">(117)<a class="headerlink" href="#equation-eqstnrzprofit" title="Link to this equation">#</a></span>\[\begin{split}  \hat{PR}_{m,t} &amp;= (1 - \tau^{corp}_{m,t})\Bigl[F(\hat{K}_{m,t},\hat{K}_{g,m,t},\hat{L}_{m,t}) - \hat{w}_t \hat{L}_{m,t}\Bigr] - ... \\
+<span class="eqno">(117)<a class="headerlink" href="#equation-eqstnrzprofit" title="Permalink to this equation">#</a></span>\[\begin{split}  \hat{PR}_{m,t} &amp;= (1 - \tau^{corp}_{m,t})\Bigl[F(\hat{K}_{m,t},\hat{K}_{g,m,t},\hat{L}_{m,t}) - \hat{w}_t \hat{L}_{m,t}\Bigr] - ... \\
   &amp;\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)\hat{K}_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\hat{K}_{m,t} \quad\forall m,t\end{split}\]</div>
 <p>The firms’ first order equation for labor demand <a class="reference internal" href="firms.html#equation-eqfirmfoc-l">(43)</a> is stationarized by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\)</span>. This stationarizes the wage <span class="math notranslate nohighlight">\(\hat{w}_t\)</span> on the left-hand-side and cancels out the <span class="math notranslate nohighlight">\(e^{g_y t}\)</span> term in front of the right-hand-side. To complete the stationarization, we multiply and divide the <span class="math notranslate nohighlight">\(\frac{Y_{m,t}}{e^{g_y t}L_{m,t}}\)</span> term on the right-hand-side by <span class="math notranslate nohighlight">\(\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzfoc-l">
-<span class="eqno">(118)<a class="headerlink" href="#equation-eqstnrzfoc-l" title="Link to this equation">#</a></span>\[  \hat{w}_t = p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[(1-\gamma_m-\gamma_{g,m})\frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right]^\frac{1}{\varepsilon_m} \quad\forall m,t\]</div>
+<span class="eqno">(118)<a class="headerlink" href="#equation-eqstnrzfoc-l" title="Permalink to this equation">#</a></span>\[  \hat{w}_t = p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[(1-\gamma_m-\gamma_{g,m})\frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right]^\frac{1}{\varepsilon_m} \quad\forall m,t\]</div>
 <p>It can be seen from the firms’ first order equation for capital demand <a class="reference internal" href="firms.html#equation-eqfirmfoc-k">(44)</a> that the interest rate is already stationary. If we multiply and divide the <span class="math notranslate nohighlight">\(\frac{Y_{m,t}}{K_{m,t}}\)</span> term on the right-hand-side by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>, those two aggregate variables become stationary. In other words, <span class="math notranslate nohighlight">\(Y_{m,t}\)</span> and <span class="math notranslate nohighlight">\(K_{m,t}\)</span> grow at the same rate and <span class="math notranslate nohighlight">\(\frac{Y_{m,t}}{K_{m,t}} = \frac{\hat{Y}_{m,t}}{\hat{K}_{m,t}}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzfoc-k">
-<span class="eqno">(119)<a class="headerlink" href="#equation-eqstnrzfoc-k" title="Link to this equation">#</a></span>\[  r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{\hat{Y}_{m,t}}{\hat{K}_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t} \quad\forall m,t\]</div>
+<span class="eqno">(119)<a class="headerlink" href="#equation-eqstnrzfoc-k" title="Permalink to this equation">#</a></span>\[  r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{\hat{Y}_{m,t}}{\hat{K}_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t} \quad\forall m,t\]</div>
 <p>A stationary version of the firms’ gross revenue attributed to each factor of production <a class="reference internal" href="firms.html#equation-eqfirmsmargreveq">(45)</a> is found by dividing both sides of the equation by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzmargreveq">
-<span class="eqno">(120)<a class="headerlink" href="#equation-eqstnrzmargreveq" title="Link to this equation">#</a></span>\[  \hat{Y}_{m,t} = MPK_{m,t}\hat{K}_{m,t} + MPK_{g,m,t}\hat{K}_{g,m,t} + \hat{MPL}_{m,t}\hat{L}_{m,t} \quad\forall m,t\]</div>
+<span class="eqno">(120)<a class="headerlink" href="#equation-eqstnrzmargreveq" title="Permalink to this equation">#</a></span>\[  \hat{Y}_{m,t} = MPK_{m,t}\hat{K}_{m,t} + MPK_{g,m,t}\hat{K}_{g,m,t} + \hat{MPL}_{m,t}\hat{L}_{m,t} \quad\forall m,t\]</div>
 <p>Note that this implies that both the marginal product of private capital <span class="math notranslate nohighlight">\(MPK_{m,t}\)</span> and the marginal product of public capital <span class="math notranslate nohighlight">\(MPK_{g,m,t}\)</span> are already stationary, as seen in <a class="reference internal" href="firms.html#equation-eqfirmsmpk-opt">(46)</a> and <a class="reference internal" href="firms.html#equation-eqfirmsmpkg-opt">(48)</a>. However, we see in <a class="reference internal" href="firms.html#equation-eqfirmsmpl-opt">(47)</a> that the marginal product of labor is growing at rate <span class="math notranslate nohighlight">\(e^{g_y t}\)</span> because of its relationship to the wage <span class="math notranslate nohighlight">\(w_t\)</span>. The division of both sides of <a class="reference internal" href="firms.html#equation-eqfirmsmargreveq">(45)</a> by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span> gives us a stationarized marginal product of labor <span class="math notranslate nohighlight">\(\hat{MPL}_{m,t}\)</span> and a stationarized labor demand <span class="math notranslate nohighlight">\(\hat{L}_{m,t}\)</span>.</p>
 <p>Using the derivation of firm profits when firms are optimizing in <a class="reference internal" href="firms.html#equation-eqfirmsprofit-kg">(49)</a> and the expressions for optimized stationary revenue <a class="reference internal" href="#equation-eqstnrzmargreveq">(120)</a>, we can show the stationary equation for firm profits when firms are optimizing. As before, stationary profits are positive when stationary public capital is positive <span class="math notranslate nohighlight">\(\hat{K}_{g,m,t}&gt;0\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzprofit-kg">
-<span class="eqno">(121)<a class="headerlink" href="#equation-eqstnrzprofit-kg" title="Link to this equation">#</a></span>\[  \hat{PR}_{m,t} = (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}\hat{K}_{g,m,t} \quad\forall m,t\]</div>
+<span class="eqno">(121)<a class="headerlink" href="#equation-eqstnrzprofit-kg" title="Permalink to this equation">#</a></span>\[  \hat{PR}_{m,t} = (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}\hat{K}_{g,m,t} \quad\forall m,t\]</div>
 <p>Using the derivation from <a class="reference internal" href="firms.html#equation-eqfirmspayout">(50)</a> and <a class="reference internal" href="firms.html#equation-eqfirms-rkt">(51)</a> in Chapter <a class="reference internal" href="firms.html#chap-firms"><span class="std std-ref">Firms</span></a>, we can stationarize the terms in the right-hand-side of the expression for <span class="math notranslate nohighlight">\(r_{K,t}\)</span> by multiplying and dividing the quotient in the last term by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>. This implies that the interest rate paid out by the financial intermediary on private capital <span class="math notranslate nohighlight">\(r_{K,t}\)</span> is stationary, whether the variables on the right-hand-side are non-stationary in <a class="reference internal" href="firms.html#equation-eqfirms-rkt">(51)</a> or stationarized as in <a class="reference internal" href="#equation-eqstnrz-rkt">(122)</a>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-rkt">
-<span class="eqno">(122)<a class="headerlink" href="#equation-eqstnrz-rkt" title="Link to this equation">#</a></span>\[  r_{K,t} =  r_t + \frac{\sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}\hat{K}_{g,m,t}}{\sum_{m=1}^M\hat{K}_{m,t}} \quad\forall t\]</div>
+<span class="eqno">(122)<a class="headerlink" href="#equation-eqstnrz-rkt" title="Permalink to this equation">#</a></span>\[  r_{K,t} =  r_t + \frac{\sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}\hat{K}_{g,m,t}}{\sum_{m=1}^M\hat{K}_{m,t}} \quad\forall t\]</div>
 </section>
 <section id="stationarized-government-equations">
-<span id="secstnrzgovt"></span><h2>Stationarized Government Equations<a class="headerlink" href="#stationarized-government-equations" title="Link to this heading">#</a></h2>
+<span id="secstnrzgovt"></span><h2>Stationarized Government Equations<a class="headerlink" href="#stationarized-government-equations" title="Permalink to this heading">#</a></h2>
 <p>Each of the tax rate functions <span class="math notranslate nohighlight">\(\tau^{etr}_{s,t}\)</span>, <span class="math notranslate nohighlight">\(\tau^{mtrx}_{s,t}\)</span>, and <span class="math notranslate nohighlight">\(\tau^{mtry}_{s,t}\)</span> is stationary. The total tax liability function <span class="math notranslate nohighlight">\(T_{j,s,t}\)</span> is growing at the rate of labor productivity growth <span class="math notranslate nohighlight">\(g_y\)</span> This can be see by looking at the decomposition of the total tax liability function into the effective tax rate times total income <a class="reference internal" href="households.html#equation-eqtaxcalcliabetr">(23)</a>. The effective tax rate function is stationary, and household income is growing at rate <span class="math notranslate nohighlight">\(g_y\)</span>. So household total tax liability is stationarized by dividing both sides of the equation by <span class="math notranslate nohighlight">\(e^{g_y t}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzliabetr">
-<span class="eqno">(123)<a class="headerlink" href="#equation-eqstnrzliabetr" title="Link to this equation">#</a></span>\[\begin{split}  \hat{T}_{js,t} &amp;= \tau^{etr}_{s,t}(\hat{x}_{j,s,t}, \hat{y}_{j,s,t})\left(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\right) \qquad\qquad\qquad\qquad\:\:\:\forall j,t \quad\text{and}\quad s\geq E+1 \\
+<span class="eqno">(123)<a class="headerlink" href="#equation-eqstnrzliabetr" title="Permalink to this equation">#</a></span>\[\begin{split}  \hat{T}_{js,t} &amp;= \tau^{etr}_{s,t}(\hat{x}_{j,s,t}, \hat{y}_{j,s,t})\left(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\right) \qquad\qquad\qquad\qquad\:\:\:\forall j,t \quad\text{and}\quad s\geq E+1 \\
   &amp;= \tau^{etr}_{s,t}(\hat{w}_t e_{j,s}n_{j,s,t}, r_{p,t}\hat{b}_{j,s,t})\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) \quad\forall j,t \quad\text{and}\quad s\geq E+1\end{split}\]</div>
 <p>We can stationarize the simple expressions for total government spending on household transfers <span class="math notranslate nohighlight">\(TR_t\)</span> in <a class="reference internal" href="government.html#equation-equnbalgbctfer">(65)</a> and on public goods <span class="math notranslate nohighlight">\(G_t\)</span> in <a class="reference internal" href="government.html#equation-equnbalgbc-gt">(74)</a> by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>,</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrznomgdp">
-<span class="eqno">(124)<a class="headerlink" href="#equation-eqstnrznomgdp" title="Link to this equation">#</a></span>\[  p_t \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t} \hat{Y}_{m,t} \quad\forall t\]</div>
+<span class="eqno">(124)<a class="headerlink" href="#equation-eqstnrznomgdp" title="Permalink to this equation">#</a></span>\[  p_t \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t} \hat{Y}_{m,t} \quad\forall t\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrztfer">
-<span class="eqno">(125)<a class="headerlink" href="#equation-eqstnrztfer" title="Link to this equation">#</a></span>\[  \hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t \hat{Y}_t \quad\forall t\]</div>
+<span class="eqno">(125)<a class="headerlink" href="#equation-eqstnrztfer" title="Permalink to this equation">#</a></span>\[  \hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t \hat{Y}_t \quad\forall t\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-gt">
-<span class="eqno">(126)<a class="headerlink" href="#equation-eqstnrz-gt" title="Link to this equation">#</a></span>\[  \hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t \hat{Y}_t \quad\forall t\]</div>
+<span class="eqno">(126)<a class="headerlink" href="#equation-eqstnrz-gt" title="Permalink to this equation">#</a></span>\[  \hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t \hat{Y}_t \quad\forall t\]</div>
 <p>where the time varying multipliers <span class="math notranslate nohighlight">\(g_{g,t}\)</span> and <span class="math notranslate nohighlight">\(g_{tr,t}\)</span>, respectively, are defined in <a class="reference internal" href="#equation-eqstnrzclosurerule-gt">(135)</a> and <a class="reference internal" href="#equation-eqstnrzclosurerule-trt">(136)</a> below. These multipliers <span class="math notranslate nohighlight">\(g_{g,t}\)</span> and <span class="math notranslate nohighlight">\(g_{tr,t}\)</span> do not have a ``<span class="math notranslate nohighlight">\(\:\,\hat{}\,\:\)</span>’’ on them because their specifications <a class="reference internal" href="government.html#equation-equnbalgbcclosure-gt">(81)</a> and <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trt">(82)</a> that are functions of nonstationary variables are equivalent to <a class="reference internal" href="#equation-eqstnrzclosurerule-gt">(135)</a> and <a class="reference internal" href="#equation-eqstnrzclosurerule-trt">(136)</a> specified in stationary variables.</p>
 <p>We can stationarize the expression for total government revenue <span class="math notranslate nohighlight">\(Rev_t\)</span> in <a class="reference internal" href="government.html#equation-equnbalgbcgovrev">(72)</a> by dividing both sides of the equation by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzgovrev">
-<span class="eqno">(127)<a class="headerlink" href="#equation-eqstnrzgovrev" title="Link to this equation">#</a></span>\[\begin{split}  \hat{Rev}_t &amp;= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} - \tau^{inv}_{m,t}\hat{I}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
+<span class="eqno">(127)<a class="headerlink" href="#equation-eqstnrzgovrev" title="Permalink to this equation">#</a></span>\[\begin{split}  \hat{Rev}_t &amp;= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} - \tau^{inv}_{m,t}\hat{I}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
   &amp;\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t\end{split}\]</div>
 <p>Every term in the government budget constraint <a class="reference internal" href="government.html#equation-equnbalgbcbudgconstr">(73)</a> is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>. We also have to multiply and divide the next period debt term <span class="math notranslate nohighlight">\(D_{t+1}\)</span> by <span class="math notranslate nohighlight">\(e^{g_y(t+1)}\tilde{N}_{t+1}\)</span>, leaving the term <span class="math notranslate nohighlight">\(e^{g_y}(1 + \tilde{g}_{n,t+1})\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzgovbc">
-<span class="eqno">(128)<a class="headerlink" href="#equation-eqstnrzgovbc" title="Link to this equation">#</a></span>\[  e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{TR}_t + \hat{UBI}_t \quad\forall t\]</div>
+<span class="eqno">(128)<a class="headerlink" href="#equation-eqstnrzgovbc" title="Permalink to this equation">#</a></span>\[  e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{TR}_t + \hat{UBI}_t \quad\forall t\]</div>
 <p>The stationarized versions of the rule for total government infrastructure investment spending <span class="math notranslate nohighlight">\(I_{g,t}\)</span> in <a class="reference internal" href="government.html#equation-equnbalgbc-igt">(75)</a> and the rule for government investment spending in each industry in <a class="reference internal" href="government.html#equation-equnbalgbc-igt">(75)</a> are found by dividing both sides of the respective equations by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-igt">
-<span class="eqno">(129)<a class="headerlink" href="#equation-eqstnrz-igt" title="Link to this equation">#</a></span>\[  \hat{I}_{g,t} = \alpha_{I,t}\: p_t\hat{Y}_t \quad\forall t\]</div>
+<span class="eqno">(129)<a class="headerlink" href="#equation-eqstnrz-igt" title="Permalink to this equation">#</a></span>\[  \hat{I}_{g,t} = \alpha_{I,t}\: p_t\hat{Y}_t \quad\forall t\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-igmt">
-<span class="eqno">(130)<a class="headerlink" href="#equation-eqstnrz-igmt" title="Link to this equation">#</a></span>\[  \hat{I}_{g,m,t} = \alpha_{I,m,t}\: \hat{I}_{g,t} \quad\forall m,t\]</div>
+<span class="eqno">(130)<a class="headerlink" href="#equation-eqstnrz-igmt" title="Permalink to this equation">#</a></span>\[  \hat{I}_{g,m,t} = \alpha_{I,m,t}\: \hat{I}_{g,t} \quad\forall m,t\]</div>
 <p>The stationarized version of the law of motion for the public capital stock in each industry <span class="math notranslate nohighlight">\(K_{g,m,t}\)</span> in <a class="reference internal" href="government.html#equation-equnbalgbc-kgmt">(77)</a> is found by dividing both sides of the equation by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span> then multiply and divide the <span class="math notranslate nohighlight">\(K_{g,m,t+1}\)</span> term on the left-hand-side by <span class="math notranslate nohighlight">\(e^{g_y(t+1)}\tilde{N}_{t+1}\)</span>, leaving the term <span class="math notranslate nohighlight">\(e^{g_y}(1 + \tilde{g}_{n,t+1})\)</span> in the denominator of the right-hand-side.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-kgmt">
-<span class="eqno">(131)<a class="headerlink" href="#equation-eqstnrz-kgmt" title="Link to this equation">#</a></span>\[  \hat{K}_{g,m,t+1} = \frac{(1 - \delta_g)\hat{K}_{g,m,t} + \hat{I}_{g,m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t\]</div>
+<span class="eqno">(131)<a class="headerlink" href="#equation-eqstnrz-kgmt" title="Permalink to this equation">#</a></span>\[  \hat{K}_{g,m,t+1} = \frac{(1 - \delta_g)\hat{K}_{g,m,t} + \hat{I}_{g,m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t\]</div>
 <p>Stationary aggregate universal basic income expenditure is found in one of two ways depending on how the individual UBI payments <span class="math notranslate nohighlight">\(ubi_{j,s,t}\)</span> are modeled. In Section <a class="reference internal" href="government.html#secubi"><span class="std std-ref">Universal basic income</span></a> of Chapter <a class="reference internal" href="government.html#chap-unbalgbc"><span class="std std-ref">Government</span></a>, we discuss how UBI payments to households <span class="math notranslate nohighlight">\(ubi_{j,s,t}\)</span> can be growth adjusted so that they grow over time at the rate of productivity growth or non-growth adjusted such that they are constant overtime. In the first case, when UBI benefits are growth adjusted and growing over time, the stationary aggregate government UBI payout <span class="math notranslate nohighlight">\(\hat{UBI}_t\)</span> is found by dividing <a class="reference internal" href="government.html#equation-equnbalgbc-ubi">(78)</a> by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>. In the second case, when UBI benefits are constant over time and not growing with productivity, the stationary aggregate government UBI payout <span class="math notranslate nohighlight">\(\hat{UBI}_t\)</span> is found by dividing <a class="reference internal" href="government.html#equation-equnbalgbc-ubi">(78)</a> by only <span class="math notranslate nohighlight">\(\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzgbc-ubi">
-<span class="eqno">(132)<a class="headerlink" href="#equation-eqstnrzgbc-ubi" title="Link to this equation">#</a></span>\[\begin{split}  \hat{UBI}_t =
+<span class="eqno">(132)<a class="headerlink" href="#equation-eqstnrzgbc-ubi" title="Permalink to this equation">#</a></span>\[\begin{split}  \hat{UBI}_t =
     \begin{cases}
       \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} \hat{ubi}_{j,s,t} \quad\forall t \quad\text{if}\quad ubi_{j,s,t} \:\:\text{is growth adjusted} \\
       \sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\hat{\omega}_{s,t} ubi_{j,s,t} \quad\forall t \quad\text{if}\quad ubi_{j,s,t} \:\:\text{is not growth adjusted}
     \end{cases}\end{split}\]</div>
 <p>The expression for the interest rate on government debt <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> in <a class="reference internal" href="government.html#equation-equnbalgbc-rate-wedge">(79)</a> is already stationary because every term on the right-hand-side is already stationary. The net return on capital, <span class="math notranslate nohighlight">\(r_{K,t}\)</span> is also stationary as shown in <a class="reference internal" href="#equation-eqstnrz-rkt">(122)</a>. The expression for the return to household savings <span class="math notranslate nohighlight">\(r_{p,t}\)</span> in <a class="reference internal" href="financial.html#equation-eq-portfolio-return">(94)</a> is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-rate-p">
-<span class="eqno">(133)<a class="headerlink" href="#equation-eqstnrz-rate-p" title="Link to this equation">#</a></span>\[  r_{p,t} = \frac{r_{gov,t}\hat{D}_{t} + r_{K,t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t \quad\text{where}\quad \hat{K}_t \equiv \sum_{m=1}^M \hat{K}_{m,t}\]</div>
+<span class="eqno">(133)<a class="headerlink" href="#equation-eqstnrz-rate-p" title="Permalink to this equation">#</a></span>\[  r_{p,t} = \frac{r_{gov,t}\hat{D}_{t} + r_{K,t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t \quad\text{where}\quad \hat{K}_t \equiv \sum_{m=1}^M \hat{K}_{m,t}\]</div>
 <p>The long-run debt-to-GDP ratio condition is also the same in both the nonstationary version in <a class="reference internal" href="government.html#equation-equnbalgbc-dy">(80)</a> as well as the stationary version below because the endogenous side is a ratio of macroeconomic variables that are growing at the same rate, with the exception of already stationary <span class="math notranslate nohighlight">\(p_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-dy">
-<span class="eqno">(134)<a class="headerlink" href="#equation-eqstnrz-dy" title="Link to this equation">#</a></span>\[  \frac{\hat{D}_t}{p_t\hat{Y}_t} = \alpha_D \quad\text{for}\quad t\geq T\]</div>
+<span class="eqno">(134)<a class="headerlink" href="#equation-eqstnrz-dy" title="Permalink to this equation">#</a></span>\[  \frac{\hat{D}_t}{p_t\hat{Y}_t} = \alpha_D \quad\text{for}\quad t\geq T\]</div>
 <p>The three potential budget closure rules <a class="reference internal" href="government.html#equation-equnbalgbcclosure-gt">(81)</a>, <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trt">(82)</a>, and <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trgt">(84)</a> are the last government equations to stationarize. In each of the cases, we simply divide both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzclosurerule-gt">
-<span class="eqno">(135)<a class="headerlink" href="#equation-eqstnrzclosurerule-gt" title="Link to this equation">#</a></span>\[\begin{split}\begin{split}
+<span class="eqno">(135)<a class="headerlink" href="#equation-eqstnrzclosurerule-gt" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{split}
   &amp;\hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t\hat{Y}_t \\
   &amp;\text{where}\quad g_{g,t} =
   \begin{cases}
@@ -619,7 +613,7 @@ document.write(`
 \end{split}\end{split}\]</div>
 <p>or</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzclosurerule-trt">
-<span class="eqno">(136)<a class="headerlink" href="#equation-eqstnrzclosurerule-trt" title="Link to this equation">#</a></span>\[\begin{split}\begin{split}
+<span class="eqno">(136)<a class="headerlink" href="#equation-eqstnrzclosurerule-trt" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{split}
   &amp;\hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t\hat{Y}_t \\
   &amp;\text{where}\quad g_{tr,t} =
   \begin{cases}
@@ -631,7 +625,7 @@ document.write(`
 \end{split}\end{split}\]</div>
 <p>or</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzclosurerule-trgt">
-<span class="eqno">(137)<a class="headerlink" href="#equation-eqstnrzclosurerule-trgt" title="Link to this equation">#</a></span>\[\begin{split}\begin{split}
+<span class="eqno">(137)<a class="headerlink" href="#equation-eqstnrzclosurerule-trgt" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{split}
   &amp;\hat{G}_t + \hat{TR}_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)p_t\hat{Y}_t \quad\Rightarrow\quad \hat{G}_t = g_{trg,t}\:\alpha_g\:p_t\hat{Y}_t \quad\text{and}\quad \hat{TR}_t = g_{trg,t}\:\alpha_{tr}\:p_t\hat{Y}_t \\
   &amp;\text{where}\quad g_{trg,t} =
   \begin{cases}
@@ -642,45 +636,45 @@ document.write(`
 \end{split}\end{split}\]</div>
 </section>
 <section id="stationarized-market-clearing-equations">
-<span id="secstnrzmc"></span><h2>Stationarized Market Clearing Equations<a class="headerlink" href="#stationarized-market-clearing-equations" title="Link to this heading">#</a></h2>
+<span id="secstnrzmc"></span><h2>Stationarized Market Clearing Equations<a class="headerlink" href="#stationarized-market-clearing-equations" title="Permalink to this heading">#</a></h2>
 <p>The labor market clearing equation <a class="reference internal" href="market_clearing.html#equation-eqmarkclrlab">(95)</a> is stationarized by dividing both sides by <span class="math notranslate nohighlight">\(\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzmarkclrlab">
-<span class="eqno">(138)<a class="headerlink" href="#equation-eqstnrzmarkclrlab" title="Link to this equation">#</a></span>\[  \sum_{m=1}^M \hat{L}_{m,t} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \hat{\omega}_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t\]</div>
+<span class="eqno">(138)<a class="headerlink" href="#equation-eqstnrzmarkclrlab" title="Permalink to this equation">#</a></span>\[  \sum_{m=1}^M \hat{L}_{m,t} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \hat{\omega}_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t\]</div>
 <p>Total savings by domestic households <span class="math notranslate nohighlight">\(B_t\)</span> from <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-bt">(96)</a> is stationarized by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>. The <span class="math notranslate nohighlight">\(\omega_{s,t-1}\)</span> terms on the right-hand_side require multiplying and dividing by <span class="math notranslate nohighlight">\(\tilde{N}_{t-1}\)</span>, which leads to the division of <span class="math notranslate nohighlight">\(1 + \tilde{g}_{n,t}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-bt">
-<span class="eqno">(139)<a class="headerlink" href="#equation-eqstnrz-bt" title="Link to this equation">#</a></span>\[  \hat{B}_t \equiv \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,t-1}\lambda_j b_{j,s,t} + i_s\hat{\omega}_{s,t-1}\lambda_j \hat{b}_{j,s,t}\Bigr) \quad \forall t\]</div>
+<span class="eqno">(139)<a class="headerlink" href="#equation-eqstnrz-bt" title="Permalink to this equation">#</a></span>\[  \hat{B}_t \equiv \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,t-1}\lambda_j b_{j,s,t} + i_s\hat{\omega}_{s,t-1}\lambda_j \hat{b}_{j,s,t}\Bigr) \quad \forall t\]</div>
 <p>And the total domestic savings constraint <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-domcapcnstr">(97)</a> is stationarized by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-domcapcnstr">
-<span class="eqno">(140)<a class="headerlink" href="#equation-eqstnrz-domcapcnstr" title="Link to this equation">#</a></span>\[  \hat{K}^d_t + \hat{D}^d_t = \hat{B}_t \quad \forall t\]</div>
+<span class="eqno">(140)<a class="headerlink" href="#equation-eqstnrz-domcapcnstr" title="Permalink to this equation">#</a></span>\[  \hat{K}^d_t + \hat{D}^d_t = \hat{B}_t \quad \forall t\]</div>
 <p>The stationarized law of motion for foreign holdings of government debt <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-zetad">(98)</a> and the government debt market clearing condition <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-dtdddf">(99)</a>, respectively, are solved for by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-zetad">
-<span class="eqno">(141)<a class="headerlink" href="#equation-eqstnrz-zetad" title="Link to this equation">#</a></span>\[  e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^{f}_{t+1} = \hat{D}^{f}_{t} + \zeta_{D}\Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}_{t+1} - \hat{D}_{t}\Bigr) \quad\forall t\]</div>
+<span class="eqno">(141)<a class="headerlink" href="#equation-eqstnrz-zetad" title="Permalink to this equation">#</a></span>\[  e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^{f}_{t+1} = \hat{D}^{f}_{t} + \zeta_{D}\Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}_{t+1} - \hat{D}_{t}\Bigr) \quad\forall t\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-dtdddf">
-<span class="eqno">(142)<a class="headerlink" href="#equation-eqstnrz-dtdddf" title="Link to this equation">#</a></span>\[  \hat{D}_t = \hat{D}^d_t + \hat{D}^f_t \quad\forall t\]</div>
+<span class="eqno">(142)<a class="headerlink" href="#equation-eqstnrz-dtdddf" title="Permalink to this equation">#</a></span>\[  \hat{D}_t = \hat{D}^d_t + \hat{D}^f_t \quad\forall t\]</div>
 <p>The private capital market clearing equation <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-ktkdkf">(100)</a> is stationarized by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>, as is the expression for excess demand at the world interest rate <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-exdemk">(101)</a> and the exogenous expression for foreign private capital flows <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-zetak">(102)</a>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-ktkdkf">
-<span class="eqno">(143)<a class="headerlink" href="#equation-eqstnrz-ktkdkf" title="Link to this equation">#</a></span>\[  \hat{K}_t = \hat{K}^d_t + \hat{K}^f_t \quad\forall t \quad\text{where}\quad \hat{K_t} \equiv \sum_{m=1}^M \hat{K}_{m,t}\]</div>
+<span class="eqno">(143)<a class="headerlink" href="#equation-eqstnrz-ktkdkf" title="Permalink to this equation">#</a></span>\[  \hat{K}_t = \hat{K}^d_t + \hat{K}^f_t \quad\forall t \quad\text{where}\quad \hat{K_t} \equiv \sum_{m=1}^M \hat{K}_{m,t}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-exdemk">
-<span class="eqno">(144)<a class="headerlink" href="#equation-eqstnrz-exdemk" title="Link to this equation">#</a></span>\[  \hat{ED}^{K,r^*}_t \equiv \hat{K}^{r^*}_t - \hat{K}^d_t \quad\forall t \quad\text{where}\quad \hat{K}^{r^*}_t \equiv \sum_{m=1}^M \hat{K}^{r^*}_{m,t}\]</div>
+<span class="eqno">(144)<a class="headerlink" href="#equation-eqstnrz-exdemk" title="Permalink to this equation">#</a></span>\[  \hat{ED}^{K,r^*}_t \equiv \hat{K}^{r^*}_t - \hat{K}^d_t \quad\forall t \quad\text{where}\quad \hat{K}^{r^*}_t \equiv \sum_{m=1}^M \hat{K}^{r^*}_{m,t}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-zetak">
-<span class="eqno">(145)<a class="headerlink" href="#equation-eqstnrz-zetak" title="Link to this equation">#</a></span>\[  \hat{K}^{f}_t = \zeta_{K}\hat{ED}^{K,r^*}_t \quad\forall t\]</div>
+<span class="eqno">(145)<a class="headerlink" href="#equation-eqstnrz-zetak" title="Permalink to this equation">#</a></span>\[  \hat{K}^{f}_t = \zeta_{K}\hat{ED}^{K,r^*}_t \quad\forall t\]</div>
 <p>We stationarize the goods market clearing equations for the first <span class="math notranslate nohighlight">\(M-1\)</span> industries <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-mm1">(105)</a> and for the <span class="math notranslate nohighlight">\(M\)</span>th industry <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-m">(106)</a> by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>. On the right-hand-side, we must multiply and divide the <span class="math notranslate nohighlight">\(K^d_{t+1}\)</span> term and the <span class="math notranslate nohighlight">\(D^f_{t+1}\)</span> term, respectively, by <span class="math notranslate nohighlight">\(e^{g_y(t+1)}\tilde{N}_{t+1}\)</span> leaving the coefficient <span class="math notranslate nohighlight">\(e^{g_y}(1+\tilde{g}_{n,t+1})\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzmarkclrgoods-mm1">
-<span class="eqno">(146)<a class="headerlink" href="#equation-eqstnrzmarkclrgoods-mm1" title="Link to this equation">#</a></span>\[  \hat{Y}_{m,t} = \hat{C}_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1\]</div>
+<span class="eqno">(146)<a class="headerlink" href="#equation-eqstnrzmarkclrgoods-mm1" title="Permalink to this equation">#</a></span>\[  \hat{Y}_{m,t} = \hat{C}_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrzmarkclrgoods-m">
-<span class="eqno">(147)<a class="headerlink" href="#equation-eqstnrzmarkclrgoods-m" title="Link to this equation">#</a></span>\[\begin{split}  \hat{Y}_{M,t} &amp;= \hat{C}_{M,t} + \hat{I}_{M,t} + \hat{I}_{g,t} + \hat{G}_t + r_{p,t} \hat{K}^f_t + r_{p,t}\hat{D}^f_t ... \\
+<span class="eqno">(147)<a class="headerlink" href="#equation-eqstnrzmarkclrgoods-m" title="Permalink to this equation">#</a></span>\[\begin{split}  \hat{Y}_{M,t} &amp;= \hat{C}_{M,t} + \hat{I}_{M,t} + \hat{I}_{g,t} + \hat{G}_t + r_{p,t} \hat{K}^f_t + r_{p,t}\hat{D}^f_t ... \\
   &amp;\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) \quad\forall t\end{split}\]</div>
 <p>where</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzeqcmt">
-<span class="eqno">(148)<a class="headerlink" href="#equation-eqstnrzeqcmt" title="Link to this equation">#</a></span>\[  \hat{C}_{m,t} \equiv \sum_{i=1}^{I}\sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j \pi_{i,m} \hat{c}_{i,j,s,t} \quad\forall m,t\]</div>
+<span class="eqno">(148)<a class="headerlink" href="#equation-eqstnrzeqcmt" title="Permalink to this equation">#</a></span>\[  \hat{C}_{m,t} \equiv \sum_{i=1}^{I}\sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\lambda_j \pi_{i,m} \hat{c}_{i,j,s,t} \quad\forall m,t\]</div>
 <p>and</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzmarkclrgoods-imt">
-<span class="eqno">(149)<a class="headerlink" href="#equation-eqstnrzmarkclrgoods-imt" title="Link to this equation">#</a></span>\[\begin{split}  \hat{I}_{M,t} &amp;\equiv e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\sum_{m=1}^M \hat{K}_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M \hat{K}_{m,t} \quad\forall t \\
+<span class="eqno">(149)<a class="headerlink" href="#equation-eqstnrzmarkclrgoods-imt" title="Permalink to this equation">#</a></span>\[\begin{split}  \hat{I}_{M,t} &amp;\equiv e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\sum_{m=1}^M \hat{K}_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M \hat{K}_{m,t} \quad\forall t \\
   &amp;= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\hat{K}_{t+1} - (1 - \delta_{M,t})\hat{K}_t \\
   &amp;= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)(\hat{K}^d_{t+1} + \hat{K}^f_{t+1}) - (1 - \delta_{M,t})(\hat{K}^d_t + \hat{K}^f_t)\end{split}\]</div>
 <p>We stationarize the law of motion for total bequests <span class="math notranslate nohighlight">\(BQ_t\)</span> in <a class="reference internal" href="market_clearing.html#equation-eqmarkclrbq">(108)</a> by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>. Because the population levels in the summation are from period <span class="math notranslate nohighlight">\(t-1\)</span>, we must multiply and divide the summed term by <span class="math notranslate nohighlight">\(\tilde{N}_{t-1}\)</span> leaving the term in the denominator of <span class="math notranslate nohighlight">\(1+\tilde{g}_{n,t}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzmarkclrbq">
-<span class="eqno">(150)<a class="headerlink" href="#equation-eqstnrzmarkclrbq" title="Link to this equation">#</a></span>\[  \hat{BQ}_{t} = \left(\frac{1+r_{p,t}}{1 + \tilde{g}_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\hat{\omega}_{s-1,t-1}\hat{b}_{j,s,t}\right) \quad\forall t\]</div>
+<span class="eqno">(150)<a class="headerlink" href="#equation-eqstnrzmarkclrbq" title="Permalink to this equation">#</a></span>\[  \hat{BQ}_{t} = \left(\frac{1+r_{p,t}}{1 + \tilde{g}_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\hat{\omega}_{s-1,t-1}\hat{b}_{j,s,t}\right) \quad\forall t\]</div>
 </section>
 </section>
 
