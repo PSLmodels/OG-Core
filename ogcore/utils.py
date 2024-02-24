@@ -11,6 +11,8 @@ import pandas as pd
 import pickle
 from pkg_resources import resource_stream, Requirement
 import importlib.resources
+import urllib3
+import ssl
 
 EPSILON = 1e-10  # tolerance or comparison functions
 
@@ -930,20 +932,21 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                 param_out = np.ones((dims)) * param_in[0]
             # case where user enters just one year for all types in 2nd dim
             if param_in.shape[0] == dims[1]:
-                param_in = np.tile(param_in.reshape(1, dims[1]), (dims[0], 1))
+                param_out = np.tile(param_in.reshape(1, dims[1]), (dims[0], 1))
             else:
                 # case where user enters multiple years, but not full time
                 # path
                 # will assume they implied values the same across 2nd dim
                 # and will fill in all periods
-                param_in = np.concatenate(
+                param_out = np.concatenate(
                     (
                         param_in,
                         np.ones((dims[0] - param_in.size)) * param_in[-1],
                     )
                 )
-                param_in = np.tile(param_in.reshape(dims[0], 1), (1, dims[1]))
-            param_out = np.squeeze(param_in, axis=2)
+                param_out = np.tile(
+                    param_out.reshape(dims[0], 1), (1, dims[1])
+                )
         elif param_in.ndim == 2:
             # case where enter values along 2 dimensions, but those aren't
             # complete
@@ -995,19 +998,9 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
         elif param_in.ndim == 2:
             # case if S by J input
             if param_in.shape[0] == dims[1]:
-                param_in = np.tile(
+                param_out = np.tile(
                     param_in.reshape(1, dims[1], dims[2]),
-                    (dims[0] - dims[1], 1, 1),
-                )
-                param_out = np.concatenate(
-                    (
-                        param_in,
-                        np.tile(
-                            param_in[-1, :, :].reshape(1, dims[1], dims[2]),
-                            (dims[1], 1, 1),
-                        ),
-                    ),
-                    axis=0,
+                    (dims[0], 1, 1),
                 )
             # case if T by S input
             elif param_in.shape[0] == dims[0] - dims[1]:
@@ -1034,15 +1027,46 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                 assert False
         elif param_in.ndim == 3:
             # this is the case where input varies by T, S, J
-            param_out = np.concatenate(
-                (
-                    param_in,
-                    np.tile(
-                        param_in[-1, :, :].reshape(1, dims[1], dims[2]),
-                        (dims[1], 1, 1),
+            if param_in.shape[0] > dims[0]:
+                param_out = param_in[: dims[0], :, :]
+            else:
+                param_out = np.concatenate(
+                    (
+                        param_in,
+                        np.tile(
+                            param_in[-1, :, :].reshape(1, dims[1], dims[2]),
+                            (dims[0] - param_in.shape[0], 1, 1),
+                        ),
                     ),
-                ),
-                axis=0,
-            )
+                    axis=0,
+                )
 
     return param_out
+
+
+class CustomHttpAdapter(requests.adapters.HTTPAdapter):
+    """
+    The UN Data Portal server doesn't support "RFC 5746 secure renegotiation". This causes and error when the client is using OpenSSL 3, which enforces that standard by default.
+    The fix is to create a custom SSL context that allows for legacy connections. This defines a function get_legacy_session() that should be used instead of requests().
+    """
+
+    # "Transport adapter" that allows us to use custom ssl_context.
+    def __init__(self, ssl_context=None, **kwargs):
+        self.ssl_context = ssl_context
+        super().__init__(**kwargs)
+
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = urllib3.poolmanager.PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_context=self.ssl_context,
+        )
+
+
+def get_legacy_session():
+    ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+    ctx.options |= 0x4  # OP_LEGACY_SERVER_CONNECT  #in Python 3.12 you will be able to switch from 0x4 to ssl.OP_LEGACY_SERVER_CONNECT.
+    session = requests.session()
+    session.mount("https://", CustomHttpAdapter(ctx))
+    return session

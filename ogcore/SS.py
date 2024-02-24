@@ -78,7 +78,6 @@ def euler_equation_solver(guesses, *args):
         tr,
         ubi,
         theta,
-        p.e[:, j],
         p.rho[-1, :],
         p.etr_params[-1],
         p.mtry_params[-1],
@@ -99,8 +98,7 @@ def euler_equation_solver(guesses, *args):
         tr,
         ubi,
         theta,
-        p.chi_n,
-        p.e[:, j],
+        p.chi_n[-1, :],
         p.etr_params[-1],
         p.mtrx_params[-1],
         None,
@@ -138,7 +136,7 @@ def euler_equation_solver(guesses, *args):
         j,
         False,
         "SS",
-        p.e[:, j],
+        p.e[-1, :, j],
         p.etr_params[-1],
         p,
     )
@@ -151,7 +149,7 @@ def euler_equation_solver(guesses, *args):
         n_guess,
         bq,
         taxes,
-        p.e[:, j],
+        p.e[-1, :, j],
         p,
     )
     mask6 = cons < 0
@@ -293,7 +291,7 @@ def inner_loop(outer_loop_vars, p, client):
         None,
         False,
         "SS",
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         p,
     )
@@ -306,7 +304,7 @@ def inner_loop(outer_loop_vars, p, client):
         nssmat,
         bq,
         net_tax,
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         p,
     )
     c_i = household.get_ci(c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c)
@@ -383,7 +381,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r, new_r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, "SS"
     )
     average_income_model = (
-        (new_r_p * b_s + new_w * p.e * nssmat)
+        (new_r_p * b_s + new_w * np.squeeze(p.e[-1, :, :]) * nssmat)
         * p.omega_SS.reshape(p.S, 1)
         * p.lambdas.reshape(1, p.J)
     ).sum()
@@ -425,7 +423,7 @@ def inner_loop(outer_loop_vars, p, client):
         None,
         False,
         "SS",
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         p,
     )
@@ -438,7 +436,7 @@ def inner_loop(outer_loop_vars, p, client):
         nssmat,
         new_bq,
         taxss,
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         p,
     )
     (
@@ -467,6 +465,7 @@ def inner_loop(outer_loop_vars, p, client):
         ubi,
         theta,
         etr_params_3D,
+        np.squeeze(p.e[-1, :, :]),
         p,
         None,
         "SS",
@@ -757,7 +756,7 @@ def SS_solver(
         nssmat,
         factor,
         True,
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         mtry_params_3D,
         capital_noncompliance_rate_2D,
@@ -770,7 +769,7 @@ def SS_solver(
         nssmat,
         factor,
         False,
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         mtrx_params_3D,
         labor_noncompliance_rate_2D,
@@ -782,7 +781,7 @@ def SS_solver(
         bssmat_s,
         nssmat,
         factor,
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         labor_noncompliance_rate_2D,
         capital_noncompliance_rate_2D,
@@ -803,7 +802,7 @@ def SS_solver(
         None,
         False,
         "SS",
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         etr_params_3D,
         p,
     )
@@ -816,10 +815,12 @@ def SS_solver(
         nssmat,
         bqssmat,
         taxss,
-        p.e,
+        np.squeeze(p.e[-1, :, :]),
         p,
     )
-    yss_before_tax_mat = household.get_y(r_p_ss, wss, bssmat_s, nssmat, p)
+    yss_before_tax_mat = household.get_y(
+        r_p_ss, wss, bssmat_s, nssmat, p, "SS"
+    )
     Css = aggr.get_C(cssmat, p, "SS")
     c_i_ss_mat = household.get_ci(
         cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c
@@ -860,6 +861,7 @@ def SS_solver(
         ubissmat,
         theta,
         etr_params_3D,
+        np.squeeze(p.e[-1, :, :]),
         p,
         None,
         "SS",

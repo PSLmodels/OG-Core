@@ -3,41 +3,64 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import matplotlib
+from cycler import cycler
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
 
 
-def plot_imm_rates(p, year=DEFAULT_START_YEAR, include_title=False, path=None):
+def plot_imm_rates(
+    imm_rates,
+    start_year=DEFAULT_START_YEAR,
+    years_to_plot=[DEFAULT_START_YEAR],
+    include_title=False,
+    source="United Nations, World Population Prospects",
+    path=None,
+):
     """
-    Create a plot of immigration rates from OG-Core parameterization.
+    Plot fertility rates from the data
 
     Args:
-        p (OG-Core Specifications class): parameters object
-        year (integer): year of mortality ratese to plot
-        include_title (bool): whether to include a title in the plot
-        path (string): path to save figure to
+        imm_rates (NumPy array): immigration rates for each of
+            totpers
+        start_year (int): first year of data
+        years_to_plot (list): list of years to plot
+        source (str): data source for fertility rates
+        path (str): path to save figure to, if None then figure
+            is returned
 
     Returns:
-        fig (Matplotlib plot object): plot of immigration rates
+        fig (Matplotlib plot object): plot of fertility rates
 
     """
-    assert isinstance(year, int)
-    age_per = np.linspace(p.E, p.E + p.S, p.S)
+    # create line styles to cycle through
+    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
-    plt.scatter(age_per, p.imm_rates[year - p.start_year, :], s=40, marker="d")
-    plt.plot(age_per, p.imm_rates[year - p.start_year, :])
-    plt.xlabel(r"Age $s$ (model periods)")
-    plt.ylabel(r"Imm. rate $i_{s}$")
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.2%}".format(x) for x in vals])
+    for y in years_to_plot:
+        i = start_year - y
+        plt.plot(imm_rates[i, :], c="blue", label="Year " + str(y))
+    # plt.title('Fertility rates by age ($f_{s}$)',
+    #     fontsize=20)
+    plt.xlabel(r"Age $s$")
+    plt.ylabel(r"Immigration rate $i_{s}$")
+    plt.legend(loc="upper left")
+    plt.text(
+        -5,
+        -0.023,
+        "Source: " + source,
+        fontsize=9,
+    )
+    plt.tight_layout(rect=(0, 0.035, 1, 1))
     if include_title:
-        plt.title("Immigration Rates in " + str(year))
-    if path is None:
-        return fig
+        plt.title("Immigration Rates")
+    # Save or return figure
+    if path:
+        output_path = os.path.join(path, "imm_rates")
+        plt.savefig(output_path, dpi=300)
+        plt.close()
     else:
-        fig_path = os.path.join(path, "imm_rates_orig")
-        plt.savefig(fig_path, dpi=300)
+        fig.show()
+        return fig
 
 
 def plot_mort_rates(
@@ -153,24 +176,27 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_ability_profiles(p, include_title=False, path=None):
+def plot_ability_profiles(p, t=None, include_title=False, path=None):
     """
     Create a plot of earnings ability profiles.
 
     Args:
         p (OG-Core Specifications class): parameters object
+        t (int): model period for year, if None, then plot ability matrix for SS
         path (string): path to save figure to
 
     Returns:
         fig (Matplotlib plot object): plot of earnings ability profiles
 
     """
+    if t is None:
+        t = -1
     age_vec = np.arange(p.starting_age, p.starting_age + p.S)
     fig, ax = plt.subplots()
     cm = plt.get_cmap("coolwarm")
     ax.set_prop_cycle(color=[cm(1.0 * i / p.J) for i in range(p.J)])
     for j in range(p.J):
-        plt.plot(age_vec, p.e[:, j], label=GROUP_LABELS[p.J][j])
+        plt.plot(age_vec, p.e[t, :, j], label=GROUP_LABELS[p.J][j])
     plt.xlabel(r"Age")
     plt.ylabel(r"Earnings ability")
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
@@ -268,60 +294,35 @@ def plot_chi_n(p, include_title=False, path=None):
 
 
 def plot_fert_rates(
-    fert_func,
-    age_midp,
-    totpers,
-    min_yr,
-    max_yr,
-    fert_data,
     fert_rates,
-    output_dir=None,
+    start_year=DEFAULT_START_YEAR,
+    years_to_plot=[DEFAULT_START_YEAR],
+    source="United Nations, World Population Prospects",
+    path=None,
 ):
     """
-    Plot fertility rates from the data along with smoothed function to
-    use for model fertility rates.
+    Plot fertility rates from the data
 
     Args:
-        fert_func (Scipy interpolation object): interpolated fertility
-            rates
-        age_midp (NumPy array): midpoint of age for each age group in
-            data
-        totpers (int): total number of agent life periods (E+S), >= 3
-        min_yr (int): age in years at which agents are born, >= 0
-        max_yr (int): age in years at which agents die with certainty,
-            >= 4
-        fert_data (NumPy array): fertility rates by age group from data
-        fert_rates (NumPy array): fitted fertility rates for each of
+        fert_rates (NumPy array): fertility rates for each of
             totpers
-        output_dir (str): path to save figure to, if None then figure
+        start_year (int): first year of data
+        years_to_plot (list): list of years to plot
+        source (str): data source for fertility rates
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
         fig (Matplotlib plot object): plot of fertility rates
 
     """
-    # Generate finer age vector and fertility rate vector for
-    # graphing cubic spline interpolating function
-    age_fine_pred = np.linspace(age_midp[0], age_midp[-1], 300)
-    fert_fine_pred = fert_func(age_fine_pred)
-    age_fine = np.hstack((min_yr, age_fine_pred, max_yr))
-    fert_fine = np.hstack((0, fert_fine_pred, 0))
-    age_mid_new = np.linspace(
-        np.float64(max_yr) / totpers, max_yr, totpers
-    ) - (0.5 * np.float64(max_yr) / totpers)
-
+    # create line styles to cycle through
+    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
-    plt.scatter(age_midp, fert_data, s=70, c="blue", marker="o", label="Data")
-    plt.scatter(
-        age_mid_new,
-        fert_rates,
-        s=40,
-        c="red",
-        marker="d",
-        label="Model period (integrated)",
-    )
-    plt.plot(age_fine, fert_fine, label="Cubic spline")
-    # plt.title('Fitted fertility rate function by age ($f_{s}$)',
+    for y in years_to_plot:
+        i = start_year - y
+        plt.plot(fert_rates[i, :], c="blue", label="Year " + str(y))
+    # plt.title('Fertility rates by age ($f_{s}$)',
     #     fontsize=20)
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Fertility rate $f_{s}$")
@@ -329,102 +330,72 @@ def plot_fert_rates(
     plt.text(
         -5,
         -0.023,
-        "Source: National Vital Statistics Reports, "
-        + "Volume 64, Number 1, January 15, 2015.",
+        "Source: " + source,
         fontsize=9,
     )
     plt.tight_layout(rect=(0, 0.035, 1, 1))
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "fert_rates")
+    if path:
+        output_path = os.path.join(path, "fert_rates")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
+        fig.show()
         return fig
 
 
 def plot_mort_rates_data(
-    totpers,
-    min_yr,
-    max_yr,
-    age_year_all,
-    mort_rates_all,
-    infmort_rate,
     mort_rates,
-    output_dir=None,
+    start_year=DEFAULT_START_YEAR,
+    years_to_plot=[DEFAULT_START_YEAR],
+    source="United Nations, World Population Prospects",
+    path=None,
 ):
     """
-    Plots mortality rates from the model and data.
+    Plots mortality rates from the data.
 
     Args:
-        totpers (int): total number of agent life periods (E+S), >= 3
-        min_yr (int): age in years at which agents are born, >= 0
-        max_yr (int): age in years at which agents die with certainty,
-            >= 4
-        age_year_all (array_like): ages in mortality rate data
-        mort_rates_all (array_like): mortality rates by age from data,
-            average across males and females
-        infmort_rate (scalar): infant mortality rate
-        mort_rates (array_like): fitted mortality rates for each of
+        mort_rates (array_like): mortality rates for each of
             totpers
-        output_dir (str): path to save figure to, if None then figure
+        start_year (int): first year of data
+        years_to_plot (list): list of years to plot
+        source (str): data source for fertility rates
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
         fig (Matplotlib plot object): plot of mortality rates
 
     """
-    age_mid_new = np.linspace(
-        np.float64(max_yr) / totpers, max_yr, totpers
-    ) - (0.5 * np.float64(max_yr) / totpers)
+    # create line styles to cycle through
+    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
-    plt.scatter(
-        np.hstack([0, age_year_all]),
-        np.hstack([infmort_rate, mort_rates_all]),
-        s=20,
-        c="blue",
-        marker="o",
-        label="Data",
-    )
-    plt.scatter(
-        np.hstack([0, age_mid_new]),
-        np.hstack([infmort_rate, mort_rates]),
-        s=40,
-        c="red",
-        marker="d",
-        label="Model period (cumulative)",
-    )
-    plt.plot(
-        np.hstack([0, age_year_all[min_yr - 1 : max_yr]]),
-        np.hstack([infmort_rate, mort_rates_all[min_yr - 1 : max_yr]]),
-    )
-    plt.axvline(x=max_yr, color="red", linestyle="-", linewidth=1)
-    plt.grid(visible=True, which="major", color="0.65", linestyle="-")
-    # plt.title('Fitted mortality rate function by age ($rho_{s}$)',
+    for y in years_to_plot:
+        i = start_year - y
+        plt.plot(mort_rates[i, :], c="blue", label="Year " + str(y))
+    # plt.title('Fertility rates by age ($f_{s}$)',
     #     fontsize=20)
     plt.xlabel(r"Age $s$")
-    plt.ylabel(r"Mortality rate $\rho_{s}$")
+    plt.ylabel(r"Mortality rate $rho_{s}$")
     plt.legend(loc="upper left")
     plt.text(
         -5,
-        -0.2,
-        "Source: Actuarial Life table, 2011 Social Security "
-        + "Administration.",
+        -0.223,
+        "Source: " + source,
         fontsize=9,
     )
-    plt.tight_layout(rect=(0, 0.03, 1, 1))
+    plt.tight_layout(rect=(0, 0.035, 1, 1))
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "mort_rates")
+    if path:
+        output_path = os.path.join(path, "mort_rates")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
+        fig.show()
         return fig
 
 
-def plot_omega_fixed(
-    age_per_EpS, omega_SS_orig, omega_SSfx, E, S, output_dir=None
-):
+def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None):
     """
     Plot the steady-state population distribution implied by the data
     on fertility and mortality rates versus the the steady-state
@@ -441,7 +412,7 @@ def plot_omega_fixed(
             after adjustment to immigration rates
         E (int): age at which household becomes economically active
         S (int): number of years which household is economically active
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -458,8 +429,8 @@ def plot_omega_fixed(
     plt.xlim((0, E + S + 1))
     plt.legend(loc="upper right")
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "OrigVsFixSSpop")
+    if path:
+        output_path = os.path.join(path, "OrigVsFixSSpop")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -467,7 +438,7 @@ def plot_omega_fixed(
 
 
 def plot_imm_fixed(
-    age_per_EpS, imm_rates_orig, imm_rates_adj, E, S, output_dir=None
+    age_per_EpS, imm_rates_orig, imm_rates_adj, E, S, path=None
 ):
     """
     Plot the immigration rates implied by the data on population,
@@ -482,7 +453,7 @@ def plot_imm_fixed(
         imm_rates_adj (Numpy array): adjusted immigration rates by age
         E (int): age at which household becomes economically active
         S (int): number of years which household is economically active
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -499,8 +470,8 @@ def plot_imm_fixed(
     plt.xlim((0, E + S + 1))
     plt.legend(loc="upper center")
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "OrigVsAdjImm")
+    if path:
+        output_path = os.path.join(path, "OrigVsAdjImm")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -509,13 +480,13 @@ def plot_imm_fixed(
 
 def plot_population_path(
     age_per_EpS,
-    initial_pop_pct,
     omega_path_lev,
     omega_SSfx,
-    data_year,
-    curr_year,
+    start_year,
+    year1,
+    year2,
     S,
-    output_dir=None,
+    path=None,
 ):
     """
     Plot the distribution of the population over age for various years.
@@ -523,15 +494,17 @@ def plot_population_path(
     Args:
         age_per_EpS (array_like): list of ages over which to plot
             population distribution
-        pop_2013_pct (array_like): population distribution in 2013
+        initial_pop_pct (array_like): initial year population distribution
         omega_path_lev (Numpy array): number of households by age
             over the transition path
         omega_SSfx (Numpy array): number of households by age
             in the SS
-        data_year (int): year of data for initial_pop_pct
-        curr_year (int): current year in the model
+        start_year (int): first year of data (so can get index of year1
+            and year2)
+        year1 (int): first year of data to plot
+        year2 (int): second year of data to plot
         S (int): number of years which household is economically active
-        output_dir (str): path to save figure to, if None then figure
+        path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
@@ -540,23 +513,33 @@ def plot_population_path(
 
     """
     fig, ax = plt.subplots()
-    plt.plot(age_per_EpS, initial_pop_pct, label=str(data_year) + " pop.")
     plt.plot(
         age_per_EpS,
-        (omega_path_lev[:, 0] / omega_path_lev[:, 0].sum()),
-        label=str(curr_year) + " pop.",
+        (
+            omega_path_lev[start_year - year1, :]
+            / omega_path_lev[start_year - year1, :].sum()
+        ),
+        label=str(year1) + " pop.",
     )
     plt.plot(
         age_per_EpS,
         (
-            omega_path_lev[:, int(0.5 * S)]
-            / omega_path_lev[:, int(0.5 * S)].sum()
+            omega_path_lev[start_year - year2, :]
+            / omega_path_lev[start_year - year2, :].sum()
+        ),
+        label=str(year2) + " pop.",
+    )
+    plt.plot(
+        age_per_EpS,
+        (
+            omega_path_lev[int(0.5 * S), :]
+            / omega_path_lev[int(0.5 * S), :].sum()
         ),
         label="T=" + str(int(0.5 * S)) + " pop.",
     )
     plt.plot(
         age_per_EpS,
-        (omega_path_lev[:, int(S)] / omega_path_lev[:, int(S)].sum()),
+        (omega_path_lev[int(S), :] / omega_path_lev[int(S), :].sum()),
         label="T=" + str(int(S)) + " pop.",
     )
     plt.plot(age_per_EpS, omega_SSfx, label="Adj. SS pop.")
@@ -565,8 +548,8 @@ def plot_population_path(
     plt.ylabel(r"Pop. dist'n $\omega_{s}$")
     plt.legend(loc="lower left")
     # Save or return figure
-    if output_dir:
-        output_path = os.path.join(output_dir, "PopDistPath")
+    if path:
+        output_path = os.path.join(path, "PopDistPath")
         plt.savefig(output_path, dpi=300)
         plt.close()
     else:
@@ -584,7 +567,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
             rates
         s (int): age of individual, >= 21
         t (int): year of analysis, >= 2016
-        output_dir (str): output directory for saving plot files
+        path (str): output directory for saving plot files
 
     Returns:
         None
@@ -719,7 +702,7 @@ def txfunc_graph(
         tax_func_type (str): functional form of tax functions
         params_to_plot (array_like or function): tax function parameters or
             nonparametric function
-        output_dir (str): output directory for saving plot files
+        path (str): output directory for saving plot files
 
     Returns:
         None
@@ -834,7 +817,7 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir, round):
             size is BW x S
         start_year (int): first year of budget window
         varstr (str): name of tax function being evaluated
-        output_dir (str): path to save graph to
+        path (str): path to save graph to
         round (int): which round of sweeping for outliers (0, 1, or 2)
 
     Returns:
@@ -863,7 +846,7 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir, round):
 
 
 def plot_income_data(
-    ages, abil_midp, abil_pcts, emat, output_dir=None, filesuffix=""
+    ages, abil_midp, abil_pcts, emat, t=None, path=None, filesuffix=""
 ):
     """
     This function graphs ability matrix in 3D, 2D, log, and nolog
@@ -875,46 +858,54 @@ def plot_income_data(
         abil_pcts (Numpy array): percent of population in each lifetime
             income group, length J
         emat (Numpy array): effective labor units by age and lifetime
-            income group, size SxJ
+            income group, size TxSxJ
+        t (int): model period for year, if None, then plot SS values
         filesuffix (str): suffix to be added to plot files
 
     Returns:
         None
 
     """
+    if t is None:
+        t = -1
     J = abil_midp.shape[0]
     abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
     cmap1 = matplotlib.cm.get_cmap("summer")
-    if output_dir:
+    if path:
         # Make sure that directory is created
-        utils.mkdirs(output_dir)
+        utils.mkdirs(path)
         if J == 1:
             # Plot of 2D, J=1 in levels
             plt.figure()
-            plt.plot(ages, emat)
+            plt.plot(ages, emat[t, :, :])
             filename = "ability_2D_lev" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
+            fullpath = os.path.join(path, filename)
             plt.savefig(fullpath, dpi=300)
             plt.close()
 
             # Plot of 2D, J=1 in logs
             plt.figure()
-            plt.plot(ages, np.log(emat))
+            plt.plot(ages, np.log(emat[t, :, :]))
             filename = "ability_2D_log" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
+            fullpath = os.path.join(path, filename)
             plt.savefig(fullpath, dpi=300)
             plt.close()
         else:
             # Plot of 3D, J>1 in levels
             fig10, ax10 = plt.subplots(subplot_kw={"projection": "3d"})
             ax10.plot_surface(
-                age_mesh, abil_mesh, emat, rstride=8, cstride=1, cmap=cmap1
+                age_mesh,
+                abil_mesh,
+                emat[t, :, :],
+                rstride=8,
+                cstride=1,
+                cmap=cmap1,
             )
             ax10.set_xlabel(r"age-$s$")
             ax10.set_ylabel(r"ability type -$j$")
             ax10.set_zlabel(r"ability $e_{j,s}$")
             filename = "ability_3D_lev" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
+            fullpath = os.path.join(path, filename)
             plt.savefig(fullpath, dpi=300)
             plt.close()
 
@@ -923,7 +914,7 @@ def plot_income_data(
             ax11.plot_surface(
                 age_mesh,
                 abil_mesh,
-                np.log(emat),
+                np.log(emat[t, :, :]),
                 rstride=8,
                 cstride=1,
                 cmap=cmap1,
@@ -932,7 +923,7 @@ def plot_income_data(
             ax11.set_ylabel(r"ability type -$j$")
             ax11.set_zlabel(r"log ability $log(e_{j,s})$")
             filename = "ability_3D_log" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
+            fullpath = os.path.join(path, filename)
             plt.savefig(fullpath, dpi=300)
             plt.close()
 
@@ -960,7 +951,7 @@ def plot_income_data(
                     if j <= 3:
                         ax.plot(
                             ages,
-                            np.log(emat[:, j]),
+                            np.log(emat[t, :, j]),
                             label=this_label,
                             linestyle=linestyles[j],
                             color="black",
@@ -968,7 +959,7 @@ def plot_income_data(
                     elif j > 3:
                         ax.plot(
                             ages,
-                            np.log(emat[:, j]),
+                            np.log(emat[t, :, j]),
                             label=this_label,
                             marker=markers[j - 4],
                             color="black",
@@ -980,7 +971,7 @@ def plot_income_data(
                 ax.set_xlabel(r"age-$s$")
                 ax.set_ylabel(r"log ability $log(e_{j,s})$")
                 filename = "ability_2D_log" + filesuffix
-                fullpath = os.path.join(output_dir, filename)
+                fullpath = os.path.join(path, filename)
                 plt.savefig(fullpath, dpi=300)
                 plt.close()
     else:
@@ -1008,7 +999,7 @@ def plot_income_data(
                 if j <= 3:
                     ax.plot(
                         ages,
-                        np.log(emat[:, j]),
+                        np.log(emat[t, :, j]),
                         label=this_label,
                         linestyle=linestyles[j],
                         color="black",
@@ -1016,7 +1007,7 @@ def plot_income_data(
                 elif j > 3:
                     ax.plot(
                         ages,
-                        np.log(emat[:, j]),
+                        np.log(emat[t, :, j]),
                         label=this_label,
                         marker=markers[j - 4],
                         color="black",

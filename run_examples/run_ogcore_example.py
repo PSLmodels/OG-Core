@@ -25,9 +25,9 @@ plt.style.use(style_file_url)
 
 def main():
     # Define parameters to use for multiprocessing
-    client = Client()
     num_workers = min(multiprocessing.cpu_count(), 7)
     print("Number of workers = ", num_workers)
+    client = Client(n_workers=num_workers)
     run_start_time = time.time()
 
     # Directories to save data

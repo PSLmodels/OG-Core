@@ -34,9 +34,9 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
 
     """
     if j is not None:
-        e = p.e[:, j]
+        e = np.squeeze(p.e[-1, :, j])  # Only computes using SS earnings
     else:
-        e = p.e
+        e = np.squeeze(p.e[-1, :, :])  # Only computes using SS earnings
     # adjust number of calendar years AIME computed from int model periods
     equiv_periods = int(round((p.S / 80.0) * p.AIME_num_years)) - 1
     if e.ndim == 2:
@@ -405,7 +405,6 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[-1, :]
             )
-
     income = r * b + w * e * n
     labor_income = w * e * n
     T_I = (

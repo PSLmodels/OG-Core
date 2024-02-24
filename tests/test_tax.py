@@ -16,7 +16,9 @@ new_param_values = {
     "capital_income_tax_noncompliance_rate": [[0.0]],
     "J": 1,
     "T": 4,
+    "chi_n": np.ones(4),
     "eta": (np.ones((4, 1)) / (4 * 1)),
+    "e": np.ones((4, 1)),
 }
 p.update_specifications(new_param_values)
 p.retire = [3, 3, 3, 3, 3, 3, 3, 3]
@@ -53,14 +55,19 @@ test_data = [
 
 
 @pytest.mark.parametrize(
-    "n,w,factor,j,p,expected",
+    "n,w,factor,j,p_in,expected",
     test_data,
     ids=["1D e", "2D e", "AIME case 2", "AIME case 3", "Min PIA case"],
 )
-def test_replacement_rate_vals(n, w, factor, j, p, expected):
+def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
     # Test replacement rate function, making sure to trigger all three
     # cases of AIME
-
+    # make e 3D
+    p = copy.deepcopy(p_in)
+    # p.e = np.tile(np.reshape(p.e, (1, p.S, p.J)), (p.T, 1, 1))
+    p.e = np.tile(
+        np.reshape(p.e, (1, p.e.shape[0], p.e.shape[1])), (p.T, 1, 1)
+    )
     theta = tax.replacement_rate_vals(n, w, factor, j, p)
     assert np.allclose(theta, expected)
 
@@ -75,6 +82,8 @@ new_param_values = {
     "lambdas": [1.0],
     "J": 1,
     "T": 3,
+    "chi_n": np.ones(3),
+    "e": np.ones((3, 1)),
     "eta": (np.ones((3, 1)) / (3 * 1)),
     "h_wealth": [2],
     "p_wealth": [3],
@@ -91,6 +100,8 @@ new_param_values2 = {
     "lambdas": [1.0],
     "J": 1,
     "T": 3,
+    "chi_n": np.ones(3),
+    "e": np.ones((3, 1)),
     "eta": (np.ones((3, 1)) / (3 * 1)),
     "h_wealth": [1.2, 1.1, 2.3],
     "p_wealth": [2.2, 2.3, 1.8],
@@ -124,6 +135,8 @@ new_param_values = {
     "lambdas": [1.0],
     "J": 1,
     "T": 3,
+    "chi_n": np.ones(3),
+    "e": np.ones((3, 1)),
     "eta": (np.ones((3, 1)) / (3 * 1)),
     "h_wealth": [3],
     "p_wealth": [4],
@@ -141,6 +154,8 @@ new_param_values2 = {
     "lambdas": [1.0],
     "J": 1,
     "T": 3,
+    "chi_n": np.ones(3),
+    "e": np.ones((3, 1)),
     "eta": (np.ones((3, 1)) / (3 * 1)),
     "h_wealth": [1.2, 1.1, 2.3],
     "p_wealth": [2.2, 2.3, 1.8],
@@ -875,6 +890,8 @@ new_param_values1 = {
     "inv_tax_credit": [[0.02]],
     "T": 3,
     "S": 3,
+    "chi_n": np.ones(3),
+    "e": np.ones((3, p1.J)),
     "rho": rho_vec.tolist(),
     "eta": (np.ones((3, p1.J)) / (3 * p1.J)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
@@ -1203,6 +1220,8 @@ new_param_values_ubi = {
     "T": 3,
     "S": 3,
     "J": 2,
+    "chi_n": np.ones(3),
+    "e": np.ones((3, 2)),
     "rho": rho_vec.tolist(),
     "lambdas": [0.65, 0.35],
     "eta": (np.ones((3, 2)) / (3 * 2)),

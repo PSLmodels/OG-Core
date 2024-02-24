@@ -1,6 +1,7 @@
 """
 Specify what is available to import from the ogcore package.
 """
+
 from ogcore.SS import *
 from ogcore.TPI import *
 from ogcore.aggregates import *
@@ -19,4 +20,4 @@ from ogcore.tax import *
 from ogcore.txfunc import *
 from ogcore.utils import *
 
-__version__ = "0.10.10"
+__version__ = "0.11.2"

@@ -5,6 +5,7 @@ parameters of the elliptical utility fuction that correspond to a
 constant Frisch elasticity function with the input Frisch elasticity.
 ------------------------------------------------------------------------
 """
+
 # Import packages
 import numpy as np
 import scipy.optimize as opt
