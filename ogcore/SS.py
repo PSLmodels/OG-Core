@@ -1,6 +1,7 @@
 # imports
 from re import VERBOSE
 import numpy as np
+import time
 import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
@@ -35,6 +36,19 @@ VERBOSE = True
 ------------------------------------------------------------------------
 """
 
+def time_logger(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        pid = os.getpid()
+        print(f"SS {func.__name__} ZZZ: {pid} execution time: {end_time - start_time} seconds")
+        return result
+    return wrapper
+
+@time_logger
+def root_finder(*args, **kwargs):
+    return opt.root(*args, **kwargs)      
 
 def euler_equation_solver(guesses, *args):
     """
@@ -240,7 +254,7 @@ def inner_loop(outer_loop_vars, p, client):
             scattered_p,
         )
         lazy_values.append(
-            delayed(opt.root)(
+            delayed(root_finder)(
                 euler_equation_solver,
                 guesses * 0.9,
                 args=euler_params,
@@ -1214,7 +1228,7 @@ def run_SS(p, client=None):
                         + list(BQguess)
                         + [TRguess, factorguess]
                     )
-                sol = opt.root(
+                sol = root_finder(
                     SS_fsolve,
                     guesses,
                     args=ss_params_baseline,
@@ -1342,7 +1356,7 @@ def run_SS(p, client=None):
                     + list(BQguess)
                     + [TR_ss]
                 )
-            sol = opt.root(
+            sol = root_finder(
                 SS_fsolve,
                 guesses,
                 args=ss_params_reform,
@@ -1371,7 +1385,7 @@ def run_SS(p, client=None):
                     + list(BQguess)
                     + [TRguess]
                 )
-            sol = opt.root(
+            sol = root_finder(
                 SS_fsolve,
                 guesses,
                 args=ss_params_reform,

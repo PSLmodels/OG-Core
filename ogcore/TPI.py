@@ -1,6 +1,7 @@
 # imports
 import numpy as np
 import pickle
+import time
 import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
@@ -23,6 +24,21 @@ MINIMIZER_TOL = 1e-13
 Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
+
+
+def time_logger(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        pid = os.getpid()
+        print(f"TPI {func.__name__} ZZZ: {pid} execution time: {end_time - start_time} seconds")
+        return result
+    return wrapper
+
+@time_logger
+def root_finder(*args, **kwargs):
+    return opt.root(*args, **kwargs)      
 
 
 def get_initial_SS_values(p):
@@ -373,7 +389,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     n_mat = np.zeros((p.T + p.S, p.S))
     euler_errors = np.zeros((p.T, 2 * p.S))
 
-    solutions = opt.root(
+    solutions = root_finder(
         firstdoughnutring,
         [guesses_b[0, -1], guesses_n[0, -1]],
         args=(
@@ -426,7 +442,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             [temp_mtry[i][j] for j in range(num_params)] for i in range(s + 2)
         ]
 
-        solutions = opt.root(
+        solutions = root_finder(
             twist_doughnut,
             list(b_guesses_to_use) + list(n_guesses_to_use),
             args=(
@@ -479,7 +495,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             for s in range(p.S)
         ]
 
-        solutions = opt.root(
+        solutions = root_finder(
             twist_doughnut,
             list(b_guesses_to_use) + list(n_guesses_to_use),
             args=(
