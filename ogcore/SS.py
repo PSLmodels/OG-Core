@@ -1112,7 +1112,7 @@ def SS_fsolve(guesses, *args):
     return errors
 
 
-def run_SS(p, client=None):
+def run_SS(p, fsolve=True, client=None):
     """
     Solve for steady-state equilibrium of OG-Core.
 
@@ -1214,29 +1214,62 @@ def run_SS(p, client=None):
                         + list(BQguess)
                         + [TRguess, factorguess]
                     )
-                sol = opt.root(
-                    SS_fsolve,
-                    guesses,
-                    args=ss_params_baseline,
-                    method=p.SS_root_method,
-                    tol=p.mindist_SS,
-                )
-                if sol.success:
+                if fsolve:
+                    sol = opt.root(
+                        SS_fsolve,
+                        guesses,
+                        args=ss_params_baseline,
+                        method=p.SS_root_method,
+                        tol=p.mindist_SS,
+                    )
+                    if ENFORCE_SOLUTION_CHECKS and not sol.success:
+                        raise RuntimeError(
+                            "Steady state equilibrium not found"
+                        )
+                    r_p_ss = sol.x[0]
+                    rss = sol.x[1]
+                    wss = sol.x[2]
+                    p_m_ss = sol.x[3 : 3 + p.M]
+                    Yss = sol.x[3 + p.M]
+                    BQss = sol.x[3 + p.M + 1 : -2]
+                    TR_ss = sol.x[-2]
+                    factor_ss = sol.x[-1]
+                    Yss = (
+                        TR_ss / p.alpha_T[-1]
+                    )  # may not be right - if budget_balance
+                    # # = True, but that's ok - will be fixed in SS_solver
+                    fsolve_flag = True
+                    SS_solved = sol.success
+                else:
+                    out_dict = SS_solver(
+                        b_guess,
+                        n_guess,
+                        r_p_guess,
+                        rguess,
+                        wguess,
+                        p_m_guess,
+                        Yguess,
+                        BQguess,
+                        TRguess,
+                        factorguess,
+                        p,
+                        client,
+                    )
                     SS_solved = True
+                    b_guess = out_dict["bssmat_splus1"]
+                    n_guess = out_dict["nssmat"]
+                    r_p_ss = out_dict["r_p_ss"]
+                    rss = out_dict["rss"]
+                    wss = out_dict["wss"]
+                    p_m_ss = out_dict["p_m_ss"]
+                    Yss = out_dict["Yss"]
+                    BQss = out_dict["BQss"]
+                    TR_ss = out_dict["TR_ss"]
+                    factor_ss = out_dict["factor_ss"]
+                    fsolve_flag = True
+                if SS_solved:
                     break
-        if ENFORCE_SOLUTION_CHECKS and not sol.success:
-            raise RuntimeError("Steady state equilibrium not found")
-        r_p_ss = sol.x[0]
-        rss = sol.x[1]
-        wss = sol.x[2]
-        p_m_ss = sol.x[3 : 3 + p.M]
-        Yss = sol.x[3 + p.M]
-        BQss = sol.x[3 + p.M + 1 : -2]
-        TR_ss = sol.x[-2]
-        factor_ss = sol.x[-1]
-        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if budget_balance
-        # # = True, but that's ok - will be fixed in SS_solver
-        fsolve_flag = True
+
         output = SS_solver(
             b_guess,
             n_guess,
