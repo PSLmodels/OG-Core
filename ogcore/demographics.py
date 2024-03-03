@@ -7,6 +7,7 @@ model
 
 # Import packages
 import os
+import time
 import numpy as np
 import scipy.optimize as opt
 import pandas as pd
@@ -138,6 +139,7 @@ def get_fert(
     fert_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
     # Read UN data, 1 year at a time
     for y in range(start_year, end_year + 1):
+        time.sleep(120)
         df = get_un_data("68", country_id=country_id, start_year=y, end_year=y)
         # put in vector
         fert_rates = df.value.values
@@ -211,6 +213,7 @@ def get_mort(
     infmort_rate_vec = np.zeros(end_year + 1 - start_year)
     # Read UN data
     for y in range(start_year, end_year + 1):
+        time.sleep(120)
         df = get_un_data("80", country_id=country_id, start_year=y, end_year=y)
         # put in vector
         mort_rates_data = df.value.values
@@ -302,6 +305,7 @@ def get_pop(
     pop_2D = np.zeros((end_year + 1 - start_year + 1, E + S))
     if infer_pop:
         if pre_pop_dist is None:
+            time.sleep(120)
             pre_pop_data = get_un_data(
                 "47",
                 country_id=country_id,
@@ -316,6 +320,7 @@ def get_pop(
         else:
             pre_pop = pre_pop_dist
         if initial_pop is None:
+            time.sleep(120)
             initial_pop_data = get_un_data(
                 "47",
                 country_id=country_id,
@@ -352,6 +357,7 @@ def get_pop(
     else:
         # Read UN data
         for y in range(start_year, end_year + 2):
+            time.sleep(120)
             pop_data = get_un_data(
                 "47",
                 country_id=country_id,
@@ -369,6 +375,7 @@ def get_pop(
             pop_2D[y - start_year, :] = pop_EpS
         # get population distribution one year before initial year for
         # calibration of omega_S_preTP
+        time.sleep(120)
         pre_pop_data = get_un_data(
             "47",
             country_id=country_id,
@@ -492,11 +499,13 @@ def get_imm_rates(
     for y in range(start_year, end_year + 1):
         if pop_dist is None:
             # need to read UN population data by age for each year
+            time.sleep(120)
             df = get_un_data(
                 "47", country_id=country_id, start_year=y, end_year=y
             )
             pop_t = df[(df.age < 100) & (df.age >= 0)].value.values
             pop_t = pop_rebin(pop_t, totpers)
+            time.sleep(120)
             df = get_un_data(
                 "47", country_id=country_id, start_year=y + 1, end_year=y + 1
             )
