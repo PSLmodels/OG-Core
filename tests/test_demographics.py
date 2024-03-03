@@ -11,7 +11,7 @@ def test_get_pop_objs():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
 
     pop_dict = demographics.get_pop_objs(
         E,
@@ -34,7 +34,7 @@ def test_pop_smooth():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
     fixper = int(1.5 * S)
     pop_dict = demographics.get_pop_objs(
         E,
@@ -75,7 +75,7 @@ def test_pop_growth_smooth():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
     fixper = int(1.5 * S)
     pop_dict = demographics.get_pop_objs(
         E,
@@ -111,7 +111,7 @@ def test_imm_smooth():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
     fixper = int(1.5 * S + 2)
     pop_dict = demographics.get_pop_objs(
         E,
@@ -213,7 +213,7 @@ def test_custom_series():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
     imm_rates = np.ones((2, E + S)) * 0.01
     pop_dict = demographics.get_pop_objs(
         E,
@@ -238,7 +238,7 @@ def test_custom_series_all():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
     fert_rates = demographics.get_fert(
         E + S,
         0,
@@ -309,7 +309,7 @@ def test_custom_series_fail():
         E = 20
         S = 80
         T = int(round(4.0 * S))
-        start_year = 2019
+        start_year = 2024
         fert_rates = demographics.get_fert(
             E + S,
             0,
@@ -366,7 +366,7 @@ def test_SS_dist():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
 
     pop_dict = demographics.get_pop_objs(
         E,
@@ -392,7 +392,7 @@ def test_time_path_length():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
 
     pop_dict = demographics.get_pop_objs(
         E,
@@ -420,7 +420,7 @@ def test_infer_pop():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
     fert_rates = demographics.get_fert(
         E + S,
         0,
@@ -489,7 +489,7 @@ def test_infer_pop_nones():
     E = 20
     S = 80
     T = int(round(4.0 * S))
-    start_year = 2019
+    start_year = 2024
     fert_rates = demographics.get_fert(
         E + S,
         0,
