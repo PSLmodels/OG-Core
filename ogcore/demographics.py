@@ -9,6 +9,7 @@ model
 import os
 import time
 import numpy as np
+import json
 import scipy.optimize as opt
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -68,7 +69,9 @@ def get_un_data(
     # Check if the request was successful before processing
     if response.status_code == 200:
         # Converts call into JSON
-        j = response.json()
+        un_str = response.text
+        j = json.loads(un_str)
+        # j = response.json()
         # Convert JSON into a pandas DataFrame.
         # pd.json_normalize flattens the JSON to accommodate nested lists
         # within the JSON structure
@@ -80,7 +83,10 @@ def get_un_data(
             # call the API for the next page
             response = get_legacy_session().get(target)
             # Convert response to JSON format
-            j = response.json()
+            un_str = response.text
+            print(un_str)
+            j = json.loads(un_str)
+            # j = response.json()
             # Store the next page in a data frame
             df_temp = pd.json_normalize(j["data"])
             # Append next page to the data frame
