@@ -10,6 +10,7 @@ import os
 import time
 import numpy as np
 import json
+from io import StringIO
 import scipy.optimize as opt
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -62,40 +63,28 @@ def get_un_data(
         + str(start_year)
         + "/end/"
         + str(end_year)
+        + "?format=csv"
     )
 
     # get data from url
     response = get_legacy_session().get(target)
     # Check if the request was successful before processing
     if response.status_code == 200:
-        # Converts call into JSON
-        un_str = response.text
-        j = json.loads(un_str)
-        # j = response.json()
-        # Convert JSON into a pandas DataFrame.
-        # pd.json_normalize flattens the JSON to accommodate nested lists
-        # within the JSON structure
-        df = pd.json_normalize(j["data"])
-        # Loop until there are new pages with data
-        while j["nextPage"] is not None:
-            # Reset the target to the next page
-            target = j["nextPage"]
-            # call the API for the next page
-            response = get_legacy_session().get(target)
-            # Convert response to JSON format
-            un_str = response.text
-            print(un_str)
-            j = json.loads(un_str)
-            # j = response.json()
-            # Store the next page in a data frame
-            df_temp = pd.json_normalize(j["data"])
-            # Append next page to the data frame
-            df = pd.concat([df, df_temp])
+
+        # if want to download the data
+        # with open("downloaded_datan.csv", "wb") as f:
+        #     f.write(response.content)
+        # df = pd.read_csv("downloaded_datan.csv")
+        # else
+        # print("TARGET: ", target)
+        csvStringIO = StringIO(response.text)
+        df = pd.read_csv(csvStringIO, sep="|", header=1)
+
         # keep just what is needed from data
-        df = df[df.variant == "Median"]
-        df = df[df.sex == "Both sexes"][["timeLabel", "ageLabel", "value"]]
+        df = df[df.Variant == "Median"]
+        df = df[df.Sex == "Both sexes"][["TimeLabel", "AgeLabel", "Value"]]
         df.rename(
-            {"timeLabel": "year", "ageLabel": "age"}, axis=1, inplace=True
+            {"TimeLabel": "year", "AgeLabel": "age", "Value": "value"}, axis=1, inplace=True
         )
         df.loc[df.age == "100+", "age"] = 100
         df.age = df.age.astype(int)
@@ -145,7 +134,6 @@ def get_fert(
     fert_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
     # Read UN data, 1 year at a time
     for y in range(start_year, end_year + 1):
-        time.sleep(120)
         df = get_un_data("68", country_id=country_id, start_year=y, end_year=y)
         # put in vector
         fert_rates = df.value.values
@@ -219,7 +207,6 @@ def get_mort(
     infmort_rate_vec = np.zeros(end_year + 1 - start_year)
     # Read UN data
     for y in range(start_year, end_year + 1):
-        time.sleep(120)
         df = get_un_data("80", country_id=country_id, start_year=y, end_year=y)
         # put in vector
         mort_rates_data = df.value.values
@@ -311,7 +298,6 @@ def get_pop(
     pop_2D = np.zeros((end_year + 1 - start_year + 1, E + S))
     if infer_pop:
         if pre_pop_dist is None:
-            time.sleep(120)
             pre_pop_data = get_un_data(
                 "47",
                 country_id=country_id,
@@ -326,7 +312,6 @@ def get_pop(
         else:
             pre_pop = pre_pop_dist
         if initial_pop is None:
-            time.sleep(120)
             initial_pop_data = get_un_data(
                 "47",
                 country_id=country_id,
@@ -363,7 +348,6 @@ def get_pop(
     else:
         # Read UN data
         for y in range(start_year, end_year + 2):
-            time.sleep(120)
             pop_data = get_un_data(
                 "47",
                 country_id=country_id,
@@ -381,7 +365,6 @@ def get_pop(
             pop_2D[y - start_year, :] = pop_EpS
         # get population distribution one year before initial year for
         # calibration of omega_S_preTP
-        time.sleep(120)
         pre_pop_data = get_un_data(
             "47",
             country_id=country_id,
@@ -505,13 +488,11 @@ def get_imm_rates(
     for y in range(start_year, end_year + 1):
         if pop_dist is None:
             # need to read UN population data by age for each year
-            time.sleep(120)
             df = get_un_data(
                 "47", country_id=country_id, start_year=y, end_year=y
             )
             pop_t = df[(df.age < 100) & (df.age >= 0)].value.values
             pop_t = pop_rebin(pop_t, totpers)
-            time.sleep(120)
             df = get_un_data(
                 "47", country_id=country_id, start_year=y + 1, end_year=y + 1
             )
