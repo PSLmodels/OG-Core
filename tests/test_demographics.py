@@ -164,8 +164,9 @@ def test_get_fert():
     Test of function to get fertility rates from data
     """
     S = 100
-    fert_rates = demographics.get_fert(S, 0, 99, graph=False)
+    fert_rates, fig = demographics.get_fert(S, 0, 99, graph=True)
     assert fert_rates.shape[1] == S
+    assert fig
 
 
 def test_get_mort():
@@ -173,8 +174,9 @@ def test_get_mort():
     Test of function to get mortality rates from data
     """
     S = 100
-    mort_rates, infmort_rate = demographics.get_mort(S, 0, 99, graph=False)
+    mort_rates, infmort_rate, fig = demographics.get_mort(S, 0, 99, graph=True)
     assert mort_rates.shape[1] == S
+    assert fig
 
 
 def test_infant_mort():
@@ -202,8 +204,9 @@ def test_get_imm_rates():
     Test of function to solve for immigration rates from population data
     """
     S = 100
-    imm_rates = demographics.get_imm_rates(S, 0, 99)
+    imm_rates, fig = demographics.get_imm_rates(S, 0, 99, graph=True)
     assert imm_rates.shape[1] == S
+    assert fig
 
 
 # Test functionality when passing in a custom series of fertility rates
@@ -558,16 +561,29 @@ def test_data_download(tmpdir):
         99,
         initial_data_year=start_year,
         final_data_year=start_year + 1,
-        download_path=tmpdir
+        download_path=tmpdir,
     )
 
     # No read in each file and call get_pop_objs again with the data
-    fert_rates = np.loadtxt(os.path.join(tmpdir, "fert_rates.csv"), delimiter=",")
-    mort_rates = np.loadtxt(os.path.join(tmpdir, "mort_rates.csv"), delimiter=",")
-    infmort_rates = np.loadtxt(os.path.join(tmpdir, "infmort_rates.csv"), delimiter=",")
-    imm_rates = np.loadtxt(os.path.join(tmpdir, "immigration_rates.csv"), delimiter=",")
-    pop_dist = np.loadtxt(os.path.join(tmpdir, "population_distribution.csv"), delimiter=",")
-    pre_pop_dist = np.loadtxt(os.path.join(tmpdir, "pre_period_population_distribution.csv"), delimiter=",")
+    fert_rates = np.loadtxt(
+        os.path.join(tmpdir, "fert_rates.csv"), delimiter=","
+    )
+    mort_rates = np.loadtxt(
+        os.path.join(tmpdir, "mort_rates.csv"), delimiter=","
+    )
+    infmort_rates = np.loadtxt(
+        os.path.join(tmpdir, "infmort_rates.csv"), delimiter=","
+    )
+    imm_rates = np.loadtxt(
+        os.path.join(tmpdir, "immigration_rates.csv"), delimiter=","
+    )
+    pop_dist = np.loadtxt(
+        os.path.join(tmpdir, "population_distribution.csv"), delimiter=","
+    )
+    pre_pop_dist = np.loadtxt(
+        os.path.join(tmpdir, "pre_period_population_distribution.csv"),
+        delimiter=",",
+    )
     pop_dict2 = demographics.get_pop_objs(
         E,
         S,
