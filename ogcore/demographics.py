@@ -84,7 +84,9 @@ def get_un_data(
         df = df[df.Variant == "Median"]
         df = df[df.Sex == "Both sexes"][["TimeLabel", "AgeLabel", "Value"]]
         df.rename(
-            {"TimeLabel": "year", "AgeLabel": "age", "Value": "value"}, axis=1, inplace=True
+            {"TimeLabel": "year", "AgeLabel": "age", "Value": "value"},
+            axis=1,
+            inplace=True,
         )
         df.loc[df.age == "100+", "age"] = 100
         df.age = df.age.astype(int)
@@ -153,7 +155,11 @@ def get_fert(
         fert_rates_2D[y - start_year, :] = fert_rates
 
     if download_path:
-        np.savetxt(os.path.join(download_path, "fert_rates.csv"), fert_rates_2D, delimiter=",")
+        np.savetxt(
+            os.path.join(download_path, "fert_rates.csv"),
+            fert_rates_2D,
+            delimiter=",",
+        )
 
     # Create plots if needed
     if graph:
@@ -230,8 +236,16 @@ def get_mort(
         infmort_rate_vec[y - start_year] = infmort_rate
 
     if download_path:
-        np.savetxt(os.path.join(download_path, "mort_rates.csv"), mort_rates_2D, delimiter=",")
-        np.savetxt(os.path.join(download_path, "infmort_rates.csv"), infmort_rate_vec, delimiter=",")
+        np.savetxt(
+            os.path.join(download_path, "mort_rates.csv"),
+            mort_rates_2D,
+            delimiter=",",
+        )
+        np.savetxt(
+            os.path.join(download_path, "infmort_rates.csv"),
+            infmort_rate_vec,
+            delimiter=",",
+        )
 
     # Create plots if needed
     if graph:
@@ -390,8 +404,18 @@ def get_pop(
         pre_pop = pre_pop_sample.value.values
 
     if download_path:
-        np.savetxt(os.path.join(download_path, "population_distribution.csv"), pop_2D, delimiter=",")
-        np.savetxt(os.path.join(download_path, "pre_period_population_distribution.csv"), pre_pop, delimiter=",")
+        np.savetxt(
+            os.path.join(download_path, "population_distribution.csv"),
+            pop_2D,
+            delimiter=",",
+        )
+        np.savetxt(
+            os.path.join(
+                download_path, "pre_period_population_distribution.csv"
+            ),
+            pre_pop,
+            delimiter=",",
+        )
 
     return pop_2D, pre_pop
 
@@ -538,7 +562,11 @@ def get_imm_rates(
         imm_rates_2D[y - start_year, :] = imm_rates
 
     if download_path:
-        np.savetxt(os.path.join(download_path, "immigration_rates.csv"), imm_rates_2D, delimiter=",")
+        np.savetxt(
+            os.path.join(download_path, "immigration_rates.csv"),
+            imm_rates_2D,
+            delimiter=",",
+        )
 
     # Create plots if needed
     if graph:
