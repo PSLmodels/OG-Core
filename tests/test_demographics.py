@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import os
 from ogcore import demographics
 
 
@@ -538,4 +539,54 @@ def test_infer_pop_nones():
     assert pop_dict is not None
 
 
-# Can I test if population is consistent from preTP to initial pop?
+# Test data download option
+def test_data_download(tmpdir):
+    """
+    Test of the data download function passing through get_pop_objs
+    to all other functions that use it
+    """
+    E = 20
+    S = 80
+    T = int(round(4.0 * S))
+    start_year = 2024
+
+    pop_dict = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year,
+        final_data_year=start_year + 1,
+        download_path=tmpdir
+    )
+
+    # No read in each file and call get_pop_objs again with the data
+    fert_rates = np.loadtxt(os.path.join(tmpdir, "fert_rates.csv"), delimiter=",")
+    mort_rates = np.loadtxt(os.path.join(tmpdir, "mort_rates.csv"), delimiter=",")
+    infmort_rates = np.loadtxt(os.path.join(tmpdir, "infmort_rates.csv"), delimiter=",")
+    imm_rates = np.loadtxt(os.path.join(tmpdir, "immigration_rates.csv"), delimiter=",")
+    pop_dist = np.loadtxt(os.path.join(tmpdir, "population_distribution.csv"), delimiter=",")
+    pre_pop_dist = np.loadtxt(os.path.join(tmpdir, "pre_period_population_distribution.csv"), delimiter=",")
+    pop_dict2 = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        pop_dist=pop_dist[0, :].reshape(1, E + S),
+        pre_pop_dist=pre_pop_dist,
+        initial_data_year=start_year,
+        final_data_year=start_year + 1,
+        GraphDiag=False,
+    )
+
+    # Assert that the two pop_dicts are the same
+    for key in pop_dict:
+        print(key)
+        assert np.allclose(pop_dict[key], pop_dict2[key])
