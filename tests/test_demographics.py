@@ -4,6 +4,55 @@ import os
 from ogcore import demographics
 
 
+# Read in some test population data to use in select tests below
+# Tests that ping the UN data portal are marked with the "local" mark
+data_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "test_io_data"
+)
+fert_rates = np.loadtxt(
+    os.path.join(data_dir, "fert_rates.csv"), delimiter=","
+)
+mort_rates = np.loadtxt(
+    os.path.join(data_dir, "mort_rates.csv"), delimiter=","
+)
+infmort_rates = np.loadtxt(
+    os.path.join(data_dir, "infmort_rates.csv"), delimiter=","
+)
+imm_rates = np.loadtxt(
+    os.path.join(data_dir, "immigration_rates.csv"), delimiter=","
+)
+pop_dist = np.loadtxt(
+    os.path.join(data_dir, "population_distribution.csv"), delimiter=","
+)
+pre_pop_dist = np.loadtxt(
+    os.path.join(data_dir, "pre_period_population_distribution.csv"),
+    delimiter=",",
+)
+
+
+@pytest.mark.local
+def test_get_pop_objs_read_UN_data():
+    """
+    Test of the that omega_SS and the last period of omega_path_S are
+    close to each other.
+    """
+    E = 20
+    S = 80
+    T = int(round(4.0 * S))
+    start_year = 2024
+
+    pop_dict = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
+        GraphDiag=False,
+    )
+
+
 def test_get_pop_objs():
     """
     Test of the that omega_SS and the last period of omega_path_S are
@@ -20,6 +69,13 @@ def test_get_pop_objs():
         T,
         0,
         99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        pop_dist=pop_dist[0, :].reshape(1, E + S),
+        pre_pop_dist=pre_pop_dist,
         initial_data_year=start_year - 1,
         final_data_year=start_year,
         GraphDiag=False,
@@ -43,6 +99,13 @@ def test_pop_smooth():
         T,
         0,
         99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        pop_dist=pop_dist[0, :].reshape(1, E + S),
+        pre_pop_dist=pre_pop_dist,
         initial_data_year=start_year - 1,
         final_data_year=start_year,
         country_id="840",
@@ -84,6 +147,13 @@ def test_pop_growth_smooth():
         T,
         0,
         99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        pop_dist=pop_dist[0, :].reshape(1, E + S),
+        pre_pop_dist=pre_pop_dist,
         initial_data_year=start_year - 1,
         final_data_year=start_year,
         country_id="840",
@@ -105,6 +175,7 @@ def test_pop_growth_smooth():
     )
 
 
+@pytest.mark.local
 def test_imm_smooth():
     """
     Test that immigration rates evolve smoothly.
@@ -159,6 +230,7 @@ def test_imm_smooth():
     )
 
 
+@pytest.mark.local
 def test_get_fert():
     """
     Test of function to get fertility rates from data
@@ -169,6 +241,7 @@ def test_get_fert():
     assert fig
 
 
+@pytest.mark.local
 def test_get_mort():
     """
     Test of function to get mortality rates from data
@@ -179,6 +252,7 @@ def test_get_mort():
     assert fig
 
 
+@pytest.mark.local
 def test_infant_mort():
     """
     Test of function to get mortality rates from data
@@ -204,12 +278,21 @@ def test_get_imm_rates():
     Test of function to solve for immigration rates from population data
     """
     S = 100
-    imm_rates, fig = demographics.get_imm_rates(S, 0, 99, graph=True)
+    imm_rates, fig = demographics.get_imm_rates(
+        S,
+        0,
+        99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        pop_dist=pop_dist,
+        graph=True,
+    )
     assert imm_rates.shape[1] == S
     assert fig
 
 
-# Test functionality when passing in a custom series of fertility rates
+# Test functionality when passing in a custom series of immigration rates
 def test_custom_series():
     """
     Test of the get pop objects function when passing in a custom series
@@ -232,73 +315,6 @@ def test_custom_series():
         infer_pop=True,
     )
     assert np.allclose(pop_dict["imm_rates"][0, :], imm_rates[0, E:])
-
-
-def test_custom_series_all():
-    """
-    Test of the get pop objects function when passing in custom series
-    for fertility, mortality, immigration, and population
-    """
-    E = 20
-    S = 80
-    T = int(round(4.0 * S))
-    start_year = 2024
-    fert_rates = demographics.get_fert(
-        E + S,
-        0,
-        99,
-        start_year=start_year,
-        end_year=start_year + 1,
-        graph=False,
-    )
-    mort_rates, infmort_rates = demographics.get_mort(
-        E + S,
-        0,
-        99,
-        start_year=start_year,
-        end_year=start_year + 1,
-        graph=False,
-    )
-    imm_rates = demographics.get_imm_rates(
-        E + S,
-        0,
-        99,
-        fert_rates=fert_rates,
-        mort_rates=mort_rates,
-        infmort_rates=infmort_rates,
-        start_year=start_year,
-        end_year=start_year + 1,
-        graph=False,
-    )
-    pop_dist = np.zeros((3, E + S))
-    for t in range(pop_dist.shape[0]):
-        df = demographics.get_un_data(
-            "47", start_year=start_year + t, end_year=start_year + t
-        )
-        pop = df[(df.age < 100) & (df.age >= 0)].value.values
-        pop_dist[t, :] = demographics.pop_rebin(pop, E + S)
-    df = demographics.get_un_data(
-        "47", start_year=start_year - 1, end_year=start_year - 1
-    )
-    pop = df[(df.age < 100) & (df.age >= 0)].value.values
-    pre_pop_dist = demographics.pop_rebin(pop, E + S)
-    pop_dict = demographics.get_pop_objs(
-        E,
-        S,
-        T,
-        0,
-        99,
-        fert_rates=fert_rates,
-        mort_rates=mort_rates,
-        infmort_rates=infmort_rates,
-        imm_rates=imm_rates,
-        pop_dist=pop_dist,
-        pre_pop_dist=pre_pop_dist,
-        initial_data_year=start_year,
-        final_data_year=start_year + 1,
-        GraphDiag=False,
-    )
-    assert pop_dict is not None
 
 
 def test_custom_series_fail():
@@ -378,6 +394,13 @@ def test_SS_dist():
         T,
         0,
         99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        pop_dist=pop_dist[0, :].reshape(1, E + S),
+        pre_pop_dist=pre_pop_dist,
         initial_data_year=start_year - 1,
         final_data_year=start_year,
         GraphDiag=False,
@@ -404,6 +427,13 @@ def test_time_path_length():
         T,
         0,
         99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        pop_dist=pop_dist[0, :].reshape(1, E + S),
+        pre_pop_dist=pre_pop_dist,
         initial_data_year=start_year - 1,
         final_data_year=start_year,
         GraphDiag=False,
@@ -415,76 +445,8 @@ def test_time_path_length():
     assert pop_dict["rho"].shape[0] == T + S
 
 
-# test of get pop when infer population
-def test_infer_pop():
-    """
-    Test of the get pop objects function when passing in custom series
-    for fertility, mortality, immigration, and population
-    """
-    E = 20
-    S = 80
-    T = int(round(4.0 * S))
-    start_year = 2024
-    fert_rates = demographics.get_fert(
-        E + S,
-        0,
-        99,
-        start_year=start_year,
-        end_year=start_year + 1,
-        graph=False,
-    )
-    mort_rates, infmort_rates = demographics.get_mort(
-        E + S,
-        0,
-        99,
-        start_year=start_year,
-        end_year=start_year + 1,
-        graph=False,
-    )
-    imm_rates = demographics.get_imm_rates(
-        E + S,
-        0,
-        99,
-        fert_rates=fert_rates,
-        mort_rates=mort_rates,
-        infmort_rates=infmort_rates,
-        start_year=start_year,
-        end_year=start_year + 1,
-        graph=False,
-    )
-    pop_dist = np.zeros((3, E + S))
-    for t in range(pop_dist.shape[0]):
-        df = demographics.get_un_data(
-            "47", start_year=start_year + t, end_year=start_year + t
-        )
-        pop = df[(df.age < 100) & (df.age >= 0)].value.values
-        pop_dist[t, :] = demographics.pop_rebin(pop, E + S)
-    df = demographics.get_un_data(
-        "47", start_year=start_year - 1, end_year=start_year - 1
-    )
-    pop = df[(df.age < 100) & (df.age >= 0)].value.values
-    pre_pop_dist = demographics.pop_rebin(pop, E + S)
-    pop_dict = demographics.get_pop_objs(
-        E,
-        S,
-        T,
-        0,
-        99,
-        fert_rates=fert_rates,
-        mort_rates=mort_rates,
-        infmort_rates=infmort_rates,
-        imm_rates=imm_rates,
-        infer_pop=True,
-        pop_dist=pop_dist[0, :].reshape(1, E + S),
-        pre_pop_dist=pre_pop_dist,
-        initial_data_year=start_year,
-        final_data_year=start_year + 1,
-        GraphDiag=False,
-    )
-    assert pop_dict is not None
-
-
 # test of get pop when infer population, but don't pass initial pop or pre_pop
+@pytest.mark.local
 def test_infer_pop_nones():
     """
     Test of the get pop objects function when passing in custom series
@@ -543,6 +505,7 @@ def test_infer_pop_nones():
 
 
 # Test data download option
+@pytest.mark.local
 def test_data_download(tmpdir):
     """
     Test of the data download function passing through get_pop_objs
