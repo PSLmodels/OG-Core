@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Utilities Functions &#8212; OG-Core</title>
   
@@ -29,39 +28,35 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
-const thebe_selector = ".thebe,.cell"
-const thebe_selector_input = "pre"
-const thebe_selector_output = ".output, .cell_output"
-</script>
-    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/utils';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -160,7 +155,18 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -414,7 +420,34 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore-utils">ogcore.utils</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore-utils">ogcore.utils</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality"><code class="docutils literal notranslate"><span class="pre">Inequality</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.gini"><code class="docutils literal notranslate"><span class="pre">Inequality.gini()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.pct"><code class="docutils literal notranslate"><span class="pre">Inequality.pct()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.ratio_pct1_pct2"><code class="docutils literal notranslate"><span class="pre">Inequality.ratio_pct1_pct2()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.var_of_logs"><code class="docutils literal notranslate"><span class="pre">Inequality.var_of_logs()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.avg_by_bin"><code class="docutils literal notranslate"><span class="pre">avg_by_bin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_array"><code class="docutils literal notranslate"><span class="pre">comp_array()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_scalar"><code class="docutils literal notranslate"><span class="pre">comp_scalar()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.convex_combo"><code class="docutils literal notranslate"><span class="pre">convex_combo()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.dict_compare"><code class="docutils literal notranslate"><span class="pre">dict_compare()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.extrapolate_arrays"><code class="docutils literal notranslate"><span class="pre">extrapolate_arrays()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.fetch_files_from_web"><code class="docutils literal notranslate"><span class="pre">fetch_files_from_web()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.get_initial_path"><code class="docutils literal notranslate"><span class="pre">get_initial_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.mkdirs"><code class="docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.not_connected"><code class="docutils literal notranslate"><span class="pre">not_connected()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_diff_func"><code class="docutils literal notranslate"><span class="pre">pct_diff_func()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pickle_file_compare"><code class="docutils literal notranslate"><span class="pre">pickle_file_compare()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.print_progress"><code class="docutils literal notranslate"><span class="pre">print_progress()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.rate_conversion"><code class="docutils literal notranslate"><span class="pre">rate_conversion()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.read_file"><code class="docutils literal notranslate"><span class="pre">read_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.safe_read_pickle"><code class="docutils literal notranslate"><span class="pre">safe_read_pickle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.save_return_table"><code class="docutils literal notranslate"><span class="pre">save_return_table()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.to_timepath_shape"><code class="docutils literal notranslate"><span class="pre">to_timepath_shape()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -427,17 +460,17 @@ document.write(`
                 <article class="bd-article">
                   
   <section id="utilities-functions">
-<span id="utils"></span><h1>Utilities Functions<a class="headerlink" href="#utilities-functions" title="Permalink to this heading">#</a></h1>
+<span id="utils"></span><h1>Utilities Functions<a class="headerlink" href="#utilities-functions" title="Link to this heading">#</a></h1>
 <p><strong>utils.py classes, methods, and modules</strong></p>
 <section id="ogcore-utils">
-<h2>ogcore.utils<a class="headerlink" href="#ogcore-utils" title="Permalink to this heading">#</a></h2>
+<h2>ogcore.utils<a class="headerlink" href="#ogcore-utils" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="ogcore.utils.Inequality">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">Inequality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ability_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">Inequality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ability_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality" title="Link to this definition">#</a></dt>
 <dd><p>A class with methods to compute different measures of inequality.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ogcore.utils.Inequality.gini">
-<span class="sig-name descname"><span class="pre">gini</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'overall'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality.gini"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality.gini" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">gini</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'overall'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality.gini"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality.gini" title="Link to this definition">#</a></dt>
 <dd><p>Compute the Gini coefficient</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -454,7 +487,7 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ogcore.utils.Inequality.pct">
-<span class="sig-name descname"><span class="pre">pct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pct</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality.pct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality.pct" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">pct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pct</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality.pct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality.pct" title="Link to this definition">#</a></dt>
 <dd><p>Returns value at given percentile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -472,7 +505,7 @@ in (0, 1).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ogcore.utils.Inequality.ratio_pct1_pct2">
-<span class="sig-name descname"><span class="pre">ratio_pct1_pct2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pct1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality.ratio_pct1_pct2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality.ratio_pct1_pct2" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ratio_pct1_pct2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pct1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality.ratio_pct1_pct2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality.ratio_pct1_pct2" title="Link to this definition">#</a></dt>
 <dd><p>Compute the pct1/pct2 percentile ratio</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -496,7 +529,7 @@ in (0, 1)</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ogcore.utils.Inequality.var_of_logs">
-<span class="sig-name descname"><span class="pre">var_of_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality.var_of_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality.var_of_logs" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">var_of_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#Inequality.var_of_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.Inequality.var_of_logs" title="Link to this definition">#</a></dt>
 <dd><p>Compute the variance of logs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -513,9 +546,9 @@ in (0, 1)</p></li>
 
 </dd></dl>
 
-<span class="target" id="module-ogcore.utils"></span><dl class="py function">
+<dl class="py function" id="module-ogcore.utils">
 <dt class="sig sig-object py" id="ogcore.utils.avg_by_bin">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">avg_by_bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eql_pctl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#avg_by_bin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.avg_by_bin" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">avg_by_bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eql_pctl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#avg_by_bin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.avg_by_bin" title="Link to this definition">#</a></dt>
 <dd><p>For an x series and y series (vectors), this function computes vectors of
 weighted average values in specified bins.</p>
 <dl class="field-list simple">
@@ -541,7 +574,7 @@ weights_binned (array_like, np.array): total weights in bins</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.comp_array">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">comp_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unequal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#comp_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.comp_array" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">comp_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unequal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#comp_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.comp_array" title="Link to this definition">#</a></dt>
 <dd><p>Compare two arrays in the L inifinity norm. Return True if | a - b | &lt; tol,
 False otherwise. If not equal, add items to the unequal list name: the name
 of the value being compared</p>
@@ -568,7 +601,7 @@ of the value being compared</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.comp_scalar">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">comp_scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unequal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#comp_scalar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.comp_scalar" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">comp_scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unequal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#comp_scalar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.comp_scalar" title="Link to this definition">#</a></dt>
 <dd><p>Compare two scalars in the L inifinity norm. Return True if
 abs(a - b) &lt; tol, False otherwise. If not equal, add items to the unequal
 list.</p>
@@ -595,7 +628,7 @@ list.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.convex_combo">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">convex_combo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#convex_combo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.convex_combo" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">convex_combo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#convex_combo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.convex_combo" title="Link to this definition">#</a></dt>
 <dd><p>Takes the convex combination of two variables, where nu is in [0,1].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -617,7 +650,7 @@ var1 and var2</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.dict_compare">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">dict_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#dict_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.dict_compare" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">dict_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#dict_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.dict_compare" title="Link to this definition">#</a></dt>
 <dd><p>Compare two dictionaries. The values of each dict are either
 numpy arrays or else types that are comparable with the <cite>==</cite> operator.
 For arrays, they are considered the same if <cite>|x - y| &lt; tol</cite> in
@@ -647,7 +680,7 @@ the L_inf norm. For scalars, they are considered the same if
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.extrapolate_arrays">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">extrapolate_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parameter</span> <span class="pre">Name'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#extrapolate_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.extrapolate_arrays" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">extrapolate_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parameter</span> <span class="pre">Name'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#extrapolate_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.extrapolate_arrays" title="Link to this definition">#</a></dt>
 <dd><p>Extrapolates input values to fit model dimensions. Using this allows
 users to input smaller dimensional arrays and have the model infer
 that they want these extrapolated.</p>
@@ -674,12 +707,12 @@ that the first dimension is always T+S</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.fetch_files_from_web">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">fetch_files_from_web</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#fetch_files_from_web"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.fetch_files_from_web" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">fetch_files_from_web</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#fetch_files_from_web"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.fetch_files_from_web" title="Link to this definition">#</a></dt>
 <dd><p>Fetches zip files from respective web addresses and saves them as
 temporary files. Prints progress bar as it downloads the files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_urls</strong> (<em>list of strings</em>) – list of URLs of respective data zip
+<dd class="field-odd"><p><strong>file_urls</strong> (<em>list</em><em> of </em><em>strings</em>) – list of URLs of respective data zip
 files</p>
 </dd>
 </dl>
@@ -712,7 +745,7 @@ zipped_file = ZipFile object, opened zipfile</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.get_initial_path">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">get_initial_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#get_initial_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.get_initial_path" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">get_initial_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#get_initial_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.get_initial_path" title="Link to this definition">#</a></dt>
 <dd><p>This function generates a path from point x1 to point xT such that
 that the path x is a linear or quadratic function of time t.</p>
 <blockquote>
@@ -751,7 +784,7 @@ or “quadratic”</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.mkdirs">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">mkdirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#mkdirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.mkdirs" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">mkdirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#mkdirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.mkdirs" title="Link to this definition">#</a></dt>
 <dd><p>Makes directories to save output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -765,7 +798,7 @@ or “quadratic”</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.not_connected">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">not_connected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://www.google.com/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#not_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.not_connected" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">not_connected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://www.google.com/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#not_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.not_connected" title="Link to this definition">#</a></dt>
 <dd><p>Checks for internet connection status of machine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -791,7 +824,7 @@ or “quadratic”</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.pct_diff_func">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">pct_diff_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simul</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#pct_diff_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.pct_diff_func" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">pct_diff_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simul</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#pct_diff_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.pct_diff_func" title="Link to this definition">#</a></dt>
 <dd><p>Used to calculate the absolute percent difference between data
 moments and model moments.</p>
 <dl class="field-list simple">
@@ -819,7 +852,7 @@ moments and model moments.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.pickle_file_compare">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">pickle_file_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#pickle_file_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.pickle_file_compare" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">pickle_file_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#pickle_file_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.pickle_file_compare" title="Link to this definition">#</a></dt>
 <dd><p>Read two pickle files and unpickle each. We assume that each
 resulting object is a dictionary. The values of each dict are either
 numpy arrays or else types that are comparable with the == operator.</p>
@@ -844,7 +877,7 @@ numpy arrays or else types that are comparable with the == operator.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.print_progress">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">print_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Progress:'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Complete'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#print_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.print_progress" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">print_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Progress:'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Complete'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#print_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.print_progress" title="Link to this definition">#</a></dt>
 <dd><p>Prints a progress bar to the terminal when completing small tasks
 of a larger job.</p>
 <dl class="field-list simple">
@@ -874,7 +907,7 @@ bar (string): progress bar</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.rate_conversion">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">rate_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annual_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#rate_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.rate_conversion" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">rate_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annual_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#rate_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.rate_conversion" title="Link to this definition">#</a></dt>
 <dd><p>This function converts annual rates to model period ratesself.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -896,7 +929,7 @@ bar (string): progress bar</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.read_file">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">read_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#read_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.read_file" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">read_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#read_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.read_file" title="Link to this definition">#</a></dt>
 <dd><p>Read the contents of ‘path’. If it does not exist, assume the file
 is installed in a .egg file, and adjust accordingly.</p>
 <dl class="field-list simple">
@@ -914,7 +947,7 @@ is installed in a .egg file, and adjust accordingly.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.safe_read_pickle">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">safe_read_pickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#safe_read_pickle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.safe_read_pickle" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">safe_read_pickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#safe_read_pickle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.safe_read_pickle" title="Link to this definition">#</a></dt>
 <dd><p>This function reads a pickle from Python 2 into Python 2 or Python 3</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -931,7 +964,7 @@ is installed in a .egg file, and adjust accordingly.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.save_return_table">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">save_return_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#save_return_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.save_return_table" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">save_return_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#save_return_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.save_return_table" title="Link to this definition">#</a></dt>
 <dd><p>Function to save or return a table of data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -955,7 +988,7 @@ Defaults to 0.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.to_timepath_shape">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">to_timepath_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">some_array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#to_timepath_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.to_timepath_shape" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">to_timepath_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">some_array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#to_timepath_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.to_timepath_shape" title="Link to this definition">#</a></dt>
 <dd><p>This function takes an vector of length T and tiles it to fill a
 Tx1x1 array for time path computations.</p>
 <dl class="field-list simple">
@@ -1038,7 +1071,34 @@ Tx1x1 array for time path computations.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore-utils">ogcore.utils</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore-utils">ogcore.utils</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality"><code class="docutils literal notranslate"><span class="pre">Inequality</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.gini"><code class="docutils literal notranslate"><span class="pre">Inequality.gini()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.pct"><code class="docutils literal notranslate"><span class="pre">Inequality.pct()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.ratio_pct1_pct2"><code class="docutils literal notranslate"><span class="pre">Inequality.ratio_pct1_pct2()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.var_of_logs"><code class="docutils literal notranslate"><span class="pre">Inequality.var_of_logs()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.avg_by_bin"><code class="docutils literal notranslate"><span class="pre">avg_by_bin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_array"><code class="docutils literal notranslate"><span class="pre">comp_array()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_scalar"><code class="docutils literal notranslate"><span class="pre">comp_scalar()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.convex_combo"><code class="docutils literal notranslate"><span class="pre">convex_combo()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.dict_compare"><code class="docutils literal notranslate"><span class="pre">dict_compare()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.extrapolate_arrays"><code class="docutils literal notranslate"><span class="pre">extrapolate_arrays()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.fetch_files_from_web"><code class="docutils literal notranslate"><span class="pre">fetch_files_from_web()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.get_initial_path"><code class="docutils literal notranslate"><span class="pre">get_initial_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.mkdirs"><code class="docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.not_connected"><code class="docutils literal notranslate"><span class="pre">not_connected()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_diff_func"><code class="docutils literal notranslate"><span class="pre">pct_diff_func()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pickle_file_compare"><code class="docutils literal notranslate"><span class="pre">pickle_file_compare()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.print_progress"><code class="docutils literal notranslate"><span class="pre">print_progress()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.rate_conversion"><code class="docutils literal notranslate"><span class="pre">rate_conversion()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.read_file"><code class="docutils literal notranslate"><span class="pre">read_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.safe_read_pickle"><code class="docutils literal notranslate"><span class="pre">safe_read_pickle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.save_return_table"><code class="docutils literal notranslate"><span class="pre">save_return_table()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.to_timepath_shape"><code class="docutils literal notranslate"><span class="pre">to_timepath_shape()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
