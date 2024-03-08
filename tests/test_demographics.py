@@ -293,6 +293,7 @@ def test_get_imm_rates():
 
 
 # Test functionality when passing in a custom series of immigration rates
+@pytest.mark.local
 def test_custom_series():
     """
     Test of the get pop objects function when passing in a custom series
