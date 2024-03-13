@@ -536,10 +536,23 @@ def get_cost_of_capital(r, K, Kp1, Km1, p, method, m=-1):
     dPsidKp1_t = adj_cost_dKp1(Km1, K, p, method)
     dPsidK_t = adj_cost_dK(K, Kp1, p, method)
     cost_of_capital = (
-        (1 + r) * (((1-tau_b_m1) * dPsidKp1_t) + 1 -
-        tau_inv_m1 - tau_b_m1 * delta_tau_m1 * (1 - tau_inv_m1)) -1 + p.delta - tau_b * delta_tau * ((1 - tau_inv_m1) * (1 - delta_tau_m1) - (1 - p.delta) * (1 - tau_inv)) + tau_inv* (1 - p.delta)) / (
-        1 - tau_b
-    ) + dPsidK_t
+        (1 + r)
+        * (
+            ((1 - tau_b_m1) * dPsidKp1_t)
+            + 1
+            - tau_inv_m1
+            - tau_b_m1 * delta_tau_m1 * (1 - tau_inv_m1)
+        )
+        - 1
+        + p.delta
+        - tau_b
+        * delta_tau
+        * (
+            (1 - tau_inv_m1) * (1 - delta_tau_m1)
+            - (1 - p.delta) * (1 - tau_inv)
+        )
+        + tau_inv * (1 - p.delta)
+    ) / (1 - tau_b) + dPsidK_t
 
     return cost_of_capital
 
@@ -670,7 +683,7 @@ def get_KY_ratio(r, p_m, p, method, m=-1):
 
 def solve_L(Y, K, K_g, p, method, m=-1):
     r"""
-    Solve for labor supply from the production function
+    Solve for labor demand from the production function
 
     .. math::
          \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}
@@ -692,7 +705,7 @@ def solve_L(Y, K, K_g, p, method, m=-1):
             compute L for all industries)
 
     Returns:
-        L (array_like): labor demand each industry
+        L (array_like): labor demand for each industry
 
     """
     gamma = p.gamma[m]
@@ -775,7 +788,9 @@ def adj_cost_dK(K, Kp1, p, method):
         ac_method = "total_tpi"
     Inv = aggr.get_I(None, Kp1, K, p, ac_method)
 
-    dPsi = ((-1 * p.psi / 2) * (Kp1 / Inv ** 2) * (Inv / K - p.mu) * (Inv / K + p.mu))
+    dPsi = (
+        (-1 * p.psi / 2) * (Kp1 / Inv**2) * (Inv / K - p.mu) * (Inv / K + p.mu)
+    )
 
     return dPsi
 
@@ -803,7 +818,7 @@ def adj_cost_dKp1(K, Kp1, p, method):
         ac_method = "total_tpi"
     Inv = aggr.get_I(None, Kp1, K, p, ac_method)
 
-    dPsi = ((p.psi / 2) * ((Inv / K - p.mu) / Inv) * (1 - p.mu * (K / Inv)))
+    dPsi = (p.psi / 2) * ((Inv / K - p.mu) / Inv) * (1 - p.mu * (K / Inv))
 
     return dPsi
 
@@ -856,6 +871,102 @@ def profits(r, w, K, L, Y, K_tau, p_m, p, method, m=-1):
         ac_method = "total_tpi"
     Psi = adj_cost(K, K, p, method)
     Inv = aggr.get_I(None, Kp1, K, p, ac_method)
-    profits = (1 - tau_b) * (p_m * Y - w * L - Psi) - Inv + tau_b * delta_tau * K_tau + tau_inv * Inv
+    profits = (
+        (1 - tau_b) * (p_m * Y - w * L - Psi)
+        - Inv
+        + tau_b * delta_tau * K_tau
+        + tau_inv * Inv
+    )
 
     return profits
+
+
+def get_YL_from_w(w, p_m, p, method, m=-1):
+    r"""
+    Solve for the output-labor ratio given the wage rate w and output
+    prices p_m.
+
+    .. math::
+        \frac{K}{L} = Z_{m,t}^{\varepsilon_m - 1}\left(\frac{1-\gamma_m-\gamma+{g,m}}{p_{m,t}w_{t}}\right)
+
+    Args:
+        w (array_like): the wage rate
+        p_m (array_like): output prices
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+        m (int): production industry index
+
+    Returns:
+        YLratio (array_like): the capital-labor ratio
+
+    """
+    if method == "SS":
+        Z = p.Z[-1, m]
+    else:
+        Z = p.Z[: p.T, m]
+    YLratio = Z ** (p.epsilon[m] - 1) * (
+        (1 - p.gamma[m] - p.gamma_g[m]) / (p_m[m] * w)
+    )
+
+    return YLratio
+
+
+def solve_K(Y, L, K_g, p, method, m=-1):
+    r"""
+    Solve for capital demand from the production function
+
+    .. math::
+         \hat{K}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}
+            {Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} -
+            \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^
+            {\frac{\varepsilon_m-1}{\varepsilon_m}} -
+            (1-\gamma_{m}-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}\hat{L}_{m,t}^
+            {\frac{\varepsilon_m-1}{\varepsilon_m}}}
+            {(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}
+            \right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
+
+    Args:
+        Y (array_like): output for each industry
+        L (array_like): capital demand for each industry
+        K_g (array_like): public capital stock
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+        m (int or None): index of industry to compute L for (None will
+            compute L for all industries)
+
+    Returns:
+        K (array_like): capital demand each industry
+
+    """
+    gamma = p.gamma[m]
+    gamma_g = p.gamma_g[m]
+    epsilon = p.epsilon[m]
+    if method == "SS":
+        Z = p.Z[-1, m]
+    else:
+        Z = p.Z[: p.T, m]
+    try:
+        if K_g == 0:
+            K_g = 1.0
+            gamma_g = 0
+    except:
+        if np.any(K_g == 0):
+            K_g[K_g == 0] = 1.0
+            gamma_g = 0
+    if epsilon == 1.0:
+        K = (Y / (Z * K_g**gamma_g * L ** (1 - gamma - gamma_g))) ** (
+            1 / gamma
+        )
+    else:
+        K = (
+            (
+                (Y / Z) ** ((epsilon - 1) / epsilon)
+                - gamma_g ** (1 / epsilon) * K_g ** ((epsilon - 1) / epsilon)
+                - (1 - gamma - gamma_g) ** (1 / epsilon)
+                * L ** ((epsilon - 1) / epsilon)
+            )
+            / (gamma ** (1 / epsilon))
+        ) ** (epsilon / (epsilon - 1))
+
+    return K
