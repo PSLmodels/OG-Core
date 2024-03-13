@@ -1,156 +1,29 @@
 {
-    "project_one_line": {
-        "start_header": null,
-        "end_header": null,
-        "source": "https://github.com/PSLmodels/OG-Core",
-        "type": "html",
-        "data": "<p>A General Overlapping-Generations Model for Evaluating Fiscal Policy</p>"
-    },
-    "key_features": {
-        "start_header": null,
-        "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
-    },
-    "project_overview": {
-        "start_header": "OG-Core",
-        "end_header": "Disclaimer",
-        "source": "README.md",
-        "type": "github_file",
-        "data": null
-    },
-    "citation": {
-        "start_header": null,
-        "end_header": null,
-        "source": "https://github.com/PSLmodels/OG-Core#citing-OG-Core",
-        "type": "html",
-        "data": "<p>Please cite the source of your analysis as \"OG-Core release #.#.#, author's calculations.\" If you wish to link to OG-Core, https://github.com/PSLmodels/OG-Core is preferred. Additionally, we strongly recommend that you describe the input data used, and provide a link to the materials required to replicate your analysis or, at least, note that those materials are available upon request.</p>"
-    },
-    "license": {
-        "start_header": null,
-        "end_header": null,
-        "source": "https://github.com/PSLmodels/OG-Core/blob/master/LICENSE.md",
-        "data": "<p>CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-        "type": "html"
-    },
-    "user_documentation": {
-        "start_header": null,
-        "end_header": null,
-        "source": "https://pslmodels.github.io/OG-Core",
-        "type": "html",
-        "data": "<a href=\"https://pslmodels.github.io/OG-Core\">User documentation</a>"
-    },
-    "user_changelog": {
-        "start_header": null,
-        "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
-    },
-    "user_changelog_recent": {
-        "start_header": null,
-        "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
-    },
-    "dev_changelog": {
-        "start_header": null,
-        "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
-    },
-    "disclaimer": {
-        "start_header": "Disclaimer",
-        "end_header": "Using/contributing to OG-Core",
-        "source": "README.md",
-        "type": "github_file",
-        "data": null
-    },
-    "user_case_studies": {
-        "start_header": null,
-        "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
-    },
-    "project_roadmap": {
-        "start_header": null,
-        "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
-    },
-    "contributor_overview": {
-        "start_header": null,
-        "end_header": null,
-        "source": "https://github.com/PSLmodels/OG-Core#usingcontributing-to-OG-Core",
-        "type": "html",
-        "data": "<p>If you want to report a <b>bug</b>, create a new issue <a href=\"https://github.com/PSLmodels/OG-Core/issues\">here</a> providing details on what you think is wrong with OG-Core.</p><p>If you want to request <b>an enhancement</b>, create a new issue <a href=\"https://github.com/PSLmodels/OG-Core/issues\">here</a> providing details on what you think should be added to OG-Core. </p>"
-    },
-    "contributor_guide": {
-        "start_header": null,
-        "end_header": null,
-        "source": "https://pslmodels.github.io/OG-Core",
-        "type": null,
-        "data": "<a href=\"https://pslmodels.github.io/OG-Core\">Contributor documentation</a>"
-    },
-    "governance_overview": {
-        "start_header": null,
-        "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
-    },
-    "public_funding": {
-        "start_header": null,
-        "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
-    },
-    "link_to_webapp": {
-        "source": "https://compute.studio/PSLmodels/OG-USA/",
-        "type": null,
-        "start_header": null,
-        "end_header": null,
-        "data": "<a href=\"https://compute.studio/PSLmodels/OG-USA/\">Link to webapp</a>"
-    },
-    "public_issue_tracker": {
-        "start_header": null,
-        "end_header": null,
-        "data": "<a href=\"https://github.com/PSLmodels/OG-Core/issues\">https://github.com/PSLmodels/OG-Core/issues</a>",
-        "source": null,
-        "type": "html"
-    },
-    "public_qanda": {
-        "start_header": null,
-        "end_header": null,
-        "data": "<a href=\"https://github.com/PSLmodels/OG-Core/issues\">https://github.com/PSLmodels/OG-Core/issues</a>",
-        "source": null,
-        "type": "html"
-    },
-    "core_maintainers": {
-        "start_header": null,
-        "end_header": null,
-        "data": "<ul><li><a href=\"https://sites.google.com/site/rickecon/\">Richard W. Evans</a></li><li><a href=\"http://jasondebacker.com\">Jason DeBacker</a></li></ul>",
-        "source": null,
-        "type": "html"
-    },
-    "unit_test": {
-        "start_header": null,
-        "end_header": null,
-        "data": "<a href=\"https://github.com/PSLmodels/OG-Core/tree/master/tests\">https://github.com/PSLmodels/OG-Core/tree/master/tests</a>",
-        "source": "https://github.com/PSLmodels/OG-Core/tree/master/tests",
-        "type": "html"
-    },
-    "integration_test": {
-        "start_header": null,
-        "end_header": null,
-        "data": "<a href=\"https://github.com/PSLmodels/OG-Core/tree/master/tests\">https://github.com/PSLmodels/OG-Core/tree/master/tests</a>",
-        "source": "https://github.com/PSLmodels/OG-Core/tree/master/tests",
-        "type": "html"
+    "name": "OG-Core",
+    "img": "https://raw.githubusercontent.com/PSLmodels/OG-Core/master/docs/OG-Core_logo.png",
+    "banner_title": "OG-Core",
+    "banner_subtitle": "Core theory and code for large-scale open source overlapping generations model of region-specific fiscal policy",
+    "detailed_description": "https://raw.githubusercontent.com/PSLmodels/OG-Core/master/README.md",
+    "policy_area": "Policy analysis, policy reform, fiscal policy, tax, benefits, social security, public finance, macroeconomic analysis, general equilibrium, dynamic scoring, overlapping generations, OG, OLG",
+    "geography": "World, generic, country-specific, region-specific",
+    "language": "Python",
+    "maintainers": [
+        {
+            "name": "Richard W. Evans",
+            "image": "https://github.com/rickecon.png",
+            "link": "https://github.com/rickecon"
+        },
+        {
+            "name": "Jason DeBacker",
+            "image": "https://github.com/jdebacker.png",
+            "link": "https://github.com/jdebacker"
+        }
+    ],
+    "links": {
+      "code_repository": "https://github.com/PSLmodels/OG-Core",
+      "user_documentation": "https://pslmodels.github.io/OG-Core",
+      "contributor_documentation": "https://pslmodels.github.io/OG-Core/content/contributing/contributor_guide.html",
+      "webapp": "",
+      "recent_changes": "https://github.com/PSLmodels/OG-Core/blob/master/CHANGELOG.md"
     }
 }

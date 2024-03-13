@@ -7,7 +7,10 @@ model
 
 # Import packages
 import os
+import time
 import numpy as np
+import json
+from io import StringIO
 import scipy.optimize as opt
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -60,35 +63,30 @@ def get_un_data(
         + str(start_year)
         + "/end/"
         + str(end_year)
+        + "?format=csv"
     )
 
     # get data from url
     response = get_legacy_session().get(target)
     # Check if the request was successful before processing
     if response.status_code == 200:
-        # Converts call into JSON
-        j = response.json()
-        # Convert JSON into a pandas DataFrame.
-        # pd.json_normalize flattens the JSON to accommodate nested lists
-        # within the JSON structure
-        df = pd.json_normalize(j["data"])
-        # Loop until there are new pages with data
-        while j["nextPage"] is not None:
-            # Reset the target to the next page
-            target = j["nextPage"]
-            # call the API for the next page
-            response = get_legacy_session().get(target)
-            # Convert response to JSON format
-            j = response.json()
-            # Store the next page in a data frame
-            df_temp = pd.json_normalize(j["data"])
-            # Append next page to the data frame
-            df = pd.concat([df, df_temp])
+
+        # if want to download the data
+        # with open("downloaded_datan.csv", "wb") as f:
+        #     f.write(response.content)
+        # df = pd.read_csv("downloaded_datan.csv")
+        # else
+        # print("TARGET: ", target)
+        csvStringIO = StringIO(response.text)
+        df = pd.read_csv(csvStringIO, sep="|", header=1)
+
         # keep just what is needed from data
-        df = df[df.variant == "Median"]
-        df = df[df.sex == "Both sexes"][["timeLabel", "ageLabel", "value"]]
+        df = df[df.Variant == "Median"]
+        df = df[df.Sex == "Both sexes"][["TimeLabel", "AgeLabel", "Value"]]
         df.rename(
-            {"timeLabel": "year", "ageLabel": "age"}, axis=1, inplace=True
+            {"TimeLabel": "year", "AgeLabel": "age", "Value": "value"},
+            axis=1,
+            inplace=True,
         )
         df.loc[df.age == "100+", "age"] = 100
         df.age = df.age.astype(int)
@@ -112,6 +110,7 @@ def get_fert(
     end_year=END_YEAR,
     graph=False,
     plot_path=None,
+    download_path=None,
 ):
     """
     This function generates a vector of fertility rates by model period
@@ -127,6 +126,7 @@ def get_fert(
         end_year (int): end year for UN data
         graph (bool): =True if want graphical output
         plot_path (str): path to save fertility rate plot
+        download_path (str): path to save fertility rate data
 
     Returns:
         fert_rates (Numpy array): fertility rates for each year of data
@@ -153,6 +153,13 @@ def get_fert(
         # year
         fert_rates = pop_rebin(fert_rates, totpers)
         fert_rates_2D[y - start_year, :] = fert_rates
+
+    if download_path:
+        np.savetxt(
+            os.path.join(download_path, "fert_rates.csv"),
+            fert_rates_2D,
+            delimiter=",",
+        )
 
     # Create plots if needed
     if graph:
@@ -184,6 +191,7 @@ def get_mort(
     end_year=END_YEAR,
     graph=False,
     plot_path=None,
+    download_path=None,
 ):
     """
     This function generates a vector of mortality rates by model period
@@ -199,6 +207,7 @@ def get_mort(
         end_year (int): end year for UN data
         graph (bool): =True if want graphical output
         plot_path (str): path to save mortality rate plot
+        download_path (str): path to save mortality rate data
 
     Returns:
         mort_rates (Numpy array) mortality rates for each year of data
@@ -225,6 +234,18 @@ def get_mort(
         # put in 2D array
         mort_rates_2D[y - start_year, :] = mort_rates
         infmort_rate_vec[y - start_year] = infmort_rate
+
+    if download_path:
+        np.savetxt(
+            os.path.join(download_path, "mort_rates.csv"),
+            mort_rates_2D,
+            delimiter=",",
+        )
+        np.savetxt(
+            os.path.join(download_path, "infmort_rates.csv"),
+            infmort_rate_vec,
+            delimiter=",",
+        )
 
     # Create plots if needed
     if graph:
@@ -262,6 +283,7 @@ def get_pop(
     country_id=UN_COUNTRY_CODE,
     start_year=START_YEAR,
     end_year=END_YEAR,
+    download_path=None,
 ):
     """
     Retrieves the population distribution data from the UN data API
@@ -291,6 +313,7 @@ def get_pop(
         country_id (str): country id for UN data
         start_year (int): start year data
         end_year (int): end year for data
+        download_path (str): path to save population distribution data
 
     Returns:
         pop_2D (Numpy array): population distribution over T0 periods
@@ -380,6 +403,20 @@ def get_pop(
         ]
         pre_pop = pre_pop_sample.value.values
 
+    if download_path:
+        np.savetxt(
+            os.path.join(download_path, "population_distribution.csv"),
+            pop_2D,
+            delimiter=",",
+        )
+        np.savetxt(
+            os.path.join(
+                download_path, "pre_period_population_distribution.csv"
+            ),
+            pre_pop,
+            delimiter=",",
+        )
+
     return pop_2D, pre_pop
 
 
@@ -439,6 +476,7 @@ def get_imm_rates(
     end_year=END_YEAR,
     graph=False,
     plot_path=None,
+    download_path=None,
 ):
     """
     Calculate immigration rates by age as a residual given population
@@ -463,6 +501,7 @@ def get_imm_rates(
         end_year (int): end year for UN data
         graph (bool): =True if want graphical output
         plot_path (str): path to save figure to
+        download_path (str): path to save immigration rate data
 
     Returns:
         imm_rates_2D (Numpy array):immigration rates that correspond to
@@ -521,6 +560,13 @@ def get_imm_rates(
         ) / pop_t[1:]
 
         imm_rates_2D[y - start_year, :] = imm_rates
+
+    if download_path:
+        np.savetxt(
+            os.path.join(download_path, "immigration_rates.csv"),
+            imm_rates_2D,
+            delimiter=",",
+        )
 
     # Create plots if needed
     if graph:
@@ -596,6 +642,7 @@ def get_pop_objs(
     initial_data_year=START_YEAR - 1,
     final_data_year=START_YEAR + 2,  # as default data year goes until T1
     GraphDiag=True,
+    download_path=None,
 ):
     """
     This function produces the demographics objects to be used in the
@@ -687,6 +734,7 @@ def get_pop_objs(
             country_id,
             initial_data_year,
             final_data_year,
+            download_path=download_path,
         )
     else:
         # ensure that user provided fert_rates are of the correct shape
@@ -715,6 +763,7 @@ def get_pop_objs(
             country_id,
             initial_data_year,
             final_data_year,
+            download_path=download_path,
         )
     else:
         # ensure that user provided mort_rates are of the correct shape
@@ -765,6 +814,7 @@ def get_pop_objs(
                 country_id,
                 initial_data_year,
                 final_data_year,
+                download_path=download_path,
             )
         else:
             pop_2D, pre_pop = get_pop(
@@ -775,6 +825,7 @@ def get_pop_objs(
                 country_id=country_id,
                 start_year=initial_data_year,
                 end_year=final_data_year,
+                download_path=download_path,
             )
     else:
         # Check first dims of pop_dist as input by user
@@ -806,6 +857,7 @@ def get_pop_objs(
             country_id,
             initial_data_year,
             final_data_year,
+            download_path=download_path,
         )
     else:
         # ensure that user provided imm_rates are of the correct shape
