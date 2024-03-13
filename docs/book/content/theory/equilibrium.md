@@ -130,7 +130,7 @@ The computational algorithm for solving for the steady-state follows the steps b
            ```
         6. Find $\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)$ using the steady-state version of {eq}`EqFirmsProfit`
         7. Find the value of the firm in steady-state as: $\bar{V}_{m} = \frac{\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)}{(1+\bar{r})}$
-        8. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for the value of the firm the world interest rate $\bar{V}_m^{r^*}$:
+        8. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for the value of the firm at the world interest rate $\bar{V}_m^{r^*}$:
             1. Use $\bar{Y}_{m}$, $\bar{r}^*$, and $\bar{L}_m$ in {eq}`EqStnrzFOC_K` to solve for $\bar{K}_m^{r^*}$.
             2. Solve for $\bar{K}_m^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_m \bar{K}^{r^*}_{m}}{\delta^{\tau}_m}$
             3. Find $\pi(\bar{K}^{r^*}_m, \bar{K}^{\tau, r^*}_m, \bar{L}_m)$ using the steady-state version of {eq}`EqFirmsProfit`
@@ -141,7 +141,7 @@ The computational algorithm for solving for the steady-state follows the steps b
         3. Use the production function to find $\bar{Y}_M$.
         4. Solve for $\bar{K}_M^{\tau} = \frac{(1-\tau^{inv})\delta_M \bar{K}_{M}}{\delta^{\tau}_M}$
         5. Find $\pi(\bar{K}_M, \bar{K}^{\tau}_M, \bar{L}_M)$ using the steady-state version of {eq}`EqFirmsProfit`
-        6. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_M$ to solve for the value of the firm the world interest rate $\bar{V}_M^{r^*}$:
+        6. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_M$ to solve for the value of the firm at the world interest rate $\bar{V}_M^{r^*}$:
             1. Use $\bar{L}_{M}$ and $\bar{r}^*$ {eq}`EqStnrzFOC_K` to solve for $\bar{K}_M^{r^*}$. NOTE: may not be an analytical solution here so might have to use a root finder...
             2. Solve for $\bar{K}_M^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_M \bar{K}^{r^*}_{M}}{\delta^{\tau}_M}$
             3. Find $\bar{pi}_M^{i'}=\pi(\bar{K}^{r^*}_M, \bar{K}^{\tau, r^*}_M, \bar{L}_M)$ using the steady-state version of {eq}`EqFirmsProfit`
