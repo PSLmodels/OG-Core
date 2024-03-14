@@ -970,3 +970,30 @@ def solve_K(Y, L, K_g, p, method, m=-1):
         ) ** (epsilon / (epsilon - 1))
 
     return K
+
+
+def FOC_K():
+    """
+    The firm's FOC for it's choice of capital stock.  Equibrium implies
+    equivalence between the interest rate and the after tax rate of return
+    on a unit of investment.
+
+    .. math::
+        r_{t+1} = \frac{(1 - \tau^{corp}_{m,t+1})\left(p_{m,t+1}
+        (Z_{m,t+1})^\frac{\varepsilon_m-1}{\varepsilon_m}
+        \left[\gamma_m\frac{\hat{Y}_{m,t+1}}{\hat{K}_{m,t+1}}
+        \right]^\frac{1}{\varepsilon_m} - \frac{\partial
+        \Psi(\hat{I}_{m,t+1},\hat{K}_{m,t+1})}{\partial
+        \hat{K}_{m,t+1}}\right) + 1 - \delta_{m} +
+        \tau^{corp}_{m,t+1}\delta^\tau_{m,t+1}\left[(1-
+        \tau^{inv}_{m,t})(1-\delta^\tau_{m,t})-(1-\delta_m)(1-
+        \tau^{inv}_{m,t+1})\right] - \tau^{inv}_{m,t+1}(1-\delta_{m})}
+        {(1-\tau^{corp}_{m,t})\frac{\partial
+        \Psi(\hat{I}_{m,t},\hat{K}_{m,t})}{\partial \hat{K}_{m,t+1}}+1
+        -\tau^{inv}_{m,t}-\tau^{corp}_{m,t}\delta^{\tau}_{m,t}(1
+        -\tau^{inv}_{m,t})} - 1 \quad\forall m,t
+
+    Args:
+
+    Returns:
+    """

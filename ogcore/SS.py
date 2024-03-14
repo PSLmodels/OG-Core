@@ -363,6 +363,7 @@ def inner_loop(outer_loop_vars, p, client):
         # L_vec[m_ind] = firm.solve_L(
         #     Y_vec[m_ind], K_vec[m_ind], K_g, p, "SS", m_ind
         # )
+        # TODO: update how solve for K below, need to use equation 125, probably with a root finder
         K_demand_open_vec[m_ind] = firm.get_K(
             p.world_int_rate[-1], w_open, L_vec[m_ind], p, "SS", m_ind
         )
@@ -384,6 +385,7 @@ def inner_loop(outer_loop_vars, p, client):
         V_open_vec[m_ind] = profit_open / (1 + p.world_int_rate[-1])
     # Find output, labor demand, capital demand for industry M
     L_M = max(0.001, L - L_vec.sum())  # make sure L_M > 0
+    # TODO: update how solve for K below, need to use equation 125, probably with a root finder
     K_demand_open_vec[-1] = firm.get_K(
         p.world_int_rate[-1], w_open, L_M, p, "SS", -1
     )
