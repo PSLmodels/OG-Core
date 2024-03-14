@@ -62,32 +62,32 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 
 
   (SecMarkClrMktClr_K)=
-  ### Private capital market clearing
+  ### Equity market clearing
 
-  Domestic firms in each industry $m$ rent private capital $K_t\equiv\sum_{m=1}^M K_{m,t}$ from domestic households $K^d_t$ and from foreign investors $K^f_t$.
+  Equity in domestic firms, $V_t\equiv\sum_{m=1}^M K_{m,t}$, is held by domestic households, $V^d_t$ and foreign investors $V^f_t$. The equity market clearing condition is thus:
 
   ```{math}
   :label: EqMarkClr_KtKdKf
-   K_t = K^d_t + K^f_t \quad\forall t \quad\text{where}\quad K_t \equiv  \sum_{m=1}^M K_{m,t}
+   V_t = V^d_t + V^f_t \quad\forall t \quad\text{where}\quad V_t \equiv  \sum_{m=1}^M V_{m,t}
   ```
 
-  Assume that there exists some exogenous world interest rate $r^*_t$. We assume that foreign capital supply $K^f_t$ is an exogenous percentage $\zeta_K\in[0,1]$ of the excess total domestic private capital demand $ED^{K,r^*}_t$ that would exist if domestic private capital demand were determined by the exogenous world interest rate $r^*_t$ and domestic private capital supply were determined by the model consistent return on household savings $r_{p,t}$. This percentage $\zeta_K$ is something we calibrate. Define excess total domestic capital demand at the exogenous world interest rate $r^*_t$ as $ED^{K,r^*}_t$, where $K^{r^*}_t\equiv\sum_{m=1}^M K^{r^*}_{m,t}$ is the capital demand by domestic firms at the world interest rate $r^*_t$, and $K^{d}_t$ is the domestic supply of private capital to firms, which is modeled as being a function of the actual rate faced by households $r_{p,t}$. Then our measure of excess demand at the world interest rate is the following.
+  Assume that there exists some exogenous world interest rate $r^*_t$. We assume that foreign equity holdings, $V^f_t$, is an exogenous percentage $\zeta_K\in[0,1]$ of the excess total supply of domestic equity, $ES^{K,r^*}_t$ that would exist if domestic firm values were determined by investment decisions made under the exogenous world interest rate $r^*_t$ and domestic equity demand were determined by the model consistent return on household savings $r_{p,t}$. This percentage $\zeta_K$ is something we calibrate. Define excess supply of equity at the exogenous world interest rate $r^*_t$ as $ES^{V,r^*}_t$, where $V^{r^*}_t\equiv\sum_{m=1}^M V^{r^*}_{m,t}$ is value of domestic firms at the world interest rate $r^*_t$, and $V^{d}_t$ is the domestic demand for equity, which is modeled as being a function of the actual rate of return faced by households $r_{p,t}$. Then our measure of excess supply at the world interest rate is the following.
 
   ```{math}
   :label: EqMarkClr_ExDemK
-    ED^{K,r^*}_t \equiv K^{r^*}_t - K^d_t \quad\forall t \quad\text{where}\quad K^{r^*}_t\equiv \sum_{m=1}^M K^{r^*}_{m,t}
+    ES^{V,r^*}_t \equiv V^{r^*}_t - V^d_t \quad\forall t \quad\text{where}\quad V^{r^*}_t\equiv \sum_{m=1}^M V^{r^*}_{m,t}
   ```
 
-  Then we assume that total foreign private capital supply $K^f_t$ is a fixed fraction of this excess capital demand at the world interest rate $r^*$.
+  Then we assume that total foreign private capital supply $V^f_t$ is a fixed fraction of this equity supply at the world interest rate $r^*$.
 
   ```{math}
   :label: EqMarkClr_zetaK
-    K^{f}_t = \zeta_{K}ED^{K,r^*}_t \quad\forall t
+    V^{f}_t = \zeta_{K}ES^{K,r^*}_t \quad\forall t
   ```
 
-  This approach nicely nests the small open economy specification discussed in Section {ref}`SecSmallOpen` of Chapter {ref}`Chap_SmOpEcn` in which $\zeta_K=1$, foreigners flexibly supply all the excess demand for private capital, the marginal product of capital is fixed at the exogenous world interest rate $r^*$, and domestic households face the least amount of crowd out by government debt. The opposite extreme is the closed private capital market assumption of $\zeta_K=0$ in which $K^f_t=0$ and households must supply all the capital demanded in the domestic market. In this specification, the interest rate is the most flexible and adjusts to equilibrate domestic private capital supply $K^d_t$ with private capital demand $K_t$.
+  This approach nicely nests the small open economy specification discussed in Section {ref}`SecSmallOpen` of Chapter {ref}`Chap_SmOpEcn` in which $\zeta_K=1$, foreigners flexibly demand the excess supply of domestic equity, the domestic interest rate is fixed at the exogenous world interest rate $r^*$, and domestic households face the least amount of crowd out by government debt. The opposite extreme is the closed private capital market assumption of $\zeta_K=0$ in which $V^f_t=0$ and households must hold all the domestic firms' equity. In this specification, the interest rate is the most flexible and adjusts to equilibrate domestic equity demand, $V^d_t$, with the supply of equity, $V_t$.
 
-  For the intermediate specifications of $\zeta_K\in(0,1)$, foreigners provide a fraction of the excess demand defined in {eq}`EqMarkClr_ExDemK`. This allows for partial inflows of foreign private capital, partial crowd-out of government spending on private investment, and partial adjustment of the domestic interest rate $r_t$. This latter set of model specifications could be characterized as large-open economy or partial capital mobility.
+  For the intermediate specifications of $\zeta_K\in(0,1)$, foreigners provide a fraction of the excess supply of equity in {eq}`EqMarkClr_ExDemK`. This allows for partial inflows of foreign equity holdings, partial crowd-out of government spending on private investment, and partial adjustment of the domestic interest rate $r_t$. This latter set of model specifications could be characterized as large-open economy or partial capital mobility.
 
 
   (SecMarkClrMktClr_goods)=
@@ -111,11 +111,11 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
     Y_{m,t} = C_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1
   ```
 
-  The output of the $M$th industry can be used for private investment, infrastructure investment, government spending, and government debt.[^M_ind] As such, the market clearing condition in the $M$th industry will look more like the traditional $Y=C+I+G+NX$ expression.[^RCrates_note]
+  The output of the $M$th industry can be used for private investment, infrastructure investment, government spending, and government debt.[^M_ind] As such, the market clearing condition in the $M$th industry will look more like the traditional $Y=C+I+G+NX$ expression.[^RCrates_note] Note also that adjustment costs are paid in units of capital, which is the same units as the output of the $M$th industry. Therefore we must include the adjustment costs in the market clearing condition for the $M$th industry.
 
   ```{math}
   :label: EqMarkClrGoods_M
-    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) \quad\forall t
+    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{g,t}D^f_t - \Pi^f_{t} + (V^f_{t+1} - V^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr)  + \Psi_{M,t} \quad\forall t
   ```
   where
   ```{math}
@@ -123,6 +123,16 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
     I_{M,t} &\equiv \sum_{m=1}^M K_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M K_{m,t} \quad\forall t \\
     &= K_{t+1} - (1 - \delta_{M,t})K_t \\
     &= (K^d_{t+1} + K^f_{t+1}) - (1 - \delta_{M,t})(K^d_t + K^f_t)
+  ```
+and
+  ```{math}
+  :label: EqMarkClrGoods_IMt
+    \Psi_{M,t} &\equiv \sum_{m=1}^M \Psi(I_{m,t},K_{m,t}) \quad\forall t \\
+  ```
+  and
+  ```{math}
+  :label: EqMarkClrGoods_Pi
+    \Pi^f_{t} &\equiv \sum_{m=1}^M \pi_{m,t} * \frac{V^f}{V} \quad\forall t \\
   ```
 
   In the partially open economy, we must add to the right-hand-side of {eq}`EqMarkClrGoods_M` the output paid to the foreign owners of capital $r_{p,t} K^f_t$ and to the foreign holders of government debt $r_{p,t}D^f_t$. And we must subtract off the foreign inflow component $K^f_{t+1} - K^f_t$ from private capital investment as shown in the first term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. You can see in the definition of private investment {eq}`EqMarkClrGoods_IMt` where this amount of foreign capital is part of $I_{M,t}$.

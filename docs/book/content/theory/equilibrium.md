@@ -58,15 +58,15 @@ The computational algorithm for solving for the steady-state follows the steps b
 
 1. Use the techniques from Section {ref}`SecDemogPopSSTP` to solve for the steady-state population distribution vector $\boldsymbol{\bar{\omega}}$ and steady-state growth rate $\bar{g}_n$ of the exogenous population process.
 
-2. Choose an initial guess for the values of the steady-state interest rate (the after-tax marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$,  portfolio rate of return $\bar{r}_p^i$, output prices $\boldsymbol{\bar{p}}^i$ (note that $\bar{p}_M =1$ since it's the numeraire good), total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
+2. Choose an initial guess for the values of the steady-state interest rate (the after-tax rate of return on firm equity) $\bar{r}^i$, wage rate $\bar{w}^i$,  portfolio rate of return $\bar{r}_p^i$, output prices $\boldsymbol{\bar{p}}^i$ (note that $\bar{p}_M =1$ since it's the numeraire good), total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
 
     1. Given $\boldsymbol{\bar{p}}^i$ find the price of consumption goods using {eq}`EqHH_pi2`
-    2. From price of consumption goods, determine the price of the composite consmpution good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
+    2. Using the prices of consumption goods, determine the price of the composite consumption good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
     3. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}_{j,s}^i$
     4. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
     5. Given values $\bar{p}$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}^i$, $\overline{tr}_{j,s}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
-        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` simultaneously for each $j$.
+        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors available (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` simultaneously for each $j$.
 
         ```{math}
         :label: EqSS_HHBC
@@ -90,9 +90,10 @@ The computational algorithm for solving for the steady-state follows the steps b
         :label: EqSS_HHeul_bS
           (\bar{c}_{j,E+S})^{-\sigma} = e^{-\sigma g_y}\chi^b_j(\bar{b}_{j,E+S+1})^{-\sigma} \quad\forall j
         ```
-    6. Determine from the quantity of the composite consumption good consumed by each household, $\bar{c}_{j,s}$, use equation {eq}`EqHH_cmDem` to determine consumption of each output good, $\bar{c}_{m,j,s}$
-    7. Using $\bar{c}_{m,j,s}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\bar{C}_{m}$
-    8. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state labor supply, $\bar{L}$, savings, $\bar{B}$
+    6. From the quantity of the composite consumption good consumed by each household, $\bar{c}_{j,s}$, use equation {eq}`EqHH_cmDem` to determine consumption of each output good, $\bar{c}_{i,j,s}$
+    7. Using $\bar{c}_{i,j,s}$ in {eq}`EqCmt`, solve for aggregate consumption of each consumption good, $\bar{C}_{i}$
+    8. Using $\bar{C}_{i}$ in {eq}`EqMarkConsDemand`, solve for aggregate consumption of each output good, $\bar{C}_{m}$
+    9. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state labor supply, $\bar{L}$, savings, $\bar{B}$
         1. Use $\bar{n}_{j,s}$ and the steady-state version of the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\bar{L}^{i}$.
 
            ```{math}
@@ -105,50 +106,75 @@ The computational algorithm for solving for the steady-state follows the steps b
            :label: EqSS_Bt
              \bar{B} \equiv \frac{1}{1 + \bar{g}_{n}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\bar{\omega}_{s-1}\lambda_j\bar{b}_{j,s} + i_s\bar{\omega}_{s}\lambda_j\bar{b}_{j,s}\Bigr)
            ```
-    9. Solve for the exogenous government interest rate $\bar{r}_{gov}^{i}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
-    10. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\overline{TR}^i$
-    11. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
-    12. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
-    13. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
-    14. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
-    15. Find output and factor demands for M-1 industries:
+    10. Solve for the exogenous government interest rate $\bar{r}_{gov}^{i}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
+    11. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\overline{TR}^i$
+    12. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
+    13. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
+    14. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
+    15. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
+    16. Find output and factor demands for M-1 industries:
         1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$, where $\hat{C}_{m,t}$ is determined by {eq}`EqStnrzEqCmt`
-        2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
-        3. Capital demand can thus be found: $\bar{K}_{m} = \frac{\bar{K}_m}{\bar{Y}_m} * \bar{Y}_m$
-        4. Labor demand can be found by inverting the production function:
+        <!-- 2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}$ -->
+        2. The labor-output ratio can be determined from the FOC for the firms' choice of labor: $\frac{\bar{Y}_m}{\bar{L}_m} = \left(\bar{Z}_m\right)^{\varepsilon_m - 1}\frac{(1-\gamma_m - \gamma_{g,m})}{(\bar{w}\bar{p}_m)}$
+        3. Labor demand can thus be found: $\bar{L}_{m} = \frac{\bar{L}_m}{\bar{Y}_m} * \bar{Y}_m$
+        4. Capital demand can be found by inverting the production function:
            ```{math}
-           :label: EqSS_solveL
-             \bar{L}_{m} = \left(\frac{\left(\frac{\bar{Y}_m}{\bar{Z}_m}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\bar{K}_m^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\bar{K}_{g,m}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
+           :label: EqSS_solveK
+             \bar{K}_{m} = \left(\frac{\left(\frac{\bar{Y}_m}{\bar{Z}_m}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}} \bar{K}_{g,m}^{\frac{\varepsilon_m-1}{\varepsilon_m}}- (1 - \gamma_{m} - \gamma_{g,m})^{\frac{1}{\varepsilon_m}}\bar{L}_m^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{\gamma_m^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
            ```
-        5. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for private capital demand at the world interest rate $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
+        5. The tax basis of the capital stock can be solved for using the steady-state version of the law of motion for the tax basis of the capital stock:
 
-           ```{math}
-           :label: EqSS_MPKg
-             \bar{K}_m^{r^*} = \bar{L}_m\left(\frac{\bar{w}}{\frac{\bar{r} + \bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{1 - \bar{\tau}^{corp}_m}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
+          ```{math}
+           :label: EqSS_MPK_tau
+             \bar{K}_m^{\tau} = \frac{(1-\tau^{inv})\delta_m \bar{K}_{m}}{\delta^{\tau}_m}
            ```
+        6. Find $\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)$ using the steady-state version of {eq}`EqFirmsProfit`
+        7. Find the value of the firm in steady-state as: $\bar{V}_{m} = \frac{\pi(\bar{K}_m, \bar{K}^{\tau}_m, \bar{L}_m)}{(1+\bar{r})}$
+        8. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_m$ to solve for the value of the firm at the world interest rate $\bar{V}_m^{r^*}$:
+            1. Use $\bar{Y}_{m}$, $\bar{r}^*$, and $\bar{L}_m$ in {eq}`EqStnrzFOC_K` to solve for $\bar{K}_m^{r^*}$.
+            2. Solve for $\bar{K}_m^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_m \bar{K}^{r^*}_{m}}{\delta^{\tau}_m}$
+            3. Find $\pi(\bar{K}^{r^*}_m, \bar{K}^{\tau, r^*}_m, \bar{L}_m)$ using the steady-state version of {eq}`EqFirmsProfit`
+            4. Find the value of the firm in steady-state under the world interest rate as $\bar{V}^{r^*}_{m} = \frac{\pi(\bar{K}^{r^*}_m, \bar{K}^{\tau , r^*}_m, \bar{L}_m)}{(1+\bar{r}^*)}$
+    17. Determine factor demands and output for industry $M$:
+        1. $\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}$
+        2. Use $\bar{L}_{M}$ and $\bar{r}$ {eq}`EqStnrzFOC_K` to solve for $\bar{K}_M$. NOTE: may not be an analytical solution here so might have to use a root finder...
+        3. Use the production function to find $\bar{Y}_M$.
+        4. Solve for $\bar{K}_M^{\tau} = \frac{(1-\tau^{inv})\delta_M \bar{K}_{M}}{\delta^{\tau}_M}$
+        5. Find $\pi(\bar{K}_M, \bar{K}^{\tau}_M, \bar{L}_M)$ using the steady-state version of {eq}`EqFirmsProfit`
+        6. Use the steady-state world interest rate $\bar{r}^*$ and labor demand $\bar{L}_M$ to solve for the value of the firm at the world interest rate $\bar{V}_M^{r^*}$:
+            1. Use $\bar{L}_{M}$ and $\bar{r}^*$ {eq}`EqStnrzFOC_K` to solve for $\bar{K}_M^{r^*}$. NOTE: may not be an analytical solution here so might have to use a root finder...
+            2. Solve for $\bar{K}_M^{\tau, r^*} = \frac{(1-\tau^{inv})\delta_M \bar{K}^{r^*}_{M}}{\delta^{\tau}_M}$
+            3. Find $\bar{pi}_M^{i'}=\pi(\bar{K}^{r^*}_M, \bar{K}^{\tau, r^*}_M, \bar{L}_M)$ using the steady-state version of {eq}`EqFirmsProfit`
+            4. Find the value of the firm in steady-state under the world interest rate as $\bar{V}^{r^*}_{M} = \frac{\pi(\bar{K}^{r^*}_M, \bar{K}^{\tau , r^*}_M, \bar{L}_M)}{(1+\bar{r}^*)}$
+        7. Find total supply of equity, and the split between that from domestic and foreign equity holdings: $\bar{V}^{i'}$, $\bar{V}^d$, $\bar{V}^f$:
+            1. Use $\bar{V}_m^{r^*}$ to find foreign demand for domestic equity {eq}`eq_foreign_cap_demand`: $\bar{V}^{f} = \bar{\zeta}_{K}\sum_{m=1}^{M}\bar{ES}_m^{r^*} = \bar{\zeta}_{K}\sum_{m=1}^{M}(\bar{V}_m^{r^*} - \bar{V}_m$
+            2. Using $\bar{D}^{d,i}$ we can then find domestic investors' holdings of equity as the residual from their total asset holdings: , $\bar{V}^{d,i} = \bar{B}^i - \bar{D}^{d,i}$
+            3. Aggregate demand for equities is then determined as $\bar{V}^{i'} = \bar{V}^{d,i} + \bar{V}^{f,i}$.
+        8. Use the equity market clearing condition, {eq}`EqStnrz_VtVdVf`, to find the value of the $M$th firm, $\bar{V}_M$:
 
-    16. Determine factor demands and output for industry $M$:
-        1.  $\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}$
-        2.  Find $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
-        3.  Find total capital supply, and the split between that from domestic and foreign households: $\bar{K}^{i'}$, $\bar{K}^d$, $\bar{K}^f$:
-            1.  We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: $\bar{K}^{f} = \bar{\zeta}_{K}\sum_{m=1}^{M}\bar{K}_m^{r^*}$
-            2.  Using $\bar{D}^{d,i}$ we can then find domestic investors' holdings of private capital as the residual from their total asset holdings: , $\bar{K}^{d,i} = \bar{B}^i - \bar{D}^{d,i}$
-            3.  Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d,i} + \bar{K}^{f,i}$.
-        4.  $\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}$
-        5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M$.
-    17. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m$.
-    18. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
+          ```{math}
+           :label: EqSS_V_M
+             \bar{V}_m = \bar{V}^{i'} - \sum_{m=1}^{M-1}\bar{V}_{m}
+          ```
+
+    18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m$.
+    19. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
 
-    1. Use $\bar{Y}_M^{i'}$ and $\bar{K}_M^{i'}$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
+    1. Use $\bar{pi}_M^{i'}$ and $\bar{V}_M^{i'}$ in {eq}`EqFirmsExpectedReturn` to solve for updated value of the pre-tax return on equity, $\bar{r}^{i'}$.
     2. Use $\bar{Y}_M^{i'}$ and $\bar{L}_M^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
     3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
-    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
-    5. Use $\boldsymbol{\overline{MPK}}_g^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{K}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
-    6. Use $\bar{Y}_m$, $\bar{L}_m$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{\bar{p}}^{i'}$
-    7. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
-    8. Use $\bar{Y}^{i'}$ in the long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
-    9. Use $\bar{r}^{i'}$, $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
+    4. Use $\boldsymbol{\overline{\Pi}}^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{V}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
+    5. Use $\bar{Y}_m$, $\bar{K}_m$ in {eq}`EqStnrzFOC_K` to solve for the updated vector of output prices, $\boldsymbol{\bar{p}}^{i'}$
+
+          ```{math}
+           :label: EqSS_p_m
+             p_{m,t}=\frac{\left(\frac{\left(1+r_{t}\right)\left((1-\tau^{b}_{m,t-1})\frac{\partial \psi(K_{m,t}, K_{m,t-1})}{\partial K_{m,t}} + 1 - \tau^{inv}_{m,t-1}-\tau^{b}_{m,t-1}\delta^{\tau}_{m,t-1}(1-\tau^{inv}_{m,t})\right)-1 + \delta_m - \tau^{b}_{m,t}\delta^{\tau}_{m,t}\left((1-\tau^{inv}_{m,t-1})(1-\delta^{\tau}_{m,t-1})-(1-\delta_m)(1-\tau^{inv}_{m,t})\right) + \tau^{inv}_{m,t}(1-\delta_m)}{(1-\tau_{m,t}^{b})} \right) + \frac{\partial \psi(K_{m,t+1},K_{m,t})}{\partial K_{m,t}}}{Z_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}\left(\gamma_m \frac{Y_{m,t}}{K_{m,t}}\right)^{\frac{1}{\varepsilon_m}}}
+          ```
+
+    6. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
+    7. Use $\bar{Y}^{i'}$ in the long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
+    8. Use $\bar{r}^{i'}$, $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
 
         ```{math}
         :label: EqSS_factor
@@ -331,8 +357,8 @@ The stationary non-steady state (transition path) solution algorithm has followi
 7. Determine from the quantity of the composite consumption good consumed by each household, $\hat{c}_{j,s,t}$, use equation {eq}`EqHH_cmDem` to determine consumption of each output good, $\hat{c}_{m,j,s,t}$
 8. Using $\hat{c}_{m,j,s,t}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\hat{C}_{m,t}$
 9.  Given values for $n_{j,s,t}$ and $\hat{b}_{j,s+1,t+1}$ for all $j$, $s$, and $t$, solve for aggregate labor supply, $\hat{L}_t$, and savings, $B_t$ in each period
-    1.  Use $n_{j,s,t}$ and the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\hat{L}_t^{i}$.
-    2.   Use $\hat{b}_{j,s+1,t+1}$ and the stationarized expression for total savings by domestic households {eq}`EqStnrz_Bt`to solve for $\hat{B}_t^i$.
+    1. Use $n_{j,s,t}$ and the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\hat{L}_t^{i}$.
+    2. Use $\hat{b}_{j,s+1,t+1}$ and the stationarized expression for total savings by domestic households {eq}`EqStnrz_Bt`to solve for $\hat{B}_t^i$.
 10. Solve for the exogenous government interest rate $r_{gov,t}^{i}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
 11. Use {eq}`EqStnrzTfer` to find $\hat{Y}_t^i$ from the guess of $\hat{TR}_t^i$
 12. Using the path of output from each industry, $\hat{Y}_{m,t}$, and the household savings and labor supply decisions, $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$, compute the path of stationarizaed total tax revenue, $\hat{Revenue}_{t}^{i}$.
@@ -342,12 +368,12 @@ The stationary non-steady state (transition path) solution algorithm has followi
 16. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\hat{I}_{g,t}$, solve for $\hat{K}_{g,t}^{i}$
 17. Find output and factor demands for M-1 industries:
     1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$, where $\hat{C}_{m,t}$ is determined by {eq}`EqStnrzEqCmt`
-    2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} = \gamma_m\left[\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{(1-\tau^{corp}_{m,t})p_{m,t}({Z}_{m,t})^\frac{\varepsilon_m -1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
-    3. Capital demand can thus be found: $\hat{K}_{m,t} = \frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}} * \hat{Y}_{m,t}$
-    4. Labor demand can be found by inverting the production function:
+    2. The labor-output ratio can be determined from the FOC for the firms' choice of labor: $\frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}} = \left(\hat{Z}_{m,t}\right)^{\varepsilon_m - 1}\frac{(1-\gamma_m - \gamma_{g,m})}{(\hat{w}_{t}p_{m,t})}$
+    3. Labor demand can thus be found: $\hat{L}_{m,t} = \frac{\hat{L}_{m,t}}{\hat{Y}_{m,t}} * \hat{Y}_{m,t}$
+    4. Capital demand can be found by inverting the production function:
       ```{math}
-      :label: EqTPI_solveL
-        \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}{Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{m}^{\frac{1}{\varepsilon_m}}\hat{K}_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
+      :label: EqTPI_solveK
+        \hat{K}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}{Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} - \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}- (1- \gamma_{m} - \gamma_{g,m})^{\frac{1}{\varepsilon_m}}\hat{L}_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}}{\gamma_m^{\frac{1}{\varepsilon_m}}}\right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
       ```
     5. Use the interest rate $r_t^*$ and labor demand $\hat{L}_{m,t}$ to solve for private capital demand at the world interest rate $\hat{K}_{m,t}^{r^*}$ using {eq}`EqFirmsMPKg_opt`
       ```{math}
@@ -373,7 +399,7 @@ The stationary non-steady state (transition path) solution algorithm has followi
     3. Use $r_t^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $r_{gov,t}^{i'}$
     4. Use $\hat{K}_{g,t}^{i'}$ and $\hat{Y}_t^{i''}$ in in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $MPK_{g,m,t}^{i'}$
     5. Use $\boldsymbol{MPK}_{g,t}^{i'}$, $r_t^{i'}$, $r_{gov,t}^{i'}$, $\hat{D}_t^{i'}$, and $\hat{K}_t^{i'}$ to find the return on the households' investment portfolio, $r_{p,t}^{i'}$
-    6. Use $\hat{Y}_{m,t}$, $\hat{L}_{m,t}$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{p}_t^{i'}$
+    6. Use $\hat{Y}_{m,t}$, $\hat{K}_{m,t}$ (for $m<M$) in {eq}`EqStnrzFOC_K` to solve for the updates vector of prices, $\boldsymbol{p}_t^{i'}$
     7. Use $r_{p,t}^{i'}$ and $\hat{b}_{j,s,t}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\hat{BQ}_t^{i'}$.
     8. Use $\hat{Y}_t^{i'}$ in the aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\hat{TR}_t^{i'}$.
 

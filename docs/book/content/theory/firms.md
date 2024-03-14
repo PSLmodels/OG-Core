@@ -33,17 +33,64 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 
   ```{math}
   :label: EqFirmsProfit
-    PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
-    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}K_{m,t} \quad\forall m,t
+    \pi(K_{m,t}, K^{\tau}_{m,t}, L_{m,t}) &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t} - \Psi(I_{m,t}, K_{m,t})\Bigr] -  \\
+    &\qquad\qquad\quad I_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K^{\tau}_{m,t} + \tau^{inv}_{m,t}I_{m,t} \quad\forall m,t
   ```
 
-  Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the second-to-last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax. Note that the last term above represents the benefits from any investment tax credit $\tau^{inv}_{m,t}$. While this should be applied to all investment, firms in `OG-Core` are making static decisions each period about the amount of capital to rent. We therefore proxy for investment with $\delta_{M,t}K_{m,t}$, which is accurate in the steady-state, but is an approximation over the transition to the steady-state.
+  Gross revenue for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and investment, $I_{m,t}$ contributes to the capital stock through the following law of motion:
+
+  ```{math}
+  :label: EqFirmsInvest
+    K_{m,t+1} = (1-\delta_M) K_{m,t} + I_{m,t} \quad\forall m,t
+  ```
+
+   The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the second-to-last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax. Note that the last term above represents the benefits from any investment tax credit $\tau^{inv}_{m,t}$.  We assume that capital adjustment costs, $\Psi(I_{m,t}, K_{m,t})$, are quadratic in the investment rate $I_{m,t}$ and the capital stock $K_{m,t}$ and are deductible from corporate income when determining taxable income.  The quadratic adjustment costs are given by the following function:
+
+  ```{math}
+    :label: EqFirmsAdjCosts
+    \Psi(I_{m,t}, K_{m,t}) = \frac{\psi}{2}\frac{\left(\frac{I_{m,t}}{K_{m,t}} - \mu_m \right)^2}{\frac{I_{m,t}}{K_{m,t}}} \quad\forall m,t
+  ```
+
+  The parameter $\mu_m = \delta_M + \bar{g}_n + g_y$, is the steady state investment rate.  Thus adjustment cost are zero in the steady state, but affect firms along the transition path.  The parameter $\psi$ governs the strength of the adjustment costs.
 
   Taxes enter the firm's profit function {eq}`EqFirmsProfit` in two places. The first is the corporate income tax rate $\tau^{corp}_{m,t}$, which is a flat tax on corporate income that can vary by industry $m$. Corporate income is defined as gross income minus labor costs. This will cause the corporate tax to only have a direct effect on the firms' capital demand decision.
 
-  The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_{m,t}$, which then lower corporate tax liability. When $\delta^\tau_{m,t}=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_{m,t}=\delta_{M,t}$, all economic depreciation is deducted from corporate income. The investment tax credit is characterized by the parameter $\tau^{inv}_{m,t}$ multiplied by a proxy for investment $\delta_{M,t}K_{m,t}$ by industry $m$, which represents the percent of industry-specific capital that can be credited against profits.
+  The tax policy also enters the profit function {eq}`EqFirmsProfit` through depreciation deductions at rate $\delta^\tau_{m,t}$, which then lower corporate tax liability. When $\delta^\tau_{m,t}=0$, no depreciation expense is deducted from the firm's tax liability. When $\delta^\tau_{m,t}=\delta_{M}$, all economic depreciation is deducted from corporate income. The investment tax credit is characterized by the parameter $\tau^{inv}_{m,t}$ multiplied by the amount of investment.  The tax basis for the capital stock, $K^\tau_{m,t}$ is determined through the following law of motion:
 
-  Firms take as given prices $p_{m,t}$, $w_t$, and $r_t$ and the level of public capital supply $K_{g,m,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_{m,t}$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to private capital $K_{m,t}$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
+  ```{math}
+  :label: EqFirmsKtau
+    K^{\tau}_{m,t} = (1-\delta^{\tau}_{m,t}) K^\tau_{m,t-1} + (1-\tau^{inv}_{m,t})I_{m,t} \quad\forall m,t
+  ```
+
+  Note the timing difference in the laws of motion for the tax basis for the capital stock and the capital stock. Investment is immediately deducted from the tax basis for the capital stock, where are there is a time to build in the physical capital stock (new investment doesn't become productive until the next period).
+
+  The expected (pre-tax) return to a shareholder investing in firm $m$ is given by:
+
+  ```{math}
+  :label: EqFirmsExpectedReturn
+  \begin{split}
+    E_{t}(R_{m,t}) = \frac{\pi_{m,t} + E_{t}V_{m,t+1} - V{m,t}}{V_{m,t}}
+  \end{split}
+  ```
+
+  where $V_t$ is the value of the firm, $E_tV_{t+1}$ is the expected value of the firm next period, and $\pi_t$ is the profit of the firm in period $t$. Without aggregate uncertainty, it must be the case that the expected return to a shareholder for an investment in any industry is the same: $E_{t}(R_{m,t}) = E_{t}(R_{t})$. Futhermore, the rate of return on equity must be the same as the rate of return on government debt, adjusted for the risk premium.  That is, $E_{t}(R_{t}) = 1 + r_{t} = 1 + \left(\frac{r_{gov,t} + \mu_d}{(1-\tau_{d,t})}\right)$ where $r_{gov,t}$ is the risk-free rate of return on government debt and the parameters $\mu_d$  and $\tau_{d,t}$ define the risk premium of equity over government debt that we've built into this model with no uncertainty.
+
+  Firms take as given prices $p_{m,t}$, $w_t$, and $r_t$ and the level of public capital supply $K_{g,m,t}$. These firms are forward looking and maximize the present discounted value of profits, where firms discount by the real interest rate $r_t$. The firm's problem is the following:
+
+  ```{math}
+  :label: EqFirmsValue
+  \begin{split}
+    V(K_{m,t}, K^\tau_{m,t-1}) &=  \max_{\{I_{m,u}, K_{m,u+1},K^\tau_{m,u}, L_{m,u}\}_{u=t}^{\infty}}  \sum_{u=t}^\infty \left(\prod_{v=t}^u \frac{1}{1+r_v}\right) \pi(K_{m,u}, L_{m,u}) \quad\forall m,t,\\
+     \quad \text{subject to}: & \\
+      & \\
+      I_{m,t} &=  K_{m,t+1} - (1-\delta_M) K_{m,t} + I_{m,t} \quad\forall m,t \\
+       K^{\tau}_{m,t} &= (1-\delta^{\tau}_{m,t}) K^\tau_{m,t-1} + (1-\tau^{inv}_{m,t})I_{m,t} \quad\forall m,t
+
+  \end{split}
+  ```
+
+
+  Note that one can use the two laws of motion (for the physical capital stock and the tax basis of the capital stock) to eliminate to choice variables: choosing $K_{m,u+1}$ will determine $I_{m,t}$ and $K^\tau_{m,t}$. Taking the derivative of the profit function {eq}`EqFirmsProfit` with respect to labor $L_{m,t}$ and setting it equal to zero (using the general CES form of the production function {eq}`EqFirmsCESprodfun`) and taking the derivative of the profit function with respect to private capital $K_{m,t+1}$ and setting it equal to zero, respectively, characterizes the optimal labor and capital demands.
 
   ```{math}
   :label: EqFirmFOC_L
@@ -52,7 +99,21 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 
   ```{math}
   :label: EqFirmFOC_K
-    r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{Y_{m,t}}{K_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t} \quad\forall m,t
+    r_{t+1} = \frac{(1 - \tau^{corp}_{m,t+1})\left(p_{m,t+1}(Z_{m,t+1})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{Y_{m,t+1}}{K_{m,t+1}}\right]^\frac{1}{\varepsilon_m} - \frac{\partial \Psi(I_{m,t+1},K_{m,t+1})}{\partial K_{m,t+1}}\right) + 1 - \delta_{m} + \tau^{corp}_{m,t+1}\delta^\tau_{m,t+1}\left[(1-\tau^{inv}_{m,t})(1-\delta^\tau_{m,t})-(1-\delta_m)(1-\tau^{inv}_{m,t+1})\right] - \tau^{inv}_{m,t+1}(1-\delta_{m})}{(1-\tau^{corp}_{m,t})\frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t+1}}+1 -\tau^{inv}_{m,t}-\tau^{corp}_{m,t}\delta^{\tau}_{m,t}(1-\tau^{inv}_{m,t})} - 1 \quad\forall m,t
+  ```
+
+  The derivatives of the quadratic adjustment cost function are given by:
+
+  ```{math}
+  :label: EqFirmAdjCost_dKp1
+    \frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t+1}} = \frac{\psi}{2}\frac{\left(\frac{I_{m,t}}{K_{m,t}}- \mu_{m}\right)}{I_{t}}\left[1 -\mu\frac{K_{m,t}}{I_{m,t}}\right] \forall m,t
+  ```
+
+  and
+
+  ```{math}
+  :label: EqFirmAdjCost_dK
+    \frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t}} = \frac{-\psi}{2}\left(\frac{K_{m,t+1}}{I^2_{m,t}}\right)\left(\frac{I_{m,t}}{K_{m,t}}-\mu\right)\left(\frac{I_{m,t}}{K_{m,t}}+\mu\right) \forall m,t
   ```
 
   Note that the presence of the public capital good creates economic rents. These rents will accrue to the owners of capital via the financial intermediary. See Section Chapter {ref}`Chap_FinInt` for more details on the determination of the return to the household's portfolio. Because public capital is exogenous to the firm's decisions, the optimality condition for capital demand {eq}`EqFirmFOC_K` is only affected by public capital $K_{g,m,t}$ through the $Y_{m,t}$ term.
@@ -60,59 +121,7 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 (EqFirmsPosProfits)=
 ## Positive Profits from Government Infrastructure Investment
 
-  The CES production function in {eq}`EqFirmsCESprodfun` exhibits constant returns to scale (CRS). A feature of CRS production functions is that gross revenue $Y_{m,t}$ is a sum of the gross revenue attributed to each factor of production,
-
-  ```{math}
-  :label: EqFirmsMargRevEq
-    Y_{m,t} = MPK_{m,t} K_{m,t} + MPK_{g,m,t} K_{g,m,t} + MPL_{m,t} L_{m,t} \quad\forall m,t
-  ```
-
-  where $MPK_{m,t}$ is the marginal product of private capital in industry $m$, $MPK_{g,m,t}$ is the marginal product of public capital, and $MPL_{m,t}$ is the marginal product of labor.[^MPfactors] Each of the terms in {eq}`EqFirmsMargRevEq` is growing at the macroeconomic variable rate of $e^{g_y t}\tilde{N_t}$ (see the third column of {numref}`TabStnrzStatVars`). Firm profit maximization for private capital demand from equation {eq}`EqFirmFOC_K` implies that the marginal product of private capital is equal to the real cost of capital:
-
-  ```{math}
-  :label: EqFirmsMPK_opt
-    MPK_{m,t} =  \frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^\tau_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{p_{m,t}(1 - \tau^{corp}_{m,t})} \quad\forall m,t
-  ```
-
-  Firm profit maximization for labor demand from equation {eq}`EqFirmFOC_L` implies that the marginal product of labor is equal to the real wage rate:
-
-  ```{math}
-  :label: EqFirmsMPL_opt
-    MPL_{m,t} =  \frac{w_t}{p_{m,t}} \quad\forall m,t
-  ```
-
-  Even though firms take the stock of public capital $K_{g,t}$ from government infrastructure investment as given, we can still calculate the marginal product of public capital from the production function {eq}`EqFirmsCESprodfun`.
-
-  ```{math}
-  :label: EqFirmsMPKg_opt
-    MPK_{g,m,t} =  \left(Z_{m,t}\right)^{\frac{\varepsilon_m - 1}{\varepsilon_m}}\left(\gamma_{g,m}\frac{Y_{m,t}}{K_{g,m,t}}\right)^{\frac{1}{\varepsilon_m}} \quad\forall m,t
-  ```
-
-  If we plug the expressions for $MPK_{m,t}$, $MPK_{g,m,t}$, and $MPL_{m,t}$ from {eq}`EqFirmsMPK_opt`, {eq}`EqFirmsMPKg_opt`, and {eq}`EqFirmsMPL_opt`, respectively, into the total revenue $Y_{m,t}$ decomposition in {eq}`EqFirmsMargRevEq` and then substitute that into the profit function {eq}`EqFirmsProfit`, we see that positive economic rents arise when public capital is positive $K_{g,m,t}>0$.
-
-  ```{math}
-  :label: EqFirmsProfit_Kg
-    \begin{split}
-      PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}Y_{m,t} - w_t L_{m,t}\Bigr] - \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}K_{m,t} \\
-      &= (1 - \tau^{corp}_{m,t})\Biggl[\biggl(\frac{r_t + \delta_{M,t} - \tau^{corp}_{m,t}\delta^{\tau}_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}}{1 - \tau^{corp}_{m,t}}\biggr)K_{m,t} + p_{m,t}MPK_{g,m,t}K_{g,m,t} + w_t L_{m,t}\Biggr] ... \\
-      &\quad\quad - (1 - \tau^{corp}_{m,t})w_t L_{m,t} - (r_t + \delta_{M,t})K_{m,t} + \tau^{corp}_{m,t}\delta^{\tau}_{m,t}K_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}K_{m,t} \\
-      &= (1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t} \quad\forall m,t
-    \end{split}
-  ```
-
-  We assume these positive economic profits resulting from government infrastructure investment are passed on to the owners of private capital through an adjusted interest rate $r_{K,t}$ provided by the financial intermediary (see Chapter {ref}`Chap_FinInt`) that zeroes out profits among the perfectly competitive firms and is a function of $p_{m,t}$, $MPK_{g,m,t}$ and $K_{g,m,t}$ in each industry $m$. Total payouts from the financial intermediary $r_{K,t}\sum_{m=1}^M K_{m,t}$ are a function of the perfectly competitive payout to owners of private capital $r_t \sum_{m=1}^M K_{m,t}$ plus any positive profits when $K_{g,m,t}>0$ from {eq}`EqFirmsProfit_Kg`.
-
-  ```{math}
-  :label: EqFirmsPayout
-    r_{K,t}\sum_{m=1}^M K_{m,t} =  r_t \sum_{m=1}^M K_{m,t} + \sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t} \quad\forall t
-  ```
-
-  This implies that the rate of return paid from the financial intermediary to the households $r_{K,t}$ is the interest rate on private capital $r_t$ plus the ratio of total positive profits across industries (a function of $K_{g,m,t}$ in each industry) divided by total private capital from {eq}`EqFirmsProfit_Kg`, in which the units are put in terms of $K_{m,t}$ (which is in terms of the $M$th industry output, see equation {eq}`eq_rK` in Chapter {ref}`Chap_FinInt`).
-
-  ```{math}
-  :label: EqFirms_rKt
-    r_{K,t} =  r_t + \frac{\sum_{m=1}^M(1 - \tau^{corp}_{m,t})p_{m,t}MPK_{g,m,t}K_{g,m,t}}{\sum_{m=1}^M K_{m,t}} \quad\forall t
-  ```
+Note that when $K_{g,t}$ is greater than zero, the public capital factor of production generates above normal profits for the firm. That is, the actual rate of return on equity, $E_t(R_t)$, will exceed the discount factor used by the firm, $1+r_t$. This is because the firm does not pay for the public capital that it uses in production. The above normal return will be distributed to shareholders as part of the firms profits and thus the return on equity.  We detail this further in the {ref}`Chap_FinInt` Chapter.
 
 (SecFirmsfootnotes)=
 ## Footnotes
