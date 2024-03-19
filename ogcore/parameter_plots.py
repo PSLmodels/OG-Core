@@ -273,7 +273,7 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_chi_n(p, include_title=False, path=None):
+def plot_chi_n(p, years_to_plot=[DEFAULT_START_YEAR], include_title=False, path=None):
     """
     Create a plot of showing the values of the chi_n parameters.
 
@@ -287,7 +287,8 @@ def plot_chi_n(p, include_title=False, path=None):
     """
     age = np.linspace(p.starting_age, p.ending_age, p.S)
     fig, ax = plt.subplots()
-    plt.plot(age, p.chi_n)
+    for y in years_to_plot:
+        plt.plot(age, p.chi_n[y - p.start_year, :], label=str(y))
     if include_title:
         plt.title("Utility Weight on the Disutility of Labor Supply")
     plt.xlabel("Age, $s$")
