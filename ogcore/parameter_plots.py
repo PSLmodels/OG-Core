@@ -64,7 +64,12 @@ def plot_imm_rates(
 
 
 def plot_mort_rates(
-    p_list, labels=[""], years=[DEFAULT_START_YEAR], survival_rates=False, include_title=False, path=None
+    p_list,
+    labels=[""],
+    years=[DEFAULT_START_YEAR],
+    survival_rates=False,
+    include_title=False,
+    path=None,
 ):
     """
     Create a plot of mortality rates from OG-Core parameterization.
@@ -88,7 +93,11 @@ def plot_mort_rates(
         t = y - p0.start_year
         for i, p in enumerate(p_list):
             if survival_rates:
-                plt.plot(age_per, np.cumprod(1 - p.rho[t, :]), label=labels[i] + " " + str(y))
+                plt.plot(
+                    age_per,
+                    np.cumprod(1 - p.rho[t, :]),
+                    label=labels[i] + " " + str(y),
+                )
             else:
                 plt.plot(age_per, p.rho[t, :], label=labels[i] + " " + str(y))
     plt.xlabel(r"Age $s$ (model periods)")
@@ -193,7 +202,9 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_ability_profiles(p, p2=None, t=None, log_scale=False, include_title=False, path=None):
+def plot_ability_profiles(
+    p, p2=None, t=None, log_scale=False, include_title=False, path=None
+):
     """
     Create a plot of earnings ability profiles.
 
@@ -308,7 +319,13 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_chi_n(p_list, labels=[""], years_to_plot=[DEFAULT_START_YEAR], include_title=False, path=None):
+def plot_chi_n(
+    p_list,
+    labels=[""],
+    years_to_plot=[DEFAULT_START_YEAR],
+    include_title=False,
+    path=None,
+):
     """
     Create a plot of showing the values of the chi_n parameters.
 
@@ -328,7 +345,11 @@ def plot_chi_n(p_list, labels=[""], years_to_plot=[DEFAULT_START_YEAR], include_
     fig, ax = plt.subplots()
     for y in years_to_plot:
         for i, p in enumerate(p_list):
-            plt.plot(age, p.chi_n[y - p.start_year, :], label=labels[i] + " " + str(y))
+            plt.plot(
+                age,
+                p.chi_n[y - p.start_year, :],
+                label=labels[i] + " " + str(y),
+            )
     if include_title:
         plt.title("Utility Weight on the Disutility of Labor Supply")
     plt.xlabel("Age, $s$")
@@ -375,8 +396,7 @@ def plot_fert_rates(
         for i, fert_rates in enumerate(fert_rates_list):
             plt.plot(fert_rates[i, :], label=labels[i] + " " + str(y))
     if include_title:
-        plt.title('Fertility rates by age ($f_{s}$)',
-            fontsize=20)
+        plt.title("Fertility rates by age ($f_{s}$)", fontsize=20)
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Fertility rate $f_{s}$")
     plt.legend(loc="upper right")

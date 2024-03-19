@@ -71,7 +71,9 @@ def test_plot_mort_rates():
 
 
 def test_plot_surv_rates():
-    fig = parameter_plots.plot_mort_rates([base_params], survival_rates=True, include_title=True)
+    fig = parameter_plots.plot_mort_rates(
+        [base_params], survival_rates=True, include_title=True
+    )
     assert fig
 
 
@@ -83,7 +85,9 @@ def test_plot_mort_rates_save_fig(tmpdir):
 
 
 def test_plot_surv_rates_save_fig(tmpdir):
-    parameter_plots.plot_mort_rates([base_params], survival_rates=True, path=tmpdir)
+    parameter_plots.plot_mort_rates(
+        [base_params], survival_rates=True, path=tmpdir
+    )
     img = mpimg.imread(os.path.join(tmpdir, "survival_rates.png"))
 
     assert isinstance(img, np.ndarray)
@@ -105,9 +109,7 @@ def test_plot_pop_growth_rates_save_fig(tmpdir):
 
 def test_plot_ability_profiles():
     p = Specifications()
-    fig = parameter_plots.plot_ability_profiles(
-        p, p2=p, include_title=True
-    )
+    fig = parameter_plots.plot_ability_profiles(p, p2=p, include_title=True)
     assert fig
 
 
