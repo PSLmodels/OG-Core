@@ -176,7 +176,7 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_ability_profiles(p, t=None, include_title=False, path=None):
+def plot_ability_profiles(p, t=None, log_scale=False, include_title=False, path=None):
     """
     Create a plot of earnings ability profiles.
 
@@ -196,9 +196,15 @@ def plot_ability_profiles(p, t=None, include_title=False, path=None):
     cm = plt.get_cmap("coolwarm")
     ax.set_prop_cycle(color=[cm(1.0 * i / p.J) for i in range(p.J)])
     for j in range(p.J):
-        plt.plot(age_vec, p.e[t, :, j], label=GROUP_LABELS[p.J][j])
+        if log_scale:
+            plt.plot(age_vec, np.log(p.e[t, :, j]), label=GROUP_LABELS[p.J][j])
+        else:
+            plt.plot(age_vec, p.e[t, :, j], label=GROUP_LABELS[p.J][j])
     plt.xlabel(r"Age")
-    plt.ylabel(r"Earnings ability")
+    if log_scale:
+        plt.ylabel(r"ln(Earnings ability)")
+    else:
+        plt.ylabel(r"Earnings ability")
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if include_title:
         plt.title("Lifecycle Profiles of Effective Labor Units")
