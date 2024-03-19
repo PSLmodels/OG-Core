@@ -191,7 +191,7 @@ def test_plot_fert_rates():
     age_midp = np.array([9, 10, 12, 16, 18.5, 22, 27, 32, 37, 42, 47, 55, 56])
     fert_func = si.interp1d(age_midp, fert_data, kind="cubic")
     fert_rates = np.random.uniform(size=totpers).reshape((1, totpers))
-    fig = parameter_plots.plot_fert_rates(fert_rates)
+    fig = parameter_plots.plot_fert_rates([fert_rates], include_title=True)
     assert fig
 
 
@@ -223,10 +223,25 @@ def test_plot_fert_rates_save_fig(tmpdir):
     fert_func = si.interp1d(age_midp, fert_data, kind="cubic")
     fert_rates = np.random.uniform(size=totpers).reshape((1, totpers))
     parameter_plots.plot_fert_rates(
-        fert_rates,
+        [fert_rates],
+        include_title=True,
         path=tmpdir,
     )
     img = mpimg.imread(os.path.join(tmpdir, "fert_rates.png"))
+
+    assert isinstance(img, np.ndarray)
+
+
+def test_plot_g_n():
+    p = Specifications()
+    fig = parameter_plots.plot_g_n([p], include_title=True)
+    assert fig
+
+
+def test_plot_g_n_savefig(tmpdir):
+    p = Specifications()
+    parameter_plots.plot_g_n([p], include_title=True, path=tmpdir)
+    img = mpimg.imread(os.path.join(tmpdir, "pop_growth_rates.png"))
 
     assert isinstance(img, np.ndarray)
 

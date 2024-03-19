@@ -183,6 +183,8 @@ def plot_ability_profiles(p, t=None, log_scale=False, include_title=False, path=
     Args:
         p (OG-Core Specifications class): parameters object
         t (int): model period for year, if None, then plot ability matrix for SS
+        log_scale (bool): whether to plot in log points
+        include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
@@ -205,7 +207,7 @@ def plot_ability_profiles(p, t=None, log_scale=False, include_title=False, path=
         plt.ylabel(r"ln(Earnings ability)")
     else:
         plt.ylabel(r"Earnings ability")
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncols=5)
     if include_title:
         plt.title("Lifecycle Profiles of Effective Labor Units")
     if path is None:
@@ -279,6 +281,8 @@ def plot_chi_n(p, years_to_plot=[DEFAULT_START_YEAR], include_title=False, path=
 
     Args:
         p (OG-Core Specifications class): parameters object
+        years_to_plot (list): list of years to plot
+        include_title (boolean): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
@@ -301,9 +305,11 @@ def plot_chi_n(p, years_to_plot=[DEFAULT_START_YEAR], include_title=False, path=
 
 
 def plot_fert_rates(
-    fert_rates,
+    fert_rates_list,
+    labels=[""],
     start_year=DEFAULT_START_YEAR,
     years_to_plot=[DEFAULT_START_YEAR],
+    include_title=False,
     source="United Nations, World Population Prospects",
     path=None,
 ):
@@ -311,10 +317,12 @@ def plot_fert_rates(
     Plot fertility rates from the data
 
     Args:
-        fert_rates (NumPy array): fertility rates for each of
-            totpers
+        fert_rates_list (list): list of Numpy arrays of fertility rates
+            for each model period and age
+        labels (list): list of labels for the legend
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
+        include_title (bool): whether to include a title in the plot
         source (str): data source for fertility rates
         path (str): path to save figure to, if None then figure
             is returned
@@ -328,9 +336,11 @@ def plot_fert_rates(
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
-        plt.plot(fert_rates[i, :], c="blue", label="Year " + str(y))
-    # plt.title('Fertility rates by age ($f_{s}$)',
-    #     fontsize=20)
+        for i, fert_rates in enumerate(fert_rates_list):
+            plt.plot(fert_rates[i, :], label=labels[i] + " " + str(y))
+    if include_title:
+        plt.title('Fertility rates by age ($f_{s}$)',
+            fontsize=20)
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Fertility rate $f_{s}$")
     plt.legend(loc="upper right")
@@ -400,6 +410,39 @@ def plot_mort_rates_data(
     else:
         fig.show()
         return fig
+
+
+def plot_g_n(p_list, label_list=[""], include_title=False, path=None):
+    """
+    Create a plot of population growth rates from OG-Core parameterization.
+
+    Args:
+        p_list (list): list of OG-Core Specifications objects
+        label_list (list): list of labels for the legend
+        include_title (bool): whether to include a title in the plot
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of immigration rates
+
+    """
+    p0 = p_list[0]
+    years = np.arange(p0.start_year, p0.start_year + p0.T)
+    fig, ax = plt.subplots()
+    for i, p in enumerate(p_list):
+        plt.plot(years, p.g_n[: p.T], label=label_list[i])
+    plt.xlabel(r"Year $s$ (model periods)")
+    plt.ylabel(r"Population Growth Rate $g_{n,t}$")
+    plt.legend(loc="upper right")
+    vals = ax.get_yticks()
+    ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
+    if include_title:
+        plt.title("Population Growth Rates")
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "pop_growth_rates")
+        plt.savefig(fig_path, dpi=300)
 
 
 def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None):
