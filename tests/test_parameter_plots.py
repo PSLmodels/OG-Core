@@ -92,19 +92,24 @@ def test_plot_pop_growth_rates_save_fig(tmpdir):
 
 
 def test_plot_ability_profiles():
-    # make save e matrix 3D
-    base_params.e = np.tile(
-        base_params.e.reshape(1, base_params.S, base_params.J),
-        (base_params.T, 1, 1),
-    )
+    p = Specifications()
     fig = parameter_plots.plot_ability_profiles(
-        base_params, include_title=True
+        p, include_title=True
+    )
+    assert fig
+
+
+def test_plot_log_ability_profiles():
+    p = Specifications()
+    fig = parameter_plots.plot_ability_profiles(
+        p, log_scale=True, include_title=True
     )
     assert fig
 
 
 def test_plot_ability_profiles_save_fig(tmpdir):
-    parameter_plots.plot_ability_profiles(base_params, path=tmpdir)
+    p = Specifications()
+    parameter_plots.plot_ability_profiles(p, path=tmpdir)
     img = mpimg.imread(os.path.join(tmpdir, "ability_profiles.png"))
 
     assert isinstance(img, np.ndarray)
