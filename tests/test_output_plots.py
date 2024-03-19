@@ -48,19 +48,74 @@ reform_taxfunctions = utils.safe_read_pickle(
 
 
 test_data = [
-    (base_tpi, base_params, reform_tpi, reform_params, "pct_diff", None, None),
-    (base_tpi, base_params, reform_tpi, reform_params, "diff", None, None),
-    (base_tpi, base_params, reform_tpi, reform_params, "forecast", None, None),
-    (base_tpi, base_params, reform_tpi, reform_params, "levels", None, None),
-    (base_tpi, base_params, None, None, "levels", None, None),
-    (base_tpi, base_params, None, None, "levels", [2040, 2060], None),
-    (base_tpi, base_params, None, None, "levels", None, "Test plot title"),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "pct_diff",
+        False,
+        None,
+        None,
+    ),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "diff",
+        False,
+        None,
+        None,
+    ),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "forecast",
+        False,
+        None,
+        None,
+    ),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "levels",
+        False,
+        None,
+        None,
+    ),
+    (base_tpi, base_params, None, None, "levels", False, None, None),
+    (base_tpi, base_params, None, None, "levels", False, [2040, 2060], None),
+    (
+        base_tpi,
+        base_params,
+        None,
+        None,
+        "levels",
+        False,
+        None,
+        "Test plot title",
+    ),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "pct_diff",
+        True,
+        None,
+        None,
+    ),
 ]
 
 
 @pytest.mark.parametrize(
     "base_tpi,base_params,reform_tpi,reform_parms,plot_type,"
-    + "vertical_line_years,plot_title",
+    + "stationarized,vertical_line_years,plot_title",
     test_data,
     ids=[
         "Pct Diff",
@@ -70,6 +125,7 @@ test_data = [
         "Levels w/o reform",
         "Vertical line included",
         "Plot title included",
+        "Stationarized pct diff",
     ],
 )
 def test_plot_aggregates(
@@ -78,6 +134,7 @@ def test_plot_aggregates(
     reform_tpi,
     reform_parms,
     plot_type,
+    stationarized,
     vertical_line_years,
     plot_title,
 ):
@@ -88,6 +145,7 @@ def test_plot_aggregates(
         reform_params=reform_params,
         var_list=["Y", "r"],
         plot_type=plot_type,
+        stationarized=stationarized,
         num_years_to_plot=20,
         start_year=2023,
         forecast_data=np.ones(20),
@@ -96,6 +154,17 @@ def test_plot_aggregates(
         plot_title=plot_title,
     )
     assert fig
+
+
+test_data = [
+    (base_tpi, base_params, reform_tpi, reform_params, "pct_diff", None, None),
+    (base_tpi, base_params, reform_tpi, reform_params, "diff", None, None),
+    (base_tpi, base_params, reform_tpi, reform_params, "forecast", None, None),
+    (base_tpi, base_params, reform_tpi, reform_params, "levels", None, None),
+    (base_tpi, base_params, None, None, "levels", None, None),
+    (base_tpi, base_params, None, None, "levels", [2040, 2060], None),
+    (base_tpi, base_params, None, None, "levels", None, "Test plot title"),
+]
 
 
 @pytest.mark.parametrize(

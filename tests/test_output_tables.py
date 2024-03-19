@@ -51,19 +51,25 @@ reform_params.inv_tax_credit = np.zeros(
 )
 
 test_data = [
-    (base_tpi, base_params, reform_tpi, reform_params, "pct_diff"),
-    (base_tpi, base_params, reform_tpi, reform_params, "diff"),
-    (base_tpi, base_params, reform_tpi, reform_params, "levels"),
+    (base_tpi, base_params, reform_tpi, reform_params, "pct_diff", False),
+    (base_tpi, base_params, reform_tpi, reform_params, "diff", False),
+    (base_tpi, base_params, reform_tpi, reform_params, "levels", False),
+    (base_tpi, base_params, reform_tpi, reform_params, "pct_diff", True),
 ]
 
 
 @pytest.mark.parametrize(
-    "base_tpi,base_params,reform_tpi,reform_params,output_type",
+    "base_tpi,base_params,reform_tpi,reform_params,output_type,stationarized",
     test_data,
-    ids=["Pct Diff", "Diff", "Levels"],
+    ids=["Pct Diff", "Diff", "Levels", "Unstationary pct diff"],
 )
 def test_macro_table(
-    base_tpi, base_params, reform_tpi, reform_params, output_type
+    base_tpi,
+    base_params,
+    reform_tpi,
+    reform_params,
+    output_type,
+    stationarized,
 ):
     df = output_tables.macro_table(
         base_tpi,
@@ -72,6 +78,7 @@ def test_macro_table(
         reform_params=reform_params,
         start_year=2023,
         output_type=output_type,
+        stationarized=stationarized,
         include_SS=True,
         include_overall=True,
     )

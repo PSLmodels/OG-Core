@@ -1218,7 +1218,40 @@ def pct_change_unstationarized(
     pct_changes = {}
     T = param_base.T
     for var in output_vars:
-        if var in ["K", "C", "Y", "BQ", "TR", "UBI", "D", "total_tax_revenue"]:
+        if var in [
+            "Y",
+            "B",
+            "K",
+            "K_f",
+            "K_d",
+            "C",
+            "I",
+            "K_g",
+            "I_g",
+            "Y_vec",
+            "K_vec",
+            "C_vec",
+            "I_total",
+            "I_d",
+            "BQ",
+            "TR",
+            "total_tax_revenue",
+            "business_tax_revenue",
+            "iit_payroll_tax_revenue",
+            "iit_revenue",
+            "payroll_tax_revenue",
+            "agg_pension_outlays",
+            "bequest_tax_revenue",
+            "wealth_tax_revenue",
+            "cons_tax_revenue",
+            "G",
+            "D",
+            "D_f",
+            "D_d",
+            "UBI_path",
+            "new_borrowing_f",
+            "debt_service_f",
+        ]:
             non_stationary_output["base"][var] = (
                 tpi_base[var][:T]
                 * np.cumprod(1 + param_base.g_n[:T])
@@ -1229,14 +1262,27 @@ def pct_change_unstationarized(
                 * np.cumprod(1 + param_reform.g_n[:T])
                 * np.exp(param_reform.g_y * np.arange(param_reform.T))
             )
-        elif var in ["L"]:
+        elif var in [
+            "L",
+            "L_vec",
+        ]:
             non_stationary_output["base"][var] = tpi_base[var][
                 :T
             ] * np.cumprod(1 + param_base.g_n[:T])
             non_stationary_output["reform"][var] = tpi_reform[var][
                 :T
             ] * np.cumprod(1 + param_reform.g_n[:T])
-        elif var in ["w", "ubi", "tr", "bq"]:
+        elif var in [
+            "w",
+            "ubi_path",
+            "tr_path",
+            "bq_path",
+            "bmat_splus1",
+            "bmat_s",
+            "c_path",
+            "y_before_tax_path",
+            "tax_path",
+        ]:
             non_stationary_output["base"][var] = tpi_base[var][:T] * np.exp(
                 param_base.g_y * np.arange(param_base.T)
             )
