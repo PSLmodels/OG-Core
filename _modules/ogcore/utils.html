@@ -1674,7 +1674,40 @@ document.write(`
     <span class="n">pct_changes</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">param_base</span><span class="o">.</span><span class="n">T</span>
     <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">output_vars</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;BQ&quot;</span><span class="p">,</span> <span class="s2">&quot;TR&quot;</span><span class="p">,</span> <span class="s2">&quot;UBI&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;B&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;K&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;K_f&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;K_d&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;I&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;K_g&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;I_g&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Y_vec&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;K_vec&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;C_vec&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;I_total&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;I_d&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;BQ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TR&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;business_tax_revenue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;iit_payroll_tax_revenue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;iit_revenue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payroll_tax_revenue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;agg_pension_outlays&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bequest_tax_revenue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;wealth_tax_revenue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cons_tax_revenue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;G&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;D&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;D_f&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;D_d&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;UBI_path&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;new_borrowing_f&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;debt_service_f&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
             <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
                 <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_base</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
@@ -1685,14 +1718,27 @@ document.write(`
                 <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_reform</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
                 <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;L&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;L_vec&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
             <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][</span>
                 <span class="p">:</span><span class="n">T</span>
             <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_base</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
             <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][</span>
                 <span class="p">:</span><span class="n">T</span>
             <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_reform</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;ubi&quot;</span><span class="p">,</span> <span class="s2">&quot;tr&quot;</span><span class="p">,</span> <span class="s2">&quot;bq&quot;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ubi_path&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tr_path&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bq_path&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bmat_splus1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bmat_s&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;c_path&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;y_before_tax_path&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tax_path&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
             <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span>
                 <span class="n">param_base</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_base</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
             <span class="p">)</span>
