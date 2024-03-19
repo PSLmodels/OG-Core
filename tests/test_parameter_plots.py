@@ -145,13 +145,13 @@ def test_plot_elliptical_u_save_fig(tmpdir):
 
 def test_plot_chi_n():
     p = Specifications()
-    fig = parameter_plots.plot_chi_n(p, include_title=True)
+    fig = parameter_plots.plot_chi_n([p], include_title=True)
     assert fig
 
 
 def test_plot_chi_n_save_fig(tmpdir):
     p = Specifications()
-    parameter_plots.plot_chi_n(p, path=tmpdir)
+    parameter_plots.plot_chi_n([p], path=tmpdir)
     img = mpimg.imread(os.path.join(tmpdir, "chi_n_values.png"))
 
     assert isinstance(img, np.ndarray)

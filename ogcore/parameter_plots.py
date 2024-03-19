@@ -292,12 +292,13 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_chi_n(p, years_to_plot=[DEFAULT_START_YEAR], include_title=False, path=None):
+def plot_chi_n(p_list, labels=[""], years_to_plot=[DEFAULT_START_YEAR], include_title=False, path=None):
     """
     Create a plot of showing the values of the chi_n parameters.
 
     Args:
-        p (OG-Core Specifications class): parameters object
+        p_list (list): parameters objects
+        labels (list): labels for legend
         years_to_plot (list): list of years to plot
         include_title (boolean): whether to include a title in the plot
         path (string): path to save figure to
@@ -306,10 +307,12 @@ def plot_chi_n(p, years_to_plot=[DEFAULT_START_YEAR], include_title=False, path=
         fig (Matplotlib plot object): plot of chi_n parameters
 
     """
-    age = np.linspace(p.starting_age, p.ending_age, p.S)
+    p0 = p_list[0]
+    age = np.linspace(p0.starting_age, p0.ending_age, p0.S)
     fig, ax = plt.subplots()
     for y in years_to_plot:
-        plt.plot(age, p.chi_n[y - p.start_year, :], label=str(y))
+        for i, p in enumerate(p_list):
+            plt.plot(age, p.chi_n[y - p.start_year, :], label=labels[i] + " " + str(y))
     if include_title:
         plt.title("Utility Weight on the Disutility of Labor Supply")
     plt.xlabel("Age, $s$")
