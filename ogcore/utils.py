@@ -1145,7 +1145,7 @@ def shift_bio_clock(
     # apply the transition path to the initial parameters
     # find diff from shifting bio clock back total_effect years
     param_shift[:, min_age_effect_felt:, ...] = param_in[
-        :, (min_age_effect_felt - total_effect_ru): S - total_effect_ru, ...
+        :, (min_age_effect_felt - total_effect_ru) : S - total_effect_ru, ...
     ]
     if use_spline:
         # use cubic spline to avoid plateau at end of lifecycle profile
