@@ -106,7 +106,7 @@ def test_plot_pop_growth_rates_save_fig(tmpdir):
 def test_plot_ability_profiles():
     p = Specifications()
     fig = parameter_plots.plot_ability_profiles(
-        p, include_title=True
+        p, p2=p, include_title=True
     )
     assert fig
 
@@ -114,7 +114,7 @@ def test_plot_ability_profiles():
 def test_plot_log_ability_profiles():
     p = Specifications()
     fig = parameter_plots.plot_ability_profiles(
-        p, log_scale=True, include_title=True
+        p, p2=p, log_scale=True, include_title=True
     )
     assert fig
 

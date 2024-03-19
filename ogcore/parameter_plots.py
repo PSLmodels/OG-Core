@@ -193,7 +193,7 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_ability_profiles(p, t=None, log_scale=False, include_title=False, path=None):
+def plot_ability_profiles(p, p2=None, t=None, log_scale=False, include_title=False, path=None):
     """
     Create a plot of earnings ability profiles.
 
@@ -219,6 +219,22 @@ def plot_ability_profiles(p, t=None, log_scale=False, include_title=False, path=
             plt.plot(age_vec, np.log(p.e[t, :, j]), label=GROUP_LABELS[p.J][j])
         else:
             plt.plot(age_vec, p.e[t, :, j], label=GROUP_LABELS[p.J][j])
+    if p2 is not None:
+        for j in range(p.J):
+            if log_scale:
+                plt.plot(
+                    age_vec,
+                    np.log(p2.e[t, :, j]),
+                    linestyle="--",
+                    label=GROUP_LABELS[p.J][j],
+                )
+            else:
+                plt.plot(
+                    age_vec,
+                    p2.e[t, :, j],
+                    linestyle="--",
+                    label=GROUP_LABELS[p.J][j],
+                )
     plt.xlabel(r"Age")
     if log_scale:
         plt.ylabel(r"ln(Earnings ability)")
