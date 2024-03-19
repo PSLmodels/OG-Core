@@ -384,6 +384,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="n">StringIO</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">CubicSpline</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_stream</span><span class="p">,</span> <span class="n">Requirement</span>
 <span class="kn">import</span> <span class="nn">importlib.resources</span>
@@ -1489,6 +1490,8 @@ document.write(`
 
 
 
+<div class="viewcode-block" id="CustomHttpAdapter">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.CustomHttpAdapter">[docs]</a>
 <span class="k">class</span> <span class="nc">CustomHttpAdapter</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">adapters</span><span class="o">.</span><span class="n">HTTPAdapter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The UN Data Portal server doesn&#39;t support &quot;RFC 5746 secure renegotiation&quot;. This causes and error when the client is using OpenSSL 3, which enforces that standard by default.</span>
@@ -1500,13 +1503,17 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span> <span class="o">=</span> <span class="n">ssl_context</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
+<div class="viewcode-block" id="CustomHttpAdapter.init_poolmanager">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.CustomHttpAdapter.init_poolmanager">[docs]</a>
     <span class="k">def</span> <span class="nf">init_poolmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connections</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">poolmanager</span> <span class="o">=</span> <span class="n">urllib3</span><span class="o">.</span><span class="n">poolmanager</span><span class="o">.</span><span class="n">PoolManager</span><span class="p">(</span>
             <span class="n">num_pools</span><span class="o">=</span><span class="n">connections</span><span class="p">,</span>
             <span class="n">maxsize</span><span class="o">=</span><span class="n">maxsize</span><span class="p">,</span>
             <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span>
             <span class="n">ssl_context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">def</span> <span class="nf">get_legacy_session</span><span class="p">():</span>
@@ -1515,6 +1522,196 @@ document.write(`
     <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
     <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="n">CustomHttpAdapter</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">session</span>
+
+
+<div class="viewcode-block" id="shift_bio_clock">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.shift_bio_clock">[docs]</a>
+<span class="k">def</span> <span class="nf">shift_bio_clock</span><span class="p">(</span>
+    <span class="n">param_in</span><span class="p">,</span>
+    <span class="n">initial_effect_period</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">final_effect_period</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">total_effect</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">min_age_effect_felt</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">bound_below</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">bound_above</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">use_spline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes an initial array of parameters that has a time</span>
+<span class="sd">    dimension and an age dimension. It then applies a shift along the</span>
+<span class="sd">    age dimension (i.e., a change in the &quot;biological clock&quot;) and phases</span>
+<span class="sd">    this shift in over some period of time.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        param_in (Numpy array): initial parameter values, first two</span>
+<span class="sd">            dimensions must be time then age, respectively</span>
+<span class="sd">        initial_effect_period (int): first model period when transition</span>
+<span class="sd">            to new parameter values occurs</span>
+<span class="sd">        final_effect_period (int): model period when effect is fully</span>
+<span class="sd">            phased in (so transition from param_in to param_out happens</span>
+<span class="sd">            between model periods `initial_effect_period` and</span>
+<span class="sd">            `final_effect_period`)</span>
+<span class="sd">        total_effect (float): total number of model periods to shift</span>
+<span class="sd">            the biological clock (allows for fractions of periods)</span>
+<span class="sd">        min_age_effect_felt (int): minimum age at which the effect of</span>
+<span class="sd">            the transition is felt in model periods</span>
+<span class="sd">        bound_below (bool): whether param_out bounded below by param_in</span>
+<span class="sd">        bound_above (bool): whether param_out bounded above by param_in</span>
+<span class="sd">        use_spline (bool): whether to use a cubic spline to interpolate</span>
+<span class="sd">            tail of param_out</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        param_out (Numpy array): updated parameter values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">total_effect</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+    <span class="p">)</span>  <span class="c1"># this code would need to change to accommodate effects &lt; 0</span>
+    <span class="n">n_dims</span> <span class="o">=</span> <span class="n">param_in</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">assert</span> <span class="n">n_dims</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># create a linear transition path</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">final_effect_period</span> <span class="o">-</span> <span class="n">initial_effect_period</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">)</span>  <span class="c1"># number of periods transition over</span>
+    <span class="n">transition_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transition path = &quot;</span><span class="p">,</span> <span class="n">transition_path</span><span class="p">)</span>
+    <span class="n">transition_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TRANS = &quot;</span><span class="p">,</span> <span class="n">transition_path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">param_in</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]))</span>
+        <span class="n">transition_arr</span><span class="p">[</span><span class="n">initial_effect_period</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">transition_path</span><span class="p">[</span>
+            <span class="n">i</span>
+        <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">param_in</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+    <span class="n">transition_arr</span><span class="p">[</span><span class="n">final_effect_period</span><span class="p">:,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span>
+        <span class="n">param_in</span><span class="p">[</span><span class="n">final_effect_period</span><span class="p">:,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">param_shift</span> <span class="o">=</span> <span class="n">param_in</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># Accounting for shifts that are fractions of a model period</span>
+    <span class="n">total_effect_ru</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">total_effect</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">total_effect</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">pct_effect</span> <span class="o">=</span> <span class="n">total_effect</span> <span class="o">/</span> <span class="n">total_effect_ru</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pct_effect</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pct effect = &quot;</span><span class="p">,</span> <span class="n">pct_effect</span><span class="p">)</span>
+    <span class="c1"># apply the transition path to the initial parameters</span>
+    <span class="c1"># find diff from shifting bio clock back total_effect years</span>
+    <span class="n">param_shift</span><span class="p">[:,</span> <span class="n">min_age_effect_felt</span><span class="p">:,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_in</span><span class="p">[</span>
+        <span class="p">:,</span> <span class="p">(</span><span class="n">min_age_effect_felt</span> <span class="o">-</span> <span class="n">total_effect_ru</span><span class="p">)</span> <span class="p">:</span> <span class="n">S</span> <span class="o">-</span> <span class="n">total_effect_ru</span><span class="p">,</span> <span class="o">...</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">use_spline</span><span class="p">:</span>
+        <span class="c1"># use cubic spline to avoid plateau at end of lifecycle profile</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">n_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">initial_effect_period</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">):</span>
+                    <span class="n">spline</span> <span class="o">=</span> <span class="n">CubicSpline</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">total_effect</span><span class="p">),</span>
+                        <span class="n">param_shift</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="n">total_effect</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="p">)</span>
+                    <span class="n">param_shift</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="n">total_effect</span><span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">spline</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">total_effect</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">initial_effect_period</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+                <span class="n">spline</span> <span class="o">=</span> <span class="n">CubicSpline</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">total_effect</span><span class="p">),</span> <span class="n">param_shift</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="n">total_effect</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">param_shift</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="n">total_effect</span><span class="p">:]</span> <span class="o">=</span> <span class="n">spline</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">total_effect</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+                <span class="p">)</span>
+    <span class="c1"># make sure values are not lower after shift</span>
+    <span class="k">if</span> <span class="n">bound_below</span><span class="p">:</span>
+        <span class="n">param_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">param_shift</span><span class="p">,</span> <span class="n">param_in</span><span class="p">)</span>
+    <span class="c1"># make sure values are not higher after shift</span>
+    <span class="k">if</span> <span class="n">bound_above</span><span class="p">:</span>
+        <span class="n">param_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">param_shift</span><span class="p">,</span> <span class="n">param_in</span><span class="p">)</span>
+    <span class="c1"># Now transition the shift over time using the transition path</span>
+    <span class="n">param_out</span> <span class="o">=</span> <span class="n">param_in</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="n">transition_arr</span> <span class="o">*</span> <span class="n">pct_effect</span> <span class="o">*</span> <span class="p">(</span><span class="n">param_shift</span> <span class="o">-</span> <span class="n">param_in</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">param_out</span></div>
+
+
+
+<div class="viewcode-block" id="pct_change_unstationarized">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.pct_change_unstationarized">[docs]</a>
+<span class="k">def</span> <span class="nf">pct_change_unstationarized</span><span class="p">(</span>
+    <span class="n">tpi_base</span><span class="p">,</span>
+    <span class="n">param_base</span><span class="p">,</span>
+    <span class="n">tpi_reform</span><span class="p">,</span>
+    <span class="n">param_reform</span><span class="p">,</span>
+    <span class="n">output_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">],</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes the time paths of variables from the baseline</span>
+<span class="sd">    and reform and parameters from the baseline and reform runs and</span>
+<span class="sd">    computes percent changes for each variable in the output_vars list.</span>
+<span class="sd">    The function first unstationarizes the time paths of the variables</span>
+<span class="sd">    and then computes the percent changes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tpi_base (Numpy array): time path of the output variables from</span>
+<span class="sd">            the baseline run</span>
+<span class="sd">        param_base (Specifications object): dictionary of parameters</span>
+<span class="sd">            from the baseline run</span>
+<span class="sd">        tpi_reform (Numpy array): time path of the output variables from</span>
+<span class="sd">            the reform run</span>
+<span class="sd">        param_reform (Specifications object): dictionary of parameters</span>
+<span class="sd">            from the reform run</span>
+<span class="sd">        output_vars (list): list of variables for which to compute</span>
+<span class="sd">            percent changes</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pct_changes (dict): dictionary of percent changes for each</span>
+<span class="sd">            variable in output_vars list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># compute non-stationary variables</span>
+    <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;base&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;reform&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="n">pct_changes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">param_base</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">output_vars</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;BQ&quot;</span><span class="p">,</span> <span class="s2">&quot;TR&quot;</span><span class="p">,</span> <span class="s2">&quot;UBI&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">]:</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
+                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_base</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
+                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">param_base</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_base</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
+                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_reform</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
+                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">]:</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][</span>
+                <span class="p">:</span><span class="n">T</span>
+            <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_base</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][</span>
+                <span class="p">:</span><span class="n">T</span>
+            <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_reform</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;ubi&quot;</span><span class="p">,</span> <span class="s2">&quot;tr&quot;</span><span class="p">,</span> <span class="s2">&quot;bq&quot;</span><span class="p">]:</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span>
+                <span class="n">param_base</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_base</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][</span>
+                <span class="p">:</span><span class="n">T</span>
+            <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
+
+        <span class="c1"># calculate percent change</span>
+        <span class="n">pct_changes</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span>
+            <span class="o">/</span> <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span>
+            <span class="o">-</span> <span class="mi">1</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pct_changes</span></div>
+
 </pre></div>
 
                 </article>

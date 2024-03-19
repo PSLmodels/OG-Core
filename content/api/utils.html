@@ -428,6 +428,10 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.var_of_logs"><code class="docutils literal notranslate"><span class="pre">Inequality.var_of_logs()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.CustomHttpAdapter"><code class="docutils literal notranslate"><span class="pre">CustomHttpAdapter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.CustomHttpAdapter.init_poolmanager"><code class="docutils literal notranslate"><span class="pre">CustomHttpAdapter.init_poolmanager()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.avg_by_bin"><code class="docutils literal notranslate"><span class="pre">avg_by_bin()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_array"><code class="docutils literal notranslate"><span class="pre">comp_array()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_scalar"><code class="docutils literal notranslate"><span class="pre">comp_scalar()</span></code></a></li>
@@ -438,6 +442,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.get_initial_path"><code class="docutils literal notranslate"><span class="pre">get_initial_path()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.mkdirs"><code class="docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.not_connected"><code class="docutils literal notranslate"><span class="pre">not_connected()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_change_unstationarized"><code class="docutils literal notranslate"><span class="pre">pct_change_unstationarized()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_diff_func"><code class="docutils literal notranslate"><span class="pre">pct_diff_func()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pickle_file_compare"><code class="docutils literal notranslate"><span class="pre">pickle_file_compare()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.print_progress"><code class="docutils literal notranslate"><span class="pre">print_progress()</span></code></a></li>
@@ -445,6 +450,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.read_file"><code class="docutils literal notranslate"><span class="pre">read_file()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.safe_read_pickle"><code class="docutils literal notranslate"><span class="pre">safe_read_pickle()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.save_return_table"><code class="docutils literal notranslate"><span class="pre">save_return_table()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.shift_bio_clock"><code class="docutils literal notranslate"><span class="pre">shift_bio_clock()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.to_timepath_shape"><code class="docutils literal notranslate"><span class="pre">to_timepath_shape()</span></code></a></li>
 </ul>
 </li>
@@ -540,6 +546,32 @@ in (0, 1)</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>var_ln_dist (scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ogcore.utils.CustomHttpAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">CustomHttpAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssl_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#CustomHttpAdapter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.CustomHttpAdapter" title="Link to this definition">#</a></dt>
+<dd><p>The UN Data Portal server doesn’t support “RFC 5746 secure renegotiation”. This causes and error when the client is using OpenSSL 3, which enforces that standard by default.
+The fix is to create a custom SSL context that allows for legacy connections. This defines a function get_legacy_session() that should be used instead of requests().</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ogcore.utils.CustomHttpAdapter.init_poolmanager">
+<span class="sig-name descname"><span class="pre">init_poolmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#CustomHttpAdapter.init_poolmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.CustomHttpAdapter.init_poolmanager" title="Link to this definition">#</a></dt>
+<dd><p>Initializes a urllib3 PoolManager.</p>
+<p>This method should not be called from user code, and is only
+exposed for use when subclassing the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPAdapter</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connections</strong> – The number of urllib3 connection pools to cache.</p></li>
+<li><p><strong>maxsize</strong> – The maximum number of connections to save in the pool.</p></li>
+<li><p><strong>block</strong> – Block when no free connections are available.</p></li>
+<li><p><strong>pool_kwargs</strong> – Extra keyword arguments used to initialize the Pool Manager.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -823,6 +855,42 @@ or “quadratic”</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.utils.pct_change_unstationarized">
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">pct_change_unstationarized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tpi_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tpi_reform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_reform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['K',</span> <span class="pre">'Y',</span> <span class="pre">'C',</span> <span class="pre">'L',</span> <span class="pre">'r',</span> <span class="pre">'w']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#pct_change_unstationarized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.pct_change_unstationarized" title="Link to this definition">#</a></dt>
+<dd><p>This function takes the time paths of variables from the baseline
+and reform and parameters from the baseline and reform runs and
+computes percent changes for each variable in the output_vars list.
+The function first unstationarizes the time paths of the variables
+and then computes the percent changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tpi_base</strong> (<em>Numpy array</em>) – time path of the output variables from
+the baseline run</p></li>
+<li><p><strong>param_base</strong> (<em>Specifications object</em>) – dictionary of parameters
+from the baseline run</p></li>
+<li><p><strong>tpi_reform</strong> (<em>Numpy array</em>) – time path of the output variables from
+the reform run</p></li>
+<li><p><strong>param_reform</strong> (<em>Specifications object</em>) – dictionary of parameters
+from the reform run</p></li>
+<li><p><strong>output_vars</strong> (<em>list</em>) – list of variables for which to compute
+percent changes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>dictionary of percent changes for each</dt><dd><p>variable in output_vars list</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pct_changes (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.pct_diff_func">
 <span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">pct_diff_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simul</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#pct_diff_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.pct_diff_func" title="Link to this definition">#</a></dt>
 <dd><p>Used to calculate the absolute percent difference between data
@@ -987,6 +1055,43 @@ Defaults to 0.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.utils.shift_bio_clock">
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">shift_bio_clock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_effect_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_effect_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_age_effect_felt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound_below</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound_above</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_spline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#shift_bio_clock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.shift_bio_clock" title="Link to this definition">#</a></dt>
+<dd><p>This function takes an initial array of parameters that has a time
+dimension and an age dimension. It then applies a shift along the
+age dimension (i.e., a change in the “biological clock”) and phases
+this shift in over some period of time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_in</strong> (<em>Numpy array</em>) – initial parameter values, first two
+dimensions must be time then age, respectively</p></li>
+<li><p><strong>initial_effect_period</strong> (<em>int</em>) – first model period when transition
+to new parameter values occurs</p></li>
+<li><p><strong>final_effect_period</strong> (<em>int</em>) – model period when effect is fully
+phased in (so transition from param_in to param_out happens
+between model periods <cite>initial_effect_period</cite> and
+<cite>final_effect_period</cite>)</p></li>
+<li><p><strong>total_effect</strong> (<em>float</em>) – total number of model periods to shift
+the biological clock (allows for fractions of periods)</p></li>
+<li><p><strong>min_age_effect_felt</strong> (<em>int</em>) – minimum age at which the effect of
+the transition is felt in model periods</p></li>
+<li><p><strong>bound_below</strong> (<em>bool</em>) – whether param_out bounded below by param_in</p></li>
+<li><p><strong>bound_above</strong> (<em>bool</em>) – whether param_out bounded above by param_in</p></li>
+<li><p><strong>use_spline</strong> (<em>bool</em>) – whether to use a cubic spline to interpolate
+tail of param_out</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>updated parameter values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>param_out (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.to_timepath_shape">
 <span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">to_timepath_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">some_array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#to_timepath_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.to_timepath_shape" title="Link to this definition">#</a></dt>
 <dd><p>This function takes an vector of length T and tiles it to fill a
@@ -1079,6 +1184,10 @@ Tx1x1 array for time path computations.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.Inequality.var_of_logs"><code class="docutils literal notranslate"><span class="pre">Inequality.var_of_logs()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.CustomHttpAdapter"><code class="docutils literal notranslate"><span class="pre">CustomHttpAdapter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.CustomHttpAdapter.init_poolmanager"><code class="docutils literal notranslate"><span class="pre">CustomHttpAdapter.init_poolmanager()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.avg_by_bin"><code class="docutils literal notranslate"><span class="pre">avg_by_bin()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_array"><code class="docutils literal notranslate"><span class="pre">comp_array()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_scalar"><code class="docutils literal notranslate"><span class="pre">comp_scalar()</span></code></a></li>
@@ -1089,6 +1198,7 @@ Tx1x1 array for time path computations.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.get_initial_path"><code class="docutils literal notranslate"><span class="pre">get_initial_path()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.mkdirs"><code class="docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.not_connected"><code class="docutils literal notranslate"><span class="pre">not_connected()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_change_unstationarized"><code class="docutils literal notranslate"><span class="pre">pct_change_unstationarized()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_diff_func"><code class="docutils literal notranslate"><span class="pre">pct_diff_func()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pickle_file_compare"><code class="docutils literal notranslate"><span class="pre">pickle_file_compare()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.print_progress"><code class="docutils literal notranslate"><span class="pre">print_progress()</span></code></a></li>
@@ -1096,6 +1206,7 @@ Tx1x1 array for time path computations.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.read_file"><code class="docutils literal notranslate"><span class="pre">read_file()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.safe_read_pickle"><code class="docutils literal notranslate"><span class="pre">safe_read_pickle()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.save_return_table"><code class="docutils literal notranslate"><span class="pre">save_return_table()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.shift_bio_clock"><code class="docutils literal notranslate"><span class="pre">shift_bio_clock()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.to_timepath_shape"><code class="docutils literal notranslate"><span class="pre">to_timepath_shape()</span></code></a></li>
 </ul>
 </li>
