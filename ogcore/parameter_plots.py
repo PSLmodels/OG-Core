@@ -64,36 +64,53 @@ def plot_imm_rates(
 
 
 def plot_mort_rates(
-    p, years=[DEFAULT_START_YEAR], include_title=False, path=None
+    p_list, labels=[""], years=[DEFAULT_START_YEAR], survival_rates=False, include_title=False, path=None
 ):
     """
     Create a plot of mortality rates from OG-Core parameterization.
 
     Args:
-        p (OG-Core Specifications class): parameters object
+        p_list (list): list of parameters objects
+        labels (list): list of labels for the legend
+        survival_rates (bool): whether to plot survival rates instead
+            of mortality rates
         include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
-        fig (Matplotlib plot object): plot of immigration rates
+        fig (Matplotlib plot object): plot of mortality rates
 
     """
-    age_per = np.linspace(p.E, p.E + p.S, p.S)
-    years = np.array(years) - p.start_year
+    p0 = p_list[0]
+    age_per = np.linspace(p0.E, p0.E + p0.S, p0.S)
     fig, ax = plt.subplots()
     for y in years:
-        plt.plot(age_per, p.rho[y, :], label=str(y + p.start_year))
+        t = y - p0.start_year
+        for i, p in enumerate(p_list):
+            if survival_rates:
+                plt.plot(age_per, np.cumprod(1 - p.rho[t, :]), label=labels[i] + " " + str(y))
+            else:
+                plt.plot(age_per, p.rho[t, :], label=labels[i] + " " + str(y))
     plt.xlabel(r"Age $s$ (model periods)")
-    plt.ylabel(r"Mortality Rates $\rho_{s}$")
-    plt.legend(loc="upper right")
+    if survival_rates:
+        plt.ylabel(r"Cumulative Survival Rates")
+        plt.legend(loc="lower left")
+        title = "Survival Rates"
+    else:
+        plt.ylabel(r"Mortality Rates $\rho_{s}$")
+        plt.legend(loc="upper right")
+        title = "Mortality Rates"
     vals = ax.get_yticks()
     ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
     if include_title:
-        plt.title("Mortality Rates")
+        plt.title(title)
     if path is None:
         return fig
     else:
-        fig_path = os.path.join(path, "mortality_rates")
+        if survival_rates:
+            fig_path = os.path.join(path, "survival_rates")
+        else:
+            fig_path = os.path.join(path, "mortality_rates")
         plt.savefig(fig_path, dpi=300)
 
 
