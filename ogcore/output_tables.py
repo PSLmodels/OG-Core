@@ -4,6 +4,7 @@ import os
 from ogcore.constants import VAR_LABELS, DEFAULT_START_YEAR
 from ogcore import tax
 from ogcore.utils import save_return_table, Inequality
+from ogcore.utils import pct_change_unstationarized
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 
@@ -15,6 +16,7 @@ def macro_table(
     reform_params=None,
     var_list=["Y", "C", "K", "L", "r", "w"],
     output_type="pct_diff",
+    stationarized=True,
     num_years=10,
     include_SS=True,
     include_overall=True,
@@ -38,6 +40,8 @@ def macro_table(
                 and reform ((reform-base)/base)
             'diff': plots difference between baseline and reform (reform-base)
             'levels': variables in model units
+        stationarized (bool): whether used stationarized variables (False
+            only affects pct_diff right now)
         num_years (integer): number of years to include in table
         include_SS (bool): whether to include the steady-state results
             in the table
@@ -72,7 +76,17 @@ def macro_table(
     for i, v in enumerate(var_list):
         if output_type == "pct_diff":
             # multiple by 100 so in percentage points
-            results = ((reform_tpi[v] - base_tpi[v]) / base_tpi[v]) * 100
+            if stationarized:
+                results = ((reform_tpi[v] - base_tpi[v]) / base_tpi[v]) * 100
+            else:
+                pct_changes = pct_change_unstationarized(
+                    base_tpi,
+                    base_params,
+                    reform_tpi,
+                    reform_params,
+                    output_vars=[v],
+                )
+                results = pct_changes[v] * 100
             results_years = results[start_index : start_index + num_years]
             results_overall = (
                 (

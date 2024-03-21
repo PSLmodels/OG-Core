@@ -20,6 +20,7 @@ def plot_aggregates(
     reform_params=None,
     var_list=["Y", "C", "K", "L"],
     plot_type="pct_diff",
+    stationarized=True,
     num_years_to_plot=50,
     start_year=DEFAULT_START_YEAR,
     forecast_data=None,
@@ -40,13 +41,15 @@ def plot_aggregates(
             object
         var_list (list): names of variable to plot
         plot_type (string): type of plot, can be:
-            'pct_diff': plots percentage difference between baselien
+            'pct_diff': plots percentage difference between baseline
                 and reform ((reform-base)/base)
             'diff': plots difference between baseline and reform
                 (reform-base)
             'levels': plot variables in model units
             'forecast': plots variables in levels relative to baseline
                 economic forecast
+        stationarized (bool): whether used stationarized variables (False
+            only affects pct_diff right now)
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
         forecast_data (array_like): baseline economic forecast series,
@@ -78,11 +81,21 @@ def plot_aggregates(
                 # Compute just percentage point changes for rates
                 plot_var = reform_tpi[v] - base_tpi[v]
             else:
-                plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
+                if stationarized:
+                    plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
+                else:
+                    pct_changes = utils.pct_change_unstationarized(
+                        base_tpi,
+                        base_params,
+                        reform_tpi,
+                        reform_params,
+                        output_vars=[v],
+                    )
+                    plot_var = pct_changes[v]
             ylabel = r"Pct. change"
             plt.plot(
                 year_vec,
-                plot_var[start_index : start_index + num_years_to_plot],
+                plot_var[start_index : start_index + num_years_to_plot] * 100,
                 label=VAR_LABELS[v],
             )
         elif plot_type == "diff":
@@ -185,7 +198,7 @@ def plot_industry_aggregates(
             object
         var_list (list): names of variable to plot
         plot_type (string): type of plot, can be:
-            'pct_diff': plots percentage difference between baselien
+            'pct_diff': plots percentage difference between baseline
                 and reform ((reform-base)/base)
             'diff': plots difference between baseline and reform
                 (reform-base)
@@ -343,7 +356,7 @@ def ss_3Dplot(
         reform_ss (dictionary): SS output from reform run
         var (string): name of variable to plot
         plot_type (string): type of plot, can be:
-            'pct_diff': plots percentage difference between baselien
+            'pct_diff': plots percentage difference between baseline
                 and reform ((reform-base)/base)
             'diff': plots difference between baseline and reform (reform-base)
             'levels': plot variables in model units

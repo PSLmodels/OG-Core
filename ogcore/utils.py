@@ -8,6 +8,7 @@ from tempfile import NamedTemporaryFile
 from io import BytesIO, StringIO
 import numpy as np
 import pandas as pd
+from scipy.interpolate import CubicSpline
 import pickle
 from pkg_resources import resource_stream, Requirement
 import importlib.resources
@@ -1070,3 +1071,233 @@ def get_legacy_session():
     session = requests.session()
     session.mount("https://", CustomHttpAdapter(ctx))
     return session
+
+
+def shift_bio_clock(
+    param_in,
+    initial_effect_period=1,
+    final_effect_period=1,
+    total_effect=1,
+    min_age_effect_felt=20,
+    bound_below=False,
+    bound_above=False,
+    use_spline=False,
+):
+    """
+    This function takes an initial array of parameters that has a time
+    dimension and an age dimension. It then applies a shift along the
+    age dimension (i.e., a change in the "biological clock") and phases
+    this shift in over some period of time.
+
+    Args:
+        param_in (Numpy array): initial parameter values, first two
+            dimensions must be time then age, respectively
+        initial_effect_period (int): first model period when transition
+            to new parameter values occurs
+        final_effect_period (int): model period when effect is fully
+            phased in (so transition from param_in to param_out happens
+            between model periods `initial_effect_period` and
+            `final_effect_period`)
+        total_effect (float): total number of model periods to shift
+            the biological clock (allows for fractions of periods)
+        min_age_effect_felt (int): minimum age at which the effect of
+            the transition is felt in model periods
+        bound_below (bool): whether param_out bounded below by param_in
+        bound_above (bool): whether param_out bounded above by param_in
+        use_spline (bool): whether to use a cubic spline to interpolate
+            tail of param_out
+
+    Returns:
+        param_out (Numpy array): updated parameter values
+    """
+    assert (
+        total_effect >= 0
+    )  # this code would need to change to accommodate effects < 0
+    n_dims = param_in.ndim
+    assert n_dims >= 2
+    T = param_in.shape[1]
+    S = param_in.shape[1]
+
+    # create a linear transition path
+    t = (
+        final_effect_period - initial_effect_period + 1
+    )  # number of periods transition over
+    transition_path = np.linspace(0, 1.0, t)
+    print("Transition path = ", transition_path)
+    transition_arr = np.zeros_like(param_in, dtype=float)
+    for i in range(t):
+        print("TRANS = ", transition_path[i] * np.ones_like(param_in[0, ...]))
+        transition_arr[initial_effect_period + i, ...] = transition_path[
+            i
+        ] * np.ones_like(param_in[0, ...])
+    transition_arr[final_effect_period:, ...] = np.ones_like(
+        param_in[final_effect_period:, ...]
+    )
+
+    param_shift = param_in.copy()
+    # Accounting for shifts that are fractions of a model period
+    total_effect_ru = int(np.ceil(total_effect))
+    if total_effect > 0:
+        pct_effect = total_effect / total_effect_ru
+    else:
+        pct_effect = 0
+    print("Pct effect = ", pct_effect)
+    # apply the transition path to the initial parameters
+    # find diff from shifting bio clock back total_effect years
+    param_shift[:, min_age_effect_felt:, ...] = param_in[
+        :, (min_age_effect_felt - total_effect_ru) : S - total_effect_ru, ...
+    ]
+    if use_spline:
+        # use cubic spline to avoid plateau at end of lifecycle profile
+        T = param_in.shape[0]
+        if n_dims == 3:
+            J = param_in.shape[-1]
+            for k in range(initial_effect_period, T):
+                for j in range(J):
+                    spline = CubicSpline(
+                        np.arange(S - total_effect),
+                        param_shift[k, :-total_effect, j],
+                    )
+                    param_shift[k, -total_effect:, j] = spline(
+                        np.arange(S - total_effect, S)
+                    )
+        else:
+            for k in range(initial_effect_period, T):
+                spline = CubicSpline(
+                    np.arange(S - total_effect), param_shift[k, :-total_effect]
+                )
+                param_shift[k, -total_effect:] = spline(
+                    np.arange(S - total_effect, S)
+                )
+    # make sure values are not lower after shift
+    if bound_below:
+        param_shift = np.maximum(param_shift, param_in)
+    # make sure values are not higher after shift
+    if bound_above:
+        param_shift = np.minimum(param_shift, param_in)
+    # Now transition the shift over time using the transition path
+    param_out = param_in + (
+        transition_arr * pct_effect * (param_shift - param_in)
+    )
+
+    return param_out
+
+
+def pct_change_unstationarized(
+    tpi_base,
+    param_base,
+    tpi_reform,
+    param_reform,
+    output_vars=["K", "Y", "C", "L", "r", "w"],
+):
+    """
+    This function takes the time paths of variables from the baseline
+    and reform and parameters from the baseline and reform runs and
+    computes percent changes for each variable in the output_vars list.
+    The function first unstationarizes the time paths of the variables
+    and then computes the percent changes.
+
+    Args:
+        tpi_base (Numpy array): time path of the output variables from
+            the baseline run
+        param_base (Specifications object): dictionary of parameters
+            from the baseline run
+        tpi_reform (Numpy array): time path of the output variables from
+            the reform run
+        param_reform (Specifications object): dictionary of parameters
+            from the reform run
+        output_vars (list): list of variables for which to compute
+            percent changes
+
+    Returns:
+        pct_changes (dict): dictionary of percent changes for each
+            variable in output_vars list
+    """
+    # compute non-stationary variables
+    non_stationary_output = {"base": {}, "reform": {}}
+    pct_changes = {}
+    T = param_base.T
+    for var in output_vars:
+        if var in [
+            "Y",
+            "B",
+            "K",
+            "K_f",
+            "K_d",
+            "C",
+            "I",
+            "K_g",
+            "I_g",
+            "Y_vec",
+            "K_vec",
+            "C_vec",
+            "I_total",
+            "I_d",
+            "BQ",
+            "TR",
+            "total_tax_revenue",
+            "business_tax_revenue",
+            "iit_payroll_tax_revenue",
+            "iit_revenue",
+            "payroll_tax_revenue",
+            "agg_pension_outlays",
+            "bequest_tax_revenue",
+            "wealth_tax_revenue",
+            "cons_tax_revenue",
+            "G",
+            "D",
+            "D_f",
+            "D_d",
+            "UBI_path",
+            "new_borrowing_f",
+            "debt_service_f",
+        ]:
+            non_stationary_output["base"][var] = (
+                tpi_base[var][:T]
+                * np.cumprod(1 + param_base.g_n[:T])
+                * np.exp(param_base.g_y * np.arange(param_base.T))
+            )
+            non_stationary_output["reform"][var] = (
+                tpi_reform[var][:T]
+                * np.cumprod(1 + param_reform.g_n[:T])
+                * np.exp(param_reform.g_y * np.arange(param_reform.T))
+            )
+        elif var in [
+            "L",
+            "L_vec",
+        ]:
+            non_stationary_output["base"][var] = tpi_base[var][
+                :T
+            ] * np.cumprod(1 + param_base.g_n[:T])
+            non_stationary_output["reform"][var] = tpi_reform[var][
+                :T
+            ] * np.cumprod(1 + param_reform.g_n[:T])
+        elif var in [
+            "w",
+            "ubi_path",
+            "tr_path",
+            "bq_path",
+            "bmat_splus1",
+            "bmat_s",
+            "c_path",
+            "y_before_tax_path",
+            "tax_path",
+        ]:
+            non_stationary_output["base"][var] = tpi_base[var][:T] * np.exp(
+                param_base.g_y * np.arange(param_base.T)
+            )
+            non_stationary_output["reform"][var] = tpi_reform[var][
+                :T
+            ] * np.exp(param_reform.g_y * np.arange(param_reform.T))
+        else:
+            non_stationary_output["base"][var] = tpi_base[var][:T]
+            non_stationary_output["reform"][var] = tpi_reform[var][:T]
+
+        # calculate percent change
+        pct_changes[var] = (
+            non_stationary_output["reform"][var]
+            / non_stationary_output["base"][var]
+            - 1
+        )
+
+    return pct_changes

@@ -467,6 +467,7 @@ filename4 = os.path.join(
 )
 
 
+@pytest.mark.local
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [(True, {}, filename1), (False, {}, filename3)],

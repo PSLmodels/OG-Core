@@ -66,13 +66,29 @@ def test_plot_imm_rates_save_fig(tmpdir):
 
 
 def test_plot_mort_rates():
-    fig = parameter_plots.plot_mort_rates(base_params, include_title=True)
+    fig = parameter_plots.plot_mort_rates([base_params], include_title=True)
+    assert fig
+
+
+def test_plot_surv_rates():
+    fig = parameter_plots.plot_mort_rates(
+        [base_params], survival_rates=True, include_title=True
+    )
     assert fig
 
 
 def test_plot_mort_rates_save_fig(tmpdir):
-    parameter_plots.plot_mort_rates(base_params, path=tmpdir)
+    parameter_plots.plot_mort_rates([base_params], path=tmpdir)
     img = mpimg.imread(os.path.join(tmpdir, "mortality_rates.png"))
+
+    assert isinstance(img, np.ndarray)
+
+
+def test_plot_surv_rates_save_fig(tmpdir):
+    parameter_plots.plot_mort_rates(
+        [base_params], survival_rates=True, path=tmpdir
+    )
+    img = mpimg.imread(os.path.join(tmpdir, "survival_rates.png"))
 
     assert isinstance(img, np.ndarray)
 
@@ -92,19 +108,22 @@ def test_plot_pop_growth_rates_save_fig(tmpdir):
 
 
 def test_plot_ability_profiles():
-    # make save e matrix 3D
-    base_params.e = np.tile(
-        base_params.e.reshape(1, base_params.S, base_params.J),
-        (base_params.T, 1, 1),
-    )
+    p = Specifications()
+    fig = parameter_plots.plot_ability_profiles(p, p2=p, include_title=True)
+    assert fig
+
+
+def test_plot_log_ability_profiles():
+    p = Specifications()
     fig = parameter_plots.plot_ability_profiles(
-        base_params, include_title=True
+        p, p2=p, log_scale=True, include_title=True
     )
     assert fig
 
 
 def test_plot_ability_profiles_save_fig(tmpdir):
-    parameter_plots.plot_ability_profiles(base_params, path=tmpdir)
+    p = Specifications()
+    parameter_plots.plot_ability_profiles(p, path=tmpdir)
     img = mpimg.imread(os.path.join(tmpdir, "ability_profiles.png"))
 
     assert isinstance(img, np.ndarray)
@@ -127,12 +146,14 @@ def test_plot_elliptical_u_save_fig(tmpdir):
 
 
 def test_plot_chi_n():
-    fig = parameter_plots.plot_chi_n(base_params, include_title=True)
+    p = Specifications()
+    fig = parameter_plots.plot_chi_n([p], include_title=True)
     assert fig
 
 
 def test_plot_chi_n_save_fig(tmpdir):
-    parameter_plots.plot_chi_n(base_params, path=tmpdir)
+    p = Specifications()
+    parameter_plots.plot_chi_n([p], path=tmpdir)
     img = mpimg.imread(os.path.join(tmpdir, "chi_n_values.png"))
 
     assert isinstance(img, np.ndarray)
@@ -184,7 +205,7 @@ def test_plot_fert_rates():
     age_midp = np.array([9, 10, 12, 16, 18.5, 22, 27, 32, 37, 42, 47, 55, 56])
     fert_func = si.interp1d(age_midp, fert_data, kind="cubic")
     fert_rates = np.random.uniform(size=totpers).reshape((1, totpers))
-    fig = parameter_plots.plot_fert_rates(fert_rates)
+    fig = parameter_plots.plot_fert_rates([fert_rates], include_title=True)
     assert fig
 
 
@@ -216,10 +237,25 @@ def test_plot_fert_rates_save_fig(tmpdir):
     fert_func = si.interp1d(age_midp, fert_data, kind="cubic")
     fert_rates = np.random.uniform(size=totpers).reshape((1, totpers))
     parameter_plots.plot_fert_rates(
-        fert_rates,
+        [fert_rates],
+        include_title=True,
         path=tmpdir,
     )
     img = mpimg.imread(os.path.join(tmpdir, "fert_rates.png"))
+
+    assert isinstance(img, np.ndarray)
+
+
+def test_plot_g_n():
+    p = Specifications()
+    fig = parameter_plots.plot_g_n([p], include_title=True)
+    assert fig
+
+
+def test_plot_g_n_savefig(tmpdir):
+    p = Specifications()
+    parameter_plots.plot_g_n([p], include_title=True, path=tmpdir)
+    img = mpimg.imread(os.path.join(tmpdir, "pop_growth_rates.png"))
 
     assert isinstance(img, np.ndarray)
 
