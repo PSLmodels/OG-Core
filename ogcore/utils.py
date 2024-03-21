@@ -1123,10 +1123,8 @@ def shift_bio_clock(
         final_effect_period - initial_effect_period + 1
     )  # number of periods transition over
     transition_path = np.linspace(0, 1.0, t)
-    print("Transition path = ", transition_path)
     transition_arr = np.zeros_like(param_in, dtype=float)
     for i in range(t):
-        print("TRANS = ", transition_path[i] * np.ones_like(param_in[0, ...]))
         transition_arr[initial_effect_period + i, ...] = transition_path[
             i
         ] * np.ones_like(param_in[0, ...])
@@ -1141,7 +1139,6 @@ def shift_bio_clock(
         pct_effect = total_effect / total_effect_ru
     else:
         pct_effect = 0
-    print("Pct effect = ", pct_effect)
     # apply the transition path to the initial parameters
     # find diff from shifting bio clock back total_effect years
     param_shift[:, min_age_effect_felt:, ...] = param_in[
