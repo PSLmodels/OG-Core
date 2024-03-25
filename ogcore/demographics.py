@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 from ogcore.utils import get_legacy_session
 from ogcore import parameter_plots as pp
 
-START_YEAR = 2023
-END_YEAR = 2023
+START_YEAR = 2024
+END_YEAR = 2024
 UN_COUNTRY_CODE = "840"  # UN code for USA
 # create output director for figures
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]

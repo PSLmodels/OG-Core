@@ -107,7 +107,7 @@ def plot_mort_rates(
         title = "Survival Rates"
     else:
         plt.ylabel(r"Mortality Rates $\rho_{s}$")
-        plt.legend(loc="upper right")
+        plt.legend(loc="upper left")
         title = "Mortality Rates"
     vals = ax.get_yticks()
     ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
