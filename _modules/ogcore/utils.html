@@ -1576,10 +1576,8 @@ document.write(`
         <span class="n">final_effect_period</span> <span class="o">-</span> <span class="n">initial_effect_period</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="p">)</span>  <span class="c1"># number of periods transition over</span>
     <span class="n">transition_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transition path = &quot;</span><span class="p">,</span> <span class="n">transition_path</span><span class="p">)</span>
     <span class="n">transition_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TRANS = &quot;</span><span class="p">,</span> <span class="n">transition_path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">param_in</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]))</span>
         <span class="n">transition_arr</span><span class="p">[</span><span class="n">initial_effect_period</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">transition_path</span><span class="p">[</span>
             <span class="n">i</span>
         <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">param_in</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
@@ -1594,7 +1592,6 @@ document.write(`
         <span class="n">pct_effect</span> <span class="o">=</span> <span class="n">total_effect</span> <span class="o">/</span> <span class="n">total_effect_ru</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">pct_effect</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pct effect = &quot;</span><span class="p">,</span> <span class="n">pct_effect</span><span class="p">)</span>
     <span class="c1"># apply the transition path to the initial parameters</span>
     <span class="c1"># find diff from shifting bio clock back total_effect years</span>
     <span class="n">param_shift</span><span class="p">[:,</span> <span class="n">min_age_effect_felt</span><span class="p">:,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_in</span><span class="p">[</span>
