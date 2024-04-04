@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.4] - 2024-04-03 22:00:00
+
+### Added
+
+- Add a function to `utils.py` to shift lifetime profiles of parameters
+- Add a function to `utils.py` to compute percentage changes in non-stationary variables
+- Add more functionality to `parameters_plots.py`, allowing the user to plot parameters from multiple parameters objects together
+
 ## [0.11.3] - 2024-03-08 12:00:00
 
 ### Added
