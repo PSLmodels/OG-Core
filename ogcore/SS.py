@@ -216,6 +216,10 @@ def inner_loop(outer_loop_vars, p, client):
     """
     # Retrieve the "scattered" Parameters object.
     global scattered_p
+
+    if scattered_p is None:
+        scattered_p = client.scatter(p, broadcast=True) if client else p
+
     # unpack variables to pass to function
     bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
 
