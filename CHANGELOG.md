@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.11.5] - 2024-04-11 12:00:00
+
+### Added
+
+- Limits `docs_check.yml` GitHub Action to pull request commits, no more on push at merge.
+- Adds Codecov secret token and if statement to `build_and_test.yml`.
+
+
 ## [0.11.4] - 2024-04-03 22:00:00
 
 ### Added

@@ -21,6 +21,7 @@ dependencies:
 - jupyter-book>=0.11.3
 - jupyter
 - pytest>=6.0
+- pytest-cov
 - pytest-xdist
 - pylint
 - coverage
