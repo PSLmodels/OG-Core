@@ -1,14 +1,5 @@
-name: Build and test [Python 3.9, 3.10, 3.11]
-
+name: Build and test
 on: [push, pull_request]
-  # paths:
-  #   - '*.py'
-  #   - 'environment.yml'
-  #   - 'requirements.txt'
-  #   - '*.pkl'
-  #   - '*.csv'
-  #   - '*.json'
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -19,12 +10,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
-
       - name: Setup Miniconda using Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-variant: Mambaforge
           auto-update-conda: true
@@ -32,7 +22,6 @@ jobs:
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
-
       - name: Build
         shell: bash -l {0}
         run: |
@@ -45,10 +34,12 @@ jobs:
         run: |
           pytest -m 'not local' --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true
