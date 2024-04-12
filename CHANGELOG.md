@@ -10,8 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Limits `docs_check.yml` GitHub Action to pull request commits, no more on push at merge.
-- Adds Codecov secret token and if statement to `build_and_test.yml`.
+- Adds a list of file change event triggers to `build_and_test.yml` so that those tests only run when one of those files is changed.
+- Updates the codecov GH Action to version 4 and adds a secret token.
+- Adds a list of file change event triggers to `deploy_docs.yml` and `docs_check.yml`, and limits `docs_check.yml` to only run on pull requests.
 
 
 ## [0.11.4] - 2024-04-03 22:00:00
