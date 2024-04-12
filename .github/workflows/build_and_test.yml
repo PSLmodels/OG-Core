@@ -1,5 +1,25 @@
 name: Build and test
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '**.yml'
+      - '**.toml'
+      - '**.ini'
+      - '**.py'
+      - '**.json'
+      - '**.csv'
+      - '**.pkl'
+      - '**.pbz2'
+  pull_request:
+    paths:
+      - '**.yml'
+      - '**.toml'
+      - '**.ini'
+      - '**.py'
+      - '**.json'
+      - '**.csv'
+      - '**.pkl'
+      - '**.pbz2'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -26,13 +46,11 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install -e .
-          pip install pytest-cov
-          pip install pytest-pycodestyle
       - name: Test
         shell: bash -l {0}
         working-directory: ./
         run: |
-          pytest -m 'not local' --cov=./ --cov-report=xml
+          python -m pytest -m "not local" --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v4
