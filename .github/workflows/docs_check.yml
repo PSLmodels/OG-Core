@@ -1,5 +1,14 @@
 name: Check that docs build
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - './docs/**.png'
+      - './docs/book/content/theory/images/**.png'
+      - './docs/book/**.yml'
+      - './docs/book/**.bib'
+      - '**.md'
+      - './docs/book/content/api/**.rst'
+      - './ogcore/**.py'
 
 jobs:
   build:
@@ -14,7 +23,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-variant: Mambaforge
-          activate-environment: ogusa-dev
+          activate-environment: ogcore-dev
           environment-file: environment.yml
           python-version: "3.11"
           auto-activate-base: false
@@ -24,5 +33,4 @@ jobs:
         run: |
           pip install -e .
           python -m ipykernel install --user --name=ogcore-dev
-          cd docs
-          jb build ./book
+          jb build ./docs/book
