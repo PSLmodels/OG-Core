@@ -1188,3 +1188,27 @@ def inequality_plot(
     else:
         return fig1
     plt.close()
+
+
+def lambda_labels(lambdas):
+    """
+    Creates string labels of percentage groups for ability types given
+    any number of ability types.
+
+    Args:
+        lambdas (np.array): array of lambdas for each ability type
+
+    Returns:
+        labels (list): list of string labels for ability types
+    """
+    lambdas_100 = lambdas #[round(x, 1) for x in lambdas]
+    lambdas_cumsum = list(np.cumsum(lambdas_100))
+    lambdas_cumsum = [round(x*100, 2) for x in lambdas_cumsum]
+    lambdas_cumsum = [0.00] + lambdas_cumsum
+    lambda_dict = {}
+    for i in range(1, len(lambdas_cumsum)):
+        lambda_dict[i-1] = (str(lambdas_cumsum[i-1]) + "-" + str(lambdas_cumsum[i]) + "%")
+    if lambdas_100[-1] < 100:
+        lambda_dict[i] = "Top " + str(100 - lambdas_cumsum[-1]) + "%"
+
+    return lambda_dict
