@@ -7,7 +7,7 @@ import os
 import sys
 import numpy as np
 import matplotlib.image as mpimg
-from ogcore import utils, output_plots
+from ogcore import utils, output_plots, constants
 
 
 # Load in test results and parameters
@@ -556,3 +556,22 @@ def test_plot_all(tmpdir):
         assert isinstance(img3, np.ndarray)
     else:
         assert True
+
+
+def test_lambda_labels():
+    """
+    Test of the lambda_labels function in output_plots.py
+    """
+    labels = output_plots.lambda_labels([
+                    0.25,
+                    0.25,
+                    0.2,
+                    0.1,
+                    0.1,
+                    0.09,
+                    0.01
+                ])
+    print(labels)
+    for k, v in labels.items():
+        print(k, v)
+        assert v == constants.GROUP_LABELS[7][k]
