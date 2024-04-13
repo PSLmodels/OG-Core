@@ -165,17 +165,17 @@ def get_fert(
     if graph:
         if plot_path:
             pp.plot_fert_rates(
-                fert_rates_2D,
-                start_year,
-                [start_year, end_year],
-                path=plot_path,
+                [fert_rates_2D],
+                start_year=start_year,
+                years_to_plot=[start_year, end_year],
+                path=plot_path
             )
             return fert_rates_2D
         else:
             fig = pp.plot_fert_rates(
-                fert_rates_2D,
-                start_year,
-                [start_year, end_year],
+                [fert_rates_2D],
+                start_year=start_year,
+                years_to_plot=[start_year, end_year]
             )
             return fert_rates_2D, fig
     else:
