@@ -743,7 +743,7 @@ def run_TPI(p, client=None):
             results = results = compute(
                 *lazy_values,
                 scheduler=dask.multiprocessing.get,
-                num_workers=p.num_workers
+                num_workers=p.num_workers,
             )
 
         for j, result in enumerate(results):
