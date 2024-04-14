@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 from ogcore.constants import (
-    GROUP_LABELS,
     VAR_LABELS,
     ToGDP_LABELS,
     DEFAULT_START_YEAR,
@@ -586,7 +585,7 @@ def ability_bar(
     var_to_plot = (reform_val - base_val) / base_val
     ax.bar(ind, var_to_plot * 100, width, bottom=0)
     ax.set_xticks(ind + width / 4)
-    ax.set_xticklabels(list(GROUP_LABELS[base_params.J].values()))
+    ax.set_xticklabels(list(lambda_labels(base_params.lambdas).values()))
     plt.xticks(rotation=45)
     plt.ylabel(r"Percentage Change in " + VAR_LABELS[var])
     if plot_title:
@@ -639,7 +638,7 @@ def ability_bar_ss(
     var_to_plot = (reform_val - base_val) / base_val
     ax.bar(ind, var_to_plot * 100, width, bottom=0)
     ax.set_xticks(ind + width / 4)
-    ax.set_xticklabels(list(GROUP_LABELS[base_params.J].values()))
+    ax.set_xticklabels(list(lambda_labels(base_params.lambdas).values()))
     plt.xticks(rotation=45)
     plt.ylabel(r"Percentage Change in " + VAR_LABELS[var])
     if plot_title:
@@ -1199,16 +1198,15 @@ def lambda_labels(lambdas):
         lambdas (np.array): array of lambdas for each ability type
 
     Returns:
-        labels (list): list of string labels for ability types
+        labels (dict): dict of string labels for ability types
     """
-    lambdas_100 = lambdas #[round(x, 1) for x in lambdas]
+    lambdas_100 = [x * 100 for x in lambdas]
     lambdas_cumsum = list(np.cumsum(lambdas_100))
-    lambdas_cumsum = [round(x*100, 2) for x in lambdas_cumsum]
     lambdas_cumsum = [0.00] + lambdas_cumsum
     lambda_dict = {}
-    for i in range(1, len(lambdas_cumsum)):
-        lambda_dict[i-1] = (str(lambdas_cumsum[i-1]) + "-" + str(lambdas_cumsum[i]) + "%")
-    if lambdas_100[-1] < 100:
-        lambda_dict[i] = "Top " + str(100 - lambdas_cumsum[-1]) + "%"
+    for i in range(1, len(lambdas_cumsum) - 1):
+        # condition formatting to number of digits need, but not more than 2
+        lambda_dict[i-1] = (f'{lambdas_cumsum[i-1]:.2f}' + "-" + f'{lambdas_cumsum[i]:.2f}' + "%")
+    lambda_dict[i] = "Top " + f'{(100 - lambdas_cumsum[-2]):.2f}' + "%"
 
     return lambda_dict
