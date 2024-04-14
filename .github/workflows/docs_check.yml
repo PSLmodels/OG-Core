@@ -1,22 +1,31 @@
 name: Check that docs build
-on: [push, pull_request]
+on:
+  pull_request:
+    paths:
+      - './docs/**.png'
+      - './docs/book/content/theory/images/**.png'
+      - './docs/book/**.yml'
+      - './docs/book/**.bib'
+      - '**.md'
+      - './docs/book/content/api/**.rst'
+      - './ogcore/**.py'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
       - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-variant: Mambaforge
-          activate-environment: ogusa-dev
+          activate-environment: ogcore-dev
           environment-file: environment.yml
-          python-version: "3.10"
+          python-version: "3.11"
           auto-activate-base: false
 
       - name: Build # Build Jupyter Book
@@ -24,5 +33,4 @@ jobs:
         run: |
           pip install -e .
           python -m ipykernel install --user --name=ogcore-dev
-          cd docs
-          jb build ./book
+          jb build ./docs/book

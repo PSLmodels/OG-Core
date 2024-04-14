@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.11.5] - 2024-04-11 12:00:00
+
+### Added
+
+- Adds a list of file change event triggers to `build_and_test.yml` so that those tests only run when one of those files is changed.
+- Updates the codecov GH Action to version 4 and adds a secret token.
+- Adds a list of file change event triggers to `deploy_docs.yml` and `docs_check.yml`, and limits `docs_check.yml` to only run on pull requests.
+
+
 ## [0.11.4] - 2024-04-03 22:00:00
 
 ### Added
@@ -210,6 +219,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.11.5]: https://github.com/PSLmodels/OG-Core/compare/v0.11.4...v0.11.5
 [0.11.4]: https://github.com/PSLmodels/OG-Core/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/PSLmodels/OG-Core/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/PSLmodels/OG-Core/compare/v0.11.1...v0.11.2
