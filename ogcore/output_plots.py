@@ -1204,9 +1204,26 @@ def lambda_labels(lambdas):
     lambdas_cumsum = list(np.cumsum(lambdas_100))
     lambdas_cumsum = [0.00] + lambdas_cumsum
     lambda_dict = {}
-    for i in range(1, len(lambdas_cumsum) - 1):
+    rounded = []  # list of rounded values, strings
+    for i in range(len(lambdas_cumsum)):
         # condition formatting to number of digits need, but not more than 2
-        lambda_dict[i-1] = (f'{lambdas_cumsum[i-1]:.2f}' + "-" + f'{lambdas_cumsum[i]:.2f}' + "%")
-    lambda_dict[i] = "Top " + f'{(100 - lambdas_cumsum[-2]):.2f}' + "%"
+        if lambdas_cumsum[i] % 1 == 0:
+            round_i = f"{lambdas_cumsum[i]:.0f}"
+        elif lambdas_cumsum[i] % 0.1 == 0:
+            round_i = f"{lambdas_cumsum[i]:.1f}"
+        else:
+            round_i = f"{lambdas_cumsum[i]:.2f}"
+        rounded.append(round_i)
+    for i in range(1, len(lambdas_cumsum) - 1):
+        lambda_dict[i - 1] = rounded[i - 1] + "-" + rounded[i] + "%"
+        # and do rounding for the top
+        top_number = 100 - lambdas_cumsum[-2]
+        if top_number % 1 == 0:
+            top_number_str = f"{top_number:.0f}"
+        elif top_number % 0.1 == 0:
+            top_number_str = f"{top_number:.1f}"
+        else:
+            top_number_str = f"{top_number:.2f}"
+    lambda_dict[i] = "Top " + top_number_str + "%"
 
     return lambda_dict
