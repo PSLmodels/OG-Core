@@ -30,6 +30,13 @@ Set flag for verbosity
 VERBOSE = True
 
 """
+A global future for the Parameters object for client workers.
+This is scattered once and place at module scope, then used
+by the client in the inner loop.
+"""
+scattered_p = None
+
+"""
 ------------------------------------------------------------------------
     Define Functions
 ------------------------------------------------------------------------
@@ -207,6 +214,12 @@ def inner_loop(outer_loop_vars, p, client):
                 units
 
     """
+    # Retrieve the "scattered" Parameters object.
+    global scattered_p
+
+    if scattered_p is None:
+        scattered_p = client.scatter(p, broadcast=True) if client else p
+
     # unpack variables to pass to function
     bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
 
@@ -222,10 +235,6 @@ def inner_loop(outer_loop_vars, p, client):
     ubi = p.ubi_nom_array[-1, :, :] / factor
 
     lazy_values = []
-    if client:
-        scattered_p = client.scatter(p, broadcast=True)
-    else:
-        scattered_p = p
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
         euler_params = (
@@ -1125,6 +1134,12 @@ def run_SS(p, client=None):
             results
 
     """
+    global scattered_p
+    if client:
+        scattered_p = client.scatter(p, broadcast=True)
+    else:
+        scattered_p = p
+
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
         [1.00, 1.0],
