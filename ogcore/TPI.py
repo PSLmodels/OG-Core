@@ -24,6 +24,13 @@ Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
 
+"""
+A global future for the Parameters object for client workers.
+This is scattered once and place at module scope, then used
+by the client in the inner loop.
+"""
+scattered_p = None
+
 
 def get_initial_SS_values(p):
     """
@@ -529,6 +536,12 @@ def run_TPI(p, client=None):
             results
 
     """
+    global scattered_p
+    if client:
+        scattered_p = client.scatter(p, broadcast=True)
+    else:
+        scattered_p = p
+
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
@@ -719,10 +732,6 @@ def run_TPI(p, client=None):
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
-        if client:
-            scattered_p = client.scatter(p, broadcast=True)
-        else:
-            scattered_p = p
         for j in range(p.J):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
             lazy_values.append(
