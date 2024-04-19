@@ -41,7 +41,7 @@
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -380,7 +380,6 @@ document.write(`
 <span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">from</span> <span class="nn">ogcore.constants</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">GROUP_LABELS</span><span class="p">,</span>
     <span class="n">VAR_LABELS</span><span class="p">,</span>
     <span class="n">ToGDP_LABELS</span><span class="p">,</span>
     <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
@@ -444,6 +443,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">num_years_to_plot</span> <span class="o">&lt;=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span>
     <span class="c1"># Make sure both runs cover same time period</span>
     <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">start_year</span>
@@ -600,6 +600,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">num_years_to_plot</span> <span class="o">&lt;=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span>
     <span class="n">dims</span> <span class="o">=</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">var_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">ind_names_list</span><span class="p">:</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind_names_list</span><span class="p">)</span> <span class="o">==</span> <span class="n">dims</span>
@@ -819,6 +820,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">num_years_to_plot</span> <span class="o">&lt;=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span>
     <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;diff&quot;</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="c1"># Make sure both runs cover same time period</span>
@@ -967,7 +969,7 @@ document.write(`
     <span class="n">var_to_plot</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_val</span> <span class="o">-</span> <span class="n">base_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">base_val</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">var_to_plot</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">GROUP_LABELS</span><span class="p">[</span><span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">lambda_labels</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Percentage Change in &quot;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
@@ -1023,7 +1025,7 @@ document.write(`
     <span class="n">var_to_plot</span> <span class="o">=</span> <span class="p">(</span><span class="n">reform_val</span> <span class="o">-</span> <span class="n">base_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">base_val</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">var_to_plot</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">GROUP_LABELS</span><span class="p">[</span><span class="n">base_params</span><span class="o">.</span><span class="n">J</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">lambda_labels</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Percentage Change in &quot;</span> <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">plot_title</span><span class="p">:</span>
@@ -1261,7 +1263,7 @@ document.write(`
         <span class="n">reform_params</span><span class="o">=</span><span class="n">reform_params</span><span class="p">,</span>
         <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">],</span>
         <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;pct_diff&quot;</span><span class="p">,</span>
-        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
         <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
         <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
             <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
@@ -1279,7 +1281,7 @@ document.write(`
         <span class="n">reform_params</span><span class="o">=</span><span class="n">reform_params</span><span class="p">,</span>
         <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;TR&quot;</span><span class="p">,</span> <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">],</span>
         <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;pct_diff&quot;</span><span class="p">,</span>
-        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
         <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
         <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
             <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
@@ -1297,7 +1299,7 @@ document.write(`
         <span class="n">reform_params</span><span class="o">=</span><span class="n">reform_params</span><span class="p">,</span>
         <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span>
         <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;levels&quot;</span><span class="p">,</span>
-        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
         <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
         <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
             <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
@@ -1314,7 +1316,7 @@ document.write(`
         <span class="n">reform_params</span><span class="o">=</span><span class="n">reform_params</span><span class="p">,</span>
         <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">],</span>
         <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;levels&quot;</span><span class="p">,</span>
-        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
         <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
         <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
             <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
@@ -1331,7 +1333,7 @@ document.write(`
         <span class="n">reform_tpi</span><span class="p">,</span>
         <span class="n">reform_params</span><span class="p">,</span>
         <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">],</span>
-        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
         <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
         <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
             <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
@@ -1348,7 +1350,7 @@ document.write(`
         <span class="n">reform_tpi</span><span class="p">,</span>
         <span class="n">reform_params</span><span class="p">,</span>
         <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">],</span>
-        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">num_years_to_plot</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
         <span class="n">start_year</span><span class="o">=</span><span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span>
         <span class="n">vertical_line_years</span><span class="o">=</span><span class="p">[</span>
             <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span>
@@ -1493,6 +1495,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years_to_plot</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">num_years_to_plot</span> <span class="o">&lt;=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span>
     <span class="c1"># Make sure both runs cover same time period</span>
     <span class="k">if</span> <span class="n">reform_tpi</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span> <span class="o">==</span> <span class="n">reform_params</span><span class="o">.</span><span class="n">start_year</span>
@@ -1581,6 +1584,46 @@ document.write(`
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">fig1</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">lambda_labels</span><span class="p">(</span><span class="n">lambdas</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates string labels of percentage groups for ability types given</span>
+<span class="sd">    any number of ability types.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lambdas (np.array): array of lambdas for each ability type</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        labels (dict): dict of string labels for ability types</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lambdas_100</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">*</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lambdas</span><span class="p">]</span>
+    <span class="n">lambdas_cumsum</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">lambdas_100</span><span class="p">))</span>
+    <span class="n">lambdas_cumsum</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">]</span> <span class="o">+</span> <span class="n">lambdas_cumsum</span>
+    <span class="n">lambda_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">rounded</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of rounded values, strings</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lambdas_cumsum</span><span class="p">)):</span>
+        <span class="c1"># condition formatting to number of digits need, but not more than 2</span>
+        <span class="k">if</span> <span class="n">lambdas_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">round_i</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lambdas_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">lambdas_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">%</span> <span class="mf">0.1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">round_i</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lambdas_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">round_i</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lambdas_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">rounded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">round_i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lambdas_cumsum</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">lambda_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">rounded</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">rounded</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span>
+        <span class="c1"># and do rounding for the top</span>
+        <span class="n">top_number</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">lambdas_cumsum</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">top_number</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">top_number_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">top_number</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">top_number</span> <span class="o">%</span> <span class="mf">0.1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">top_number_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">top_number</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">top_number_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">top_number</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">lambda_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Top &quot;</span> <span class="o">+</span> <span class="n">top_number_str</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span>
+
+    <span class="k">return</span> <span class="n">lambda_dict</span>
 </pre></div>
 
                 </article>
