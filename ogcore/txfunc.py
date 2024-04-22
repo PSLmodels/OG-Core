@@ -1,6 +1,6 @@
 """
 ------------------------------------------------------------------------
-This script reads in data generated from the Tax Calculator model.
+This script reads in data generated from a tax-benefit microsimulation model.
 It then estimates tax functions tau_{s,t}(x,y), where
 tau_{s,t} is the effective tax rate, marginal tax rate on labor income,
 or the marginal tax rate on capital income, for a given age (s) in a
@@ -1388,12 +1388,9 @@ def tax_func_estimate(
     starting_age,
     ending_age,
     start_year=DEFAULT_START_YEAR,
-    baseline=True,
     analytical_mtrs=False,
     tax_func_type="DEP",
     age_specific=False,
-    reform={},
-    data=None,
     desc_data=False,
     graph_data=False,
     graph_est=False,
@@ -1416,16 +1413,12 @@ def tax_func_estimate(
         starting_age (int): minimum age to estimate tax functions for
         ending_age (int): maximum age to estimate tax functions for
         start_yr (int): first year of budget window
-        baseline (bool): whether these are the baseline tax functions
         analytical_mtrs (bool): whether to use the analytical derivation
             of the marginal tax rates (and thus only need to estimate
             the effective tax rate functions)
         tax_func_type (str): functional form of tax functions
         age_specific (bool): whether to estimate age specific tax
             functions
-        reform (dict): policy reform dictionary for Tax-Calculator
-        data (str or Pandas DataFrame): path to or data to use in
-            Tax-Calculator
         client (Dask client object): client
         num_workers (int): number of workers to use for parallelization
             with Dask
@@ -1479,9 +1472,6 @@ def tax_func_estimate(
     # --------------------------------------------------------------------
     # start_time = scalar, current processor time in seconds (float)
     # output_dir = string, directory to which plots will be saved
-    # micro_data = dictionary, BW (one for each year) DataFrames,
-    #              each of which has variables with observations from
-    #              Tax-Calculator
     # t          = integer >= start_year, index for year of analysis
     # --------------------------------------------------------------------
     # '''
