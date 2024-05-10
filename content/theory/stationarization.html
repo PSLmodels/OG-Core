@@ -528,10 +528,12 @@ document.write(`
 <p>We stationarize the Euler equations for savings <a class="reference internal" href="households.html#equation-eqhheul-b">(31)</a> and <a class="reference internal" href="households.html#equation-eqhheul-bs">(32)</a> by dividing both sides of the respective equations by <span class="math notranslate nohighlight">\(e^{-\sigma g_y t}\)</span>. On the right-hand-side of the equation, we then need to multiply and divide both terms by <span class="math notranslate nohighlight">\(e^{-\sigma g_y(t+1)}\)</span>, which leaves a multiplicative coefficient <span class="math notranslate nohighlight">\(e^{-\sigma g_y}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-eul-b">
 <span class="eqno">(114)<a class="headerlink" href="#equation-eqstnrz-eul-b" title="Link to this equation">#</a></span>\[\begin{split}  \frac{(\hat{c}_{j,s,t})^{-\sigma}}{p_t} &amp;= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \\
-  &amp;\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
+  &amp;\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr] - \hat{MTR}^w_{j,s+1,t+1}}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
   &amp;\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\\end{split}\]</div>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-eul-bs">
 <span class="eqno">(115)<a class="headerlink" href="#equation-eqstnrz-eul-bs" title="Link to this equation">#</a></span>\[  \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S\]</div>
+<p>Where <span class="math notranslate nohighlight">\(\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\left[2 -
+        \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\right]\right)\)</span></p>
 </section>
 <section id="stationarized-firms-equations">
 <span id="secstnrzfirms"></span><h2>Stationarized Firms Equations<a class="headerlink" href="#stationarized-firms-equations" title="Link to this heading">#</a></h2>

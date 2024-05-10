@@ -376,7 +376,7 @@ document.write(`
   <h1>Source code for ogcore.txfunc</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">This script reads in data generated from the Tax Calculator model.</span>
+<span class="sd">This script reads in data generated from a tax-benefit microsimulation model.</span>
 <span class="sd">It then estimates tax functions tau_{s,t}(x,y), where</span>
 <span class="sd">tau_{s,t} is the effective tax rate, marginal tax rate on labor income,</span>
 <span class="sd">or the marginal tax rate on capital income, for a given age (s) in a</span>
@@ -1787,12 +1787,9 @@ document.write(`
     <span class="n">starting_age</span><span class="p">,</span>
     <span class="n">ending_age</span><span class="p">,</span>
     <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
-    <span class="n">baseline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">analytical_mtrs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">tax_func_type</span><span class="o">=</span><span class="s2">&quot;DEP&quot;</span><span class="p">,</span>
     <span class="n">age_specific</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">reform</span><span class="o">=</span><span class="p">{},</span>
-    <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">desc_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">graph_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">graph_est</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1815,16 +1812,12 @@ document.write(`
 <span class="sd">        starting_age (int): minimum age to estimate tax functions for</span>
 <span class="sd">        ending_age (int): maximum age to estimate tax functions for</span>
 <span class="sd">        start_yr (int): first year of budget window</span>
-<span class="sd">        baseline (bool): whether these are the baseline tax functions</span>
 <span class="sd">        analytical_mtrs (bool): whether to use the analytical derivation</span>
 <span class="sd">            of the marginal tax rates (and thus only need to estimate</span>
 <span class="sd">            the effective tax rate functions)</span>
 <span class="sd">        tax_func_type (str): functional form of tax functions</span>
 <span class="sd">        age_specific (bool): whether to estimate age specific tax</span>
 <span class="sd">            functions</span>
-<span class="sd">        reform (dict): policy reform dictionary for Tax-Calculator</span>
-<span class="sd">        data (str or Pandas DataFrame): path to or data to use in</span>
-<span class="sd">            Tax-Calculator</span>
 <span class="sd">        client (Dask client object): client</span>
 <span class="sd">        num_workers (int): number of workers to use for parallelization</span>
 <span class="sd">            with Dask</span>
@@ -1878,9 +1871,6 @@ document.write(`
     <span class="c1"># --------------------------------------------------------------------</span>
     <span class="c1"># start_time = scalar, current processor time in seconds (float)</span>
     <span class="c1"># output_dir = string, directory to which plots will be saved</span>
-    <span class="c1"># micro_data = dictionary, BW (one for each year) DataFrames,</span>
-    <span class="c1">#              each of which has variables with observations from</span>
-    <span class="c1">#              Tax-Calculator</span>
     <span class="c1"># t          = integer &gt;= start_year, index for year of analysis</span>
     <span class="c1"># --------------------------------------------------------------------</span>
     <span class="c1"># &#39;&#39;&#39;</span>
