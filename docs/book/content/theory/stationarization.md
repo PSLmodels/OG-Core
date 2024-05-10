@@ -105,7 +105,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrz_eul_b
     \frac{(\hat{c}_{j,s,t})^{-\sigma}}{p_t} &= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \\
-    &\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
+    &\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr] - \hat{MTR}^w_{j,s+1,t+1}}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
@@ -113,6 +113,9 @@ The usual definition of equilibrium would be allocations and prices such that ho
   :label: EqStnrz_eul_bS
     \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
+
+Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\left[2 -
+        \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\right]\right)$
 
 (SecStnrzFirms)=
 ## Stationarized Firms Equations
