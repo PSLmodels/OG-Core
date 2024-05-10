@@ -27,7 +27,7 @@ def main():
     # Define parameters to use for multiprocessing
     num_workers = min(multiprocessing.cpu_count(), 7)
     print("Number of workers = ", num_workers)
-    client = Client(n_workers=num_workers)
+    client = Client(n_workers=num_workers, threads_per_worker=1)
     run_start_time = time.time()
 
     # Directories to save data
