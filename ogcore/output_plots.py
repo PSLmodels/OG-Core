@@ -95,7 +95,7 @@ def plot_aggregates(
             ylabel = r"Pct. change"
             plt.plot(
                 year_vec,
-                plot_var[start_index : start_index + num_years_to_plot] * 100,
+                plot_var[start_index : start_index + num_years_to_plot],
                 label=VAR_LABELS[v],
             )
         elif plot_type == "diff":
