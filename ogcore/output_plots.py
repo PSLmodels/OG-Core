@@ -883,7 +883,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        var_list=["D", "G", "TR", "total_tax_revenue"],
+        var_list=["D", "TR", "total_tax_revenue"],
         plot_type="pct_diff",
         num_years_to_plot=min(base_params.T, 150),
         start_year=base_params.start_year,
@@ -928,6 +928,23 @@ def plot_all(base_output_path, reform_output_path, save_path):
         ],
         plot_title="Wage Rates Under Baseline and Reform",
         path=os.path.join(save_path, "WageRates.png"),
+    )
+
+    # Gov't spending toGDP in base and reform-- vertical lines at tG1, tG2
+    plot_gdp_ratio(
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        var_list=["G"],
+        num_years_to_plot=min(base_params.T, 150),
+        start_year=base_params.start_year,
+        vertical_line_years=[
+            base_params.start_year + base_params.tG1,
+            base_params.start_year + base_params.tG2,
+        ],
+        plot_title="Gov't Spending-to-GDP",
+        path=os.path.join(save_path, "SpendGDPratio.png"),
     )
 
     # Debt-GDP in base and reform-- vertical lines at tG1, tG2
