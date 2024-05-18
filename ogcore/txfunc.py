@@ -106,6 +106,15 @@ def get_tax_rates(
                     * ((income**-phi1) + phi2) ** ((-1 - phi1) / phi1)
                 )
             )
+    if tax_func_type == "HSV":
+        lambda_s, tau_s = (
+            np.squeeze(params[..., 0]),
+            np.squeeze(params[..., 1]),
+        )
+        if rate_type == "etr":
+            txrates = 1 - (lambda_s * (income ** (-tau_s)))
+        else:  # marginal tax rate function
+            txrates = 1 - (lambda_s * (1 - tau_s) * (income ** (-tau_s)))
     elif tax_func_type == "DEP":
         (
             A,
@@ -774,6 +783,29 @@ def txfunc_est(
         params = np.zeros(numparams)
         params[:3] = np.array([phi0til, phi1til, phi2til])
         params_to_plot = params
+    elif tax_func_type == "HSV":
+        # '''
+        # Estimate Heathcote, Storesletten, Violante (2017) parameters via
+        # OLS
+        # '''
+        constant = np.ones_like(income)
+        ln_income = np.log(income)
+        X = np.column_stack((constant, ln_income))
+        Y = 1 - txrates
+        param_est = np.linalg.inv(X.T @ X) @ X.T @ Y
+        params = np.zeros(numparams)
+        if rate_type == "etr":
+            ln_lambda_s_hat, minus_tau_s_hat = param_est
+            params[:2] = np.array([np.exp(ln_lambda_s_hat), -minus_tau_s_hat])
+        else:
+            constant, minus_tau_s_hat = param_est
+            lambda_s_hat = np.exp(constant - np.log(1 + minus_tau_s_hat))
+            params[:2] = np.array([lambda_s_hat, -minus_tau_s_hat])
+        # Calculate the WSSE
+        Y_hat = X @ params
+        wsse = ((Y - Y_hat) ** 2 * wgts).sum()
+        obs = df.shape[0]
+        params_to_plot = params
     elif tax_func_type == "linear":
         # '''
         # For linear rates, just take the mean ETR or MTR by age-year.
@@ -1438,6 +1470,7 @@ def tax_func_estimate(
         "DEP": 12,
         "DEP_totalinc": 6,
         "GS": 3,
+        "HSV": 2,
         "linear": 1,
         "mono": 1,
         "mono2D": 1,
