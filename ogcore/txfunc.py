@@ -791,7 +791,7 @@ def txfunc_est(
         constant = np.ones_like(income)
         ln_income = np.log(income)
         X = np.column_stack((constant, ln_income))
-        Y = 1 - txrates
+        Y = np.log(1 - txrates)
         param_est = np.linalg.inv(X.T @ X) @ X.T @ Y
         params = np.zeros(numparams)
         if rate_type == "etr":
