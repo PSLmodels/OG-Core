@@ -642,9 +642,6 @@ def txfunc_est(
             max_y_init = np.minimum(
                 txrates[(df["total_labinc"] < x_20pctl)].max(), MAX_ETR + 0.05
             )
-            shift = txrates[
-                (df["total_labinc"] < x_20pctl) | (df["total_capinc"] < y_20pctl)
-            ].min()
             share_init = 0.5
             params_init = np.array(
                 [
@@ -657,6 +654,9 @@ def txfunc_est(
                     share_init,
                 ]
             )
+        shift = txrates[
+                (df["total_labinc"] < x_20pctl) | (df["total_capinc"] < y_20pctl)
+            ].min()
         shift_x = 0.0  # temp value
         shift_y = 0.0  # temp value
         tx_objs = (
@@ -670,11 +670,20 @@ def txfunc_est(
         )
         lb_max_x = np.maximum(min_x, 0.0) + 1e-4
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
+        # bnds = (
+        #     (1e-12, None),
+        #     (1e-12, None),
+        #     (1e-12, None),
+        #     (1e-12, None),
+        #     (lb_max_x, MAX_ETR + 0.15),
+        #     (lb_max_y, MAX_ETR + 0.15),
+        #     (0, 1),
+        # )
         bnds = (
-            (1e-12, None),
-            (1e-12, None),
-            (1e-12, None),
-            (1e-12, None),
+            (1e-12, 9999),
+            (1e-12, 9999),
+            (1e-12, 9999),
+            (1e-12, 9999),
             (lb_max_x, MAX_ETR + 0.15),
             (lb_max_y, MAX_ETR + 0.15),
             (0, 1),
@@ -738,13 +747,13 @@ def txfunc_est(
                 txrates[(df["total_labinc"] < x_20pctl)].max(), MAX_ETR + 0.05
             )
             max_income_init = max(max_x_init, max_y_init)
-            min_income = min(min_x, min_y)
-            shift = txrates[
+            share_init = 0.5
+            params_init = np.array([Atil_init, Btil_init, max_income_init])
+        shift = txrates[
                 (df["total_labinc"] < x_20pctl) | (df["total_capinc"] < y_20pctl)
             ].min()
-            share_init = 0.5
-            shift_inc = 0.0  # temp value
-            params_init = np.array([Atil_init, Btil_init, max_income_init])
+        min_income = min(min_x, min_y)
+        shift_inc = 0.0  # temp value
         tx_objs = (
             np.array([min_income, shift_inc, shift]),
             X,
@@ -755,7 +764,8 @@ def txfunc_est(
             rate_type,
         )
         lb_max_income = np.maximum(min_income, 0.0) + 1e-4
-        bnds = ((1e-12, None), (1e-12, None), (lb_max_income, MAX_ETR + 0.15))
+        # bnds = ((1e-12, None), (1e-12, None), (lb_max_income, MAX_ETR + 0.15))
+        bnds = ((1e-12, 99999), (1e-12, 9999), (lb_max_income, MAX_ETR + 0.15))
         if global_opt:
             params_til = opt.differential_evolution(
                 wsumsq,
