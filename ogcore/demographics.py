@@ -45,6 +45,8 @@ def get_un_data(
     for UN population data (see
     https://population.un.org/dataportal/about/dataapi)
 
+    Requires a API token in file "un_api_token.txt"
+
     Args:
         variable_code (str): variable code for UN data
         country_id (str): country id for UN data
@@ -54,6 +56,11 @@ def get_un_data(
     Returns:
         df (Pandas DataFrame): DataFrame of UN data
     """
+
+    # Load the token from a local file
+    with open("un_api_token.txt", "r") as file:
+        un_token = file.read().strip()
+
     target = (
         "https://population.un.org/dataportalapi/api/v1/data/indicators/"
         + variable_code
@@ -66,8 +73,11 @@ def get_un_data(
         + "?format=csv"
     )
 
+    payload = {}
+    headers = {"Authorization": un_token}
+
     # get data from url
-    response = get_legacy_session().get(target)
+    response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
     if response.status_code == 200:
 
@@ -374,7 +384,7 @@ def get_pop(
             )
     else:
         # Read UN data
-        for y in range(start_year, end_year + 2):
+        for y in range(start_year, end_year):
             pop_data = get_un_data(
                 "47",
                 country_id=country_id,
