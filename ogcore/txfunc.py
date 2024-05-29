@@ -568,8 +568,16 @@ def replace_outliers(param_list, sse_big_mat):
 
 
 def txfunc_est(
-    df, s, t, rate_type, tax_func_type, numparams, output_dir, graph,
-    params_init=None, global_opt=False
+    df,
+    s,
+    t,
+    rate_type,
+    tax_func_type,
+    numparams,
+    output_dir,
+    graph,
+    params_init=None,
+    global_opt=False,
 ):
     """
     This function uses tax tax rate and income data for individuals of a
@@ -655,8 +663,8 @@ def txfunc_est(
                 ]
             )
         shift = txrates[
-                (df["total_labinc"] < x_20pctl) | (df["total_capinc"] < y_20pctl)
-            ].min()
+            (df["total_labinc"] < x_20pctl) | (df["total_capinc"] < y_20pctl)
+        ].min()
         shift_x = 0.0  # temp value
         shift_y = 0.0  # temp value
         tx_objs = (
@@ -690,11 +698,8 @@ def txfunc_est(
         )
         if global_opt:
             params_til = opt.differential_evolution(
-                wsumsq,
-                bounds=bnds,
-                args=(tx_objs),
-                seed=1
-                )
+                wsumsq, bounds=bnds, args=(tx_objs), seed=1
+            )
         else:
             params_til = opt.minimize(
                 wsumsq,
@@ -722,16 +727,16 @@ def txfunc_est(
         params_to_plot = params
         # set initial values to parameter estimates
         params_init = np.array(
-                [
-                    Atil,
-                    Btil,
-                    Ctil,
-                    Dtil,
-                    max_x,
-                    max_y,
-                    share,
-                ]
-            )
+            [
+                Atil,
+                Btil,
+                Ctil,
+                Dtil,
+                max_x,
+                max_y,
+                share,
+            ]
+        )
     elif tax_func_type == "DEP_totalinc":
         # '''
         # Estimate DeBacker, Evans, Phillips (2018) ratio of polynomial
@@ -750,8 +755,8 @@ def txfunc_est(
             share_init = 0.5
             params_init = np.array([Atil_init, Btil_init, max_income_init])
         shift = txrates[
-                (df["total_labinc"] < x_20pctl) | (df["total_capinc"] < y_20pctl)
-            ].min()
+            (df["total_labinc"] < x_20pctl) | (df["total_capinc"] < y_20pctl)
+        ].min()
         min_income = min(min_x, min_y)
         shift_inc = 0.0  # temp value
         tx_objs = (
@@ -768,11 +773,8 @@ def txfunc_est(
         bnds = ((1e-12, 99999), (1e-12, 9999), (lb_max_income, MAX_ETR + 0.15))
         if global_opt:
             params_til = opt.differential_evolution(
-                wsumsq,
-                bounds=bnds,
-                args=(tx_objs),
-                seed=1
-                )
+                wsumsq, bounds=bnds, args=(tx_objs), seed=1
+            )
         else:
             params_til = opt.minimize(
                 wsumsq,
@@ -818,11 +820,8 @@ def txfunc_est(
         bnds = ((1e-12, 9999), (1e-12, 9999), (1e-12, 9999))
         if global_opt:
             params_til = opt.differential_evolution(
-                wsumsq,
-                bounds=bnds,
-                args=(tx_objs),
-                seed=1
-                )
+                wsumsq, bounds=bnds, args=(tx_objs), seed=1
+            )
         else:
             params_til = opt.minimize(
                 wsumsq,
@@ -1156,7 +1155,7 @@ def tax_func_loop(
             etrparams,
             etr_wsumsq_arr[s - s_min],
             etr_obs_arr[s - s_min],
-            params_init_etr
+            params_init_etr,
         ) = txfunc_est(
             df_etr,
             s,
@@ -1167,7 +1166,7 @@ def tax_func_loop(
             output_dir,
             False,
             None,
-            True
+            True,
         )
         etrparam_list[s - s_min] = etrparams
         del df_etr
@@ -1178,7 +1177,7 @@ def tax_func_loop(
             mtrxparams,
             mtrx_wsumsq_arr[s - s_min],
             mtrx_obs_arr[s - s_min],
-            params_init_mtrx
+            params_init_mtrx,
         ) = txfunc_est(
             df_mtrx,
             s,
@@ -1189,7 +1188,7 @@ def tax_func_loop(
             output_dir,
             False,
             None,
-            True
+            True,
         )
         del df_mtrx
         # Estimate marginal tax rate of capital income function
@@ -1198,7 +1197,7 @@ def tax_func_loop(
             mtryparams,
             mtry_wsumsq_arr[s - s_min],
             mtry_obs_arr[s - s_min],
-            params_init_mtry
+            params_init_mtry,
         ) = txfunc_est(
             df_mtry,
             s,
@@ -1209,7 +1208,7 @@ def tax_func_loop(
             output_dir,
             False,
             None,
-            True
+            True,
         )
         mtryparam_list[s - s_min] = mtryparams
     else:
@@ -1360,7 +1359,7 @@ def tax_func_loop(
                 etrparams,
                 etr_wsumsq_arr[s - s_min],
                 etr_obs_arr[s - s_min],
-                params_init
+                params_init,
             ) = txfunc_est(
                 df_etr,
                 s,
@@ -1370,7 +1369,7 @@ def tax_func_loop(
                 numparams,
                 output_dir,
                 graph_est,
-                params_init_etr
+                params_init_etr,
             )
             etrparam_list[s - s_min] = etrparams
             del df_etr
@@ -1381,7 +1380,7 @@ def tax_func_loop(
                 mtrxparams,
                 mtrx_wsumsq_arr[s - s_min],
                 mtrx_obs_arr[s - s_min],
-                params_init
+                params_init,
             ) = txfunc_est(
                 df_mtrx,
                 s,
@@ -1391,7 +1390,7 @@ def tax_func_loop(
                 numparams,
                 output_dir,
                 graph_est,
-                params_init_mtrx
+                params_init_mtrx,
             )
             mtrxparam_list[s - s_min] = mtrxparams
             del df_mtrx
@@ -1401,7 +1400,7 @@ def tax_func_loop(
                 mtryparams,
                 mtry_wsumsq_arr[s - s_min],
                 mtry_obs_arr[s - s_min],
-                params_init
+                params_init,
             ) = txfunc_est(
                 df_mtry,
                 s,
@@ -1411,7 +1410,7 @@ def tax_func_loop(
                 numparams,
                 output_dir,
                 graph_est,
-                params_init_mtry
+                params_init_mtry,
             )
             mtryparam_list[s - s_min] = mtryparams
 
