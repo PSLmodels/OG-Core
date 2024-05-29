@@ -434,6 +434,7 @@ def test_tax_func_loop():
         assert np.allclose(test_tuple[i], v, atol=1e-06)
 
 
+# DEP parameters
 A = 0.02
 B = 0.01
 C = 0.003
@@ -444,12 +445,17 @@ max_y = 0.8
 min_y = 0.05
 shift = 0.03
 share = 0.7
+shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+# GS parameters
 phi0 = 0.6
 phi1 = 0.5
 phi2 = 0.6
-shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
-shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+# Linear parameters
 avg_rate = 0.17
+# HSV parameters
+lambda_s = 0.5
+tau_s = 0.1
 
 
 @pytest.mark.parametrize(
@@ -606,6 +612,24 @@ avg_rate = 0.17
             False,
             np.array([0.64187414, 0.63823569, 0.27160586, 0.09619512]),
         ),
+        (
+            "HSV",
+            "etr",
+            np.array([lambda_s, tau_s]),
+            True,
+            False,
+            False,
+            np.array([0.670123022, 0.684204102, 0.543778232, 0.455969612]),
+        ),
+        (
+            "HSV",
+            "mtr",
+            np.array([lambda_s, tau_s]),
+            True,
+            False,
+            False,
+            np.array([0.70311072, 0.715783692, 0.589400409, 0.510372651]),
+        ),
     ],
     ids=[
         "DEP for estimation",
@@ -618,6 +642,8 @@ avg_rate = 0.17
         "DEP, analytical MTRs",
         "DEP analytical capital MTRs",
         "DEP_totalinc, analytical MTRs",
+        "HSV, etr",
+        "HSV, mtr",
     ],
 )
 def test_get_tax_rates(
