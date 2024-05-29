@@ -204,6 +204,21 @@ expected_tuple_GS = (
 )
 expected_tuple_linear_mtrx = (0.37030104, 0.0, 152900)
 expected_tuple_linear_mtry = (0.24793767, 0.0, 152900)
+expected_tuple_HSV = (
+    np.array([1.68456651, 0.06149992]),
+    792935850.6195159,
+    152900,
+)
+expected_tuple_HSV_mtrx = (
+    np.array([1.35287201, 0.05298318]),
+    642774637.8247124,
+    152900,
+)
+expected_tuple_HSV_mtry = (
+    np.array([1.76056732, 0.05796658]),
+    798149828.3166732,
+    152900,
+)
 
 
 @pytest.mark.local  # only marking as local because platform
@@ -259,8 +274,18 @@ def test_txfunc_est(
         ("etr", "linear", 1, expected_tuple_linear),
         ("mtrx", "linear", 1, expected_tuple_linear_mtrx),
         ("mtry", "linear", 1, expected_tuple_linear_mtry),
+        ("etr", "HSV", 2, expected_tuple_HSV),
+        ("mtrx", "HSV", 2, expected_tuple_HSV_mtrx),
+        ("mtry", "HSV", 2, expected_tuple_HSV_mtry),
     ],
-    ids=["linear", "linear, mtrx", "linear, mtry"],
+    ids=[
+        "linear, etr",
+        "linear, mtrx",
+        "linear, mtry",
+        "HSV, etr",
+        "HSV, mtrx",
+        "HSV, mtry",
+    ],
 )
 def test_txfunc_est_on_GH(
     rate_type, tax_func_type, numparams, expected_tuple, tmpdir
@@ -294,6 +319,7 @@ def test_txfunc_est_on_GH(
     )
 
     for i, v in enumerate(expected_tuple):
+        print("For element", i, ", test tuple =", test_tuple[i])
         assert np.allclose(test_tuple[i], v, rtol=0.0, atol=1e-04)
 
 
