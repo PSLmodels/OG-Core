@@ -846,9 +846,9 @@ def txfunc_est(
         # '''
         constant = np.ones_like(income)
         ln_income = np.log(income)
-        X = np.column_stack((constant, ln_income))
-        Y = np.log(1 - txrates)
-        param_est = np.linalg.inv(X.T @ X) @ X.T @ Y
+        X_mat = np.column_stack((constant, ln_income))
+        Y_vec = np.log(1 - txrates)
+        param_est = np.linalg.inv(X_mat.T @ X_mat) @ X_mat.T @ Y_vec
         params = np.zeros(numparams)
         if rate_type == "etr":
             ln_lambda_s_hat, minus_tau_s_hat = param_est
@@ -858,8 +858,8 @@ def txfunc_est(
             lambda_s_hat = np.exp(constant - np.log(1 + minus_tau_s_hat))
             params[:2] = np.array([lambda_s_hat, -minus_tau_s_hat])
         # Calculate the WSSE
-        Y_hat = X @ params
-        wsse = ((Y - Y_hat) ** 2 * wgts).sum()
+        Y_hat = X_mat @ params
+        wsse = ((Y_vec - Y_hat) ** 2 * wgts).sum()
         obs = df.shape[0]
         params_to_plot = params
     elif tax_func_type == "linear":
