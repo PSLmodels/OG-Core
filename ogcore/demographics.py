@@ -27,6 +27,17 @@ if os.access(OUTPUT_DIR, os.F_OK) is False:
     os.makedirs(OUTPUT_DIR)
 
 
+# UN data API token
+# global UN_TOKEN
+# # UN_TOKEN = None
+# global UN_TOKEN
+# Check for a file named "un_api_token.txt" in the current directory
+# if os.path.exists("./ogusa/un_api_token.txt"):
+#     with open("un_api_token.txt", "r") as file:
+#         UN_TOKEN = file.read().strip()
+# else:  # if file not exist, prompt user for token
+#     UN_TOKEN = input("Please enter your UN API token: ")
+
 """
 ------------------------------------------------------------------------
 Define functions
@@ -67,7 +78,10 @@ def get_un_data(
     )
 
     # get data from url
-    response = get_legacy_session().get(target)
+    payload = {}
+    headers = {"Authorization": UN_TOKEN}
+    print("UN Token  = ", UN_TOKEN)
+    response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
     if response.status_code == 200:
 
@@ -723,6 +737,19 @@ def get_pop_objs(
         assert (
             infer_pop is True
         )  # if pass immigration rates, need to infer population
+
+    # Check that user is going to need access to demographic data from
+    # the UN. If so, prompt them for their API token.
+    # Prompt the user to enter their name
+    if (fert_rates is None or mort_rates is None or infmort_rates is None
+        or imm_rates is None or pop_dist is None):
+        global UN_TOKEN
+        # Check for a file named "un_api_token.txt" in the current directory
+        if os.path.exists("./ogcore/un_api_token.txt"):
+            with open("./ogcore/un_api_token.txt", "r") as file:
+                UN_TOKEN = file.read().strip()
+        else:  # if file not exist, prompt user for token
+            UN_TOKEN = input("Please enter your UN API token: ")
 
     # Get fertility rates if not provided
     if fert_rates is None:
