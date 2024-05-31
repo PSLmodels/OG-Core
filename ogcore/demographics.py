@@ -80,7 +80,6 @@ def get_un_data(
     # get data from url
     payload = {}
     headers = {"Authorization": UN_TOKEN}
-    print("UN Token  = ", UN_TOKEN)
     response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
     if response.status_code == 200:
@@ -150,13 +149,8 @@ def get_fert(
     # CLean and rebin data
     for y in range(start_year, end_year + 1):
         df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
-        fert_rates = df_y.value.values
-        # fill in with zeros for ages  < 15 and > 49
-        # NOTE: this assumes min_year < 15 and max_age > 49
-        fert_rates = np.append(fert_rates, np.zeros(max_age - 49))
-        fert_rates = np.append(np.zeros(15 - min_age), fert_rates)
         # put in vector
-        fert_rates = df.value.values
+        fert_rates = df_y.value.values
         # fill in with zeros for ages  < 15 and > 49
         # NOTE: this assumes min_year < 15 and max_age > 49
         fert_rates = np.append(fert_rates, np.zeros(max_age - 49))
@@ -179,7 +173,7 @@ def get_fert(
 
     # Create plots if needed
     if graph:
-        if plot_path:
+        if plot_path is not None:
             pp.plot_fert_rates(
                 [fert_rates_2D],
                 start_year=start_year,
@@ -269,7 +263,7 @@ def get_mort(
 
     # Create plots if needed
     if graph:
-        if plot_path:
+        if plot_path is not None:
             pp.plot_mort_rates_data(
                 mort_rates_2D,
                 start_year,
@@ -570,13 +564,11 @@ def get_imm_rates(
             pop_t = pop_rebin(pop_t, totpers)
             pop_dist[y - start_year, :] = pop_t
     # Make sure shape conforms
-    print("pop_dist shape = ", pop_dist.shape)
-    print("mort_rates shape = ", mort_rates.shape)
     assert pop_dist.shape[1] == mort_rates.shape[1]
     assert pop_dist.shape[0] == end_year - start_year + 2
     for y in range(start_year, end_year + 1):
         pop_t = pop_dist[y - start_year, :]
-        pop_tp1 = pop_dist[y - start_year + 1, :]
+        pop_tp1 = pop_dist[y + 1 - start_year, :]
         # initialize imm_rate vector
         imm_rates = np.zeros(totpers)
         # back out imm rates by age for each year
@@ -601,7 +593,7 @@ def get_imm_rates(
 
     # Create plots if needed
     if graph:
-        if plot_path:
+        if plot_path is not None:
             pp.plot_imm_rates(
                 imm_rates_2D,
                 start_year,
@@ -767,8 +759,8 @@ def get_pop_objs(
     ):
         global UN_TOKEN
         # Check for a file named "un_api_token.txt" in the current directory
-        if os.path.exists("./ogcore/un_api_token.txt"):
-            with open("./ogcore/un_api_token.txt", "r") as file:
+        if os.path.exists(os.path.join("un_api_token.txt")):
+            with open(os.path.join("un_api_token.txt"), "r") as file:
                 UN_TOKEN = file.read().strip()
         else:  # if file not exist, prompt user for token
             UN_TOKEN = input("Please enter your UN API token: ")
