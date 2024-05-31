@@ -859,7 +859,8 @@ def txfunc_est(
             params[:2] = np.array([lambda_s_hat, -minus_tau_s_hat])
         # Calculate the WSSE
         Y_hat = X_mat @ params
-        wsse = ((Y_vec - Y_hat) ** 2 * wgts).sum()
+        # wsse = ((Y_vec - Y_hat) ** 2 * wgts).sum()
+        wsse = ((Y_vec - Y_hat) ** 2).sum()
         obs = df.shape[0]
         params_to_plot = params
     elif tax_func_type == "linear":
