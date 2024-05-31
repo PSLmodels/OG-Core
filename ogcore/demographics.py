@@ -84,13 +84,6 @@ def get_un_data(
     response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
     if response.status_code == 200:
-
-        # if want to download the data
-        # with open("downloaded_datan.csv", "wb") as f:
-        #     f.write(response.content)
-        # df = pd.read_csv("downloaded_datan.csv")
-        # else
-        # print("TARGET: ", target)
         csvStringIO = StringIO(response.text)
         df = pd.read_csv(csvStringIO, sep="|", header=1)
 
@@ -150,9 +143,18 @@ def get_fert(
     """
     # initialize fert rates array
     fert_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
-    # Read UN data, 1 year at a time
+    # Read UN data
+    df = get_un_data(
+        "68", country_id=country_id, start_year=start_year, end_year=end_year
+    )
+    # CLean and rebin data
     for y in range(start_year, end_year + 1):
-        df = get_un_data("68", country_id=country_id, start_year=y, end_year=y)
+        df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
+        fert_rates = df_y.value.values
+        # fill in with zeros for ages  < 15 and > 49
+        # NOTE: this assumes min_year < 15 and max_age > 49
+        fert_rates = np.append(fert_rates, np.zeros(max_age - 49))
+        fert_rates = np.append(np.zeros(15 - min_age), fert_rates)
         # put in vector
         fert_rates = df.value.values
         # fill in with zeros for ages  < 15 and > 49
@@ -233,10 +235,14 @@ def get_mort(
     mort_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
     infmort_rate_vec = np.zeros(end_year + 1 - start_year)
     # Read UN data
+    df = get_un_data(
+        "80", country_id=country_id, start_year=start_year, end_year=end_year
+    )
+    # CLean and rebin data
     for y in range(start_year, end_year + 1):
-        df = get_un_data("80", country_id=country_id, start_year=y, end_year=y)
+        df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
         # put in vector
-        mort_rates_data = df.value.values
+        mort_rates_data = df_y.value.values
         # In UN data, mortality rates for 0 year olds are the infant
         # mortality rates
         infmort_rate = mort_rates_data[0]
@@ -336,7 +342,7 @@ def get_pop(
     """
     # Generate time path of the nonstationary population distribution
     # Get path up to end of data year
-    pop_2D = np.zeros((end_year + 1 - start_year + 1, E + S))
+    pop_2D = np.zeros((end_year + 2 - start_year, E + S))
     if infer_pop:
         if pre_pop_dist is None:
             pre_pop_data = get_un_data(
@@ -350,6 +356,7 @@ def get_pop(
                 & (pre_pop_data["age"] <= max_age)
             ]
             pre_pop = pre_pop_sample.value.values
+            pre_pop_dist = pop_rebin(pre_pop, E + S)
         else:
             pre_pop = pre_pop_dist
         if initial_pop is None:
@@ -364,6 +371,7 @@ def get_pop(
                 & (pre_pop_data["age"] <= max_age)
             ]
             initial_pop = initial_pop_sample.value.values
+            initial_pop = pop_rebin(initial_pop, E + S)
         # Check that have all necessary inputs to infer the population
         # distribution
         assert not [
@@ -388,15 +396,19 @@ def get_pop(
             )
     else:
         # Read UN data
+        pop_data = get_un_data(
+            "47",
+            country_id=country_id,
+            start_year=start_year,
+            end_year=end_year
+            + 2,  # note go to + 2 because needed to infer immigration for end_year
+        )
+        # CLean and rebin data
         for y in range(start_year, end_year + 2):
-            pop_data = get_un_data(
-                "47",
-                country_id=country_id,
-                start_year=y,
-                end_year=y,
-            )
             pop_data_sample = pop_data[
-                (pop_data["age"] >= min_age) & (pop_data["age"] <= max_age)
+                (pop_data["age"] >= min_age)
+                & (pop_data["age"] <= max_age)
+                & (pop_data["year"] == y)
             ]
             pop = pop_data_sample.value.values
             # Generate the current population distribution given that E+S might
@@ -404,6 +416,7 @@ def get_pop(
             # age_per_EpS = np.arange(1, E + S + 1)
             pop_EpS = pop_rebin(pop, E + S)
             pop_2D[y - start_year, :] = pop_EpS
+
         # get population distribution one year before initial year for
         # calibration of omega_S_preTP
         pre_pop_data = get_un_data(
@@ -541,25 +554,29 @@ def get_imm_rates(
         assert fert_rates.shape == mort_rates.shape
         assert infmort_rates is not None
         assert infmort_rates.shape[0] == mort_rates.shape[0]
-    # Read UN data
-    for y in range(start_year, end_year + 1):
-        if pop_dist is None:
-            # need to read UN population data by age for each year
-            df = get_un_data(
-                "47", country_id=country_id, start_year=y, end_year=y
-            )
-            pop_t = df[(df.age < 100) & (df.age >= 0)].value.values
+    if pop_dist is None:
+        # need to read UN population data
+        df = get_un_data(
+            "47",
+            country_id=country_id,
+            start_year=start_year,
+            end_year=end_year + 2,
+        )
+        pop_dist = np.zeros((end_year + 2 - start_year, totpers))
+        for y in range(start_year, end_year + 1):
+            pop_t = df[
+                (df.age < 100) & (df.age >= 0) & (df.year == y)
+            ].value.values
             pop_t = pop_rebin(pop_t, totpers)
-            df = get_un_data(
-                "47", country_id=country_id, start_year=y + 1, end_year=y + 1
-            )
-            pop_tp1 = df[(df.age < 100) & (df.age >= 0)].value.values
-            pop_tp1 = pop_rebin(pop_tp1, totpers)
-        else:
-            # Make sure shape conforms
-            assert pop_dist.shape[1] == mort_rates.shape[1]
-            pop_t = pop_dist[y - start_year, :]
-            pop_tp1 = pop_dist[y - start_year + 1, :]
+            pop_dist[y - start_year, :] = pop_t
+    # Make sure shape conforms
+    print("pop_dist shape = ", pop_dist.shape)
+    print("mort_rates shape = ", mort_rates.shape)
+    assert pop_dist.shape[1] == mort_rates.shape[1]
+    assert pop_dist.shape[0] == end_year - start_year + 2
+    for y in range(start_year, end_year + 1):
+        pop_t = pop_dist[y - start_year, :]
+        pop_tp1 = pop_dist[y - start_year + 1, :]
         # initialize imm_rate vector
         imm_rates = np.zeros(totpers)
         # back out imm rates by age for each year
@@ -741,8 +758,13 @@ def get_pop_objs(
     # Check that user is going to need access to demographic data from
     # the UN. If so, prompt them for their API token.
     # Prompt the user to enter their name
-    if (fert_rates is None or mort_rates is None or infmort_rates is None
-        or imm_rates is None or pop_dist is None):
+    if (
+        fert_rates is None
+        or mort_rates is None
+        or infmort_rates is None
+        or imm_rates is None
+        or pop_dist is None
+    ):
         global UN_TOKEN
         # Check for a file named "un_api_token.txt" in the current directory
         if os.path.exists("./ogcore/un_api_token.txt"):
