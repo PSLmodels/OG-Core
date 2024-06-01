@@ -146,6 +146,8 @@ def get_fert(
     df = get_un_data(
         "68", country_id=country_id, start_year=start_year, end_year=end_year
     )
+    if download_path:
+        df.to_csv(os.path.join(download_path, "raw_fert_data_UN.csv"), index=False)
     # CLean and rebin data
     for y in range(start_year, end_year + 1):
         df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
@@ -232,6 +234,8 @@ def get_mort(
     df = get_un_data(
         "80", country_id=country_id, start_year=start_year, end_year=end_year
     )
+    if download_path:
+        df.to_csv(os.path.join(download_path, "raw_mort_data_UN.csv"), index=False)
     # CLean and rebin data
     for y in range(start_year, end_year + 1):
         df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
@@ -345,6 +349,8 @@ def get_pop(
                 start_year=start_year - 1,
                 end_year=start_year - 1,
             )
+            if download_path:
+                pre_pop_data.to_csv(os.path.join(download_path, "raw_pre_pop_data_UN.csv"), index=False)
             pre_pop_sample = pre_pop_data[
                 (pre_pop_data["age"] >= min_age)
                 & (pre_pop_data["age"] <= max_age)
@@ -397,6 +403,8 @@ def get_pop(
             end_year=end_year
             + 2,  # note go to + 2 because needed to infer immigration for end_year
         )
+        if download_path:
+            pop_data.to_csv(os.path.join(download_path, "raw_pop_data_UN.csv"), index=False)
         # CLean and rebin data
         for y in range(start_year, end_year + 2):
             pop_data_sample = pop_data[
@@ -663,7 +671,7 @@ def get_pop_objs(
     pre_pop_dist=None,
     country_id=UN_COUNTRY_CODE,
     initial_data_year=START_YEAR - 1,
-    final_data_year=START_YEAR + 2,  # as default data year goes until T1
+    final_data_year=START_YEAR + 2,
     GraphDiag=True,
     download_path=None,
 ):
@@ -733,8 +741,8 @@ def get_pop_objs(
         final_data_year,
     )
     assert E + S <= max_age - min_age + 1
-    assert initial_data_year >= 2011 and initial_data_year <= 2100
-    assert final_data_year >= 2011 and final_data_year <= 2100
+    assert initial_data_year >= 2011 and initial_data_year <= 2100 - 1
+    assert final_data_year >= 2011 and final_data_year <= 2100 - 1
     # Ensure that the last year of data used is before SS transition assumed
     # Really, it will need to be well before this
     assert final_data_year > initial_data_year
