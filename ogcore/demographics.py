@@ -147,7 +147,9 @@ def get_fert(
         "68", country_id=country_id, start_year=start_year, end_year=end_year
     )
     if download_path:
-        df.to_csv(os.path.join(download_path, "raw_fert_data_UN.csv"), index=False)
+        df.to_csv(
+            os.path.join(download_path, "raw_fert_data_UN.csv"), index=False
+        )
     # CLean and rebin data
     for y in range(start_year, end_year + 1):
         df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
@@ -235,7 +237,9 @@ def get_mort(
         "80", country_id=country_id, start_year=start_year, end_year=end_year
     )
     if download_path:
-        df.to_csv(os.path.join(download_path, "raw_mort_data_UN.csv"), index=False)
+        df.to_csv(
+            os.path.join(download_path, "raw_mort_data_UN.csv"), index=False
+        )
     # CLean and rebin data
     for y in range(start_year, end_year + 1):
         df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
@@ -350,7 +354,10 @@ def get_pop(
                 end_year=start_year - 1,
             )
             if download_path:
-                pre_pop_data.to_csv(os.path.join(download_path, "raw_pre_pop_data_UN.csv"), index=False)
+                pre_pop_data.to_csv(
+                    os.path.join(download_path, "raw_pre_pop_data_UN.csv"),
+                    index=False,
+                )
             pre_pop_sample = pre_pop_data[
                 (pre_pop_data["age"] >= min_age)
                 & (pre_pop_data["age"] <= max_age)
@@ -404,7 +411,9 @@ def get_pop(
             + 2,  # note go to + 2 because needed to infer immigration for end_year
         )
         if download_path:
-            pop_data.to_csv(os.path.join(download_path, "raw_pop_data_UN.csv"), index=False)
+            pop_data.to_csv(
+                os.path.join(download_path, "raw_pop_data_UN.csv"), index=False
+            )
         # CLean and rebin data
         for y in range(start_year, end_year + 2):
             pop_data_sample = pop_data[
