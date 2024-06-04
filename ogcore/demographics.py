@@ -77,6 +77,17 @@ def get_un_data(
         + "?format=csv"
     )
 
+
+    # Check for a file named "un_api_token.txt" in the current directory
+    if os.path.exists(os.path.join("un_api_token.txt")):
+        with open(os.path.join("un_api_token.txt"), "r") as file:
+            UN_TOKEN = file.read().strip()
+    else:  # if file not exist, prompt user for token
+        UN_TOKEN = input("Please enter your UN API token (press return if you do not have one): ")
+        # write the UN_TOKEN to a file to find in the future
+        with open(os.path.join("un_api_token.txt"), "w") as file:
+            file.write(UN_TOKEN)
+
     # get data from url
     payload = {}
     headers = {"Authorization": UN_TOKEN}
@@ -99,9 +110,13 @@ def get_un_data(
         df.year = df.year.astype(int)
         df = df[df.age < 100]  # need to drop 100+ age category
     else:
-        print(
-            f"Failed to retrieve population data. HTTP status code: {response.status_code}"
-        )
+        # Read from UN GH Repo:
+        # TODO: put code to do this here...
+
+        # Do we still want to keep the status code for failures?
+        # print(
+        #     f"Failed to retrieve population data. HTTP status code: {response.status_code}"
+        # )
         assert False
 
     return df
@@ -763,24 +778,6 @@ def get_pop_objs(
         assert (
             infer_pop is True
         )  # if pass immigration rates, need to infer population
-
-    # Check that user is going to need access to demographic data from
-    # the UN. If so, prompt them for their API token.
-    # Prompt the user to enter their name
-    if (
-        fert_rates is None
-        or mort_rates is None
-        or infmort_rates is None
-        or imm_rates is None
-        or pop_dist is None
-    ):
-        global UN_TOKEN
-        # Check for a file named "un_api_token.txt" in the current directory
-        if os.path.exists(os.path.join("un_api_token.txt")):
-            with open(os.path.join("un_api_token.txt"), "r") as file:
-                UN_TOKEN = file.read().strip()
-        else:  # if file not exist, prompt user for token
-            UN_TOKEN = input("Please enter your UN API token: ")
 
     # Get fertility rates if not provided
     if fert_rates is None:
