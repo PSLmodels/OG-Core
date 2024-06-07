@@ -90,7 +90,7 @@ def get_un_data(
 
     # get data from url
     payload = {}
-    headers = {"Authorization": UN_TOKEN}
+    headers = {"Authorization": "Bearer " + UN_TOKEN}
     response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
     if response.status_code == 200:
@@ -111,13 +111,35 @@ def get_un_data(
         df = df[df.age < 100]  # need to drop 100+ age category
     else:
         # Read from UN GH Repo:
-        # TODO: put code to do this here...
+        print(
+            f"Failed to retrieve population data from UN. Reading " +
+            " from https://github.com/EAPD-DRB/Population-Data " +
+            "instead of UN WPP API"
+        )
+        country_dict = {
+            "840": "USA",
+            "710": "ZAF",
+            "458": "MYS",
+            "356": "IND",
+            "826": "UK"
+        }
+        un_variable_dict = {
+            "68": "fertility_rates",
+            "80": "mortality_rates",
+            "47": "population"
+        }
+        country = country_dict[country_id]
+        variable = un_variable_dict[variable_code]
+        url = "https://raw.githubusercontent.com/EAPD-DRB/Population-Data/main/Data/{c}/UN_{v}_data.csv".format(c=country, v=variable)
+        df = pd.read_csv(url)
+        # keep just the years requested
+        df = df[(df.year >= start_year) & (df.year <= end_year)]
 
         # Do we still want to keep the status code for failures?
         # print(
         #     f"Failed to retrieve population data. HTTP status code: {response.status_code}"
         # )
-        assert False
+        # assert False
 
     return df
 
