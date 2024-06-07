@@ -27,17 +27,6 @@ if os.access(OUTPUT_DIR, os.F_OK) is False:
     os.makedirs(OUTPUT_DIR)
 
 
-# UN data API token
-# global UN_TOKEN
-# # UN_TOKEN = None
-# global UN_TOKEN
-# Check for a file named "un_api_token.txt" in the current directory
-# if os.path.exists("./ogusa/un_api_token.txt"):
-#     with open("un_api_token.txt", "r") as file:
-#         UN_TOKEN = file.read().strip()
-# else:  # if file not exist, prompt user for token
-#     UN_TOKEN = input("Please enter your UN API token: ")
-
 """
 ------------------------------------------------------------------------
 Define functions
@@ -188,10 +177,6 @@ def get_fert(
     df = get_un_data(
         "68", country_id=country_id, start_year=start_year, end_year=end_year
     )
-    if download_path:
-        df.to_csv(
-            os.path.join(download_path, "raw_fert_data_UN.csv"), index=False
-        )
     # CLean and rebin data
     for y in range(start_year, end_year + 1):
         df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
@@ -278,10 +263,6 @@ def get_mort(
     df = get_un_data(
         "80", country_id=country_id, start_year=start_year, end_year=end_year
     )
-    if download_path:
-        df.to_csv(
-            os.path.join(download_path, "raw_mort_data_UN.csv"), index=False
-        )
     # CLean and rebin data
     for y in range(start_year, end_year + 1):
         df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
@@ -452,10 +433,6 @@ def get_pop(
             end_year=end_year
             + 2,  # note go to + 2 because needed to infer immigration for end_year
         )
-        if download_path:
-            pop_data.to_csv(
-                os.path.join(download_path, "raw_pop_data_UN.csv"), index=False
-            )
         # CLean and rebin data
         for y in range(start_year, end_year + 2):
             pop_data_sample = pop_data[
