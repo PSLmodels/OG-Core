@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.11.7] - 2024-06-07 01:00:00
+
+### Added
+
+- Heathcote, Storesletten, and Violante (2017) tax functions to `txfunc.py`
+
 ## [0.11.6] - 2024-04-19 01:00:00
 
 ### Added
