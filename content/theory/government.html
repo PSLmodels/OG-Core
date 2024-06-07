@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -37,9 +37,9 @@
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -73,27 +73,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -115,8 +111,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -184,7 +185,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
@@ -200,7 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="current nav bd-sidenav">
@@ -242,7 +243,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -251,7 +252,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -535,7 +536,7 @@ document.write(`
 <p>The key building blocks of the functional form Equation <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(60)</a> are the <span class="math notranslate nohighlight">\(\tau(x)\)</span> and <span class="math notranslate nohighlight">\(\tau(y)\)</span> univariate functions. The ratio of polynomials in the <span class="math notranslate nohighlight">\(\tau(x)\)</span> function <span class="math notranslate nohighlight">\(\frac{Ax^2 + Bx}{Ax^2 + Bx + 1}\)</span> with positive coefficients <span class="math notranslate nohighlight">\(A,B&gt;0\)</span> and positive support for labor income <span class="math notranslate nohighlight">\(x&gt;0\)</span> creates a negative-exponential-shaped function that is bounded between 0 and 1, and the curvature is governed by the ratio of quadratic polynomials. The multiplicative scalar term <span class="math notranslate nohighlight">\((max_x-min_x)\)</span> on the ratio of polynomials and the addition of <span class="math notranslate nohighlight">\(min_x\)</span> at the end of <span class="math notranslate nohighlight">\(\tau(x)\)</span> expands the range of the univariate negative-exponential-shaped function to <span class="math notranslate nohighlight">\(\tau(x)\in[min_x, max_x]\)</span>. The <span class="math notranslate nohighlight">\(\tau(y)\)</span> function is an analogous univariate negative-exponential-shaped function in capital income <span class="math notranslate nohighlight">\(y\)</span>, such that <span class="math notranslate nohighlight">\(\tau(y)\in[min_y,max_y]\)</span>.</p>
 <p>The respective <span class="math notranslate nohighlight">\(shift_x\)</span> and <span class="math notranslate nohighlight">\(shift_y\)</span> parameters in Equation <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(60)</a> are analogous to the additive constants in a Stone-Geary utility function. These constants ensure that the two sums <span class="math notranslate nohighlight">\(\tau(x) + shift_x\)</span> and <span class="math notranslate nohighlight">\(\tau(y) + shift_y\)</span> are both strictly positive. They allow for negative tax rates in the <span class="math notranslate nohighlight">\(\tau(\cdot)\)</span> functions despite the requirement that the arguments inside the brackets be strictly positive. The general <span class="math notranslate nohighlight">\(shift\)</span> parameter outside of the Cobb-Douglas brackets can then shift the tax rate function so that it can accommodate negative tax rates. The Cobb-Douglas share parameter <span class="math notranslate nohighlight">\(\phi\in[0,1]\)</span> controls the shape of the function between the two univariate functions <span class="math notranslate nohighlight">\(\tau(x)\)</span> and <span class="math notranslate nohighlight">\(\tau(y)\)</span>.</p>
 <p>This functional form for tax rates delivers flexible parametric functions that can fit the tax rate data shown in the scatterplot data in <a class="reference internal" href="#figtaxcalcetrtotinc"><span class="std std-numref">Figure 2</span></a> and <a class="reference internal" href="#figtaxcalc3dvspred"><span class="std std-numref">Figure 3</span></a> as well as a wide variety of policy reforms. Further, these functional forms are monotonically increasing in both labor income <span class="math notranslate nohighlight">\(x\)</span> and capital income <span class="math notranslate nohighlight">\(y\)</span>. This characteristic of monotonicity in <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> is essential for guaranteeing convex budget sets and thus uniqueness of solutions to the household Euler equations. The assumption of monotonicity does not appear to be a strong one when viewing the the tax rate data shown in <a class="reference internal" href="#figtaxcalc3dvspred"><span class="std std-numref">Figure 3</span></a>. While it does limit the potential tax systems to which one could apply our methodology, tax policies that do not satisfy this assumption would result in non-convex budget sets and thus require non-standard DGE model solutions methods and would not guarantee a unique equilibrium. The 12 parameters of our tax rate functional form from <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(60)</a> are summarized in <a class="reference internal" href="#tabtaxcalctfuncparams"><span class="std std-numref">Table 1</span></a>.</p>
-<table class="table" id="tabtaxcalctfuncparams">
+<div class="pst-scrollable-table-container"><table class="table" id="tabtaxcalctfuncparams">
 <caption><span class="caption-number">Table 1 </span><span class="caption-text"><strong>Description of tax rate function <span class="math notranslate nohighlight">\(\tau(x,y)\)</span> parameters.</strong></span><a class="headerlink" href="#tabtaxcalctfuncparams" title="Link to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Symbol</p></th>
@@ -581,6 +582,7 @@ document.write(`
 </tr>
 </tbody>
 </table>
+</div>
 <figure class="align-default" id="figtaxcalcetrtotinc">
 <a class="reference internal image-reference" href="../../_images/Compare_ETR_functions.png"><img alt="../../_images/Compare_ETR_functions.png" src="../../_images/Compare_ETR_functions.png" style="height: 500px;" /></a>
 <figcaption>
@@ -593,7 +595,7 @@ document.write(`
 <p><span class="caption-number">Fig. 3 </span><span class="caption-text">Estimated tax rate functions of ETR, MTRx, MTRy, and histogram as functions of labor income and capital income from microsimulation model: <span class="math notranslate nohighlight">\(t=2017\)</span> and <span class="math notranslate nohighlight">\(s=42\)</span> under 2017 law in the United States. Note: Axes in the histogram in the lower-right panel have been switched relative to the other three figures in order to see the distribution.</span><a class="headerlink" href="#figtaxcalc3dvspred" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<table class="table" id="tabtaxcalcest42">
+<div class="pst-scrollable-table-container"><table class="table" id="tabtaxcalcest42">
 <caption><span class="caption-number">Table 2 </span><span class="caption-text"><strong>Estimated baseline current law tax rate function for <span class="math notranslate nohighlight">\(\tau_{s,t}(x,y)\)</span> parameters for <span class="math notranslate nohighlight">\(s=42\)</span>, <span class="math notranslate nohighlight">\(t=2017\)</span>.</strong></span><a class="headerlink" href="#tabtaxcalcest42" title="Link to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Parameter</p></th>
@@ -675,6 +677,7 @@ document.write(`
 </tr>
 </tbody>
 </table>
+</div>
 <p>Let <span class="math notranslate nohighlight">\(\boldsymbol{\theta}_{s,t}=(A,B,C,D,max_x,min_x,max_y,min_y,shift_x,shift_y,shift,\phi)\)</span> be the full vector of 12 parameters of the tax function for a particular type of tax rate, age of filers, and year. We first directly specify <span class="math notranslate nohighlight">\(min_x\)</span> as the minimum tax rate and <span class="math notranslate nohighlight">\(max_x\)</span> as the maximum tax rate in the data for age-<span class="math notranslate nohighlight">\(s\)</span> and period-<span class="math notranslate nohighlight">\(t\)</span> individuals for capital income close to 0 (<span class="math notranslate nohighlight">\(\$0&lt;y&lt;\$3,000\)</span>), and <span class="math notranslate nohighlight">\(min_y\)</span> as the minimum tax rate and <span class="math notranslate nohighlight">\(max_y\)</span> as the maximum tax rate for labor income close to 0 (<span class="math notranslate nohighlight">\(\$0&lt;x&lt;\$3,000\)</span>). We then set <span class="math notranslate nohighlight">\(shift_x = \min(0,|min_x|)+\epsilon\)</span> and <span class="math notranslate nohighlight">\(shift_y = \min(0,|min_y|)+\epsilon\)</span> so that the respective arguments in the brackets of <a class="reference internal" href="#equation-eqtaxcalctaxfuncform">(60)</a> are strictly positive. Then let <span class="math notranslate nohighlight">\(shift\)</span> be be the minimum tax rate in the corresponding data minus <span class="math notranslate nohighlight">\(\epsilon\)</span>. Let <span class="math notranslate nohighlight">\(\bar{\boldsymbol{\theta}}_{s,t}=\{min_x,max_x,min_y,max_y,shift_x,shift_y, shift\}\)</span> be the set of parameters we take directly from the data in this way.</p>
 <p>We then estimate five remaining parameters <span class="math notranslate nohighlight">\(\tilde{\boldsymbol{\theta}}_{s,t}=(A,B,C,D,\phi)\)</span> using the following nonlinear weighted least squares criterion,</p>
 <div class="math notranslate nohighlight" id="equation-eqtaxcalcthetawssq">
@@ -694,14 +697,19 @@ document.write(`
 \[  \tau = \phi_{0}(1 - (x+y)^{(\phi_{1}-1)}((x+y)^{-\phi1} + \phi_{2})^{(-1 - \phi_{1})/\phi_{1}})\]</div>
 <p>Users can select this option by setting the parameter <code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;GS&quot;</span></code>.  The three parameters of this function (<span class="math notranslate nohighlight">\(\phi_{0}, \phi_{1}, \phi_{2}\)</span>) are estimated using the weighted sum of squares estimated described in Equation <a class="reference internal" href="#equation-eqtaxcalcthetawssq">(61)</a>.</p>
 </li>
+<li><p>Tax functions from <span id="id8">[<a class="reference internal" href="../OGCore_references.html#id22" title="Jonathan Heathcote, Kjetil Storesletten, and Giovanni L. Violante. Optimal Tax Progressivity: An Analytical Framework. The Quarterly Journal of Economics, 132(4):1693-1754, 2017. URL: https://ideas.repec.org/a/oup/qjecon/v132y2017i4p1693-1754..html, doi:.">Heathcote <em>et al.</em>, 2017</a>]</span>:</p>
+<div class="math notranslate nohighlight">
+\[  \tau = 1 - \phi_{0}(x+y)^{1-phi_1}\]</div>
+<p>Users can select this option by setting the parameter <code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;HSV&quot;</span></code>.  The two parameters of this function (<span class="math notranslate nohighlight">\(\phi_{0}, \phi_{1}\)</span>) are estimated using ordinary least squares.</p>
+</li>
 <li><p>Linear tax functions (i.e., <span class="math notranslate nohighlight">\(\tau =\)</span> a constant).  Users can select this option by setting the parameter <code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;linear&quot;</span></code>.  The constant rate is found by taking the weighted average of the appropriate tax rate (effective tax rate, marginal tax rate on labor income, marginal tax rate on labor income) for each age and year, where the values are weighted by sampling weights and income.</p></li>
-<li><p>Monotonically increasing smoothing spline <code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;mono&quot;</span></code>. This functional approach is based on <span id="id8">[<a class="reference internal" href="../OGCore_references.html#id15" title="Paul H. C. Eilers and Brian D. Marx. Flexible smoothing with b-splines and penalties. Statistical Science, 11(2):89-121, May 1996.">Eilers and Marx, 1996</a>]</span>, <span id="id9">[<a class="reference internal" href="../OGCore_references.html#id16" title="Paul H. C. Eilers. A perfect smoother. Anals of Chemistry, 75(14):3631-3636, July 2003.">Eilers, 2003</a>]</span> and <span id="id10">[<a class="reference internal" href="../OGCore_references.html#id17" title="Paul H. C. Eilers. Unimodal smoothing. Joural of Chemometrics, 19(?):317-328, ? 2005.">Eilers, 2005</a>]</span>, which is a least squares smoothing spline that penalizes nonmonotonicities. We used k-fold cross validation to show that the optimal smoothing parameter for this function on our tax data is <span class="math notranslate nohighlight">\(\lambda=12\)</span>, which is set as the default. These tax functions are fit to total income data (labor income plus capital income).</p></li>
+<li><p>Monotonically increasing smoothing spline <code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;mono&quot;</span></code>. This functional approach is based on <span id="id9">[<a class="reference internal" href="../OGCore_references.html#id15" title="Paul H. C. Eilers and Brian D. Marx. Flexible smoothing with b-splines and penalties. Statistical Science, 11(2):89-121, May 1996.">Eilers and Marx, 1996</a>]</span>, <span id="id10">[<a class="reference internal" href="../OGCore_references.html#id16" title="Paul H. C. Eilers. A perfect smoother. Anals of Chemistry, 75(14):3631-3636, July 2003.">Eilers, 2003</a>]</span> and <span id="id11">[<a class="reference internal" href="../OGCore_references.html#id17" title="Paul H. C. Eilers. Unimodal smoothing. Joural of Chemometrics, 19(?):317-328, ? 2005.">Eilers, 2005</a>]</span>, which is a least squares smoothing spline that penalizes nonmonotonicities. We used k-fold cross validation to show that the optimal smoothing parameter for this function on our tax data is <span class="math notranslate nohighlight">\(\lambda=12\)</span>, which is set as the default. These tax functions are fit to total income data (labor income plus capital income).</p></li>
 </ol>
-<p>Among all of these tax functional forms, users can set the <code class="docutils literal notranslate"><span class="pre">age_specific</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">False</span></code> if they wish to have one function for all ages <span class="math notranslate nohighlight">\(s\)</span>.  In addition, for the functions based on <span id="id11">[<a class="reference internal" href="../OGCore_references.html#id14" title="Jason DeBacker, Richard W. Evans, and Kerk L. Phillips. Integrating microsimulation models of tax policy into a DGE macroeconomic model. Public Finance Review, 47(2):207-275, March 2019.">DeBacker <em>et al.</em>, 2019</a>]</span> (<code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;DEP&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;DEP_totinc&quot;</span></code>), one can set <code class="docutils literal notranslate"><span class="pre">analytical_mtrs=True</span></code> if they wish to have the <span class="math notranslate nohighlight">\(\tau^{mtrx}_{s,t}\)</span> and <span class="math notranslate nohighlight">\(\tau^{mtry}_{s,t}\)</span> derived from the <span class="math notranslate nohighlight">\(\tau^{etr}_{s,t}\)</span> functions.  This provides theoretical consistency, but reduced fit of the functions (see <span id="id12">[<a class="reference internal" href="../OGCore_references.html#id14" title="Jason DeBacker, Richard W. Evans, and Kerk L. Phillips. Integrating microsimulation models of tax policy into a DGE macroeconomic model. Public Finance Review, 47(2):207-275, March 2019.">DeBacker <em>et al.</em>, 2019</a>]</span> for more details).</p>
+<p>Among all of these tax functional forms, users can set the <code class="docutils literal notranslate"><span class="pre">age_specific</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">False</span></code> if they wish to have one function for all ages <span class="math notranslate nohighlight">\(s\)</span>.  In addition, for the functions based on <span id="id12">[<a class="reference internal" href="../OGCore_references.html#id14" title="Jason DeBacker, Richard W. Evans, and Kerk L. Phillips. Integrating microsimulation models of tax policy into a DGE macroeconomic model. Public Finance Review, 47(2):207-275, March 2019.">DeBacker <em>et al.</em>, 2019</a>]</span> (<code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;DEP&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">tax_func_type=&quot;DEP_totinc&quot;</span></code>), one can set <code class="docutils literal notranslate"><span class="pre">analytical_mtrs=True</span></code> if they wish to have the <span class="math notranslate nohighlight">\(\tau^{mtrx}_{s,t}\)</span> and <span class="math notranslate nohighlight">\(\tau^{mtry}_{s,t}\)</span> derived from the <span class="math notranslate nohighlight">\(\tau^{etr}_{s,t}\)</span> functions.  This provides theoretical consistency, but reduced fit of the functions (see <span id="id13">[<a class="reference internal" href="../OGCore_references.html#id14" title="Jason DeBacker, Richard W. Evans, and Kerk L. Phillips. Integrating microsimulation models of tax policy into a DGE macroeconomic model. Public Finance Review, 47(2):207-275, March 2019.">DeBacker <em>et al.</em>, 2019</a>]</span> for more details).</p>
 </section>
 <section id="income-tax-noncompliance">
 <span id="sectaxcompliance"></span><h6>Income Tax Noncompliance<a class="headerlink" href="#income-tax-noncompliance" title="Link to this heading">#</a></h6>
-<p>The parameters of the tax functions used in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> are typically estimated using data that miss the effects of compliance (either because they use administrative data from tax returns or because of similar under-reporting in survey data <span id="id13">[<a class="reference internal" href="../OGCore_references.html#id3" title="Erik Hurst, Geng Li, and Benjamin Pugsley. Are household surveys like tax forms? evidence from income underreporting of the self-employed. The Review of Economics and Statistics, 96(1):19-33, 2014. URL: https://EconPapers.repec.org/RePEc:tpr:restat:v:96:y:2014:i:1:p:19-33.">Hurst <em>et al.</em>, 2014</a>]</span>(see Hurst et al. (REStat, 2014))).  <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> therefore offers the user two parameters that scale the marginal and effective tax rate functions in order to account for income tax noncompliance.  These parameters are <code class="docutils literal notranslate"><span class="pre">labor_income_tax_noncompliance_rate</span></code> and <code class="docutils literal notranslate"><span class="pre">capital_income_tax_noncompliance_rate</span></code> and represent the rates of noncompliance on the respective sources of income.  The implementation of these parameters is as follows.  Let represent <span class="math notranslate nohighlight">\(\eta\)</span> the noncompliance rate (on labor and capital income) and let <span class="math notranslate nohighlight">\(\tau\)</span> represent the marginal tax rate (on labor or capital income) without accounting for noncompliance.  Then, the marginal tax rate faced by a household, after accounting for compliance decisions, is <span class="math notranslate nohighlight">\(\tau^{nc} = (1 - \eta)\tau\)</span>.</p>
+<p>The parameters of the tax functions used in <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> are typically estimated using data that miss the effects of compliance (either because they use administrative data from tax returns or because of similar under-reporting in survey data <span id="id14">[<a class="reference internal" href="../OGCore_references.html#id3" title="Erik Hurst, Geng Li, and Benjamin Pugsley. Are household surveys like tax forms? evidence from income underreporting of the self-employed. The Review of Economics and Statistics, 96(1):19-33, 2014. URL: https://EconPapers.repec.org/RePEc:tpr:restat:v:96:y:2014:i:1:p:19-33.">Hurst <em>et al.</em>, 2014</a>]</span>(see Hurst et al. (REStat, 2014))).  <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> therefore offers the user two parameters that scale the marginal and effective tax rate functions in order to account for income tax noncompliance.  These parameters are <code class="docutils literal notranslate"><span class="pre">labor_income_tax_noncompliance_rate</span></code> and <code class="docutils literal notranslate"><span class="pre">capital_income_tax_noncompliance_rate</span></code> and represent the rates of noncompliance on the respective sources of income.  The implementation of these parameters is as follows.  Let represent <span class="math notranslate nohighlight">\(\eta\)</span> the noncompliance rate (on labor and capital income) and let <span class="math notranslate nohighlight">\(\tau\)</span> represent the marginal tax rate (on labor or capital income) without accounting for noncompliance.  Then, the marginal tax rate faced by a household, after accounting for compliance decisions, is <span class="math notranslate nohighlight">\(\tau^{nc} = (1 - \eta)\tau\)</span>.</p>
 <p>When computing the role of compliance on the effective tax rate, we take a weighted average over the rates of noncompliance for labor and capital income.  If we let <span class="math notranslate nohighlight">\(X\)</span> represent labor income, <span class="math notranslate nohighlight">\(Y\)</span> capital income, and <span class="math notranslate nohighlight">\(\eta_X\)</span> and <span class="math notranslate nohighlight">\(\eta_Y\)</span> represent the noncompliance rates on labor and capital income, respecitvely.  Then the noncompliance rate applied to the effective tax rate is given by <span class="math notranslate nohighlight">\(\eta = \frac{\eta_X X + \eta_Y Y}{X + Y}\)</span>.  If we use <span class="math notranslate nohighlight">\(\tau\)</span> to represent the effective tax rate, then the effective tax rate used in the households budget constraint and to determine tax liability is <span class="math notranslate nohighlight">\(\tau^{nc} = (1 - \eta)\tau\)</span>, where the <span class="math notranslate nohighlight">\(\eta\)</span> represents the average rate of noncompliance across income sources.</p>
 </section>
 <section id="factor-transforming-income-units">
@@ -771,10 +779,10 @@ document.write(`
 <p>A non-growth adjusted UBI (<code class="docutils literal notranslate"><span class="pre">ubi_growthadj</span> <span class="pre">=</span> <span class="pre">False</span></code>) is one in which the initial nonstationary nominal-valued <span class="math notranslate nohighlight">\(t=0\)</span> UBI matrix <span class="math notranslate nohighlight">\(ubi^{\$}_{j,s,t=0}\)</span> does not grow, while the economy’s long-run growth rate is <span class="math notranslate nohighlight">\(g_y\)</span> for the most common parameterization is positive (<span class="math notranslate nohighlight">\(g_y&gt;0\)</span>).</p>
 <div class="math notranslate nohighlight" id="equation-equbiubi-nom-nongrwadj-jst">
 <span class="eqno">(68)<a class="headerlink" href="#equation-equbiubi-nom-nongrwadj-jst" title="Link to this equation">#</a></span>\[  ubi^{nom}_{j,s,t} = ubi^{nom}_{j,s,t=0} \quad\forall j,s,t\]</div>
-<p>As described in chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>, the stationarized UBI transfer to each household <span class="math notranslate nohighlight">\(\hat{ubi}_{j,s,t}\)</span> is the nonstationary transfer divided by the growth rate since the initial period. When the long-run economic growth rate is positive <span class="math notranslate nohighlight">\(g_y&gt;0\)</span> and the UBI specification is not growth-adjusted, the steady-state stationary UBI household transfer is zero <span class="math notranslate nohighlight">\(\overline{ubi}_{j,s}=0\)</span> for all lifetime income groups <span class="math notranslate nohighlight">\(j\)</span> and ages <span class="math notranslate nohighlight">\(s\)</span> as time periods <span class="math notranslate nohighlight">\(t\)</span> go to infinity. However, to simplify, we assume in this case that the stationarized steady-state UBI transfer matrix to households is the stationarized value of that matrix in period <span class="math notranslate nohighlight">\(T\)</span>.<a class="footnote-reference brackets" href="#ubigrowthadj" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
+<p>As described in chapter <a class="reference internal" href="stationarization.html#chap-stnrz"><span class="std std-ref">Stationarization</span></a>, the stationarized UBI transfer to each household <span class="math notranslate nohighlight">\(\hat{ubi}_{j,s,t}\)</span> is the nonstationary transfer divided by the growth rate since the initial period. When the long-run economic growth rate is positive <span class="math notranslate nohighlight">\(g_y&gt;0\)</span> and the UBI specification is not growth-adjusted, the steady-state stationary UBI household transfer is zero <span class="math notranslate nohighlight">\(\overline{ubi}_{j,s}=0\)</span> for all lifetime income groups <span class="math notranslate nohighlight">\(j\)</span> and ages <span class="math notranslate nohighlight">\(s\)</span> as time periods <span class="math notranslate nohighlight">\(t\)</span> go to infinity. However, to simplify, we assume in this case that the stationarized steady-state UBI transfer matrix to households is the stationarized value of that matrix in period <span class="math notranslate nohighlight">\(T\)</span>.<a class="footnote-reference brackets" href="#ubigrowthadj" id="id15" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
 <div class="math notranslate nohighlight" id="equation-equbiubi-mod-nongrwadj-ss">
 <span class="eqno">(69)<a class="headerlink" href="#equation-equbiubi-mod-nongrwadj-ss" title="Link to this equation">#</a></span>\[  \overline{ubi}_{j,s} = ubi_{j,s,t=T} \quad\forall j,s\]</div>
-<p>Note that in non-growth-adjusted case, if <span class="math notranslate nohighlight">\(g_y&lt;0\)</span>, then the stationary value of <span class="math notranslate nohighlight">\(\hat{ubi}_{j,s,t}\)</span> is going to infinity as <span class="math notranslate nohighlight">\(t\)</span> goes to infinity. Therefore, a UBI specification must be growth adjusted for any assumed negative long run growth <span class="math notranslate nohighlight">\(g_y&lt;0\)</span>.<a class="footnote-reference brackets" href="#growthadj-note" id="id15" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a></p>
+<p>Note that in non-growth-adjusted case, if <span class="math notranslate nohighlight">\(g_y&lt;0\)</span>, then the stationary value of <span class="math notranslate nohighlight">\(\hat{ubi}_{j,s,t}\)</span> is going to infinity as <span class="math notranslate nohighlight">\(t\)</span> goes to infinity. Therefore, a UBI specification must be growth adjusted for any assumed negative long run growth <span class="math notranslate nohighlight">\(g_y&lt;0\)</span>.<a class="footnote-reference brackets" href="#growthadj-note" id="id16" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a></p>
 </section>
 <section id="ubi-specification-adjusted-for-economic-growth">
 <span id="secubi-growthadj"></span><h6>UBI specification adjusted for economic growth<a class="headerlink" href="#ubi-specification-adjusted-for-economic-growth" title="Link to this heading">#</a></h6>
@@ -881,7 +889,7 @@ document.write(`
 </section>
 <section id="change-both-government-spending-and-transfers">
 <span id="secunbalgbc-chggttrt"></span><h3>Change both government spending and transfers<a class="headerlink" href="#change-both-government-spending-and-transfers" title="Link to this heading">#</a></h3>
-<p>In some cases, changing only government spending <span class="math notranslate nohighlight">\(G_t\)</span> or only government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> will not be enough. That is, there exist policies for which a decrease in government spending to zero after period <span class="math notranslate nohighlight">\(T_{G1}\)</span> will not stabilize the debt-to-GDP ratio. And negative government spending on public goods does not make sense. <a class="footnote-reference brackets" href="#negative-val-note" id="id16" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> On the other hand, negative transfers do make sense. Notwithstanding, one might want the added stabilization ability of changing both government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> to stabilize the long-run debt-to-GDP ratio.</p>
+<p>In some cases, changing only government spending <span class="math notranslate nohighlight">\(G_t\)</span> or only government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> will not be enough. That is, there exist policies for which a decrease in government spending to zero after period <span class="math notranslate nohighlight">\(T_{G1}\)</span> will not stabilize the debt-to-GDP ratio. And negative government spending on public goods does not make sense. <a class="footnote-reference brackets" href="#negative-val-note" id="id17" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> On the other hand, negative transfers do make sense. Notwithstanding, one might want the added stabilization ability of changing both government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> to stabilize the long-run debt-to-GDP ratio.</p>
 <p>In our specific form of this joint option, we assume that the factor by which we scale government spending and transfers is the same <span class="math notranslate nohighlight">\(g_{g,t} = g_{tr,t}\)</span> for all <span class="math notranslate nohighlight">\(t\)</span>. We label this single scaling factor <span class="math notranslate nohighlight">\(g_{trg,t}\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-equnbalgbcclosure-gtrgt">
 <span class="eqno">(83)<a class="headerlink" href="#equation-equnbalgbcclosure-gtrgt" title="Link to this equation">#</a></span>\[  g_{trg,t}\equiv g_{g,t} = g_{tr,t} \quad\forall t\]</div>
@@ -919,15 +927,15 @@ document.write(`
 <p>We assume that whatever parameters the tax functions have in the last year of the budget window persist forever.</p>
 </aside>
 <aside class="footnote brackets" id="ubigrowthadj" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">3</a><span class="fn-bracket">]</span></span>
 <p>The steady-state assumption in equation <a class="reference internal" href="#equation-equbiubi-mod-nongrwadj-ss">(69)</a> implies that the UBI amount is growth adjusted for every period after the steady-state is reached.</p>
 </aside>
 <aside class="footnote brackets" id="growthadj-note" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">4</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">4</a><span class="fn-bracket">]</span></span>
 <p>We impose this requirement of <code class="docutils literal notranslate"><span class="pre">ubi_growthadj</span> <span class="pre">=</span> <span class="pre">False</span></code> when <code class="docutils literal notranslate"><span class="pre">g_y_annual</span> <span class="pre">&lt;</span> <span class="pre">0</span></code> in the <a class="reference external" href="https://github.com/PSLmodels/OG-Core/blob/master/ogcore/default_parameters.json"><code class="docutils literal notranslate"><span class="pre">default_parameters.json</span></code></a> “validators” specification of the parameter.</p>
 </aside>
 <aside class="footnote brackets" id="negative-val-note" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">5</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id17">5</a><span class="fn-bracket">]</span></span>
 <p>Negative values for government spending on public goods would mean that revenues are coming into the country from some outside source, which revenues are triggered by government deficits being too high in an arbitrary future period <span class="math notranslate nohighlight">\(T_{G2}\)</span>.</p>
 </aside>
 </aside>
@@ -961,7 +969,7 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -1090,8 +1098,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

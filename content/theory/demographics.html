@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -37,9 +37,9 @@
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -73,27 +73,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -115,8 +111,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -184,7 +185,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
@@ -200,7 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="current nav bd-sidenav">
@@ -242,7 +243,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -251,7 +252,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -436,7 +437,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="demographics">
 <span id="chap-demog"></span><span id="glue"></span><h1>Demographics<a class="headerlink" href="#demographics" title="Link to this heading">#</a></h1>
-<p>We start the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> section on modeling with a description of the household demographics of the model. <span id="id1">[<a class="reference internal" href="../OGCore_references.html#id23" title="Shinichi Nishiyama. Fiscal policy effects in a heterogeneous-agent OLG economy with an aging population. Journal of Economic Dynamics and Control, 61:114-132, December 2015.">Nishiyama, 2015</a>]</span> and <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id14" title="Jason DeBacker, Richard W. Evans, and Kerk L. Phillips. Integrating microsimulation models of tax policy into a DGE macroeconomic model. Public Finance Review, 47(2):207-275, March 2019.">DeBacker <em>et al.</em>, 2019</a>]</span> have recently shown that demographic dynamics are likely the biggest influence on macroeconomic time series, exhibiting more influence than fiscal variables or household preference parameters.</p>
+<p>We start the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> section on modeling with a description of the household demographics of the model. <span id="id1">[<a class="reference internal" href="../OGCore_references.html#id24" title="Shinichi Nishiyama. Fiscal policy effects in a heterogeneous-agent OLG economy with an aging population. Journal of Economic Dynamics and Control, 61:114-132, December 2015.">Nishiyama, 2015</a>]</span> and <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id14" title="Jason DeBacker, Richard W. Evans, and Kerk L. Phillips. Integrating microsimulation models of tax policy into a DGE macroeconomic model. Public Finance Review, 47(2):207-275, March 2019.">DeBacker <em>et al.</em>, 2019</a>]</span> have recently shown that demographic dynamics are likely the biggest influence on macroeconomic time series, exhibiting more influence than fiscal variables or household preference parameters.</p>
 <p>In this chapter, we characterize the equations and parameters that govern the transition dynamics of the population distribution by age. In <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>, we take the approach of taking mortality rates and fertility rates from outside estimates. But we estimate our immigration rates as residuals using the mortality rates, fertility rates, and at least two consecutive periods of population distribution data. This approach makes sense if one modeling a country in which in one is not confident in the immigration rate data. If the country has good immigration data, then the immigration residual approach we describe below can be skipped.</p>
 <p>We define <span class="math notranslate nohighlight">\(\omega_{s,t}\)</span> as the number of households of age <span class="math notranslate nohighlight">\(s\)</span> alive at time <span class="math notranslate nohighlight">\(t\)</span>. A measure <span class="math notranslate nohighlight">\(\omega_{1,t}\)</span> of households is born in each period <span class="math notranslate nohighlight">\(t\)</span> and live for up to <span class="math notranslate nohighlight">\(E+S\)</span> periods, with <span class="math notranslate nohighlight">\(S\geq 4\)</span>.<a class="footnote-reference brackets" href="#calibage-note" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> Households are termed ``youth’’, and do not participate in market activity during ages <span class="math notranslate nohighlight">\(1\leq s\leq E\)</span>. The households enter the workforce and economy in period <span class="math notranslate nohighlight">\(E+1\)</span> and remain in the workforce until they unexpectedly die or live until age <span class="math notranslate nohighlight">\(s=E+S\)</span>. We model the population with households age <span class="math notranslate nohighlight">\(s\leq E\)</span> outside of the workforce and economy in order most closely match the empirical population dynamics.</p>
 <p>The population of agents of each age in each period <span class="math notranslate nohighlight">\(\omega_{s,t}\)</span> evolves according to the following function,</p>
@@ -549,7 +550,7 @@ First, note that the matrix <span class="math notranslate nohighlight">\(\boldsy
 <p>Existence of an <span class="math notranslate nohighlight">\(m \in \mathbb{N}\)</span> such that <span class="math notranslate nohighlight">\(\left(\bf\Omega^m\right)_{ij} \neq 0 ~~ ( &gt; 0)\)</span> is one of the definitions of an irreducible (primitive) matrix. It is equivalent to saying that the directed graph associated with the matrix is strongly connected. Now the Perron-Frobenius Theorem for irreducible matrices gives us that the equilibrium vector is unique.</p>
 <p>We also know from that theorem that the eigenvalue associated with the positive real eigenvector will be real and positive. This eigenvalue, <span class="math notranslate nohighlight">\(p\)</span>, is the Perron eigenvalue and it is the steady state population growth rate of the model. By the PF Theorem for irreducible matrices, <span class="math notranslate nohighlight">\(| \lambda_i | \leq p\)</span> for all eigenvalues <span class="math notranslate nohighlight">\(\lambda_i\)</span> and there will be exactly <span class="math notranslate nohighlight">\(h\)</span> eigenvalues that are equal, where <span class="math notranslate nohighlight">\(h\)</span> is the period of the matrix. Since our matrix <span class="math notranslate nohighlight">\(\bf\Omega\)</span> is aperiodic, the steady state growth rate is the unique largest eigenvalue in magnitude. This implies that almost all initial vectors will converge to this eigenvector under iteration.</p>
 </div>
-<p>For a full treatment and proof of the Perron-Frobenius Theorem, see <span id="id5">[<a class="reference internal" href="../OGCore_references.html#id29" title="Kotaro Suzumura. Perron-Frobenius theorem on non-negative square matrices: an elementary proof. Hitotsubashi Journal of Economics, 24:137-141, 1983.">Suzumura, 1983</a>]</span>. Because the population growth process is exogenous to the full overlapping generations model, we calibrate it based on the annual fertility rate, mortality rate, and population rate data for age years <span class="math notranslate nohighlight">\(s=1\)</span> to <span class="math notranslate nohighlight">\(s=100\)</span>.</p>
+<p>For a full treatment and proof of the Perron-Frobenius Theorem, see <span id="id5">[<a class="reference internal" href="../OGCore_references.html#id30" title="Kotaro Suzumura. Perron-Frobenius theorem on non-negative square matrices: an elementary proof. Hitotsubashi Journal of Economics, 24:137-141, 1983.">Suzumura, 1983</a>]</span>. Because the population growth process is exogenous to the full overlapping generations model, we calibrate it based on the annual fertility rate, mortality rate, and population rate data for age years <span class="math notranslate nohighlight">\(s=1\)</span> to <span class="math notranslate nohighlight">\(s=100\)</span>.</p>
 <hr class="footnotes docutils" />
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="calibage-note" role="doc-footnote">
@@ -591,7 +592,7 @@ First, note that the matrix <span class="math notranslate nohighlight">\(\boldsy
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -677,8 +678,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

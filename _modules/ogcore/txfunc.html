@@ -13,19 +13,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -36,9 +36,9 @@
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -68,27 +68,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -110,8 +106,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -181,7 +182,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
@@ -197,7 +198,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="nav bd-sidenav">
@@ -239,7 +240,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -248,7 +249,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -484,6 +485,15 @@ document.write(`
                     <span class="o">*</span> <span class="p">((</span><span class="n">income</span><span class="o">**-</span><span class="n">phi1</span><span class="p">)</span> <span class="o">+</span> <span class="n">phi2</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi1</span><span class="p">)</span> <span class="o">/</span> <span class="n">phi1</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+    <span class="k">if</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;HSV&quot;</span><span class="p">:</span>
+        <span class="n">lambda_s</span><span class="p">,</span> <span class="n">tau_s</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s2">&quot;etr&quot;</span><span class="p">:</span>
+            <span class="n">txrates</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">lambda_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">income</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">tau_s</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># marginal tax rate function</span>
+            <span class="n">txrates</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">lambda_s</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_s</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">income</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">tau_s</span><span class="p">)))</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;DEP&quot;</span><span class="p">:</span>
         <span class="p">(</span>
             <span class="n">A</span><span class="p">,</span>
@@ -949,7 +959,16 @@ document.write(`
 <div class="viewcode-block" id="txfunc_est">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.txfunc_est">[docs]</a>
 <span class="k">def</span> <span class="nf">txfunc_est</span><span class="p">(</span>
-    <span class="n">df</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">rate_type</span><span class="p">,</span> <span class="n">tax_func_type</span><span class="p">,</span> <span class="n">numparams</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">graph</span>
+    <span class="n">df</span><span class="p">,</span>
+    <span class="n">s</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">,</span>
+    <span class="n">rate_type</span><span class="p">,</span>
+    <span class="n">tax_func_type</span><span class="p">,</span>
+    <span class="n">numparams</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">graph</span><span class="p">,</span>
+    <span class="n">params_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function uses tax tax rate and income data for individuals of a</span>
@@ -1010,31 +1029,33 @@ document.write(`
         <span class="c1"># Estimate DeBacker, Evans, Phillips (2018) ratio of polynomial</span>
         <span class="c1"># tax functions.</span>
         <span class="c1"># &#39;&#39;&#39;</span>
-        <span class="n">Atil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">Btil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">Ctil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">Dtil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">max_x_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
-            <span class="n">txrates</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y_20pctl</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.05</span>
-        <span class="p">)</span>
-        <span class="n">max_y_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
-            <span class="n">txrates</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x_20pctl</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.05</span>
-        <span class="p">)</span>
+        <span class="c1"># if Atil_init not exist, set to 1.0</span>
+        <span class="k">if</span> <span class="n">params_init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Atil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">Btil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">Ctil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">Dtil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">max_x_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
+                <span class="n">txrates</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y_20pctl</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.05</span>
+            <span class="p">)</span>
+            <span class="n">max_y_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
+                <span class="n">txrates</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x_20pctl</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.05</span>
+            <span class="p">)</span>
+            <span class="n">share_init</span> <span class="o">=</span> <span class="mf">0.5</span>
+            <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">Atil_init</span><span class="p">,</span>
+                    <span class="n">Btil_init</span><span class="p">,</span>
+                    <span class="n">Ctil_init</span><span class="p">,</span>
+                    <span class="n">Dtil_init</span><span class="p">,</span>
+                    <span class="n">max_x_init</span><span class="p">,</span>
+                    <span class="n">max_y_init</span><span class="p">,</span>
+                    <span class="n">share_init</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
         <span class="n">shift</span> <span class="o">=</span> <span class="n">txrates</span><span class="p">[</span>
             <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x_20pctl</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y_20pctl</span><span class="p">)</span>
         <span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="n">share_init</span> <span class="o">=</span> <span class="mf">0.5</span>
-        <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">Atil_init</span><span class="p">,</span>
-                <span class="n">Btil_init</span><span class="p">,</span>
-                <span class="n">Ctil_init</span><span class="p">,</span>
-                <span class="n">Dtil_init</span><span class="p">,</span>
-                <span class="n">max_x_init</span><span class="p">,</span>
-                <span class="n">max_y_init</span><span class="p">,</span>
-                <span class="n">share_init</span><span class="p">,</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
         <span class="n">shift_x</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># temp value</span>
         <span class="n">shift_y</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># temp value</span>
         <span class="n">tx_objs</span> <span class="o">=</span> <span class="p">(</span>
@@ -1048,23 +1069,37 @@ document.write(`
         <span class="p">)</span>
         <span class="n">lb_max_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-4</span>
         <span class="n">lb_max_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">min_y</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-4</span>
+        <span class="c1"># bnds = (</span>
+        <span class="c1">#     (1e-12, None),</span>
+        <span class="c1">#     (1e-12, None),</span>
+        <span class="c1">#     (1e-12, None),</span>
+        <span class="c1">#     (1e-12, None),</span>
+        <span class="c1">#     (lb_max_x, MAX_ETR + 0.15),</span>
+        <span class="c1">#     (lb_max_y, MAX_ETR + 0.15),</span>
+        <span class="c1">#     (0, 1),</span>
+        <span class="c1"># )</span>
         <span class="n">bnds</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
             <span class="p">(</span><span class="n">lb_max_x</span><span class="p">,</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.15</span><span class="p">),</span>
             <span class="p">(</span><span class="n">lb_max_y</span><span class="p">,</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.15</span><span class="p">),</span>
             <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
-            <span class="n">wsumsq</span><span class="p">,</span>
-            <span class="n">params_init</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">,</span>
-            <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span>
-            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">global_opt</span><span class="p">:</span>
+            <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">differential_evolution</span><span class="p">(</span>
+                <span class="n">wsumsq</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+                <span class="n">wsumsq</span><span class="p">,</span>
+                <span class="n">params_init</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">,</span>
+                <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span>
+                <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">Atil</span><span class="p">,</span> <span class="n">Btil</span><span class="p">,</span> <span class="n">Ctil</span><span class="p">,</span> <span class="n">Dtil</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">,</span> <span class="n">share</span> <span class="o">=</span> <span class="n">params_til</span><span class="o">.</span><span class="n">x</span>
         <span class="c1"># message = (&quot;(max_x, min_x)=(&quot; + str(max_x) + &quot;, &quot; + str(min_x) +</span>
         <span class="c1">#     &quot;), (max_y, min_y)=(&quot; + str(max_y) + &quot;, &quot; + str(min_y) + &quot;)&quot;)</span>
@@ -1081,27 +1116,40 @@ document.write(`
             <span class="p">[</span><span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">,</span> <span class="n">share</span><span class="p">,</span> <span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">shift_x</span><span class="p">,</span> <span class="n">shift_y</span><span class="p">,</span> <span class="n">shift</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">params_to_plot</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="c1"># set initial values to parameter estimates</span>
+        <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">Atil</span><span class="p">,</span>
+                <span class="n">Btil</span><span class="p">,</span>
+                <span class="n">Ctil</span><span class="p">,</span>
+                <span class="n">Dtil</span><span class="p">,</span>
+                <span class="n">max_x</span><span class="p">,</span>
+                <span class="n">max_y</span><span class="p">,</span>
+                <span class="n">share</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;DEP_totalinc&quot;</span><span class="p">:</span>
         <span class="c1"># &#39;&#39;&#39;</span>
         <span class="c1"># Estimate DeBacker, Evans, Phillips (2018) ratio of polynomial</span>
         <span class="c1"># tax functions as a function of total income.</span>
         <span class="c1"># &#39;&#39;&#39;</span>
-        <span class="n">Atil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">Btil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">max_x_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
-            <span class="n">txrates</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y_20pctl</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.05</span>
-        <span class="p">)</span>
-        <span class="n">max_y_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
-            <span class="n">txrates</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x_20pctl</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.05</span>
-        <span class="p">)</span>
-        <span class="n">max_income_init</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_x_init</span><span class="p">,</span> <span class="n">max_y_init</span><span class="p">)</span>
-        <span class="n">min_income</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">params_init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Atil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">Btil_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">max_x_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
+                <span class="n">txrates</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y_20pctl</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.05</span>
+            <span class="p">)</span>
+            <span class="n">max_y_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
+                <span class="n">txrates</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x_20pctl</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.05</span>
+            <span class="p">)</span>
+            <span class="n">max_income_init</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_x_init</span><span class="p">,</span> <span class="n">max_y_init</span><span class="p">)</span>
+            <span class="n">share_init</span> <span class="o">=</span> <span class="mf">0.5</span>
+            <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Atil_init</span><span class="p">,</span> <span class="n">Btil_init</span><span class="p">,</span> <span class="n">max_income_init</span><span class="p">])</span>
         <span class="n">shift</span> <span class="o">=</span> <span class="n">txrates</span><span class="p">[</span>
             <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x_20pctl</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y_20pctl</span><span class="p">)</span>
         <span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="n">share_init</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="n">min_income</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">)</span>
         <span class="n">shift_inc</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># temp value</span>
-        <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Atil_init</span><span class="p">,</span> <span class="n">Btil_init</span><span class="p">,</span> <span class="n">max_income_init</span><span class="p">])</span>
         <span class="n">tx_objs</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">min_income</span><span class="p">,</span> <span class="n">shift_inc</span><span class="p">,</span> <span class="n">shift</span><span class="p">]),</span>
             <span class="n">X</span><span class="p">,</span>
@@ -1112,15 +1160,21 @@ document.write(`
             <span class="n">rate_type</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">lb_max_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">min_income</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-4</span>
-        <span class="n">bnds</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">(</span><span class="n">lb_max_income</span><span class="p">,</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.15</span><span class="p">))</span>
-        <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
-            <span class="n">wsumsq</span><span class="p">,</span>
-            <span class="n">params_init</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">,</span>
-            <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span>
-            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="c1"># bnds = ((1e-12, None), (1e-12, None), (lb_max_income, MAX_ETR + 0.15))</span>
+        <span class="n">bnds</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">99999</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span> <span class="p">(</span><span class="n">lb_max_income</span><span class="p">,</span> <span class="n">MAX_ETR</span> <span class="o">+</span> <span class="mf">0.15</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">global_opt</span><span class="p">:</span>
+            <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">differential_evolution</span><span class="p">(</span>
+                <span class="n">wsumsq</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+                <span class="n">wsumsq</span><span class="p">,</span>
+                <span class="n">params_init</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">,</span>
+                <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span>
+                <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">Atil</span><span class="p">,</span> <span class="n">Btil</span><span class="p">,</span> <span class="n">max_income</span> <span class="o">=</span> <span class="n">params_til</span><span class="o">.</span><span class="n">x</span>
         <span class="n">wsse</span> <span class="o">=</span> <span class="n">params_til</span><span class="o">.</span><span class="n">fun</span>
         <span class="n">obs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1131,15 +1185,19 @@ document.write(`
         <span class="n">params</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Atil</span><span class="p">,</span> <span class="n">Btil</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">income2bar</span><span class="p">,</span> <span class="n">Ibar</span><span class="p">])</span>
         <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">max_income</span><span class="p">,</span> <span class="n">min_income</span><span class="p">,</span> <span class="n">shift_income</span><span class="p">,</span> <span class="n">shift</span><span class="p">])</span>
         <span class="n">params_to_plot</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="c1"># set initial values to parameter estimates</span>
+        <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Atil</span><span class="p">,</span> <span class="n">Btil</span><span class="p">,</span> <span class="n">max_income</span><span class="p">])</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;GS&quot;</span><span class="p">:</span>
         <span class="c1"># &#39;&#39;&#39;</span>
         <span class="c1"># Estimate Gouveia-Strauss parameters via least squares.</span>
         <span class="c1"># Need to use a different functional form than for DEP function.</span>
         <span class="c1"># &#39;&#39;&#39;</span>
-        <span class="n">phi0_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">phi1_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">phi2_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">phi0_init</span><span class="p">,</span> <span class="n">phi1_init</span><span class="p">,</span> <span class="n">phi2_init</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">params_init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">phi0_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">phi1_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">phi2_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">phi0_init</span><span class="p">,</span> <span class="n">phi1_init</span><span class="p">,</span> <span class="n">phi2_init</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial phi0, phi1, phi2: &quot;</span><span class="p">,</span> <span class="n">params_init</span><span class="p">)</span>
         <span class="n">tx_objs</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">None</span><span class="p">]),</span>
             <span class="n">X</span><span class="p">,</span>
@@ -1149,20 +1207,52 @@ document.write(`
             <span class="n">tax_func_type</span><span class="p">,</span>
             <span class="n">rate_type</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">bnds</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-        <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
-            <span class="n">wsumsq</span><span class="p">,</span>
-            <span class="n">params_init</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">,</span>
-            <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span>
-            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="c1"># bnds = ((1e-12, None), (1e-12, None), (1e-12, None))</span>
+        <span class="n">bnds</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">global_opt</span><span class="p">:</span>
+            <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">differential_evolution</span><span class="p">(</span>
+                <span class="n">wsumsq</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+                <span class="n">wsumsq</span><span class="p">,</span>
+                <span class="n">params_init</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">,</span>
+                <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span>
+                <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">phi0til</span><span class="p">,</span> <span class="n">phi1til</span><span class="p">,</span> <span class="n">phi2til</span> <span class="o">=</span> <span class="n">params_til</span><span class="o">.</span><span class="n">x</span>
         <span class="n">wsse</span> <span class="o">=</span> <span class="n">params_til</span><span class="o">.</span><span class="n">fun</span>
         <span class="n">obs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numparams</span><span class="p">)</span>
         <span class="n">params</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">phi0til</span><span class="p">,</span> <span class="n">phi1til</span><span class="p">,</span> <span class="n">phi2til</span><span class="p">])</span>
+        <span class="n">params_to_plot</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="c1"># set initial values to parameter estimates</span>
+        <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">phi0til</span><span class="p">,</span> <span class="n">phi1til</span><span class="p">,</span> <span class="n">phi2til</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;HSV&quot;</span><span class="p">:</span>
+        <span class="c1"># &#39;&#39;&#39;</span>
+        <span class="c1"># Estimate Heathcote, Storesletten, Violante (2017) parameters via</span>
+        <span class="c1"># OLS</span>
+        <span class="c1"># &#39;&#39;&#39;</span>
+        <span class="n">constant</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
+        <span class="n">ln_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
+        <span class="n">X_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">constant</span><span class="p">,</span> <span class="n">ln_income</span><span class="p">))</span>
+        <span class="n">Y_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">txrates</span><span class="p">)</span>
+        <span class="n">param_est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X_mat</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X_mat</span><span class="p">)</span> <span class="o">@</span> <span class="n">X_mat</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Y_vec</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numparams</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s2">&quot;etr&quot;</span><span class="p">:</span>
+            <span class="n">ln_lambda_s_hat</span><span class="p">,</span> <span class="n">minus_tau_s_hat</span> <span class="o">=</span> <span class="n">param_est</span>
+            <span class="n">params</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_lambda_s_hat</span><span class="p">),</span> <span class="o">-</span><span class="n">minus_tau_s_hat</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">constant</span><span class="p">,</span> <span class="n">minus_tau_s_hat</span> <span class="o">=</span> <span class="n">param_est</span>
+            <span class="n">lambda_s_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">constant</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">minus_tau_s_hat</span><span class="p">))</span>
+            <span class="n">params</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lambda_s_hat</span><span class="p">,</span> <span class="o">-</span><span class="n">minus_tau_s_hat</span><span class="p">])</span>
+        <span class="c1"># Calculate the WSSE</span>
+        <span class="n">Y_hat</span> <span class="o">=</span> <span class="n">X_mat</span> <span class="o">@</span> <span class="n">params</span>
+        <span class="c1"># wsse = ((Y_vec - Y_hat) ** 2 * wgts).sum()</span>
+        <span class="n">wsse</span> <span class="o">=</span> <span class="p">((</span><span class="n">Y_vec</span> <span class="o">-</span> <span class="n">Y_hat</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">params_to_plot</span> <span class="o">=</span> <span class="n">params</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
         <span class="c1"># &#39;&#39;&#39;</span>
@@ -1237,7 +1327,7 @@ document.write(`
     <span class="c1"># Garbage collection</span>
     <span class="k">del</span> <span class="n">df</span><span class="p">,</span> <span class="n">txrates</span>
 
-    <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">wsse</span><span class="p">,</span> <span class="n">obs</span></div>
+    <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">wsse</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">params_init</span></div>
 
 
 
@@ -1419,6 +1509,110 @@ document.write(`
     <span class="n">NoData_cnt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">min_age</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># Each age s must be done in serial</span>
+    <span class="c1"># Set initial values</span>
+    <span class="c1"># TODO: update this, so if using DEP or GS initial parameters are estimated on all ages first</span>
+    <span class="k">if</span> <span class="n">tax_func_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;DEP&quot;</span><span class="p">,</span> <span class="s2">&quot;DEP_totalinc&quot;</span><span class="p">,</span> <span class="s2">&quot;GS&quot;</span><span class="p">]:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">df_etr</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">df</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;etr&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]))</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;mtr_labinc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mtr_capinc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;total_labinc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;total_capinc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;etr&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_mtrx</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">df</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;mtr_labinc&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]))</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;mtr_labinc&quot;</span><span class="p">,</span> <span class="s2">&quot;total_labinc&quot;</span><span class="p">,</span> <span class="s2">&quot;total_capinc&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">],</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_mtry</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">df</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;mtr_capinc&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_labinc&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_capinc&quot;</span><span class="p">]))</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]))</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;mtr_capinc&quot;</span><span class="p">,</span> <span class="s2">&quot;total_labinc&quot;</span><span class="p">,</span> <span class="s2">&quot;total_capinc&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">],</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Estimate effective tax rate function ETR(x,y)</span>
+        <span class="p">(</span>
+            <span class="n">etrparams</span><span class="p">,</span>
+            <span class="n">etr_wsumsq_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+            <span class="n">etr_obs_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+            <span class="n">params_init_etr</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">txfunc_est</span><span class="p">(</span>
+            <span class="n">df_etr</span><span class="p">,</span>
+            <span class="n">s</span><span class="p">,</span>
+            <span class="n">t</span><span class="p">,</span>
+            <span class="s2">&quot;etr&quot;</span><span class="p">,</span>
+            <span class="n">tax_func_type</span><span class="p">,</span>
+            <span class="n">numparams</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">etrparams</span>
+        <span class="k">del</span> <span class="n">df_etr</span>
+
+        <span class="c1"># Estimate marginal tax rate of labor income function</span>
+        <span class="c1"># MTRx(x,y)</span>
+        <span class="p">(</span>
+            <span class="n">mtrxparams</span><span class="p">,</span>
+            <span class="n">mtrx_wsumsq_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+            <span class="n">mtrx_obs_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+            <span class="n">params_init_mtrx</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">txfunc_est</span><span class="p">(</span>
+            <span class="n">df_mtrx</span><span class="p">,</span>
+            <span class="n">s</span><span class="p">,</span>
+            <span class="n">t</span><span class="p">,</span>
+            <span class="s2">&quot;mtrx&quot;</span><span class="p">,</span>
+            <span class="n">tax_func_type</span><span class="p">,</span>
+            <span class="n">numparams</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">del</span> <span class="n">df_mtrx</span>
+        <span class="c1"># Estimate marginal tax rate of capital income function</span>
+        <span class="c1"># MTRy(x,y)</span>
+        <span class="p">(</span>
+            <span class="n">mtryparams</span><span class="p">,</span>
+            <span class="n">mtry_wsumsq_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+            <span class="n">mtry_obs_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+            <span class="n">params_init_mtry</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">txfunc_est</span><span class="p">(</span>
+            <span class="n">df_mtry</span><span class="p">,</span>
+            <span class="n">s</span><span class="p">,</span>
+            <span class="n">t</span><span class="p">,</span>
+            <span class="s2">&quot;mtry&quot;</span><span class="p">,</span>
+            <span class="n">tax_func_type</span><span class="p">,</span>
+            <span class="n">numparams</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">mtryparams</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">params_init_etr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">params_init_mtrx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">params_init_mtry</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ages_list</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">age_specific</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Year=&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s2">&quot;Age=&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
@@ -1563,6 +1757,7 @@ document.write(`
                 <span class="n">etrparams</span><span class="p">,</span>
                 <span class="n">etr_wsumsq_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
                 <span class="n">etr_obs_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+                <span class="n">params_init</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">=</span> <span class="n">txfunc_est</span><span class="p">(</span>
                 <span class="n">df_etr</span><span class="p">,</span>
                 <span class="n">s</span><span class="p">,</span>
@@ -1572,6 +1767,7 @@ document.write(`
                 <span class="n">numparams</span><span class="p">,</span>
                 <span class="n">output_dir</span><span class="p">,</span>
                 <span class="n">graph_est</span><span class="p">,</span>
+                <span class="n">params_init_etr</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">etrparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">etrparams</span>
             <span class="k">del</span> <span class="n">df_etr</span>
@@ -1582,6 +1778,7 @@ document.write(`
                 <span class="n">mtrxparams</span><span class="p">,</span>
                 <span class="n">mtrx_wsumsq_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
                 <span class="n">mtrx_obs_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+                <span class="n">params_init</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">=</span> <span class="n">txfunc_est</span><span class="p">(</span>
                 <span class="n">df_mtrx</span><span class="p">,</span>
                 <span class="n">s</span><span class="p">,</span>
@@ -1591,6 +1788,7 @@ document.write(`
                 <span class="n">numparams</span><span class="p">,</span>
                 <span class="n">output_dir</span><span class="p">,</span>
                 <span class="n">graph_est</span><span class="p">,</span>
+                <span class="n">params_init_mtrx</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">mtrxparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">mtrxparams</span>
             <span class="k">del</span> <span class="n">df_mtrx</span>
@@ -1600,6 +1798,7 @@ document.write(`
                 <span class="n">mtryparams</span><span class="p">,</span>
                 <span class="n">mtry_wsumsq_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
                 <span class="n">mtry_obs_arr</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">],</span>
+                <span class="n">params_init</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">=</span> <span class="n">txfunc_est</span><span class="p">(</span>
                 <span class="n">df_mtry</span><span class="p">,</span>
                 <span class="n">s</span><span class="p">,</span>
@@ -1609,6 +1808,7 @@ document.write(`
                 <span class="n">numparams</span><span class="p">,</span>
                 <span class="n">output_dir</span><span class="p">,</span>
                 <span class="n">graph_est</span><span class="p">,</span>
+                <span class="n">params_init_mtry</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">mtryparam_list</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">]</span> <span class="o">=</span> <span class="n">mtryparams</span>
 
@@ -1837,6 +2037,7 @@ document.write(`
         <span class="s2">&quot;DEP&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
         <span class="s2">&quot;DEP_totalinc&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
         <span class="s2">&quot;GS&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;HSV&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
         <span class="s2">&quot;linear&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="s2">&quot;mono&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="s2">&quot;mono2D&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -2539,7 +2740,7 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
 </div>
@@ -2548,8 +2749,6 @@ document.write(`
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"></div>
               
             
           </div>
@@ -2594,8 +2793,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -37,9 +37,9 @@
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -73,27 +73,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -115,8 +111,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -184,7 +185,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
@@ -200,7 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="current nav bd-sidenav">
@@ -242,7 +243,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -251,7 +252,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -636,7 +637,7 @@ document.write(`
 </figcaption>
 </figure>
 <p><a class="reference internal" href="#tabsseqlbaggrvars"><span class="std std-numref">Table 4</span></a> lists the steady-state prices and aggregate variable values along with some of the maximum error values from the characterizing equations.</p>
-<table class="table" id="tabsseqlbaggrvars">
+<div class="pst-scrollable-table-container"><table class="table" id="tabsseqlbaggrvars">
 <caption><span class="caption-number">Table 4 </span><span class="caption-text"><strong>Steady-state prices, aggregate variables, and maximum errors</strong></span><a class="headerlink" href="#tabsseqlbaggrvars" title="Link to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Variable</p></th>
@@ -693,6 +694,7 @@ document.write(`
 </tr>
 </tbody>
 </table>
+</div>
 <p>The steady-state computation time does not include any of the exogenous parameter computation processes, the longest of which is the estimation of the baseline tax functions which computation takes 1 hour and 15 minutes.</p>
 </section>
 </section>
@@ -724,7 +726,7 @@ document.write(`
 <span id="seceqlbnsssoln"></span><h3>Stationary non-steady-state solution method<a class="headerlink" href="#stationary-non-steady-state-solution-method" title="Link to this heading">#</a></h3>
 <p>This section describes the computational algorithm for the solution method for the stationary non-steady-state equilibrium described in the <a class="reference internal" href="#seceqlbnssdef"><span class="std std-ref">Stationary Non-Steady-State Equilibrium Definition</span></a>. The default specification of the model is the baseline specification (<code class="docutils literal notranslate"><span class="pre">baseline</span> <span class="pre">=</span> <span class="pre">True</span></code>) in which the government can run deficits and surpluses (<code class="docutils literal notranslate"><span class="pre">budget_balance</span> <span class="pre">=</span> <span class="pre">False</span></code>), in which the economy is a large partially open economy [<span class="math notranslate nohighlight">\(\zeta_D,\zeta_K\in(0,1)\)</span>], and in which baseline government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> are not held constant until the closure rule (<code class="docutils literal notranslate"><span class="pre">baseline_spending</span> <span class="pre">=</span> <span class="pre">False</span></code>). We describe the algorithm for this model configuration below and follow that with a description of how it is modified for alternative configurations.</p>
 <p>The computational algorithm for the non-steady-state solution follows similar steps to the steady-state solution described in Section <a class="reference internal" href="#seceqlbsssoln"><span class="std std-ref">Steady-state solution method</span></a>. There is an outer-loop of guessed values of macroeconomic variables <span class="math notranslate nohighlight">\(\{r_{p,t}, r_t, w_t, \boldsymbol{p}_t, BQ_t, TR_t\}\)</span>, but in this case, we guess the entire transition path of those variables. Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.</p>
-<p>We call this solution algorithm the time path iteration (TPI) method or transition path iteration. This method was originally outlined in a series of papers between 1981 and 1985 <a class="footnote-reference brackets" href="#citation-note" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and in the seminal book <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id10" title="Alan J. Auerbach and Laurence J. Kotlikoff. Dynamic Fiscal Policy. Cambridge University Press, 1987.">Auerbach and Kotlikoff, 1987</a>]</span> [Chapter 4] for the perfect foresight case and in <span id="id3">[<a class="reference internal" href="../OGCore_references.html#id24" title="Shinichi Nishiyama and Kent Smetters. Does Social Security privatization produce efficiency gains? Quarterly Journal of Economics, 122(4):1677-1719, November 2007.">Nishiyama and Smetters, 2007</a>]</span> Appendix II and <span id="id4">[<a class="reference internal" href="../OGCore_references.html#id18" title="Richard W. Evans and Kerk L. Phillips. OLG life cycle model transition paths: alternate model forecast method. Computational Economics, 43(1):105-131, January 2014.">Evans and Phillips, 2014</a>]</span>[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see <span id="id5">[<a class="reference internal" href="../OGCore_references.html#id27" title="Nancy L. Stokey, Robert E. Lucas, Jr., and Edward C. Prescott. Recursive Methods in Economic Dynamics. Harvard University Press, 1989.">Stokey <em>et al.</em>, 1989</a>]</span> [Chapter 17]).</p>
+<p>We call this solution algorithm the time path iteration (TPI) method or transition path iteration. This method was originally outlined in a series of papers between 1981 and 1985 <a class="footnote-reference brackets" href="#citation-note" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and in the seminal book <span id="id2">[<a class="reference internal" href="../OGCore_references.html#id10" title="Alan J. Auerbach and Laurence J. Kotlikoff. Dynamic Fiscal Policy. Cambridge University Press, 1987.">Auerbach and Kotlikoff, 1987</a>]</span> [Chapter 4] for the perfect foresight case and in <span id="id3">[<a class="reference internal" href="../OGCore_references.html#id25" title="Shinichi Nishiyama and Kent Smetters. Does Social Security privatization produce efficiency gains? Quarterly Journal of Economics, 122(4):1677-1719, November 2007.">Nishiyama and Smetters, 2007</a>]</span> Appendix II and <span id="id4">[<a class="reference internal" href="../OGCore_references.html#id18" title="Richard W. Evans and Kerk L. Phillips. OLG life cycle model transition paths: alternate model forecast method. Computational Economics, 43(1):105-131, January 2014.">Evans and Phillips, 2014</a>]</span>[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see <span id="id5">[<a class="reference internal" href="../OGCore_references.html#id28" title="Nancy L. Stokey, Robert E. Lucas, Jr., and Edward C. Prescott. Recursive Methods in Economic Dynamics. Harvard University Press, 1989.">Stokey <em>et al.</em>, 1989</a>]</span> [Chapter 17]).</p>
 <p>The key assumption is that the economy will reach the steady-state equilibrium <span class="math notranslate nohighlight">\(\boldsymbol{\bar{\Gamma}}\)</span> described in <a class="reference internal" href="#seceqlbssdef"><span class="std std-ref">Stationary Steady-State Equilibrium Definition</span></a> in a finite number of periods <span class="math notranslate nohighlight">\(T&lt;\infty\)</span> regardless of the initial state <span class="math notranslate nohighlight">\(\boldsymbol{\hat{\Gamma}}_1\)</span>. The first step in solving for the non-steady-state equilibrium transition path is to solve for the steady-state using the method described in Section <a class="reference internal" href="#seceqlbsssoln"><span class="std std-ref">Steady-state solution method</span></a>. After solving for the steady-state, one must then find a fixed point over the entire time path or transition path of endogenous objects that satisfies the characterizing equilibrium equations in every period.</p>
 <p>The stationary non-steady state (transition path) solution algorithm has following steps.</p>
 <ol class="arabic">
@@ -874,7 +876,7 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -972,8 +974,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

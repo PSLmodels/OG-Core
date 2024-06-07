@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=384b581d" />
@@ -37,9 +37,9 @@
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -73,27 +73,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -115,8 +111,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -184,7 +185,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
@@ -200,7 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
 <ul class="current nav bd-sidenav">
@@ -242,7 +243,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -251,7 +252,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -441,7 +442,7 @@ document.write(`
 <span id="chap-stnrz"></span><h1>Stationarization<a class="headerlink" href="#stationarization" title="Link to this heading">#</a></h1>
 <p>The previous chapters derive all the equations necessary to solve for the steady-state and nonsteady-state equilibria of this model. However, because labor productivity is growing at rate <span class="math notranslate nohighlight">\(g_y\)</span> as can be seen in the firms’ production function <a class="reference internal" href="firms.html#equation-eqfirmscesprodfun">(40)</a> and the population is growing at rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span> as defined in <a class="reference internal" href="demographics.html#equation-eqpopgrowthtil">(5)</a>, the model is not stationary. Different endogenous variables of the model are growing at different rates. We have already specified three potential budget closure rules <a class="reference internal" href="government.html#equation-equnbalgbcclosure-gt">(81)</a>, <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trt">(82)</a>, and <a class="reference internal" href="government.html#equation-equnbalgbcclosure-trgt">(84)</a> using some combination of government spending <span class="math notranslate nohighlight">\(G_t\)</span> and transfers <span class="math notranslate nohighlight">\(TR_t\)</span> that stationarize the debt-to-GDP ratio.</p>
 <p><a class="reference internal" href="#tabstnrzstatvars"><span class="std std-numref">Table 3</span></a> lists the definitions of stationary versions of all the endogenous variables. Variables with a ``<span class="math notranslate nohighlight">\(\:\,\hat{}\,\:\)</span>’’ signify stationary variables. The first column of variables are growing at the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span>. These variables are most closely associated with individual variables. The second column of variables are growing at the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span>. These variables are most closely associated with population values. The third column of variables are growing at both the productivity growth rate <span class="math notranslate nohighlight">\(g_y\)</span> and the population growth rate <span class="math notranslate nohighlight">\(\tilde{g}_{n,t}\)</span>. These variables are most closely associated with aggregate variables. The last column shows that the interest rates <span class="math notranslate nohighlight">\(r_t\)</span>, <span class="math notranslate nohighlight">\(r_{p,t}\)</span> and <span class="math notranslate nohighlight">\(r_{gov,t}\)</span>, and household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\)</span> are already stationary.</p>
-<table class="table" id="tabstnrzstatvars">
+<div class="pst-scrollable-table-container"><table class="table" id="tabstnrzstatvars">
 <caption><span class="caption-number">Table 3 </span><span class="caption-text"><strong>Stationary variable definitions.</strong> Note: The interest rate <span class="math notranslate nohighlight">\(r_t\)</span> in firm first order condition is already stationary because <span class="math notranslate nohighlight">\(Y_{m,t}\)</span> and <span class="math notranslate nohighlight">\(K_{m,t}\)</span> grow at the same rate and <span class="math notranslate nohighlight">\(p_{m,t}\)</span> is stationary. Household labor supply <span class="math notranslate nohighlight">\(n_{j,s,t}\in[0,\tilde{l}]\)</span> is stationary.</span><a class="headerlink" href="#tabstnrzstatvars" title="Link to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Sources of growth</strong></p></th>
@@ -498,6 +499,7 @@ document.write(`
 </tr>
 </tbody>
 </table>
+</div>
 <p>The usual definition of equilibrium would be allocations and prices such that households optimize <a class="reference internal" href="households.html#equation-eqhh-cidem2">(19)</a>, <a class="reference internal" href="households.html#equation-eqhheul-n">(30)</a>, <a class="reference internal" href="households.html#equation-eqhheul-b">(31)</a>, and <a class="reference internal" href="households.html#equation-eqhheul-bs">(32)</a>, firms optimize <a class="reference internal" href="firms.html#equation-eqfirmfoc-l">(43)</a> and <a class="reference internal" href="firms.html#equation-eqfirmfoc-k">(44)</a>, and markets clear <a class="reference internal" href="market_clearing.html#equation-eqmarkclrlab">(95)</a>, <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-dtdddf">(99)</a>, <a class="reference internal" href="market_clearing.html#equation-eqmarkclr-ktkdkf">(100)</a>, <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-mm1">(105)</a>, <a class="reference internal" href="market_clearing.html#equation-eqmarkclrgoods-m">(106)</a>, and <a class="reference internal" href="market_clearing.html#equation-eqmarkclrbq">(108)</a>. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections <a class="reference internal" href="equilibrium.html#seceqlbsssoln"><span class="std std-ref">Steady-state solution method</span></a> and <a class="reference internal" href="equilibrium.html#seceqlbnsssoln"><span class="std std-ref">Stationary non-steady-state solution method</span></a> of Chapter <a class="reference internal" href="equilibrium.html#chap-eqm"><span class="std std-ref">Equilibrium</span></a> to solve for the equilibria in the steady-state and transition path equilibrium definitions.</p>
 <section id="stationarized-household-equations">
 <span id="secstnrzhh"></span><h2>Stationarized Household Equations<a class="headerlink" href="#stationarized-household-equations" title="Link to this heading">#</a></h2>
@@ -713,7 +715,7 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -802,8 +804,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>
