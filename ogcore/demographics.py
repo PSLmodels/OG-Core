@@ -77,13 +77,14 @@ def get_un_data(
         + "?format=csv"
     )
 
-
     # Check for a file named "un_api_token.txt" in the current directory
     if os.path.exists(os.path.join("un_api_token.txt")):
         with open(os.path.join("un_api_token.txt"), "r") as file:
             UN_TOKEN = file.read().strip()
     else:  # if file not exist, prompt user for token
-        UN_TOKEN = input("Please enter your UN API token (press return if you do not have one): ")
+        UN_TOKEN = input(
+            "Please enter your UN API token (press return if you do not have one): "
+        )
         # write the UN_TOKEN to a file to find in the future
         with open(os.path.join("un_api_token.txt"), "w") as file:
             file.write(UN_TOKEN)
@@ -112,25 +113,29 @@ def get_un_data(
     else:
         # Read from UN GH Repo:
         print(
-            f"Failed to retrieve population data from UN. Reading " +
-            " from https://github.com/EAPD-DRB/Population-Data " +
-            "instead of UN WPP API"
+            f"Failed to retrieve population data from UN. Reading "
+            + " from https://github.com/EAPD-DRB/Population-Data "
+            + "instead of UN WPP API"
         )
         country_dict = {
             "840": "USA",
             "710": "ZAF",
             "458": "MYS",
             "356": "IND",
-            "826": "UK"
+            "826": "UK",
         }
         un_variable_dict = {
             "68": "fertility_rates",
             "80": "mortality_rates",
-            "47": "population"
+            "47": "population",
         }
         country = country_dict[country_id]
         variable = un_variable_dict[variable_code]
-        url = "https://raw.githubusercontent.com/EAPD-DRB/Population-Data/main/Data/{c}/UN_{v}_data.csv".format(c=country, v=variable)
+        url = (
+            "https://raw.githubusercontent.com/EAPD-DRB/"
+            + "Population-Data/main/"
+            + "Data/{c}/UN_{v}_data.csv".format(c=country, v=variable)
+        )
         df = pd.read_csv(url)
         # keep just the years requested
         df = df[(df.year >= start_year) & (df.year <= end_year)]
