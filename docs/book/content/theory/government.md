@@ -251,9 +251,17 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
      Users can select this option by setting the parameter `tax_func_type="GS"`.  The three parameters of this function ($\phi_{0}, \phi_{1}, \phi_{2}$) are estimated using the weighted sum of squares estimated described in Equation {eq}`EqTaxCalcThetaWSSQ`.
 
-  3. Linear tax functions (i.e., $\tau =$ a constant).  Users can select this option by setting the parameter `tax_func_type="linear"`.  The constant rate is found by taking the weighted average of the appropriate tax rate (effective tax rate, marginal tax rate on labor income, marginal tax rate on labor income) for each age and year, where the values are weighted by sampling weights and income.
+  3. Tax functions from {cite}`HeathcoteStoreslettenViolante:2017`:
 
-  4. Monotonically increasing smoothing spline `tax_func_type="mono"`. This functional approach is based on {cite}`EilersMarx:1996`, {cite}`Eilers:2003` and {cite}`Eilers:2005`, which is a least squares smoothing spline that penalizes nonmonotonicities. We used k-fold cross validation to show that the optimal smoothing parameter for this function on our tax data is $\lambda=12$, which is set as the default. These tax functions are fit to total income data (labor income plus capital income).
+     ```{math}
+       \tau = 1 - \phi_{0}(x+y)^{1-phi_1}
+     ```
+
+     Users can select this option by setting the parameter `tax_func_type="HSV"`.  The two parameters of this function ($\phi_{0}, \phi_{1}$) are estimated using ordinary least squares.
+
+  4. Linear tax functions (i.e., $\tau =$ a constant).  Users can select this option by setting the parameter `tax_func_type="linear"`.  The constant rate is found by taking the weighted average of the appropriate tax rate (effective tax rate, marginal tax rate on labor income, marginal tax rate on labor income) for each age and year, where the values are weighted by sampling weights and income.
+
+  5. Monotonically increasing smoothing spline `tax_func_type="mono"`. This functional approach is based on {cite}`EilersMarx:1996`, {cite}`Eilers:2003` and {cite}`Eilers:2005`, which is a least squares smoothing spline that penalizes nonmonotonicities. We used k-fold cross validation to show that the optimal smoothing parameter for this function on our tax data is $\lambda=12$, which is set as the default. These tax functions are fit to total income data (labor income plus capital income).
 
   Among all of these tax functional forms, users can set the `age_specific` parameter to `False` if they wish to have one function for all ages $s$.  In addition, for the functions based on {cite}`DeBackerEtAl:2019` (`tax_func_type="DEP"` or `tax_func_type="DEP_totinc"`), one can set `analytical_mtrs=True` if they wish to have the $\tau^{mtrx}_{s,t}$ and $\tau^{mtry}_{s,t}$ derived from the $\tau^{etr}_{s,t}$ functions.  This provides theoretical consistency, but reduced fit of the functions (see {cite}`DeBackerEtAl:2019` for more details).
 
