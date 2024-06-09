@@ -806,7 +806,6 @@ def txfunc_est(
             phi1_init = 1.0
             phi2_init = 1.0
             params_init = np.array([phi0_init, phi1_init, phi2_init])
-        print("Initial phi0, phi1, phi2: ", params_init)
         tx_objs = (
             np.array([None]),
             X,
