@@ -66,17 +66,24 @@ def get_un_data(
         + "?format=csv"
     )
 
+    # Check for a file named "un_api_token.txt" in the current directory
+    if os.path.exists(os.path.join("un_api_token.txt")):
+        with open(os.path.join("un_api_token.txt"), "r") as file:
+            UN_TOKEN = file.read().strip()
+    else:  # if file not exist, prompt user for token
+        UN_TOKEN = input(
+            "Please enter your UN API token (press return if you do not have one): "
+        )
+        # write the UN_TOKEN to a file to find in the future
+        with open(os.path.join("un_api_token.txt"), "w") as file:
+            file.write(UN_TOKEN)
+
     # get data from url
-    response = get_legacy_session().get(target)
+    payload = {}
+    headers = {"Authorization": "Bearer " + UN_TOKEN}
+    response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
     if response.status_code == 200:
-
-        # if want to download the data
-        # with open("downloaded_datan.csv", "wb") as f:
-        #     f.write(response.content)
-        # df = pd.read_csv("downloaded_datan.csv")
-        # else
-        # print("TARGET: ", target)
         csvStringIO = StringIO(response.text)
         df = pd.read_csv(csvStringIO, sep="|", header=1)
 
@@ -93,10 +100,40 @@ def get_un_data(
         df.year = df.year.astype(int)
         df = df[df.age < 100]  # need to drop 100+ age category
     else:
+        # Read from UN GH Repo:
         print(
-            f"Failed to retrieve population data. HTTP status code: {response.status_code}"
+            f"Failed to retrieve population data from UN. Reading "
+            + " from https://github.com/EAPD-DRB/Population-Data "
+            + "instead of UN WPP API"
         )
-        assert False
+        country_dict = {
+            "840": "USA",
+            "710": "ZAF",
+            "458": "MYS",
+            "356": "IND",
+            "826": "UK",
+        }
+        un_variable_dict = {
+            "68": "fertility_rates",
+            "80": "mortality_rates",
+            "47": "population",
+        }
+        country = country_dict[country_id]
+        variable = un_variable_dict[variable_code]
+        url = (
+            "https://raw.githubusercontent.com/EAPD-DRB/"
+            + "Population-Data/main/"
+            + "Data/{c}/UN_{v}_data.csv".format(c=country, v=variable)
+        )
+        df = pd.read_csv(url)
+        # keep just the years requested
+        df = df[(df.year >= start_year) & (df.year <= end_year)]
+
+        # Do we still want to keep the status code for failures?
+        # print(
+        #     f"Failed to retrieve population data. HTTP status code: {response.status_code}"
+        # )
+        # assert False
 
     return df
 
@@ -136,11 +173,15 @@ def get_fert(
     """
     # initialize fert rates array
     fert_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
-    # Read UN data, 1 year at a time
+    # Read UN data
+    df = get_un_data(
+        "68", country_id=country_id, start_year=start_year, end_year=end_year
+    )
+    # CLean and rebin data
     for y in range(start_year, end_year + 1):
-        df = get_un_data("68", country_id=country_id, start_year=y, end_year=y)
+        df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
         # put in vector
-        fert_rates = df.value.values
+        fert_rates = df_y.value.values
         # fill in with zeros for ages  < 15 and > 49
         # NOTE: this assumes min_year < 15 and max_age > 49
         fert_rates = np.append(fert_rates, np.zeros(max_age - 49))
@@ -163,7 +204,7 @@ def get_fert(
 
     # Create plots if needed
     if graph:
-        if plot_path:
+        if plot_path is not None:
             pp.plot_fert_rates(
                 [fert_rates_2D],
                 start_year=start_year,
@@ -219,10 +260,14 @@ def get_mort(
     mort_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
     infmort_rate_vec = np.zeros(end_year + 1 - start_year)
     # Read UN data
+    df = get_un_data(
+        "80", country_id=country_id, start_year=start_year, end_year=end_year
+    )
+    # CLean and rebin data
     for y in range(start_year, end_year + 1):
-        df = get_un_data("80", country_id=country_id, start_year=y, end_year=y)
+        df_y = df[(df.age >= min_age) & (df.age <= max_age) & (df.year == y)]
         # put in vector
-        mort_rates_data = df.value.values
+        mort_rates_data = df_y.value.values
         # In UN data, mortality rates for 0 year olds are the infant
         # mortality rates
         infmort_rate = mort_rates_data[0]
@@ -249,7 +294,7 @@ def get_mort(
 
     # Create plots if needed
     if graph:
-        if plot_path:
+        if plot_path is not None:
             pp.plot_mort_rates_data(
                 mort_rates_2D,
                 start_year,
@@ -322,7 +367,7 @@ def get_pop(
     """
     # Generate time path of the nonstationary population distribution
     # Get path up to end of data year
-    pop_2D = np.zeros((end_year + 1 - start_year + 1, E + S))
+    pop_2D = np.zeros((end_year + 2 - start_year, E + S))
     if infer_pop:
         if pre_pop_dist is None:
             pre_pop_data = get_un_data(
@@ -331,11 +376,17 @@ def get_pop(
                 start_year=start_year - 1,
                 end_year=start_year - 1,
             )
+            if download_path:
+                pre_pop_data.to_csv(
+                    os.path.join(download_path, "raw_pre_pop_data_UN.csv"),
+                    index=False,
+                )
             pre_pop_sample = pre_pop_data[
                 (pre_pop_data["age"] >= min_age)
                 & (pre_pop_data["age"] <= max_age)
             ]
             pre_pop = pre_pop_sample.value.values
+            pre_pop_dist = pop_rebin(pre_pop, E + S)
         else:
             pre_pop = pre_pop_dist
         if initial_pop is None:
@@ -350,6 +401,7 @@ def get_pop(
                 & (pre_pop_data["age"] <= max_age)
             ]
             initial_pop = initial_pop_sample.value.values
+            initial_pop = pop_rebin(initial_pop, E + S)
         # Check that have all necessary inputs to infer the population
         # distribution
         assert not [
@@ -374,15 +426,19 @@ def get_pop(
             )
     else:
         # Read UN data
+        pop_data = get_un_data(
+            "47",
+            country_id=country_id,
+            start_year=start_year,
+            end_year=end_year
+            + 2,  # note go to + 2 because needed to infer immigration for end_year
+        )
+        # CLean and rebin data
         for y in range(start_year, end_year + 2):
-            pop_data = get_un_data(
-                "47",
-                country_id=country_id,
-                start_year=y,
-                end_year=y,
-            )
             pop_data_sample = pop_data[
-                (pop_data["age"] >= min_age) & (pop_data["age"] <= max_age)
+                (pop_data["age"] >= min_age)
+                & (pop_data["age"] <= max_age)
+                & (pop_data["year"] == y)
             ]
             pop = pop_data_sample.value.values
             # Generate the current population distribution given that E+S might
@@ -390,6 +446,7 @@ def get_pop(
             # age_per_EpS = np.arange(1, E + S + 1)
             pop_EpS = pop_rebin(pop, E + S)
             pop_2D[y - start_year, :] = pop_EpS
+
         # get population distribution one year before initial year for
         # calibration of omega_S_preTP
         pre_pop_data = get_un_data(
@@ -527,25 +584,27 @@ def get_imm_rates(
         assert fert_rates.shape == mort_rates.shape
         assert infmort_rates is not None
         assert infmort_rates.shape[0] == mort_rates.shape[0]
-    # Read UN data
-    for y in range(start_year, end_year + 1):
-        if pop_dist is None:
-            # need to read UN population data by age for each year
-            df = get_un_data(
-                "47", country_id=country_id, start_year=y, end_year=y
-            )
-            pop_t = df[(df.age < 100) & (df.age >= 0)].value.values
+    if pop_dist is None:
+        # need to read UN population data
+        df = get_un_data(
+            "47",
+            country_id=country_id,
+            start_year=start_year,
+            end_year=end_year + 2,
+        )
+        pop_dist = np.zeros((end_year + 2 - start_year, totpers))
+        for y in range(start_year, end_year + 1):
+            pop_t = df[
+                (df.age < 100) & (df.age >= 0) & (df.year == y)
+            ].value.values
             pop_t = pop_rebin(pop_t, totpers)
-            df = get_un_data(
-                "47", country_id=country_id, start_year=y + 1, end_year=y + 1
-            )
-            pop_tp1 = df[(df.age < 100) & (df.age >= 0)].value.values
-            pop_tp1 = pop_rebin(pop_tp1, totpers)
-        else:
-            # Make sure shape conforms
-            assert pop_dist.shape[1] == mort_rates.shape[1]
-            pop_t = pop_dist[y - start_year, :]
-            pop_tp1 = pop_dist[y - start_year + 1, :]
+            pop_dist[y - start_year, :] = pop_t
+    # Make sure shape conforms
+    assert pop_dist.shape[1] == mort_rates.shape[1]
+    assert pop_dist.shape[0] == end_year - start_year + 2
+    for y in range(start_year, end_year + 1):
+        pop_t = pop_dist[y - start_year, :]
+        pop_tp1 = pop_dist[y + 1 - start_year, :]
         # initialize imm_rate vector
         imm_rates = np.zeros(totpers)
         # back out imm rates by age for each year
@@ -570,7 +629,7 @@ def get_imm_rates(
 
     # Create plots if needed
     if graph:
-        if plot_path:
+        if plot_path is not None:
             pp.plot_imm_rates(
                 imm_rates_2D,
                 start_year,
@@ -640,7 +699,7 @@ def get_pop_objs(
     pre_pop_dist=None,
     country_id=UN_COUNTRY_CODE,
     initial_data_year=START_YEAR - 1,
-    final_data_year=START_YEAR + 2,  # as default data year goes until T1
+    final_data_year=START_YEAR + 2,
     GraphDiag=True,
     download_path=None,
 ):
@@ -710,8 +769,8 @@ def get_pop_objs(
         final_data_year,
     )
     assert E + S <= max_age - min_age + 1
-    assert initial_data_year >= 2011 and initial_data_year <= 2100
-    assert final_data_year >= 2011 and final_data_year <= 2100
+    assert initial_data_year >= 2011 and initial_data_year <= 2100 - 1
+    assert final_data_year >= 2011 and final_data_year <= 2100 - 1
     # Ensure that the last year of data used is before SS transition assumed
     # Really, it will need to be well before this
     assert final_data_year > initial_data_year
