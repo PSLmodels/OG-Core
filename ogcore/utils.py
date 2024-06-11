@@ -12,6 +12,7 @@ from scipy.interpolate import CubicSpline
 import pickle
 import urllib3
 import ssl
+import json
 
 EPSILON = 1e-10  # tolerance or comparison functions
 
@@ -1274,3 +1275,42 @@ def pct_change_unstationarized(
         )
 
     return pct_changes
+
+
+def param_dump_json(p, path=None):
+    """
+    This function creates a JSON file with the model parameters of the
+    format used for the default_parameters.json file.
+
+    Args:
+        p (OG-Core Specifications class): model parameters object
+        path (string): path to save JSON file to
+
+    Returns:
+        JSON (string): JSON on model parameters
+    """
+    converted_data = {}
+    spec = p.specification(meta_data=False, include_empty=True, serializable=True, use_state=True)
+    for key in p.keys():
+        val = dict(spec[key][0])['value']
+        if isinstance(val, np.ndarray):
+            converted_data[key] = val.tolist()
+        else:
+            converted_data[key] = val
+
+    # Parameters that need to be turned into annual rates for default_parameters.json
+    # g_y_annual
+    # beta_annual
+    # delta_annual
+    # delta_tau_annual
+    # delta_g_annual
+    # world_int_rate_annual
+
+    # Convert to JSON string
+    json_str = json.dumps(converted_data, indent=4)
+
+    if path is not None:
+        with open(path, "w") as f:
+            f.write(json_str)
+    else:
+        return json_str
