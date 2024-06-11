@@ -1290,9 +1290,11 @@ def param_dump_json(p, path=None):
         JSON (string): JSON on model parameters
     """
     converted_data = {}
-    spec = p.specification(meta_data=False, include_empty=True, serializable=True, use_state=True)
+    spec = p.specification(
+        meta_data=False, include_empty=True, serializable=True, use_state=True
+    )
     for key in p.keys():
-        val = dict(spec[key][0])['value']
+        val = dict(spec[key][0])["value"]
         if isinstance(val, np.ndarray):
             converted_data[key] = val.tolist()
         else:
