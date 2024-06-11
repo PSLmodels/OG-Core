@@ -58,28 +58,6 @@ def test_convex_combo():
     assert np.allclose(expected, combo)
 
 
-def test_read_file():
-    """
-    Test of utils.read_file() function
-    """
-    path = os.path.join(CUR_PATH, "test_io_data")
-    fname = "SS_fsolve_inputs.pkl"
-    bytes_data = utils.read_file(path, fname)
-
-    assert isinstance(bytes_data, io.TextIOWrapper)
-
-
-def test_read_file_from_egg():
-    """
-    Test of utils.read_file() function, case of reading file from .egg
-    """
-    path = os.path.join(CUR_PATH)
-    fname = "default_parameters.json"
-    bytes_data = utils.read_file(path, fname)
-
-    assert isinstance(bytes_data, io.StringIO)
-
-
 def test_pickle_file_compare():
     """
     Test of utils.pickle_file_compare() function
@@ -947,3 +925,24 @@ def test_pct_change_unstationarized(p1, p2, expected):
     for key in pct_change.keys():
         print("Checking ", key)
         assert np.allclose(pct_change[key], expected[key])
+
+
+def test_param_dump_json():
+    """
+    Test of the param_dump_json function
+    """
+    p = Specifications()
+    j_str = utils.param_dump_json(p)
+    assert isinstance(j_str, str)
+
+
+def test_param_dump_json_save(tempdir):
+    """
+    Test of the param_dump_json function
+    """
+    p = Specifications()
+    utils.param_dump_json(p, path=os.path.join(tempdir, "test.json"))
+    # read in file
+    with open(os.path.join(tempdir, "test.json"), "r") as f:
+        j_str = f.read()
+    assert isinstance(j_str, str)
