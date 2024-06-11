@@ -5,13 +5,11 @@ import requests
 from zipfile import ZipFile
 import urllib
 from tempfile import NamedTemporaryFile
-from io import BytesIO, StringIO
+from io import BytesIO
 import numpy as np
 import pandas as pd
 from scipy.interpolate import CubicSpline
 import pickle
-from pkg_resources import resource_stream, Requirement
-import importlib.resources
 import urllib3
 import ssl
 
@@ -76,28 +74,6 @@ def convex_combo(var1, var2, nu):
     """
     combo = nu * var1 + (1 - nu) * var2
     return combo
-
-
-def read_file(path, fname):
-    """
-    Read the contents of 'path'. If it does not exist, assume the file
-    is installed in a .egg file, and adjust accordingly.
-
-    Args:
-        path (str): path name for new directory
-        fname (str): filename
-
-    Returns:
-        file contents (str)
-
-    """
-
-    if not os.path.exists(os.path.join(path, fname)):
-        buf = resource_stream("ogcore", fname)
-        _bytes = buf.read()
-        return StringIO(_bytes.decode("utf-8"))
-    else:
-        return open(os.path.join(path, fname))
 
 
 def pickle_file_compare(
