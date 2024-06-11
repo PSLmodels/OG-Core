@@ -71,12 +71,15 @@ def get_un_data(
         with open(os.path.join("un_api_token.txt"), "r") as file:
             UN_TOKEN = file.read().strip()
     else:  # if file not exist, prompt user for token
-        UN_TOKEN = input(
-            "Please enter your UN API token (press return if you do not have one): "
-        )
-        # write the UN_TOKEN to a file to find in the future
-        with open(os.path.join("un_api_token.txt"), "w") as file:
-            file.write(UN_TOKEN)
+        try:
+            UN_TOKEN = input(
+                "Please enter your UN API token (press return if you do not have one): "
+            )
+            # write the UN_TOKEN to a file to find in the future
+            with open(os.path.join("un_api_token.txt"), "w") as file:
+                file.write(UN_TOKEN)
+        except EOFError:
+            UN_TOKEN = ""
 
     # get data from url
     payload = {}
