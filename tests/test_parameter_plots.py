@@ -1,8 +1,6 @@
 """
 Tests of parameter_plots.py module
 """
-
-from tracemalloc import start
 import pytest
 import os
 import sys
