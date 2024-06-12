@@ -5,15 +5,14 @@ import requests
 from zipfile import ZipFile
 import urllib
 from tempfile import NamedTemporaryFile
-from io import BytesIO, StringIO
+from io import BytesIO
 import numpy as np
 import pandas as pd
 from scipy.interpolate import CubicSpline
 import pickle
-from pkg_resources import resource_stream, Requirement
-import importlib.resources
 import urllib3
 import ssl
+import json
 
 EPSILON = 1e-10  # tolerance or comparison functions
 
@@ -76,28 +75,6 @@ def convex_combo(var1, var2, nu):
     """
     combo = nu * var1 + (1 - nu) * var2
     return combo
-
-
-def read_file(path, fname):
-    """
-    Read the contents of 'path'. If it does not exist, assume the file
-    is installed in a .egg file, and adjust accordingly.
-
-    Args:
-        path (str): path name for new directory
-        fname (str): filename
-
-    Returns:
-        file contents (str)
-
-    """
-
-    if not os.path.exists(os.path.join(path, fname)):
-        buf = resource_stream("ogcore", fname)
-        _bytes = buf.read()
-        return StringIO(_bytes.decode("utf-8"))
-    else:
-        return open(os.path.join(path, fname))
 
 
 def pickle_file_compare(
@@ -1298,3 +1275,44 @@ def pct_change_unstationarized(
         )
 
     return pct_changes
+
+
+def param_dump_json(p, path=None):
+    """
+    This function creates a JSON file with the model parameters of the
+    format used for the default_parameters.json file.
+
+    Args:
+        p (OG-Core Specifications class): model parameters object
+        path (string): path to save JSON file to
+
+    Returns:
+        JSON (string): JSON on model parameters
+    """
+    converted_data = {}
+    spec = p.specification(
+        meta_data=False, include_empty=True, serializable=True, use_state=True
+    )
+    for key in p.keys():
+        val = dict(spec[key][0])["value"]
+        if isinstance(val, np.ndarray):
+            converted_data[key] = val.tolist()
+        else:
+            converted_data[key] = val
+
+    # Parameters that need to be turned into annual rates for default_parameters.json
+    # g_y_annual
+    # beta_annual
+    # delta_annual
+    # delta_tau_annual
+    # delta_g_annual
+    # world_int_rate_annual
+
+    # Convert to JSON string
+    json_str = json.dumps(converted_data, indent=4)
+
+    if path is not None:
+        with open(path, "w") as f:
+            f.write(json_str)
+    else:
+        return json_str

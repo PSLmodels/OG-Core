@@ -1,10 +1,8 @@
 import os
 import numpy as np
 import scipy.interpolate as si
-import pkg_resources
 import paramtools
-
-# import ogcore
+import ogcore
 from ogcore import elliptical_u_est
 from ogcore.utils import rate_conversion, extrapolate_arrays
 from ogcore.constants import BASELINE_DIR
@@ -35,7 +33,7 @@ class Specifications(paramtools.Parameters):
         self.num_workers = num_workers
 
         # put OG-Core version in parameters to save for reference
-        self.ogcore_version = pkg_resources.get_distribution("ogcore").version
+        self.ogcore_version = ogcore.__version__
 
         # does cheap calculations to find parameter values
         self.initialize()
