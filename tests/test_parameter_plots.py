@@ -1,6 +1,7 @@
 """
 Tests of parameter_plots.py module
 """
+
 import pytest
 import os
 import sys
