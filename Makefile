@@ -5,6 +5,12 @@
 #              to work in that environment (and not on Windows).
 # USAGE: OG-Core$ make [TARGET]
 
+changelog:
+	build-changelog changelog.yaml --output changelog.yaml --update-last-date --start-from 0.11.9 --append-file changelog_entry.yaml
+	build-changelog changelog.yaml --org PSLmodels --repo OG-Core --output CHANGELOG.md --template .github/changelog_template.md
+	bump-version changelog.yaml setup.py
+	rm changelog_entry.yaml || true
+	touch changelog_entry.yaml
 .PHONY=help
 help:
 	@echo "USAGE: make [TARGET]"
