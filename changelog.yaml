@@ -1,0 +1,7 @@
+- changes:
+    added:
+    - The first release of the OG-Core model was version 0.7.0 on 2021-08-30 (see CHANGELOG.md)
+    - Many releases were tagged between 2021-08-30 and 2024-06-12 (see CHANGELOG.md)
+    - The most recent release is 0.11.9 (see CHANGELOG.md)
+  date: 2024-06-12 01:00:00
+  version: 0.11.9
