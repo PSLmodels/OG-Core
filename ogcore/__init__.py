@@ -2,7 +2,7 @@
 Specify what is available to import from the ogcore package.
 """
 
-import ogcore.__version__ as ogc_version
+import ogcore
 from ogcore.SS import *
 from ogcore.TPI import *
 from ogcore.aggregates import *
@@ -21,4 +21,4 @@ from ogcore.tax import *
 from ogcore.txfunc import *
 from ogcore.utils import *
 
-__version__ = ogc_version
+__version__ = ogcore.__version__
