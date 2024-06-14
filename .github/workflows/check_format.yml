@@ -1,5 +1,5 @@
 
-name: Check Black formatting
+name: Check code formatting
 
 on: [push, pull_request]
 
@@ -7,8 +7,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
       - uses: psf/black@stable
         with:
           options: "-l 79 --check"
