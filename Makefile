@@ -11,6 +11,12 @@ changelog:
 	bump-version changelog.yaml setup.py
 	rm changelog_entry.yaml || true
 	touch changelog_entry.yaml
+format:
+	black . -l 79
+	linecheck . --fix
+documentation:
+	jb clean ./docs/book
+	jb build ./docs/book
 .PHONY=help
 help:
 	@echo "USAGE: make [TARGET]"
