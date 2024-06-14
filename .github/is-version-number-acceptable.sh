@@ -20,7 +20,7 @@ then
     git --no-pager log -1 $current_version
     echo
     echo "Update the version number in setup.py before merging this branch into master."
-    echo "Look at the CONTRIBUTING.md file to learn how the version number should be updated."
+    echo "Look at the changelog_entry.yaml documentation file to learn how the version number should be updated."
     exit 1
 fi
 
@@ -28,6 +28,6 @@ if ! $(dirname "$BASH_SOURCE")/has-functional-changes.sh | grep --quiet CHANGELO
 then
     echo "CHANGELOG.md has not been modified, while functional changes were made."
     echo "Explain what you changed before merging this branch into master."
-    echo "Look at the CONTRIBUTING.md file to learn how to write the changelog."
+    echo "Look at the contributor_guide.md documentation file to learn how to write the changelog_entry.yaml."
     exit 2
 fi
