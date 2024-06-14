@@ -1,0 +1,5 @@
+- bump: patch
+  changes:
+    added:
+      - Adds automatic versioning workflow by updating `build_and_test.yml`, adding `
+      - Updates `README.md`
