@@ -55,7 +55,7 @@ def elliptical_u(b, k, upsilon, l_tilde, n):
 
     Args:
         b (scalar):  scale parameter of elliptical utility function
-        k (scalar):  shift parametr of elliptical utility function
+        k (scalar):  shift parameter of elliptical utility function
         upsilon (scalar):  curvature parameter of elliptical utility
             function
         l_tilde (scalar): maximum amount of labor supply
@@ -152,48 +152,29 @@ def sumsq_MU(params, *objs):
 def estimation(frisch, l_tilde):
     """
     This function estimates the parameters of an elliptical utility
-    funcion that fits a constant frisch elasticty function.
+    function that fits a constant frisch elasticity function.
 
     Args:
         frisch (scalar):  Frisch elasticity of labor supply
         l_tilde (scalar): maximum amount of labor supply
 
     Returns:
-        b_MU_til (scalar): estimated b from ellipitical utility function
-        upsilon_MU_til (scalar): estimated upsilon from ellipitical
+        b_MU_til (scalar): estimated b from elliptical utility function
+        upsilon_MU_til (scalar): estimated upsilon from elliptical
             utility function
 
     """
-
-    """
-    ------------------------------------------------------------------------
-    Set parameters
-    ------------------------------------------------------------------------
-    """
+    # Set parameters
     theta = 1 / frisch
     N = 101
-    """
-    ------------------------------------------------------------------------
-    Estimate parameters of ellipitical utility function
-    ------------------------------------------------------------------------
-    """
+
+    # Estimate parameters of elliptical utility function
     # Initial guesses
     b_init = 0.6701
     # k_init = -.6548
     upsilon_init = 2.3499
     # don't estimate near edge of range of labor supply
     n_grid = np.linspace(0.01, 0.8, num=N)
-
-    # Estimating using levels of utility function
-    # ellipse_params_init = np.array([b_init, k_init, upsilon_init])
-    # ellipse_objs = (theta, l_tilde, n_grid)
-    # bnds = ((None, None), (None, None), (1e-12, None))
-    # ellipse_params_til = opt.minimize(sumsq, ellipse_params_init,
-    #                     args=(ellipse_objs), method="L-BFGS-B", bounds=bnds,
-    #                     tol=1e-15)
-    # (b_til, k_til, upsilon_til) = ellipse_params_til.x
-
-    # elapsed_time = time.clock() - start_time
 
     # Estimate params using marginal utilities
     ellipse_MU_params_init = np.array([b_init, upsilon_init])
