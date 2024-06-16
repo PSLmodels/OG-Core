@@ -17,7 +17,7 @@ Government levies taxes on households and firms, funds public pensions, and make
 Income taxes are modeled through the total tax liability function $T_{s,t}$, which can be decomposed into the effective tax rate times total income {eq}`EqTaxCalcLiabETR2`. In this chapter, we detail the household tax component of government activity $T_{s,t}$ in `OG-Core`, along with our method of incorporating detailed microsimulation data into a dynamic general equilibrium model.
 
 ```{math}
-:label: EqHHBC2
+:label: EqHHBC2_gov
   p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
   &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
   &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
@@ -31,7 +31,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 `OG-Core` follows the method of {cite}`DeBackerEtAl:2019` of generating detailed tax data on effective tax rates and marginal tax rates for a sample of tax filers along with their respective income and demographic characteristics and then using that data to estimate parametric tax functions that can be incorporated into `OG-Core`.
 
 (SecTaxCalcRateTheory)=
-###### Effective and Marginal Tax Rates
+##### Effective and Marginal Tax Rates
 
   Before going into more detail regarding how we handle these two difficulties in `OG-Core`, we need to define some functions and make some notation. For notational simplicity, we will use the variable $x$ to summarize labor income, and we will use the variable $y$ to summarize capital income.
 
@@ -445,11 +445,14 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
   Similar to transfers $TR_t$, the time dependent multiplier $g_{g,t}$ in front of the right-hand-side of {eq}`EqUnbalGBC_Gt` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We make this more specific in the next section.
 
   Total government infrastructure investment spending, $I_{g,t}$ is assumed to be a time-dependent fraction of GDP.
+
   ```{math}
   :label: EqUnbalGBC_Igt
     I_{g,t} = \alpha_{I,t}\: p_t Y_t \quad\forall t
   ```
+
   The government also chooses what percent of total infrastructure investment goes to each industry $\alpha_{I,m,t}$, although these are exogenously calibrated parameters in the model.
+
   ```{math}
   :label: EqUnbalGBC_Igmt
     I_{g,m,t} = \alpha_{I,m,t}\: I_{g,t} \quad\forall m,t

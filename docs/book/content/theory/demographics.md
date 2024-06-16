@@ -11,7 +11,6 @@ kernelspec:
   name: ogcore-dev
 ---
 
-(glue)=
 
 (Chap_Demog)=
 # Demographics

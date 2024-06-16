@@ -11,7 +11,7 @@ ogcore.utils
 .. currentmodule:: ogcore.utils
 
 .. autoclass:: Inequality
-  :members: gini, var_of_logs, ratio_pct1_pct2, pct, topshare
+  :members: gini, var_of_logs, ratio_pct1_pct2, pct, top_share
 
 .. autoclass:: CustomHttpAdapter
   :members: init_poolmanager
