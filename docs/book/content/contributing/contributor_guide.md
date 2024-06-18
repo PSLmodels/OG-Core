@@ -29,7 +29,7 @@ If you have already completed the {ref}`Sec_SetupPython` and {ref}`Sec_SetupGit`
 
 6. Create a local repo by entering at the command line the text after the $.[^commandline_note] This step creates a directory called `OG-Core` in the directory that you specified in the prior step:
 
-    ```
+    ```console
       git clone https://github.com/[github-username]/OG-Core.git
     ```
 
@@ -37,7 +37,7 @@ If you have already completed the {ref}`Sec_SetupPython` and {ref}`Sec_SetupGit`
 
 8. Make it easier to [push](https://help.github.com/articles/github-glossary/#pull) your local work to others and [pull](https://help.github.com/articles/github-glossary/#pull) others' work to your local machine by entering at the command line:
 
-    ```
+    ```console
       $ cd OG-Core
       OG-Core$ git remote add upstream https://github.com/PSLmodels/OG-Core.git
     ```
@@ -45,27 +45,26 @@ If you have already completed the {ref}`Sec_SetupPython` and {ref}`Sec_SetupGit`
 9. Create a conda environment with all of the necessary packages to
    execute the source code:
 
-    ```
-      OG-Core$ conda env create -f environment.yml
+    ```console
+      OG-Core$ conda env create
     ```
 
 10. The prior command will create a conda environment called `ogcore-dev`.
     Activate this environment as follows:
 
-    ```
+    ```console
       OG-Core$ conda activate ogcore-dev
     ```
 
 11. To make sure that the `ogcore` Python package from the `OG-Core` repository is installed and operational in your `ogcore-dev` conda environment, type the following command at your command prompt.
 
-    ```
+    ```console
     OG-Core$ pip install -e .
     ```
 
 If you have made it this far, you've successfully made a remote copy (a fork) of the central `OG-Core` repo. The main repository is hosted in the cloud at https://github.com/PSLmodels/OG-Core. Your fork of that repository is hosted in the cloud on your GitHub account at https://github.com/[YourGitHubHandle]/OG-Core. For example, Richard Evans' fork of OG-Core is at https://github.com/rickecon/OG-Core. You have also created a local repository (a [clone](https://help.github.com/articles/github-glossary/#clone)) of your fork that exists in the memory of your local machine that only you can see. You will make your changes to the OG-Core model by editing the files in the `OG-Core` directory on your machine and then submitting those changes to your local repo. As a new contributor, you will push your changes from your local repo to your remote repo when you're ready to share that work with the team.
 
 Don't be alarmed if the above paragraph is confusing. The following section introduces some standard Git practices and guides you through the contribution process.
-
 
 (Sec_Workflow)=
 ## Workflow
@@ -74,7 +73,6 @@ Don't be alarmed if the above paragraph is confusing. The following section intr
 ### Submitting a GitHub Issue
 
 GitHub "issues" are an excellent way to ask questions, include code examples, and tag specific GitHub users.
-
 
 (Sec_GitHubPR)=
 ### Submitting a GitHub Pull Request
@@ -85,53 +83,62 @@ The following text describes a typical workflow for changing `OG-Core`.  Differe
 
    a. Tell Git to switch to the master branch in your local repo. Navigate to your local `OG-Core` directory and enter the following text at the command line:
 
-    ```
+    ```console
         OG-Core$ git checkout master
     ```
 
    b. Download all of the content from the central `OG-Core` repo:
-    ```
+
+    ```console
         OG-Core$ git fetch upstream
     ```
 
    c. Update your local master branch to contain the latest content of the central master branch using [merge](https://help.github.com/articles/github-glossary/#merge). This step ensures that you are working with the latest version of `OG-Core`:
-    ```
+
+    ```console
         OG-Core$ git merge upstream/master
     ```
 
    d. Push the updated master branch in your local repo to your GitHub repo:
-    ```
+
+    ```console
         OG-Core$ git push origin master
     ```
 
 2. Create a new [branch](https://help.github.com/articles/github-glossary/#branch) on your local machine. Think of your branches as a way to organize your projects. If you want to work on this documentation, for example, create a separate branch for that work. If you want to change an element of the `OG-Core` model, create a different branch for that project:
-    ```
+
+    ```console
      OG-Core$ git checkout -b [new-branch-name]
     ```
 
 3. As you make changes, frequently check that your changes do not introduce bugs or degrade the accuracy of the `OG-Core`. To do this, run the following command from the command line from inside the `OG-Core/ogcore` directory:
-    ```
+
+    ```console
      OG-Core/ogcore$  pytest
     ```
+
    Note that running this full suite of tests may take more than 6 hours (depending on your hardware). To run the subset of tests that run on each pull request (and take about 40 minutes), use  `pytest -m "not local"`.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn't possible or doesn't work, the core maintainers are here to help via a [GitHub Issue](https://github.com/PSLmodels/OG-Core/issues).
 
 4. Now you're ready to [commit](https://help.github.com/articles/github-glossary/#commit) your changes to your local repo using the code below. The first line of code tells `Git` to track a file. Use the `git status` command to find all the files you have edited, and `git add` command to add each of the files that you would like `Git` to track. As a rule, do not add large files. If you'd like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message. This should be a short description of your changes.
 
    *Tip*: Committing often is a good idea as `Git` keeps a record of your changes. This means that you can always revert to a previous version of your work if you need to. Do this to commit:
-    ```
+
+    ```console
      OG-Core$ git add [filename]
      OG-Core$ git commit -m "[description-of-your-commit]"
     ```
 
 5. Periodically, make sure that the branch you created in step 2 is in sync with the changes other contributors are making to the central master branch by fetching upstream and merging upstream/master into your branch:
-    ```
+
+    ```console
       OG-Core$ git fetch upstream
       OG-Core$ git merge upstream/master
     ```
+
    You may need to resolve conflicts that arise when another contributor changed the same section of code that you are changing. Feel free to ask other contributors for guidance if this happens to you. If you do need to fix a merge conflict, re-run the test suite afterwards (step 4.)
 
 6. Make sure your changes conform to the formatting requirements of the OG-Core repository. We use the [`black`](https://pypi.org/project/black/) formatting package. You can automatically check the formatting of your changes by making sure your `ogcore-dev` conda environment is activated and typing the following commands. If you are on a Mac or Linux operating system, type the following commands in your terminal.
-    ```
+    ```console
     [Mac or Linux]OG-Core$ make format    or    [Windows]OG-Core$ black . -l 79    and    [Windows]OG-Core$ linecheck . --fix
     OG-Core$ git status
     OG-Core$ git add -A
@@ -160,7 +167,7 @@ The following text describes a typical workflow for changing `OG-Core`.  Differe
 
 
 8. When you are ready for other team members to review your code, make your final commit and push your local branch to your remote repo:
-    ```
+    ```console
      OG-Core$ git push origin [new-branch-name]
     ```
 9. From the GitHub.com user interface, [open a pull request](https://help.github.com/articles/creating-a-pull-request/#creating-the-pull-request).
@@ -175,13 +182,13 @@ The following text describes a typical workflow for changing `OG-Core`.  Differe
 
 1. Navigate to your local `OG-Core` repository in the terminal of your local machine and activate the `ogcore-dev` conda environment. If you have not created the `ogcore-dev` conda environment, follow steps 1-11 in Section {ref}`Sec_SetupGit` above.
 
-    ```
+    ```console
     OG-Core$ conda activate ogcore-dev
     ```
 
 2. Run the Python example script [`OG-Core/run_examples/run_ogcore_example.py`](https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py) by entering the following command in your terminal in your local machine `OG-Core` repository with the `ogcore-dev` conda environment activated.
 
-    ```
+    ```console
     (ogcore-dev) OG-Core$ python ./run_examples/run_ogcore_example.py
     ```
 

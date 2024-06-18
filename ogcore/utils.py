@@ -331,9 +331,9 @@ def get_initial_path(x1, xT, p, shape):
 
     Notes:
         The identifying assumptions for quadratic are the following:
-            1. `x1` is the value at time `t=0: x1 = c
+            1. `x1` is the value at time `t=0: x1 = c`
             2. `xT` is the value at time `t=T-1: xT = a*(T-1)^2 + b*(T-1) + c`
-            3. the slope of the path at `t=T-1` is 0: 0 = 2*a*(T-1) + b`
+            3. the slope of the path at `t=T-1` is 0: `0 = 2*a*(T-1) + b`
 
     """
     if shape == "linear":

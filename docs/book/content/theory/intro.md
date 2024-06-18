@@ -1,4 +1,4 @@
-(Chap_Intro)=
+(Chap_ModelIntro)=
 # Model Overview
 
 The overlapping generations model is a workhorse of dynamic fiscal analysis. The `OG-Core` model is dynamic in that households in the model make consumption, savings, and labor supply decisions based on their expectations over their entire lifetime, not just the current period. Because `OG-Core` is a general equilibrium model, behavioral changes by households and firms can cause macroeconomic variables and prices to adjust. This characteristic has recently become a required component of fiscal policy analysis in the United States.[^dynscore_note]
