@@ -1,6 +1,5 @@
 
 (Chap_FinInt)=
-
 # Financial Intermediary
 
 Domestic household wealth $W^d_{t}=B_{t}$ and foreign ownership of domestic assets $W^f_{t}$, both in terms of the numeraire good, are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.
@@ -15,7 +14,7 @@ Foreign demand for government bonds is specified in section {ref}`SecMarkClrMktC
 This leaves domestic investors to buy up the residual amount of government debt:
 
   ```{math}
-  :label: EqMarkClr_zetaD2
+  :label: EqMarkClr_DomesticDebt
     D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t
   ```
 

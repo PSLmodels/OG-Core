@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
@@ -52,7 +52,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -459,31 +459,31 @@ document.write(`
 <li><p>Sign in to GitHub and create your own <a class="reference external" href="https://help.github.com/articles/github-glossary/#remote">remote</a> <a class="reference external" href="https://help.github.com/articles/github-glossary/#repository">repository</a> (repo) of <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> by clicking <a class="reference external" href="https://help.github.com/articles/github-glossary/#fork">Fork</a> in the upper right corner of the <a class="reference external" href="https://github.com/PSLmodels/OG-Core">OG-Core GitHub page</a>. Select your username when asked “Where should we fork this repository?”</p></li>
 <li><p>From your command line on your local computer, navigate to the directory on your computer where you would like your local repo to reside.</p></li>
 <li><p>Create a local repo by entering at the command line the text after the $.<a class="footnote-reference brackets" href="#commandline-note" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> This step creates a directory called <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> in the directory that you specified in the prior step:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="p">[</span><span class="n">github</span><span class="o">-</span><span class="n">username</span><span class="p">]</span><span class="o">/</span><span class="n">OG</span><span class="o">-</span><span class="n">Core</span><span class="o">.</span><span class="n">git</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  git clone https://github.com/[github-username]/OG-Core.git</span>
 </pre></div>
 </div>
 </li>
 <li><p>From your command line or terminal, navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> directory.</p></li>
 <li><p>Make it easier to <a class="reference external" href="https://help.github.com/articles/github-glossary/#pull">push</a> your local work to others and <a class="reference external" href="https://help.github.com/articles/github-glossary/#pull">pull</a> others’ work to your local machine by entering at the command line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  $ cd OG-Core
-  OG-Core$ git remote add upstream https://github.com/PSLmodels/OG-Core.git
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">  $ </span><span class="nb">cd</span><span class="w"> </span>OG-Core
+<span class="go">  OG-Core$ git remote add upstream https://github.com/PSLmodels/OG-Core.git</span>
 </pre></div>
 </div>
 </li>
 <li><p>Create a conda environment with all of the necessary packages to
 execute the source code:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  OG-Core$ conda env create
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  OG-Core$ conda env create</span>
 </pre></div>
 </div>
 </li>
 <li><p>The prior command will create a conda environment called <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code>.
 Activate this environment as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  OG-Core$ conda activate ogcore-dev
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  OG-Core$ conda activate ogcore-dev</span>
 </pre></div>
 </div>
 </li>
 <li><p>To make sure that the <code class="docutils literal notranslate"><span class="pre">ogcore</span></code> Python package from the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository is installed and operational in your <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment, type the following command at your command prompt.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>OG-Core$ pip install -e .
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OG-Core$ pip install -e .</span>
 </pre></div>
 </div>
 </li>
@@ -518,21 +518,21 @@ repository by executing the following <strong>four</strong> Git commands:</p>
 <p>a. Tell Git to switch to the master branch in your local repo.
 Navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> directory and enter the
 following text at the command line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    OG-Core$ git checkout master
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">    OG-Core$ git checkout master</span>
 </pre></div>
 </div>
 <p>b. Download all of the content from the central <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repo:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    OG-Core$ git fetch upstream
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">    OG-Core$ git fetch upstream</span>
 </pre></div>
 </div>
 <p>c. Update your local master branch to contain the latest content of
 the central master branch using <a class="reference external" href="https://help.github.com/articles/github-glossary/#merge">merge</a>. This step ensures that
 you are working with the latest version of <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    OG-Core$ git merge upstream/master
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">    OG-Core$ git merge upstream/master</span>
 </pre></div>
 </div>
 <p>d. Push the updated master branch in your local repo to your GitHub repo:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    OG-Core$ git push origin master
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">    OG-Core$ git push origin master</span>
 </pre></div>
 </div>
 </li>
@@ -541,7 +541,7 @@ branches as a way to organize your projects. If you want to work on
 this documentation, for example, create a separate branch for that
 work. If you want to change an element of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> model, create
 a different branch for that project:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-Core$ git checkout -b [new-branch-name]
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> OG-Core$ git checkout -b [new-branch-name]</span>
 </pre></div>
 </div>
 </li>
@@ -549,27 +549,27 @@ a different branch for that project:</p>
 introduce bugs or degrade the accuracy of the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code>. To do
 this, run the following command from the command line from inside
 the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore</span></code> directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-Core/ogcore$  pytest
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> OG-Core/ogcore$  pytest</span>
 </pre></div>
 </div>
 <p>Note that running this full suite of tests may take more than 6 hours (depending on your hardware). To run the subset of tests that run on each pull request (and take about 40 minutes), use  <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">-m</span> <span class="pre">&quot;not</span> <span class="pre">local&quot;</span></code>.  If the tests do not pass, try to fix the issue by using the information provided by the error message. If this isn’t possible or doesn’t work, the core maintainers are here to help via a <a class="reference external" href="https://github.com/PSLmodels/OG-Core/issues">GitHub Issue</a>.</p>
 </li>
 <li><p>Now you’re ready to <a class="reference external" href="https://help.github.com/articles/github-glossary/#commit">commit</a> your changes to your local repo using the code below. The first line of code tells <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track a file. Use the <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code> command to find all the files you have edited, and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span></code> command to add each of the files that you would like <code class="docutils literal notranslate"><span class="pre">Git</span></code> to track. As a rule, do not add large files. If you’d like to add a file that is larger than 25 MB, please contact the other contributors and ask how to proceed. The second line of code commits your changes to your local repo and allows you to create a commit message. This should be a short description of your changes.</p>
 <p><em>Tip</em>: Committing often is a good idea as <code class="docutils literal notranslate"><span class="pre">Git</span></code> keeps a record of your changes. This means that you can always revert to a previous version of your work if you need to. Do this to commit:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-Core$ git add [filename]
- OG-Core$ git commit -m &quot;[description-of-your-commit]&quot;
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> OG-Core$ git add [filename]</span>
+<span class="go"> OG-Core$ git commit -m &quot;[description-of-your-commit]&quot;</span>
 </pre></div>
 </div>
 </li>
 <li><p>Periodically, make sure that the branch you created in step 2 is in sync with the changes other contributors are making to the central master branch by fetching upstream and merging upstream/master into your branch:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  OG-Core$ git fetch upstream
-  OG-Core$ git merge upstream/master
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  OG-Core$ git fetch upstream</span>
+<span class="go">  OG-Core$ git merge upstream/master</span>
 </pre></div>
 </div>
 <p>You may need to resolve conflicts that arise when another contributor changed the same section of code that you are changing. Feel free to ask other contributors for guidance if this happens to you. If you do need to fix a merge conflict, re-run the test suite afterwards (step 4.)</p>
 </li>
 <li><p>When you are ready for other team members to review your code, make your final commit and push your local branch to your remote repo:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> OG-Core$ git push origin [new-branch-name]
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> OG-Core$ git push origin [new-branch-name]</span>
 </pre></div>
 </div>
 </li>
@@ -583,12 +583,12 @@ the <code class="docutils literal notranslate"><span class="pre">OG-Core/ogcore<
 <p><code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> comes with an example run script <a class="reference external" href="https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py"><code class="docutils literal notranslate"><span class="pre">OG-Core/run_examples/run_ogcore_example.py</span></code></a>. Running this script will solve for the current-law baseline steady state and transition path solution of a calibrated version of an economy as well as a simple reform (increasing the corporate income tax rate) version of the model with its corresponding steady-state and transition path solution. This example script saves the full set of model output from both baseline and reform runs of the model. It also creates a large number of commonly used analytical figures and tables. This example run script is a nice foundation for using the model to run your own customized simulations. Below are the steps to running the example script.</p>
 <ol class="arabic">
 <li><p>Navigate to your local <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository in the terminal of your local machine and activate the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment. If you have not created the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment, follow steps 1-11 in Section <a class="reference internal" href="#sec-setupgit"><span class="std std-ref">Setup Git</span></a> above.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>OG-Core$ conda activate ogcore-dev
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">OG-Core$ conda activate ogcore-dev</span>
 </pre></div>
 </div>
 </li>
 <li><p>Run the Python example script <a class="reference external" href="https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py"><code class="docutils literal notranslate"><span class="pre">OG-Core/run_examples/run_ogcore_example.py</span></code></a> by entering the following command in your terminal in your local machine <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> repository with the <code class="docutils literal notranslate"><span class="pre">ogcore-dev</span></code> conda environment activated.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ogcore-dev) OG-Core$ python ./run_examples/run_ogcore_example.py
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp gp-VirtualEnv">(ogcore-dev)</span> <span class="go">OG-Core$ python ./run_examples/run_ogcore_example.py</span>
 </pre></div>
 </div>
 </li>

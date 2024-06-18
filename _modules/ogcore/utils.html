@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
@@ -51,7 +51,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -734,9 +734,9 @@ document.write(`
 
 <span class="sd">    Notes:</span>
 <span class="sd">        The identifying assumptions for quadratic are the following:</span>
-<span class="sd">            1. `x1` is the value at time `t=0: x1 = c</span>
+<span class="sd">            1. `x1` is the value at time `t=0: x1 = c`</span>
 <span class="sd">            2. `xT` is the value at time `t=T-1: xT = a*(T-1)^2 + b*(T-1) + c`</span>
-<span class="sd">            3. the slope of the path at `t=T-1` is 0: 0 = 2*a*(T-1) + b`</span>
+<span class="sd">            3. the slope of the path at `t=T-1` is 0: `0 = 2*a*(T-1) + b`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
@@ -1001,6 +1001,8 @@ document.write(`
         <span class="k">return</span> <span class="n">value</span></div>
 
 
+<div class="viewcode-block" id="Inequality.top_share">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.top_share">[docs]</a>
     <span class="k">def</span> <span class="nf">top_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pctile</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the top X% share</span>
@@ -1021,6 +1023,7 @@ document.write(`
         <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">pctile_share</span></div>
+</div>
 
 
 

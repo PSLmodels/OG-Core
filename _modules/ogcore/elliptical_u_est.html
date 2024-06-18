@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
@@ -51,7 +51,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -440,7 +440,7 @@ document.write(`
 
 <span class="sd">    Args:</span>
 <span class="sd">        b (scalar):  scale parameter of elliptical utility function</span>
-<span class="sd">        k (scalar):  shift parametr of elliptical utility function</span>
+<span class="sd">        k (scalar):  shift parameter of elliptical utility function</span>
 <span class="sd">        upsilon (scalar):  curvature parameter of elliptical utility</span>
 <span class="sd">            function</span>
 <span class="sd">        l_tilde (scalar): maximum amount of labor supply</span>
@@ -549,48 +549,29 @@ document.write(`
 <span class="k">def</span> <span class="nf">estimation</span><span class="p">(</span><span class="n">frisch</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function estimates the parameters of an elliptical utility</span>
-<span class="sd">    funcion that fits a constant frisch elasticty function.</span>
+<span class="sd">    function that fits a constant frisch elasticity function.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        frisch (scalar):  Frisch elasticity of labor supply</span>
 <span class="sd">        l_tilde (scalar): maximum amount of labor supply</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        b_MU_til (scalar): estimated b from ellipitical utility function</span>
-<span class="sd">        upsilon_MU_til (scalar): estimated upsilon from ellipitical</span>
+<span class="sd">        b_MU_til (scalar): estimated b from elliptical utility function</span>
+<span class="sd">        upsilon_MU_til (scalar): estimated upsilon from elliptical</span>
 <span class="sd">            utility function</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    ------------------------------------------------------------------------</span>
-<span class="sd">    Set parameters</span>
-<span class="sd">    ------------------------------------------------------------------------</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set parameters</span>
     <span class="n">theta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">frisch</span>
     <span class="n">N</span> <span class="o">=</span> <span class="mi">101</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    ------------------------------------------------------------------------</span>
-<span class="sd">    Estimate parameters of ellipitical utility function</span>
-<span class="sd">    ------------------------------------------------------------------------</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Estimate parameters of elliptical utility function</span>
     <span class="c1"># Initial guesses</span>
     <span class="n">b_init</span> <span class="o">=</span> <span class="mf">0.6701</span>
     <span class="c1"># k_init = -.6548</span>
     <span class="n">upsilon_init</span> <span class="o">=</span> <span class="mf">2.3499</span>
     <span class="c1"># don&#39;t estimate near edge of range of labor supply</span>
     <span class="n">n_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
-
-    <span class="c1"># Estimating using levels of utility function</span>
-    <span class="c1"># ellipse_params_init = np.array([b_init, k_init, upsilon_init])</span>
-    <span class="c1"># ellipse_objs = (theta, l_tilde, n_grid)</span>
-    <span class="c1"># bnds = ((None, None), (None, None), (1e-12, None))</span>
-    <span class="c1"># ellipse_params_til = opt.minimize(sumsq, ellipse_params_init,</span>
-    <span class="c1">#                     args=(ellipse_objs), method=&quot;L-BFGS-B&quot;, bounds=bnds,</span>
-    <span class="c1">#                     tol=1e-15)</span>
-    <span class="c1"># (b_til, k_til, upsilon_til) = ellipse_params_til.x</span>
-
-    <span class="c1"># elapsed_time = time.clock() - start_time</span>
 
     <span class="c1"># Estimate params using marginal utilities</span>
     <span class="n">ellipse_MU_params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b_init</span><span class="p">,</span> <span class="n">upsilon_init</span><span class="p">])</span>

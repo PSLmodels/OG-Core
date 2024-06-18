@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
@@ -52,7 +52,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -440,10 +440,10 @@ document.write(`
 <p>Domestic household wealth <span class="math notranslate nohighlight">\(W^d_{t}=B_{t}\)</span> and foreign ownership of domestic assets <span class="math notranslate nohighlight">\(W^f_{t}\)</span>, both in terms of the numeraire good, are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.</p>
 <p>Foreign demand for government bonds is specified in section <a class="reference internal" href="market_clearing.html#secmarkclrmktclr-g"><span class="std std-ref">Government bond market clearing</span></a> of the <a class="reference internal" href="market_clearing.html#chap-markclr"><span class="std std-ref">Market Clearing</span></a> chapter:</p>
 <div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad2">
-<span class="eqno">(90)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Link to this equation">#</a></span>\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D, t}(D_{t+1} - D_{t}) \quad\forall t\]</div>
+<span class="eqno">(89)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Link to this equation">#</a></span>\[  D^{f}_{t+1} = D^{f}_{t} + \zeta_{D, t}(D_{t+1} - D_{t}) \quad\forall t\]</div>
 <p>This leaves domestic investors to buy up the residual amount of government debt:</p>
-<div class="math notranslate nohighlight" id="equation-eqmarkclr-zetad2">
-<span class="eqno">(90)<a class="headerlink" href="#equation-eqmarkclr-zetad2" title="Link to this equation">#</a></span>\[  D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t\]</div>
+<div class="math notranslate nohighlight" id="equation-eqmarkclr-domesticdebt">
+<span class="eqno">(90)<a class="headerlink" href="#equation-eqmarkclr-domesticdebt" title="Link to this equation">#</a></span>\[  D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t\]</div>
 <p>We assume that debt dominates the capital markets, such that domestic investor demand for capital, <span class="math notranslate nohighlight">\(K^{d}_{t}\)</span> is given as:</p>
 <div class="math notranslate nohighlight" id="equation-eq-domestic-cap-demand">
 <span class="eqno">(91)<a class="headerlink" href="#equation-eq-domestic-cap-demand" title="Link to this equation">#</a></span>\[  K^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t\]</div>
