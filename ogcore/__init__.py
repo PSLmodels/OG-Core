@@ -2,6 +2,7 @@
 Specify what is available to import from the ogcore package.
 """
 
+import ogcore
 from ogcore.SS import *
 from ogcore.TPI import *
 from ogcore.aggregates import *
