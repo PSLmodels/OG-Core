@@ -1326,7 +1326,7 @@ def run_TPI(p, client=None):
         )
 
     if (
-        np.any(np.absolute(RC_error) >= p.mindist_TPI * 10)
+        np.any(np.absolute(RC_error) >= p.RC_TPI)
     ) and ENFORCE_SOLUTION_CHECKS:
         raise RuntimeError(
             "Transition path equlibrium not found " + "(RC_error)"
