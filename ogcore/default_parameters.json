@@ -3340,6 +3340,42 @@
             }
         }
     },
+    "RC_SS": {
+        "title": "Tolerance for the resource constraint in the steady state solution",
+        "description": "Tolerance for the resource constraint in the steady state solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1e-09
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 0.001
+            }
+        }
+    },
+    "RC_TPI": {
+        "title": "Tolerance for the resource constraint in the time path solution",
+        "description": "Tolerance for the resource constraint in the time path solution.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1e-05
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 0.01
+            }
+        }
+    },
     "reform_use_baseline_solution":{
         "title": "Whether or not the baseline SS solution is used for starting values when solving the reform",
         "description": "Whether or not the baseline SS solution is used for starting values when solving the reform.",

@@ -927,7 +927,7 @@ def SS_solver(
             + " budget"
         )
 
-    if ENFORCE_SOLUTION_CHECKS and (max(np.absolute(RC)) > p.mindist_SS):
+    if ENFORCE_SOLUTION_CHECKS and (max(np.absolute(RC)) > p.RC_SS):
         print("Resource Constraint Difference:", RC)
         err = "Steady state aggregate resource constraint not satisfied"
         raise RuntimeError(err)
