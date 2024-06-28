@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 import pytest
-from ogcore import tax
+from ogcore import pensions
 from ogcore.parameters import Specifications
 
 
@@ -68,5 +68,5 @@ def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
     p.e = np.tile(
         np.reshape(p.e, (1, p.e.shape[0], p.e.shape[1])), (p.T, 1, 1)
     )
-    theta = tax.replacement_rate_vals(n, w, factor, j, p)
+    theta = pensions.replacement_rate_vals(n, w, factor, j, p)
     assert np.allclose(theta, expected)
