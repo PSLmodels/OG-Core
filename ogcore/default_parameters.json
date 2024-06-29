@@ -2920,6 +2920,120 @@
             }
         }
     },
+    "tau_p": {
+        "title": "TODO: fill in description",
+        "description": "TODO: fill in description",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "k_ret": {
+        "title": "TODO: fill in description",
+        "description": "TODO: fill in description",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "rep_rate_py": {
+        "title": "TODO: fill in description",
+        "description": "TODO: fill in description",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "vpoint": {
+        "title": "TODO: fill in description",
+        "description": "TODO: fill in description",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "last_career_years": {
+        "title": "Number of years used to compute TODO: complete",
+        "description": "Number of years used to compute TODO: complete.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "TODO: add note about how compute works",
+        "type": "int",
+        "value": [
+            {
+                "value": 10
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": "S"
+            }
+        }
+    },
+    "yr_contr": {
+        "title": "Number of years used to compute TODO: complete",
+        "description": "Number of years used to compute TODO: complete.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "TODO: add note about how compute works",
+        "type": "int",
+        "value": [
+            {
+                "value": 40
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": "retirement_age"
+            }
+        }
+    },
     "AIME_num_years": {
         "title": "Number of years used to compute average index monthly earnings (AIME)",
         "description": "Number of years used to compute average index monthly earnings (AIME).",
