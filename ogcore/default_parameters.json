@@ -2897,6 +2897,29 @@
             }
         }
     },
+    "pension_system": {
+        "title": "Pension system",
+        "description": "Pension system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "str",
+        "value": [
+                {
+                    "value": "US-Style Social Securit"
+                }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "US-Style Social Security",
+                    "Defined Benefits",
+                    "Notional Defined Contribution",
+                    "Points System"
+                ]
+            }
+        }
+    },
     "AIME_num_years": {
         "title": "Number of years used to compute average index monthly earnings (AIME)",
         "description": "Number of years used to compute average index monthly earnings (AIME).",
