@@ -73,18 +73,20 @@ def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
 
 
 p = Specifications()
-p.update_specifications({
-    "S": 7,
-    "retirement_age": 4,
-    "last_career_yrs": 3,
-    "yr_contr": 4,
-    "rep_rate_py":  0.2
-})
+# p.update_specifications({
+#     "S": 7,
+#     "rep_rate_py":  0.2
+# })
+p.S = 7
+p.rep_rate_py = 0.2
+p.retirement_age = 4
+p.last_career_yrs = 3
+p.yr_contr = 4
+p.g_y = 0.03
 j = 1
 w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
-g_y = 0.03
 L_inc_avg = np.zeros(0)
 L_inc_avg_s = np.zeros(p.last_career_yrs)
 DB_s = np.zeros(p.retirement_age)
@@ -104,7 +106,7 @@ def test_DB_1dim_loop(args, DB_loop_expected):
 
     w, e, n, S_ret, S, g_y, L_inc_avg_s, L_inc_avg, DB_s, DB = args
     DB_loop = pensions.DB_1dim_loop(
-        w, e, n, S_ret, S, g_y, L_inc_avg_s, L_inc_avg, DB_s, DB,
-        p.last_career_yrs, p.rep_rate,
+        w, e, n, S_ret, S, g_y, L_inc_avg_s, L_inc_avg, DB,
+        p.last_career_yrs,
         p.rep_rate_py, p.yr_contr)
     assert (np.allclose(DB_loop, DB_loop_expected))
