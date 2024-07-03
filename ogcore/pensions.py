@@ -197,14 +197,14 @@ def DB_amount(w, e, n, j, p):
         w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
 
-        DB_s = np.zeros(p.retirement_age)
+        DB_s = np.zeros(p.retire)
         DB = np.zeros(p.S)
         # TODO: we set a rep_rate_py in params, but not rep_rate.  What is it???
         DB = DB_1dim_loop(
             w_S,
             p.e[:, j],
             n_S,
-            p.retirement_age,
+            p.retire,
             p.S,
             p.g_y,
             L_inc_avg_s,
@@ -219,7 +219,7 @@ def DB_amount(w, e, n, j, p):
 
     else:
         if np.ndim(n) == 1:
-            DB_s = np.zeros(p.retirement_age)
+            DB_s = np.zeros(p.retire)
             DB = np.zeros(p.S)
             DB = DB_1dim_loop(
                 w,
@@ -238,14 +238,14 @@ def DB_amount(w, e, n, j, p):
             )
 
         elif np.ndim(n) == 2:
-            DB_sj = np.zeros((p.retirement_age, p.J))
+            DB_sj = np.zeros((p.retire, p.J))
             DB = np.zeros((p.S, p.J))
             L_inc_avg_sj = np.zeros((p.last_career_yrs, p.J))
             DB = DB_2dim_loop(
                 w,
                 e,
                 n,
-                p.retirement_age,
+                p.retire,
                 p.S,
                 p.g_y,
                 L_inc_avg_sj,
@@ -553,7 +553,7 @@ def delta_ret(self, r, Y, p):
 
 @numba.jit
 def deriv_DB_loop(
-    w, e, S, S_ret, per_rmn, d_theta, last_career_yrs, rep_rate_py, yr_contr
+    w, e, S, S_ret, per_rmn, last_career_yrs, rep_rate_py, yr_contr
 ):
     d_theta = np.zeros(per_rmn)
     num_per_retire = S - S_ret
@@ -626,9 +626,9 @@ def PS_2dim_loop(w, e, n, S_ret, S, J, g_y, vpoint, factor, L_inc_avg_sj, PS):
             L_inc_avg_sj[s, :] = (
                 w[s] / np.exp(g_y * (u - s)) * e[s, :] * n[s, :]
             )
-        PS[u, :] = (
-            MONTHS_IN_A_YEAR * vpoint * L_inc_avg_sj.sum(axis=0)
-        ) / (factor * THOUSAND)
+        PS[u, :] = (MONTHS_IN_A_YEAR * vpoint * L_inc_avg_sj.sum(axis=0)) / (
+            factor * THOUSAND
+        )
 
     return PS
 

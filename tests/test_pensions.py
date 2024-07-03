@@ -79,7 +79,7 @@ p = Specifications()
 # })
 p.S = 7
 p.rep_rate_py = 0.2
-p.retirement_age = 4
+p.retire = 4
 p.last_career_yrs = 3
 p.yr_contr = 4
 p.g_y = 0.03
@@ -89,24 +89,136 @@ e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 L_inc_avg = np.zeros(0)
 L_inc_avg_s = np.zeros(p.last_career_yrs)
-DB_s = np.zeros(p.retirement_age)
 DB = np.zeros(p.S)
-DB_loop_expected1 = np.array([0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065])
-args1 = w, e, n, p.retirement_age, p.S, p.g_y, L_inc_avg_s, L_inc_avg, DB_s, DB
+DB_loop_expected1 = np.array(
+    [0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065]
+)
+args1 = (
+    w,
+    e,
+    n,
+    p.retire,
+    p.S,
+    p.g_y,
+    L_inc_avg_s,
+    L_inc_avg,
+    DB,
+    p.last_career_yrs,
+    p.rep_rate_py,
+    p.yr_contr,
+)
 
 test_data = [(args1, DB_loop_expected1)]
-#             (classes2, args2, NDC_expected2)]
 
-@pytest.mark.parametrize('args,DB_loop_expected', test_data,
-                         ids=['SS/Complete'])
+
+@pytest.mark.parametrize(
+    "args,DB_loop_expected", test_data, ids=["SS/Complete"]
+)
 def test_DB_1dim_loop(args, DB_loop_expected):
     """
     Test of the pensions.DB_1dim_loop() function.
     """
 
-    w, e, n, S_ret, S, g_y, L_inc_avg_s, L_inc_avg, DB_s, DB = args
+    (
+        w,
+        e,
+        n,
+        S_ret,
+        S,
+        g_y,
+        L_inc_avg_s,
+        L_inc_avg,
+        DB,
+        last_career_yrs,
+        rep_rate_py,
+        yr_contr,
+    ) = args
     DB_loop = pensions.DB_1dim_loop(
-        w, e, n, S_ret, S, g_y, L_inc_avg_s, L_inc_avg, DB,
-        p.last_career_yrs,
-        p.rep_rate_py, p.yr_contr)
-    assert (np.allclose(DB_loop, DB_loop_expected))
+        w,
+        e,
+        n,
+        S_ret,
+        S,
+        g_y,
+        L_inc_avg_s,
+        L_inc_avg,
+        DB,
+        last_career_yrs,
+        rep_rate_py,
+        yr_contr,
+    )
+    assert np.allclose(DB_loop, DB_loop_expected)
+
+
+p = Specifications()
+p.S = 7
+p.retire = 4
+per_rmn = p.S
+p.last_career_yrs = 3
+p.yr_contr = p.retire
+p.rep_rate_py = 0.2
+p.g_y = 0.03
+w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
+e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+deriv_DB_loop_expected = np.array(
+    [0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0]
+)
+d_theta_empty = np.zeros_like(w)
+args3 = (
+    w,
+    e,
+    p.S,
+    p.retire,
+    per_rmn,
+    p.last_career_yrs,
+    p.rep_rate_py,
+    p.yr_contr,
+)
+
+test_data = [(args3, deriv_DB_loop_expected)]
+
+
+@pytest.mark.parametrize("args,deriv_DB_loop_expected", test_data)
+def test_deriv_DB_loop(args, deriv_DB_loop_expected):
+    """
+    Test of the pensions.deriv_DB_loop() function.
+    """
+    (w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contr) = args
+    deriv_DB_loop = pensions.deriv_DB_loop(
+        w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contr
+    )
+
+    assert np.allclose(deriv_DB_loop, deriv_DB_loop_expected)
+
+
+p = Specifications()
+p.S = 7
+p.retire = 4
+p.vpoint = 0.4
+w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
+e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+p.g_y = 0.03
+factor = 2
+d_theta_empty = np.zeros_like(w)
+deriv_PS_loop_expected1 = np.array(
+    [0.003168, 0.0029304, 0.0026136, 0.002088, 0, 0, 0]
+)
+args3 = (w, e, p.S, p.retire, per_rmn, d_theta_empty, p.vpoint, factor)
+
+test_data = [(args3, deriv_PS_loop_expected1)]
+
+
+@pytest.mark.parametrize(
+    "args,deriv_PS_loop_expected", test_data, ids=["SS/Complete"]
+)
+def test_deriv_PS_loop(args, deriv_PS_loop_expected):
+    """
+    Test of the pensions.deriv_PS_loop() function.
+    """
+    (w, e, S, retire, per_rmn, d_theta_empty, vpoint, factor) = args
+
+    deriv_PS_loop = pensions.deriv_PS_loop(
+        w, e, S, retire, per_rmn, d_theta_empty, vpoint, factor
+    )
+
+    assert np.allclose(deriv_PS_loop, deriv_PS_loop_expected)
