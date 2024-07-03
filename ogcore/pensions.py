@@ -3,6 +3,10 @@ import numpy as np
 import numba
 from ogcore import utils
 
+# set constants
+MONTHS_IN_A_YEAR = 12
+THOUSAND = 1000
+
 
 def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     """
@@ -208,7 +212,6 @@ def DB_amount(w, e, n, j, p):
             DB_s,
             DB,
             p.last_career_yrs,
-            p.rep_rate,
             p.rep_rate_py,
             p.yr_contr,
         )
@@ -230,7 +233,6 @@ def DB_amount(w, e, n, j, p):
                 DB_s,
                 DB,
                 p.last_career_yrs,
-                p.rep_rate,
                 p.rep_rate_py,
                 p.yr_contr,
             )
@@ -251,7 +253,6 @@ def DB_amount(w, e, n, j, p):
                 DB_sj,
                 DB,
                 p.last_career_yrs,
-                p.rep_rate,
                 p.rep_rate_py,
                 p.yr_contr,
             )
@@ -264,13 +265,13 @@ def NDC_amount(w, e, n, r, Y, j, p):
     Calculate public pension from a notional defined contribution
     system.
     """
-    self.get_g_ndc(
+    g_ndc_amount = g_ndc(
         r,
         Y,
         p.g_n_SS,
         p.g_y,
     )
-    self.get_delta_ret(r, Y, p)
+    delta_ret_amount = delta_ret(r, Y, p)
 
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
@@ -287,9 +288,9 @@ def NDC_amount(w, e, n, r, Y, j, p):
             p.S_ret,
             p.S,
             p.g_y,
-            self.tau_p,
-            self.g_ndc,
-            self.delta_ret,
+            p.tau_p,
+            g_ndc_amount,
+            delta_ret_amount,
             NDC_s,
             NDC,
         )
@@ -306,9 +307,9 @@ def NDC_amount(w, e, n, r, Y, j, p):
                 p.S_ret,
                 p.S,
                 p.g_y,
-                self.tau_p,
-                self.g_ndc,
-                self.delta_ret,
+                p.tau_p,
+                g_ndc_amount,
+                delta_ret_amount,
                 NDC_s,
                 NDC,
             )
@@ -322,9 +323,9 @@ def NDC_amount(w, e, n, r, Y, j, p):
                 p.S_ret,
                 p.S,
                 p.g_y,
-                self.tau_p,
-                self.g_ndc,
-                self.delta_ret,
+                p.tau_p,
+                g_ndc_amount,
+                delta_ret_amount,
                 NDC_sj,
                 NDC,
             )
@@ -342,42 +343,42 @@ def PS_amount(w, e, n, j, factor, p):
         w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
         L_inc_avg_s = np.zeros(p.S_ret)
-        PPB = np.zeros(p.S)
-        PPB = PPB_1dim_loop(
+        PS = np.zeros(p.S)
+        PS = PS_1dim_loop(
             w_S,
             p.emat[:, j],
             n_S,
             p.S_ret,
             p.S,
             p.g_y,
-            self.vpoint,
+            p.vpoint,
             factor,
             L_inc_avg_s,
-            PPB,
+            PS,
         )
-        PPB = PPB[-per_rmn:]
+        PS = PS[-per_rmn:]
 
     else:
         if np.ndim(n) == 1:
             L_inc_avg_s = np.zeros(p.S_ret)
-            PPB = np.zeros(p.S)
-            PPB = PPB_1dim_loop(
+            PS = np.zeros(p.S)
+            PS = PS_1dim_loop(
                 w,
                 e,
                 n,
                 p.S_ret,
                 p.S,
                 p.g_y,
-                self.vpoint,
+                p.vpoint,
                 factor,
                 L_inc_avg_s,
-                PPB,
+                PS,
             )
 
         elif np.ndim(n) == 2:
             L_inc_avg_sj = np.zeros((p.S_ret, p.J))
-            PPB = np.zeros((p.S, p.J))
-            PPB = PPB_2dim_loop(
+            PS = np.zeros((p.S, p.J))
+            PS = PS_2dim_loop(
                 w,
                 e,
                 n,
@@ -385,16 +386,16 @@ def PS_amount(w, e, n, j, factor, p):
                 p.S,
                 p.J,
                 p.g_y,
-                self.vpoint,
+                p.vpoint,
                 factor,
                 L_inc_avg_sj,
-                PPB,
+                PS,
             )
 
-    return PPB
+    return PS
 
 
-def deriv_theta(r, w, e, Y, per_rmn, factor):
+def deriv_theta(r, w, e, Y, per_rmn, factor, p):
     """
     Change in pension benefits for another unit of labor supply for
     pension system selected
@@ -421,8 +422,8 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
         d_theta = np.zeros(per_rmn)
     else:
         d_theta_empty = np.zeros(per_rmn)
-        delta_ret = get_delta_ret(r, Y)
-        g_ndc = get_g_ndc(r, Y, p.g_n_SS, p.g_y)
+        delta_ret_amount = delta_ret(r, Y)
+        g_ndc_amount = g_ndc(r, Y, p.g_n_SS, p.g_y)
         d_theta = deriv_NDC_loop(
             w,
             e,
@@ -430,9 +431,9 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
             p.S,
             p.S_ret,
             p.g_y,
-            self.tau_p,
-            self.g_ndc,
-            self.delta_ret,
+            p.tau_p,
+            g_ndc_amount,
+            delta_ret_amount,
             d_theta_empty,
         )
 
@@ -525,11 +526,10 @@ def g_dir(r, Y, g_n, g_y, p):
     """
     if p.dir_growth_rate == "r":
         g_dir = r
-    elif self.dir_growth_rate == "Curr GDP":
+    elif p.dir_growth_rate == "Curr GDP":
         g_dir = (Y[1:] - Y[:-1]) / Y[:-1]
-    elif self.dir_growth_rate == "LR GDP":
+    elif p.dir_growth_rate == "LR GDP":
         g_dir = g_y + g_n
-    #            self.g_dir = 0.015
     else:
         g_dir = g_y + g_n
 
@@ -546,7 +546,7 @@ def delta_ret(self, r, Y, p):
     dir_delta = delta_ret_loop(
         p.S, p.S_ret, surv_rates, g_dir_value, dir_delta_s_empty
     )
-    delta_ret = 1 / (dir_delta - self.k_ret)
+    delta_ret = 1 / (dir_delta - p.k_ret)
 
     return delta_ret
 
@@ -568,8 +568,8 @@ def deriv_DB_loop(
 def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
     # TODO: do we need these constants or can we scale vpoint to annual??
     for s in range((S - per_rmn), S_ret):
-        d_theta[s] = (w[s] * e[s] * vpoint * constants.MONTHS_IN_A_YEAR) / (
-            factor * constants.THOUSAND
+        d_theta[s] = (w[s] * e[s] * vpoint * MONTHS_IN_A_YEAR) / (
+            factor * THOUSAND
         )
 
     return d_theta
@@ -606,31 +606,31 @@ def delta_ret_loop(S, S_ret, surv_rates, g_dir, dir_delta_s):
 
 
 @numba.jit
-def PS_1dim_loop(w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PPB):
+def PS_1dim_loop(w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS):
     # TODO: do we need these constants or can we scale vpoint to annual??
     for u in range(S_ret, S):
         for s in range(S_ret):
             L_inc_avg_s[s] = w[s] / np.exp(g_y * (u - s)) * e[s] * n[s]
-        PPB[u] = (constants.MONTHS_IN_A_YEAR * vpoint * L_inc_avg_s.sum()) / (
-            factor * constants.THOUSAND
+        PS[u] = (MONTHS_IN_A_YEAR * vpoint * L_inc_avg_s.sum()) / (
+            factor * THOUSAND
         )
 
-    return PPB
+    return PS
 
 
 @numba.jit
-def PS_2dim_loop(w, e, n, S_ret, S, J, g_y, vpoint, factor, L_inc_avg_sj, PPB):
+def PS_2dim_loop(w, e, n, S_ret, S, J, g_y, vpoint, factor, L_inc_avg_sj, PS):
     # TODO: do we need these constants or can we scale vpoint to annual??
     for u in range(S_ret, S):
         for s in range(S_ret):
             L_inc_avg_sj[s, :] = (
                 w[s] / np.exp(g_y * (u - s)) * e[s, :] * n[s, :]
             )
-        PPB[u, :] = (
-            constants.MONTHS_IN_A_YEAR * vpoint * L_inc_avg_sj.sum(axis=0)
-        ) / (factor * constants.THOUSAND)
+        PS[u, :] = (
+            MONTHS_IN_A_YEAR * vpoint * L_inc_avg_sj.sum(axis=0)
+        ) / (factor * THOUSAND)
 
-    return PPB
+    return PS
 
 
 @numba.jit
@@ -645,7 +645,6 @@ def DB_1dim_loop(
     L_inc_avg,
     DB,
     last_career_yrs,
-    rep_rate,
     rep_rate_py,
     yr_contr,
 ):
@@ -674,7 +673,6 @@ def DB_2dim_loop(
     L_inc_avg,
     DB,
     last_career_yrs,
-    rep_rate,
     rep_rate_py,
     yr_contr,
 ):
