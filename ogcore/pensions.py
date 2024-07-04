@@ -445,18 +445,15 @@ def deriv_DB(w, e, per_rmn, p):
     Change in DB pension benefits for another unit of labor supply
     """
 
-    if per_rmn < (p.S - p.S_ret + 1):
+    if per_rmn < (p.S - p.retire + 1):
         d_theta = np.zeros(p.S)
     else:
-        d_theta_empty = np.zeros(p.S)
         d_theta = deriv_DB_loop(
             w,
             e,
             p.S,
-            p.S_ret,
+            p.retire,
             per_rmn,
-            p.g_y,
-            d_theta_empty,
             p.last_career_yrs,
             p.rep_rate_py,
             p.yr_contr,
