@@ -279,13 +279,13 @@ def NDC_amount(w, e, n, r, Y, j, p):
         w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
 
-        NDC_s = np.zeros(p.S_ret)
+        NDC_s = np.zeros(p.retire)
         NDC = np.zeros(p.S)
         NDC = NDC_1dim_loop(
             w_S,
             p.emat[:, j],
             n_S,
-            p.S_ret,
+            p.retire,
             p.S,
             p.g_y,
             p.tau_p,
@@ -298,13 +298,13 @@ def NDC_amount(w, e, n, r, Y, j, p):
 
     else:
         if np.ndim(n) == 1:
-            NDC_s = np.zeros(p.S_ret)
+            NDC_s = np.zeros(p.retire)
             NDC = np.zeros(p.S)
             NDC = NDC_1dim_loop(
                 w,
                 e,
                 n,
-                p.S_ret,
+                p.retire,
                 p.S,
                 p.g_y,
                 p.tau_p,
@@ -314,13 +314,13 @@ def NDC_amount(w, e, n, r, Y, j, p):
                 NDC,
             )
         elif np.ndim(n) == 2:
-            NDC_sj = np.zeros((p.S_ret, p.J))
+            NDC_sj = np.zeros((p.retire, p.J))
             NDC = np.zeros((p.S, p.J))
             NDC = NDC_2dim_loop(
                 w,
                 e,
                 n,
-                p.S_ret,
+                p.retire,
                 p.S,
                 p.g_y,
                 p.tau_p,
@@ -342,13 +342,13 @@ def PS_amount(w, e, n, j, factor, p):
         per_rmn = n.shape[0]
         w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
-        L_inc_avg_s = np.zeros(p.S_ret)
+        L_inc_avg_s = np.zeros(p.retire)
         PS = np.zeros(p.S)
         PS = PS_1dim_loop(
             w_S,
             p.emat[:, j],
             n_S,
-            p.S_ret,
+            p.retire,
             p.S,
             p.g_y,
             p.vpoint,
@@ -360,13 +360,13 @@ def PS_amount(w, e, n, j, factor, p):
 
     else:
         if np.ndim(n) == 1:
-            L_inc_avg_s = np.zeros(p.S_ret)
+            L_inc_avg_s = np.zeros(p.retire)
             PS = np.zeros(p.S)
             PS = PS_1dim_loop(
                 w,
                 e,
                 n,
-                p.S_ret,
+                p.retire,
                 p.S,
                 p.g_y,
                 p.vpoint,
@@ -376,13 +376,13 @@ def PS_amount(w, e, n, j, factor, p):
             )
 
         elif np.ndim(n) == 2:
-            L_inc_avg_sj = np.zeros((p.S_ret, p.J))
+            L_inc_avg_sj = np.zeros((p.retire, p.J))
             PS = np.zeros((p.S, p.J))
             PS = PS_2dim_loop(
                 w,
                 e,
                 n,
-                p.S_ret,
+                p.retire,
                 p.S,
                 p.J,
                 p.g_y,
@@ -418,7 +418,7 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
     """
     if per_rmn == 1:
         d_theta = 0
-    elif per_rmn < (p.S - p.S_ret + 1):
+    elif per_rmn < (p.S - p.retire + 1):
         d_theta = np.zeros(per_rmn)
     else:
         d_theta_empty = np.zeros(per_rmn)
@@ -429,7 +429,7 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
             e,
             per_rmn,
             p.S,
-            p.S_ret,
+            p.retire,
             p.g_y,
             p.tau_p,
             g_ndc_amount,
@@ -466,12 +466,12 @@ def deriv_PS(w, e, per_rmn, factor, p):
     Change in points system pension benefits for another unit of labor supply
     """
 
-    if per_rmn < (p.S - p.S_ret + 1):
+    if per_rmn < (p.S - p.retire + 1):
         d_theta = np.zeros(p.S)
     else:
         d_theta_empty = np.zeros(p.S)
         d_theta = deriv_PS_loop(
-            w, e, p.S, p.S_ret, per_rmn, p.g_y, d_theta_empty, p.vpoint, factor
+            w, e, p.S, p.retire, per_rmn, d_theta_empty, p.vpoint, factor
         )
         d_theta = d_theta[-per_rmn:]
 
@@ -538,10 +538,10 @@ def delta_ret(self, r, Y, p):
     Compute conversion coefficient for the NDC pension amount
     """
     surv_rates = 1 - p.mort_rates_SS
-    dir_delta_s_empty = np.zeros(p.S - p.S_ret + 1)
+    dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
     g_dir_value = g_dir(r, Y, p.g_n_SS, p.g_y)
     dir_delta = delta_ret_loop(
-        p.S, p.S_ret, surv_rates, g_dir_value, dir_delta_s_empty
+        p.S, p.retire, surv_rates, g_dir_value, dir_delta_s_empty
     )
     delta_ret = 1 / (dir_delta - p.k_ret)
 

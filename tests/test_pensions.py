@@ -237,8 +237,7 @@ w_ddb1 = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb1 = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 per_rmn = n_ddb1.shape[0]
 d_theta_empty = np.zeros_like(per_rmn)
-deriv_DB_expected1 = np.array(
-    [0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0])
+deriv_DB_expected1 = np.array([0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0])
 args_ddb1 = (w_ddb1, e_ddb1, per_rmn, p)
 
 #############non-zero d_theta: case 2############
@@ -254,17 +253,17 @@ w_ddb1 = np.array([1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb1 = np.array([1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 per_rmn = n_ddb2.shape[0]
 d_theta_empty = np.zeros_like(per_rmn)
-deriv_DB_expected2 = np.array(
-    [0.6105, 0.5445, 0.435, 0.43935, 0.0, 0.0])
+deriv_DB_expected2 = np.array([0.6105, 0.5445, 0.435, 0.43935, 0.0, 0.0])
 args_ddb2 = (w_ddb1, e_ddb1, per_rmn, p2)
 
-test_data = [(args_ddb1, deriv_DB_expected1),
-             (args_ddb2, deriv_DB_expected2)]
+test_data = [(args_ddb1, deriv_DB_expected1), (args_ddb2, deriv_DB_expected2)]
 
 
-@pytest.mark.parametrize('args,deriv_DB_expected', test_data,
-                         ids=['non-zero d_theta: case 1',
-                              'non-zero d_theta: case 2'])
+@pytest.mark.parametrize(
+    "args,deriv_DB_expected",
+    test_data,
+    ids=["non-zero d_theta: case 1", "non-zero d_theta: case 2"],
+)
 def test_deriv_DB(args, deriv_DB_expected):
     """
     Test of the pensions.deriv_DB() function.
@@ -272,4 +271,52 @@ def test_deriv_DB(args, deriv_DB_expected):
     (w, e, per_rmn, p) = args
     deriv_DB = pensions.deriv_DB(w, e, per_rmn, p)
 
-    assert (np.allclose(deriv_DB, deriv_DB_expected))
+    assert np.allclose(deriv_DB, deriv_DB_expected)
+
+
+#############PS deriv SS or complete lifetimes############
+p = Specifications()
+p.S = 7
+p.retire = 4
+p.vpoint = 0.4
+omegas = 1 / (p.S) * np.ones(p.S)
+p.omega_SS = omegas
+p.g_y = 0.03
+per_rmn_dps1 = p.S
+factor = 2
+w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
+e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+deriv_PS_expected1 = np.array(
+    [0.003168, 0.0029304, 0.0026136, 0.002088, 0, 0, 0]
+)
+args_dps1 = (w, e, per_rmn_dps1, factor, p)
+
+##############PS deriv incomplete lifetimes############
+p2 = Specifications()
+p2.S = 7
+p2.retire = 4
+p2.vpoint = 0.4
+omegas = 1 / (p2.S) * np.ones(p2.S)
+p2.omega_SS = omegas
+p2.g_y = 0.03
+per_rmn_dps2 = 5
+factor = 2
+w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
+e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+deriv_PS_expected2 = np.array([0.0026136, 0.002088, 0, 0, 0])
+args_dps2 = (w, e, per_rmn_dps2, factor, p2)
+test_data = [(args_dps1, deriv_PS_expected1), (args_dps2, deriv_PS_expected2)]
+
+
+@pytest.mark.parametrize(
+    "args,deriv_PS_expected", test_data, ids=["SS/Complete", "Incomplete"]
+)
+def test_deriv_S(args, deriv_PS_expected):
+    """
+    Test of the pensions.deriv_PS() function.
+    """
+    (w, e, per_rmn, factor, p) = args
+
+    deriv_PS = pensions.deriv_PS(w, e, per_rmn, factor, p)
+
+    assert np.allclose(deriv_PS, deriv_PS_expected)
