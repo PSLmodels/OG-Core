@@ -422,15 +422,14 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
         d_theta = np.zeros(per_rmn)
     else:
         d_theta_empty = np.zeros(per_rmn)
-        delta_ret_amount = delta_ret(r, Y)
-        g_ndc_amount = g_ndc(r, Y, p.g_n_SS, p.g_y)
+        delta_ret_amount = delta_ret(r, Y, p)
+        g_ndc_amount = g_ndc(r, Y, p)
         d_theta = deriv_NDC_loop(
             w,
             e,
             per_rmn,
             p.S,
             p.retire,
-            p.g_y,
             p.tau_p,
             g_ndc_amount,
             delta_ret_amount,
@@ -501,7 +500,7 @@ def delta_point(r, Y, g_n, g_y, p):
     return delta_point
 
 
-def g_ndc(r, Y, g_n, g_y, p):
+def g_ndc(r, Y, p):
     """
     Compute growth rate used for contributions to NDC pension
     """
@@ -510,14 +509,14 @@ def g_ndc(r, Y, g_n, g_y, p):
     elif p.ndc_growth_rate == "Curr GDP":
         g_ndc = (Y[1:] - Y[:-1]) / Y[:-1]
     elif p.ndc_growth_rate == "LR GDP":
-        g_ndc = g_y + g_n
+        g_ndc = p.g_y + p.g_n
     else:
-        g_ndc = g_y + g_n
+        g_ndc = p.g_y + p.g_n
 
     return g_ndc
 
 
-def g_dir(r, Y, g_n, g_y, p):
+def g_dir(r, Y, p):
     """
     Compute growth rate used for contributions to NDC pension
     """
@@ -526,20 +525,25 @@ def g_dir(r, Y, g_n, g_y, p):
     elif p.dir_growth_rate == "Curr GDP":
         g_dir = (Y[1:] - Y[:-1]) / Y[:-1]
     elif p.dir_growth_rate == "LR GDP":
-        g_dir = g_y + g_n
+        g_dir = p.g_y + p.g_n
     else:
-        g_dir = g_y + g_n
+        g_dir = p.g_y + p.g_n
 
     return g_dir
 
 
-def delta_ret(self, r, Y, p):
+def delta_ret(r, Y, p):
     """
     Compute conversion coefficient for the NDC pension amount
     """
     surv_rates = 1 - p.mort_rates_SS
     dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
-    g_dir_value = g_dir(r, Y, p.g_n_SS, p.g_y)
+    g_dir_value = g_dir(r, Y, p)
+    print("G dir value type = ", type(p.S))
+    print("G dir value type = ", type(p.retire))
+    print("G dir value type = ", type(surv_rates))
+    print("G dir value type = ", type(g_dir_value))
+    print("G dir value type = ", type(dir_delta_s_empty))
     dir_delta = delta_ret_loop(
         p.S, p.retire, surv_rates, g_dir_value, dir_delta_s_empty
     )
@@ -588,7 +592,7 @@ def deriv_NDC_loop(w, e, per_rmn, S, S_ret, tau_p, g_ndc, delta_ret, d_theta):
 
 
 @numba.jit
-def delta_ret_loop(S, S_ret, surv_rates, g_dir, dir_delta_s):
+def delta_ret_loop(S, S_ret, surv_rates, g_dir_value, dir_delta_s):
 
     cumul_surv_rates = np.ones(S - S_ret + 1)
     for s in range(S - S_ret + 1):
@@ -596,7 +600,7 @@ def delta_ret_loop(S, S_ret, surv_rates, g_dir, dir_delta_s):
         surv_rates_vec[0] = 1.0
         cumul_surv_rates[s] = np.prod(surv_rates_vec)
         cumul_g_y = np.ones(S - S_ret + 1)
-        cumul_g_y[s] = (1 / (1 + g_dir)) ** s
+        cumul_g_y[s] = (1 / (1 + g_dir_value)) ** s
         dir_delta_s[s] = cumul_surv_rates[s] * cumul_g_y[s]
     dir_delta = dir_delta_s.sum()
     return dir_delta

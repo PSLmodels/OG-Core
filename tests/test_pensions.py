@@ -320,3 +320,55 @@ def test_deriv_S(args, deriv_PS_expected):
     deriv_PS = pensions.deriv_PS(w, e, per_rmn, factor, p)
 
     assert np.allclose(deriv_PS, deriv_PS_expected)
+
+
+#############complete lifetimes, S = 4###################
+p = Specifications()
+p.S = 4
+p.retire = 2
+per_rmn = p.S
+p.g_y = 0.03
+p.g_n_SS = 0.0
+p.ndc_growth_rate = "LR GDP"
+p.dir_growth_rate = "r"
+p.tau_p = 0.3
+p.k_ret = 0.4615
+p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
+w = np.array([1.2, 1.1, 1.21, 1])
+e = np.array([1.1, 1.11, 0.9, 0.87])
+r = 0.02
+d_NDC_expected1 = np.array([0.757437326, 0.680222841, 0.0, 0.0])
+args1 = (r, w, e, None, per_rmn, p)
+
+#############Incomplete lifetimes###################
+p2 = Specifications()
+p2.S = 4
+p2.retire = 2
+per_rmn2 = 3
+p2.g_y = 0.04
+p2.g_n_SS = 0.0
+p2.ndc_growth_rate = "LR GDP"
+p2.dir_growth_rate = "LR GDP"
+p2.tau_p = 0.3
+p2.k_ret = 0.4615
+p2.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
+w2 = np.array([1.1, 1.21, 1.25])
+e2 = np.array([1.11, 0.9, 1.0])
+r2 = 0.04
+d_NDC_expected2 = np.array([0.396808466, 0.0, 0.0])
+args2 = (r2, w2, e2, None, per_rmn2, p2)
+
+test_data = [(args1, d_NDC_expected1), (args2, d_NDC_expected2)]
+
+
+@pytest.mark.parametrize(
+    "args,d_NDC_expected", test_data, ids=["SS/Complete", "Incomplete"]
+)
+def test_deriv_NDC(args, d_NDC_expected):
+    """
+    Test of the pensions.deriv_NDC() function.
+    """
+    r, w, e, Y, per_rmn, p = args
+    d_NDC = pensions.deriv_NDC(r, w, e, Y, per_rmn, p)
+
+    assert np.allclose(d_NDC, d_NDC_expected)
