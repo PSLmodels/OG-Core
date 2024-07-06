@@ -424,6 +424,8 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
         d_theta_empty = np.zeros(per_rmn)
         delta_ret_amount = delta_ret(r, Y, p)
         g_ndc_amount = g_ndc(r, Y, p)
+        print("g_ndc = ", g_ndc_amount)
+        print("delta_ret = ", delta_ret_amount)
         d_theta = deriv_NDC_loop(
             w,
             e,
@@ -505,29 +507,29 @@ def g_ndc(r, Y, p):
     Compute growth rate used for contributions to NDC pension
     """
     if p.ndc_growth_rate == "r":
-        g_ndc = r
+        g_ndc = r[-1]
     elif p.ndc_growth_rate == "Curr GDP":
         g_ndc = (Y[1:] - Y[:-1]) / Y[:-1]
     elif p.ndc_growth_rate == "LR GDP":
-        g_ndc = p.g_y + p.g_n
+        g_ndc = p.g_y[-1] + p.g_n[-1]
     else:
-        g_ndc = p.g_y + p.g_n
+        g_ndc = p.g_y[-1] + p.g_n[-1]
 
     return g_ndc
 
 
-def g_dir(r, Y, p):
+def g_dir(r, Y, g_y, g_n, dir_growth_rate):
     """
     Compute growth rate used for contributions to NDC pension
     """
-    if p.dir_growth_rate == "r":
-        g_dir = r
-    elif p.dir_growth_rate == "Curr GDP":
+    if dir_growth_rate == "r":
+        g_dir = r[-1]
+    elif dir_growth_rate == "Curr GDP":
         g_dir = (Y[1:] - Y[:-1]) / Y[:-1]
-    elif p.dir_growth_rate == "LR GDP":
-        g_dir = p.g_y + p.g_n
+    elif dir_growth_rate == "LR GDP":
+        g_dir = g_y[-1] + g_n[-1]
     else:
-        g_dir = p.g_y + p.g_n
+        g_dir = g_y[-1] + g_n[-1]
 
     return g_dir
 
@@ -538,7 +540,7 @@ def delta_ret(r, Y, p):
     """
     surv_rates = 1 - p.mort_rates_SS
     dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
-    g_dir_value = g_dir(r, Y, p)
+    g_dir_value = g_dir(r, Y, p.g_y, p.g_n, p.dir_growth_rate)
     print("G dir value type = ", type(p.S))
     print("G dir value type = ", type(p.retire))
     print("G dir value type = ", type(surv_rates))
@@ -577,15 +579,16 @@ def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
 
 
 @numba.jit
-def deriv_NDC_loop(w, e, per_rmn, S, S_ret, tau_p, g_ndc, delta_ret, d_theta):
-
+def deriv_NDC_loop(
+    w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta
+):
     for s in range((S - per_rmn), S_ret):
         d_theta[s - (S - per_rmn)] = (
             tau_p
             * w[s - (S - per_rmn)]
             * e[s - (S - per_rmn)]
-            * delta_ret
-            * (1 + g_ndc) ** (S_ret - s - 1)
+            * delta_ret_value
+            * (1 + g_ndc_value) ** (S_ret - s - 1)
         )
 
     return d_theta
