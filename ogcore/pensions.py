@@ -424,8 +424,6 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
         d_theta_empty = np.zeros(per_rmn)
         delta_ret_amount = delta_ret(r, Y, p)
         g_ndc_amount = g_ndc(r, Y, p)
-        print("g_ndc = ", g_ndc_amount)
-        print("delta_ret = ", delta_ret_amount)
         d_theta = deriv_NDC_loop(
             w,
             e,
@@ -579,9 +577,7 @@ def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
 
 
 @numba.jit
-def deriv_NDC_loop(
-    w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta
-):
+def deriv_NDC_loop(w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta):
     for s in range((S - per_rmn), S_ret):
         d_theta[s - (S - per_rmn)] = (
             tau_p
