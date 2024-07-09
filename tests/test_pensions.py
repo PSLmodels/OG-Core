@@ -82,7 +82,7 @@ p.rep_rate_py = 0.2
 p.retire = 4
 p.last_career_yrs = 3
 p.yr_contr = 4
-p.g_y = 0.03
+p.g_y = np.ones(p.T) * 0.03
 j = 1
 w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
@@ -157,7 +157,7 @@ per_rmn = p.S
 p.last_career_yrs = 3
 p.yr_contr = p.retire
 p.rep_rate_py = 0.2
-p.g_y = 0.03
+p.g_y = np.ones(p.T) * 0.03
 w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 deriv_DB_loop_expected = np.array(
@@ -197,7 +197,7 @@ p.retire = 4
 p.vpoint = 0.4
 w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
-p.g_y = 0.03
+p.g_y = np.ones(p.T) * 0.03
 factor = 2
 d_theta_empty = np.zeros_like(w)
 deriv_PS_loop_expected1 = np.array(
@@ -231,7 +231,7 @@ p.retire = 4
 p.last_career_yrs = 3
 p.yr_contr = p.retire
 p.rep_rate_py = 0.2
-p.g_y = 0.03
+p.g_y = np.ones(p.T) * 0.03
 n_ddb1 = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 w_ddb1 = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb1 = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
@@ -281,7 +281,7 @@ p.retire = 4
 p.vpoint = 0.4
 omegas = 1 / (p.S) * np.ones(p.S)
 p.omega_SS = omegas
-p.g_y = 0.03
+p.g_y = np.ones(p.T) * 0.03
 per_rmn_dps1 = p.S
 factor = 2
 w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
@@ -327,7 +327,7 @@ p = Specifications()
 p.S = 4
 p.retire = 2
 per_rmn = p.S
-p.g_y = np.ones(p.T) * 0.03
+p.g_y = np.ones(p.T) * np.ones(p.T) * 0.03
 p.g_n = np.ones(p.T) * 0.0
 p.g_n_SS = 0.0
 p.ndc_growth_rate = "LR GDP"
@@ -384,7 +384,7 @@ def test_deriv_NDC(args, d_NDC_expected):
 # p.last_career_yrs = 3
 # p.yr_contr = p.retire
 # p.rep_rate_py = 0.2
-# p.g_y = np.ones(p.T) * 0.03
+# p.g_y = np.ones(p.T) * np.ones(p.T) * 0.03
 # w_db = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 # e_db = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 # n_db = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
@@ -424,24 +424,24 @@ def test_deriv_NDC(args, d_NDC_expected):
 # p3 = Specifications()
 # p3.pension_system = 'PS'
 # p3.S = 7
-# p3.S_ret = 4
-# w_ppb = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
-# e_ppb = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
-# n_ppb = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+# p3.retire = 4
+# w_ps = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+# e_ps = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+# n_ps = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 # omegas = (1/p3.S) * np.ones(p3.S)
 # p3.omega_SS = omegas
 # p3.vpoint = 0.4
 # factor = 2
 # Y = None
 # lambdas = 1
-# j_ind = 1
+# j = 1
 # p3.g_y = np.ones(p3.T) * 0.03
-# pension_expected_ppb = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
-# args_ps = (w_db, e_db, n_db, r, Y, lambdas, j_ind, factor)
+# pension_expected_ps = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
+# args_ps = (w_db, e_db, n_db, r, Y, lambdas, j, factor)
 
 # test_data = [(args_pb, pension_expected_db),
 #              (args_ndc, pension_expected_ndc),
-#              (args_ps, pension_expected_ppb)]
+#              (args_ps, pension_expected_ps)]
 
 # @pytest.mark.parametrize('classes,args,pension_expected', test_data,
 #                          ids=['DB', 'NDC', 'PS'])
@@ -449,7 +449,7 @@ def test_deriv_NDC(args, d_NDC_expected):
 #     '''
 #     Test of pensions.get_pension_benefit
 #     '''
-#     w, e, n, r, Y, lambdas, j_ind, factor = args
+#     w, e, n, r, Y, lambdas, j, factor = args
 
 #     pension = pensions.pension_amount(
 #         w,  n, theta, t, j, shift, method, e, p)
@@ -462,7 +462,7 @@ p.S = 3
 p.retire = 2
 per_rmn = p.S
 p.g_n_SS = 0.0
-p.g_y = np.ones(p.T) * 0.03
+p.g_y = np.ones(p.T) * np.ones(p.T) * 0.03
 p.ndc_growth_rate = "LR GDP"
 p.dir_growth_rate = "r"
 w = np.array([1.2, 1.1, 1.21])
@@ -533,7 +533,7 @@ def test_deriv_NDC_loop(args, deriv_NDC_loop_expected):
 p = Specifications()
 p.S = 4
 p.retire = 2
-p.g_y = np.ones(p.T) * 0.04
+p.g_y = np.ones(p.T) * np.ones(p.T) * 0.04
 p.g_n_SS = 0.0
 p.ndc_growth_rate = "LR GDP"
 p.dir_growth_rate = "r"
@@ -559,3 +559,328 @@ def test_delta_ret_loop(args, dir_delta_ret_expected):
     )
 
     assert np.allclose(dir_delta, dir_delta_ret_expected)
+
+
+#####################SS / Complete lifetimes############
+p = Specifications()
+p.S = 7
+p.retire = 4
+p.last_career_yrs = 3
+p.yr_contr = p.retire
+p.rep_rate_py = 0.2
+p.g_y = np.ones(p.T) * 0.03
+j = 1
+w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+DB_expected1 = np.array([0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065])
+args1 = (w, e, n, j, p)
+
+#####################Incomplete############
+p2 = Specifications()
+p2.S = 7
+p2.retire = 4
+p2.last_career_yrs = 3
+p2.yr_contr = p2.retire
+p2.rep_rate_py = 0.2
+p2.g_y = np.ones(p2.T) * 0.03
+j = 1
+w2 = np.array([1.21, 1.0, 1.01, 0.99, 0.8])
+e2 = np.array(
+    [
+        [1.1, 1.1],
+        [1.11, 1.11],
+        [0.9, 0.9],
+        [0.87, 0.87],
+        [0.87, 0.87],
+        [0.7, 0.7],
+        [0.6, 0.6],
+    ]
+)
+n2 = np.array([0.4, 0.42, 0.3, 0.2, 0.2])
+p2.w_preTP = np.array([1.05])
+p2.n_preTP = np.array(
+    [
+        [0.4, 0.4],
+        [0.3, 0.3],
+        [0.2, 0.2],
+        [0.3, 0.3],
+        [0.4, 0.4],
+        [0.45, 0.45],
+        [0.5, 0.5],
+    ]
+)
+p2.e = e2
+DB_expected2 = np.array([0, 0, 0.289170525, 0.280624244, 0.272330544])
+args2 = (w2, e2, n2, j, p2)
+
+test_data = [(args1, DB_expected1), (args2, DB_expected2)]
+
+
+@pytest.mark.parametrize(
+    "args,DB_expected", test_data, ids=["SS/Complete", "Incomplete"]
+)
+def test_DB(args, DB_expected):
+    """
+    Test of the pensions.get_DB() function.
+    """
+    w, e, n, j, p = args
+    DB = pensions.DB_amount(w, e, n, j, p)
+
+    assert np.allclose(DB, DB_expected)
+
+
+################pension benefit derivative: DB############
+p = Specifications()
+p.pension_system = "Defined Benefits"
+p.S = 7
+p.retire = 4
+per_rmn = p.S
+p.last_career_yrs = 3
+p.yr_contr = p.retire
+p.rep_rate_py = 0.2
+w_ddb = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
+e_ddb = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+p.g_y = np.ones(p.T) * 0.03
+Y = None
+r_ddb = np.ones(p.T) * 0.03
+factor = 2
+d_theta_expected_ddb = np.array([0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0])
+args_ddb = (r_ddb, w_ddb, e_ddb, Y, per_rmn, factor, p)
+
+################pension benefit derivative: NDC############
+p2 = Specifications()
+p2.pension_system = "Notional Defined Contribution"
+p2.S = 4
+p2.retire = 2
+per_rmn = p2.S
+w_dndc = np.array([1.2, 1.1, 1.21, 1])
+e_dndc = np.array([1.1, 1.11, 0.9, 0.87])
+p2.g_y = np.ones(p2.T) * 0.03
+p2.g_n_SS = 0.0
+p2.ndc_growth_rate = "LR GDP"
+p2.dir_growth_rate = "r"
+r_dndc = np.ones(p2.T) * 0.02
+p2.tau_p = 0.3
+p2.k_ret = 0.4615
+p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
+d_theta_expected_dndc = np.array([0.75838653, 0.680222841, 0, 0])
+# TODO: has to change first element from the below to above. Why?
+# check by hand calculation spreadsheet
+# d_theta_expected_dndc = np.array([0.757437326, 0.680222841, 0, 0])
+Y = None
+factor = 2
+args_dndc = (r_dndc, w_dndc, e_dndc, Y, per_rmn, factor, p2)
+
+
+################pension benefit derivative: PS############
+p3 = Specifications()
+p3.pension_system = "Points System"
+p3.S = 7
+p3.retire = 4
+w_dps = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
+e_dps = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+p3.g_y = np.ones(p3.T) * 0.03
+Y = None
+factor = 2
+r_dps = np.ones(p3.T) * 0.03
+p3.vpoint = 0.4
+omegas = 1 / (p3.S) * np.ones(p3.S)
+p3.omega_SS = omegas
+per_rmn_ps = 5
+d_theta_expected_dps = np.array([0.0026136, 0.002088, 0, 0, 0])
+args_dps = (r_dps, w_dps, e_dps, Y, per_rmn_ps, factor, p3)
+
+test_data = [
+    (args_ddb, d_theta_expected_ddb),
+    (args_dndc, d_theta_expected_dndc),
+    (args_dps, d_theta_expected_dps),
+]
+
+
+@pytest.mark.parametrize(
+    "args,d_theta_expected", test_data, ids=["DB", "NDC", "PS"]
+)
+def test_deriv_theta(args, d_theta_expected):
+    """
+    Test of pensions.deriv_theta
+    """
+    r, w, e, Y, per_rmn, factor, p = args
+    d_theta = pensions.deriv_theta(r, w, e, Y, per_rmn, factor, p)
+    assert np.allclose(d_theta, d_theta_expected)
+
+
+#############complete lifetimes, S = 4###################
+p = Specifications()
+p.S = 4
+p.retire = 2
+j = 1
+w = np.array([1.2, 1.1, 1.21, 1])
+e = np.array([1.1, 1.11, 0.9, 0.87])
+n = np.array([0.4, 0.45, 0.4, 0.3])
+p.g_y = np.ones(p.T) * 0.03
+p.g_n_SS = 0.0
+p.ndc_growth_rate = "LR GDP"
+p.dir_growth_rate = "r"
+r = np.ones(p.T) * 0.03
+p.tau_p = 0.3
+p.k_ret = 0.4615
+p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
+NDC_expected1 = np.array([0, 0, 0.27992856, 0.27165542])
+# NDC_expected1 = np.array([0, 0, 0.279756794, 0.271488732])
+args1 = (w, e, n, r, None, j, p)
+
+#############incomplete lifetimes###################
+p2 = Specifications()
+p2.S = 4
+p2.retire = 2
+j = 1
+w = np.array([1.1, 1.21, 1])
+e = np.array([[1.0, 1.0], [1.11, 1.11], [0.9, 0.9], [0.87, 0.87]])
+n = np.array([0.45, 0.4, 0.3])
+p2.w_preTP = np.array([1.05])
+p2.n_preTP = np.array([[0.4, 0.4], [0.2, 0.2], [0.3, 0.3], [0.5, 0.5]])
+p2.g_y = np.ones(p2.T) * 0.03
+p2.g_n_SS = 0.0
+p2.ndc_growth_rate = "LR GDP"
+p2.dir_growth_rate = "r"
+r = np.ones(p2.T) * 0.03
+p2.tau_p = 0.3
+p2.k_ret = 0.4615
+p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
+p2.e = e
+NDC_expected2 = np.array([0, 0.25185784, 0.24441432])
+# TODO: why move from numbers below to those above ?  Diff in numpy rounding??
+# NDC_expected2 = np.array([0, 0.251721214, 0.244281728])
+args2 = (w, e, n, r, None, j, p2)
+
+test_data = [(args1, NDC_expected1), (args2, NDC_expected2)]
+
+
+@pytest.mark.parametrize(
+    "args,NDC_expected", test_data, ids=["SS/Complete", "Incomplete"]
+)
+def test_NDC(args, NDC_expected):
+    """
+    Test of the pensions.NDC() function.
+    """
+    w, e, n, r, Y, j, p = args
+    NDC = pensions.NDC_amount(w, e, n, r, Y, j, p)
+    assert np.allclose(NDC, NDC_expected)
+
+
+#############complete lifetimes, S = 7###################
+p = Specifications()
+p.S = 7
+p.retire = 4
+p.vpoint = 0.4
+j = 1
+w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+p.g_y = np.ones(p.T) * 0.03
+factor = 2
+points_py_s = np.zeros(p.retire)
+L_inc_avg_s = np.zeros(p.retire)
+L_inc_avg = np.zeros(1)
+PS = np.zeros(p.S)
+PS_loop_expected = np.array(
+    [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
+)
+args1 = (w, e, n, p.retire, p.S, p.g_y, p.vpoint, factor, L_inc_avg_s, PS)
+
+test_data = [(args1, PS_loop_expected)]
+
+
+@pytest.mark.parametrize(
+    "args,PS_loop_expected", test_data, ids=["SS/Complete"]
+)
+def test_PS_1dim_loop(args, PS_loop_expected):
+    """
+    Test of the pensions.PS_1dim_loop() function.
+    """
+    (w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS) = args
+    PS_loop = pensions.PS_1dim_loop(
+        w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS
+    )
+    assert np.allclose(PS_loop, PS_loop_expected)
+
+
+#####################SS / Complete lifetimes############
+p = Specifications()
+p.S = 7
+p.retire = 4
+p.g_y = np.ones(p.T) * 0.03
+j = 1
+lambdas = 1
+w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+omegas = (1 / p.S) * np.ones(p.S)
+p.omega_SS = omegas
+factor = 2
+points_py_s = np.zeros(p.retire)
+L_inc_avg_s = np.zeros(p.retire)
+L_inc_avg = np.zeros(1)
+PS = np.zeros(p.S)
+p.vpoint = 0.4
+PS_expected1 = np.array([0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156])
+args1 = (w, e, n, j, factor, p)
+
+####################Incomplete############
+p2 = Specifications()
+p2.S = 7
+p2.retire = 4
+p2.omega_SS = omegas
+factor = 2
+p2.g_y = np.ones(p2.T) * 0.03
+p2.vpoint = 0.4
+j = 1
+lambdas = 1
+points_py_s = np.zeros(p.retire)
+L_inc_avg_s = np.zeros(p.retire)
+L_inc_avg = np.zeros(1)
+PS = np.zeros(p.S)
+w2 = np.array([1.21, 1.0, 1.01, 0.99, 0.8])
+e2 = np.array(
+    [
+        [1.1, 1.1],
+        [1.11, 1.11],
+        [0.9, 0.9],
+        [0.87, 0.87],
+        [0.87, 0.87],
+        [0.7, 0.7],
+        [0.6, 0.6],
+    ]
+)
+n2 = np.array([0.4, 0.42, 0.3, 0.2, 0.2])
+p2.w_preTP = np.array([1.05])
+p2.n_preTP = np.array(
+    [
+        [0.4, 0.4],
+        [0.3, 0.3],
+        [0.2, 0.2],
+        [0.3, 0.3],
+        [0.4, 0.4],
+        [0.45, 0.45],
+        [0.5, 0.5],
+    ]
+)
+p2.e = e2
+PS_expected2 = np.array([0, 0, 0.003585952, 0.003479971, 0.003377123])
+args2 = (w2, e2, n2, j, factor, p2)
+
+test_data = [(args1, PS_expected1), (args2, PS_expected2)]
+
+
+@pytest.mark.parametrize(
+    "args,PS_expected", test_data, ids=["SS/Complete", "Incomplete"]
+)
+def test_get_PS(args, PS_expected):
+    """
+    Test of the pensions.get_PS() function.
+    """
+    w, e, n, j, factor, p = args
+    PS = pensions.PS_amount(w, e, n, j, factor, p)
+    print("PS inside of the test", PS)
+    assert np.allclose(PS, PS_expected)

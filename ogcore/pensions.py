@@ -194,12 +194,14 @@ def DB_amount(w, e, n, j, p):
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
         # TODO: think about how to handle setting w_preTP and n_preTP
+        # TODO: will need to update how the e matrix is handled here
+        # and else where to allow for it to be time varying
         w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
 
         DB_s = np.zeros(p.retire)
         DB = np.zeros(p.S)
-        # TODO: we set a rep_rate_py in params, but not rep_rate.  What is it???
+        print("DB_1dim_loop", w_S, p.e[:, j], n_S)
         DB = DB_1dim_loop(
             w_S,
             p.e[:, j],
@@ -209,7 +211,6 @@ def DB_amount(w, e, n, j, p):
             p.g_y,
             L_inc_avg_s,
             L_inc_avg,
-            DB_s,
             DB,
             p.last_career_yrs,
             p.rep_rate_py,
@@ -225,12 +226,11 @@ def DB_amount(w, e, n, j, p):
                 w,
                 e,
                 n,
-                p.retiremet_age,
+                p.retire,
                 p.S,
                 p.g_y,
                 L_inc_avg_s,
                 L_inc_avg,
-                DB_s,
                 DB,
                 p.last_career_yrs,
                 p.rep_rate_py,
@@ -250,7 +250,6 @@ def DB_amount(w, e, n, j, p):
                 p.g_y,
                 L_inc_avg_sj,
                 L_inc_avg,
-                DB_sj,
                 DB,
                 p.last_career_yrs,
                 p.rep_rate_py,
@@ -265,12 +264,7 @@ def NDC_amount(w, e, n, r, Y, j, p):
     Calculate public pension from a notional defined contribution
     system.
     """
-    g_ndc_amount = g_ndc(
-        r,
-        Y,
-        p.g_n_SS,
-        p.g_y,
-    )
+    g_ndc_amount = g_ndc(r, Y, p)
     delta_ret_amount = delta_ret(r, Y, p)
 
     if n.shape[0] < p.S:
@@ -283,7 +277,7 @@ def NDC_amount(w, e, n, r, Y, j, p):
         NDC = np.zeros(p.S)
         NDC = NDC_1dim_loop(
             w_S,
-            p.emat[:, j],
+            p.e[:, j],
             n_S,
             p.retire,
             p.S,
@@ -346,7 +340,7 @@ def PS_amount(w, e, n, j, factor, p):
         PS = np.zeros(p.S)
         PS = PS_1dim_loop(
             w_S,
-            p.emat[:, j],
+            p.e[:, j],
             n_S,
             p.retire,
             p.S,
@@ -408,6 +402,12 @@ def deriv_theta(r, w, e, Y, per_rmn, factor, p):
         d_theta = deriv_NDC(r, w, e, Y, per_rmn, p)
     elif p.pension_system == "Points System":
         d_theta = deriv_PS(w, e, per_rmn, factor, p)
+    else:
+        raise ValueError(
+            "pension_system must be one of the following: "
+            "'US-style Social Security', 'Defined Benefits', "
+            "'Notional Defined Contribution', 'Points System'"
+        )
 
     return d_theta
 
@@ -576,7 +576,6 @@ def deriv_NDC_loop(
     w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta
 ):
     for s in range((S - per_rmn), S_ret):
-        print("TESTING", tau_p, delta_ret_value, g_ndc_value)
         d_theta[s - (S - per_rmn)] = (
             tau_p
             * w[s - (S - per_rmn)]
@@ -607,8 +606,9 @@ def delta_ret_loop(S, S_ret, surv_rates, g_dir_value, dir_delta_s):
 def PS_1dim_loop(w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS):
     # TODO: do we need these constants or can we scale vpoint to annual??
     for u in range(S_ret, S):
+        # TODO: allow for g_y to be time varying
         for s in range(S_ret):
-            L_inc_avg_s[s] = w[s] / np.exp(g_y * (u - s)) * e[s] * n[s]
+            L_inc_avg_s[s] = w[s] / np.exp(g_y[-1] * (u - s)) * e[s] * n[s]
         PS[u] = (MONTHS_IN_A_YEAR * vpoint * L_inc_avg_s.sum()) / (
             factor * THOUSAND
         )
@@ -649,8 +649,11 @@ def DB_1dim_loop(
 
     for u in range(S_ret, S):
         for s in range(S_ret - last_career_yrs, S_ret):
+            # TODO: pass t so that can pull correct g_y value
+            # Just need to make if doing over time path makes sense
+            # or if should just do SS
             L_inc_avg_s[s - (S_ret - last_career_yrs)] = (
-                w[s] / np.exp(g_y * (u - s)) * e[s] * n[s]
+                w[s] / np.exp(g_y[-1] * (u - s)) * e[s] * n[s]
             )
         L_inc_avg = L_inc_avg_s.sum() / last_career_yrs
         rep_rate = yr_contr * rep_rate_py
@@ -692,9 +695,10 @@ def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC_s, NDC):
 
     for u in range(S_ret, S):
         for s in range(0, S_ret):
+            # TODO: update so can take g_y from period t
             NDC_s[s] = (
                 tau_p
-                * (w[s] / np.exp(g_y * (u - s)))
+                * (w[s] / np.exp(g_y[-1] * (u - s)))
                 * e[s]
                 * n[s]
                 * ((1 + g_ndc) ** (S_ret - s - 1))
