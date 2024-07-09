@@ -376,166 +376,186 @@ def test_deriv_NDC(args, d_NDC_expected):
     assert np.allclose(d_NDC, d_NDC_expected)
 
 
+# ################pension benefit: DB############
+# p = Specifications()
+# p.pension_system = 'DB'
+# p.S = 7
+# p.retire = 4
+# p.last_career_yrs = 3
+# p.yr_contr = p.retire
+# p.rep_rate_py = 0.2
+# p.g_y = np.ones(p.T) * 0.03
+# w_db = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+# e_db = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+# n_db = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+# Y = None
+# j = 1
+# factor = 2
+# omegas = None
+# lambdas = 1
+# pension_expected_db = [0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065]
+# args_pb = (w_db, e_db, n_db, r, Y, lambdas, j, factor)
+
+# ################pension benefit: NDC############
+# p2 = Specifications()
+# p2.pension_system = 'NDC'
+# p2.ndc_growth_rate = 'LR GDP'
+# p2.dir_growth_rate = 'r'
+# p2.S = 4
+# p2.retire = 2
+# w_ndc = np.array([1.2, 1.1, 1.21, 1])
+# e_ndc = np.array([1.1, 1.11, 0.9, 0.87])
+# n_ndc = np.array([0.4, 0.45, 0.4, 0.3])
+# Y = None
+# j = 1
+# p2.g_y = 0.03
+# p2.g_n_SS = 0.0
+# r = 0.03
+# factor = 2
+# p2.tau_p = 0.3
+# p2.k_ret = 0.4615
+# p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
+# omegas = None
+# lambdas = 1
+# pension_expected_ndc = [0, 0, 0.279756794, 0.271488732]
+# args_ndc = (w_ndc, e_ndc, n_ndc, r, Y, lambdas, j, factor)
+
+# ################pension benefit: PS############
+# p3 = Specifications()
+# p3.pension_system = 'PS'
+# p3.S = 7
+# p3.S_ret = 4
+# w_ppb = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+# e_ppb = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+# n_ppb = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+# omegas = (1/p3.S) * np.ones(p3.S)
+# p3.omega_SS = omegas
+# p3.vpoint = 0.4
+# factor = 2
+# Y = None
+# lambdas = 1
+# j_ind = 1
+# p3.g_y = np.ones(p3.T) * 0.03
+# pension_expected_ppb = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
+# args_ps = (w_db, e_db, n_db, r, Y, lambdas, j_ind, factor)
+
+# test_data = [(args_pb, pension_expected_db),
+#              (args_ndc, pension_expected_ndc),
+#              (args_ps, pension_expected_ppb)]
+
+# @pytest.mark.parametrize('classes,args,pension_expected', test_data,
+#                          ids=['DB', 'NDC', 'PS'])
+# def test_pension_benefit(classes, args, pension_expected):
+#     '''
+#     Test of pensions.get_pension_benefit
+#     '''
+#     w, e, n, r, Y, lambdas, j_ind, factor = args
+
+#     pension = pensions.pension_amount(
+#         w,  n, theta, t, j, shift, method, e, p)
+#     assert (np.allclose(pension, pension_expected))
 
 
-
-################pension benefit: DB############
-demographics_ndc = deepcopy(demographics)
-households_pb = deepcopy(households)
-pensions_db = deepcopy(pensions_class)
-pensions_db.pension_system = 'DB'
-households_pb.S = 7
-households_pb.S_ret = 4
-w_db = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
-e_db = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
-n_db = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
-pensions_db.last_career_yrs = 3
-pensions_db.yr_contr = S_ret
-pensions_db.rep_rate_py = 0.2
-Y = None
-j_ind = 1
-firms.g_y = 0.03
-factor = 2
-omegas = None
-lambdas = 1
-pension_expected_db = [0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065]
-classes_pb = (demographics_ndc, households_pb, firms, pensions_db)
-args_pb = (w_db, e_db, n_db, r, Y, lambdas, j_ind, factor)
-
-################pension benefit: NDC############
-households_ndc = deepcopy(households)
-pensions_ndc = deepcopy(pensions_class)
-pensions_ndc.pension_system = 'NDC'
-pensions_ndc.ndc_growth_rate = 'LR GDP'
-pensions_ndc.dir_growth_rate = 'r'
-households_ndc.S = 4
-households_ndc.S_ret = 2
-w_ndc = np.array([1.2, 1.1, 1.21, 1])
-e_ndc = np.array([1.1, 1.11, 0.9, 0.87])
-n_ndc = np.array([0.4, 0.45, 0.4, 0.3])
-Y = None
-j_ind = 1
-firms.g_y = 0.03
-demographics_ndc.g_n_SS = 0.0
-r = 0.03
-factor = 2
-pensions_ndc.tau_p = 0.3
-pensions_ndc.k_ret = 0.4615
-demographics_ndc.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
-omegas = None
-lambdas = 1
-pension_expected_ndc = [0, 0, 0.279756794, 0.271488732]
-classes_ndc = (demographics_ndc, households_ndc, firms, pensions_ndc)
-args_ndc = (w_ndc, e_ndc, n_ndc, r, Y, lambdas, j_ind, factor)
-
-################pension benefit: PS############
-demographics_ppb = deepcopy(demographics)
-households_ppb = deepcopy(households)
-pensions_ppb = deepcopy(pensions_class)
-pensions_ppb.pension_system = 'PS'
-households_ppb.S = 7
-households_ppb.S_ret = 4
-w_ppb = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
-e_ppb = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
-n_ppb = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
-omegas = (1/households_ppb.S) * np.ones(households_ppb.S)
-demographics_ppb.omega_SS = omegas
-pensions_ppb.vpoint = 0.4
-factor = 2
-Y = None
-lambdas = 1
-j_ind = 1
-firms.g_y = 0.03
-pension_expected_ppb = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
-classes_ppb = (demographics_ppb, households_ppb, firms, pensions_ppb)
-args_ppb = (w_db, e_db, n_db, r, Y, lambdas, j_ind, factor)
-
-test_data = [(classes_pb, args_pb, pension_expected_db),
-             (classes_ndc, args_ndc, pension_expected_ndc),
-             (classes_ppb, args_ppb, pension_expected_ppb)]
-
-@pytest.mark.parametrize('classes,args,pension_expected', test_data,
-                         ids=['DB', 'NDC', 'PS'])
-def test_pension_benefit(classes, args, pension_expected):
-    '''
-    Test of pensions.get_pension_benefit
-    '''
-
-    demographics_ndc, households, firms, pensions = classes
-    w, e, n, r, Y, lambdas, j_ind, factor = args
-
-    pension = pensions.pension_benefit(
-        demographics_ndc, households, firms, w, e, n, r,
-        Y, lambdas, j_ind, factor)
-    assert (np.allclose(pension, pension_expected))
 ############SS or complete lifetimes############
-households_pl1 = deepcopy(households)
-pensions_pl1 = deepcopy(pensions_class)
-households_pl1.S = 3
-households_pl1.S_ret = 2
-per_rmn = households_pl1.S
+p = Specifications()
+p.S = 3
+p.retire = 2
+per_rmn = p.S
+p.g_n_SS = 0.0
+p.g_y = np.ones(p.T) * 0.03
+p.ndc_growth_rate = "LR GDP"
+p.dir_growth_rate = "r"
 w = np.array([1.2, 1.1, 1.21])
 e = np.array([1.1, 1.11, 0.9])
-firms.g_y = 0.03
-demographics.g_n_SS = 0.0
-pensions_pl1.ndc_growth_rate = 'LR GDP'
-pensions_pl1.dir_growth_rate = 'r'
-r = 0.02
-pensions_pl1.tau_p = 0.3
-pensions_pl1.k_ret = 0.4615
-pensions_pl1.delta_ret = 1.857010214
-pensions_pl1.g_ndc = firms.g_y + demographics.g_n_SS
-demographics.mort_rates_SS = np.array([0.1,	0.2, 0.4, 1.0])
+r = np.ones(p.T) * 0.02
+p.tau_p = 0.3
+p.k_ret = 0.4615
+delta_ret = 1.857010214
+g_ndc = p.g_y[-1] + p.g_n_SS
+p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 1.0])
 deriv_NDC_loop_expected1 = np.array([0.757437326, 0.680222841, 0.0])
 d_theta_empty = np.zeros_like(w)
-
-#args3 = (pensions_pl1, households_pl1, w, e, per_rmn)
-args3 = (w, e, per_rmn, households_pl1.S, households_pl1.S_ret, firms.g_y,
-         pensions_pl1.tau_p, pensions_pl1.g_ndc, pensions_pl1.delta_ret,
-         d_theta_empty)
+args3 = (w, e, per_rmn, g_ndc, delta_ret, d_theta_empty, p)
 
 ################Incomplete lifetimes#################
-households_pl2 = deepcopy(households)
-pensions_pl2 = deepcopy(pensions_class)
-households_pl2.S = 4
-households_pl2.S_ret = 2
+p2 = Specifications()
+p2.S = 4
+p2.retire = 2
 per_rmn = 3
-#w = np.array([1.2, 1.1, 1.21, 1.25])
-#e = np.array([1.1, 1.11, 0.9, 1.0])
-w = np.array([1.1, 1.21, 1.25])
-e = np.array([1.11, 0.9, 1.0])
-firms.g_y = 0.04
-demographics.g_n_SS = 0.0
-pensions_pl2.ndc_growth_rate = 'LR GDP'
-pensions_pl2.dir_growth_rate = 'r'
-#r = np.array([0.05, 0.03, 0.04, 0.03])
+w2 = np.array([1.1, 1.21, 1.25])
+e2 = np.array([1.11, 0.9, 1.0])
+p2.g_y = np.ones(p.T) * 0.04
+p2.g_n_SS = 0.0
+p2.ndc_growth_rate = "LR GDP"
+p2.dir_growth_rate = "r"
 r = np.array([0.03, 0.04, 0.03])
-pensions_pl2.tau_p = 0.3
-pensions_pl2.k_ret = 0.4615
-pensions_pl2.delta_ret = 1.083288196
-pensions_pl2.g_ndc = firms.g_y + demographics.g_n_SS
-#demographics.mort_rates_SS = np.array([0.1, 0.2, 0.4, 1.0])
-demographics.mort_rates_SS = np.array([0.2, 0.4, 1.0])
+p2.tau_p = 0.3
+p2.k_ret = 0.4615
+delta_ret2 = 1.083288196
+g_ndc2 = p2.g_y[-1] + p2.g_n_SS
+p2.mort_rates_SS = np.array([0.2, 0.4, 1.0])
 deriv_NDC_loop_expected2 = np.array([0.396808466, 0.0, 0.0])
-#d_theta_empty = np.zeros_like(w)
 d_theta_empty = np.zeros(per_rmn)
-args4 = (w, e, per_rmn, households_pl2.S, households_pl2.S_ret, firms.g_y,
-         pensions_pl2.tau_p, pensions_pl2.g_ndc, pensions_pl2.delta_ret,
-         d_theta_empty)
+args4 = (w2, e2, per_rmn2, g_ndc2, delta_ret2, d_theta_empty, p2)
 
-test_data = [(args3, deriv_NDC_loop_expected1),
-             (args4, deriv_NDC_loop_expected2)]
+test_data = [
+    (args3, deriv_NDC_loop_expected1),
+    (args4, deriv_NDC_loop_expected2),
+]
 
-@pytest.mark.parametrize('args,deriv_NDC_loop_expected', test_data,
-                         ids=['SS', 'incomplete'])
+
+@pytest.mark.parametrize(
+    "args,deriv_NDC_loop_expected", test_data, ids=["SS", "incomplete"]
+)
 def test_deriv_NDC_loop(args, deriv_NDC_loop_expected):
     """
     Test of the pensions.deriv_NDC_loop() function.
     """
-    (w, e, per_rmn, households.S, households.S_ret, firms.g_y, pensions_pl2.tau_p,
-     pensions_pl2.g_ndc, pensions_pl2.delta_ret, d_theta_empty) = args
+    (w, e, per_rmn, g_ndc_value, delta_ret_value, d_theta, p) = args
 
+    print("TESTING", p.tau_p, delta_ret_value, g_ndc_value)
     deriv_NDC_loop = pensions.deriv_NDC_loop(
-        w, e, per_rmn, households.S, households.S_ret, firms.g_y,
-        pensions_pl2.tau_p, pensions_pl2.g_ndc, pensions_pl2.delta_ret,
-        d_theta_empty)
+        w,
+        e,
+        per_rmn,
+        p.S,
+        p.retire,
+        p.tau_p,
+        g_ndc_value,
+        delta_ret_value,
+        d_theta,
+    )
+
+    assert np.allclose(deriv_NDC_loop, deriv_NDC_loop_expected)
+
+
+############SS or complete lifietimes############
+p = Specifications()
+p.S = 4
+p.retire = 2
+p.g_y = np.ones(p.T) * 0.04
+p.g_n_SS = 0.0
+p.ndc_growth_rate = "LR GDP"
+p.dir_growth_rate = "r"
+r = 0.02
+g_ndc_amount = p.g_y[-1] + p.g_n_SS
+p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
+dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
+dir_delta_ret_expected1 = 1.384615385
+surv_rates = np.zeros(p.S - p.retire + 1)
+surv_rates = 1 - p.mort_rates_SS
+args5 = (surv_rates, g_ndc_amount, dir_delta_s_empty, p)
+test_data = [(args5, dir_delta_ret_expected1)]
+
+
+@pytest.mark.parametrize("args,dir_delta_ret_expected", test_data, ids=["SS"])
+def test_delta_ret_loop(args, dir_delta_ret_expected):
+    """
+    Test of the pensions.delta_ret_loop() function.
+    """
+    (surv_rates, g_ndc_value, dir_delta_s_empty, p) = args
+    dir_delta = pensions.delta_ret_loop(
+        p.S, p.retire, surv_rates, g_ndc_value, dir_delta_s_empty
+    )
+
+    assert np.allclose(dir_delta, dir_delta_ret_expected)

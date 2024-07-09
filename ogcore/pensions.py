@@ -539,11 +539,6 @@ def delta_ret(r, Y, p):
     surv_rates = 1 - p.mort_rates_SS
     dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
     g_dir_value = g_dir(r, Y, p.g_y, p.g_n, p.dir_growth_rate)
-    print("G dir value type = ", type(p.S))
-    print("G dir value type = ", type(p.retire))
-    print("G dir value type = ", type(surv_rates))
-    print("G dir value type = ", type(g_dir_value))
-    print("G dir value type = ", type(dir_delta_s_empty))
     dir_delta = delta_ret_loop(
         p.S, p.retire, surv_rates, g_dir_value, dir_delta_s_empty
     )
@@ -577,8 +572,11 @@ def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
 
 
 @numba.jit
-def deriv_NDC_loop(w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta):
+def deriv_NDC_loop(
+    w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta
+):
     for s in range((S - per_rmn), S_ret):
+        print("TESTING", tau_p, delta_ret_value, g_ndc_value)
         d_theta[s - (S - per_rmn)] = (
             tau_p
             * w[s - (S - per_rmn)]
