@@ -445,15 +445,31 @@ p3.g_y = np.ones(p3.T) * 0.03
 pension_expected_ps = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
 args_ps = (r, w_db, n_db, Y, theta, t, j, shift, method, e_db, factor, p3)
 
+## SS ##
+p4 = Specifications()
+p4.pension_system = "US-Style Social Security"
+p4.S = 7
+p4.retire = 4
+w_ss = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+e_ss = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+n_ss = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+omegas = (1 / p4.S) * np.ones(p4.S)
+theta = 0.4
+p.replacement_rate_adjust = np.ones(p4.T)
+pension_expected_ss = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
+args_ss = (r, w_ss, n_ss, Y, theta, t, j, shift, method, e_ss, factor, p4)
+
+
 test_data = [
     (args_pb, pension_expected_db),
     (args_ndc, pension_expected_ndc),
     (args_ps, pension_expected_ps),
+    (args_ss, pension_expected_ss),
 ]
 
 
 @pytest.mark.parametrize(
-    "args,pension_expected", test_data, ids=["DB", "NDC", "PS"]
+    "args,pension_expected", test_data, ids=["DB", "NDC", "PS", "SS"]
 )
 def test_pension_amount(args, pension_expected):
     """
