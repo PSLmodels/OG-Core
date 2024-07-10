@@ -376,84 +376,95 @@ def test_deriv_NDC(args, d_NDC_expected):
     assert np.allclose(d_NDC, d_NDC_expected)
 
 
-# ################pension benefit: DB############
-# p = Specifications()
-# p.pension_system = 'DB'
-# p.S = 7
-# p.retire = 4
-# p.last_career_yrs = 3
-# p.yr_contr = p.retire
-# p.rep_rate_py = 0.2
-# p.g_y = np.ones(p.T) * np.ones(p.T) * 0.03
-# w_db = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
-# e_db = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
-# n_db = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
-# Y = None
-# j = 1
-# factor = 2
-# omegas = None
-# lambdas = 1
-# pension_expected_db = [0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065]
-# args_pb = (w_db, e_db, n_db, r, Y, lambdas, j, factor)
+## For all parameterizations below ##
+t = 1
+shift = False
+method = "SS"
+theta = None
 
-# ################pension benefit: NDC############
-# p2 = Specifications()
-# p2.pension_system = 'NDC'
-# p2.ndc_growth_rate = 'LR GDP'
-# p2.dir_growth_rate = 'r'
-# p2.S = 4
-# p2.retire = 2
-# w_ndc = np.array([1.2, 1.1, 1.21, 1])
-# e_ndc = np.array([1.1, 1.11, 0.9, 0.87])
-# n_ndc = np.array([0.4, 0.45, 0.4, 0.3])
-# Y = None
-# j = 1
-# p2.g_y = 0.03
-# p2.g_n_SS = 0.0
-# r = 0.03
-# factor = 2
-# p2.tau_p = 0.3
-# p2.k_ret = 0.4615
-# p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
-# omegas = None
-# lambdas = 1
-# pension_expected_ndc = [0, 0, 0.279756794, 0.271488732]
-# args_ndc = (w_ndc, e_ndc, n_ndc, r, Y, lambdas, j, factor)
+################pension benefit: DB############
+p = Specifications()
+p.pension_system = "Defined Benefits"
+p.S = 7
+p.retire = 4
+p.last_career_yrs = 3
+p.yr_contr = p.retire
+p.rep_rate_py = 0.2
+p.g_y = np.ones(p.T) * 0.03
+w_db = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+e_db = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+n_db = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+Y = None
+j = 1
+factor = 2
+omegas = None
+lambdas = 1
+pension_expected_db = [0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065]
+args_pb = (r, w_db, n_db, Y, theta, t, j, shift, method, e_db, factor, p)
 
-# ################pension benefit: PS############
-# p3 = Specifications()
-# p3.pension_system = 'PS'
-# p3.S = 7
-# p3.retire = 4
-# w_ps = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
-# e_ps = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
-# n_ps = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
-# omegas = (1/p3.S) * np.ones(p3.S)
-# p3.omega_SS = omegas
-# p3.vpoint = 0.4
-# factor = 2
-# Y = None
-# lambdas = 1
-# j = 1
-# p3.g_y = np.ones(p3.T) * 0.03
-# pension_expected_ps = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
-# args_ps = (w_db, e_db, n_db, r, Y, lambdas, j, factor)
+################pension benefit: NDC############
+p2 = Specifications()
+p2.pension_system = "Notional Defined Contribution"
+p2.ndc_growth_rate = "LR GDP"
+p2.dir_growth_rate = "r"
+p2.S = 4
+p2.retire = 2
+w_ndc = np.array([1.2, 1.1, 1.21, 1])
+e_ndc = np.array([1.1, 1.11, 0.9, 0.87])
+n_ndc = np.array([0.4, 0.45, 0.4, 0.3])
+Y = None
+j = 1
+p2.g_y = np.ones(p2.T) * 0.03
+p2.g_n_SS = 0.0
+r = np.ones(p2.T) * 0.03
+factor = 2
+p2.tau_p = 0.3
+p2.k_ret = 0.4615
+p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
+omegas = None
+lambdas = 1
+pension_expected_ndc = [0, 0, 0.27992856, 0.27165542]
+args_ndc = (r, w_ndc, n_ndc, Y, theta, t, j, shift, method, e_ndc, factor, p2)
 
-# test_data = [(args_pb, pension_expected_db),
-#              (args_ndc, pension_expected_ndc),
-#              (args_ps, pension_expected_ps)]
+################pension benefit: PS############
+p3 = Specifications()
+p3.pension_system = "Points System"
+p3.S = 7
+p3.retire = 4
+w_ps = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+e_ps = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+n_ps = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+omegas = (1 / p3.S) * np.ones(p3.S)
+p3.omega_SS = omegas
+p3.vpoint = 0.4
+factor = 2
+Y = None
+lambdas = 1
+j = 1
+p3.g_y = np.ones(p3.T) * 0.03
+pension_expected_ps = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
+args_ps = (r, w_db, n_db, Y, theta, t, j, shift, method, e_db, factor, p3)
 
-# @pytest.mark.parametrize('classes,args,pension_expected', test_data,
-#                          ids=['DB', 'NDC', 'PS'])
-# def test_pension_benefit(classes, args, pension_expected):
-#     '''
-#     Test of pensions.get_pension_benefit
-#     '''
-#     w, e, n, r, Y, lambdas, j, factor = args
+test_data = [
+    (args_pb, pension_expected_db),
+    (args_ndc, pension_expected_ndc),
+    (args_ps, pension_expected_ps),
+]
 
-#     pension = pensions.pension_amount(
-#         w,  n, theta, t, j, shift, method, e, p)
-#     assert (np.allclose(pension, pension_expected))
+
+@pytest.mark.parametrize(
+    "args,pension_expected", test_data, ids=["DB", "NDC", "PS"]
+)
+def test_pension_amount(args, pension_expected):
+    """
+    Test of pensions.pension_amount
+    """
+    r, w, n, Y, theta, t, j, shift, method, e, factor, p = args
+
+    pension = pensions.pension_amount(
+        r, w, n, Y, theta, t, j, shift, method, e, factor, p
+    )
+    assert np.allclose(pension, pension_expected)
 
 
 ############SS or complete lifetimes############

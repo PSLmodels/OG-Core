@@ -64,7 +64,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     return theta
 
 
-def pension_amount(w, n, theta, t, j, shift, method, e, p):
+def pension_amount(r, w, n, Y, theta, t, j, shift, method, e, factor, p):
     """
     Calculate public pension benefit amounts for each household.
 
@@ -91,11 +91,11 @@ def pension_amount(w, n, theta, t, j, shift, method, e, p):
     if p.pension_system == "US-Style Social Security":
         pension = SS_amount(w, n, theta, t, j, shift, method, e, p)
     elif p.pension_system == "Defined Benefits":
-        pension = DB_amount(w, n, t, j, shift, method, e, p)
+        pension = DB_amount(w, e, n, j, p)
     elif p.pension_system == "Notional Defined Contribution":
-        sdf
+        pension = NDC_amount(w, e, n, r, Y, j, p)
     elif p.pension_system == "Points System":
-        sdf
+        pension = PS_amount(w, e, n, j, factor, p)
     else:
         raise ValueError(
             "pension_system must be one of the following: "
