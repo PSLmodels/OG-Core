@@ -317,7 +317,114 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
 
 #### Pensions
 
-[TODO: Add description of government pensions and the relevant parameters]
+The `OG-Core` model allows for four different systems for public pensions:
+
+1. U.S.-style social security system
+2. Defined benefit system
+3. Notional defined contribution system
+4. Points system
+
+These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`.  We discuss each of these in turn below.
+
+##### U.S.-style social security system
+
+##### Defined benefit system
+
+\subsection{Defined Benefits System:}
+
+\begin{equation}\label{eqn:db_amount}
+  P = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}
+\end{equation}
+
+\noindent\noindent where:
+  \begin{itemize}
+    \item $ny$ are the number of years over which average earnings are calculated.  Note that this could be modified to be based on a certain number of highest earning years rather than a number of the last earnings years before retirement as specified above.  Our initial specification will be as above.
+    \item $Cy$ are the number of years of contributions.  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
+    \item $\alpha_{DB}$ is the replacement rate per year of contribution.
+  \end{itemize}
+
+  Given this pension system and the fact that there is only variation in labor supply along the intensive margin (so we don't need to consider changes in $Cy$), the partial derivatives from the household section are given by:
+
+  \begin{equation}\label{eqn:db_deriv}
+    \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+      \begin{cases}
+        0 , & \text{if}\ s < R - Cy \\
+        w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
+        0, & \text{if}\ s \geq R \\
+      \end{cases}
+  \end{equation}
+
+
+##### Notional defined contribution system
+
+\subsection{Notional Defined Contribution System:}
+
+\begin{equation}\label{eqn:ndc_amount}
+  P = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}
+\end{equation}
+
+\noindent\noindent where:
+  \begin{itemize}
+    \item $\bar{g}_j$ the rate of growth applied to contributions.
+      \begin{itemize}
+        \item In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
+        \item i.e., $g_{NDC,t}=\prod_{j=i}^{R-1}\bar{g}_{j}$
+        \item This is not $g_y$ - in the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, in the transition, it's not a function of exogenous variables).
+      \end{itemize}
+    \item $\delta_{R, t}$ is the conversion coefficient at time $t$ and its calculation is detailed below.
+  \end{itemize}
+
+\begin{equation}
+  \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
+\end{equation}
+
+\noindent\noindent where $k$ is an adjustment that takes into account the number of payments per year.  $k=0.5 - (6/13n)$, where $n$ is the number of payments per year.  Given the monthly payment system, $n=12$ and thus $k=0.4615$.  I do not know where the other numbers in $k$ come from - maybe those should be parameters too?
+
+\begin{equation}
+  dir_{R, t} = \sum_{u=0}^{E+S-R}\left[\prod_{s=R}^{u}(1-\hat{\rho}_{s, t})\right](1+\hat{g}_{y, t})^{-u}
+\end{equation}
+
+\noindent\noindent where $\hat{\rho}_{s,t}$ are the mortality tables used in the pension system at time $t$ and $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$.
+
+\begin{equation}
+  ind_{R} = 0
+\end{equation}
+
+Given that we model households we set $ind_{R} = 0$.  We might want to think about some scaling to account for the fact that households lose members over time, but for now, I think we can ignore the gender/martial/survivor components of the pension formula and just say both members contribute and payouts are related to those contributions as long as the household survives.
+
+
+Given this pension system, the partial derivatives from the household section are given by:
+
+\begin{equation}\label{eqn:ndc_deriv}
+  \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+    \begin{cases}
+      \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
+      0, & \text{if}\ s \geq R \\
+    \end{cases}
+\end{equation}
+
+##### Points system
+
+\subsection{Points System:}
+
+\begin{equation}\label{eqn:ps_amount}
+  P = \sum_{s=E}^{R-1}w_{t}e_{j,s}n_{j,s,t}\times v_{t}
+\end{equation}
+
+\noindent\noindent where:
+  \begin{itemize}
+    \item $v_{t}$ is the value of a point at time $t$
+  \end{itemize}
+
+  Given this pension system, the partial derivatives from the household section are given by:
+
+  \begin{equation}\label{eqn:ps_deriv}
+	\frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+	\begin{cases}
+	0 , & \text{if}\ s < R \\
+	w_{t}e_{j,s}v_{t}, & \text{if}\ s \geq R \\
+	\end{cases}
+\end{equation}
 
 #### Lump sum transfers:
 
