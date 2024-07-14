@@ -328,15 +328,29 @@ These can be selected with the `pension_system` parameter.  Accepted values are 
 
 ##### U.S.-style social security system
 
+ Because individual lifetime income type (and thus their lifecycle earnings profile) are deterministic from birth, the Social Security replacement rate $\theta_j$ in the payroll tax \eqref{EqPayTax} can be thought of as simply an percent of the age $R-1$ labor earnings. This replacement rate, $\theta_j$, is indexed to current average wage $w_t$, and then the ability $j$-specific $\theta_j$ captures the percent consistent with the average replacement amount of each type. In this way, $e_{j,s}$ is included $\theta_j$. $R$ is the age at which the individual becomes eligible to receive the retirement benefit from the payroll tax.
+
+  As mentioned in Section \ref{SecIndProb} and in Table \ref{TabExogVars}, we calibrate the retirement age to be $R = E+s = 65$ and the payroll tax rate to $\tau^P=0.15$. To calibrate the payroll tax replacement rates $\{\theta_j\}_{j=1}^J$, first we solve for the steady state equilibrium without the retirement benefits. Then, we calculate the monthly level of income for each ability type in dollars in our simulated model.  We use the 2014 statutory formula to calculate the monthly retirement benefits or ``primary insurance amount'' (PIA) using the worker's earnings from the year prior to retirement in place of the average index of monthly earnings (AIME) for each ability type.  By multiplying the PIA by the average effective labor participation rate and dividing by the monthly level of income, we generate the replacement rates for each ability type.  We cap the replacement rates so that the maximum monthly retirement rate is thirty thousand dollars.  In reality the cap is much lower than this, but in our model all wage income is subject to the payroll tax and this cap binds.
+
+  With this set of replacement rates in hand, we resolve the model including retirement benefits and repeat the calibration.  We do this until the replacement rates assumed when the simulation is performed match those calculated from the statutory formula.
+
+  The statutory formula we use for PIA is as follows:
+  \begin{itemize}
+    \item 90\% of AIME for AIME less than \$749.
+    \item 32\% of addition AIME up to \$4519.
+    \item 15\% of addition AIME up to a maximum payment of \$30,000
+  \end{itemize}
+
+  Our seven calibrated replacement rate values are $\theta_1=0.1332$, $\theta_2=0.1368$, $\theta_3=0.1368$, $\theta_4=0.1368$, $\theta_5=0.1368$, $\theta_6=0.1368$, and $\theta_7=0.1368$.
+
 ##### Defined benefit system
 
-\subsection{Defined Benefits System:}
-
-\begin{equation}\label{eqn:db_amount}
+  ```{math}
+  :label: eqn:db_amount
   P = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}
-\end{equation}
+  ```
 
-\noindent\noindent where:
+where:
   \begin{itemize}
     \item $ny$ are the number of years over which average earnings are calculated.  Note that this could be modified to be based on a certain number of highest earning years rather than a number of the last earnings years before retirement as specified above.  Our initial specification will be as above.
     \item $Cy$ are the number of years of contributions.  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
@@ -345,25 +359,24 @@ These can be selected with the `pension_system` parameter.  Accepted values are 
 
   Given this pension system and the fact that there is only variation in labor supply along the intensive margin (so we don't need to consider changes in $Cy$), the partial derivatives from the household section are given by:
 
-  \begin{equation}\label{eqn:db_deriv}
+  ```{math}
+  :label: eqn:db_deriv
     \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
       \begin{cases}
         0 , & \text{if}\ s < R - Cy \\
         w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
         0, & \text{if}\ s \geq R \\
       \end{cases}
-  \end{equation}
-
+  ```
 
 ##### Notional defined contribution system
 
-\subsection{Notional Defined Contribution System:}
+  ```{math}
+  :label: eqn:ndc_amount
+   P = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}
+  ```
 
-\begin{equation}\label{eqn:ndc_amount}
-  P = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}
-\end{equation}
-
-\noindent\noindent where:
+where:
   \begin{itemize}
     \item $\bar{g}_j$ the rate of growth applied to contributions.
       \begin{itemize}
@@ -374,42 +387,41 @@ These can be selected with the `pension_system` parameter.  Accepted values are 
     \item $\delta_{R, t}$ is the conversion coefficient at time $t$ and its calculation is detailed below.
   \end{itemize}
 
-\begin{equation}
+  ```{math}
   \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
-\end{equation}
+  ```
 
-\noindent\noindent where $k$ is an adjustment that takes into account the number of payments per year.  $k=0.5 - (6/13n)$, where $n$ is the number of payments per year.  Given the monthly payment system, $n=12$ and thus $k=0.4615$.  I do not know where the other numbers in $k$ come from - maybe those should be parameters too?
+where $k$ is an adjustment that takes into account the number of payments per year.  $k=0.5 - (6/13n)$, where $n$ is the number of payments per year.  Given the monthly payment system, $n=12$ and thus $k=0.4615$.  I do not know where the other numbers in $k$ come from - maybe those should be parameters too?
 
-\begin{equation}
+  ```{math}
   dir_{R, t} = \sum_{u=0}^{E+S-R}\left[\prod_{s=R}^{u}(1-\hat{\rho}_{s, t})\right](1+\hat{g}_{y, t})^{-u}
-\end{equation}
+  ```
 
-\noindent\noindent where $\hat{\rho}_{s,t}$ are the mortality tables used in the pension system at time $t$ and $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$.
+where $\hat{\rho}_{s,t}$ are the mortality tables used in the pension system at time $t$ and $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$.
 
-\begin{equation}
+  ```{math}
   ind_{R} = 0
-\end{equation}
+  ```
 
 Given that we model households we set $ind_{R} = 0$.  We might want to think about some scaling to account for the fact that households lose members over time, but for now, I think we can ignore the gender/martial/survivor components of the pension formula and just say both members contribute and payouts are related to those contributions as long as the household survives.
 
-
 Given this pension system, the partial derivatives from the household section are given by:
 
-\begin{equation}\label{eqn:ndc_deriv}
+  ```{math}
+  :label: eqn:ndc_deriv
   \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
       \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
       0, & \text{if}\ s \geq R \\
     \end{cases}
-\end{equation}
+  ```
 
 ##### Points system
 
-\subsection{Points System:}
-
-\begin{equation}\label{eqn:ps_amount}
+  ```{math}
+  :label: eqn:ps_amount
   P = \sum_{s=E}^{R-1}w_{t}e_{j,s}n_{j,s,t}\times v_{t}
-\end{equation}
+  ```
 
 \noindent\noindent where:
   \begin{itemize}
@@ -418,13 +430,14 @@ Given this pension system, the partial derivatives from the household section ar
 
   Given this pension system, the partial derivatives from the household section are given by:
 
-  \begin{equation}\label{eqn:ps_deriv}
-	\frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
-	\begin{cases}
-	0 , & \text{if}\ s < R \\
-	w_{t}e_{j,s}v_{t}, & \text{if}\ s \geq R \\
-	\end{cases}
-\end{equation}
+  ```{math}
+  :label: eqn:ps_deriv
+  \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+  \begin{cases}
+    0 , & \text{if}\ s < R \\
+    w_{t}e_{j,s}v_{t}, & \text{if}\ s \geq R \\
+  \end{cases}
+ ```
 
 #### Lump sum transfers:
 
@@ -434,6 +447,7 @@ Given this pension system, the partial derivatives from the household section ar
   :label: EqUnbalGBCtfer
     TR_t = g_{tr,t}\:\alpha_{tr}\: p_t Y_t \quad\forall t
   ```
+
   where total government transfers to households $TR_t$ and GDP ($p_t Y_t$) are in terms of the numeraire good and the term $Y_t$ is in terms of the composite good.
 
   The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.

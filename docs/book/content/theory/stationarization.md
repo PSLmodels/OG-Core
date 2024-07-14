@@ -309,153 +309,101 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
 
   ### Stationarized Pension System Equations
 
-  \subsection{Simple example with an NDC system:}
-
-Consider a model there the agents are economically active for four periods (i.e., $S$=4) and where the retirement age is three (i.e., $R$=2 (not 3 because of zero-indexing)).  The pension benefits in each year of life (assuming the agent is born at time 0) are:
-
-\begin{equation}
-  \begin{split}
-    \theta_{j,0,0} & = 0 \\
-    \theta_{j,1,1} & = 0 \\
-    \theta_{j,2,2} & = \biggl[\tau^{p}_{0}w_{0}e_{j,0}n_{j,0,0}(1+g_{NDC,0})^{2-0-1} + \tau^{p}_{1}w_{1}e_{j,1}n_{j,1,1}(1+g_{NDC,1})^{2-1-1}\biggr]\delta_{R,2} \\
-    \theta_{j,3,3} & = \biggl[\tau^{p}_{0}w_{0}e_{j,0}n_{j,0,0}(1+g_{NDC,0})^{2-0-1} + \tau^{p}_{1}w_{1}e_{j,1}n_{j,1,1}(1+g_{NDC,1})^{2-1-1}\biggr]\delta_{R,2} \\
-  \end{split}
-\end{equation}
-
-Recall how these pension amounts enter the budget constraint:
-
-\begin{equation}
-(1 + \tau^{c}_{j,s,t})c_{j,s,t} + b_{j,s+1,t+1} = (1 + r_{t})b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} + \theta_{j,s,t}
-\end{equation}
-
-In the budget constraint, we have $c_{j,s,t}$, $b_{j,s,t}$, $bq_{j,s,t}$, $tr_{j,s,t}$, $T_{j,s,t}$, $w_{t}$ all growing at the rate of labor augmenting technological change, $g_{y}$.  Thus, to stationarize the period $t$ budget constraint, we divide both sides of the equation by $e^{g_{y}t}$, which gives us:
-
-\begin{equation}
-  \begin{split}
-    (1 + \tau^{c}_{j,s,t})\frac{c_{j,s,t}}{e^{g_{y}t}} + \frac{b_{j,s+1,t+1}}{{e^{g_{y}t}}} & = (1 + r_{t})\frac{b_{j,s,t}}{e^{g_{y}t}} + \frac{w_{t}}{e^{g_{y}t}}e_{j,s}n_{j,s,t} + \frac{bq_{j,s,t}}{e^{g_{y}t}} + \frac{tr_{j,s,t}}{e^{g_{y}t}} - \frac{T_{j,s,t}}{e^{g_{y}t}} + \frac{\theta_{j,s,t}}{e^{g_{y}t}} \\
-    & \text{or} \\
-    (1 + \tau^{c}_{j,s,t})\hat{c}_{j,s,t} + e^{g_{y}}\hat{b}_{j,s+1,t+1} &= (1 + r_{t})\hat{b}_{j,s,t} + \hat{w}_{t}e_{j,s}n_{j,s,t} + \hat{bq}_{j,s,t} + \hat{tr}_{j,s,t} - \hat{T}_{j,s,t} + \hat{\theta}_{j,s,t}
-  \end{split}
-\end{equation}
-
-We thus are defining $\hat{\theta}_{j,s,t}$ as $\frac{\theta_{j,s,t}}{e^{g_{y}t}}$.  To see how we determine the value of this stationarized pension amount, we return to the four period example:
-
-\begin{equation}
-  \begin{split}
-    \hat{\theta}_{j,0,0} & = \frac{\theta_{j,0,0}}{e^{g_{y}0}} = \frac{0}{1}= 0 \\
-    \hat{\theta}_{j,1,1} & = \frac{\theta_{j,1,1}}{e^{g_{y}1}} = \frac{0}{e^{g_{y}}}= 0 \\
-    \hat{\theta}_{j,2,2} & = \frac{\theta_{j,2,2}}{e^{g_{y}2}} = \biggl[\tau^{p}_{0}\frac{w_{0}}{e^{g_{y}2}}e_{j,0}n_{j,0,0}(1+g_{NDC,0})^{2-0-1} + \tau^{p}_{1}\frac{w_{1}}{e^{g_{y}2}}e_{j,1}n_{j,1,1}(1+g_{NDC,1})^{2-1-1}\biggr]\delta_{R,2} \\
-     & = \biggl[\tau^{p}_{0}\frac{\hat{w}_{0}}{e^{g_{y}2}}e_{j,0}n_{j,0,0}(1+g_{NDC,0})^{2-0-1} + \tau^{p}_{1}\frac{\hat{w}_{1}}{e^{g_{y}}}e_{j,1}n_{j,1,1}(1+g_{NDC,1})^{2-1-1}\biggr]\delta_{R,2} \\
-    \hat{\theta}_{j,3,3} & = \frac{\theta_{j,3,3}}{e^{g_{y}3}} = \biggl[\tau^{p}_{0}\frac{w_{0}}{e^{g_{y}3}}e_{j,0}n_{j,0,0}(1+g_{NDC,0})^{2-0-1} + \tau^{p}_{1}\frac{w_{1}}{e^{g_{y}3}}e_{j,1}n_{j,1,1}(1+g_{NDC,1})^{2-1-1}\biggr]\delta_{R,2} \\
-     & = \biggl[\tau^{p}_{0}\frac{\hat{w}_{0}}{e^{g_{y}3}}e_{j,0}n_{j,0,0}(1+g_{NDC,0})^{2-0-1} + \tau^{p}_{1}\frac{\hat{w}_{1}}{e^{g_{y}2}}e_{j,1}n_{j,1,1}(1+g_{NDC,1})^{2-1-1}\biggr]\delta_{R,2}
-  \end{split}
-\end{equation}
-
-Note how the unstationarized pension amounts are the same in each period of retirement, but the stationarized amounts are not.
-
-The pattern to this (and thus the general formulation) is:
-
-\begin{equation}
-  \hat{\theta}_{j,u,t+u-s}=
-    \begin{cases}
-      0, & \text{if}\ u < R \\
-      \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}, & \text{otherwise}
-    \end{cases}
-\end{equation}
-
-
-\subsection{NDC equations}
+#### Stiationarized Notional Defined Contributions Equations
 
 The stationarized NDC pension amount is given by:
 
-\begin{equation}\label{eqn:ndc_amount_stationarized}
+  ```{math}
+  :label: eqn:ndc_amount_stationarized
   \hat{\theta}_{j,u,t+u-s}=
     \begin{cases}
       0, & \text{if}\ u < R \\
       \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}, & \text{otherwise}
     \end{cases}
-\end{equation}
+  ```
 
 
 The stationarized derivative of the pension amount it slightly simpler since it involved only current period wages.  We give the derivation first.
 
 The FOC for the choice of labor supply is given by:
 
-\begin{equation}
+  ```{math}
   \begin{split}
     \biggl(\frac{1}{1 + \tau^{c}_{j,s,t}}\biggr)&\biggl(w_{t}e_{j,s} - \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}\biggr)c^{-\sigma}_{j,s,t} + \sum_{u=R}^{E+S}\beta^{u-s}\prod_{v=s}^{u}(1-\rho_{v})\frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}}c^{-\sigma}_{j,u,t+u-s}\biggl(\frac{1}{1+\tau^{c}_{j,u,t+u-s}}\biggr) \\
     & = MDU_l(n_{j,s,t})e^{g_{y}t(1-\sigma)}
   \end{split}
-\end{equation}
+  ```
 
-\noindent\noindent where we now pull the growth factor out of the marginal disutility of labor term to aid in the exposition of the stationarization.  To stationarize this equation, we divide both sides through by $e^{g_{y}t(1-\sigma)}$.
+where we now pull the growth factor out of the marginal disutility of labor term to aid in the exposition of the stationarization.  To stationarize this equation, we divide both sides through by $e^{g_{y}t(1-\sigma)}$.
 
-\begin{equation}
+  ```{math}
   \begin{split}
     \biggl(\frac{1}{1 + \tau^{c}_{j,s,t}}\biggr)&\biggl(\frac{w_{t}}{e^{g_{y}t}}e_{j,s} - \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}\biggr)\frac{c^{-\sigma}_{j,s,t}}{e^{g_{y}t(-\sigma)}} + \sum_{u=R}^{E+S}\beta^{u-s}\prod_{v=s}^{u}(1-\rho_{v})\frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}e^{g_{y}t}}\frac{c^{-\sigma}_{j,u,t+u-s}}{e^{g_{y}t(-\sigma)}}\biggl(\frac{1}{1+\tau^{c}_{j,u,t+u-s}}\biggr) \\
     & = MDU_l(n_{j,s,t})\frac{e^{g_{y}t(1-\sigma)}}{e^{g_{y}t(1-\sigma)}}
   \end{split}
-\end{equation}
+  ```
 
 Which we can write as:
 
-\begin{equation}
+  ```{math}
   \begin{split}
     \biggl(\frac{1}{1 + \tau^{c}_{j,s,t}}\biggr)&\biggl(\hat{w}_{t}e_{j,s} - \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}\biggr)\hat{c}^{-\sigma}_{j,s,t} + \sum_{u=R}^{E+S}\beta^{u-s}\prod_{v=s}^{u}(1-\rho_{v})\frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}}\hat{c}^{-\sigma}_{j,u,t+u-s}e^{g_{y}(u-s)(-\sigma)}\biggl(\frac{1}{1+\tau^{c}_{j,u,t+u-s}}\biggr) \\
     & = MDU_l(n_{j,s,t})
   \end{split}
-\end{equation}
+  ```
 
-\noindent\noindent where $\frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}}$ is given by:
+where $\frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}}$ is given by:
 
-\begin{equation}\label{eqn:ndc_deriv_stationarized}
+  ```{math}
+  :label: eqn:ndc_deriv_stationarized
   \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
       \tau^{p}_{t}\hat{w}_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
       0, & \text{if}\ s \geq R \\
     \end{cases}
-\end{equation}
+  ```
 
 
-\subsection{DB equations}
+#### Stationarized Defined Benefits Equations}
 
 Stationarized pension amount:
 
-\begin{equation}\label{eqn:db_amount_staionarized}
+  ```{math}
+  :label: eqn:db_amount_staionarized
   \hat{\theta}_{j,u,t+u-s} = \biggl[\frac{\sum_{s=R-ny}^{R-1}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}, \ \ \forall u \geq R
-\end{equation}
-
+  ```
 
 Stationarized pension amount derivative:
 
-  \begin{equation}\label{eqn:db_deriv_stationarized}
+  ```{math}
+  :label: eqn:db_deriv_stationarized
     \frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}} =
       \begin{cases}
         0 , & \text{if}\ s < R - Cy \\
         \hat{w}_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
         0, & \text{if}\ s \geq R \\
       \end{cases}
-  \end{equation}
+  ```
 
-
-\subsection{PS equations}
+#### Stationarized Points System Equations
 
 Stationarized pension amount:
 
-\begin{equation}\label{eqn:ps_amount_stationarized}
+  ```{math}
+  :label: eqn:ps_amount_stationarized
   \hat{\theta}_{j,u,t+u-s} =\sum_{s=E}^{R-1}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}v_{t}, \ \ \forall u \geq R
-\end{equation}
-
+  ```
 
 Stationarized pension amount derivative:
 
-\begin{equation}\label{eqn:ps_deriv_stationarized}
+  ```{math}
+  :label: eqn:ps_deriv_stationarized
   \frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
       \hat{w}_{t}e_{j,s} v_{t}, & \text{if}\ s < R  \\
       0, & \text{if}\ s \geq R \\
     \end{cases}
-\end{equation}
+  ```
 
 (SecStnrzMC)=
 ## Stationarized Market Clearing Equations
