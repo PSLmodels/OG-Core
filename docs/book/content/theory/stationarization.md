@@ -209,7 +209,9 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
   ```{math}
   :label: EqStnrzGovRev
     \hat{Rev}_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} - \tau^{inv}_{m,t}\hat{I}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
-    &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p{i,t}\hat{c}_{i,j,s,t}}_{\text{consumption tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{w}_{t}\hat{b}_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t \quad\forall t
   ```
 
   Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
