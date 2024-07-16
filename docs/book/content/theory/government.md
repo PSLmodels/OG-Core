@@ -368,14 +368,16 @@ Under the U.S.-style social security system, households over age $R$ received a 
 
 ##### Defined benefit system
 
+The defined benefit system pension amount is given as:
+
   ```{math}
-  :label: eqn:db_amount
-  P = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}
+  :label: eqn:db_pension
+  pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \forall s > R
   ```
 
 where:
   \begin{itemize}
-    \item $ny$ are the number of years over which average earnings are calculated.  Note that this could be modified to be based on a certain number of highest earning years rather than a number of the last earnings years before retirement as specified above.  Our initial specification will be as above.
+    \item $ny$ are the number of years over which average earnings are calculated
     \item $Cy$ are the number of years of contributions.  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
     \item $\alpha_{DB}$ is the replacement rate per year of contribution.
   \end{itemize}
@@ -394,18 +396,21 @@ where:
 
 ##### Notional defined contribution system
 
+The pension amount under a notional defined contribution system is given as:
+
   ```{math}
-  :label: eqn:ndc_amount
-   P = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}
+  :label: eqn:ndc_pension
+   pension{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \forall s > R
   ```
 
 where:
   \begin{itemize}
-    \item $\bar{g}_j$ the rate of growth applied to contributions.
+    \item $\tau^p$ is the pension contribution tax rate
+    \item $g_{NDC,t}$ the rate of growth applied to contributions.
       \begin{itemize}
-        \item In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
+        \item For example, In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
         \item i.e., $g_{NDC,t}=\prod_{j=i}^{R-1}\bar{g}_{j}$
-        \item This is not $g_y$ - in the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, in the transition, it's not a function of exogenous variables).
+        \item Note, this is not $g_y$. In the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, and in the transition path equilibrium, it's not a function of exogenous variables since the growth rate of nominal GDP is endogenous.
       \end{itemize}
     \item $\delta_{R, t}$ is the conversion coefficient at time $t$ and its calculation is detailed below.
   \end{itemize}
@@ -414,7 +419,9 @@ where:
   \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
   ```
 
-where $k$ is an adjustment that takes into account the number of payments per year.  $k=0.5 - (6/13n)$, where $n$ is the number of payments per year.  Given the monthly payment system, $n=12$ and thus $k=0.4615$.  I do not know where the other numbers in $k$ come from - maybe those should be parameters too?
+where $k$ is an adjustment that takes into account the number of payments per year.  In particular, $k=0.5 - (6/13n)$, where $n$ is the number of payments per year.  So if the payments are made monthly, $n=12$ and thus $k=0.4615$.
+
+The $dir_{R, t}$ term is an adjustment to make the payments actuarially fair given mortality risk:
 
   ```{math}
   dir_{R, t} = \sum_{u=0}^{E+S-R}\left[\prod_{s=R}^{u}(1-\hat{\rho}_{s, t})\right](1+\hat{g}_{y, t})^{-u}
@@ -422,11 +429,7 @@ where $k$ is an adjustment that takes into account the number of payments per ye
 
 where $\hat{\rho}_{s,t}$ are the mortality tables used in the pension system at time $t$ and $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$.
 
-  ```{math}
-  ind_{R} = 0
-  ```
-
-Given that we model households we set $ind_{R} = 0$.  We might want to think about some scaling to account for the fact that households lose members over time, but for now, I think we can ignore the gender/martial/survivor components of the pension formula and just say both members contribute and payouts are related to those contributions as long as the household survives.
+Finally, $ind_{R}$ is an adjustment for survivor benefits.  Since we model households (and not individuals), we set $ind_{R} = 0$ by default.  This can be changed with the parameter `indR` if one would like to account for the fact that households lose members over time.
 
 Given this pension system, the partial derivatives from the household section are given by:
 
@@ -441,17 +444,16 @@ Given this pension system, the partial derivatives from the household section ar
 
 ##### Points system
 
+Under a points system, the pension amount is given as:
+
   ```{math}
-  :label: eqn:ps_amount
-  P = \sum_{s=E}^{R-1}w_{t}e_{j,s}n_{j,s,t}\times v_{t}
+  :label: eqn:ps_pension
+  pension{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \forall s > R
   ```
 
-\noindent\noindent where:
-  \begin{itemize}
-    \item $v_{t}$ is the value of a point at time $t$
-  \end{itemize}
+where $v_{t}$ is the value of a point at time $t$
 
-  Given this pension system, the partial derivatives from the household section are given by:
+Given this pension system, the partial derivatives from the household section are given by:
 
   ```{math}
   :label: eqn:ps_deriv

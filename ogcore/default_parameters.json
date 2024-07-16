@@ -2921,8 +2921,8 @@
         }
     },
     "tau_p": {
-        "title": "TODO: fill in description",
-        "description": "TODO: fill in description",
+        "title": "Pension system contribution tax rate under a notional defined contribution system.",
+        "description": "Pension system contribution tax rate under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -2940,11 +2940,11 @@
         }
     },
     "k_ret": {
-        "title": "TODO: fill in description",
-        "description": "TODO: fill in description",
+        "title": "Adjustment for frequency of pension payments under a notional defined contribution system.",
+        "description": "Adjustment for frequency of pension payments under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "",
+        "notes": "k = 0.5 - (6/13n), where n is the number of payments per year",
         "type": "float",
         "value": [
             {
@@ -2978,8 +2978,8 @@
         }
     },
     "vpoint": {
-        "title": "TODO: fill in description",
-        "description": "TODO: fill in description",
+        "title": "The value of a point under a points system pension.",
+        "description": "The value of a point under a points system pension.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -3016,11 +3016,11 @@
         }
     },
     "yr_contr": {
-        "title": "Number of years used to compute TODO: complete",
-        "description": "Number of years used to compute TODO: complete.",
+        "title": "Number of years of contributions made to defined benefits pension system.",
+        "description": "Number of years of contributions made to defined benefits pension system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "TODO: add note about how compute works",
+        "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.",
         "type": "int",
         "value": [
             {
@@ -3029,7 +3029,7 @@
         ],
         "validators": {
             "range": {
-                "min": 1,
+                "min": 0,
                 "max": "retirement_age"
             }
         }
