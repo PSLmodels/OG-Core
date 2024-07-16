@@ -538,8 +538,10 @@ Given this pension system, the partial derivatives from the household section ar
 
   ```{math}
   :label: EqUnbalGBCgovRev
-    Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}K_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
-    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}K_{m,t}\Bigr]}_{\text{corporate income tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household income tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p{i,t}c_{i,j,s,t}}_{\text{consumption tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{w}_{t}b_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
   ```
 
   where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.
