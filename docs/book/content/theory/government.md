@@ -326,22 +326,45 @@ The `OG-Core` model allows for four different systems for public pensions:
 
 These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`.  We discuss each of these in turn below.
 
+For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit.
+
 ##### U.S.-style social security system
 
- Because individual lifetime income type (and thus their lifecycle earnings profile) are deterministic from birth, the Social Security replacement rate $\theta_j$ in the payroll tax \eqref{EqPayTax} can be thought of as simply an percent of the age $R-1$ labor earnings. This replacement rate, $\theta_j$, is indexed to current average wage $w_t$, and then the ability $j$-specific $\theta_j$ captures the percent consistent with the average replacement amount of each type. In this way, $e_{j,s}$ is included $\theta_j$. $R$ is the age at which the individual becomes eligible to receive the retirement benefit from the payroll tax.
+Under the U.S.-style social security system, households over age $R$ received a pension amount that is a function of their earnings history.  The earings history includes the highest earning `AIME_num_periods` prior to retirement (which OG-Core assumes happens at age $R$).  This history determines the Average Indexed Monthly Earnings (AIME):
 
-  As mentioned in Section \ref{SecIndProb} and in Table \ref{TabExogVars}, we calibrate the retirement age to be $R = E+s = 65$ and the payroll tax rate to $\tau^P=0.15$. To calibrate the payroll tax replacement rates $\{\theta_j\}_{j=1}^J$, first we solve for the steady state equilibrium without the retirement benefits. Then, we calculate the monthly level of income for each ability type in dollars in our simulated model.  We use the 2014 statutory formula to calculate the monthly retirement benefits or ``primary insurance amount'' (PIA) using the worker's earnings from the year prior to retirement in place of the average index of monthly earnings (AIME) for each ability type.  By multiplying the PIA by the average effective labor participation rate and dividing by the monthly level of income, we generate the replacement rates for each ability type.  We cap the replacement rates so that the maximum monthly retirement rate is thirty thousand dollars.  In reality the cap is much lower than this, but in our model all wage income is subject to the payroll tax and this cap binds.
+  ```{math}
+  :label: eqn:AIME
+  AIME_{j,R,t+R} = {\sum_{u=0}^{AIMEper} w_{t+u}e_{j,u,t+u}n{j,u,t+u}}{ 12 * AIMEper}
+  ```
 
-  With this set of replacement rates in hand, we resolve the model including retirement benefits and repeat the calibration.  We do this until the replacement rates assumed when the simulation is performed match those calculated from the statutory formula.
+ The AIME in turn, determines a household's (PIA) based on three rates and brackets:
 
-  The statutory formula we use for PIA is as follows:
-  \begin{itemize}
-    \item 90\% of AIME for AIME less than \$749.
-    \item 32\% of addition AIME up to \$4519.
-    \item 15\% of addition AIME up to a maximum payment of \$30,000
-  \end{itemize}
+   ```{math}
+  :label: eqn:PIA
+    PIAbase_{j,R,t+R} =
+      \begin{cases}
+        PIArate_1 \times AIME_{j,R,t+R}, \text{for} AIME_{j,R,t+R} \leq AIMEbkt_1 \\
+        PIArate_2 \times AIME_{j,R,t+R}, \text{for} AIMEbkt_1 < AIME_{j,R,t+R} \leq AIMEbkt_2 \\
+        PIArate_3 \times AIME_{j,R,t+R}, \text{for} AIMEbkt_2 < AIME_{j,R,t+R} \\
+      \end{cases}
+  ```
+ The PIA is then capped at a maximum, set by the parameter `PIA_maxpayment`, $PIA_{j,R,t+R} = max{PIAbase_{j,R,t+R}, \text{PIA max payment amount}}$.
 
-  Our seven calibrated replacement rate values are $\theta_1=0.1332$, $\theta_2=0.1368$, $\theta_3=0.1368$, $\theta_4=0.1368$, $\theta_5=0.1368$, $\theta_6=0.1368$, and $\theta_7=0.1368$.
+  The replacement rate, $\theta_j$ is then calculated as annual earnings, with an adjustment for the wage rate.:
+
+     ```{math}
+  :label: eqn:theta
+    \theta_{j,R,t+R} = \frac{PIA_{j,R,t+R}} \times 12}{factor \times w_{t+R}}
+  ```
+  Note that $aIME_{j,R,t+R}$ is a function of each households' earning history, but their choice of earning may depend on their retirement benefit.  Solving this exactly would introduce and additional fixed point problem in both the steady state solution and in the time path solution.  The latter would be extremely computationally taxing.  Therefore, we make the simplification of determining the AIME for each type $j$ using the steady state solution and earnings for type $j$ in the steady state.  This leads to some approximation error, but because $\theta_j$ is adjusted by the current wage rate, this approximation error is minized.
+
+  The pension amount for households under the US-style social security system is then:
+
+  ```{math}
+  :label: eqn:ss_pension
+    pension_{j,s,t} = \theta_j \times w_t \forall s > R
+  ```
+
 
 ##### Defined benefit system
 

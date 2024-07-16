@@ -56,7 +56,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
                 + p.PIA_rate_bkt_2 * (p.AIME_bkt_2 - p.AIME_bkt_1)
                 + p.PIA_rate_bkt_3 * (AIME[j] - p.AIME_bkt_2)
             )
-    # Set the maximum monthly replacment rate from SS benefits tables
+    # Set the maximum monthly replacement rate from SS benefits tables
     PIA[PIA > p.PIA_maxpayment] = p.PIA_maxpayment
     if p.PIA_minpayment != 0.0:
         PIA[PIA < p.PIA_minpayment] = p.PIA_minpayment
