@@ -30,7 +30,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     else:
         e = np.squeeze(p.e[-1, :, :])  # Only computes using SS earnings
     # adjust number of calendar years AIME computed from int model periods
-    equiv_periods = int(round((p.S / 80.0) * p.AIME_num_years)) - 1
+    equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
     if e.ndim == 2:
         dim2 = e.shape[1]
     else:
@@ -189,7 +189,7 @@ def DB_amount(w, e, n, j, p):
     Calculate public pension from a defined benefits system.
     """
     L_inc_avg = np.zeros(0)
-    L_inc_avg_s = np.zeros(p.last_career_yrs)
+    L_inc_avg_s = np.zeros(p.avg_earn_num_years)
 
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
@@ -212,7 +212,7 @@ def DB_amount(w, e, n, j, p):
             L_inc_avg_s,
             L_inc_avg,
             DB,
-            p.last_career_yrs,
+            p.avg_earn_num_years,
             p.rep_rate_py,
             p.yr_contr,
         )
@@ -232,7 +232,7 @@ def DB_amount(w, e, n, j, p):
                 L_inc_avg_s,
                 L_inc_avg,
                 DB,
-                p.last_career_yrs,
+                p.avg_earn_num_years,
                 p.rep_rate_py,
                 p.yr_contr,
             )
@@ -240,7 +240,7 @@ def DB_amount(w, e, n, j, p):
         elif np.ndim(n) == 2:
             DB_sj = np.zeros((p.retire, p.J))
             DB = np.zeros((p.S, p.J))
-            L_inc_avg_sj = np.zeros((p.last_career_yrs, p.J))
+            L_inc_avg_sj = np.zeros((p.avg_earn_num_years, p.J))
             DB = DB_2dim_loop(
                 w,
                 e,
@@ -251,7 +251,7 @@ def DB_amount(w, e, n, j, p):
                 L_inc_avg_sj,
                 L_inc_avg,
                 DB,
-                p.last_career_yrs,
+                p.avg_earn_num_years,
                 p.rep_rate_py,
                 p.yr_contr,
             )
@@ -453,7 +453,7 @@ def deriv_DB(w, e, per_rmn, p):
             p.S,
             p.retire,
             per_rmn,
-            p.last_career_yrs,
+            p.avg_earn_num_years,
             p.rep_rate_py,
             p.yr_contr,
         )
@@ -549,12 +549,12 @@ def delta_ret(r, Y, p):
 
 @numba.jit
 def deriv_DB_loop(
-    w, e, S, S_ret, per_rmn, last_career_yrs, rep_rate_py, yr_contr
+    w, e, S, S_ret, per_rmn, avg_earn_num_years, rep_rate_py, yr_contr
 ):
     d_theta = np.zeros(per_rmn)
     num_per_retire = S - S_ret
     for s in range(per_rmn):
-        d_theta[s] = w[s] * e[s] * rep_rate_py * (yr_contr / last_career_yrs)
+        d_theta[s] = w[s] * e[s] * rep_rate_py * (yr_contr / avg_earn_num_years)
     d_theta[-num_per_retire:] = 0.0
 
     return d_theta
@@ -642,20 +642,20 @@ def DB_1dim_loop(
     L_inc_avg_s,
     L_inc_avg,
     DB,
-    last_career_yrs,
+    avg_earn_num_years,
     rep_rate_py,
     yr_contr,
 ):
 
     for u in range(S_ret, S):
-        for s in range(S_ret - last_career_yrs, S_ret):
+        for s in range(S_ret - avg_earn_num_years, S_ret):
             # TODO: pass t so that can pull correct g_y value
             # Just need to make if doing over time path makes sense
             # or if should just do SS
-            L_inc_avg_s[s - (S_ret - last_career_yrs)] = (
+            L_inc_avg_s[s - (S_ret - avg_earn_num_years)] = (
                 w[s] / np.exp(g_y[-1] * (u - s)) * e[s] * n[s]
             )
-        L_inc_avg = L_inc_avg_s.sum() / last_career_yrs
+        L_inc_avg = L_inc_avg_s.sum() / avg_earn_num_years
         rep_rate = yr_contr * rep_rate_py
         DB[u] = rep_rate * L_inc_avg
 
@@ -673,17 +673,17 @@ def DB_2dim_loop(
     L_inc_avg_sj,
     L_inc_avg,
     DB,
-    last_career_yrs,
+    avg_earn_num_years,
     rep_rate_py,
     yr_contr,
 ):
 
     for u in range(S_ret, S):
-        for s in range(S_ret - last_career_yrs, S_ret):
-            L_inc_avg_sj[s - (S_ret - last_career_yrs), :] = (
+        for s in range(S_ret - avg_earn_num_years, S_ret):
+            L_inc_avg_sj[s - (S_ret - avg_earn_num_years), :] = (
                 w[s] / np.exp(g_y * (u - s)) * e[s, :] * n[s, :]
             )
-        L_inc_avg = L_inc_avg_sj.sum(axis=0) / last_career_yrs
+        L_inc_avg = L_inc_avg_sj.sum(axis=0) / avg_earn_num_years
         rep_rate = yr_contr * rep_rate_py
         DB[u, :] = rep_rate * L_inc_avg
 

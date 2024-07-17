@@ -2996,25 +2996,6 @@
             }
         }
     },
-    "last_career_years": {
-        "title": "Number of years used to compute TODO: complete",
-        "description": "Number of years used to compute TODO: complete.",
-        "section_1": "Fiscal Policy Parameters",
-        "section_2": "Government Pension Parameters",
-        "notes": "TODO: add note about how compute works",
-        "type": "int",
-        "value": [
-            {
-                "value": 10
-            }
-        ],
-        "validators": {
-            "range": {
-                "min": 1,
-                "max": "S"
-            }
-        }
-    },
     "yr_contr": {
         "title": "Number of years of contributions made to defined benefits pension system.",
         "description": "Number of years of contributions made to defined benefits pension system.",
@@ -3034,12 +3015,12 @@
             }
         }
     },
-    "AIME_num_years": {
-        "title": "Number of years used to compute average index monthly earnings (AIME)",
-        "description": "Number of years used to compute average index monthly earnings (AIME).",
+    "avg_earn_num_years": {
+        "title": "Number of years used to compute average earnings for pension benefits.",
+        "description": "Number of years used to compute average earnings for pension benefits.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
+        "notes": "US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
         "type": "int",
         "value": [
             {
