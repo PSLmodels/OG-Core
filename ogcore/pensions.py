@@ -189,7 +189,8 @@ def DB_amount(w, e, n, j, p):
     Calculate public pension from a defined benefits system.
     """
     L_inc_avg = np.zeros(0)
-    L_inc_avg_s = np.zeros(p.avg_earn_num_years)
+    equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
+    L_inc_avg_s = np.zeros(equiv_periods)
 
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
@@ -212,7 +213,7 @@ def DB_amount(w, e, n, j, p):
             L_inc_avg_s,
             L_inc_avg,
             DB,
-            p.avg_earn_num_years,
+            equiv_periods,
             p.alpha_db,
             p.yr_contr,
         )
@@ -232,7 +233,7 @@ def DB_amount(w, e, n, j, p):
                 L_inc_avg_s,
                 L_inc_avg,
                 DB,
-                p.avg_earn_num_years,
+                equiv_periods,
                 p.alpha_db,
                 p.yr_contr,
             )
@@ -240,7 +241,7 @@ def DB_amount(w, e, n, j, p):
         elif np.ndim(n) == 2:
             DB_sj = np.zeros((p.retire, p.J))
             DB = np.zeros((p.S, p.J))
-            L_inc_avg_sj = np.zeros((p.avg_earn_num_years, p.J))
+            L_inc_avg_sj = np.zeros((equiv_periods, p.J))
             DB = DB_2dim_loop(
                 w,
                 e,
@@ -251,7 +252,7 @@ def DB_amount(w, e, n, j, p):
                 L_inc_avg_sj,
                 L_inc_avg,
                 DB,
-                p.avg_earn_num_years,
+                equiv_periods,
                 p.alpha_db,
                 p.yr_contr,
             )
@@ -443,7 +444,7 @@ def deriv_DB(w, e, per_rmn, p):
     """
     Change in DB pension benefits for another unit of labor supply
     """
-
+    equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
     if per_rmn < (p.S - p.retire + 1):
         d_theta = np.zeros(p.S)
     else:
@@ -453,7 +454,7 @@ def deriv_DB(w, e, per_rmn, p):
             p.S,
             p.retire,
             per_rmn,
-            p.avg_earn_num_years,
+            equiv_periods,
             p.alpha_db,
             p.yr_contr,
         )

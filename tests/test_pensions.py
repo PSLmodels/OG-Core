@@ -73,26 +73,24 @@ def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
 
 
 p = Specifications()
-# p.update_specifications({
-#     "S": 7,
-#     "rep_rate_py":  0.2
-# })
 p.S = 7
-p.rep_rate_py = 0.2
+p.alpha_db = 0.2
 p.retire = 4
-p.last_career_yrs = 3
+p.avg_earn_num_years = 50
 p.yr_contr = 4
 p.g_y = np.ones(p.T) * 0.03
 j = 1
 w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
 L_inc_avg = np.zeros(0)
-L_inc_avg_s = np.zeros(p.last_career_yrs)
+L_inc_avg_s = np.zeros(equiv_periods)
 DB = np.zeros(p.S)
 DB_loop_expected1 = np.array(
     [0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065]
 )
+
 args1 = (
     w,
     e,
@@ -103,8 +101,8 @@ args1 = (
     L_inc_avg_s,
     L_inc_avg,
     DB,
-    p.last_career_yrs,
-    p.rep_rate_py,
+    equiv_periods,
+    p.alpha_db,
     p.yr_contr,
 )
 
@@ -154,9 +152,9 @@ p = Specifications()
 p.S = 7
 p.retire = 4
 per_rmn = p.S
-p.last_career_yrs = 3
+p.avg_earn_num_years = 50
 p.yr_contr = p.retire
-p.rep_rate_py = 0.2
+p.alpha_db = 0.2
 p.g_y = np.ones(p.T) * 0.03
 w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
@@ -164,14 +162,15 @@ deriv_DB_loop_expected = np.array(
     [0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0]
 )
 d_theta_empty = np.zeros_like(w)
+equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
 args3 = (
     w,
     e,
     p.S,
     p.retire,
     per_rmn,
-    p.last_career_yrs,
-    p.rep_rate_py,
+    equiv_periods,
+    p.alpha_db,
     p.yr_contr,
 )
 
@@ -228,9 +227,9 @@ def test_deriv_PS_loop(args, deriv_PS_loop_expected):
 p = Specifications()
 p.S = 7
 p.retire = 4
-p.last_career_yrs = 3
+p.avg_earn_num_years = 50
 p.yr_contr = p.retire
-p.rep_rate_py = 0.2
+p.alpha_db = 0.2
 p.g_y = np.ones(p.T) * 0.03
 n_ddb1 = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 w_ddb1 = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
@@ -246,7 +245,7 @@ p2.S = 7
 p2.retire = 5
 p2.last_career_yrs = 2
 p2.yr_contr = p2.retire
-p2.rep_rate_py = 0.2
+p2.alpha_db = 0.2
 p2.g_y = 0.03
 n_ddb2 = np.array([0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 w_ddb1 = np.array([1.1, 1.21, 1, 1.01, 0.99, 0.8])
@@ -387,9 +386,9 @@ p = Specifications()
 p.pension_system = "Defined Benefits"
 p.S = 7
 p.retire = 4
-p.last_career_yrs = 3
+p.avg_earn_num_years = 50
 p.yr_contr = p.retire
-p.rep_rate_py = 0.2
+p.alpha_db = 0.2
 p.g_y = np.ones(p.T) * 0.03
 w_db = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e_db = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
@@ -449,14 +448,16 @@ args_ps = (r, w_db, n_db, Y, theta, t, j, shift, method, e_db, factor, p3)
 p4 = Specifications()
 p4.pension_system = "US-Style Social Security"
 p4.S = 7
-p4.retire = 4
+p4.retire = (np.ones(p4.T) * 4).astype(int)
 w_ss = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e_ss = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n_ss = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 omegas = (1 / p4.S) * np.ones(p4.S)
-theta = 0.4
-p.replacement_rate_adjust = np.ones(p4.T)
-pension_expected_ss = [0, 0, 0, 0, 0.004164689, 0.004041603, 0.003922156]
+theta = np.array([0.4, 0.4])
+p4.replacement_rate_adjust = np.ones(p4.T)
+pension_expected_ss = [0, 0, 0, 0, 0.404, 0.396, 0.32]
+method = "TPI"
+shift = False
 args_ss = (r, w_ss, n_ss, Y, theta, t, j, shift, method, e_ss, factor, p4)
 
 
@@ -592,9 +593,9 @@ def test_delta_ret_loop(args, dir_delta_ret_expected):
 p = Specifications()
 p.S = 7
 p.retire = 4
-p.last_career_yrs = 3
+p.avg_earn_num_years = 50
 p.yr_contr = p.retire
-p.rep_rate_py = 0.2
+p.alpha_db = 0.2
 p.g_y = np.ones(p.T) * 0.03
 j = 1
 w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
@@ -607,9 +608,9 @@ args1 = (w, e, n, j, p)
 p2 = Specifications()
 p2.S = 7
 p2.retire = 4
-p2.last_career_yrs = 3
+p.avg_earn_num_years = 50
 p2.yr_contr = p2.retire
-p2.rep_rate_py = 0.2
+p2.alpha_db = 0.2
 p2.g_y = np.ones(p2.T) * 0.03
 j = 1
 w2 = np.array([1.21, 1.0, 1.01, 0.99, 0.8])
@@ -663,9 +664,9 @@ p.pension_system = "Defined Benefits"
 p.S = 7
 p.retire = 4
 per_rmn = p.S
-p.last_career_yrs = 3
+p.avg_earn_num_years = 50
 p.yr_contr = p.retire
-p.rep_rate_py = 0.2
+p.alpha_db = 0.2
 w_ddb = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 p.g_y = np.ones(p.T) * 0.03
