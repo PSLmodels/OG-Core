@@ -2958,9 +2958,9 @@
             }
         }
     },
-    "rep_rate_py": {
-        "title": "TODO: fill in description",
-        "description": "TODO: fill in description",
+    "alpha_db": {
+        "title": "Replacement rate under a defined contribution system.",
+        "description": "Replacement rate under a defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",

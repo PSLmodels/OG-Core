@@ -213,7 +213,7 @@ def DB_amount(w, e, n, j, p):
             L_inc_avg,
             DB,
             p.avg_earn_num_years,
-            p.rep_rate_py,
+            p.alpha_db,
             p.yr_contr,
         )
         DB = DB[-per_rmn:]
@@ -233,7 +233,7 @@ def DB_amount(w, e, n, j, p):
                 L_inc_avg,
                 DB,
                 p.avg_earn_num_years,
-                p.rep_rate_py,
+                p.alpha_db,
                 p.yr_contr,
             )
 
@@ -252,7 +252,7 @@ def DB_amount(w, e, n, j, p):
                 L_inc_avg,
                 DB,
                 p.avg_earn_num_years,
-                p.rep_rate_py,
+                p.alpha_db,
                 p.yr_contr,
             )
 
@@ -454,7 +454,7 @@ def deriv_DB(w, e, per_rmn, p):
             p.retire,
             per_rmn,
             p.avg_earn_num_years,
-            p.rep_rate_py,
+            p.alpha_db,
             p.yr_contr,
         )
     return d_theta
@@ -549,12 +549,12 @@ def delta_ret(r, Y, p):
 
 @numba.jit
 def deriv_DB_loop(
-    w, e, S, S_ret, per_rmn, avg_earn_num_years, rep_rate_py, yr_contr
+    w, e, S, S_ret, per_rmn, avg_earn_num_years, alpha_db, yr_contr
 ):
     d_theta = np.zeros(per_rmn)
     num_per_retire = S - S_ret
     for s in range(per_rmn):
-        d_theta[s] = w[s] * e[s] * rep_rate_py * (yr_contr / avg_earn_num_years)
+        d_theta[s] = w[s] * e[s] * alpha_db * (yr_contr / avg_earn_num_years)
     d_theta[-num_per_retire:] = 0.0
 
     return d_theta
@@ -643,7 +643,7 @@ def DB_1dim_loop(
     L_inc_avg,
     DB,
     avg_earn_num_years,
-    rep_rate_py,
+    alpha_db,
     yr_contr,
 ):
 
@@ -656,7 +656,7 @@ def DB_1dim_loop(
                 w[s] / np.exp(g_y[-1] * (u - s)) * e[s] * n[s]
             )
         L_inc_avg = L_inc_avg_s.sum() / avg_earn_num_years
-        rep_rate = yr_contr * rep_rate_py
+        rep_rate = yr_contr * alpha_db
         DB[u] = rep_rate * L_inc_avg
 
     return DB
@@ -674,7 +674,7 @@ def DB_2dim_loop(
     L_inc_avg,
     DB,
     avg_earn_num_years,
-    rep_rate_py,
+    alpha_db,
     yr_contr,
 ):
 
@@ -684,7 +684,7 @@ def DB_2dim_loop(
                 w[s] / np.exp(g_y * (u - s)) * e[s, :] * n[s, :]
             )
         L_inc_avg = L_inc_avg_sj.sum(axis=0) / avg_earn_num_years
-        rep_rate = yr_contr * rep_rate_py
+        rep_rate = yr_contr * alpha_db
         DB[u, :] = rep_rate * L_inc_avg
 
     return DB
