@@ -187,6 +187,16 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
 def DB_amount(w, e, n, j, p):
     """
     Calculate public pension from a defined benefits system.
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        j (int): index of lifetime income group
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        DB (Numpy array): pension amount for each household
     """
     L_inc_avg = np.zeros(0)
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
@@ -200,9 +210,7 @@ def DB_amount(w, e, n, j, p):
         w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
 
-        DB_s = np.zeros(p.retire)
         DB = np.zeros(p.S)
-        print("DB_1dim_loop", w_S, p.e[:, j], n_S)
         DB = DB_1dim_loop(
             w_S,
             p.e[:, j],
@@ -221,7 +229,6 @@ def DB_amount(w, e, n, j, p):
 
     else:
         if np.ndim(n) == 1:
-            DB_s = np.zeros(p.retire)
             DB = np.zeros(p.S)
             DB = DB_1dim_loop(
                 w,
@@ -239,7 +246,6 @@ def DB_amount(w, e, n, j, p):
             )
 
         elif np.ndim(n) == 2:
-            DB_sj = np.zeros((p.retire, p.J))
             DB = np.zeros((p.S, p.J))
             L_inc_avg_sj = np.zeros((equiv_periods, p.J))
             DB = DB_2dim_loop(
@@ -264,6 +270,18 @@ def NDC_amount(w, e, n, r, Y, j, p):
     """
     Calculate public pension from a notional defined contribution
     system.
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        r (array_like): interest rate
+        Y (array_like): GDP
+        j (int): index of lifetime income group
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        NDC (Numpy array): pension amount for each household
     """
     g_ndc_amount = g_ndc(r, Y, p)
     delta_ret_amount = delta_ret(r, Y, p)
@@ -331,6 +349,18 @@ def NDC_amount(w, e, n, r, Y, j, p):
 def PS_amount(w, e, n, j, factor, p):
     """
     Calculate public pension from a points system.
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        j (int): index of lifetime income group
+        factor (scalar): scaling factor converting model units to
+            dollars
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        PS (Numpy array): pension amount for each household
     """
 
     if n.shape[0] < p.S:
@@ -394,6 +424,18 @@ def deriv_theta(r, w, e, Y, per_rmn, factor, p):
     """
     Change in pension benefits for another unit of labor supply for
     pension system selected
+
+    Args:
+        r (array_like): interest rate
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        Y (array_like): GDP
+        per_rmn (int): number of periods remaining in the model
+        factor (scalar): scaling factor converting model units to
+
+    Returns:
+        d_theta (Numpy array): change in pension benefits for another
+            unit of labor supply
     """
     # TODO: Add SS here...
     if p.pension_system == "Defined Benefits":
@@ -416,6 +458,18 @@ def deriv_theta(r, w, e, Y, per_rmn, factor, p):
 def deriv_NDC(r, w, e, Y, per_rmn, p):
     """
     Change in NDC pension benefits for another unit of labor supply
+
+    Args:
+        r (array_like): interest rate
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        Y (array_like): GDP
+        per_rmn (int): number of periods remaining in the model
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        d_theta (Numpy array): change in NDC pension benefits for
+            another unit of labor supply
     """
     if per_rmn == 1:
         d_theta = 0
@@ -443,6 +497,16 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
 def deriv_DB(w, e, per_rmn, p):
     """
     Change in DB pension benefits for another unit of labor supply
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        per_rmn (int): number of periods remaining in the model
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        d_theta: change in DB pension benefits for another unit of labor
+            supply
     """
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
     if per_rmn < (p.S - p.retire + 1):
@@ -463,7 +527,11 @@ def deriv_DB(w, e, per_rmn, p):
 
 def deriv_PS(w, e, per_rmn, factor, p):
     """
-    Change in points system pension benefits for another unit of labor supply
+    Change in points system pension benefits for another unit of
+    labor supply
+
+    Args:
+        w
     """
 
     if per_rmn < (p.S - p.retire + 1):
