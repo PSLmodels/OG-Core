@@ -531,7 +531,16 @@ def deriv_PS(w, e, per_rmn, factor, p):
     labor supply
 
     Args:
-        w
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        per_rmn (int): number of periods remaining in the model
+        factor (scalar): scaling factor converting model units to
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        d_theta (Numpy array): change in points system pension benefits
+            for another unit of labor supply
+
     """
 
     if per_rmn < (p.S - p.retire + 1):
@@ -552,6 +561,17 @@ def deriv_PS(w, e, per_rmn, factor, p):
 def delta_point(r, Y, g_n, g_y, p):
     """
     Compute growth rate used for contributions to points system pension
+
+    Args:
+        r (array_like): interest rate
+        Y (array_like): GDP
+        g_n (array_like): population growth rate
+        g_y (array_like): GDP growth rate
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        delta_point (Numpy array): growth rate used for contributions to
+            points
     """
     # TODO: Add option to allow use to enter growth rate amount
     # Also to allow rate to vary by year
@@ -572,6 +592,15 @@ def delta_point(r, Y, g_n, g_y, p):
 def g_ndc(r, Y, p):
     """
     Compute growth rate used for contributions to NDC pension
+
+    Args:
+        r (array_like): interest rate
+        Y (array_like): GDP
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        g_ndc (Numpy array): growth rate used for contributions to NDC
+
     """
     if p.ndc_growth_rate == "r":
         g_ndc = r[-1]
@@ -588,6 +617,17 @@ def g_ndc(r, Y, p):
 def g_dir(r, Y, g_y, g_n, dir_growth_rate):
     """
     Compute growth rate used for contributions to NDC pension
+
+    Args:
+        r (array_like): interest rate
+        Y (array_like): GDP
+        g_y (array_like): GDP growth rate
+        g_n (array_like): population growth rate
+        dir_growth_rate (str): growth rate used for contributions to NDC
+
+    Returns:
+        g_dir (Numpy array): growth rate used for contributions to NDC
+
     """
     if dir_growth_rate == "r":
         g_dir = r[-1]
@@ -604,6 +644,16 @@ def g_dir(r, Y, g_y, g_n, dir_growth_rate):
 def delta_ret(r, Y, p):
     """
     Compute conversion coefficient for the NDC pension amount
+
+    Args:
+        r (array_like): interest rate
+        Y (array_like): GDP
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        delta_ret (Numpy array): conversion coefficient for the NDC
+            pension amount
+
     """
     surv_rates = 1 - p.mort_rates_SS
     dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
@@ -620,6 +670,23 @@ def delta_ret(r, Y, p):
 def deriv_DB_loop(
     w, e, S, S_ret, per_rmn, avg_earn_num_years, alpha_db, yr_contr
 ):
+    """
+    Change in DB pension benefits for another unit of labor supply
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        S (int): number of periods in the model
+        S_ret (int): retirement age
+        per_rmn (int): number of periods remaining in the model
+        avg_earn_num_years (int): number of years AIME is computed from
+        alpha_db (scalar): replacement rate
+        yr_contr (scalar): years of contribution
+
+    Returns:
+        d_theta (Numpy array): change in DB pension benefits for
+            another unit of labor supply
+    """
     d_theta = np.zeros(per_rmn)
     num_per_retire = S - S_ret
     for s in range(per_rmn):
@@ -631,6 +698,27 @@ def deriv_DB_loop(
 
 @numba.jit
 def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
+    """
+    Change in points system pension benefits for another unit of
+    labor supply
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        S (int): number of periods in the model
+        S_ret (int): retirement age
+        per_rmn (int): number of periods remaining in the model
+        d_theta (Numpy array): change in points system pension benefits
+            for another unit of labor supply
+        vpoint (scalar): value of points
+        factor (scalar): scaling factor converting model units to
+            local currency
+
+    Returns:
+        d_theta (Numpy array): change in points system pension benefits
+            for another unit of labor supply
+
+    """
     # TODO: do we need these constants or can we scale vpoint to annual??
     for s in range((S - per_rmn), S_ret):
         d_theta[s] = (w[s] * e[s] * vpoint * MONTHS_IN_A_YEAR) / (
@@ -644,6 +732,27 @@ def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
 def deriv_NDC_loop(
     w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta
 ):
+    """
+    Change in NDC pension benefits for another unit of labor supply
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        per_rmn (int): number of periods remaining in the model
+        S (int): number of periods in the model
+        S_ret (int): retirement age
+        tau_p (scalar): tax rate
+        g_ndc_value (scalar): growth rate of NDC pension
+        delta_ret_value (scalar): conversion coefficient for the NDC
+            pension amount
+        d_theta (Numpy array): change in NDC pension benefits for
+            another unit of labor supply
+
+    Returns:
+        d_theta (Numpy array): change in NDC pension benefits for
+            another unit of labor supply
+
+    """
     for s in range((S - per_rmn), S_ret):
         d_theta[s - (S - per_rmn)] = (
             tau_p
@@ -658,7 +767,21 @@ def deriv_NDC_loop(
 
 @numba.jit
 def delta_ret_loop(S, S_ret, surv_rates, g_dir_value, dir_delta_s):
+    """
+    Compute conversion coefficient for the NDC pension amount
 
+    Args:
+        S (int): number of periods in the model
+        S_ret (int): retirement age
+        surv_rates (Numpy array): survival rates
+        g_dir_value (scalar): growth rate of NDC pension
+        dir_delta_s (Numpy array): conversion coefficient for the NDC
+            pension amount
+
+    Returns:
+        dir_delta (scalar): conversion coefficient for the NDC pension
+            amount
+    """
     cumul_surv_rates = np.ones(S - S_ret + 1)
     for s in range(S - S_ret + 1):
         surv_rates_vec = surv_rates[S_ret : S_ret + s + 1]
@@ -673,6 +796,26 @@ def delta_ret_loop(S, S_ret, surv_rates, g_dir_value, dir_delta_s):
 
 @numba.jit
 def PS_1dim_loop(w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS):
+    """
+    Calculate public pension from a points system.
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        S_ret (int): retirement age
+        S (int): number of periods in the model
+        g_y (array_like): GDP growth rate
+        vpoint (scalar): value of points
+        factor (scalar): scaling factor converting model units to
+            local currency
+        L_inc_avg_s (Numpy array): average labor income
+        PS (Numpy array): pension amount for each household
+
+    Returns:
+        PS (Numpy array): pension amount for each household
+
+    """
     # TODO: do we need these constants or can we scale vpoint to annual??
     for u in range(S_ret, S):
         # TODO: allow for g_y to be time varying
@@ -687,6 +830,27 @@ def PS_1dim_loop(w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS):
 
 @numba.jit
 def PS_2dim_loop(w, e, n, S_ret, S, J, g_y, vpoint, factor, L_inc_avg_sj, PS):
+    """
+    Calculate public pension from a points system.
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        S_ret (int): retirement age
+        S (int): number of periods in the model
+        J (int): number of lifetime income groups
+        g_y (array_like): GDP growth rate
+        vpoint (scalar): value of points
+        factor (scalar): scaling factor converting model units to
+            local currency
+        L_inc_avg_sj (Numpy array): average labor income
+        PS (Numpy array): pension amount for each household
+
+    Returns:
+        PS (Numpy array): pension amount for each household
+
+    """
     # TODO: do we need these constants or can we scale vpoint to annual??
     for u in range(S_ret, S):
         for s in range(S_ret):
@@ -715,7 +879,26 @@ def DB_1dim_loop(
     alpha_db,
     yr_contr,
 ):
+    """
+    Calculate public pension from a defined benefits system.
 
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        S_ret (int): retirement age
+        S (int): number of periods in the model
+        g_y (array_like): GDP growth rate
+        L_inc_avg_s (Numpy array): average labor income
+        L_inc_avg (scalar): average labor income
+        DB (Numpy array): pension amount for each household
+        avg_earn_num_years (int): number of years AIME is computed from
+        alpha_db (scalar): replacement rate
+        yr_contr (scalar): years of contribution
+
+    Returns:
+        DB (Numpy array): pension amount for each household
+    """
     for u in range(S_ret, S):
         for s in range(S_ret - avg_earn_num_years, S_ret):
             # TODO: pass t so that can pull correct g_y value
@@ -746,7 +929,27 @@ def DB_2dim_loop(
     alpha_db,
     yr_contr,
 ):
+    """
+    Calculate public pension from a defined benefits system.
 
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        S_ret (int): retirement age
+        S (int): number of periods in the model
+        g_y (array_like): GDP growth rate
+        L_inc_avg_sj (Numpy array): average labor income
+        L_inc_avg (scalar): average labor income
+        DB (Numpy array): pension amount for each household
+        avg_earn_num_years (int): number of years AIME is computed from
+        alpha_db (scalar): replacement rate
+        yr_contr (scalar): years of contribution
+
+    Returns:
+        DB (Numpy array): pension amount for each household
+
+    """
     for u in range(S_ret, S):
         for s in range(S_ret - avg_earn_num_years, S_ret):
             L_inc_avg_sj[s - (S_ret - avg_earn_num_years), :] = (
@@ -761,7 +964,26 @@ def DB_2dim_loop(
 
 @numba.jit
 def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC_s, NDC):
+    """
+    Calculate public pension from a notional defined contribution
 
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        S_ret (int): retirement age
+        S (int): number of periods in the model
+        g_y (array_like): GDP growth rate
+        tau_p (scalar): tax rate
+        g_ndc (scalar): growth rate of NDC pension
+        delta_ret (scalar): conversion coefficient for the NDC pension amount
+        NDC_s (Numpy array): average labor income
+        NDC (Numpy array): pension amount for each household
+
+    Returns:
+        NDC (Numpy array): pension amount for each household
+
+    """
     for u in range(S_ret, S):
         for s in range(0, S_ret):
             # TODO: update so can take g_y from period t
@@ -780,6 +1002,26 @@ def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC_s, NDC):
 def NDC_2dim_loop(
     w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC_sj, NDC
 ):
+    """
+    Calculate public pension from a notional defined contribution
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply
+        S_ret (int): retirement age
+        S (int): number of periods in the model
+        g_y (array_like): GDP growth rate
+        tau_p (scalar): tax rate
+        g_ndc (scalar): growth rate of NDC pension
+        delta_ret (scalar): conversion coefficient for the NDC pension amount
+        NDC_sj (Numpy array): average labor income
+        NDC (Numpy array): pension amount for each household
+
+    Returns:
+        NDC (Numpy array): pension amount for each household
+
+    """
     for u in range(S_ret, S):
         for s in range(0, S_ret):
             NDC_sj[s, :] = (
