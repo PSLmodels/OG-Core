@@ -115,6 +115,8 @@ def get_un_data(
             "458": "MYS",
             "356": "IND",
             "826": "UK",
+            "360": "IDN",
+            "608": "PHL",
         }
         un_variable_dict = {
             "68": "fertility_rates",
