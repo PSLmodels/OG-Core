@@ -14,6 +14,23 @@ from ogcore import tax, utils
 ------------------------------------------------------------------------
 """
 
+def mu_c(c, sigma):
+    r"""
+    Compute the marginal utility of consumption.
+
+    .. math::
+        MU_{c} = c^{-\sigma}
+
+    Args:
+        c (array_like): household consumption
+        sigma (scalar): coefficient of relative risk aversion
+
+    Returns:
+        output (array_like): marginal utility of consumption
+
+    """
+
+    return c**(-sigma)
 
 def marg_ut_cons(c, sigma):
     r"""
@@ -43,6 +60,25 @@ def marg_ut_cons(c, sigma):
     output = np.squeeze(output)
 
     return output
+
+
+def mu_n(n, chi_n, p):
+    r"""
+    Compute the marginal disutility of labor.
+
+    .. math::
+        MDU_{n} = \chi^n_{s} n^{\frac{1}{\theta}}
+
+    Args:
+        n (array_like): household labor supply
+        chi_n (array_like): utility weights on disutility of labor
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        output (array_like): marginal disutility of labor supply
+
+    """
+    return chi_n * n ** (1 / p.theta)
 
 
 def marg_ut_labor(n, chi_n, p):
@@ -134,6 +170,77 @@ def marg_ut_labor(n, chi_n, p):
     output = MDU_n * np.squeeze(chi_n)
     output = np.squeeze(output)
     return output
+
+def mu_b(b, chi_b, p):
+    r"""
+    Compute the marginal utility of savings.
+
+    .. math::
+        MU_{b} = \chi^b_{j}b_{j,s,t}^{-\sigma}
+
+    Args:
+        b (array_like): household savings
+        chi_b (array_like): utility weights on savings
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        output (array_like): marginal utility of savings
+
+    """
+    return chi_b * b**(-p.sigma)
+
+def inv_mu_c(value, sigma):
+    r"""
+    Compute the inverse of the marginal utility of consumption.
+
+    .. math::
+        c = \left(\frac{1}{val}\right)^{-1/\sigma}
+
+    Args:
+        value (array_like): marginal utility of consumption
+        sigma (scalar): coefficient of relative risk aversion
+
+    Returns:
+        output (array_like): household consumption
+
+    """
+    return value ** (-1 / sigma)
+
+def inv_mu_n(value, chi_n, p):
+    r"""
+    Compute the inverse of the marginal disutility of labor.
+
+    .. math::
+        n = \left(\frac{val}{\chi^n_{s}}\right)^{\theta}
+
+    Args:
+        value (array_like): marginal disutility of labor
+        chi_n (array_like): utility weights on disutility of labor
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        output (array_like): household labor supply
+
+    """
+    return (value / chi_n) ** p.theta
+
+def inv_mu_b(value, chi_b, p):
+    r"""
+    Compute the inverse of the marginal utility of savings.
+
+    .. math::
+        b = \left(\frac{MU_b}{\chi^b_{j}}\right)^{-1/\sigma}
+
+    Args:
+        value (array_like): marginal utility of savings
+        chi_b (array_like): utility weights on savings
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        output (array_like): household savings
+
+    """
+    return (value / chi_b) ** (-1 / p.sigma)
 
 
 def get_bq(BQ, j, p, method):
@@ -238,6 +345,35 @@ def get_tr(TR, j, p, method):
     return tr
 
 
+def get_b_splus1(b, r, w, p_tilde, c, n, bq, net_tax, e, p):
+    r"""
+    Calculate next period household savings from the budget constraint.
+
+    .. math::
+        b_{j,s+1,t+1} = \frac{(1 + r_{t+1})b_{j,s,t} + w_{t+1}e_{j,s}n_{j,s,t}
+        + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - c_{j,s,t}}{p_{t+1}}
+        
+
+    Args:
+        b (Numpy array): household savings one period ahead
+        r (array_like): the real interest rate
+        w (array_like): the real wage rate
+        p_tilde (array_like): the ratio of real GDP to nominal GDP
+        n (Numpy array): household labor supply
+        bq (Numpy array): household bequests received
+        net_tax (Numpy array): household net taxes paid
+        e (Numpy array): effective labor units
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        b_splus1 (Numpy array): household savings
+
+    """
+    b_splus1 = ((1+r) * b + w * e * n + bq - net_tax - c * p_tilde) * np.exp(-p.g_y)
+    
+    return b_splus1
+
+
 def get_cons(r, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
     r"""
     Calculate household consumption.
@@ -310,6 +446,44 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
         c_s = c_s.reshape(T, 1, S, J)
         c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s
     return c_si
+
+
+def savings_Euler_inverse(
+        r, w, p_tilde, b_splus1, c_splus1, bq, factor, tr, ubi, theta, rho, etr_params, mtry_params, t, j, p, method
+):
+    r"""
+    Compute current consumption from next period's consumption and savings using the savings Euler equation.
+
+    .. math::
+        c_{j,s,t} = \Bigl( \tilde{p}_{t} e^{-\sigma g_y}
+        \biggl[\chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} +
+        \beta_j\bigl(1 - \rho_s\bigr)\Bigl(\frac{1 + r_{t+1}
+        \bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr]}{\tilde{p}_{t+1}}\Bigr)
+        (c_{j,s+1,t+1})^{-\sigma}\biggr] \Bigr)^{-1/\sigma}
+
+    Args:
+        r (array_like): the real interest rate
+        w (array_like): the real wage rate
+        p_tilde (array_like): composite good price
+        b_splus1 (Numpy array): household savings one period ahead
+        c_splus1 (Numpy array): household consumption one period ahead
+        bq (Numpy array): household bequests received
+        factor (scalar): scaling factor converting model units to dollars
+        tr (Numpy array): government transfers to household
+        ubi (Numpy array): universal basic income payment
+        theta (Numpy array): social security replacement rate for each
+            lifetime income group
+        rho (Numpy array): mortality rates
+        etr_params (list): parameters of the effective tax rate
+            functions
+        mtry_params (list): parameters of the marginal tax rate
+            on capital income functions
+        t (int): model period
+        j (int): index of ability type
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+    """
 
 
 def FOC_savings(
