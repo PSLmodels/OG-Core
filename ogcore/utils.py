@@ -1023,67 +1023,51 @@ def extrapolate_array(param_in, dims=None, item="Parameter Name"):
 
 
 def extrapolate_nested_list(list_in, dims=(400, 80, 1)):
-                try:
-                tax_to_set = (
-                    tax_to_set.tolist()
-                )  # in case parameters are numpy arrays
-            except AttributeError:  # catches if they are lists already
-                pass
-            if len(tax_to_set) == 1 and isinstance(tax_to_set[0], float):
-                setattr(
-                    self,
-                    item,
-                    [
-                        [[tax_to_set] for i in range(self.S)]
-                        for t in range(self.T)
-                    ],
-                )
-            elif any(
-                [
-                    isinstance(tax_to_set[i][j], list)
-                    for i, v in enumerate(tax_to_set)
-                    for j, vv in enumerate(tax_to_set[i])
-                ]
-            ):
-                if len(tax_to_set) > self.T + self.S:
-                    tax_to_set = tax_to_set[: self.T + self.S]
-                if len(tax_to_set) < self.T + self.S:
-                    tax_params_to_add = [tax_to_set[-1]] * (
-                        self.T + self.S - len(tax_to_set)
-                    )
-                    tax_to_set.extend(tax_params_to_add)
-                if len(tax_to_set[0]) > self.S:
-                    for t, v in enumerate(tax_to_set):
-                        tax_to_set[t] = tax_to_set[t][: self.S]
-                if len(tax_to_set[0]) < self.S:
-                    tax_params_to_add = [tax_to_set[:][-1]] * (
-                        self.S - len(tax_to_set[0])
-                    )
-                    tax_to_set[0].extend(tax_params_to_add)
+    """
+    Function to extrapolate a nested list to a specified size.
 
-                    # for t, v in enumerate(tax_to_set):
-                    #     for j, k in enumerate(tax_to_set)
-                    #     tax_params_to_add = [tax_to_set[t][-1]] * (
-                    #         self.S - len(tax_to_set[t])
-                    #     )
-                    #     tax_to_set[t].extend(tax_params_to_add)
+    Currently only set up for 3 deep nested lists, but could be
+    generalized to deeper or shallower lists.
 
+    Args:
+        list_in (list): list to extrapolate
+        dims (tuple): dimensions of the output list
 
+    Returns:
+        list_out (list): extrapolated list
+    """
+    T, S, num_params = dims
+    try:
+        list_in = list_in.tolist()  # in case parameters are numpy arrays
+    except AttributeError:  # catches if they are lists already
+        pass
+    assert isinstance(list_in, list), "please give a list"
 
-                    print("TAX PARAMS TO ADD: ", tax_params_to_add)
-                    print("TAX TO SET sizes before: ", len(tax_to_set), len(tax_to_set[0]), len(tax_to_set[0][0]))
-                    tax_to_set[0].extend(tax_params_to_add)
-                    print("TAX TO SET sizes after: ", len(tax_to_set), len(tax_to_set[0]), len(tax_to_set[0][0]))
+    def depth(L):
+        return isinstance(L, list) and max(map(depth, L)) + 1
 
-                setattr(self, item, tax_to_set)
-            else:
-                print(
-                    "please give a "
-                    + item
-                    + " that is a single element or nested lists of"
-                    + " lists that is three lists deep"
-                )
-                assert False
+    # for now, just have this work for 3 deep lists since
+    # the only OG-Core use case is for tax function parameters
+    assert depth(list_in) == 3, "please give a list that is three lists deep"
+    assert depth(list_in) == len(
+        dims
+    ), "please make sure the depth of nested list is equal to the length of dims to extrapolate"
+    # Extrapolate along the first dimension
+    if len(list_in) > T + S:
+        list_in = list_in[: T + S]
+    if len(list_in) < T + S:
+        params_to_add = [list_in[-1]] * (T + S - len(list_in))
+        list_in.extend(params_to_add)
+    # Extrapolate along the second dimension
+    for t in range(len(list_in)):
+        if len(list_in[t]) > S:
+            list_in[t] = list_in[t][:S]
+        if len(list_in[t]) < S:
+            params_to_add = [list_in[t][-1]] * (S - len(list_in[t]))
+            list_in[t].extend(params_to_add)
+
+    return list_in
+
 
 class CustomHttpAdapter(requests.adapters.HTTPAdapter):
     """
