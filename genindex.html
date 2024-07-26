@@ -17,12 +17,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
@@ -36,9 +36,9 @@
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
@@ -138,6 +138,8 @@
         <div class="sidebar-primary-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="content/intro/intro.html">
   
@@ -159,7 +161,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -184,6 +186,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/execute.html">Model Execution Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/firm.html">Firm Functions</a></li>
@@ -333,10 +336,10 @@
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
   </button>
 `);
 </script>
@@ -344,7 +347,7 @@ document.write(`
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
   </button>
 `);
@@ -467,15 +470,13 @@ document.write(`
 </li>
       <li><a href="content/api/elliptical_u_est.html#ogcore.elliptical_u_est.elliptical_u">elliptical_u() (in module ogcore.elliptical_u_est)</a>
 </li>
-      <li><a href="content/api/elliptical_u_est.html#ogcore.elliptical_u_est.estimation">estimation() (in module ogcore.elliptical_u_est)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/elliptical_u_est.html#ogcore.elliptical_u_est.estimation">estimation() (in module ogcore.elliptical_u_est)</a>
+</li>
       <li><a href="content/api/tax.html#ogcore.tax.ETR_income">ETR_income() (in module ogcore.tax)</a>
 </li>
       <li><a href="content/api/tax.html#ogcore.tax.ETR_wealth">ETR_wealth() (in module ogcore.tax)</a>
-</li>
-      <li><a href="content/api/utils.html#ogcore.utils.extrapolate_arrays">extrapolate_arrays() (in module ogcore.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -521,11 +522,15 @@ document.write(`
 </li>
       <li><a href="content/api/fiscal.html#ogcore.fiscal.get_debt_service_f">get_debt_service_f() (in module ogcore.fiscal)</a>
 </li>
+      <li><a href="content/api/demographics.html#ogcore.demographics.get_fert">get_fert() (in module ogcore.demographics)</a>
+</li>
       <li><a href="content/api/fiscal.html#ogcore.fiscal.get_G_ss">get_G_ss() (in module ogcore.fiscal)</a>
 </li>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.get_I">get_I() (in module ogcore.aggregates)</a>
 </li>
       <li><a href="content/api/fiscal.html#ogcore.fiscal.get_I_g">get_I_g() (in module ogcore.fiscal)</a>
+</li>
+      <li><a href="content/api/demographics.html#ogcore.demographics.get_imm_rates">get_imm_rates() (in module ogcore.demographics)</a>
 </li>
       <li><a href="content/api/utils.html#ogcore.utils.get_initial_path">get_initial_path() (in module ogcore.utils)</a>
 </li>
@@ -535,17 +540,23 @@ document.write(`
 </li>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.get_K_splits">get_K_splits() (in module ogcore.aggregates)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/firm.html#ogcore.firm.get_KLratio">get_KLratio() (in module ogcore.firm)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.get_L">get_L() (in module ogcore.aggregates)</a>
 </li>
       <li><a href="content/api/firm.html#ogcore.firm.get_L_from_Y">get_L_from_Y() (in module ogcore.firm)</a>
 </li>
+      <li><a href="content/api/demographics.html#ogcore.demographics.get_mort">get_mort() (in module ogcore.demographics)</a>
+</li>
       <li><a href="content/api/firm.html#ogcore.firm.get_MPx">get_MPx() (in module ogcore.firm)</a>
 </li>
       <li><a href="content/api/firm.html#ogcore.firm.get_pm">get_pm() (in module ogcore.firm)</a>
+</li>
+      <li><a href="content/api/demographics.html#ogcore.demographics.get_pop">get_pop() (in module ogcore.demographics)</a>
+</li>
+      <li><a href="content/api/demographics.html#ogcore.demographics.get_pop_objs">get_pop_objs() (in module ogcore.demographics)</a>
 </li>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.get_ptilde">get_ptilde() (in module ogcore.aggregates)</a>
 </li>
@@ -562,6 +573,8 @@ document.write(`
       <li><a href="content/api/household.html#ogcore.household.get_tr">get_tr() (in module ogcore.household)</a>
 </li>
       <li><a href="content/api/parameters.html#ogcore.parameters.Specifications.get_ubi_nom_objs">get_ubi_nom_objs() (ogcore.parameters.Specifications method)</a>
+</li>
+      <li><a href="content/api/demographics.html#ogcore.demographics.get_un_data">get_un_data() (in module ogcore.demographics)</a>
 </li>
       <li><a href="content/api/firm.html#ogcore.firm.get_w">get_w() (in module ogcore.firm)</a>
 </li>
@@ -581,6 +594,8 @@ document.write(`
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/demographics.html#ogcore.demographics.immsolve">immsolve() (in module ogcore.demographics)</a>
+</li>
       <li><a href="content/api/tax.html#ogcore.tax.income_tax_liab">income_tax_liab() (in module ogcore.tax)</a>
 </li>
       <li><a href="content/api/output_tables.html#ogcore.output_tables.ineq_table">ineq_table() (in module ogcore.output_tables)</a>
@@ -614,6 +629,8 @@ document.write(`
 
       <ul>
         <li><a href="content/api/aggregates.html#module-ogcore.aggregates">ogcore.aggregates</a>
+</li>
+        <li><a href="content/api/demographics.html#module-ogcore.demographics">ogcore.demographics</a>
 </li>
         <li><a href="content/api/elliptical_u_est.html#module-ogcore.elliptical_u_est">ogcore.elliptical_u_est</a>
 </li>
@@ -673,6 +690,13 @@ document.write(`
 
       <ul>
         <li><a href="content/api/aggregates.html#module-ogcore.aggregates">module</a>
+</li>
+      </ul></li>
+      <li>
+    ogcore.demographics
+
+      <ul>
+        <li><a href="content/api/demographics.html#module-ogcore.demographics">module</a>
 </li>
       </ul></li>
       <li>
@@ -798,10 +822,10 @@ document.write(`
 </li>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_chi_n">plot_chi_n() (in module ogcore.parameter_plots)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_elliptical_u">plot_elliptical_u() (in module ogcore.parameter_plots)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_fert_rates">plot_fert_rates() (in module ogcore.parameter_plots)</a>
 </li>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_g_n">plot_g_n() (in module ogcore.parameter_plots)</a>
@@ -823,6 +847,8 @@ document.write(`
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_pop_growth">plot_pop_growth() (in module ogcore.parameter_plots)</a>
 </li>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_population_path">plot_population_path() (in module ogcore.parameter_plots)</a>
+</li>
+      <li><a href="content/api/demographics.html#ogcore.demographics.pop_rebin">pop_rebin() (in module ogcore.demographics)</a>
 </li>
       <li><a href="content/api/utils.html#ogcore.utils.print_progress">print_progress() (in module ogcore.utils)</a>
 </li>
@@ -999,8 +1025,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

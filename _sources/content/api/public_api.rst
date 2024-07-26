@@ -12,6 +12,7 @@ There is also a link to the source code for each documented member.
    :maxdepth: 1
 
    aggregates
+   demographics
    elliptical_u_est
    execute
    firm

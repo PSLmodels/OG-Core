@@ -1,0 +1,898 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Demographics Functions &#8212; OG-Core</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/demographics';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Elliptical Utility Function Estimation" href="elliptical_u_est.html" />
+    <link rel="prev" title="Aggregates Equations" href="aggregates.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro/intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="OG-Core - Home"/>
+    <script>document.write(`<img src="../../_static/OG-Core_logo.png" class="logo__image only-dark" alt="OG-Core - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro/intro.html">
+                    OG-Core
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributor_guide.html">Contributor Guide</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="public_api.html">API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Demographics Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utilities Functions</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../theory/intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/demographics.html">Demographics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/households.html">Households</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/firms.html">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/market_clearing.html">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/stationarization.html">Stationarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equilibrium.html">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/calibration.html">Calibrating OG-Core</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../theory/derivations.html">Derivations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../OGCore_references.html">References</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../citations.html">Citations and use cases of OG-Core</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/api/demographics.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/content/api/demographics.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Demographics Functions</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.demographics">ogcore.demographics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_fert"><code class="docutils literal notranslate"><span class="pre">get_fert()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_imm_rates"><code class="docutils literal notranslate"><span class="pre">get_imm_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_mort"><code class="docutils literal notranslate"><span class="pre">get_mort()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_pop"><code class="docutils literal notranslate"><span class="pre">get_pop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_pop_objs"><code class="docutils literal notranslate"><span class="pre">get_pop_objs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_un_data"><code class="docutils literal notranslate"><span class="pre">get_un_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.immsolve"><code class="docutils literal notranslate"><span class="pre">immsolve()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.pop_rebin"><code class="docutils literal notranslate"><span class="pre">pop_rebin()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="demographics-functions">
+<span id="demographics"></span><h1>Demographics Functions<a class="headerlink" href="#demographics-functions" title="Link to this heading">#</a></h1>
+<p><strong>demographics.py modules</strong></p>
+<section id="module-ogcore.demographics">
+<span id="ogcore-demographics"></span><h2>ogcore.demographics<a class="headerlink" href="#module-ogcore.demographics" title="Link to this heading">#</a></h2>
+<hr class="docutils" />
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.get_fert">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_fert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totpers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_fert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_fert" title="Link to this definition">#</a></dt>
+<dd><p>This function generates a vector of fertility rates by model period
+age that corresponds to the fertility rate data by age in years.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
+<li><p><strong>min_age</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_age</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4, &lt; 100 (max age in UN data is 99, 100+ i same group)</p></li>
+<li><p><strong>country_id</strong> (<em>str</em>) – country id for UN data</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – start year for UN data</p></li>
+<li><p><strong>end_year</strong> (<em>int</em>) – end year for UN data</p></li>
+<li><p><strong>graph</strong> (<em>bool</em>) – =True if want graphical output</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path to save fertility rate plot</p></li>
+<li><p><strong>download_path</strong> (<em>str</em>) – path to save fertility rate data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>fertility rates for each year of data</dt><dd><p>and model age</p>
+</dd>
+</dl>
+<p>fig (Matplotlib Figure): figure object if graph=True and plot_path=None</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>fert_rates (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.get_imm_rates">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_imm_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totpers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fert_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mort_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infmort_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_imm_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_imm_rates" title="Link to this definition">#</a></dt>
+<dd><p>Calculate immigration rates by age as a residual given population
+levels in different periods, then output average calculated
+immigration rate. We have to replace the first mortality rate in
+this function in order to adjust the first implied immigration rate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
+<li><p><strong>min_age</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_age</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4</p></li>
+<li><p><strong>fert_rates</strong> (<em>Numpy array</em>) – fertility rates for each year of data
+and model age</p></li>
+<li><p><strong>mort_rates</strong> (<em>Numpy array</em>) – mortality rates for each year of data
+and model age</p></li>
+<li><p><strong>infmort_rates</strong> (<em>Numpy array</em>) – infant mortality rates for each year
+of data</p></li>
+<li><p><strong>pop_dist</strong> (<em>Numpy array</em>) – population distribution over T0+1 periods</p></li>
+<li><p><strong>country_id</strong> (<em>str</em>) – country id for UN data</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – start year for UN data</p></li>
+<li><p><strong>end_year</strong> (<em>int</em>) – end year for UN data</p></li>
+<li><p><strong>graph</strong> (<em>bool</em>) – =True if want graphical output</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path to save figure to</p></li>
+<li><p><strong>download_path</strong> (<em>str</em>) – path to save immigration rate data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>immigration rates that correspond to</dt><dd><p>each year of data and period of life, length E+S</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>imm_rates_2D (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.get_mort">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_mort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totpers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_mort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_mort" title="Link to this definition">#</a></dt>
+<dd><p>This function generates a vector of mortality rates by model period
+age.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>totpers</strong> (<em>int</em>) – total number of agent life periods (E+S), &gt;= 3</p></li>
+<li><p><strong>min_age</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_age</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4, &lt; 100 (max age in UN data is 99, 100+ i same group)</p></li>
+<li><p><strong>country_id</strong> (<em>str</em>) – country id for UN data</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – start year for UN data</p></li>
+<li><p><strong>end_year</strong> (<em>int</em>) – end year for UN data</p></li>
+<li><p><strong>graph</strong> (<em>bool</em>) – =True if want graphical output</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path to save mortality rate plot</p></li>
+<li><p><strong>download_path</strong> (<em>str</em>) – path to save mortality rate data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>mort_rates (Numpy array) mortality rates for each year of data</dt><dd><p>and model age</p>
+</dd>
+</dl>
+<p>infmort_rate_vec (Numpy array): infant mortality rates for each
+fig (Matplotlib Figure): figure object if graph=True and plot_path=None</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.get_pop">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infer_pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fert_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mort_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infmort_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_pop_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_pop" title="Link to this definition">#</a></dt>
+<dd><p>Retrieves the population distribution data from the UN data API</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>E</strong> (<em>int</em>) – number of model periods in which agent is not
+economically active, &gt;= 1</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of model periods in which agent is economically
+active, &gt;= 3</p></li>
+<li><p><strong>min_age</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_age</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4, &lt; 100 (max age in UN data is 99, 100+ i same group)</p></li>
+<li><p><strong>infer_pop</strong> (<em>bool</em>) – =True if want to infer the population
+from the given fertility, mortality, and immigration rates</p></li>
+<li><p><strong>fert_rates</strong> (<em>Numpy array</em>) – fertility rates for each year of data
+and model age</p></li>
+<li><p><strong>mort_rates</strong> (<em>Numpy array</em>) – mortality rates for each year of data
+and model age</p></li>
+<li><p><strong>infmort_rates</strong> (<em>Numpy array</em>) – infant mortality rates for each year
+of data</p></li>
+<li><p><strong>imm_rates</strong> (<em>Numpy array</em>) – immigration rates for reach year of data
+and model age</p></li>
+<li><p><strong>initial_pop_data</strong> (<em>Pandas DataFrame</em>) – initial population data
+for the first year of model calibration (start_year)</p></li>
+<li><p><strong>pre_pop_dist</strong> (<em>Numpy array</em>) – population distribution for the year
+before the initial year for calibration</p></li>
+<li><p><strong>country_id</strong> (<em>str</em>) – country id for UN data</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – start year data</p></li>
+<li><p><strong>end_year</strong> (<em>int</em>) – end year for data</p></li>
+<li><p><strong>download_path</strong> (<em>str</em>) – path to save population distribution data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>population distribution over T0 periods
+pre_pop (Numpy array): population distribution one year before</p>
+<blockquote>
+<div><p>initial year for calibration of omega_S_preTP</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pop_2D (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.get_pop_objs">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_pop_objs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">320</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fert_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mort_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infmort_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infer_pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_pop_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_data_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2023</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_data_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2026</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">GraphDiag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_pop_objs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_pop_objs" title="Link to this definition">#</a></dt>
+<dd><p>This function produces the demographics objects to be used in the
+OG-USA model package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>E</strong> (<em>int</em>) – number of model periods in which agent is not
+economically active, &gt;= 1</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of model periods in which agent is economically
+active, &gt;= 3</p></li>
+<li><p><strong>T</strong> (<em>int</em>) – number of periods to be simulated in TPI, &gt; 2*S</p></li>
+<li><p><strong>min_age</strong> (<em>int</em>) – age in years at which agents are born, &gt;= 0</p></li>
+<li><p><strong>max_age</strong> (<em>int</em>) – age in years at which agents die with certainty,
+&gt;= 4, &lt; 100 (max age in UN data is 99, 100+ i same group)</p></li>
+<li><p><strong>fert_rates</strong> (<em>array_like</em>) – user provided fertility rates, dimensions
+are T0 x E+S</p></li>
+<li><p><strong>mort_rates</strong> (<em>array_like</em>) – user provided mortality rates, dimensions
+are T0 x E+S</p></li>
+<li><p><strong>infmort_rates</strong> (<em>array_like</em>) – user provided infant mortality rates,
+length T0</p></li>
+<li><p><strong>imm_rates</strong> (<em>array_like</em>) – user provided immigration rates, dimensions
+are T0 x E+S</p></li>
+<li><p><strong>infer_pop</strong> (<em>bool</em>) – =True if want to infer the population</p></li>
+<li><p><strong>pop_dist</strong> (<em>array_like</em>) – user provided population distribution,
+dimensions are T0+1 x E+S</p></li>
+<li><p><strong>pre_pop_dist</strong> (<em>array_like</em>) – user provided population distribution
+for the year before the initial year for calibration,
+length E+S</p></li>
+<li><p><strong>country_id</strong> (<em>str</em>) – country id for UN data</p></li>
+<li><p><strong>initial_data_year</strong> (<em>int</em>) – initial year of data to use
+(not relevant if have user provided data)</p></li>
+<li><p><strong>final_data_year</strong> (<em>int</em>) – final year of data to use,
+T0=initial_year-final_year + 1</p></li>
+<li><p><strong>pop_dist</strong> – user provided population distribution, last
+dimension is of length E+S</p></li>
+<li><p><strong>GraphDiag</strong> (<em>bool</em>) – =True if want graphical output and printed
+diagnostics</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl>
+<dt>includes:</dt><dd><dl class="simple">
+<dt>omega_path_S (Numpy array), time path of the population</dt><dd><p>distribution from the current state to the steady-state,
+size T+S x S</p>
+</dd>
+</dl>
+<p>g_n_SS (scalar): steady-state population growth rate
+omega_SS (Numpy array): normalized steady-state population</p>
+<blockquote>
+<div><p>distribution, length S</p>
+</div></blockquote>
+<dl class="simple">
+<dt>surv_rates (Numpy array): survival rates that correspond to</dt><dd><p>each model period of life, length S</p>
+</dd>
+<dt>mort_rates (Numpy array): mortality rates that correspond to</dt><dd><p>each model period of life, length S</p>
+</dd>
+<dt>g_n_path (Numpy array): population growth rates over the time</dt><dd><p>path, length T + S</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pop_dict (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.get_un_data">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_un_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_un_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_un_data" title="Link to this definition">#</a></dt>
+<dd><p>This function retrieves data from the United Nations Data Portal API
+for UN population data (see
+<a class="reference external" href="https://population.un.org/dataportal/about/dataapi">https://population.un.org/dataportal/about/dataapi</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>variable_code</strong> (<em>str</em>) – variable code for UN data</p></li>
+<li><p><strong>country_id</strong> (<em>str</em>) – country id for UN data</p></li>
+<li><p><strong>start_year</strong> (<em>int</em>) – start year for UN data</p></li>
+<li><p><strong>end_year</strong> (<em>int</em>) – end year for UN data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame of UN data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>df (Pandas DataFrame)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.immsolve">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">immsolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imm_rates</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#immsolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.immsolve" title="Link to this definition">#</a></dt>
+<dd><p>This function generates a vector of errors representing the
+difference in two consecutive periods stationary population
+distributions. This vector of differences is the zero-function
+objective used to solve for the immigration rates vector, similar to
+the original immigration rates vector from get_imm_rates(), that
+sets the steady-state population distribution by age equal to the
+population distribution in period int(1.5*S)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>imm_rates</strong> (<em>Numpy array</em>) – immigration rates that correspond to
+each period of life, length E+S</p></li>
+<li><p><strong>args</strong> (<em>tuple</em>) – (fert_rates, mort_rates, infmort_rates, omega_cur,
+g_n_SS)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>difference between omega_new and</dt><dd><p>omega_cur_pct, length E+S</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>omega_errs (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.pop_rebin">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">pop_rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curr_pop_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">totpers_new</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#pop_rebin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.pop_rebin" title="Link to this definition">#</a></dt>
+<dd><p>For cases in which totpers (E+S) is less than the number of periods
+in the population distribution data, this function calculates a new
+population distribution vector with totpers (E+S) elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>curr_pop_dist</strong> (<em>Numpy array</em>) – population distribution over N
+periods</p></li>
+<li><p><strong>totpers_new</strong> (<em>int</em>) – number of periods to which we are
+transforming the population distribution, &gt;= 3</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>new population distribution over</dt><dd><p>totpers (E+S) periods that approximates curr_pop_dist</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>curr_pop_new (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content/api"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="aggregates.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Aggregates Equations</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="elliptical_u_est.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Elliptical Utility Function Estimation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.demographics">ogcore.demographics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_fert"><code class="docutils literal notranslate"><span class="pre">get_fert()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_imm_rates"><code class="docutils literal notranslate"><span class="pre">get_imm_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_mort"><code class="docutils literal notranslate"><span class="pre">get_mort()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_pop"><code class="docutils literal notranslate"><span class="pre">get_pop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_pop_objs"><code class="docutils literal notranslate"><span class="pre">get_pop_objs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_un_data"><code class="docutils literal notranslate"><span class="pre">get_un_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.immsolve"><code class="docutils literal notranslate"><span class="pre">immsolve()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.pop_rebin"><code class="docutils literal notranslate"><span class="pre">pop_rebin()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

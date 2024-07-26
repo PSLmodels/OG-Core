@@ -17,12 +17,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
@@ -36,9 +36,9 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -138,6 +138,8 @@
         <div class="sidebar-primary-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="../../content/intro/intro.html">
   
@@ -159,7 +161,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -184,6 +186,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/firm.html">Firm Functions</a></li>
@@ -333,10 +336,10 @@
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
   </button>
 `);
 </script>
@@ -344,7 +347,7 @@ document.write(`
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
   </button>
 `);
@@ -1312,9 +1315,7 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="extrapolate_arrays">
-<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.extrapolate_arrays">[docs]</a>
-<span class="k">def</span> <span class="nf">extrapolate_arrays</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;Parameter Name&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">extrapolate_array</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;Parameter Name&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extrapolates input values to fit model dimensions. Using this allows</span>
 <span class="sd">    users to input smaller dimensional arrays and have the model infer</span>
@@ -1464,8 +1465,54 @@ document.write(`
                     <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                 <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">param_out</span></div>
+    <span class="k">return</span> <span class="n">param_out</span>
 
+
+<span class="k">def</span> <span class="nf">extrapolate_nested_list</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to extrapolate a nested list to a specified size.</span>
+
+<span class="sd">    Currently only set up for 3 deep nested lists, but could be</span>
+<span class="sd">    generalized to deeper or shallower lists.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        list_in (list): list to extrapolate</span>
+<span class="sd">        dims (tuple): dimensions of the output list</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list_out (list): extrapolated list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">num_params</span> <span class="o">=</span> <span class="n">dims</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">list_in</span> <span class="o">=</span> <span class="n">list_in</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># in case parameters are numpy arrays</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># catches if they are lists already</span>
+        <span class="k">pass</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s2">&quot;please give a list&quot;</span>
+
+    <span class="k">def</span> <span class="nf">depth</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># for now, just have this work for 3 deep lists since</span>
+    <span class="c1"># the only OG-Core use case is for tax function parameters</span>
+    <span class="k">assert</span> <span class="n">depth</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;please give a list that is three lists deep&quot;</span>
+    <span class="k">assert</span> <span class="n">depth</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">dims</span>
+    <span class="p">),</span> <span class="s2">&quot;please make sure the depth of nested list is equal to the length of dims to extrapolate&quot;</span>
+    <span class="c1"># Extrapolate along the first dimension</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span><span class="p">:</span>
+        <span class="n">list_in</span> <span class="o">=</span> <span class="n">list_in</span><span class="p">[:</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span><span class="p">:</span>
+        <span class="n">params_to_add</span> <span class="o">=</span> <span class="p">[</span><span class="n">list_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">S</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">))</span>
+        <span class="n">list_in</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">params_to_add</span><span class="p">)</span>
+    <span class="c1"># Extrapolate along the second dimension</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">S</span><span class="p">:</span>
+            <span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">][:</span><span class="n">S</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">S</span><span class="p">:</span>
+            <span class="n">params_to_add</span> <span class="o">=</span> <span class="p">[</span><span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+            <span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">params_to_add</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">list_in</span>
 
 
 <div class="viewcode-block" id="CustomHttpAdapter">
@@ -1839,8 +1886,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>
