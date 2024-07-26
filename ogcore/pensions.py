@@ -199,7 +199,10 @@ def DB_amount(w, e, n, j, p):
         DB (Numpy array): pension amount for each household
     """
     L_inc_avg = np.zeros(0)
+    # Adjustment to turn years into model periods
+    # TODO: could add this to parameters.py at some point
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
+    equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib))
     L_inc_avg_s = np.zeros(equiv_periods)
 
     if n.shape[0] < p.S:
@@ -223,7 +226,7 @@ def DB_amount(w, e, n, j, p):
             DB,
             equiv_periods,
             p.alpha_db,
-            p.yr_contr,
+            equiv_yr_contrib,
         )
         DB = DB[-per_rmn:]
 
@@ -242,7 +245,7 @@ def DB_amount(w, e, n, j, p):
                 DB,
                 equiv_periods,
                 p.alpha_db,
-                p.yr_contr,
+                equiv_yr_contrib,
             )
 
         elif np.ndim(n) == 2:
@@ -260,7 +263,7 @@ def DB_amount(w, e, n, j, p):
                 DB,
                 equiv_periods,
                 p.alpha_db,
-                p.yr_contr,
+                equiv_yr_contrib,
             )
 
     return DB
@@ -509,6 +512,7 @@ def deriv_DB(w, e, per_rmn, p):
             supply
     """
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
+    equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib))
     if per_rmn < (p.S - p.retire + 1):
         d_theta = np.zeros(p.S)
     else:
@@ -520,7 +524,7 @@ def deriv_DB(w, e, per_rmn, p):
             per_rmn,
             equiv_periods,
             p.alpha_db,
-            p.yr_contr,
+            equiv_yr_contrib,
         )
     return d_theta
 
