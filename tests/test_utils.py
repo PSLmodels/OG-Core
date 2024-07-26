@@ -790,13 +790,61 @@ test_data = [
     test_data,
     ids=["2D, scalar in", "2D, 1D in", "2D in", "1D out", "3D out"],
 )
-def test_extrapolate_arrays(param_in, dims, expected):
+def test_extrapolate_array(param_in, dims, expected):
     """
-    Test of the utils.extrapolate_arrays function
+    Test of the utils.extrapolate_array function
     """
-    test_value = utils.extrapolate_arrays(param_in, dims=dims)
+    test_value = utils.extrapolate_array(param_in, dims=dims)
 
     assert np.allclose(test_value, expected)
+
+
+T_L = 20
+S_L = 4
+list1 = [[[3]]] * (T_L + 10)
+list2 = [[[3]]] * (T_L - 6)
+list3 = [[[3]] * (S_L + 2)]
+list4 = [[[3]] * (S_L - 2)]
+list5 = np.ones((18, 2, 3))
+test_data = [
+    (list1, (T_L, S_L, 1)),
+    (list2, (T_L, S_L, 1)),
+    (list3, (T_L, S_L, 1)),
+    (list4, (T_L, S_L, 1)),
+    (list5, (T_L, S_L, 3)),
+]
+
+
+@pytest.mark.parametrize(
+    "list_in,dims",
+    test_data,
+    ids=[" > T + S", "<T", ">S", "<S", "Numpy array"],
+)
+def test_extrapolate_nested_list(list_in, dims):
+    """
+    Test of the utils.extrapolate_nested_list function
+    """
+
+    test_value = utils.extrapolate_nested_list(list_in, dims=dims)
+
+    min_S = dims[1]
+    max_S = dims[1]
+    min_p = dims[2]
+    max_p = dims[2]
+    for t in range(len(test_value)):
+        min_S = min(min_S, len(test_value[t]))
+        max_S = max(max_S, len(test_value[t]))
+        for s in range(len(test_value[t])):
+            min_p = min(len(test_value[t][s]), min_p)
+            max_p = max(len(test_value[t][s]), max_p)
+
+    assert len(test_value) == dims[0] + dims[1]
+    assert len(test_value[0]) == dims[1]
+    assert len(test_value[0][0]) == dims[2]
+    assert min_S == dims[1]
+    assert max_S == dims[1]
+    assert min_p == dims[2]
+    assert max_p == dims[2]
 
 
 arr1 = np.array([1.0, 2.0, 2.0, 3.0])
