@@ -869,7 +869,7 @@ def avg_by_bin(x, y, weights=None, bins=10, eql_pctl=True):
     return x_binned, y_binned, weights_binned
 
 
-def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
+def extrapolate_array(param_in, dims=None, item="Parameter Name"):
     """
     Extrapolates input values to fit model dimensions. Using this allows
     users to input smaller dimensional arrays and have the model infer
@@ -1022,7 +1022,7 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
     return param_out
 
 
-def extrapolate_lists(list_in, dims=(400, 80, 1)):
+def extrapolate_nested_list(list_in, dims=(400, 80, 1)):
                 try:
                 tax_to_set = (
                     tax_to_set.tolist()

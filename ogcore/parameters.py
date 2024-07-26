@@ -4,7 +4,7 @@ import scipy.interpolate as si
 import paramtools
 import ogcore
 from ogcore import elliptical_u_est
-from ogcore.utils import rate_conversion, extrapolate_arrays, extrapolate_nested_list
+from ogcore.utils import rate_conversion, extrapolate_array, extrapolate_nested_list
 from ogcore.constants import BASELINE_DIR
 
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -170,7 +170,7 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S,), item=item
             )
             setattr(self, item, param_out)
@@ -183,7 +183,7 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list2:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.M), item=item
             )
             setattr(self, item, param_out)
@@ -191,7 +191,7 @@ class Specifications(paramtools.Parameters):
         tp_param_list3 = ["tau_c"]
         for item in tp_param_list3:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.I), item=item
             )
             setattr(self, item, param_out)
@@ -202,7 +202,7 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list3:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.J), item=item
             )
             setattr(self, item, param_out)
@@ -212,7 +212,7 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list4:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.S), item=item
             )
             setattr(self, item, param_out)
@@ -241,18 +241,18 @@ class Specifications(paramtools.Parameters):
         # want to allow user to enter one that varies by only S, S and J,
         # S and T, or T and S and J.
         param_in = getattr(self, "eta")
-        param_out = extrapolate_arrays(
+        param_out = extrapolate_array(
             param_in, dims=(self.T + self.S, self.S, self.J), item="eta"
         )
         setattr(self, "eta", param_out)
         param_in = getattr(self, "e")
-        param_out = extrapolate_arrays(
+        param_out = extrapolate_array(
             param_in, dims=(self.T, self.S, self.J), item="e"
         )
         setattr(self, "e", param_out)
         # Extrapolate chi_n over T + S
         param_in = getattr(self, "chi_n")
-        param_out = extrapolate_arrays(
+        param_out = extrapolate_array(
             param_in, dims=(self.T + self.S, self.S), item="chi_n"
         )
         setattr(self, "chi_n", param_out)
