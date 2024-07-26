@@ -343,26 +343,28 @@ Under the U.S.-style social security system, households over age $R$ received a 
   :label: eqn:PIA
     PIAbase_{j,R,t+R} =
       \begin{cases}
-        PIArate_1 \times AIME_{j,R,t+R}, \text{for} AIME_{j,R,t+R} \leq AIMEbkt_1 \\
-        PIArate_2 \times AIME_{j,R,t+R}, \text{for} AIMEbkt_1 < AIME_{j,R,t+R} \leq AIMEbkt_2 \\
-        PIArate_3 \times AIME_{j,R,t+R}, \text{for} AIMEbkt_2 < AIME_{j,R,t+R} \\
+        PIArate_1 \times AIME_{j,R,t+R}, \text{for } AIME_{j,R,t+R} \leq AIMEbkt_1 \\
+        PIArate_2 \times AIME_{j,R,t+R}, \text{for } AIMEbkt_1 < AIME_{j,R,t+R} \leq AIMEbkt_2 \\
+        PIArate_3 \times AIME_{j,R,t+R}, \text{for } AIMEbkt_2 < AIME_{j,R,t+R} \\
       \end{cases}
   ```
- The PIA is then capped at a maximum, set by the parameter `PIA_maxpayment`, $PIA_{j,R,t+R} = max{PIAbase_{j,R,t+R}, \text{PIA max payment amount}}$.
+
+ The PIA is then capped at a maximum, set by the parameter `PIA_maxpayment`, $PIA_{j,R,t+R} = \max\{PIAbase_{j,R,t+R}, \text{ PIA max payment amount}\}$.
 
   The replacement rate, $\theta_j$ is then calculated as annual earnings, with an adjustment for the wage rate.:
 
-     ```{math}
+  ```{math}
   :label: eqn:theta
-    \theta_{j,R,t+R} = \frac{PIA_{j,R,t+R}} \times 12}{factor \times w_{t+R}}
+    \theta_{j,R,t+R} = \frac{PIA_{j,R,t+R} \times 12}{factor \times w_{t+R}}
   ```
+
   Note that $aIME_{j,R,t+R}$ is a function of each households' earning history, but their choice of earning may depend on their retirement benefit.  Solving this exactly would introduce and additional fixed point problem in both the steady state solution and in the time path solution.  The latter would be extremely computationally taxing.  Therefore, we make the simplification of determining the AIME for each type $j$ using the steady state solution and earnings for type $j$ in the steady state.  This leads to some approximation error, but because $\theta_j$ is adjusted by the current wage rate, this approximation error is minized.
 
   The pension amount for households under the US-style social security system is then:
 
   ```{math}
   :label: eqn:ss_pension
-    pension_{j,s,t} = \theta_j \times w_t \forall s > R
+    pension_{j,s,t} = \theta_j \times w_t \quad \forall s > R
   ```
 
 
@@ -372,7 +374,7 @@ The defined benefit system pension amount is given as:
 
   ```{math}
   :label: eqn:db_pension
-  pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \forall s > R
+  pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \quad \forall s > R
   ```
 
 where:
@@ -400,20 +402,17 @@ The pension amount under a notional defined contribution system is given as:
 
   ```{math}
   :label: eqn:ndc_pension
-   pension{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \forall s > R
+   pension{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s > R
   ```
 
 where:
-  \begin{itemize}
-    \item $\tau^p$ is the pension contribution tax rate
-    \item $g_{NDC,t}$ the rate of growth applied to contributions.
-      \begin{itemize}
-        \item For example, In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
-        \item i.e., $g_{NDC,t}=\prod_{j=i}^{R-1}\bar{g}_{j}$
-        \item Note, this is not $g_y$. In the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, and in the transition path equilibrium, it's not a function of exogenous variables since the growth rate of nominal GDP is endogenous.
-      \end{itemize}
-    \item $\delta_{R, t}$ is the conversion coefficient at time $t$ and its calculation is detailed below.
-  \end{itemize}
+
+  * $\tau^p$ is the pension contribution tax rate
+  * $g_{NDC,t}$ the rate of growth applied to contributions.
+    * For example, In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
+    * i.e., $g_{NDC,t}=\prod_{j=i}^{R-1}\bar{g}_{j}$
+    * Note, this is not $g_y$. In the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, and in the transition path equilibrium, it's not a function of exogenous variables since the growth rate of nominal GDP is endogenous.
+  * $\delta_{R, t}$ is the conversion coefficient at time $t$ and its calculation is detailed below.
 
   ```{math}
   \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
