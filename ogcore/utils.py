@@ -1022,6 +1022,69 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
     return param_out
 
 
+def extrapolate_lists(list_in, dims=(400, 80, 1)):
+                try:
+                tax_to_set = (
+                    tax_to_set.tolist()
+                )  # in case parameters are numpy arrays
+            except AttributeError:  # catches if they are lists already
+                pass
+            if len(tax_to_set) == 1 and isinstance(tax_to_set[0], float):
+                setattr(
+                    self,
+                    item,
+                    [
+                        [[tax_to_set] for i in range(self.S)]
+                        for t in range(self.T)
+                    ],
+                )
+            elif any(
+                [
+                    isinstance(tax_to_set[i][j], list)
+                    for i, v in enumerate(tax_to_set)
+                    for j, vv in enumerate(tax_to_set[i])
+                ]
+            ):
+                if len(tax_to_set) > self.T + self.S:
+                    tax_to_set = tax_to_set[: self.T + self.S]
+                if len(tax_to_set) < self.T + self.S:
+                    tax_params_to_add = [tax_to_set[-1]] * (
+                        self.T + self.S - len(tax_to_set)
+                    )
+                    tax_to_set.extend(tax_params_to_add)
+                if len(tax_to_set[0]) > self.S:
+                    for t, v in enumerate(tax_to_set):
+                        tax_to_set[t] = tax_to_set[t][: self.S]
+                if len(tax_to_set[0]) < self.S:
+                    tax_params_to_add = [tax_to_set[:][-1]] * (
+                        self.S - len(tax_to_set[0])
+                    )
+                    tax_to_set[0].extend(tax_params_to_add)
+
+                    # for t, v in enumerate(tax_to_set):
+                    #     for j, k in enumerate(tax_to_set)
+                    #     tax_params_to_add = [tax_to_set[t][-1]] * (
+                    #         self.S - len(tax_to_set[t])
+                    #     )
+                    #     tax_to_set[t].extend(tax_params_to_add)
+
+
+
+                    print("TAX PARAMS TO ADD: ", tax_params_to_add)
+                    print("TAX TO SET sizes before: ", len(tax_to_set), len(tax_to_set[0]), len(tax_to_set[0][0]))
+                    tax_to_set[0].extend(tax_params_to_add)
+                    print("TAX TO SET sizes after: ", len(tax_to_set), len(tax_to_set[0]), len(tax_to_set[0][0]))
+
+                setattr(self, item, tax_to_set)
+            else:
+                print(
+                    "please give a "
+                    + item
+                    + " that is a single element or nested lists of"
+                    + " lists that is three lists deep"
+                )
+                assert False
+
 class CustomHttpAdapter(requests.adapters.HTTPAdapter):
     """
     The UN Data Portal server doesn't support "RFC 5746 secure renegotiation". This causes and error when the client is using OpenSSL 3, which enforces that standard by default.
