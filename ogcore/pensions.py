@@ -661,7 +661,7 @@ def delta_ret(r, Y, p):
     dir_delta = delta_ret_loop(
         p.S, p.retire, surv_rates, g_dir_value, dir_delta_s_empty
     )
-    delta_ret = 1 / (dir_delta - p.k_ret)
+    delta_ret = 1 / (dir_delta + p.indR - p.k_ret)
 
     return delta_ret
 

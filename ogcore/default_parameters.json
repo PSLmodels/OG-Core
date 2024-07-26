@@ -2939,6 +2939,25 @@
             }
         }
     },
+    "indR": {
+        "title": "Adjustment for survivor benefits under a notional defined contribution system.",
+        "description": "Adjustment for survivor benefits under a notional defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
     "k_ret": {
         "title": "Adjustment for frequency of pension payments under a notional defined contribution system.",
         "description": "Adjustment for frequency of pension payments under a notional defined contribution system.",
