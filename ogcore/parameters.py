@@ -4,7 +4,11 @@ import scipy.interpolate as si
 import paramtools
 import ogcore
 from ogcore import elliptical_u_est
-from ogcore.utils import rate_conversion, extrapolate_array, extrapolate_nested_list
+from ogcore.utils import (
+    rate_conversion,
+    extrapolate_array,
+    extrapolate_nested_list,
+)
 from ogcore.constants import BASELINE_DIR
 
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -234,7 +238,9 @@ class Specifications(paramtools.Parameters):
                     + " lists that is three lists deep"
                 )
                 assert False
-            tax_to_set_out = extrapolate_nested_list(tax_to_set_in, dims=(self.T, self.S, len(tax_to_set_in[0][0])))
+            tax_to_set_out = extrapolate_nested_list(
+                tax_to_set_in, dims=(self.T, self.S, len(tax_to_set_in[0][0]))
+            )
             setattr(self, item, tax_to_set_out)
 
         # Try to deal with size of eta.  It may vary by S, J, T, but
