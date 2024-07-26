@@ -799,19 +799,19 @@ def test_extrapolate_array(param_in, dims, expected):
     assert np.allclose(test_value, expected)
 
 
-T = 20
-S = 4
-list1 = [[[3]]] * (T + 10)
-list2 = [[[3]]] * (T - 6)
-list3 = [[[3]] * (S + 2)]
-list4 = [[[3]] * (S - 2)]
+T_L = 20
+S_L = 4
+list1 = [[[3]]] * (T_L + 10)
+list2 = [[[3]]] * (T_L - 6)
+list3 = [[[3]] * (S_L + 2)]
+list4 = [[[3]] * (S_L - 2)]
 list5 = np.ones((18, 2, 3))
 test_data = [
-    (list1, (T, S, 1)),
-    (list2, (T, S, 1)),
-    (list3, (T, S, 1)),
-    (list4, (T, S, 1)),
-    (list5, (T, S, 3)),
+    (list1, (T_L, S_L, 1)),
+    (list2, (T_L, S_L, 1)),
+    (list3, (T_L, S_L, 1)),
+    (list4, (T_L, S_L, 1)),
+    (list5, (T_L, S_L, 3)),
 ]
 
 
