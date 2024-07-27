@@ -23,6 +23,7 @@ There is also a link to the source code for each documented member.
    parameter_plots
    parameter_tables
    parameters
+   pensions
    tax
    txfunc
    utils
