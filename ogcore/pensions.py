@@ -9,8 +9,11 @@ THOUSAND = 1000
 
 
 def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
-    """
+    r"""
     Calculates replacement rate values for the social security system.
+
+    .. math::
+        \theta_{j,R,t+R} = \frac{PIA_{j,R,t+R} \times 12}{factor \times w_{t+R}}
 
     Args:
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
@@ -106,9 +109,12 @@ def pension_amount(r, w, n, Y, theta, t, j, shift, method, e, factor, p):
 
 
 def SS_amount(w, n, theta, t, j, shift, method, e, p):
-    """
+    r"""
     Calculate public pension benefit amounts for each household under
     a US-style social security system.
+
+    .. mathL::
+        pension_{j,s,t} = \theta_j \times w_t \quad \forall s > R
 
     Args:
         w (array_like): real wage rate
@@ -185,8 +191,12 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
 
 
 def DB_amount(w, e, n, j, p):
-    """
+    r"""
     Calculate public pension from a defined benefits system.
+
+    .. math::
+        pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}
+            n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \quad \forall s > R
 
     Args:
         w (array_like): real wage rate
@@ -270,9 +280,13 @@ def DB_amount(w, e, n, j, p):
 
 
 def NDC_amount(w, e, n, r, Y, j, p):
-    """
+    r"""
     Calculate public pension from a notional defined contribution
     system.
+
+    .. math::
+        pension{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}
+            e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s > R
 
     Args:
         w (array_like): real wage rate
@@ -350,8 +364,11 @@ def NDC_amount(w, e, n, r, Y, j, p):
 
 
 def PS_amount(w, e, n, j, factor, p):
-    """
+    r"""
     Calculate public pension from a points system.
+
+    .. math::
+        pension{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s > R
 
     Args:
         w (array_like): real wage rate
@@ -459,8 +476,15 @@ def deriv_theta(r, w, e, Y, per_rmn, factor, p):
 
 
 def deriv_NDC(r, w, e, Y, per_rmn, p):
-    """
+    r"""
     Change in NDC pension benefits for another unit of labor supply
+
+    .. math::
+        \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+            \begin{cases}
+            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
+            0, & \text{if}\ s \geq R \\
+            \end{cases}
 
     Args:
         r (array_like): interest rate
@@ -498,8 +522,16 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
 
 
 def deriv_DB(w, e, per_rmn, p):
-    """
+    r"""
     Change in DB pension benefits for another unit of labor supply
+
+    .. math::
+        \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+            \begin{cases}
+                0 , & \text{if}\ s < R - Cy \\
+                w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
+                0, & \text{if}\ s \geq R \\
+            \end{cases}
 
     Args:
         w (array_like): real wage rate
@@ -530,9 +562,16 @@ def deriv_DB(w, e, per_rmn, p):
 
 
 def deriv_PS(w, e, per_rmn, factor, p):
-    """
+    r"""
     Change in points system pension benefits for another unit of
     labor supply
+
+    .. math::
+        \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+            \begin{cases}
+                0 , & \text{if}\ s < R \\
+                w_{t}e_{j,s}v_{t}, & \text{if}\ s \geq R \\
+            \end{cases}
 
     Args:
         w (array_like): real wage rate
@@ -563,7 +602,7 @@ def deriv_PS(w, e, per_rmn, factor, p):
 # the pension_amount function
 # TODO: create a parameter for pension growth rates -- a single param should do
 def delta_point(r, Y, g_n, g_y, p):
-    """
+    r"""
     Compute growth rate used for contributions to points system pension
 
     Args:
@@ -646,8 +685,11 @@ def g_dir(r, Y, g_y, g_n, dir_growth_rate):
 
 
 def delta_ret(r, Y, p):
-    """
+    r"""
     Compute conversion coefficient for the NDC pension amount
+
+    .. math::
+        \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
 
     Args:
         r (array_like): interest rate
