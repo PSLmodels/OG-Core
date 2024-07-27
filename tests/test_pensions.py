@@ -77,13 +77,14 @@ p.S = 7
 p.alpha_db = 0.2
 p.retire = 4
 p.avg_earn_num_years = 50
-p.yr_contr = 4
+p.yr_contrib = 55
 p.g_y = np.ones(p.T) * 0.03
 j = 1
 w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
+equiv_contrib_periods = int(round((p.S / 80.0) * p.yr_contrib)) - 1
 L_inc_avg = np.zeros(0)
 L_inc_avg_s = np.zeros(equiv_periods)
 DB = np.zeros(p.S)
@@ -103,7 +104,7 @@ args1 = (
     DB,
     equiv_periods,
     p.alpha_db,
-    p.yr_contr,
+    equiv_contrib_periods
 )
 
 test_data = [(args1, DB_loop_expected1)]
@@ -129,7 +130,7 @@ def test_DB_1dim_loop(args, DB_loop_expected):
         DB,
         last_career_yrs,
         rep_rate_py,
-        yr_contr,
+        yr_contrib,
     ) = args
     DB_loop = pensions.DB_1dim_loop(
         w,
@@ -143,7 +144,7 @@ def test_DB_1dim_loop(args, DB_loop_expected):
         DB,
         last_career_yrs,
         rep_rate_py,
-        yr_contr,
+        yr_contrib,
     )
     assert np.allclose(DB_loop, DB_loop_expected)
 
@@ -153,7 +154,7 @@ p.S = 7
 p.retire = 4
 per_rmn = p.S
 p.avg_earn_num_years = 50
-p.yr_contr = p.retire
+p.yr_contrib = 55
 p.alpha_db = 0.2
 p.g_y = np.ones(p.T) * 0.03
 w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
@@ -163,6 +164,7 @@ deriv_DB_loop_expected = np.array(
 )
 d_theta_empty = np.zeros_like(w)
 equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
+equiv_contrib_periods = int(round((p.S / 80.0) * p.yr_contrib)) - 1
 args3 = (
     w,
     e,
@@ -171,7 +173,7 @@ args3 = (
     per_rmn,
     equiv_periods,
     p.alpha_db,
-    p.yr_contr,
+    equiv_contrib_periods,
 )
 
 test_data = [(args3, deriv_DB_loop_expected)]
@@ -182,9 +184,9 @@ def test_deriv_DB_loop(args, deriv_DB_loop_expected):
     """
     Test of the pensions.deriv_DB_loop() function.
     """
-    (w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contr) = args
+    (w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contrib) = args
     deriv_DB_loop = pensions.deriv_DB_loop(
-        w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contr
+        w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contrib
     )
 
     assert np.allclose(deriv_DB_loop, deriv_DB_loop_expected)
@@ -228,7 +230,7 @@ p = Specifications()
 p.S = 7
 p.retire = 4
 p.avg_earn_num_years = 50
-p.yr_contr = p.retire
+p.yr_contrib = 55
 p.alpha_db = 0.2
 p.g_y = np.ones(p.T) * 0.03
 n_ddb1 = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
@@ -244,7 +246,7 @@ p2 = Specifications()
 p2.S = 7
 p2.retire = 5
 p2.last_career_yrs = 2
-p2.yr_contr = p2.retire
+p2.yr_contrib = 55
 p2.alpha_db = 0.2
 p2.g_y = 0.03
 n_ddb2 = np.array([0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
@@ -252,7 +254,7 @@ w_ddb1 = np.array([1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb1 = np.array([1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 per_rmn = n_ddb2.shape[0]
 d_theta_empty = np.zeros_like(per_rmn)
-deriv_DB_expected2 = np.array([0.6105, 0.5445, 0.435, 0.43935, 0.0, 0.0])
+deriv_DB_expected2 = np.array([0.4884, 0.4356, 0.348, 0.35148, 0.0, 0.0])
 args_ddb2 = (w_ddb1, e_ddb1, per_rmn, p2)
 
 test_data = [(args_ddb1, deriv_DB_expected1), (args_ddb2, deriv_DB_expected2)]
@@ -387,7 +389,7 @@ p.pension_system = "Defined Benefits"
 p.S = 7
 p.retire = 4
 p.avg_earn_num_years = 50
-p.yr_contr = p.retire
+p.yr_contrib = 55
 p.alpha_db = 0.2
 p.g_y = np.ones(p.T) * 0.03
 w_db = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
@@ -594,7 +596,7 @@ p = Specifications()
 p.S = 7
 p.retire = 4
 p.avg_earn_num_years = 50
-p.yr_contr = p.retire
+p.yr_contrib = 55
 p.alpha_db = 0.2
 p.g_y = np.ones(p.T) * 0.03
 j = 1
@@ -609,7 +611,7 @@ p2 = Specifications()
 p2.S = 7
 p2.retire = 4
 p.avg_earn_num_years = 50
-p2.yr_contr = p2.retire
+p2.yr_contrib = 55
 p2.alpha_db = 0.2
 p2.g_y = np.ones(p2.T) * 0.03
 j = 1
@@ -639,7 +641,7 @@ p2.n_preTP = np.array(
     ]
 )
 p2.e = e2
-DB_expected2 = np.array([0, 0, 0.289170525, 0.280624244, 0.272330544])
+DB_expected2 = np.array([0, 0, 0.30593337, 0.29689167, 0.2881172])
 args2 = (w2, e2, n2, j, p2)
 
 test_data = [(args1, DB_expected1), (args2, DB_expected2)]
@@ -665,7 +667,7 @@ p.S = 7
 p.retire = 4
 per_rmn = p.S
 p.avg_earn_num_years = 50
-p.yr_contr = p.retire
+p.yr_contrib = 55
 p.alpha_db = 0.2
 w_ddb = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])

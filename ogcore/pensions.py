@@ -202,7 +202,7 @@ def DB_amount(w, e, n, j, p):
     # Adjustment to turn years into model periods
     # TODO: could add this to parameters.py at some point
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
-    equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib))
+    equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib)) - 1
     L_inc_avg_s = np.zeros(equiv_periods)
 
     if n.shape[0] < p.S:
@@ -512,7 +512,7 @@ def deriv_DB(w, e, per_rmn, p):
             supply
     """
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
-    equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib))
+    equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib)) - 1
     if per_rmn < (p.S - p.retire + 1):
         d_theta = np.zeros(p.S)
     else:
@@ -692,6 +692,8 @@ def deriv_DB_loop(
             another unit of labor supply
     """
     d_theta = np.zeros(per_rmn)
+    print("Year contribution: ", yr_contr)
+    print("Average earnings years: ", avg_earn_num_years)
     num_per_retire = S - S_ret
     for s in range(per_rmn):
         d_theta[s] = w[s] * e[s] * alpha_db * (yr_contr / avg_earn_num_years)
