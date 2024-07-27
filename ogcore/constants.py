@@ -234,8 +234,8 @@ PARAM_LABELS = {
         "Shift parameter in government interest rate wedge",
         r"$\mu_{d,t}$",
     ],
-    "AIME_num_years": [
-        "Number of years over which compute AIME",
+    "avg_earn_num_years": [
+        "Number of years over which compute average earnings for pension benefit",
         r"$\texttt{AIME_num_years}$",
     ],
     "AIME_bkt_1": ["First AIME bracket threshold", r"$\texttt{AIME_bkt_1}$"],
