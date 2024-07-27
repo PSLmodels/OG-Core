@@ -366,7 +366,7 @@ where $\frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}}$ is given by
   ```
 
 
-#### Stationarized Defined Benefits Equations}
+#### Stationarized Defined Benefits Equations
 
 Stationarized pension amount:
 
