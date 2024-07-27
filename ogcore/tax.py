@@ -281,7 +281,10 @@ def net_taxes(
 
     """
     T_I = income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p)
-    pension = pensions.pension_amount(w, n, theta, t, j, shift, method, e, p)
+    # TODO: replace "1" with Y in the args below when want NDC functions
+    pension = pensions.pension_amount(
+        r, w, n, 1, theta, t, j, shift, method, e, factor, p
+    )
     T_BQ = bequest_tax_liab(r, b, bq, t, j, method, p)
     T_W = wealth_tax_liab(r, b, t, j, method, p)
 
