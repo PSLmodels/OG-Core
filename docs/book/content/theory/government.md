@@ -447,7 +447,7 @@ Under a points system, the pension amount is given as:
 
   ```{math}
   :label: eqn:ps_pension
-  pension{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \forall s > R
+  pension{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s > R
   ```
 
 where $v_{t}$ is the value of a point at time $t$
