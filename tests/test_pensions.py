@@ -104,7 +104,7 @@ args1 = (
     DB,
     equiv_periods,
     p.alpha_db,
-    equiv_contrib_periods
+    equiv_contrib_periods,
 )
 
 test_data = [(args1, DB_loop_expected1)]
