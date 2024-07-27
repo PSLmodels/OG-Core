@@ -3015,7 +3015,7 @@
             }
         }
     },
-    "yr_contr": {
+    "yr_contrib": {
         "title": "Number of years of contributions made to defined benefits pension system.",
         "description": "Number of years of contributions made to defined benefits pension system.",
         "section_1": "Fiscal Policy Parameters",
