@@ -317,7 +317,151 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
 
 #### Pensions
 
-[TODO: Add description of government pensions and the relevant parameters]
+The `OG-Core` model allows for four different systems for public pensions:
+
+1. U.S.-style social security system
+2. Defined benefit system
+3. Notional defined contribution system
+4. Points system
+
+These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`.  We discuss each of these in turn below.
+
+For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit.
+
+##### U.S.-style social security system
+
+Under the U.S.-style social security system, households over age $R$ received a pension amount that is a function of their earnings history.  The earings history includes the highest earning `AIME_num_periods` prior to retirement (which OG-Core assumes happens at age $R$).  This history determines the Average Indexed Monthly Earnings (AIME):
+
+  ```{math}
+  :label: eqn:AIME
+  AIME_{j,R,t+R} = {\sum_{u=0}^{AIMEper} w_{t+u}e_{j,u,t+u}n{j,u,t+u}}{ 12 * AIMEper}
+  ```
+
+ The AIME in turn, determines a household's (PIA) based on three rates and brackets:
+
+   ```{math}
+  :label: eqn:PIA
+    PIAbase_{j,R,t+R} =
+      \begin{cases}
+        PIArate_1 \times AIME_{j,R,t+R}, \text{for } AIME_{j,R,t+R} \leq AIMEbkt_1 \\
+        PIArate_2 \times AIME_{j,R,t+R}, \text{for } AIMEbkt_1 < AIME_{j,R,t+R} \leq AIMEbkt_2 \\
+        PIArate_3 \times AIME_{j,R,t+R}, \text{for } AIMEbkt_2 < AIME_{j,R,t+R} \\
+      \end{cases}
+  ```
+
+ The PIA is then capped at a maximum, set by the parameter `PIA_maxpayment`, $PIA_{j,R,t+R} = \max\{PIAbase_{j,R,t+R}, \text{ PIA max payment amount}\}$.
+
+  The replacement rate, $\theta_j$ is then calculated as annual earnings, with an adjustment for the wage rate.:
+
+  ```{math}
+  :label: eqn:theta
+    \theta_{j,R,t+R} = \frac{PIA_{j,R,t+R} \times 12}{factor \times w_{t+R}}
+  ```
+
+  Note that $aIME_{j,R,t+R}$ is a function of each households' earning history, but their choice of earning may depend on their retirement benefit.  Solving this exactly would introduce and additional fixed point problem in both the steady state solution and in the time path solution.  The latter would be extremely computationally taxing.  Therefore, we make the simplification of determining the AIME for each type $j$ using the steady state solution and earnings for type $j$ in the steady state.  This leads to some approximation error, but because $\theta_j$ is adjusted by the current wage rate, this approximation error is minized.
+
+  The pension amount for households under the US-style social security system is then:
+
+  ```{math}
+  :label: eqn:ss_pension
+    pension_{j,s,t} = \theta_j \times w_t \quad \forall s > R
+  ```
+
+
+##### Defined benefit system
+
+The defined benefit system pension amount is given as:
+
+  ```{math}
+  :label: eqn:db_pension
+  pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \quad \forall s > R
+  ```
+
+where:
+  \begin{itemize}
+    \item $ny$ are the number of years over which average earnings are calculated
+    \item $Cy$ are the number of years of contributions.  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
+    \item $\alpha_{DB}$ is the replacement rate per year of contribution.
+  \end{itemize}
+
+  Given this pension system and the fact that there is only variation in labor supply along the intensive margin (so we don't need to consider changes in $Cy$), the partial derivatives from the household section are given by:
+
+  ```{math}
+  :label: eqn:db_deriv
+    \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+      \begin{cases}
+        0 , & \text{if}\ s < R - Cy \\
+        w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
+        0, & \text{if}\ s \geq R \\
+      \end{cases}
+  ```
+
+##### Notional defined contribution system
+
+The pension amount under a notional defined contribution system is given as:
+
+  ```{math}
+  :label: eqn:ndc_pension
+   pension{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s > R
+  ```
+
+where:
+
+  * $\tau^p$ is the pension contribution tax rate
+  * $g_{NDC,t}$ the rate of growth applied to contributions.
+    * For example, In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
+    * i.e., $g_{NDC,t}=\prod_{j=i}^{R-1}\bar{g}_{j}$
+    * Note, this is not $g_y$. In the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, and in the transition path equilibrium, it's not a function of exogenous variables since the growth rate of nominal GDP is endogenous.
+  * $\delta_{R, t}$ is the conversion coefficient at time $t$ and its calculation is detailed below.
+
+  ```{math}
+  \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
+  ```
+
+where $k$ is an adjustment that takes into account the number of payments per year.  In particular, $k=0.5 - (6/13n)$, where $n$ is the number of payments per year.  So if the payments are made monthly, $n=12$ and thus $k=0.4615$.
+
+The $dir_{R, t}$ term is an adjustment to make the payments actuarially fair given mortality risk:
+
+  ```{math}
+  dir_{R, t} = \sum_{u=0}^{E+S-R}\left[\prod_{s=R}^{u}(1-\hat{\rho}_{s, t})\right](1+\hat{g}_{y, t})^{-u}
+  ```
+
+where $\hat{\rho}_{s,t}$ are the mortality tables used in the pension system at time $t$ and $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$.
+
+Finally, $ind_{R}$ is an adjustment for survivor benefits.  Since we model households (and not individuals), we set $ind_{R} = 0$ by default.  This can be changed with the parameter `indR` if one would like to account for the fact that households lose members over time.
+
+Given this pension system, the partial derivatives from the household section are given by:
+
+  ```{math}
+  :label: eqn:ndc_deriv
+  \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+    \begin{cases}
+      \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
+      0, & \text{if}\ s \geq R \\
+    \end{cases}
+  ```
+
+##### Points system
+
+Under a points system, the pension amount is given as:
+
+  ```{math}
+  :label: eqn:ps_pension
+  pension{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s > R
+  ```
+
+where $v_{t}$ is the value of a point at time $t$
+
+Given this pension system, the partial derivatives from the household section are given by:
+
+  ```{math}
+  :label: eqn:ps_deriv
+  \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+  \begin{cases}
+    0 , & \text{if}\ s < R \\
+    w_{t}e_{j,s}v_{t}, & \text{if}\ s \geq R \\
+  \end{cases}
+ ```
 
 #### Lump sum transfers:
 
@@ -327,6 +471,7 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
   :label: EqUnbalGBCtfer
     TR_t = g_{tr,t}\:\alpha_{tr}\: p_t Y_t \quad\forall t
   ```
+
   where total government transfers to households $TR_t$ and GDP ($p_t Y_t$) are in terms of the numeraire good and the term $Y_t$ is in terms of the composite good.
 
   The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.
@@ -417,8 +562,10 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
 
   ```{math}
   :label: EqUnbalGBCgovRev
-    Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}K_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
-    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}K_{m,t}\Bigr]}_{\text{corporate income tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household income tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p{i,t}c_{i,j,s,t}}_{\text{consumption tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{w}_{t}b_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
   ```
 
   where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.
@@ -430,7 +577,7 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
-    D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + TR_t + UBI_t  \quad\forall t
+    D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
   ```
 
   where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$.

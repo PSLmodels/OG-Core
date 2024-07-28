@@ -4,7 +4,7 @@ import numpy as np
 import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
-from ogcore import tax, household, firm, utils, fiscal
+from ogcore import tax, pensions, household, firm, utils, fiscal
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 import os
@@ -71,7 +71,7 @@ def euler_equation_solver(guesses, *args):
     b_s = np.array([0] + list(b_guess[:-1]))
     b_splus1 = b_guess
 
-    theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
+    theta = pensions.replacement_rate_vals(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(
         r,
@@ -275,7 +275,7 @@ def inner_loop(outer_loop_vars, p, client):
     b_splus1 = bssmat
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) + list(bssmat[:-1, :]))
 
-    theta = tax.replacement_rate_vals(nssmat, w, factor, None, p)
+    theta = pensions.replacement_rate_vals(nssmat, w, factor, None, p)
 
     num_params = len(p.etr_params[-1][0])
     etr_params_3D = [
@@ -401,7 +401,7 @@ def inner_loop(outer_loop_vars, p, client):
     new_BQ = aggr.get_BQ(new_r_p, bssmat, None, p, "SS", False)
     new_bq = household.get_bq(new_BQ, None, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
-    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
+    theta = pensions.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
     # Find updated goods prices
     new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS")
@@ -724,7 +724,7 @@ def SS_solver(
     bqssmat = household.get_bq(BQss, None, p, "SS")
     trssmat = household.get_tr(TR_ss, None, p, "SS")
     ubissmat = p.ubi_nom_array[-1, :, :] / factor_ss
-    theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
+    theta = pensions.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.etr_params[-1][0])

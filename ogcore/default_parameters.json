@@ -2897,12 +2897,149 @@
             }
         }
     },
-    "AIME_num_years": {
-        "title": "Number of years used to compute average index monthly earnings (AIME)",
-        "description": "Number of years used to compute average index monthly earnings (AIME).",
+    "pension_system": {
+        "title": "Pension system",
+        "description": "Pension system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
+        "notes": "",
+        "type": "str",
+        "value": [
+                {
+                    "value": "US-Style Social Security"
+                }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "US-Style Social Security",
+                    "Defined Benefits",
+                    "Notional Defined Contribution",
+                    "Points System"
+                ]
+            }
+        }
+    },
+    "tau_p": {
+        "title": "Pension system contribution tax rate under a notional defined contribution system.",
+        "description": "Pension system contribution tax rate under a notional defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "indR": {
+        "title": "Adjustment for survivor benefits under a notional defined contribution system.",
+        "description": "Adjustment for survivor benefits under a notional defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "k_ret": {
+        "title": "Adjustment for frequency of pension payments under a notional defined contribution system.",
+        "description": "Adjustment for frequency of pension payments under a notional defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "k = 0.5 - (6/13n), where n is the number of payments per year",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "alpha_db": {
+        "title": "Replacement rate under a defined contribution system.",
+        "description": "Replacement rate under a defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "vpoint": {
+        "title": "The value of a point under a points system pension.",
+        "description": "The value of a point under a points system pension.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "yr_contrib": {
+        "title": "Number of years of contributions made to defined benefits pension system.",
+        "description": "Number of years of contributions made to defined benefits pension system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.",
+        "type": "int",
+        "value": [
+            {
+                "value": 40
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": "retirement_age"
+            }
+        }
+    },
+    "avg_earn_num_years": {
+        "title": "Number of years used to compute average earnings for pension benefits.",
+        "description": "Number of years used to compute average earnings for pension benefits.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
         "type": "int",
         "value": [
             {
