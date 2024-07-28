@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.13] - 2024-07-28 12:00:00
+
+### Added
+
+- Added three new pension types to the model: (i) defined benefits system, (ii) notional defined contribution system, and (iii) points system.
+
+## [0.11.12] - 2024-07-26 01:00:00
+
+### Bug Fix
+
+- Fixes extrapolation of nested lists of tax function parameters.
+
+## [0.11.11] - 2024-06-24 01:00:00
+
+### Added
+
+- Add new parameters for resource constraint tolerances for steady state and time path solution.
+
 ## [0.11.10] - 2024-06-17 01:00:00
 
 ### Added
@@ -253,6 +271,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.11.13]: https://github.com/PSLmodels/OG-Core/compare/v0.11.11...v0.11.13
+[0.11.11]: https://github.com/PSLmodels/OG-Core/compare/v0.11.10...v0.11.11
 [0.11.10]: https://github.com/PSLmodels/OG-Core/compare/v0.11.9...v0.11.10
 [0.11.9]: https://github.com/PSLmodels/OG-Core/compare/v0.11.8...v0.11.9
 [0.11.8]: https://github.com/PSLmodels/OG-Core/compare/v0.11.7...v0.11.8

@@ -7,13 +7,10 @@ model
 
 # Import packages
 import os
-import time
 import numpy as np
-import json
 from io import StringIO
 import scipy.optimize as opt
 import pandas as pd
-import matplotlib.pyplot as plt
 from ogcore.utils import get_legacy_session
 from ogcore import parameter_plots as pp
 
@@ -115,6 +112,8 @@ def get_un_data(
             "458": "MYS",
             "356": "IND",
             "826": "UK",
+            "360": "IDN",
+            "608": "PHL",
         }
         un_variable_dict = {
             "68": "fertility_rates",
@@ -400,8 +399,8 @@ def get_pop(
                 end_year=start_year,
             )
             initial_pop_sample = initial_pop_data[
-                (pre_pop_data["age"] >= min_age)
-                & (pre_pop_data["age"] <= max_age)
+                (initial_pop_data["age"] >= min_age)
+                & (initial_pop_data["age"] <= max_age)
             ]
             initial_pop = initial_pop_sample.value.values
             initial_pop = pop_rebin(initial_pop, E + S)

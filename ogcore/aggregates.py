@@ -6,7 +6,7 @@ Functions to compute economic aggregates.
 
 # Packages
 import numpy as np
-from ogcore import tax
+from ogcore import tax, pensions
 
 """
 -------------------------------------------------------------------------------
@@ -347,8 +347,8 @@ def revenue(
     inc_pay_tax_liab = tax.income_tax_liab(
         r, w, b, n, factor, 0, None, method, e, etr_params, p
     )
-    pension_benefits = tax.pension_amount(
-        w, n, theta, 0, None, False, method, e, p
+    pension_benefits = pensions.pension_amount(
+        r, w, n, Y, theta, 0, None, False, method, e, factor, p
     )
     bq_tax_liab = tax.bequest_tax_liab(r, b, bq, 0, None, method, p)
     w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)

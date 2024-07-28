@@ -869,7 +869,7 @@ def avg_by_bin(x, y, weights=None, bins=10, eql_pctl=True):
     return x_binned, y_binned, weights_binned
 
 
-def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
+def extrapolate_array(param_in, dims=None, item="Parameter Name"):
     """
     Extrapolates input values to fit model dimensions. Using this allows
     users to input smaller dimensional arrays and have the model infer
@@ -1020,6 +1020,53 @@ def extrapolate_arrays(param_in, dims=None, item="Parameter Name"):
                 )
 
     return param_out
+
+
+def extrapolate_nested_list(list_in, dims=(400, 80, 1)):
+    """
+    Function to extrapolate a nested list to a specified size.
+
+    Currently only set up for 3 deep nested lists, but could be
+    generalized to deeper or shallower lists.
+
+    Args:
+        list_in (list): list to extrapolate
+        dims (tuple): dimensions of the output list
+
+    Returns:
+        list_out (list): extrapolated list
+    """
+    T, S, num_params = dims
+    try:
+        list_in = list_in.tolist()  # in case parameters are numpy arrays
+    except AttributeError:  # catches if they are lists already
+        pass
+    assert isinstance(list_in, list), "please give a list"
+
+    def depth(L):
+        return isinstance(L, list) and max(map(depth, L)) + 1
+
+    # for now, just have this work for 3 deep lists since
+    # the only OG-Core use case is for tax function parameters
+    assert depth(list_in) == 3, "please give a list that is three lists deep"
+    assert depth(list_in) == len(
+        dims
+    ), "please make sure the depth of nested list is equal to the length of dims to extrapolate"
+    # Extrapolate along the first dimension
+    if len(list_in) > T + S:
+        list_in = list_in[: T + S]
+    if len(list_in) < T + S:
+        params_to_add = [list_in[-1]] * (T + S - len(list_in))
+        list_in.extend(params_to_add)
+    # Extrapolate along the second dimension
+    for t in range(len(list_in)):
+        if len(list_in[t]) > S:
+            list_in[t] = list_in[t][:S]
+        if len(list_in[t]) < S:
+            params_to_add = [list_in[t][-1]] * (S - len(list_in[t]))
+            list_in[t].extend(params_to_add)
+
+    return list_in
 
 
 class CustomHttpAdapter(requests.adapters.HTTPAdapter):
