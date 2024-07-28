@@ -386,7 +386,7 @@ document.write(`
 
 <span class="c1"># Packages</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">tax</span>
+<span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">tax</span><span class="p">,</span> <span class="n">pensions</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">-------------------------------------------------------------------------------</span>
@@ -744,8 +744,8 @@ document.write(`
     <span class="n">inc_pay_tax_liab</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
         <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span>
     <span class="p">)</span>
-    <span class="n">pension_benefits</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">pension_amount</span><span class="p">(</span>
-        <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span>
+    <span class="n">pension_benefits</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">pension_amount</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">p</span>
     <span class="p">)</span>
     <span class="n">bq_tax_liab</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">w_tax_liab</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">wealth_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>

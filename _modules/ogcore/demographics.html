@@ -387,13 +387,10 @@ document.write(`
 
 <span class="c1"># Import packages</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">opt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">ogcore.utils</span> <span class="kn">import</span> <span class="n">get_legacy_session</span>
 <span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">parameter_plots</span> <span class="k">as</span> <span class="n">pp</span>
 
@@ -793,8 +790,8 @@ document.write(`
                 <span class="n">end_year</span><span class="o">=</span><span class="n">start_year</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">initial_pop_sample</span> <span class="o">=</span> <span class="n">initial_pop_data</span><span class="p">[</span>
-                <span class="p">(</span><span class="n">pre_pop_data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_age</span><span class="p">)</span>
-                <span class="o">&amp;</span> <span class="p">(</span><span class="n">pre_pop_data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_age</span><span class="p">)</span>
+                <span class="p">(</span><span class="n">initial_pop_data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_age</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">initial_pop_data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_age</span><span class="p">)</span>
             <span class="p">]</span>
             <span class="n">initial_pop</span> <span class="o">=</span> <span class="n">initial_pop_sample</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">values</span>
             <span class="n">initial_pop</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">initial_pop</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>

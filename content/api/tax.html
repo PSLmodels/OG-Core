@@ -436,8 +436,6 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.get_biz_tax"><code class="docutils literal notranslate"><span class="pre">get_biz_tax()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.income_tax_liab"><code class="docutils literal notranslate"><span class="pre">income_tax_liab()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.net_taxes"><code class="docutils literal notranslate"><span class="pre">net_taxes()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.pension_amount"><code class="docutils literal notranslate"><span class="pre">pension_amount()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.replacement_rate_vals"><code class="docutils literal notranslate"><span class="pre">replacement_rate_vals()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.wealth_tax_liab"><code class="docutils literal notranslate"><span class="pre">wealth_tax_liab()</span></code></a></li>
 </ul>
 </li>
@@ -702,64 +700,6 @@ lifetime income group j</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="ogcore.tax.pension_amount">
-<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">pension_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#pension_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.pension_amount" title="Link to this definition">#</a></dt>
-<dd><p>Calculate public pension benefit amounts for each household.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
-<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
-<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate value for
-lifetime income group j</p></li>
-<li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
-<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
-<li><p><strong>shift</strong> (<em>bool</em>) – whether computing for periods 0–s or 1–(s+1),
-=True for 1–(s+1)</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
-‘TPI’</p></li>
-<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
-<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>pension amount for each household</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pension (Numpy array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ogcore.tax.replacement_rate_vals">
-<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">replacement_rate_vals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nssmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#replacement_rate_vals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.replacement_rate_vals" title="Link to this definition">#</a></dt>
-<dd><p>Calculates replacement rate values for the social security system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nssmat</strong> (<em>Numpy array</em>) – initial guess at labor supply, size = SxJ</p></li>
-<li><p><strong>new_w</strong> (<em>scalar</em>) – steady state real wage rate</p></li>
-<li><p><strong>factor_ss</strong> (<em>scalar</em>) – scaling factor converting model units to
-dollars</p></li>
-<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
-<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>social security replacement rate value for</dt><dd><p>lifetime income group j</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>theta (Numpy array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.tax.wealth_tax_liab">
 <span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">wealth_tax_liab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#wealth_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.wealth_tax_liab" title="Link to this definition">#</a></dt>
 <dd><p>Calculate wealth tax liability for each household.</p>
@@ -861,8 +801,6 @@ dollars</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.get_biz_tax"><code class="docutils literal notranslate"><span class="pre">get_biz_tax()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.income_tax_liab"><code class="docutils literal notranslate"><span class="pre">income_tax_liab()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.net_taxes"><code class="docutils literal notranslate"><span class="pre">net_taxes()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.pension_amount"><code class="docutils literal notranslate"><span class="pre">pension_amount()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.replacement_rate_vals"><code class="docutils literal notranslate"><span class="pre">replacement_rate_vals()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.wealth_tax_liab"><code class="docutils literal notranslate"><span class="pre">wealth_tax_liab()</span></code></a></li>
 </ul>
 </li>

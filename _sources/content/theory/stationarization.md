@@ -209,14 +209,16 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
   ```{math}
   :label: EqStnrzGovRev
     \hat{Rev}_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} - \tau^{inv}_{m,t}\hat{I}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
-    &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \quad\forall t
+    &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p{i,t}\hat{c}_{i,j,s,t}}_{\text{consumption tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{w}_{t}\hat{b}_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
   ```
 
   Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
 
   ```{math}
   :label: EqStnrzGovBC
-    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{TR}_t + \hat{UBI}_t \quad\forall t
+    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
   ```
 
   The stationarized versions of the rule for total government infrastructure investment spending $I_{g,t}$ in {eq}`EqUnbalGBC_Igt` and the rule for government investment spending in each industry in {eq}`EqUnbalGBC_Igt` are found by dividing both sides of the respective equations by $e^{g_y t}\tilde{N}_t$.
@@ -304,6 +306,105 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
       \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}p_t\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
+  ```
+
+
+  ### Stationarized Pension System Equations
+
+#### Stiationarized Notional Defined Contributions Equations
+
+The stationarized NDC pension amount is given by:
+
+  ```{math}
+  :label: eqn:ndc_amount_stationarized
+  \hat{\theta}_{j,u,t+u-s}=
+    \begin{cases}
+      0, & \text{if}\ u < R \\
+      \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}, & \text{otherwise}
+    \end{cases}
+  ```
+
+
+The stationarized derivative of the pension amount it slightly simpler since it involved only current period wages.  We give the derivation first.
+
+The FOC for the choice of labor supply is given by:
+
+  ```{math}
+  \begin{split}
+    \biggl(\frac{1}{1 + \tau^{c}_{j,s,t}}\biggr)&\biggl(w_{t}e_{j,s} - \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}\biggr)c^{-\sigma}_{j,s,t} + \sum_{u=R}^{E+S}\beta^{u-s}\prod_{v=s}^{u}(1-\rho_{v})\frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}}c^{-\sigma}_{j,u,t+u-s}\biggl(\frac{1}{1+\tau^{c}_{j,u,t+u-s}}\biggr) \\
+    & = MDU_l(n_{j,s,t})e^{g_{y}t(1-\sigma)}
+  \end{split}
+  ```
+
+where we now pull the growth factor out of the marginal disutility of labor term to aid in the exposition of the stationarization.  To stationarize this equation, we divide both sides through by $e^{g_{y}t(1-\sigma)}$.
+
+  ```{math}
+  \begin{split}
+    \biggl(\frac{1}{1 + \tau^{c}_{j,s,t}}\biggr)&\biggl(\frac{w_{t}}{e^{g_{y}t}}e_{j,s} - \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}\biggr)\frac{c^{-\sigma}_{j,s,t}}{e^{g_{y}t(-\sigma)}} + \sum_{u=R}^{E+S}\beta^{u-s}\prod_{v=s}^{u}(1-\rho_{v})\frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}e^{g_{y}t}}\frac{c^{-\sigma}_{j,u,t+u-s}}{e^{g_{y}t(-\sigma)}}\biggl(\frac{1}{1+\tau^{c}_{j,u,t+u-s}}\biggr) \\
+    & = MDU_l(n_{j,s,t})\frac{e^{g_{y}t(1-\sigma)}}{e^{g_{y}t(1-\sigma)}}
+  \end{split}
+  ```
+
+Which we can write as:
+
+  ```{math}
+  \begin{split}
+    \biggl(\frac{1}{1 + \tau^{c}_{j,s,t}}\biggr)&\biggl(\hat{w}_{t}e_{j,s} - \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}\biggr)\hat{c}^{-\sigma}_{j,s,t} + \sum_{u=R}^{E+S}\beta^{u-s}\prod_{v=s}^{u}(1-\rho_{v})\frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}}\hat{c}^{-\sigma}_{j,u,t+u-s}e^{g_{y}(u-s)(-\sigma)}\biggl(\frac{1}{1+\tau^{c}_{j,u,t+u-s}}\biggr) \\
+    & = MDU_l(n_{j,s,t})
+  \end{split}
+  ```
+
+where $\frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}}$ is given by:
+
+  ```{math}
+  :label: eqn:ndc_deriv_stationarized
+  \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+    \begin{cases}
+      \tau^{p}_{t}\hat{w}_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
+      0, & \text{if}\ s \geq R \\
+    \end{cases}
+  ```
+
+
+#### Stationarized Defined Benefits Equations
+
+Stationarized pension amount:
+
+  ```{math}
+  :label: eqn:db_amount_staionarized
+  \hat{\theta}_{j,u,t+u-s} = \biggl[\frac{\sum_{s=R-ny}^{R-1}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}, \ \ \forall u \geq R
+  ```
+
+Stationarized pension amount derivative:
+
+  ```{math}
+  :label: eqn:db_deriv_stationarized
+    \frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+      \begin{cases}
+        0 , & \text{if}\ s < R - Cy \\
+        \hat{w}_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
+        0, & \text{if}\ s \geq R \\
+      \end{cases}
+  ```
+
+#### Stationarized Points System Equations
+
+Stationarized pension amount:
+
+  ```{math}
+  :label: eqn:ps_amount_stationarized
+  \hat{\theta}_{j,u,t+u-s} =\sum_{s=E}^{R-1}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}v_{t}, \ \ \forall u \geq R
+  ```
+
+Stationarized pension amount derivative:
+
+  ```{math}
+  :label: eqn:ps_deriv_stationarized
+  \frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}} =
+    \begin{cases}
+      \hat{w}_{t}e_{j,s} v_{t}, & \text{if}\ s < R  \\
+      0, & \text{if}\ s \geq R \\
+    \end{cases}
   ```
 
 (SecStnrzMC)=
