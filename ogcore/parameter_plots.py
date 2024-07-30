@@ -44,7 +44,7 @@ def plot_imm_rates(
     plt.legend(loc="upper left")
     plt.text(
         -5,
-        -0.023,
+        -0.05,
         "Source: " + source,
         fontsize=9,
     )
