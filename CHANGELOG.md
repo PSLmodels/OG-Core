@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.14] - 2024-07-30 12:00:00
+
+### Added
+
+- Aesthetic updates to plotting functions in `parameter_plots.py` and `demographics.py`
+
 ## [0.11.13] - 2024-07-28 12:00:00
 
 ### Added
@@ -270,7 +276,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Version [0.7.0] on August 30, 2021 was the first time that the OG-USA repository was detached from all of the core model logic, which was named OG-Core. Before this version, OG-USA was part of what is now the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository. In the next version of OG-USA, we adjusted the version numbering to begin with 0.1.0. This initial version of 0.7.0, was sequential from what OG-USA used to be when the OG-Core project was called OG-USA.
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
-
+[0.11.14]: https://github.com/PSLmodels/OG-Core/compare/v0.11.13...v0.11.14
 [0.11.13]: https://github.com/PSLmodels/OG-Core/compare/v0.11.11...v0.11.13
 [0.11.11]: https://github.com/PSLmodels/OG-Core/compare/v0.11.10...v0.11.11
 [0.11.10]: https://github.com/PSLmodels/OG-Core/compare/v0.11.9...v0.11.10
