@@ -591,11 +591,15 @@ document.write(`
 
     <span class="c1"># Create plots if needed</span>
     <span class="k">if</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">start_year</span> <span class="o">==</span> <span class="n">end_year</span><span class="p">:</span>
+            <span class="n">years_to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_year</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">years_to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">plot_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pp</span><span class="o">.</span><span class="n">plot_fert_rates</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">fert_rates_2D</span><span class="p">],</span>
                 <span class="n">start_year</span><span class="o">=</span><span class="n">start_year</span><span class="p">,</span>
-                <span class="n">years_to_plot</span><span class="o">=</span><span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">],</span>
+                <span class="n">years_to_plot</span><span class="o">=</span><span class="n">years_to_plot</span><span class="p">,</span>
                 <span class="n">path</span><span class="o">=</span><span class="n">plot_path</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">fert_rates_2D</span>
@@ -603,7 +607,7 @@ document.write(`
             <span class="n">fig</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">plot_fert_rates</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">fert_rates_2D</span><span class="p">],</span>
                 <span class="n">start_year</span><span class="o">=</span><span class="n">start_year</span><span class="p">,</span>
-                <span class="n">years_to_plot</span><span class="o">=</span><span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">],</span>
+                <span class="n">years_to_plot</span><span class="o">=</span><span class="n">years_to_plot</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">fert_rates_2D</span><span class="p">,</span> <span class="n">fig</span>
     <span class="k">else</span><span class="p">:</span>
@@ -684,11 +688,15 @@ document.write(`
 
     <span class="c1"># Create plots if needed</span>
     <span class="k">if</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">start_year</span> <span class="o">==</span> <span class="n">end_year</span><span class="p">:</span>
+            <span class="n">years_to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_year</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">years_to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">plot_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pp</span><span class="o">.</span><span class="n">plot_mort_rates_data</span><span class="p">(</span>
                 <span class="n">mort_rates_2D</span><span class="p">,</span>
                 <span class="n">start_year</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">],</span>
+                <span class="n">years_to_plot</span><span class="p">,</span>
                 <span class="n">path</span><span class="o">=</span><span class="n">plot_path</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">mort_rates_2D</span><span class="p">,</span> <span class="n">infmort_rate_vec</span>
@@ -696,7 +704,7 @@ document.write(`
             <span class="n">fig</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">plot_mort_rates_data</span><span class="p">(</span>
                 <span class="n">mort_rates_2D</span><span class="p">,</span>
                 <span class="n">start_year</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">],</span>
+                <span class="n">years_to_plot</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">mort_rates_2D</span><span class="p">,</span> <span class="n">infmort_rate_vec</span><span class="p">,</span> <span class="n">fig</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1028,11 +1036,15 @@ document.write(`
 
     <span class="c1"># Create plots if needed</span>
     <span class="k">if</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">start_year</span> <span class="o">==</span> <span class="n">end_year</span><span class="p">:</span>
+            <span class="n">years_to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_year</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">years_to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">plot_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pp</span><span class="o">.</span><span class="n">plot_imm_rates</span><span class="p">(</span>
                 <span class="n">imm_rates_2D</span><span class="p">,</span>
                 <span class="n">start_year</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">],</span>
+                <span class="n">years_to_plot</span><span class="p">,</span>
                 <span class="n">path</span><span class="o">=</span><span class="n">plot_path</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">imm_rates_2D</span>
@@ -1040,7 +1052,7 @@ document.write(`
             <span class="n">fig</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">plot_imm_rates</span><span class="p">(</span>
                 <span class="n">imm_rates_2D</span><span class="p">,</span>
                 <span class="n">start_year</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">],</span>
+                <span class="n">years_to_plot</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">imm_rates_2D</span><span class="p">,</span> <span class="n">fig</span>
     <span class="k">else</span><span class="p">:</span>
