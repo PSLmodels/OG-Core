@@ -3,7 +3,6 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import matplotlib
-from cycler import cycler
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
@@ -34,7 +33,6 @@ def plot_imm_rates(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -258,7 +256,7 @@ def plot_ability_profiles(
         return fig
     else:
         fig_path = os.path.join(path, "ability_profiles")
-        plt.savefig(fig_path, bbox_inches="tight")
+        plt.savefig(fig_path, bbox_inches="tight", dpi=300)
 
 
 def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
@@ -389,7 +387,6 @@ def plot_fert_rates(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -441,7 +438,6 @@ def plot_mort_rates_data(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -706,7 +702,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "ETR_age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D histogram for all data
@@ -737,7 +733,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "Hist_Age_" + str(s) + "_Year_" + str(t) + ".png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D scatterplot of MTRx data
@@ -755,7 +751,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "MTRx_Age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D scatterplot of MTRy data
@@ -773,7 +769,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "MTRy_Age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Garbage collection
@@ -855,7 +851,7 @@ def txfunc_graph(
     ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1, linewidth=0)
     filename = tx_label + "_age_" + str(s) + "_Year_" + str(t) + "_vsPred.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Make comparison plot with truncated income domains
@@ -908,7 +904,7 @@ def txfunc_graph(
         tx_label + "trunc_age_" + str(s) + "_Year_" + str(t) + "_vsPred.png"
     )
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
 
