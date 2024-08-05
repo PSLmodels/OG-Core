@@ -665,9 +665,12 @@ def run_TPI(p, client=None):
         D_f = np.zeros(p.T + p.S)
     else:
         if p.baseline_spending:
-            TR = TRbaseline
-            G = Gbaseline
-            G[p.T :] = ss_vars["Gss"]
+            TR = np.concatenate(
+                (TRbaseline[: p.T], np.ones(p.S) * ss_vars["TR_ss"])
+            )
+            G = np.concatenate(
+                (Gbaseline[: p.T], np.ones(p.S) * ss_vars["Gss"])
+            )
         else:
             TR = p.alpha_T * Y
             G = np.ones(p.T + p.S) * ss_vars["Gss"]
