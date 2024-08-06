@@ -40,7 +40,7 @@
         "validators": {
             "range": {
                 "min": -0.01,
-                "max": 0.04
+                "max": 0.08
             }
         }
     },
