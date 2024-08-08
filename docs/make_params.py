@@ -131,11 +131,7 @@ def paramtextdf(df):
         except KeyError:  # case of no validators, or also non-numeric ones?
             try:
                 r = row.validators["choice"]
-                return (
-                    "_Valid Choices:_"
-                    + str(r["choices"])
-                    + "  \n"
-                )
+                return "_Valid Choices:_" + str(r["choices"]) + "  \n"
             except KeyError:
                 return ""
 
@@ -143,9 +139,7 @@ def paramtextdf(df):
         return df.apply(valid_range_one, axis=1)
 
     text = title(df)
-    text += description(
-        df
-    )
+    text += description(df)
     text += notes(df)
     text += value_type(df)
     text += valid_range(df)
