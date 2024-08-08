@@ -433,8 +433,8 @@ def save_return_table(table_df, output_type, path, precision=2):
             table_df.to_csv(path_or_buf=path, index=False, na_rep="")
         elif output_type == "json":
             table_df.to_json(path_or_buf=path, double_precision=precision)
-        elif output_type == "md":
-            table_df.to_markdown(path_or_buf=path, double_precision=precision)
+        # elif output_type == "md":  # TODO: figure out how to save md to disk
+        #     table_df.to_markdown(path_or_buf=path, double_precision=precision)
         elif output_type == "excel":
             table_df.to_excel(excel_writer=path, index=False, na_rep="")
         else:

@@ -194,7 +194,7 @@ def param_table(p, table_format="tex", path=None):
         value = getattr(p, k)
         if hasattr(value, "__len__") & ~isinstance(value, str):
             if value.ndim > 1:
-                report = "See elsewhere"
+                report = "Too large to report here, see default parameters JSON"
             else:
                 report = (
                     "["
