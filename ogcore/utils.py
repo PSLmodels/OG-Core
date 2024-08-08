@@ -401,7 +401,7 @@ def save_return_table(table_df, output_type, path, precision=2):
     Args:
         table_df (Pandas DataFrame): table
         output_type (string): specifies the type of file to save
-            table to: 'csv', 'tex', 'excel', 'json'
+            table to: 'csv', 'tex', 'excel', 'json', 'md'
         path (string): specifies path to save file with table to
         precision (integer): number of significant digits to print.
             Defaults to 0.
@@ -433,6 +433,8 @@ def save_return_table(table_df, output_type, path, precision=2):
             table_df.to_csv(path_or_buf=path, index=False, na_rep="")
         elif output_type == "json":
             table_df.to_json(path_or_buf=path, double_precision=precision)
+        elif output_type == "md":
+            table_df.to_markdown(path_or_buf=path, double_precision=precision)
         elif output_type == "excel":
             table_df.to_excel(excel_writer=path, index=False, na_rep="")
         else:
