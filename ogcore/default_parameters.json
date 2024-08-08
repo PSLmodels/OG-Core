@@ -3253,11 +3253,13 @@
     "start_year": {
         "title": "Calendar year in which to start model analysis",
         "description": "Calendar year in which to start model analysis.",
-        "notes": "",
+        "section_1": "Other Parameters",
+        "section_2": "",
+        "notes": "Calendar year for initial model period",
         "type": "int",
         "value": [
             {
-                "value": 2021
+                "value": 2025
             }
         ],
         "validators": {
