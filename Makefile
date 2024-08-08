@@ -19,6 +19,7 @@ help:
 	@echo "coverage   : generate test coverage report"
 	@echo "git-sync   : synchronize local, origin, and upstream Git repos"
 	@echo "git-pr N=n : create local pr-n branch containing upstream PR"
+	@echo "make-docs  : build new Jupyter Book documentation files"
 
 .PHONY=clean
 clean:
@@ -64,6 +65,10 @@ git-sync:
 .PHONY=git-pr
 git-pr:
 	@./gitpr $(N)
+
+.PHONY=build-docs
+build-docs:
+	@cd ./docs ; python make_params.py; jb build ./book
 
 pip-package:
 	pip install wheel

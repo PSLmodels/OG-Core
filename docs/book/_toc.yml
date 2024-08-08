@@ -23,6 +23,7 @@ parts:
 - caption: Appendix
   chapters:
   - file: content/theory/derivations
+  - file: content/intro/parameters
 - caption: References
   chapters:
   - file: content/OGCore_references
