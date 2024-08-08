@@ -324,8 +324,8 @@
     "constant_demographics": {
         "title": "Use constant demographics",
         "description": "Use constant demographics.",
-        "section_1": "Household Parameters",
-        "section_2": "Demographics",
+        "section_1": "Demographic Parameters",
+        "section_2": "",
         "notes": "This boolean allows one to use empirical mortality rates, but keep the population distribution constant across periods.  Note that immigration is shut off when this is true.",
         "type": "bool",
         "value": [
@@ -550,7 +550,7 @@
         "title": "Total time endowment of household",
         "description": "Total time endowment of household.",
         "section_1": "Household Parameters",
-        "section_2": "Behavioral Assumptions",
+        "section_2": "Endowments",
         "notes": "Can be normalized to 1.0 without loss of generality.",
         "type": "float",
         "value": [
@@ -2070,6 +2070,7 @@
         "title": "Bequest distribution process",
         "description": "Matrix that describes the bequest distribution process.",
         "section_1": "Household Parameters",
+        "section_2": "Endowments",
         "notes": "This SxJ matrix gives the fraction of total aggregate bequests going to each age s and ability type j.",
         "type": "float",
         "number_dims": 2,
@@ -2810,6 +2811,7 @@
         "title": "Indicator variable for whether or not to use the zeta matrix to distribute bequests",
         "description": "Indicator variable for whether or not to use the zeta matrix to distribute bequests.",
         "section_1": "Household Parameters",
+        "section_2": "Endowments",
         "notes": "",
         "type": "bool",
         "value": [
@@ -3265,7 +3267,7 @@
         "validators": {
             "range": {
                 "min": 2013,
-                "max": 2030
+                "max": 2100
             }
         }
     },
@@ -3739,7 +3741,8 @@
     "etr_params": {
         "title": "Effective tax rate function parameters.",
         "description": "Effective tax rate function parameters.",
-        "section_1": "Tax Functions",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
         "notes": "",
         "type": "float",
         "number_dims": 3,
@@ -3761,7 +3764,8 @@
     "mtrx_params": {
         "title": "Marginal tax rate on labor income function parameters.",
         "description": "Marginal tax rate on labor income function parameters.",
-        "section_1": "Tax Functions",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
         "notes": "",
         "type": "float",
         "number_dims": 3,
@@ -3783,7 +3787,8 @@
     "mtry_params": {
         "title": "Marginal tax rate on capital income function parameters.",
         "description": "Marginal tax rate on capital income function parameters.",
-        "section_1": "Tax Functions",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
         "notes": "",
         "type": "float",
         "number_dims": 3,
@@ -3805,7 +3810,8 @@
     "mean_income_data": {
         "title": "Mean income (in current dollars) from the microdata used for tax function estimation.",
         "description": "Mean income (in current dollars) from the microdata used for tax function estimation.",
-        "section_1": "Tax Functions",
+        "section_1": "Other Parameters",
+        "section_2": "",
         "notes": "",
         "type": "float",
         "value": [
@@ -3823,7 +3829,8 @@
     "frac_tax_payroll": {
         "title": "Fraction of IIT+Payroll tax revenue that is attributable to payroll taxes.",
         "description": "Fraction of IIT+Payroll tax revenue that is attributable to payroll taxes.",
-        "section_1": "Tax Functions",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
         "notes": "",
         "type": "float",
         "number_dims": 1,
