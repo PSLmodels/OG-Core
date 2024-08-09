@@ -4,7 +4,7 @@ REFORM_DIR = "OUTPUT_REFORM"
 BASELINE_DIR = "OUTPUT_BASELINE"
 
 # Default year for model runs
-DEFAULT_START_YEAR = 2021
+DEFAULT_START_YEAR = 2025
 
 
 VAR_LABELS = {
@@ -83,6 +83,9 @@ VAR_LABELS = {
 }
 
 ToGDP_LABELS = {
+    "Y": "GDP-to-GDP (=1 ;-))",
+    "B": "Savings-to-GDP ($B_{t}/Y_t$)",
+    "C": "Consumption-to-GDP ($C_{t}/Y_t$)",
     "D": "Debt-to-GDP ($D_{t}/Y_t$)",
     "D_d": "Domestically-owned Debt-to-GDP ($D^d_{t}/Y_t$)",
     "D_f": "Foreign-owned Debt-to-GDP ($D^f_{t}/Y_t$)",
@@ -90,9 +93,25 @@ ToGDP_LABELS = {
     "K": "Capital-Output Ratio ($K_{t}/Y_t$)",
     "K_d": "Domestically-owned Capital-Output Ratio ($K^d_{t}/Y_t$)",
     "K_f": "Foreign-owned Capital-Output Ratio ($K^f_{t}/Y_t$)",
+    "K_g": "Infrastructure-Output Ratio ($K^g_{t}/Y_t$)",
     "C": "Consumption-Output Ratio ($C_{t}/Y_t$)",
     "I": "Investment-Output Ratio ($I_{t}/Y_t$)",
+    "I_total": "Investment-Output Ratio ($I_{t}/Y_t$)",
+    "I_d": "Domestic Investment-Output Ratio ($I^d_{t}/Y_t$)",
+    "I_g": "Infrastructure Investment-Output Ratio ($I^g_{t}/Y_t$)",
     "total_tax_revenue": "Tax Revenue-to-GDP ($REV_{t}/Y_t$)",
+    "TR": "Transfer Spending-to-GDP ($TR_{t}/Y_t$)",
+    "BQ": "Bequests-to-GDP ($BQ_{t}/Y_t$)",
+    "total_tax_revenue": "Tax Revenue-to-GDP ($Revenue_{t}/Y_t$)",
+    "business_tax_revenue": "Corporate Tax Revenue-to-GDP",
+    "iit_revenue": "Personal Income Tax Revenue-to-GDP",
+    "iit_payroll_revenue": "Personal Income + Payroll Tax Revenue-to-GDP",
+    "payroll_tax_revenue": "Payroll Tax Revenue-to-GDP",
+    "bequest_tax_revenue": "Bequest Tax Revenue-to-GDP",
+    "wealth_tax_revenue": "Wealth Tax Revenue-to-GDP",
+    "cons_tax_revenue": "Consumption Tax Revenue-to-GDP",
+    "agg_pension_outlays": "Pension Outlays-to-GDP ($Pensions_{t}/Y_t$)",
+    "UBI_path": "UBI Outlays-to-GDP ($UBI_{t}/Y_t$)",
 }
 
 GROUP_LABELS = {

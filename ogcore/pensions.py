@@ -712,7 +712,7 @@ def delta_ret(r, Y, p):
     return delta_ret
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def deriv_DB_loop(
     w, e, S, S_ret, per_rmn, avg_earn_num_years, alpha_db, yr_contr
 ):
@@ -744,7 +744,7 @@ def deriv_DB_loop(
     return d_theta
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
     """
     Change in points system pension benefits for another unit of
@@ -776,7 +776,7 @@ def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
     return d_theta
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def deriv_NDC_loop(
     w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta
 ):
@@ -813,7 +813,7 @@ def deriv_NDC_loop(
     return d_theta
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def delta_ret_loop(S, S_ret, surv_rates, g_dir_value, dir_delta_s):
     """
     Compute conversion coefficient for the NDC pension amount
@@ -842,7 +842,7 @@ def delta_ret_loop(S, S_ret, surv_rates, g_dir_value, dir_delta_s):
     return dir_delta
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def PS_1dim_loop(w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS):
     """
     Calculate public pension from a points system.
@@ -876,7 +876,7 @@ def PS_1dim_loop(w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS):
     return PS
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def PS_2dim_loop(w, e, n, S_ret, S, J, g_y, vpoint, factor, L_inc_avg_sj, PS):
     """
     Calculate public pension from a points system.
@@ -912,7 +912,7 @@ def PS_2dim_loop(w, e, n, S_ret, S, J, g_y, vpoint, factor, L_inc_avg_sj, PS):
     return PS
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def DB_1dim_loop(
     w,
     e,
@@ -962,7 +962,7 @@ def DB_1dim_loop(
     return DB
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def DB_2dim_loop(
     w,
     e,
@@ -1010,7 +1010,7 @@ def DB_2dim_loop(
     return DB
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC_s, NDC):
     """
     Calculate public pension from a notional defined contribution
@@ -1046,7 +1046,7 @@ def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC_s, NDC):
     return NDC
 
 
-@numba.jit
+@numba.jit(nopython=True)
 def NDC_2dim_loop(
     w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC_sj, NDC
 ):
