@@ -33,4 +33,4 @@ jobs:
         run: |
           pip install -e .
           python -m ipykernel install --user --name=ogcore-dev
-          jb build ./docs/book
+          make build-docs

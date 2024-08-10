@@ -13,6 +13,7 @@ import pickle
 import urllib3
 import ssl
 import json
+import collections
 
 EPSILON = 1e-10  # tolerance or comparison functions
 
@@ -1367,3 +1368,46 @@ def param_dump_json(p, path=None):
             f.write(json_str)
     else:
         return json_str
+
+
+def json_to_dict(json_text):
+    """
+    Convert specified JSON text into an ordered Python dictionary.
+
+    Parameters
+    ----------
+    json_text: string
+        JSON text.
+
+    Raises
+    ------
+    ValueError:
+        if json_text contains a JSON syntax error.
+
+    Returns
+    -------
+    dictionary: collections.OrderedDict
+        JSON data expressed as an ordered Python dictionary.
+    """
+    try:
+        ordered_dict = json.loads(
+            json_text, object_pairs_hook=collections.OrderedDict
+        )
+    except ValueError as valerr:
+        text_lines = json_text.split("\n")
+        msg = "Text below contains invalid JSON:\n"
+        msg += str(valerr) + "\n"
+        msg += "Above location of the first error may be approximate.\n"
+        msg += "The invalid JSON text is between the lines:\n"
+        bline = (
+            "XXXX----.----1----.----2----.----3----.----4"
+            "----.----5----.----6----.----7"
+        )
+        msg += bline + "\n"
+        linenum = 0
+        for line in text_lines:
+            linenum += 1
+            msg += "{:04d}{}".format(linenum, line) + "\n"
+        msg += bline + "\n"
+        raise ValueError(msg)
+    return ordered_dict

@@ -35,7 +35,7 @@ jobs:
         run: |
           pip install -e .
           python -m ipykernel install --user --name=ogcore-dev
-          jb build ./docs/book
+          make build-docs
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
