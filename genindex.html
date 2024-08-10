@@ -197,6 +197,7 @@
 <li class="toctree-l2"><a class="reference internal" href="content/api/parameter_plots.html">Parameter Plotting Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/parameter_tables.html">Parameter Table Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/tax.html">Tax Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/utils.html">Utilities Functions</a></li>
@@ -220,6 +221,7 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="content/theory/derivations.html">Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/intro/parameters.html">Model parameters</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="nav bd-sidenav">
@@ -454,8 +456,34 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/fiscal.html#ogcore.fiscal.D_G_path">D_G_path() (in module ogcore.fiscal)</a>
 </li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.DB_1dim_loop">DB_1dim_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.DB_2dim_loop">DB_2dim_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.DB_amount">DB_amount() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.delta_point">delta_point() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.delta_ret">delta_ret() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.delta_ret_loop">delta_ret_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.deriv_DB">deriv_DB() (in module ogcore.pensions)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/pensions.html#ogcore.pensions.deriv_DB_loop">deriv_DB_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.deriv_NDC">deriv_NDC() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.deriv_NDC_loop">deriv_NDC_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.deriv_PS">deriv_PS() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.deriv_PS_loop">deriv_PS_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.deriv_theta">deriv_theta() (in module ogcore.pensions)</a>
+</li>
       <li><a href="content/api/utils.html#ogcore.utils.dict_compare">dict_compare() (in module ogcore.utils)</a>
 </li>
       <li><a href="content/api/output_tables.html#ogcore.output_tables.dynamic_revenue_decomposition">dynamic_revenue_decomposition() (in module ogcore.output_tables)</a>
@@ -500,6 +528,10 @@ document.write(`
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/pensions.html#ogcore.pensions.g_dir">g_dir() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.g_ndc">g_ndc() (in module ogcore.pensions)</a>
+</li>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.gen_3Dscatters_hist">gen_3Dscatters_hist() (in module ogcore.parameter_plots)</a>
 </li>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.get_B">get_B() (in module ogcore.aggregates)</a>
@@ -540,10 +572,10 @@ document.write(`
 </li>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.get_K_splits">get_K_splits() (in module ogcore.aggregates)</a>
 </li>
-      <li><a href="content/api/firm.html#ogcore.firm.get_KLratio">get_KLratio() (in module ogcore.firm)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/firm.html#ogcore.firm.get_KLratio">get_KLratio() (in module ogcore.firm)</a>
+</li>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.get_L">get_L() (in module ogcore.aggregates)</a>
 </li>
       <li><a href="content/api/firm.html#ogcore.firm.get_L_from_Y">get_L_from_Y() (in module ogcore.firm)</a>
@@ -652,6 +684,8 @@ document.write(`
 </li>
         <li><a href="content/api/parameters.html#module-ogcore.parameters">ogcore.parameters</a>
 </li>
+        <li><a href="content/api/pensions.html#module-ogcore.pensions">ogcore.pensions</a>
+</li>
         <li><a href="content/api/tax.html#module-ogcore.tax">ogcore.tax</a>
 </li>
         <li><a href="content/api/txfunc.html#module-ogcore.txfunc">ogcore.txfunc</a>
@@ -673,10 +707,16 @@ document.write(`
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/api/tax.html#ogcore.tax.net_taxes">net_taxes() (in module ogcore.tax)</a>
+      <li><a href="content/api/pensions.html#ogcore.pensions.NDC_1dim_loop">NDC_1dim_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.NDC_2dim_loop">NDC_2dim_loop() (in module ogcore.pensions)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/pensions.html#ogcore.pensions.NDC_amount">NDC_amount() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/tax.html#ogcore.tax.net_taxes">net_taxes() (in module ogcore.tax)</a>
+</li>
       <li><a href="content/api/utils.html#ogcore.utils.not_connected">not_connected() (in module ogcore.utils)</a>
 </li>
   </ul></td>
@@ -772,6 +812,13 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    ogcore.pensions
+
+      <ul>
+        <li><a href="content/api/pensions.html#module-ogcore.pensions">module</a>
+</li>
+      </ul></li>
+      <li>
     ogcore.tax
 
       <ul>
@@ -808,6 +855,8 @@ document.write(`
 </li>
       <li><a href="content/api/utils.html#ogcore.utils.pct_diff_func">pct_diff_func() (in module ogcore.utils)</a>
 </li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.pension_amount">pension_amount() (in module ogcore.pensions)</a>
+</li>
       <li><a href="content/api/utils.html#ogcore.utils.pickle_file_compare">pickle_file_compare() (in module ogcore.utils)</a>
 </li>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_2D_taxfunc">plot_2D_taxfunc() (in module ogcore.parameter_plots)</a>
@@ -822,10 +871,10 @@ document.write(`
 </li>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_elliptical_u">plot_elliptical_u() (in module ogcore.parameter_plots)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_fert_rates">plot_fert_rates() (in module ogcore.parameter_plots)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/parameter_plots.html#ogcore.parameter_plots.plot_g_n">plot_g_n() (in module ogcore.parameter_plots)</a>
 </li>
       <li><a href="content/api/output_plots.html#ogcore.output_plots.plot_gdp_ratio">plot_gdp_ratio() (in module ogcore.output_plots)</a>
@@ -850,6 +899,12 @@ document.write(`
 </li>
       <li><a href="content/api/utils.html#ogcore.utils.print_progress">print_progress() (in module ogcore.utils)</a>
 </li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.PS_1dim_loop">PS_1dim_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.PS_2dim_loop">PS_2dim_loop() (in module ogcore.pensions)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.PS_amount">PS_amount() (in module ogcore.pensions)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -861,6 +916,8 @@ document.write(`
       <li><a href="content/api/utils.html#ogcore.utils.Inequality.ratio_pct1_pct2">ratio_pct1_pct2() (ogcore.utils.Inequality method)</a>
 </li>
       <li><a href="content/api/txfunc.html#ogcore.txfunc.replace_outliers">replace_outliers() (in module ogcore.txfunc)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.replacement_rate_vals">replacement_rate_vals() (in module ogcore.pensions)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -889,6 +946,8 @@ document.write(`
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/parameters.html#ogcore.parameters.Specifications">Specifications (class in ogcore.parameters)</a>
+</li>
+      <li><a href="content/api/pensions.html#ogcore.pensions.SS_amount">SS_amount() (in module ogcore.pensions)</a>
 </li>
       <li><a href="content/api/output_plots.html#ogcore.output_plots.ss_profiles">ss_profiles() (in module ogcore.output_plots)</a>
 </li>

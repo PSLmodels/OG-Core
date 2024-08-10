@@ -1,0 +1,1754 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Model parameters &#8212; OG-Core</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/intro/parameters';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="References" href="../OGCore_references.html" />
+    <link rel="prev" title="Derivations" href="../theory/derivations.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="OG-Core - Home"/>
+    <script>document.write(`<img src="../../_static/OG-Core_logo.png" class="logo__image only-dark" alt="OG-Core - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    OG-Core
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributor_guide.html">Contributor Guide</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/demographics.html">Demographics Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/pensions.html">Pension Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../theory/intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/demographics.html">Demographics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/households.html">Households</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/firms.html">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/market_clearing.html">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/stationarization.html">Stationarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equilibrium.html">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/calibration.html">Calibrating OG-Core</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../theory/derivations.html">Derivations</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Model parameters</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../OGCore_references.html">References</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../citations.html">Citations and use cases of OG-Core</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/intro/parameters.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/content/intro/parameters.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Model parameters</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#household-parameters">Household Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behavioral-assumptions">Behavioral Assumptions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#frisch"><code class="docutils literal notranslate"><span class="pre">frisch</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#beta-annual"><code class="docutils literal notranslate"><span class="pre">beta_annual</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sigma"><code class="docutils literal notranslate"><span class="pre">sigma</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-c"><code class="docutils literal notranslate"><span class="pre">alpha_c</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chi-b"><code class="docutils literal notranslate"><span class="pre">chi_b</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chi-n"><code class="docutils literal notranslate"><span class="pre">chi_n</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#endowments">Endowments</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ltilde"><code class="docutils literal notranslate"><span class="pre">ltilde</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta"><code class="docutils literal notranslate"><span class="pre">zeta</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#use-zeta"><code class="docutils literal notranslate"><span class="pre">use_zeta</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-dimensions">Model Dimensions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#s"><code class="docutils literal notranslate"><span class="pre">S</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#j"><code class="docutils literal notranslate"><span class="pre">J</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#t"><code class="docutils literal notranslate"><span class="pre">T</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#i"><code class="docutils literal notranslate"><span class="pre">I</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#lambdas"><code class="docutils literal notranslate"><span class="pre">lambdas</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-age"><code class="docutils literal notranslate"><span class="pre">starting_age</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ending-age"><code class="docutils literal notranslate"><span class="pre">ending_age</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#firm-parameters">Firm Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#capital-accumulation">Capital Accumulation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-annual"><code class="docutils literal notranslate"><span class="pre">delta_annual</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Model Dimensions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#m"><code class="docutils literal notranslate"><span class="pre">M</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#production-function">Production Function</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#gamma"><code class="docutils literal notranslate"><span class="pre">gamma</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#gamma-g"><code class="docutils literal notranslate"><span class="pre">gamma_g</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon"><code class="docutils literal notranslate"><span class="pre">epsilon</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#io-matrix"><code class="docutils literal notranslate"><span class="pre">io_matrix</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#z"><code class="docutils literal notranslate"><span class="pre">Z</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#government-parameters">Government Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-g-annual"><code class="docutils literal notranslate"><span class="pre">delta_g_annual</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fiscal-policy-parameters">Fiscal Policy Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fiscal-closure-rules">Fiscal Closure Rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tg1"><code class="docutils literal notranslate"><span class="pre">tG1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tg2"><code class="docutils literal notranslate"><span class="pre">tG2</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#rho-g"><code class="docutils literal notranslate"><span class="pre">rho_G</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#debt-ratio-ss"><code class="docutils literal notranslate"><span class="pre">debt_ratio_ss</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#government-pension-parameters">Government Pension Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#retirement-age"><code class="docutils literal notranslate"><span class="pre">retirement_age</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pension-system"><code class="docutils literal notranslate"><span class="pre">pension_system</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-p"><code class="docutils literal notranslate"><span class="pre">tau_p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#indr"><code class="docutils literal notranslate"><span class="pre">indR</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#k-ret"><code class="docutils literal notranslate"><span class="pre">k_ret</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-db"><code class="docutils literal notranslate"><span class="pre">alpha_db</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#vpoint"><code class="docutils literal notranslate"><span class="pre">vpoint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#yr-contrib"><code class="docutils literal notranslate"><span class="pre">yr_contrib</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#avg-earn-num-years"><code class="docutils literal notranslate"><span class="pre">avg_earn_num_years</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aime-bkt-1"><code class="docutils literal notranslate"><span class="pre">AIME_bkt_1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aime-bkt-2"><code class="docutils literal notranslate"><span class="pre">AIME_bkt_2</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-rate-bkt-1"><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-rate-bkt-2"><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_2</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-rate-bkt-3"><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_3</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-maxpayment"><code class="docutils literal notranslate"><span class="pre">PIA_maxpayment</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-minpayment"><code class="docutils literal notranslate"><span class="pre">PIA_minpayment</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#replacement-rate-adjust"><code class="docutils literal notranslate"><span class="pre">replacement_rate_adjust</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spending">Spending</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-t"><code class="docutils literal notranslate"><span class="pre">alpha_T</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-g"><code class="docutils literal notranslate"><span class="pre">alpha_G</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-i"><code class="docutils literal notranslate"><span class="pre">alpha_I</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-growthadj"><code class="docutils literal notranslate"><span class="pre">ubi_growthadj</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-017"><code class="docutils literal notranslate"><span class="pre">ubi_nom_017</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-1864"><code class="docutils literal notranslate"><span class="pre">ubi_nom_1864</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-65p"><code class="docutils literal notranslate"><span class="pre">ubi_nom_65p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-max"><code class="docutils literal notranslate"><span class="pre">ubi_nom_max</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eta"><code class="docutils literal notranslate"><span class="pre">eta</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#budget-balance"><code class="docutils literal notranslate"><span class="pre">budget_balance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-spending"><code class="docutils literal notranslate"><span class="pre">baseline_spending</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#taxes">Taxes</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cit-rate"><code class="docutils literal notranslate"><span class="pre">cit_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#c-corp-share-of-assets"><code class="docutils literal notranslate"><span class="pre">c_corp_share_of_assets</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#adjustment-factor-for-cit-receipts"><code class="docutils literal notranslate"><span class="pre">adjustment_factor_for_cit_receipts</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inv-tax-credit"><code class="docutils literal notranslate"><span class="pre">inv_tax_credit</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-c"><code class="docutils literal notranslate"><span class="pre">tau_c</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-tau-annual"><code class="docutils literal notranslate"><span class="pre">delta_tau_annual</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#h-wealth"><code class="docutils literal notranslate"><span class="pre">h_wealth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#m-wealth"><code class="docutils literal notranslate"><span class="pre">m_wealth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#p-wealth"><code class="docutils literal notranslate"><span class="pre">p_wealth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-bq"><code class="docutils literal notranslate"><span class="pre">tau_bq</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-payroll"><code class="docutils literal notranslate"><span class="pre">tau_payroll</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#constant-rates"><code class="docutils literal notranslate"><span class="pre">constant_rates</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zero-taxes"><code class="docutils literal notranslate"><span class="pre">zero_taxes</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#analytical-mtrs"><code class="docutils literal notranslate"><span class="pre">analytical_mtrs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#age-specific"><code class="docutils literal notranslate"><span class="pre">age_specific</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tax-func-type"><code class="docutils literal notranslate"><span class="pre">tax_func_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#labor-income-tax-noncompliance-rate"><code class="docutils literal notranslate"><span class="pre">labor_income_tax_noncompliance_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#capital-income-tax-noncompliance-rate"><code class="docutils literal notranslate"><span class="pre">capital_income_tax_noncompliance_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#etr-params"><code class="docutils literal notranslate"><span class="pre">etr_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mtrx-params"><code class="docutils literal notranslate"><span class="pre">mtrx_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mtry-params"><code class="docutils literal notranslate"><span class="pre">mtry_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#frac-tax-payroll"><code class="docutils literal notranslate"><span class="pre">frac_tax_payroll</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-debt-ratio"><code class="docutils literal notranslate"><span class="pre">initial_debt_ratio</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-kg-ratio"><code class="docutils literal notranslate"><span class="pre">initial_Kg_ratio</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#r-gov-scale"><code class="docutils literal notranslate"><span class="pre">r_gov_scale</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#r-gov-shift"><code class="docutils literal notranslate"><span class="pre">r_gov_shift</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#open-economy-parameters">Open Economy Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#world-int-rate-annual"><code class="docutils literal notranslate"><span class="pre">world_int_rate_annual</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-foreign-debt-ratio"><code class="docutils literal notranslate"><span class="pre">initial_foreign_debt_ratio</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta-d"><code class="docutils literal notranslate"><span class="pre">zeta_D</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta-k"><code class="docutils literal notranslate"><span class="pre">zeta_K</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-assumptions">Economic Assumptions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-y-annual"><code class="docutils literal notranslate"><span class="pre">g_y_annual</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demographic-parameters">Demographic Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constant-demographics"><code class="docutils literal notranslate"><span class="pre">constant_demographics</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#omega"><code class="docutils literal notranslate"><span class="pre">omega</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#omega-ss"><code class="docutils literal notranslate"><span class="pre">omega_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#omega-s-pretp"><code class="docutils literal notranslate"><span class="pre">omega_S_preTP</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n"><code class="docutils literal notranslate"><span class="pre">g_n</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n-ss"><code class="docutils literal notranslate"><span class="pre">g_n_ss</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imm-rates"><code class="docutils literal notranslate"><span class="pre">imm_rates</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rho"><code class="docutils literal notranslate"><span class="pre">rho</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-solution-parameters">Model Solution Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nu"><code class="docutils literal notranslate"><span class="pre">nu</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ss-root-method"><code class="docutils literal notranslate"><span class="pre">SS_root_method</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#foc-root-method"><code class="docutils literal notranslate"><span class="pre">FOC_root_method</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maxiter"><code class="docutils literal notranslate"><span class="pre">maxiter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mindist-ss"><code class="docutils literal notranslate"><span class="pre">mindist_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mindist-tpi"><code class="docutils literal notranslate"><span class="pre">mindist_TPI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rc-ss"><code class="docutils literal notranslate"><span class="pre">RC_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rc-tpi"><code class="docutils literal notranslate"><span class="pre">RC_TPI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reform-use-baseline-solution"><code class="docutils literal notranslate"><span class="pre">reform_use_baseline_solution</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-r-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_r_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-w-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_w_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-tr-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_TR_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-factor-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_factor_SS</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-parameters">Other Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#start-year"><code class="docutils literal notranslate"><span class="pre">start_year</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mean-income-data"><code class="docutils literal notranslate"><span class="pre">mean_income_data</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="model-parameters">
+<h1>Model parameters<a class="headerlink" href="#model-parameters" title="Link to this heading">#</a></h1>
+<p>This section contains documentation of the models parameters in a format
+that is easy to search and print.
+The model parameters are grouped here roughly in line with the
+organization of the theory in the <code class="docutils literal notranslate"><span class="pre">OG-Core</span></code> documentation.</p>
+<section id="household-parameters">
+<h2>Household Parameters<a class="headerlink" href="#household-parameters" title="Link to this heading">#</a></h2>
+<section id="behavioral-assumptions">
+<h3>Behavioral Assumptions<a class="headerlink" href="#behavioral-assumptions" title="Link to this heading">#</a></h3>
+<section id="frisch">
+<h4><code class="docutils literal notranslate"><span class="pre">frisch</span></code><a class="headerlink" href="#frisch" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Frisch elasticity of labor supply.<br />
+<em>Notes:</em> See Altonji (JPE, 1986) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.2 and max = 0.62<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="beta-annual">
+<h4><code class="docutils literal notranslate"><span class="pre">beta_annual</span></code><a class="headerlink" href="#beta-annual" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Annual rate of time preference for households.<br />
+<em>Notes:</em> Default value from Carroll (JME, 2009).  Allows for each type to have a different value.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 0.9999<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="sigma">
+<h4><code class="docutils literal notranslate"><span class="pre">sigma</span></code><a class="headerlink" href="#sigma" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Coefficient of relative risk aversion in household utility function.<br />
+<em>Notes:</em> Default value from Attanasio, Banks, Meghir and Weber (JEBS, 1999).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1.0 and max = 2.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-c">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_c</span></code><a class="headerlink" href="#alpha-c" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Share parameters for each good in the composite consumption good.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="chi-b">
+<h4><code class="docutils literal notranslate"><span class="pre">chi_b</span></code><a class="headerlink" href="#chi-b" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Household utility weight on bequests.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 10000.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="chi-n">
+<h4><code class="docutils literal notranslate"><span class="pre">chi_n</span></code><a class="headerlink" href="#chi-n" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Household utility weight on on disutility of labor supply.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 10000.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="endowments">
+<h3>Endowments<a class="headerlink" href="#endowments" title="Link to this heading">#</a></h3>
+<section id="e">
+<h4><code class="docutils literal notranslate"><span class="pre">e</span></code><a class="headerlink" href="#e" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Effective labor hours matrix.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 9e+99<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="ltilde">
+<h4><code class="docutils literal notranslate"><span class="pre">ltilde</span></code><a class="headerlink" href="#ltilde" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Total time endowment of household.<br />
+<em>Notes:</em> Can be normalized to 1.0 without loss of generality.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.01 and max = 5.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="zeta">
+<h4><code class="docutils literal notranslate"><span class="pre">zeta</span></code><a class="headerlink" href="#zeta" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Matrix that describes the bequest distribution process.<br />
+<em>Notes:</em> This SxJ matrix gives the fraction of total aggregate bequests going to each age s and ability type j.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="use-zeta">
+<h4><code class="docutils literal notranslate"><span class="pre">use_zeta</span></code><a class="headerlink" href="#use-zeta" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Indicator variable for whether or not to use the zeta matrix to distribute bequests.<br />
+<em>Value Type:</em> bool</p>
+</section>
+</section>
+<section id="model-dimensions">
+<h3>Model Dimensions<a class="headerlink" href="#model-dimensions" title="Link to this heading">#</a></h3>
+<section id="s">
+<h4><code class="docutils literal notranslate"><span class="pre">S</span></code><a class="headerlink" href="#s" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Maximum number of periods of economic life of model agent.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 3 and max = 80<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="j">
+<h4><code class="docutils literal notranslate"><span class="pre">J</span></code><a class="headerlink" href="#j" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Number of different labor productivity types of agents.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 1 and max = 100<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="t">
+<h4><code class="docutils literal notranslate"><span class="pre">T</span></code><a class="headerlink" href="#t" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Number of periods until it is assumed that the model reaches its steady state.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 3 and max = 1000<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="i">
+<h4><code class="docutils literal notranslate"><span class="pre">I</span></code><a class="headerlink" href="#i" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Number of different consumption goods.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 1 and max = 50<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="lambdas">
+<h4><code class="docutils literal notranslate"><span class="pre">lambdas</span></code><a class="headerlink" href="#lambdas" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Fraction of population of each labor productivity type.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="starting-age">
+<h4><code class="docutils literal notranslate"><span class="pre">starting_age</span></code><a class="headerlink" href="#starting-age" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Age at which households become economically active.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 0 and max = ending_age<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="ending-age">
+<h4><code class="docutils literal notranslate"><span class="pre">ending_age</span></code><a class="headerlink" href="#ending-age" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Maximum age a household can live until.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = starting_age and max = 120<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+</section>
+<section id="firm-parameters">
+<h2>Firm Parameters<a class="headerlink" href="#firm-parameters" title="Link to this heading">#</a></h2>
+<section id="capital-accumulation">
+<h3>Capital Accumulation<a class="headerlink" href="#capital-accumulation" title="Link to this heading">#</a></h3>
+<section id="delta-annual">
+<h4><code class="docutils literal notranslate"><span class="pre">delta_annual</span></code><a class="headerlink" href="#delta-annual" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Annual rate of economic depreciation of capital.<br />
+<em>Notes:</em> Approximately the value from Kehoe calibration exercise: <a class="reference external" href="http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf">http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf</a>.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="id1">
+<h3>Model Dimensions<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<section id="m">
+<h4><code class="docutils literal notranslate"><span class="pre">M</span></code><a class="headerlink" href="#m" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Number of different production industries.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 1 and max = 50<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="production-function">
+<h3>Production Function<a class="headerlink" href="#production-function" title="Link to this heading">#</a></h3>
+<section id="gamma">
+<h4><code class="docutils literal notranslate"><span class="pre">gamma</span></code><a class="headerlink" href="#gamma" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Capital’s share of output in firm production function.<br />
+<em>Notes:</em> Historical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital’s share is increasing, so default value is above this.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="gamma-g">
+<h4><code class="docutils literal notranslate"><span class="pre">gamma_g</span></code><a class="headerlink" href="#gamma-g" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Public capital’s share of output in firm production function.<br />
+<em>Value Type:</em> float</p>
+</section>
+<section id="epsilon">
+<h4><code class="docutils literal notranslate"><span class="pre">epsilon</span></code><a class="headerlink" href="#epsilon" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Elasticity of substitution among private capital, public capital, and labor in firm production function.<br />
+<em>Notes:</em> If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.2 and max = 10.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="io-matrix">
+<h4><code class="docutils literal notranslate"><span class="pre">io_matrix</span></code><a class="headerlink" href="#io-matrix" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Input-output matrix used to map production outputs into consumption goods using a fixed coefficient model.  This matrix has dimensions I x M, where I is the number of distinct consumption goods and M is the number of distinct production goods.  The sum each row of this matrix must be 1.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="z">
+<h4><code class="docutils literal notranslate"><span class="pre">Z</span></code><a class="headerlink" href="#z" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Total factor productivity in firm production function.  Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 5.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+</section>
+<section id="government-parameters">
+<h2>Government Parameters<a class="headerlink" href="#government-parameters" title="Link to this heading">#</a></h2>
+<section id="delta-g-annual">
+<h3><code class="docutils literal notranslate"><span class="pre">delta_g_annual</span></code><a class="headerlink" href="#delta-g-annual" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Annual rate of economic depreciation of public capital.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="fiscal-policy-parameters">
+<h2>Fiscal Policy Parameters<a class="headerlink" href="#fiscal-policy-parameters" title="Link to this heading">#</a></h2>
+<section id="fiscal-closure-rules">
+<h3>Fiscal Closure Rules<a class="headerlink" href="#fiscal-closure-rules" title="Link to this heading">#</a></h3>
+<section id="tg1">
+<h4><code class="docutils literal notranslate"><span class="pre">tG1</span></code><a class="headerlink" href="#tg1" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Number of model periods until budget closure rule kicks in.<br />
+<em>Notes:</em> It may make sense for this tG1 to exceed the length of the budget window one is looking at.  But it must also not be too late into the time path that a steady-state won’t be reached by time T.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 0 and max = tG2<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="tg2">
+<h4><code class="docutils literal notranslate"><span class="pre">tG2</span></code><a class="headerlink" href="#tg2" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Number of model periods until budget closure ends and budgetary variables jump to steady-state values.<br />
+<em>Notes:</em> The number of periods until the closure rule ends must not exceed T, the time at which the model is assumed to reach the steady-state.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = tG1 and max = T<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="rho-g">
+<h4><code class="docutils literal notranslate"><span class="pre">rho_G</span></code><a class="headerlink" href="#rho-g" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1].<br />
+<em>Notes:</em> Lower rho_G =&gt; slower convergence.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.01 and max = 0.9<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="debt-ratio-ss">
+<h4><code class="docutils literal notranslate"><span class="pre">debt_ratio_ss</span></code><a class="headerlink" href="#debt-ratio-ss" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Debt to GDP ratio to be achieved in the steady state.<br />
+<em>Notes:</em> Note that depending upon the tax policy parameters, some debt to GDP ratios may not be achievable with positive government spending.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 5.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="government-pension-parameters">
+<h3>Government Pension Parameters<a class="headerlink" href="#government-pension-parameters" title="Link to this heading">#</a></h3>
+<section id="retirement-age">
+<h4><code class="docutils literal notranslate"><span class="pre">retirement_age</span></code><a class="headerlink" href="#retirement-age" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Age at which agents can collect Social Security benefits. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 0 and max = 100<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="pension-system">
+<h4><code class="docutils literal notranslate"><span class="pre">pension_system</span></code><a class="headerlink" href="#pension-system" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Pension system.<br />
+<em>Value Type:</em> str<br />
+<em>Valid Choices:</em>[‘US-Style Social Security’, ‘Defined Benefits’, ‘Notional Defined Contribution’, ‘Points System’]</p>
+</section>
+<section id="tau-p">
+<h4><code class="docutils literal notranslate"><span class="pre">tau_p</span></code><a class="headerlink" href="#tau-p" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Pension system contribution tax rate under a notional defined contribution system.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="indr">
+<h4><code class="docutils literal notranslate"><span class="pre">indR</span></code><a class="headerlink" href="#indr" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Adjustment for survivor benefits under a notional defined contribution system.<br />
+<em>Notes:</em> indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="k-ret">
+<h4><code class="docutils literal notranslate"><span class="pre">k_ret</span></code><a class="headerlink" href="#k-ret" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Adjustment for frequency of pension payments under a notional defined contribution system.<br />
+<em>Notes:</em> k = 0.5 - (6/13n), where n is the number of payments per year<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-db">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_db</span></code><a class="headerlink" href="#alpha-db" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Replacement rate under a defined contribution system.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="vpoint">
+<h4><code class="docutils literal notranslate"><span class="pre">vpoint</span></code><a class="headerlink" href="#vpoint" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> The value of a point under a points system pension.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="yr-contrib">
+<h4><code class="docutils literal notranslate"><span class="pre">yr_contrib</span></code><a class="headerlink" href="#yr-contrib" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Number of years of contributions made to defined benefits pension system.<br />
+<em>Notes:</em> Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 0 and max = retirement_age<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="avg-earn-num-years">
+<h4><code class="docutils literal notranslate"><span class="pre">avg_earn_num_years</span></code><a class="headerlink" href="#avg-earn-num-years" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Number of years used to compute average earnings for pension benefits.<br />
+<em>Notes:</em> US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 1 and max = retirement_age<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="aime-bkt-1">
+<h4><code class="docutils literal notranslate"><span class="pre">AIME_bkt_1</span></code><a class="headerlink" href="#aime-bkt-1" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Upper bound to the first average index monthly earnings (AIME) bracket.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 9999999999.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="aime-bkt-2">
+<h4><code class="docutils literal notranslate"><span class="pre">AIME_bkt_2</span></code><a class="headerlink" href="#aime-bkt-2" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Upper bound to the second average index monthly earnings (AIME) bracket.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 9999999999999.9<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="pia-rate-bkt-1">
+<h4><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_1</span></code><a class="headerlink" href="#pia-rate-bkt-1" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="pia-rate-bkt-2">
+<h4><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_2</span></code><a class="headerlink" href="#pia-rate-bkt-2" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="pia-rate-bkt-3">
+<h4><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_3</span></code><a class="headerlink" href="#pia-rate-bkt-3" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="pia-maxpayment">
+<h4><code class="docutils literal notranslate"><span class="pre">PIA_maxpayment</span></code><a class="headerlink" href="#pia-maxpayment" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> The maximum primary insurance amount (PIA) payment.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = PIA_minpayment and max = 9999999999999.9<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="pia-minpayment">
+<h4><code class="docutils literal notranslate"><span class="pre">PIA_minpayment</span></code><a class="headerlink" href="#pia-minpayment" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> The minimum primary insurance amount (PIA) payment.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = PIA_maxpayment<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="replacement-rate-adjust">
+<h4><code class="docutils literal notranslate"><span class="pre">replacement_rate_adjust</span></code><a class="headerlink" href="#replacement-rate-adjust" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Adjustment to the Social Security retirement benefits replacement rate. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 10.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="spending">
+<h3>Spending<a class="headerlink" href="#spending" title="Link to this heading">#</a></h3>
+<section id="alpha-t">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_T</span></code><a class="headerlink" href="#alpha-t" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Exogenous ratio of government transfers to GDP when budget balance is false. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 0.3<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-g">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_G</span></code><a class="headerlink" href="#alpha-g" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Exogenous ratio of government spending to GDP when budget balance is false. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 0.3<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-i">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_I</span></code><a class="headerlink" href="#alpha-i" title="Link to this heading">#</a></h4>
+<p><em>Description:</em><br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 0.3<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="ubi-growthadj">
+<h4><code class="docutils literal notranslate"><span class="pre">ubi_growthadj</span></code><a class="headerlink" href="#ubi-growthadj" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Boolean indicator variable for whether or not to growth adjust universal basic income transfer.<br />
+<em>Notes:</em> When this Boolean = True, the ubi_{j,s,t} matrix is stationary because it is multiplied by e^{g_y t} in the nonstationary household budget constraint. When this Boolean = False, the ubi_{j,s,t} is not multiplied by e^{g_y t} and the steady-state value is a matrix of zeros.<br />
+<em>Value Type:</em> bool</p>
+</section>
+<section id="ubi-nom-017">
+<h4><code class="docutils literal notranslate"><span class="pre">ubi_nom_017</span></code><a class="headerlink" href="#ubi-nom-017" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Dollar (nominal) amount of universal basic income (UBI) per child age 0 through 17.<br />
+<em>Notes:</em> The universal basic income (UBI) per child ages 0 through 17 can range from <span class="math notranslate nohighlight">\(0 per year to \)</span>7,200 per year (max $600 per month).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 7200.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="ubi-nom-1864">
+<h4><code class="docutils literal notranslate"><span class="pre">ubi_nom_1864</span></code><a class="headerlink" href="#ubi-nom-1864" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Dollar (nominal) amount of universal basic income (UBI) per adult age 18 to 64.<br />
+<em>Notes:</em> The universal basic income (UBI) per adult age 18 through 64 can range from <span class="math notranslate nohighlight">\(0 per year to \)</span>18,000 per year ($1,500 per month).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 18000.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="ubi-nom-65p">
+<h4><code class="docutils literal notranslate"><span class="pre">ubi_nom_65p</span></code><a class="headerlink" href="#ubi-nom-65p" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Dollar (nominal) amount of universal basic income (UBI) per adult age 65 and over.<br />
+<em>Notes:</em> The universal basic income (UBI) per adult age 65 and over can range from <span class="math notranslate nohighlight">\(0 per year to \)</span>12,000 per year ($1,000 per month).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 12000.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="ubi-nom-max">
+<h4><code class="docutils literal notranslate"><span class="pre">ubi_nom_max</span></code><a class="headerlink" href="#ubi-nom-max" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Maximum dollar (nominal) amount of universal basic income (UBI) per household when all UBI allowances are added up.<br />
+<em>Notes:</em> The maximum dollar (nominal) amount of universal basic income (UBI) per household can range from <span class="math notranslate nohighlight">\(0 per year to \)</span>40,000 per year ($3,333 per month).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 40000.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="eta">
+<h4><code class="docutils literal notranslate"><span class="pre">eta</span></code><a class="headerlink" href="#eta" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Matrix that allocated government transfers across households.<br />
+<em>Notes:</em> This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="budget-balance">
+<h4><code class="docutils literal notranslate"><span class="pre">budget_balance</span></code><a class="headerlink" href="#budget-balance" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Flag to balance government budget in each period.<br />
+<em>Value Type:</em> bool</p>
+</section>
+<section id="baseline-spending">
+<h4><code class="docutils literal notranslate"><span class="pre">baseline_spending</span></code><a class="headerlink" href="#baseline-spending" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Flag for use in reform simulations to keep level of government spending and transfers constant between baseline and reform runs.<br />
+<em>Value Type:</em> bool</p>
+</section>
+</section>
+<section id="taxes">
+<h3>Taxes<a class="headerlink" href="#taxes" title="Link to this heading">#</a></h3>
+<section id="cit-rate">
+<h4><code class="docutils literal notranslate"><span class="pre">cit_rate</span></code><a class="headerlink" href="#cit-rate" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Corporate income tax rate.  Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> This is the top marginal corporate income tax rate.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 0.99<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="c-corp-share-of-assets">
+<h4><code class="docutils literal notranslate"><span class="pre">c_corp_share_of_assets</span></code><a class="headerlink" href="#c-corp-share-of-assets" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Share of total business assets held in C corporations<br />
+<em>Notes:</em> This affects the effective corporate income tax rate on the representative firm in the model<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="adjustment-factor-for-cit-receipts">
+<h4><code class="docutils literal notranslate"><span class="pre">adjustment_factor_for_cit_receipts</span></code><a class="headerlink" href="#adjustment-factor-for-cit-receipts" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Adjustment to the statutory CIT rate to match effective rate on corporations<br />
+<em>Notes:</em> This adjustment is necessary to match corporate income tax receipts found in the data.  It is computed as the ratio of the CIT/GDP from US data to CIT/GDP in the model (with this parameter =1)<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 2.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="inv-tax-credit">
+<h4><code class="docutils literal notranslate"><span class="pre">inv_tax_credit</span></code><a class="headerlink" href="#inv-tax-credit" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Investment tax credit rate.  This credit reduced the cost of new investment by the specified rate.<br />
+<em>Notes:</em> This credit reduced the cost of new investment by the specified rate<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -1.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="tau-c">
+<h4><code class="docutils literal notranslate"><span class="pre">tau_c</span></code><a class="headerlink" href="#tau-c" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Consumption tax rate.  Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes by consumption good. Tax rates cab vary over time. It is thus a TxI array.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 5.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="delta-tau-annual">
+<h4><code class="docutils literal notranslate"><span class="pre">delta_tau_annual</span></code><a class="headerlink" href="#delta-tau-annual" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Annual rate of depreciation of capital for tax purposes.  Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> Cost-of-Capital-Calculator can help to calibrate this parameter.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="h-wealth">
+<h4><code class="docutils literal notranslate"><span class="pre">h_wealth</span></code><a class="headerlink" href="#h-wealth" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Numerator in wealth tax function. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 10.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="m-wealth">
+<h4><code class="docutils literal notranslate"><span class="pre">m_wealth</span></code><a class="headerlink" href="#m-wealth" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Term in denominator in wealth tax function. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> Must be positive to avoid division by zero when computing ETR and MTR for wealth tax<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-08 and max = 10.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="p-wealth">
+<h4><code class="docutils literal notranslate"><span class="pre">p_wealth</span></code><a class="headerlink" href="#p-wealth" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Scale parameter in wealth tax function. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> Set to 0 to have no wealth tax.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 10.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="tau-bq">
+<h4><code class="docutils literal notranslate"><span class="pre">tau_bq</span></code><a class="headerlink" href="#tau-bq" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Linear tax rate on bequests. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 0.99<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="tau-payroll">
+<h4><code class="docutils literal notranslate"><span class="pre">tau_payroll</span></code><a class="headerlink" href="#tau-payroll" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Linear payroll tax rate. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> Set to zero as default since tax functions include income and payroll taxes.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 0.99<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="constant-rates">
+<h4><code class="docutils literal notranslate"><span class="pre">constant_rates</span></code><a class="headerlink" href="#constant-rates" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Flag to use linear tax functions.<br />
+<em>Value Type:</em> bool</p>
+</section>
+<section id="zero-taxes">
+<h4><code class="docutils literal notranslate"><span class="pre">zero_taxes</span></code><a class="headerlink" href="#zero-taxes" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Flag to run model without any individual income taxes.<br />
+<em>Value Type:</em> bool</p>
+</section>
+<section id="analytical-mtrs">
+<h4><code class="docutils literal notranslate"><span class="pre">analytical_mtrs</span></code><a class="headerlink" href="#analytical-mtrs" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Flag to use analytically derived marginal tax rates in tax functions.<br />
+<em>Value Type:</em> bool</p>
+</section>
+<section id="age-specific">
+<h4><code class="docutils literal notranslate"><span class="pre">age_specific</span></code><a class="headerlink" href="#age-specific" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Flag to use analytically derived marginal tax rates in tax functions.<br />
+<em>Value Type:</em> bool</p>
+</section>
+<section id="tax-func-type">
+<h4><code class="docutils literal notranslate"><span class="pre">tax_func_type</span></code><a class="headerlink" href="#tax-func-type" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Functional form for individual income tax functions.<br />
+<em>Value Type:</em> str<br />
+<em>Valid Choices:</em>[‘DEP’, ‘DEP_totalinc’, ‘GS’, ‘HSV’, ‘linear’, ‘mono’, ‘mono2D’]</p>
+</section>
+<section id="labor-income-tax-noncompliance-rate">
+<h4><code class="docutils literal notranslate"><span class="pre">labor_income_tax_noncompliance_rate</span></code><a class="headerlink" href="#labor-income-tax-noncompliance-rate" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Labor income tax noncompliance rate, the ratio of taxes paid to taxes owed.<br />
+<em>Notes:</em> Can be specified to vary by type J and over year T<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="capital-income-tax-noncompliance-rate">
+<h4><code class="docutils literal notranslate"><span class="pre">capital_income_tax_noncompliance_rate</span></code><a class="headerlink" href="#capital-income-tax-noncompliance-rate" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Capital income tax noncompliance rate, the ratio of taxes paid to taxes owed.<br />
+<em>Notes:</em> Can be specified to vary by type J and over year T<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="etr-params">
+<h4><code class="docutils literal notranslate"><span class="pre">etr_params</span></code><a class="headerlink" href="#etr-params" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Effective tax rate function parameters.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -100.0 and max = 10000.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="mtrx-params">
+<h4><code class="docutils literal notranslate"><span class="pre">mtrx_params</span></code><a class="headerlink" href="#mtrx-params" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Marginal tax rate on labor income function parameters.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -100.0 and max = 10000.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="mtry-params">
+<h4><code class="docutils literal notranslate"><span class="pre">mtry_params</span></code><a class="headerlink" href="#mtry-params" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Marginal tax rate on capital income function parameters.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -100.0 and max = 20000.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="frac-tax-payroll">
+<h4><code class="docutils literal notranslate"><span class="pre">frac_tax_payroll</span></code><a class="headerlink" href="#frac-tax-payroll" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Fraction of IIT+Payroll tax revenue that is attributable to payroll taxes.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-debt-ratio">
+<h4><code class="docutils literal notranslate"><span class="pre">initial_debt_ratio</span></code><a class="headerlink" href="#initial-debt-ratio" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Debt to GDP ratio in the initial period.<br />
+<em>Notes:</em> Should be calibrated based on government debt held by the public to GDP in the model start year.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 2.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-kg-ratio">
+<h4><code class="docutils literal notranslate"><span class="pre">initial_Kg_ratio</span></code><a class="headerlink" href="#initial-kg-ratio" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Government capital (aka infrastructure) to GDP ratio in the initial period.<br />
+<em>Notes:</em> Should be calibrated based on the value of public infrastructure to GDP in the model start year.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 50.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="r-gov-scale">
+<h4><code class="docutils literal notranslate"><span class="pre">r_gov_scale</span></code><a class="headerlink" href="#r-gov-scale" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Parameter to scale the market interest rate to find interest rate on government debt.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 4.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="r-gov-shift">
+<h4><code class="docutils literal notranslate"><span class="pre">r_gov_shift</span></code><a class="headerlink" href="#r-gov-shift" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Parameter to shift the market interest rate to find interest rate on government debt.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -0.3 and max = 0.3<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+</section>
+<section id="open-economy-parameters">
+<h2>Open Economy Parameters<a class="headerlink" href="#open-economy-parameters" title="Link to this heading">#</a></h2>
+<section id="world-int-rate-annual">
+<h3><code class="docutils literal notranslate"><span class="pre">world_int_rate_annual</span></code><a class="headerlink" href="#world-int-rate-annual" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Exogenous annual world interest rate to be used when modeling a small open economy. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.01 and max = 0.08<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-foreign-debt-ratio">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_foreign_debt_ratio</span></code><a class="headerlink" href="#initial-foreign-debt-ratio" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Share of government debt held by foreigners in model start year.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="zeta-d">
+<h3><code class="docutils literal notranslate"><span class="pre">zeta_D</span></code><a class="headerlink" href="#zeta-d" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Share of new debt issues from government that are purchased by foreigners. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> This value is about 0.4 historically for the U.S., set to zero to have closed econ as default.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="zeta-k">
+<h3><code class="docutils literal notranslate"><span class="pre">zeta_K</span></code><a class="headerlink" href="#zeta-k" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Share of excess demand for capital that is supplied by foreigners. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Notes:</em> Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="economic-assumptions">
+<h2>Economic Assumptions<a class="headerlink" href="#economic-assumptions" title="Link to this heading">#</a></h2>
+<section id="g-y-annual">
+<h3><code class="docutils literal notranslate"><span class="pre">g_y_annual</span></code><a class="headerlink" href="#g-y-annual" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Growth rate of labor augmenting technological change.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -0.01 and max = 0.08<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="demographic-parameters">
+<h2>Demographic Parameters<a class="headerlink" href="#demographic-parameters" title="Link to this heading">#</a></h2>
+<section id="constant-demographics">
+<h3><code class="docutils literal notranslate"><span class="pre">constant_demographics</span></code><a class="headerlink" href="#constant-demographics" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Use constant demographics.<br />
+<em>Notes:</em> This boolean allows one to use empirical mortality rates, but keep the population distribution constant across periods.  Note that immigration is shut off when this is true.<br />
+<em>Value Type:</em> bool</p>
+</section>
+<section id="omega">
+<h3><code class="docutils literal notranslate"><span class="pre">omega</span></code><a class="headerlink" href="#omega" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Population distribution (fraction at each age) over the time path.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="omega-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">omega_SS</span></code><a class="headerlink" href="#omega-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Population distribution (fraction at each age) in the steady-state.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="omega-s-pretp">
+<h3><code class="docutils literal notranslate"><span class="pre">omega_S_preTP</span></code><a class="headerlink" href="#omega-s-pretp" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Population distribution (fraction at each age) in the period before the transition path begins.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="g-n">
+<h3><code class="docutils literal notranslate"><span class="pre">g_n</span></code><a class="headerlink" href="#g-n" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Population growth rate over the time path.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -1.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="g-n-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">g_n_ss</span></code><a class="headerlink" href="#g-n-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Population growth rate in the steady-state.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -1.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="imm-rates">
+<h3><code class="docutils literal notranslate"><span class="pre">imm_rates</span></code><a class="headerlink" href="#imm-rates" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Immigration rates over the time path.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -1.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="rho">
+<h3><code class="docutils literal notranslate"><span class="pre">rho</span></code><a class="headerlink" href="#rho" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Age-specific mortality rates.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="model-solution-parameters">
+<h2>Model Solution Parameters<a class="headerlink" href="#model-solution-parameters" title="Link to this heading">#</a></h2>
+<section id="nu">
+<h3><code class="docutils literal notranslate"><span class="pre">nu</span></code><a class="headerlink" href="#nu" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Parameter for convergence rate of functional iteration.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.01 and max = 0.5<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="ss-root-method">
+<h3><code class="docutils literal notranslate"><span class="pre">SS_root_method</span></code><a class="headerlink" href="#ss-root-method" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Root finding algorithm for outer loop of the SS solution.<br />
+<em>Notes:</em> Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in <a class="reference external" href="http://SS.py">SS.py</a> and <a class="reference external" href="http://TPI.py">TPI.py</a> and will therefore break without modifications of the source code.<br />
+<em>Value Type:</em> str<br />
+<em>Valid Choices:</em>[‘hybr’, ‘lm’, ‘broyden1’, ‘broyden2’, ‘anderson’, ‘linearmixing’, ‘diagbroyden’, ‘excitingmixing’, ‘krylov’, ‘df-sane’]</p>
+</section>
+<section id="foc-root-method">
+<h3><code class="docutils literal notranslate"><span class="pre">FOC_root_method</span></code><a class="headerlink" href="#foc-root-method" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Root finding algorithm for solving household first order conditions.<br />
+<em>Notes:</em> Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in <a class="reference external" href="http://SS.py">SS.py</a> and <a class="reference external" href="http://TPI.py">TPI.py</a> and will therefore break without modifications of the source code.<br />
+<em>Value Type:</em> str<br />
+<em>Valid Choices:</em>[‘hybr’, ‘lm’, ‘broyden1’, ‘broyden2’, ‘anderson’, ‘linearmixing’, ‘diagbroyden’, ‘excitingmixing’, ‘krylov’, ‘df-sane’]</p>
+</section>
+<section id="maxiter">
+<h3><code class="docutils literal notranslate"><span class="pre">maxiter</span></code><a class="headerlink" href="#maxiter" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Max iterations for time path iteration.<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 2 and max = 500<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="mindist-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">mindist_SS</span></code><a class="headerlink" href="#mindist-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Tolerance for convergence of steady state solution.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-13 and max = 0.001<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="mindist-tpi">
+<h3><code class="docutils literal notranslate"><span class="pre">mindist_TPI</span></code><a class="headerlink" href="#mindist-tpi" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Tolerance for convergence of time path solution.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-13 and max = 0.001<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="rc-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">RC_SS</span></code><a class="headerlink" href="#rc-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Tolerance for the resource constraint in the steady state solution.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-13 and max = 0.001<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="rc-tpi">
+<h3><code class="docutils literal notranslate"><span class="pre">RC_TPI</span></code><a class="headerlink" href="#rc-tpi" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Tolerance for the resource constraint in the time path solution.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-13 and max = 0.01<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="reform-use-baseline-solution">
+<h3><code class="docutils literal notranslate"><span class="pre">reform_use_baseline_solution</span></code><a class="headerlink" href="#reform-use-baseline-solution" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Whether or not the baseline SS solution is used for starting values when solving the reform.<br />
+<em>Value Type:</em> bool</p>
+</section>
+<section id="initial-guess-r-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_guess_r_SS</span></code><a class="headerlink" href="#initial-guess-r-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Initial guess of r for the SS solution.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.01 and max = 0.25<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-guess-w-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_guess_w_SS</span></code><a class="headerlink" href="#initial-guess-w-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Initial guess of w for the SS solution.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.01 and max = 5.15<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-guess-tr-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_guess_TR_SS</span></code><a class="headerlink" href="#initial-guess-tr-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Initial guess of TR for the SS solution.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 0.2<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-guess-factor-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_guess_factor_SS</span></code><a class="headerlink" href="#initial-guess-factor-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Initial guess of factor for the SS solution.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1.0 and max = 500000<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+<section id="other-parameters">
+<h2>Other Parameters<a class="headerlink" href="#other-parameters" title="Link to this heading">#</a></h2>
+<section id="start-year">
+<h3><code class="docutils literal notranslate"><span class="pre">start_year</span></code><a class="headerlink" href="#start-year" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Calendar year in which to start model analysis.<br />
+<em>Notes:</em> Calendar year for initial model period<br />
+<em>Value Type:</em> int<br />
+<em>Valid Range:</em> min = 2013 and max = 2100<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="mean-income-data">
+<h3><code class="docutils literal notranslate"><span class="pre">mean_income_data</span></code><a class="headerlink" href="#mean-income-data" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Mean income (in current dollars) from the microdata used for tax function estimation.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 9.9e+100<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content/intro"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../theory/derivations.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Derivations</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../OGCore_references.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">References</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#household-parameters">Household Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behavioral-assumptions">Behavioral Assumptions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#frisch"><code class="docutils literal notranslate"><span class="pre">frisch</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#beta-annual"><code class="docutils literal notranslate"><span class="pre">beta_annual</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sigma"><code class="docutils literal notranslate"><span class="pre">sigma</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-c"><code class="docutils literal notranslate"><span class="pre">alpha_c</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chi-b"><code class="docutils literal notranslate"><span class="pre">chi_b</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chi-n"><code class="docutils literal notranslate"><span class="pre">chi_n</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#endowments">Endowments</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ltilde"><code class="docutils literal notranslate"><span class="pre">ltilde</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta"><code class="docutils literal notranslate"><span class="pre">zeta</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#use-zeta"><code class="docutils literal notranslate"><span class="pre">use_zeta</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-dimensions">Model Dimensions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#s"><code class="docutils literal notranslate"><span class="pre">S</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#j"><code class="docutils literal notranslate"><span class="pre">J</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#t"><code class="docutils literal notranslate"><span class="pre">T</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#i"><code class="docutils literal notranslate"><span class="pre">I</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#lambdas"><code class="docutils literal notranslate"><span class="pre">lambdas</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-age"><code class="docutils literal notranslate"><span class="pre">starting_age</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ending-age"><code class="docutils literal notranslate"><span class="pre">ending_age</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#firm-parameters">Firm Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#capital-accumulation">Capital Accumulation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-annual"><code class="docutils literal notranslate"><span class="pre">delta_annual</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Model Dimensions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#m"><code class="docutils literal notranslate"><span class="pre">M</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#production-function">Production Function</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#gamma"><code class="docutils literal notranslate"><span class="pre">gamma</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#gamma-g"><code class="docutils literal notranslate"><span class="pre">gamma_g</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#epsilon"><code class="docutils literal notranslate"><span class="pre">epsilon</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#io-matrix"><code class="docutils literal notranslate"><span class="pre">io_matrix</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#z"><code class="docutils literal notranslate"><span class="pre">Z</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#government-parameters">Government Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-g-annual"><code class="docutils literal notranslate"><span class="pre">delta_g_annual</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fiscal-policy-parameters">Fiscal Policy Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fiscal-closure-rules">Fiscal Closure Rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tg1"><code class="docutils literal notranslate"><span class="pre">tG1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tg2"><code class="docutils literal notranslate"><span class="pre">tG2</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#rho-g"><code class="docutils literal notranslate"><span class="pre">rho_G</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#debt-ratio-ss"><code class="docutils literal notranslate"><span class="pre">debt_ratio_ss</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#government-pension-parameters">Government Pension Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#retirement-age"><code class="docutils literal notranslate"><span class="pre">retirement_age</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pension-system"><code class="docutils literal notranslate"><span class="pre">pension_system</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-p"><code class="docutils literal notranslate"><span class="pre">tau_p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#indr"><code class="docutils literal notranslate"><span class="pre">indR</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#k-ret"><code class="docutils literal notranslate"><span class="pre">k_ret</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-db"><code class="docutils literal notranslate"><span class="pre">alpha_db</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#vpoint"><code class="docutils literal notranslate"><span class="pre">vpoint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#yr-contrib"><code class="docutils literal notranslate"><span class="pre">yr_contrib</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#avg-earn-num-years"><code class="docutils literal notranslate"><span class="pre">avg_earn_num_years</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aime-bkt-1"><code class="docutils literal notranslate"><span class="pre">AIME_bkt_1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aime-bkt-2"><code class="docutils literal notranslate"><span class="pre">AIME_bkt_2</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-rate-bkt-1"><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-rate-bkt-2"><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_2</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-rate-bkt-3"><code class="docutils literal notranslate"><span class="pre">PIA_rate_bkt_3</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-maxpayment"><code class="docutils literal notranslate"><span class="pre">PIA_maxpayment</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-minpayment"><code class="docutils literal notranslate"><span class="pre">PIA_minpayment</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#replacement-rate-adjust"><code class="docutils literal notranslate"><span class="pre">replacement_rate_adjust</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spending">Spending</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-t"><code class="docutils literal notranslate"><span class="pre">alpha_T</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-g"><code class="docutils literal notranslate"><span class="pre">alpha_G</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-i"><code class="docutils literal notranslate"><span class="pre">alpha_I</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-growthadj"><code class="docutils literal notranslate"><span class="pre">ubi_growthadj</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-017"><code class="docutils literal notranslate"><span class="pre">ubi_nom_017</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-1864"><code class="docutils literal notranslate"><span class="pre">ubi_nom_1864</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-65p"><code class="docutils literal notranslate"><span class="pre">ubi_nom_65p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-max"><code class="docutils literal notranslate"><span class="pre">ubi_nom_max</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eta"><code class="docutils literal notranslate"><span class="pre">eta</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#budget-balance"><code class="docutils literal notranslate"><span class="pre">budget_balance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-spending"><code class="docutils literal notranslate"><span class="pre">baseline_spending</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#taxes">Taxes</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cit-rate"><code class="docutils literal notranslate"><span class="pre">cit_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#c-corp-share-of-assets"><code class="docutils literal notranslate"><span class="pre">c_corp_share_of_assets</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#adjustment-factor-for-cit-receipts"><code class="docutils literal notranslate"><span class="pre">adjustment_factor_for_cit_receipts</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inv-tax-credit"><code class="docutils literal notranslate"><span class="pre">inv_tax_credit</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-c"><code class="docutils literal notranslate"><span class="pre">tau_c</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-tau-annual"><code class="docutils literal notranslate"><span class="pre">delta_tau_annual</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#h-wealth"><code class="docutils literal notranslate"><span class="pre">h_wealth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#m-wealth"><code class="docutils literal notranslate"><span class="pre">m_wealth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#p-wealth"><code class="docutils literal notranslate"><span class="pre">p_wealth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-bq"><code class="docutils literal notranslate"><span class="pre">tau_bq</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-payroll"><code class="docutils literal notranslate"><span class="pre">tau_payroll</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#constant-rates"><code class="docutils literal notranslate"><span class="pre">constant_rates</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zero-taxes"><code class="docutils literal notranslate"><span class="pre">zero_taxes</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#analytical-mtrs"><code class="docutils literal notranslate"><span class="pre">analytical_mtrs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#age-specific"><code class="docutils literal notranslate"><span class="pre">age_specific</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tax-func-type"><code class="docutils literal notranslate"><span class="pre">tax_func_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#labor-income-tax-noncompliance-rate"><code class="docutils literal notranslate"><span class="pre">labor_income_tax_noncompliance_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#capital-income-tax-noncompliance-rate"><code class="docutils literal notranslate"><span class="pre">capital_income_tax_noncompliance_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#etr-params"><code class="docutils literal notranslate"><span class="pre">etr_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mtrx-params"><code class="docutils literal notranslate"><span class="pre">mtrx_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mtry-params"><code class="docutils literal notranslate"><span class="pre">mtry_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#frac-tax-payroll"><code class="docutils literal notranslate"><span class="pre">frac_tax_payroll</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-debt-ratio"><code class="docutils literal notranslate"><span class="pre">initial_debt_ratio</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-kg-ratio"><code class="docutils literal notranslate"><span class="pre">initial_Kg_ratio</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#r-gov-scale"><code class="docutils literal notranslate"><span class="pre">r_gov_scale</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#r-gov-shift"><code class="docutils literal notranslate"><span class="pre">r_gov_shift</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#open-economy-parameters">Open Economy Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#world-int-rate-annual"><code class="docutils literal notranslate"><span class="pre">world_int_rate_annual</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-foreign-debt-ratio"><code class="docutils literal notranslate"><span class="pre">initial_foreign_debt_ratio</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta-d"><code class="docutils literal notranslate"><span class="pre">zeta_D</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta-k"><code class="docutils literal notranslate"><span class="pre">zeta_K</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-assumptions">Economic Assumptions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-y-annual"><code class="docutils literal notranslate"><span class="pre">g_y_annual</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demographic-parameters">Demographic Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constant-demographics"><code class="docutils literal notranslate"><span class="pre">constant_demographics</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#omega"><code class="docutils literal notranslate"><span class="pre">omega</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#omega-ss"><code class="docutils literal notranslate"><span class="pre">omega_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#omega-s-pretp"><code class="docutils literal notranslate"><span class="pre">omega_S_preTP</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n"><code class="docutils literal notranslate"><span class="pre">g_n</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n-ss"><code class="docutils literal notranslate"><span class="pre">g_n_ss</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imm-rates"><code class="docutils literal notranslate"><span class="pre">imm_rates</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rho"><code class="docutils literal notranslate"><span class="pre">rho</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-solution-parameters">Model Solution Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nu"><code class="docutils literal notranslate"><span class="pre">nu</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ss-root-method"><code class="docutils literal notranslate"><span class="pre">SS_root_method</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#foc-root-method"><code class="docutils literal notranslate"><span class="pre">FOC_root_method</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maxiter"><code class="docutils literal notranslate"><span class="pre">maxiter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mindist-ss"><code class="docutils literal notranslate"><span class="pre">mindist_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mindist-tpi"><code class="docutils literal notranslate"><span class="pre">mindist_TPI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rc-ss"><code class="docutils literal notranslate"><span class="pre">RC_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rc-tpi"><code class="docutils literal notranslate"><span class="pre">RC_TPI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reform-use-baseline-solution"><code class="docutils literal notranslate"><span class="pre">reform_use_baseline_solution</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-r-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_r_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-w-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_w_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-tr-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_TR_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-factor-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_factor_SS</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-parameters">Other Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#start-year"><code class="docutils literal notranslate"><span class="pre">start_year</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mean-income-data"><code class="docutils literal notranslate"><span class="pre">mean_income_data</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

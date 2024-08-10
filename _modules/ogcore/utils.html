@@ -197,6 +197,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameter_plots.html">Parameter Plotting Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameter_tables.html">Parameter Table Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
@@ -220,6 +221,7 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../content/theory/derivations.html">Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../content/intro/parameters.html">Model parameters</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="nav bd-sidenav">
@@ -393,6 +395,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">urllib3</span>
 <span class="kn">import</span> <span class="nn">ssl</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">1e-10</span>  <span class="c1"># tolerance or comparison functions</span>
 
@@ -816,7 +819,7 @@ document.write(`
 <span class="sd">    Args:</span>
 <span class="sd">        table_df (Pandas DataFrame): table</span>
 <span class="sd">        output_type (string): specifies the type of file to save</span>
-<span class="sd">            table to: &#39;csv&#39;, &#39;tex&#39;, &#39;excel&#39;, &#39;json&#39;</span>
+<span class="sd">            table to: &#39;csv&#39;, &#39;tex&#39;, &#39;excel&#39;, &#39;json&#39;, &#39;md&#39;</span>
 <span class="sd">        path (string): specifies path to save file with table to</span>
 <span class="sd">        precision (integer): number of significant digits to print.</span>
 <span class="sd">            Defaults to 0.</span>
@@ -848,6 +851,10 @@ document.write(`
             <span class="n">table_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path_or_buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
             <span class="n">table_df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">path_or_buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">double_precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;md&quot;</span><span class="p">:</span>
+            <span class="n">table_df</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span>
+                <span class="n">buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">floatfmt</span><span class="o">=</span><span class="s2">&quot;.</span><span class="si">{}</span><span class="s2">f&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;excel&quot;</span><span class="p">:</span>
             <span class="n">table_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">excel_writer</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1824,6 +1831,49 @@ document.write(`
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">json_str</span></div>
 
+
+
+<span class="k">def</span> <span class="nf">json_to_dict</span><span class="p">(</span><span class="n">json_text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert specified JSON text into an ordered Python dictionary.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    json_text: string</span>
+<span class="sd">        JSON text.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError:</span>
+<span class="sd">        if json_text contains a JSON syntax error.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dictionary: collections.OrderedDict</span>
+<span class="sd">        JSON data expressed as an ordered Python dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+            <span class="n">json_text</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">valerr</span><span class="p">:</span>
+        <span class="n">text_lines</span> <span class="o">=</span> <span class="n">json_text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Text below contains invalid JSON:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">valerr</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;Above location of the first error may be approximate.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;The invalid JSON text is between the lines:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">bline</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;XXXX----.----1----.----2----.----3----.----4&quot;</span>
+            <span class="s2">&quot;----.----5----.----6----.----7&quot;</span>
+        <span class="p">)</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="n">bline</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">linenum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text_lines</span><span class="p">:</span>
+            <span class="n">linenum</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:04d}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">linenum</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="n">bline</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ordered_dict</span>
 </pre></div>
 
                 </article>

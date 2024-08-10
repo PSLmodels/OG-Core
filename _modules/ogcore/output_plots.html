@@ -197,6 +197,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameter_plots.html">Parameter Plotting Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameter_tables.html">Parameter Table Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
@@ -220,6 +221,7 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../content/theory/derivations.html">Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../content/intro/parameters.html">Model parameters</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="nav bd-sidenav">
@@ -458,6 +460,9 @@ document.write(`
         <span class="k">assert</span> <span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">v</span> <span class="ow">in</span> <span class="n">VAR_LABELS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">),</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not in the list of variable labels&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;pct_diff&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;r_gov&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;r_p&quot;</span><span class="p">]:</span>
                 <span class="c1"># Compute just percentage point changes for rates</span>
@@ -620,6 +625,9 @@ document.write(`
         <span class="k">assert</span> <span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">v</span> <span class="ow">in</span> <span class="n">VAR_LABELS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">),</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not in the list of variable labels&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">var_label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">else</span><span class="p">:</span>
@@ -834,6 +842,9 @@ document.write(`
     <span class="n">start_index</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
     <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">v</span> <span class="ow">in</span> <span class="n">ToGDP_LABELS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">),</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not in the list of variable labels&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;levels&quot;</span><span class="p">:</span>
             <span class="n">plot_var_base</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][:</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">/</span> <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][:</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
