@@ -158,6 +158,7 @@ class Specifications(paramtools.Parameters):
         tp_param_list = [
             "alpha_G",
             "alpha_T",
+            "alpha_I",
             "world_int_rate_annual",
             "adjustment_factor_for_cit_receipts",
             "tau_bq",
