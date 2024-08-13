@@ -1301,8 +1301,8 @@
         ],
         "validators": {
             "range": {
-                "min": 99e9,
-                "max": -99e9
+                "min": -99e9,
+                "max": 99e9
             }
         }
     },
