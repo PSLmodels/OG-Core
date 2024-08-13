@@ -730,7 +730,7 @@
     },
     "alpha_I": {
         "title": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)",
-        "description": "",
+        "description": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
