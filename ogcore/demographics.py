@@ -1,8 +1,9 @@
 """
-------------------------------------------------------------------------
-Functions for generating demographic objects necessary for the OG-USA
-model
-------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+Functions for generating demographic objects necessary for the OG-USA model. A
+list of UN official 3-digit country codes and corresponding 3-character country
+abbreviations is available at https://unstats.un.org/unsd/methodology/m49/
+-------------------------------------------------------------------------------
 """
 
 # Import packages

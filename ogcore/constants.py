@@ -151,18 +151,18 @@ GROUP_LABELS = {
 
 
 PARAM_LABELS = {
-    "start_year": ["Initial year", r"$\texttt{start_year}$"],
+    "start_year": ["Initial year", r"$\texttt{start\_year}$"],
     # 'Gamma': ['Initial distribution of savings', r'\hat{\Gamma}_{0}'],
     # 'N': ['Initial population', 'N_{0}'],
-    "omega": ["Population by age over time", r"${{\omega_{s,t}}}_{s=1}^{S}$"],
+    "omega": ["Population by age over time", r"$\omega_{s,t}$"],
     # 'fert_rates': ['Fertility rates by age',
-    #                r'\left{f_{s}\right}_{s=1}^{S}'],
-    "imm_rates": ["Immigration rates by age", r"${{i_{s}}}_{s=1}^{S}$"],
-    "rho": ["Mortality rates by age", r"${{\rho_{s}}}_{s=1}^{S}$"],
-    "e": ["Deterministic ability process", r"${{e_{j,s}}}_{j,s=1}^{J,S}$"],
+    #                r'$f_{s,t}$'],
+    "imm_rates": ["Immigration rates by age", r"$i_{s,t}$"],
+    "rho": ["Mortality rates by age", r"$\rho_{s,t}$"],
+    "e": ["Deterministic ability process", r"$e_{j,s,t}$"],
     "lambdas": [
         "Lifetime income group percentages",
-        r"${{\lambda_{j}}}_{j=1}^{J}$",
+        r"$\lambda_{j}$",
     ],
     "J": ["Number of lifetime income groups", "$J$"],
     "S": ["Maximum periods in economically active individual life", "$S$"],
@@ -178,22 +178,22 @@ PARAM_LABELS = {
     # 'k': ['Constant parameter in utility of leisure', 'k'],
     "chi_n": [
         "Disutility of labor level parameters",
-        r"$\left{\chi^{n}_{s}\right}_{s=1}^{S}$",
+        r"$\chi^{n}_{s}$",
     ],
     "chi_b": [
         "Utility of bequests level parameters",
-        r"$\left{\chi^{b}_{j}\right}_{j=1}^{J}$",
+        r"$\chi^{b}_{j}$",
     ],
     "use_zeta": [
         "Whether to distribute bequests between lifetime income groups",
-        r"$\texttt{use_zeta}$",
+        r"$\texttt{use\_zeta}$",
     ],
     "zeta": ["Distribution of bequests", r"$\zeta$"],
     "Z": ["Total factor productivity", "$Z_{t}$"],
     "gamma": ["Capital share of income", r"$\gamma$"],
     "epsilon": [
         "Elasticity of substitution between capital and labor",
-        r"\varepsilon",
+        r"$\varepsilon$",
     ],
     "delta": ["Capital depreciation rate", r"$\delta$"],
     "g_y": [
@@ -202,20 +202,20 @@ PARAM_LABELS = {
     ],
     "tax_func_type": [
         "Functional form used for income tax functions",
-        r"$\texttt{tax_func_type}$",
+        r"$\texttt{tax\_func\_type}$",
     ],
     "analytical_mtrs": [
         "Whether use analytical MTRs or estimate MTRs",
-        r"$\texttt{analytical_mtrs}$",
+        r"$\texttt{analytical\_mtrs}$",
     ],
     "age_specific": [
         "Whether use age-specific tax functions",
-        r"$\texttt{age_specific}$",
+        r"$\texttt{age\_specific}$",
     ],
     "tau_payroll": ["Payroll tax rate", r"$\tau^{p}_{t}$"],
     # 'theta': ['Replacement rate by average income',
     #           r'\left{\theta_{j}\right}_{j=1}^{J}'],
-    "tau_bq": ["Bequest (estate) tax rate", r"$\tau^{BQ}_{t}}$"],
+    "tau_bq": ["Bequest (estate) tax rate", r"$\tau^{BQ}_{t}$"],
     "tau_b": ["Entity-level business income tax rate", r"$\tau^{b}_{t}$"],
     "delta_tau": [
         "Rate of depreciation for tax purposes",
@@ -227,12 +227,12 @@ PARAM_LABELS = {
     "p_wealth": ["Coefficient on level term in wealth tax function", "$P$"],
     "budget_balance": [
         "Whether have a balanced budget in each period",
-        r"$\texttt{budget_balance}$",
+        r"$\texttt{budget\_balance}$",
     ],
     "baseline_spending": [
         "Whether level of spending constant between "
         + "the baseline and reform runs",
-        r"$\texttt{baseline_spending}$",
+        r"$\texttt{baseline\_spending}$",
     ],
     "alpha_T": ["Transfers as a share of GDP", r"$\alpha^{T}_{t}$"],
     "eta": ["Distribution of transfers", r"$\eta_{j,s,t}$"],
@@ -255,27 +255,30 @@ PARAM_LABELS = {
     ],
     "avg_earn_num_years": [
         "Number of years over which compute average earnings for pension benefit",
-        r"$\texttt{AIME_num_years}$",
+        r"$\texttt{avg\_earn\_num\_years}$",
     ],
-    "AIME_bkt_1": ["First AIME bracket threshold", r"$\texttt{AIME_bkt_1}$"],
-    "AIME_bkt_2": ["Second AIME bracket threshold", r"$\texttt{AIME_bkt_2}$"],
+    "AIME_bkt_1": ["First AIME bracket threshold", r"$\texttt{AIME\_bkt\_1}$"],
+    "AIME_bkt_2": [
+        "Second AIME bracket threshold",
+        r"$\texttt{AIME\_bkt\_2}$",
+    ],
     "PIA_rate_bkt_1": [
         "First AIME bracket PIA rate",
-        r"$\texttt{PIA_rate_bkt_1}$",
+        r"$\texttt{PIA\_rate\_bkt\_1}$",
     ],
     "PIA_rate_bkt_2": [
         "Second AIME bracket PIA rate",
-        r"\texttt{PIA_rate_bkt_2}",
+        r"$\texttt{PIA\_rate\_bkt\_2}$",
     ],
     "PIA_rate_bkt_3": [
         "Third AIME bracket PIA rate",
-        r"$\texttt{PIA_rate_bkt_3}$",
+        r"$\texttt{PIA\_rate\_bkt\_3}$",
     ],
-    "PIA_maxpayment": ["Maximum PIA payment", r"$\texttt{PIA_maxpayment}$"],
-    "PIA_minpayment": ["Minimum PIA payment", r"$\texttt{PIA_maxpayment}$"],
+    "PIA_maxpayment": ["Maximum PIA payment", r"$\texttt{PIA\_maxpayment}$"],
+    "PIA_minpayment": ["Minimum PIA payment", r"$\texttt{PIA\_minpayment}$"],
     "replacement_rate_adjust": [
         "Adjustment to replacement rate",
-        r"$theta_{adj,t}$",
+        r"$\theta_{adj,t}$",
     ],
     "world_int_rate": ["World interest rate", r"$r^{*}_{t}$"],
     "initial_foreign_debt_ratio": [
@@ -292,8 +295,8 @@ PARAM_LABELS = {
     ],
     "nu": ["Dampening parameter for TPI", r"$\xi$"],
     "maxiter": ["Maximum number of iterations for TPI", r"$\texttt{maxiter}$"],
-    "mindist_SS": ["SS solution tolerance", r"$\texttt{mindist_SS}$"],
-    "mindist_TPI": ["TPI solution tolerance", r"$\texttt{mindist_TPI}$"],
+    "mindist_SS": ["SS solution tolerance", r"$\texttt{mindist\_SS}$"],
+    "mindist_TPI": ["TPI solution tolerance", r"$\texttt{mindist\_TPI}$"],
 }
 
 # Ignoring the following:
