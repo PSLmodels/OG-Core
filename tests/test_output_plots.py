@@ -22,10 +22,16 @@ if sys.version_info[1] < 11:
     base_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
     )
-else:
+elif sys.version_info[1] == 11:
     base_params = utils.safe_read_pickle(
         os.path.join(
             CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
+        )
+    )
+else:
+    base_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
         )
     )
 reform_ss = utils.safe_read_pickle(
@@ -38,9 +44,13 @@ if sys.version_info[1] < 11:
     reform_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_reform.pkl")
     )
-else:
+elif sys.version_info[1] == 11:
     reform_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_reform_v311.pkl")
+    )
+else:
+    reform_params = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl")
     )
 reform_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_reform.pkl")
@@ -147,7 +157,7 @@ def test_plot_aggregates(
         plot_type=plot_type,
         stationarized=stationarized,
         num_years_to_plot=20,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         forecast_data=np.ones(20),
         forecast_units="ones",
         vertical_line_years=vertical_line_years,
@@ -198,7 +208,7 @@ def test_plot_industry_aggregates(
         var_list=["Y_vec"],
         plot_type=plot_type,
         num_years_to_plot=20,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         forecast_data=np.ones(20),
         forecast_units="ones",
         vertical_line_years=vertical_line_years,
@@ -218,7 +228,7 @@ test_data = [
 def test_plot_aggregates_save_fig(tmpdir):
     path = os.path.join(tmpdir, "test_plot.png")
     output_plots.plot_aggregates(
-        base_tpi, base_params, start_year=2023, plot_type="levels", path=path
+        base_tpi, base_params, start_year=int(base_params.start_year), plot_type="levels", path=path
     )
     img = mpimg.imread(path)
 
@@ -228,7 +238,7 @@ def test_plot_aggregates_save_fig(tmpdir):
 def test_plot_aggregates_not_a_type(tmpdir):
     with pytest.raises(AssertionError):
         output_plots.plot_aggregates(
-            base_tpi, base_params, start_year=2023, plot_type="levels2"
+            base_tpi, base_params, start_year=int(base_params.start_year), plot_type="levels2"
         )
 
 
@@ -275,7 +285,7 @@ def test_plot_gdp_ratio(
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         plot_type=plot_type,
         vertical_line_years=vertical_line_years,
         plot_title=plot_title,
@@ -289,7 +299,7 @@ def test_plot_gdp_ratio_save_fig(tmpdir):
         base_tpi,
         base_params,
         reform_tpi=reform_tpi,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         reform_params=reform_params,
         path=path,
     )
@@ -304,7 +314,7 @@ def test_ability_bar():
         base_params,
         reform_tpi,
         reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         plot_title=" Test Plot Title",
     )
     assert fig
@@ -317,7 +327,7 @@ def test_ability_bar_save_fig(tmpdir):
         base_params,
         reform_tpi,
         reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         path=path,
     )
     img = mpimg.imread(path)
@@ -374,7 +384,7 @@ def test_tpi_profiles(by_j):
         base_params,
         reform_tpi,
         reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         by_j=by_j,
         plot_title=" Test Plot Title",
     )
@@ -404,7 +414,7 @@ def test_tpi_profiles_save_fig(tmpdir):
         base_params,
         reform_tpi,
         reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         path=path,
     )
     img = mpimg.imread(path)
@@ -515,7 +525,7 @@ def test_inequality_plot(
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         ineq_measure=ineq_measure,
         pctiles=pctiles,
         plot_type=plot_type,
@@ -530,7 +540,7 @@ def test_inequality_plot_save_fig(tmpdir):
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         path=path,
     )
     img = mpimg.imread(path)

@@ -17,10 +17,16 @@ if sys.version_info[1] < 11:
     base_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
     )
-else:
+elif sys.version_info[1] == 11:
     base_params = utils.safe_read_pickle(
         os.path.join(
             CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
+        )
+    )
+else:
+    base_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
         )
     )
 base_taxfunctions = utils.safe_read_pickle(
@@ -36,10 +42,11 @@ if sys.version_info[1] < 11:
 micro_data = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
 )
-base_params.rho = np.tile(
-    base_params.rho.reshape(1, base_params.S),
-    (base_params.T + base_params.S, 1),
-)
+if base_params.rho.ndim == 1:
+    base_params.rho = np.tile(
+            base_params.rho.reshape(1, base_params.S),
+            (base_params.T + base_params.S, 1),
+        )
 
 
 def test_plot_imm_rates():
@@ -94,13 +101,13 @@ def test_plot_surv_rates_save_fig(tmpdir):
 
 def test_plot_pop_growth():
     fig = parameter_plots.plot_pop_growth(
-        base_params, start_year=2023, include_title=True
+        base_params, start_year=int(base_params.start_year), include_title=True
     )
     assert fig
 
 
 def test_plot_pop_growth_rates_save_fig(tmpdir):
-    parameter_plots.plot_pop_growth(base_params, start_year=2023, path=tmpdir)
+    parameter_plots.plot_pop_growth(base_params, start_year=int(base_params.start_year), path=tmpdir)
     img = mpimg.imread(os.path.join(tmpdir, "pop_growth_rates.png"))
 
     assert isinstance(img, np.ndarray)
