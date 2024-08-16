@@ -21,7 +21,7 @@ setuptools.setup(
         "ogcore": ["default_parameters.json", "OGcorePlots.mplstyle"]
     },
     include_packages=True,
-    python_requires=">=3.7.7, <3.12",
+    python_requires=">=3.7.7",
     install_requires=[
         "numpy",
         "scipy>=1.7.1",
