@@ -49,6 +49,10 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
   - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
+* - $\hat{rm}_{j,s,t} \equiv \frac{rm_{j,s,t}}{e^{g_y t}}$
+  -
+  - $\hat{RM}_t \equiv \frac{RM_t}{e^{g_y t}\tilde{N}_t}$
+  -
 ```
 
 The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHH_ciDem2`, {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab`, {eq}`EqMarkClr_DtDdDf`, {eq}`EqMarkClr_KtKdKf`, {eq}`EqMarkClrGoods_Mm1`, {eq}`EqMarkClrGoods_M`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` of Chapter {ref}`Chap_Eqm` to solve for the equilibria in the steady-state and transition path equilibrium definitions.
@@ -86,7 +90,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   :label: EqStnrzHHBC
     p_t\hat{c}_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
     &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \\
-    &\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
+    &\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \hat{rm}_{j,s,t} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad \hat{b}_{j,E+1,t}=0\quad\forall j,t
   ```
 
@@ -114,8 +118,26 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
 
-Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\left[2 -
-        \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\right]\right)$
+  Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\left[2 -
+        \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\right]\right)$.
+
+  The stationarized versions of the remittance equations {eq}`EqHH_AggrRemit` and {eq}`EqHH_IndRemitRec` from Section {ref}`SecHHremit` in Chapter {ref}`Chap_House` are the following.
+
+  ```{math}
+  :label: EqHH_AggrRemitStnrz
+  \hat{RM}_t = \begin{cases}
+    &\alpha_{RM,1}p_t\hat{Y}_t \quad\text{for}\quad t=1, \\
+    &\frac{\left(1 + g_{RM,t}\right)}{e^{g_y}\left(1 + \tilde{g}_{n,t}\right)}\hat{RM}_{t-1} \quad\text{for}\quad 2\leq t \leq T_{G1}, \\
+    &\rho_{RM}\alpha_{RM,T}p_t\hat{Y}_t + \left(1-\rho_{RM}\right)\frac{\left(1 + g_{RM,t}\right)}{e^{g_y}\left(1 + \tilde{g}_{n,t}\right)}\hat{RM}_{t-1} \quad\text{for}\quad T_{G1} < t < T_{G2}, \\
+    &\alpha_{RM,T}p_t\hat{Y}_t \quad\forall t\geq T_{G2}
+  \end{cases}
+  ```
+
+  ```{math}
+  :label: EqHH_IndRemitRecStnrz
+  \hat{rm}_{j,s,t} = \eta_{RM,j,s,t}\frac{\hat{RM}_t}{\lambda_j\hat{\omega}_{s,t}} \quad\forall \quad j,s,t
+  ```
+
 
 (SecStnrzFirms)=
 ## Stationarized Firms Equations
@@ -489,3 +511,5 @@ Stationarized pension amount derivative:
   :label: EqStnrzMarkClrBQ
     \hat{BQ}_{t} = \left(\frac{1+r_{p,t}}{1 + \tilde{g}_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\hat{\omega}_{s-1,t-1}\hat{b}_{j,s,t}\right) \quad\forall t
   ```
+
+  The demand side of aggregate consumption $\hat{C}_{m,t}$, aggregate investment $\hat{I}_{M,t}$, and aggregate bequests $\hat{BQ}_t$ is each indirectly affected by the size of remittances, described equations {eq}`EqHH_AggrRemit` and {eq}`EqHH_IndRemitRec` in Section {ref}`SecHHremit` of Chapter {ref}`Chap_House` and in the stationarized versions of those equations {eq}`EqHH_AggrRemitStnrz` and {eq}`EqHH_IndRemitRecStnrz` in Section {ref}`SecStnrzHH` in this Chapter.

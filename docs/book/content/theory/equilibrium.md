@@ -62,27 +62,28 @@ The computational algorithm for solving for the steady-state follows the steps b
 
     1. Given $\boldsymbol{\bar{p}}^i$ find the price of consumption goods using {eq}`EqHH_pi2`
     2. From price of consumption goods, determine the price of the composite consmpution good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
-    3. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}_{j,s}^i$
-    4. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}^i$
-    5. Given values $\bar{p}$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}^i$, $\overline{tr}_{j,s}^i$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
+    3. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}_{j,s}$
+    4. With $\overline{Y}^{\,i}$, use {eq}`EqHH_AggrRemitStnrz` to get $\overline{RM}$ and use {eq}`EqHH_IndRemitRecStnrz` to get $\overline{rm}_{j,s}$.
+    5. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}$
+    6. Given values $\bar{p}^i$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}$, $\overline{rm}_{j,s}$, $\overline{tr}_{j,s}$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
         1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` simultaneously for each $j$.
 
         ```{math}
         :label: EqSS_HHBC
-          \bar{c}_{j,s} &= (1 + \bar{r}_{p,a})\bar{b}_{j,s} + \bar{w}_a e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1} + \overline{bq}_{j,s}^i + \overline{tr}_{j,s}^i + \hat{ubi}_{j,s} - \bar{T}_{j,s}  \\
+          \bar{c}_{j,s} &= (1 + \bar{r}_{p}^i)\bar{b}_{j,s} + \bar{w}^i e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1} + \overline{bq}_{j,s} + \overline{rm}_{j,s} + \overline{tr}_{j,s} + \overline{ubi}_{j,s} - \overline{T}_{j,s}  \\
           &\qquad\qquad\forall j\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \bar{b}_{j,E+1}=0
         ```
 
         ```{math}
         :label: EqSS_HHeul_n
-          \bar{w}_a e_{j,s}\bigl(1 - \tau^{mtrx}_{s}\bigr)(\bar{c}_{j,s})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
+          \bar{w}^i e_{j,s}\bigl(1 - \tau^{mtrx}_{s}\bigr)(\bar{c}_{j,s})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
           \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S \\
         ```
 
         ```{math}
         :label: EqSS_HHeul_b
-          (\bar{c}_{j,s})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\bar{b}_{j,s+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + \bar{r}_{p,a}\bigl[1 - \tau^{mtry}_{s+1}\bigr]\Bigr)(\bar{c}_{j,s+1})^{-\sigma}\biggr] \\
+          (\bar{c}_{j,s})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\bar{b}_{j,s+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + \bar{r}_{p}^i\bigl[1 - \tau^{mtry}_{s+1}\bigr]\Bigr)(\bar{c}_{j,s+1})^{-\sigma}\biggr] \\
           \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
         ```
 
@@ -90,9 +91,9 @@ The computational algorithm for solving for the steady-state follows the steps b
         :label: EqSS_HHeul_bS
           (\bar{c}_{j,E+S})^{-\sigma} = e^{-\sigma g_y}\chi^b_j(\bar{b}_{j,E+S+1})^{-\sigma} \quad\forall j
         ```
-    6. Determine from the quantity of the composite consumption good consumed by each household, $\bar{c}_{j,s}$, use equation {eq}`EqStnrz_cmDem2` to determine consumption of each output good, $\bar{c}_{m,j,s}$
-    7. Using $\bar{c}_{m,j,s}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\bar{C}_{m}$
-    8. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state labor supply, $\bar{L}$, savings, $\bar{B}$
+    7. Determine from the quantity of the composite consumption good consumed by each household, $\bar{c}_{j,s}$, use equation {eq}`EqStnrz_cmDem2` to determine consumption of each output good, $\bar{c}_{m,j,s}$
+    8. Using $\bar{c}_{m,j,s}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\bar{C}_{m}$
+    9. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state labor supply, $\bar{L}$, savings, $\bar{B}$
         1. Use $\bar{n}_{j,s}$ and the steady-state version of the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\bar{L}^{i}$.
 
            ```{math}
@@ -105,13 +106,13 @@ The computational algorithm for solving for the steady-state follows the steps b
            :label: EqSS_Bt
              \bar{B} \equiv \frac{1}{1 + \bar{g}_{n}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\bar{\omega}_{s-1}\lambda_j\bar{b}_{j,s} + i_s\bar{\omega}_{s}\lambda_j\bar{b}_{j,s}\Bigr)
            ```
-    9. Solve for the exogenous government interest rate $\bar{r}_{gov}^{i}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
-    10. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\overline{TR}^i$
-    11. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
-    12. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
-    13. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
-    14. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
-    15. Find output and factor demands for M-1 industries:
+    10. Solve for the exogenous government interest rate $\bar{r}_{gov}^{i}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
+    11. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\overline{TR}^i$
+    12. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
+    13. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
+    14. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
+    15. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
+    16. Find output and factor demands for M-1 industries:
         1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$, where $\hat{C}_{m,t}$ is determined by {eq}`EqStnrzEqCmt`
         2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
         3. Capital demand can thus be found: $\bar{K}_{m} = \frac{\bar{K}_m}{\bar{Y}_m} * \bar{Y}_m$
@@ -127,7 +128,7 @@ The computational algorithm for solving for the steady-state follows the steps b
              \bar{K}_m^{r^*} = \bar{L}_m\left(\frac{\bar{w}}{\frac{\bar{r} + \bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{1 - \bar{\tau}^{corp}_m}}\right)^{\varepsilon_m} \frac{\gamma_m}{(1 - \gamma_m - \gamma_{g,m})}
            ```
 
-    16. Determine factor demands and output for industry $M$:
+    17. Determine factor demands and output for industry $M$:
         1.  $\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}$
         2.  Find $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
         3.  Find total capital supply, and the split between that from domestic and foreign households: $\bar{K}^{i'}$, $\bar{K}^d$, $\bar{K}^f$:
@@ -136,8 +137,8 @@ The computational algorithm for solving for the steady-state follows the steps b
             3.  Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d,i} + \bar{K}^{f,i}$.
         4.  $\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}$
         5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M$.
-    17. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m$.
-    18. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
+    18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m$.
+    19. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
 
     1. Use $\bar{Y}_M^{i'}$ and $\bar{K}_M^{i'}$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
@@ -414,4 +415,6 @@ Under alternative model configurations, the solution algorithm changes slightly.
 (SecEqlbFootnotes)=
 ## Footnotes
 
-[^citation_note]: See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`.
+  This section contains the footnotes for this chapter.
+
+  [^citation_note]: See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`.
