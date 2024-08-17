@@ -53,7 +53,9 @@ elif sys.version_info[1] == 11:
     )
 else:
     reform_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl")
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
+        )
     )
 # add investment tax credit parameter that not in cached parameters
 base_params.inv_tax_credit = np.zeros(

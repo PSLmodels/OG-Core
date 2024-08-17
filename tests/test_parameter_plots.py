@@ -44,9 +44,9 @@ micro_data = utils.safe_read_pickle(
 )
 if base_params.rho.ndim == 1:
     base_params.rho = np.tile(
-            base_params.rho.reshape(1, base_params.S),
-            (base_params.T + base_params.S, 1),
-        )
+        base_params.rho.reshape(1, base_params.S),
+        (base_params.T + base_params.S, 1),
+    )
 
 
 def test_plot_imm_rates():
@@ -107,7 +107,9 @@ def test_plot_pop_growth():
 
 
 def test_plot_pop_growth_rates_save_fig(tmpdir):
-    parameter_plots.plot_pop_growth(base_params, start_year=int(base_params.start_year), path=tmpdir)
+    parameter_plots.plot_pop_growth(
+        base_params, start_year=int(base_params.start_year), path=tmpdir
+    )
     img = mpimg.imread(os.path.join(tmpdir, "pop_growth_rates.png"))
 
     assert isinstance(img, np.ndarray)

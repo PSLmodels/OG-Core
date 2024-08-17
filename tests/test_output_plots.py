@@ -50,7 +50,9 @@ elif sys.version_info[1] == 11:
     )
 else:
     reform_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl")
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
+        )
     )
 reform_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_reform.pkl")
@@ -228,7 +230,11 @@ test_data = [
 def test_plot_aggregates_save_fig(tmpdir):
     path = os.path.join(tmpdir, "test_plot.png")
     output_plots.plot_aggregates(
-        base_tpi, base_params, start_year=int(base_params.start_year), plot_type="levels", path=path
+        base_tpi,
+        base_params,
+        start_year=int(base_params.start_year),
+        plot_type="levels",
+        path=path,
     )
     img = mpimg.imread(path)
 
@@ -238,7 +244,10 @@ def test_plot_aggregates_save_fig(tmpdir):
 def test_plot_aggregates_not_a_type(tmpdir):
     with pytest.raises(AssertionError):
         output_plots.plot_aggregates(
-            base_tpi, base_params, start_year=int(base_params.start_year), plot_type="levels2"
+            base_tpi,
+            base_params,
+            start_year=int(base_params.start_year),
+            plot_type="levels2",
         )
 
 
