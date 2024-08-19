@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.11.17] - 2024-08-14 12:00:00
+## [0.11.17] - 2024-08-18 12:00:00
 
 ### Added
 
@@ -14,11 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug Fix
 
-- Extrapolate `alpha_I`
+- Extrapolate `alpha_I` in `parameters.py`
 - Ensure `alpha_I` shape conforms in `TPI.py`
 - Fix formatting of labels in `constants.py`
-
--
 
 ## [0.11.16] - 2024-08-10 12:00:00
 
