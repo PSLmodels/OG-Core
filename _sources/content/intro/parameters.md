@@ -383,7 +383,7 @@ _Out-of-Range Action:_ error
 
 
 ####  `alpha_I`  
-_Description:_   
+_Description:_ Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 0.3  
 _Out-of-Range Action:_ error  
@@ -397,25 +397,25 @@ _Value Type:_ bool
 
 ####  `ubi_nom_017`  
 _Description:_ Dollar (nominal) amount of universal basic income (UBI) per child age 0 through 17.  
-_Notes:_ The universal basic income (UBI) per child ages 0 through 17 can range from $0 per year to $7,200 per year (max $600 per month).  
+_Notes:_ The universal basic income (UBI) per child ages 0 through 17 can take positive or negative values (e.g., a negative value may be used to implement a head tax).  
 _Value Type:_ float  
-_Valid Range:_ min = 0.0 and max = 7200.0  
+_Valid Range:_ min = -99000000000.0 and max = 99000000000.0  
 _Out-of-Range Action:_ error  
 
 
 ####  `ubi_nom_1864`  
 _Description:_ Dollar (nominal) amount of universal basic income (UBI) per adult age 18 to 64.  
-_Notes:_ The universal basic income (UBI) per adult age 18 through 64 can range from $0 per year to $18,000 per year ($1,500 per month).  
+_Notes:_ The universal basic income (UBI) per adult age 18 through 64 can take positive or negative values (e.g., a negative value may be used to implement a head tax).  
 _Value Type:_ float  
-_Valid Range:_ min = 0.0 and max = 18000.0  
+_Valid Range:_ min = -99000000000.0 and max = 99000000000.0  
 _Out-of-Range Action:_ error  
 
 
 ####  `ubi_nom_65p`  
 _Description:_ Dollar (nominal) amount of universal basic income (UBI) per adult age 65 and over.  
-_Notes:_ The universal basic income (UBI) per adult age 65 and over can range from $0 per year to $12,000 per year ($1,000 per month).  
+_Notes:_ The universal basic income (UBI) per adult age 65 can take positive or negative values (e.g., a negative value may be used to implement a head tax).  
 _Value Type:_ float  
-_Valid Range:_ min = 0.0 and max = 12000.0  
+_Valid Range:_ min = -99000000000.0 and max = 99000000000.0  
 _Out-of-Range Action:_ error  
 
 
