@@ -730,7 +730,7 @@
     },
     "alpha_I": {
         "title": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)",
-        "description": "",
+        "description": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -1254,7 +1254,7 @@
         "description": "Dollar (nominal) amount of universal basic income (UBI) per child age 0 through 17.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
-        "notes": "The universal basic income (UBI) per child ages 0 through 17 can range from $0 per year to $7,200 per year (max $600 per month).",
+        "notes": "The universal basic income (UBI) per child ages 0 through 17 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
         "type": "float",
         "value": [
             {
@@ -1263,8 +1263,8 @@
         ],
         "validators": {
             "range": {
-                "min": 0.0,
-                "max": 7200.0
+                "min": -99e9,
+                "max": 99e9
             }
         }
     },
@@ -1273,7 +1273,7 @@
         "description": "Dollar (nominal) amount of universal basic income (UBI) per adult age 18 to 64.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
-        "notes": "The universal basic income (UBI) per adult age 18 through 64 can range from $0 per year to $18,000 per year ($1,500 per month).",
+        "notes": "The universal basic income (UBI) per adult age 18 through 64 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
         "type": "float",
         "value": [
             {
@@ -1282,8 +1282,8 @@
         ],
         "validators": {
             "range": {
-                "min": 0.0,
-                "max": 18000.0
+                "min": -99e9,
+                "max": 99e9
             }
         }
     },
@@ -1292,7 +1292,7 @@
         "description": "Dollar (nominal) amount of universal basic income (UBI) per adult age 65 and over.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
-        "notes": "The universal basic income (UBI) per adult age 65 and over can range from $0 per year to $12,000 per year ($1,000 per month).",
+        "notes": "The universal basic income (UBI) per adult age 65 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
         "type": "float",
         "value": [
             {
@@ -1301,8 +1301,8 @@
         ],
         "validators": {
             "range": {
-                "min": 0.0,
-                "max": 12000.0
+                "min": -99e9,
+                "max": 99e9
             }
         }
     },
