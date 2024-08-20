@@ -10,9 +10,6 @@ import numpy as np
 from ogcore import utils, output_tables
 
 
-# TODO: for dynamic_revenue_decomposition, need to add 3.12 pickle of results
-# for baseline and reform that have M = 1 as the 3.12 pickle file does
-
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 base_ss = utils.safe_read_pickle(
