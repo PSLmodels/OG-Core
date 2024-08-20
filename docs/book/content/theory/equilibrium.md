@@ -25,7 +25,7 @@ In all of the specifications of `OG-Core`, we use a two-stage fixed point algori
 
 Our approach is to choose the minimum number of macroeconomic variables in an outer loop in order to be able to solve the household's $2JS$ Euler equations in terms of only the $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ variables directly, holding all other variables constant. The household system of Euler equations has a provable root solution and is orders of magnitude more tractable (less nonlinear) to solve holding these outer loop variables constant.
 
-The steady-state solution method for each of the cases above is associated with a solution method that has a subset of the following outer-loop variables $\{\bar{r}_p, \bar{r}, \bar{w}, \boldsymbol{\bar{p}}, \bar{Y}, \overline{TR}, \overline{BQ}, factor\}$.
+The steady-state solution method for each of the cases above is associated with a solution method that has a subset of the following outer-loop variables $\Bigl\{\bar{r}_p, \bar{r}, \bar{w}, \{\bar{p}_m\}_{m=1}^{M-1}, \bar{Y}, \overline{TR}, \overline{BQ}, factor\Bigr\}$.
 
 
 (SecEqlbSSdef)=
@@ -39,7 +39,7 @@ We define a stationary steady-state equilibrium as the following.
 
 ```{admonition} **Definition: Stationary steady-state equilibrium**
 :class: note
-A non-autarkic stationary steady-state equilibrium in the `OG-Core` model is defined as constant allocations of stationary household labor supply $n_{j,s,t}=\bar{n}_{j,s}$ and savings $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ for all $j$, $t$, and $E+1\leq s\leq E+S$, and constant prices $\hat{w}_t=\bar{w}$, $r_t=\bar{r}$,  $r_{p,t}=\bar{r}_p$, and $\boldsymbol{p_t}=\boldsymbol{\bar{p}}$ for all $t$ such that the following conditions hold:
+A non-autarkic stationary steady-state equilibrium in the `OG-Core` model is defined as constant allocations of stationary household labor supply $n_{j,s,t}=\bar{n}_{j,s}$ and savings $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ for all $j$, $t$, and $E+1\leq s\leq E+S$, and constant prices $\hat{w}_t=\bar{w}$, $r_t=\bar{r}$,  $r_{p,t}=\bar{r}_p$, $\{p_{m,t}\}_{m=1}^M = \{\bar{p}_m\}_{m=1}^M$, and $p_t=\bar{p}$ for all $t$ such that the following conditions hold:
 1. The population has reached its stationary steady-state distribution $\hat{\omega}_{s,t} = \bar{\omega}_s$ for all $s$ and $t$ as characterized in Section {ref}`SecDemogPopSSTP`,
 2. households optimize according to {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, {eq}`EqStnrz_eul_bS`, and {eq}`EqStnrz_cmDem2`,
 3. firms in each industry optimize according to {eq}`EqStnrzFOC_L` and {eq}`EqStnrzFOC_K`,
@@ -58,14 +58,15 @@ The computational algorithm for solving for the steady-state follows the steps b
 
 1. Use the techniques from Section {ref}`SecDemogPopSSTP` to solve for the steady-state population distribution vector $\boldsymbol{\bar{\omega}}$ and steady-state growth rate $\bar{g}_n$ of the exogenous population process.
 
-2. Choose an initial guess for the values of the steady-state interest rate (the after-tax marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$,  portfolio rate of return $\bar{r}_p^i$, output prices $\boldsymbol{\bar{p}}^i$ (note that $\bar{p}_M =1$ since it's the numeraire good), total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
+2. Choose an initial guess for the values of the steady-state interest rate (the after-tax marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$,  portfolio rate of return $\bar{r}_p^i$, output prices $\{\bar{p}_m^i\}_{m=1}^{M-1}$ (note that $\bar{p}_M =1$ since it's the numeraire good), total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
 
-    1. Given $\boldsymbol{\bar{p}}^i$ find the price of consumption goods using {eq}`EqHH_pi2`
+    1. Given $\{\bar{p}_m^i\}_{m=1}^{M-1}$ find the price of consumption goods $\{\bar{p}_i\}_{i=1}^I$ using {eq}`EqHH_pi2`
     2. From price of consumption goods, determine the price of the composite consmpution good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
     3. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}_{j,s}$
-    4. With $\overline{Y}^{\,i}$, use {eq}`EqHH_AggrRemitStnrz` to get $\overline{RM}$ and use {eq}`EqHH_IndRemitRecStnrz` to get $\overline{rm}_{j,s}$.
-    5. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}$
-    6. Given values $\bar{p}^i$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}$, $\overline{rm}_{j,s}$, $\overline{tr}_{j,s}$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
+    4. Use {eq}`EqStnrzTfer` to get aggregate GDP $\overline{Y}$ from steady-state transfers $\overline{TR}^i$ and composite goods prices $\bar{p}$.
+    5. With $\overline{Y}$, use {eq}`EqHH_AggrRemitStnrz` to get $\overline{RM}$ and use {eq}`EqHH_IndRemitRecStnrz` to get $\overline{rm}_{j,s}$.
+    6. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}$
+    7. Given values $\bar{p}^i$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}$, $\overline{rm}_{j,s}$, $\overline{tr}_{j,s}$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
         1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` simultaneously for each $j$.
 
@@ -91,9 +92,9 @@ The computational algorithm for solving for the steady-state follows the steps b
         :label: EqSS_HHeul_bS
           (\bar{c}_{j,E+S})^{-\sigma} = e^{-\sigma g_y}\chi^b_j(\bar{b}_{j,E+S+1})^{-\sigma} \quad\forall j
         ```
-    7. Determine from the quantity of the composite consumption good consumed by each household, $\bar{c}_{j,s}$, use equation {eq}`EqStnrz_cmDem2` to determine consumption of each output good, $\bar{c}_{m,j,s}$
-    8. Using $\bar{c}_{m,j,s}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\bar{C}_{m}$
-    9. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state labor supply, $\bar{L}$, savings, $\bar{B}$
+    8. Determine from the quantity of the composite consumption good consumed by each household, $\bar{c}_{j,s}$, use equation {eq}`EqStnrz_cmDem2` to determine consumption of each output good, $\bar{c}_{m,j,s}$
+    9. Using $\bar{c}_{m,j,s}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\bar{C}_{m}$
+    10. Given values for $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ for all $j$ and $s$, solve for steady-state labor supply, $\bar{L}$, savings, $\bar{B}$
         1. Use $\bar{n}_{j,s}$ and the steady-state version of the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\bar{L}^{i}$.
 
            ```{math}
@@ -106,14 +107,13 @@ The computational algorithm for solving for the steady-state follows the steps b
            :label: EqSS_Bt
              \bar{B} \equiv \frac{1}{1 + \bar{g}_{n}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\bar{\omega}_{s-1}\lambda_j\bar{b}_{j,s} + i_s\bar{\omega}_{s}\lambda_j\bar{b}_{j,s}\Bigr)
            ```
-    10. Solve for the exogenous government interest rate $\bar{r}_{gov}^{i}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
-    11. Use {eq}`EqStnrzTfer` to find $\bar{Y}^i$ from the guess of $\overline{TR}^i$
-    12. Use {eq}`EqStnrz_DY` to find $\bar{D}^i$ from $\bar{Y}^i$
-    13. Using $\bar{D}^i$, we can find foreign investor holdings of debt, $\bar{D}^{f,i}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\bar{D}^{d,i} = \bar{D}^i - \bar{D}^{f,i}$
-    14. Using $\bar{Y}^i$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
-    15. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\bar{K}_{g}^{i}$
+    11. Solve for the exogenous government interest rate $\bar{r}_{gov}$ using equation {eq}`EqUnbalGBC_rate_wedge`.
+    12. Use {eq}`EqStnrz_DY` to find $\overline{D}$ from $\overline{Y}$
+    13. Using $\overline{D}$, we can find foreign investor holdings of debt, $\overline{D}^{f}$ from {eq}`EqMarkClr_zetaD2` and then solve for domestic debt holdings through the debt market clearing condition: $\overline{D}^{d} = \overline{D} - \overline{D}^{f}$
+    14. Using $\overline{Y}$, find government infrastructure investment, $\bar{I}_{g}$ from {eq}`EqStnrz_Igt`
+    15. Using the law of motion of the stock of infrastructure, {eq}`EqStnrz_Kgmt`, and $\bar{I}_{g}$, solve for $\overline{K}_{g}$
     16. Find output and factor demands for M-1 industries:
-        1. By {eq}`EqMarkClrGoods_Mm1`, $\hat{Y}_{m,t}=\hat{C}_{m,t}$, where $\hat{C}_{m,t}$ is determined by {eq}`EqStnrzEqCmt`
+        1. By {eq}`EqStnrzMarkClrGoods_Mm1`, $\overline{Y}_{m}=\overline{C}_{m}$ for $1\leq m \leq M-1$, where $\overline{C}_{m}$ is determined by {eq}`EqStnrzEqCmt`.
         2. The capital-output ratio can be determined from the FOC for the firms' choice of capital: $\frac{\bar{K}_m}{\bar{Y}_m} = \gamma_m\left[\frac{\bar{r} +\bar{\delta}_M - \bar{\tau}^{corp}_m\bar{\delta}^{\tau}_m - \bar{\tau}^{inv}_m\bar{\delta}_M}{\left(1 - \bar{\tau}^{corp}_m\right)\bar{p}_m(\bar{Z}_m)^\frac{\varepsilon_m-1}{\varepsilon_m}}\right]^{-\varepsilon_m}$
         3. Capital demand can thus be found: $\bar{K}_{m} = \frac{\bar{K}_m}{\bar{Y}_m} * \bar{Y}_m$
         4. Labor demand can be found by inverting the production function:
@@ -133,8 +133,8 @@ The computational algorithm for solving for the steady-state follows the steps b
         2.  Find $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
         3.  Find total capital supply, and the split between that from domestic and foreign households: $\bar{K}^{i'}$, $\bar{K}^d$, $\bar{K}^f$:
             1.  We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: $\bar{K}^{f} = \bar{\zeta}_{K}\sum_{m=1}^{M}\bar{K}_m^{r^*}$
-            2.  Using $\bar{D}^{d,i}$ we can then find domestic investors' holdings of private capital as the residual from their total asset holdings: , $\bar{K}^{d,i} = \bar{B}^i - \bar{D}^{d,i}$
-            3.  Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d,i} + \bar{K}^{f,i}$.
+            2.  Using $\bar{D}^{d}$ we can then find domestic investors' holdings of private capital as the residual from their total asset holdings: , $\bar{K}^{d} = \bar{B} - \bar{D}^{d}$
+            3.  Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d} + \bar{K}^{f}$.
         4.  $\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}$
         5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M$.
     18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m$.
