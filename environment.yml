@@ -2,7 +2,7 @@ name: ogcore-dev
 channels:
 - conda-forge
 dependencies:
-- python>=3.7.7
+- python>=3.7.7, <3.13
 - numpy
 - ipython
 - setuptools
