@@ -49,12 +49,12 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   ```{math}
   :label: EqTaxCalcLiabETR2
     T_{j,s,t} &= T^{x+y}_{j,s,t} + T^w_{j,s,t} \\
-    &=\tau^{etr,xy}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) + \tau^{etr,w}_{s,t}\bigl(b_{j,s,t}\bigr)b_{j,s,t}
+    &=\tau^{etr,xy}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) + \tau^{etr,w}_{t}\bigl(b_{j,s,t}\bigr)b_{j,s,t}
   ```
 
-  where the wealth tax function is described in Section {ref}`SecGovWealthTax` of this chapter. Rearranging the first term on the right-hand-side of {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate on income ($\tau_{s,t}^{etr,xy}$) as total tax liability, minus the wealth tax liability, divided by unadjusted gross income. And the definition of the effective tax rate on wealth ($\tau_{s,t}^{etr,w}$) as total tax liability, minus the income tax liability, divided by wealth.
+  where the wealth tax function is described in Section {ref}`SecGovWealthTax` of this chapter. Rearranging the first term on the right-hand-side of {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate on income ($\tau_{s,t}^{etr,xy}$) as total tax liability, minus the wealth tax liability, divided by unadjusted gross income. And the definition of the effective tax rate on wealth ($\tau_{t}^{etr,w}$) as total tax liability, minus the income tax liability, divided by wealth.
 
-  A marginal tax rate ($\tau_{s,t}^{mtr}$) is defined as the change in total tax liability from a small change in either income or wealth. We allow these functions to vary by age $s$ and time $t$. In `OG-Core`, we differentiate between the marginal tax rate on labor income ($\tau_{s,t}^{mtrx}$), the marginal tax rate on capital income ($\tau_{j,s}^{mtry}$), and the marginal tax rate on wealth ($\tau_{s,t}^{mtrw}$).
+  A marginal tax rate ($\tau_{s,t}^{mtr}$) is defined as the change in total tax liability from a small change in either income or wealth. We allow these functions to vary by age $s$ and time $t$. In `OG-Core`, we differentiate between the marginal tax rate on labor income ($\tau_{s,t}^{mtrx}$), the marginal tax rate on capital income ($\tau_{s,t}^{mtry}$), and the marginal tax rate on wealth ($\tau_{t}^{mtrw}$).
 
   ```{math}
   :label: EqTaxCalcMTRx
@@ -81,7 +81,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqMTRy_derive
-    \frac{\partial T_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t}b_{j,s,t}}{\partial b_{j,s,t}} + \frac{\partial T^w_{j,s,t}}{b_{j,s,t}}  = \tau^{mtry}_{s,t}r_{p,t} + \tau^{mtrw}_{s,t}
+    \frac{\partial T_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t}b_{j,s,t}}{\partial b_{j,s,t}} + \frac{\partial T^w_{j,s,t}}{b_{j,s,t}}  = \tau^{mtry}_{s,t}r_{p,t} + \tau^{mtrw}_{t}
   ```
 
 
@@ -561,7 +561,7 @@ Given this pension system, the partial derivatives from the household section ar
     &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t},b_{j,E+S+1,t}=0
   ```
 
-  where we defined the tax liability function $T_{j,s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate schedule $\tau^{corp}_{m,t}$ and the tax on depreciation expensing schedule $\delta^\tau_{m,t}$ enters the firms' profit function in each industry $m$.
+  where we defined the tax liability function $T_{j,s,t}$ in {eq}`EqTaxCalcLiabETR` as effective tax rate times respective total income and wealth. The transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate schedule $\tau^{corp}_{m,t}$ and the tax on depreciation expensing schedule $\delta^\tau_{m,t}$ enters the firms' profit function in each industry $m$.
 
   ```{math}
   :label: EqFirmsProfit2
@@ -574,9 +574,9 @@ Given this pension system, the partial derivatives from the household section ar
   ```{math}
   :label: EqUnbalGBCgovRev
     Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}K_{m,t}\Bigr]}_{\text{corporate income tax revenue}} \\
-    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household income tax revenue}} \\
-    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p{i,t}c_{i,j,s,t}}_{\text{consumption tax revenue}} \\
-    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{w}_{t}b_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,xy}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household income tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p_{i,t}c_{i,j,s,t}}_{\text{consumption tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,w}_{t}b_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
   ```
 
   where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.
