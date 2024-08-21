@@ -72,26 +72,27 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         ```{math}
         :label: EqSS_HHBC
-          \bar{c}_{j,s} &= \Bigl[(1 + \bar{r}_{p}^i)\bar{b}_{j,s} + \bar{w}^i e_{j,s}\bar{n}_{j,s} - \sum_{i=1}^I\left(1 + \tau_i^c\right)\bar{p}_i c_{min,i} - e^{g_y}\bar{b}_{j,s+1} ... \\
-          &\qquad + \overline{bq}_{j,s} + \overline{rm}_{j,s} + \overline{tr}_{j,s} + \overline{ubi}_{j,s} - \overline{T}_{j,s}\Bigr] / \bar{p}^i  \\
+          \bar{c}_{j,s} &= \Bigl[(1 + \bar{r}_{p}^i)\bar{b}_{j,s} + \bar{w}^i e_{j,s}\bar{n}_{j,s} - \sum_{i=1}^I\left(1 + \tau_i^c\right)\bar{p}_i \bar{c}_{min,i} - e^{g_y}\bar{b}_{j,s+1} ... \\
+          &\qquad + \overline{bq}_{j,s} + \overline{rm}_{j,s} + \overline{tr}_{j,s} + \overline{ubi}_{j,s} - \overline{T}_{j,s}\Bigr] / \bar{p}  \\
           &\qquad\qquad\forall j\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \bar{b}_{j,E+1}=0
         ```
 
         ```{math}
         :label: EqSS_HHeul_n
-          \frac{\bar{w}^i e_{j,s}}{\bar{p}^i}\bigl(1 - \tau^{mtrx}_{s}\bigr)(\bar{c}_{j,s})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
+          \frac{\bar{w}^i e_{j,s}}{\bar{p}}\bigl(1 - \tau^{mtrx}_{s}\bigr)(\bar{c}_{j,s})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
           \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S \\
         ```
 
         ```{math}
         :label: EqSS_HHeul_b
-          (\bar{c}_{j,s})^{-\sigma} = e^{-\sigma g_y}\biggl[\chi^b_j\rho_s(\bar{b}_{j,s+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\Bigl(1 + \bar{r}_{p}^i\bigl[1 - \tau^{mtry}_{s+1}\bigr]\Bigr)(\bar{c}_{j,s+1})^{-\sigma}\biggr] \\
-          \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+          \frac{(\bar{c}_{j,s})^{-\sigma}}{\bar{p}} &= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\bar{b}_{j,s+1})^{-\sigma} ... \\
+          &\quad\quad\quad + \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + \bar{r}_{p}^i\bigl[1 - \tau^{mtry}_{s+1}\bigr] - \tau^{mtrw}}{\bar{p}}\right)(\bar{c}_{j,s+1})^{-\sigma}\Biggr] \\
+          &\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
         ```
 
         ```{math}
         :label: EqSS_HHeul_bS
-          (\bar{c}_{j,E+S})^{-\sigma} = e^{-\sigma g_y}\chi^b_j(\bar{b}_{j,E+S+1})^{-\sigma} \quad\forall j
+          \frac{(\bar{c}_{j,E+S})^{-\sigma}}{\bar{p}} = e^{-\sigma g_y}\chi^b_j(\bar{b}_{j,E+S+1})^{-\sigma} \quad\forall j
         ```
     8. Determine from the quantity of the composite consumption good consumed by each household, $\bar{c}_{j,s}$, use equation {eq}`EqStnrz_cmDem2` to determine consumption of each output good, $\bar{c}_{m,j,s}$
     9. Using $\bar{c}_{m,j,s}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\bar{C}_{m}$

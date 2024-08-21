@@ -91,7 +91,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
     p_t\hat{c}_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
     &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \\
     &\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \hat{rm}_{j,s,t} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
-    &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \hat{b}_{j,E+1,t},\hat{b}_{j,E+S+1,t}=0
+    &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
   ```
 
   Because total bequests $BQ_t$ and total government transfers $TR_t$ grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population $\tilde{N}_t$. This stationarizes total bequests $\hat{BQ}_t$, total transfers $\hat{TR}_t$, and the respective population level in the denominator $\hat{\omega}_{s,t}$.
@@ -115,10 +115,10 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrz_eul_bS
-    \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
+    \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t
   ```
 
-  where $\tau^{mtrw}_{t}$ is defined in {eq}`EqMTRwealth` in Section {ref}`SecGovWealthTax` of Chapter {ref}`Chap_UnbalGBC`.
+  where $\tau^{mtrw}_{t+1}$ is defined in {eq}`EqMTRwealth` in Section {ref}`SecGovWealthTax` of Chapter {ref}`Chap_UnbalGBC`.
 
   The stationarized versions of the remittance equations {eq}`EqHH_AggrRemit` and {eq}`EqHH_IndRemitRec` from Section {ref}`SecHHremit` in Chapter {ref}`Chap_House` are the following.
 
@@ -203,7 +203,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzLiabETR
-    \hat{T}_{js,t} = \tau^{etr,xy}_{s,t}\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) + \tau^{etr,w}_t b_{j,s,t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \hat{T}_{js,t} = \tau^{etr,xy}_{s,t}\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) + \tau^{etr,w}_t\hat{b}_{j,s,t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   We can stationarize the simple expressions for total government spending on household transfers $TR_t$ in {eq}`EqUnbalGBCtfer` and on public goods $G_t$ in {eq}`EqUnbalGBC_Gt` by dividing both sides by $e^{g_y t}\tilde{N}_t$,
