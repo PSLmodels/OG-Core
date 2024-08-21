@@ -53,19 +53,19 @@ In this section, we describe what is arguably the most important economic agent 
   Solving {eq}`EqHHFOCci` for $c_{i,j,s,t}$ gives the optimal demand function for consumption of good $i$ by ability-$j$ and age-$s$ individual in period $t$.
   ```{math}
   :label: EqHH_ciDem
-    c_{i,j,s,t} = \alpha_i\left(\frac{(1 + \tau^{c}_{i,t})\tilde{p}_{i,t}}{\tilde{p}_{j,s,t}}\right)^{-1}c_{j,s,t} + c_{min,i} \quad\forall i,j,s,t
+    c_{i,j,s,t} = \alpha_i\left(\frac{[1 + \tau^{c}_{i,t}]\tilde{p}_{i,t}}{\tilde{p}_{j,s,t}}\right)^{-1}c_{j,s,t} + c_{min,i} \quad\forall i,j,s,t
   ```
   This household demand function for good-$i$ shows that $c_{i,j,s,t}$ is a fraction of total composite consumption $c_{j,s,t}$, and that fraction is negatively correlated with the relative price of good-$i$ to the composite good price.
 
   Substituting the demand equations {eq}`EqHH_ciDem` back into the composite consumption definition {eq}`EqHHCompCons` gives us the expression for the non-normalized composite price $\tilde{p}_{j,s,t}$ as a function of each non-normalized industry-$i$ good price $\tilde{p}_{i,t}$.
   ```{math}
   :label: EqCompPnonnorm
-    \tilde{p}_{j,s,t} = \prod_{i=1}^I\left(\frac{(1 + \tau^{c}_{i,t})\tilde{p}_{i,t}}{\alpha_i}\right)^{\alpha_i} \quad\forall j,s,t
+    \tilde{p}_{j,s,t} = \prod_{i=1}^I\left(\frac{[1 + \tau^{c}_{i,t}]\tilde{p}_{i,t}}{\alpha_i}\right)^{\alpha_i} \quad\forall j,s,t
   ```
   Because nothing on the right-hand-side of {eq}`EqCompPnonnorm` is a function of $j$ or $s$, then $\tilde{p}_{j,s,t}=\tilde{p}_t$ for all $j$ and $s$.
   ```{math}
   :label: EqCompPnonnorm2
-    \tilde{p}_{t} = \prod_{i=1}^I\left(\frac{(1 + \tau^{c}_{i,t})\tilde{p}_{i,t}}{\alpha_i}\right)^{\alpha_i} \quad\forall t
+    \tilde{p}_{t} = \prod_{i=1}^I\left(\frac{[1 + \tau^{c}_{i,t}]\tilde{p}_{i,t}}{\alpha_i}\right)^{\alpha_i} \quad\forall t
   ```
 
   Consumption goods are determined from production goods through a fixed $I\times M$ coefficient matrix, $\Pi^I$. Each element, $\pi_{i,m}$, of $\Pi^I$ represents the fraction of good $i$ that is made up of output from industry $m$. It follows that the prices of consumption goods can be expressed as a function of the prices of production goods and the fixed coefficient matrix $\Pi^I$.
@@ -81,11 +81,11 @@ In this section, we describe what is arguably the most important economic agent 
   ```
   ```{math}
   :label: EqHH_ciDem2
-    c_{i,j,s,t} = \alpha_i\left(\frac{(1 + \tau^{c}_{i,t})p_{i,t}}{p_t}\right)^{-1}c_{j,s,t} + c_{min,i} \quad\forall m,j,s,t
+    c_{i,j,s,t} = \alpha_i\left(\frac{[1 + \tau^{c}_{i,t}]p_{i,t}}{p_t}\right)^{-1}c_{j,s,t} + c_{min,i} \quad\forall m,j,s,t
   ```
   ```{math}
   :label: EqCompPnorm2
-    p_t = \prod_{i=1}^I\left(\frac{(1 + \tau^{c}_{i,t})p_{i,t}}{\alpha_i}\right)^{\alpha_i} \quad\forall t
+    p_t = \prod_{i=1}^I\left(\frac{[1 + \tau^{c}_{i,t}]p_{i,t}}{\alpha_i}\right)^{\alpha_i} \quad\forall t
   ```
   ```{math}
   :label: EqPmPcompNormDef

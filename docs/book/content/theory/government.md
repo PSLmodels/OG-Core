@@ -311,6 +311,20 @@ Linear consumption taxes, $\tau^c_{i,t}$ can vary over time and by consumption g
 
   where $p^w\geq 0$ is a nonnegative scale parameter of the overall tax rate, $h^w> 0$ is a strictly positive scale coefficient parameter on the linear term inside of the parentheses, and $m^w\geq 0$ is a nonnegative constant additive coefficient in the denominator of the rate function in parentheses. This functional form allows us to represent a zero wealth tax rate ($p^w=0$), a flat wealth tax rate ($p^w>0$ and $m_w= 0$), and a progressive wealth tax rate ($p^w$, $h^w$, and $m^w$ > 0).
 
+  The expression for the effective tax rate on wealth is the following.
+
+  ```{math}
+  :label: EqETRwealth
+    \tau^{etr,w}_{t} = \frac{T^w_{j,s,t}}{b_{j,s,t}} = p^w\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right) \quad\forall j,s,t
+  ```
+
+  The analytical expression for the marginal tax rate on wealth defined in equation {eq}`` is the following.
+
+  ```{math}
+  :label: EqMTRwealth
+    \tau^{mtrw}_{t} = \frac{\partial T^w_{j,s,t}}{\partial b_{j,s,t}} = \tau^{etr,w}_t\left[2 - \left(\frac{h^w b_{j,s,t}}{h^w b_{j,s,t} + m^w}\right)\right] \quad\forall j,s,t
+  ```
+
 
 #### Corporate income taxes
 
@@ -585,14 +599,14 @@ Given this pension system, the partial derivatives from the household section ar
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, and total transfer payments to households $TR_t$ and $UBI_t$ every period $t$,
+  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$,
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
     D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
   ```
 
-  where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$.
+  where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$. All variables in {eq}`EqUnbalGBCbudgConstr` are nominal variables denominated in current-period prices with the numeraire $p_{M,t}=1$ for all $t$.
 
   We assume that government spending on public goods in terms of the numeraire good is a fixed fraction of GDP each period in the initial periods.
 
