@@ -21,7 +21,8 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
     Calculates the effective tax rate on wealth.
 
     .. math::
-        T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}
+        \tau_{s,t}^{etr,w} =
+        p^{w}\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)
 
     Args:
         b (Numpy array): savings
@@ -43,9 +44,8 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
     Calculates the marginal tax rate on wealth from the wealth tax.
 
     .. math::
-        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =
-        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\left[2 -
-        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\right]
+        \tau^{mtrw}_{s,t} = \tau^{etr,w}_{s,t}
+        \left[2 - \left(\frac{h^w}{h^w b_{j,s,t} + m^w}\right)b_{j,s,t}\right]
 
     Args:
         b (Numpy array): savings
