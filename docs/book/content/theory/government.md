@@ -41,39 +41,47 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   ```
   ```{math}
   :label: EqTaxCalcCapInc
-    y_{j,s,t} \equiv r_{hh,t}b_{j,s,t} \quad\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
+    y_{j,s,t} \equiv r_{p,t}b_{j,s,t} \quad\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
-  We can express total tax liability $T_{s,t}$ from the household budget constraint {eq}`EqHHBC` as an effective tax rate multiplied by total income.
+  We can express total tax liability $T_{j,s,t}$ from the household budget constraint {eq}`EqHHBC` as an effective tax rate on income multiplied by total income plus an effective tax rate on wealth multiplied by wealth $b_{j,s,t}$,
 
   ```{math}
   :label: EqTaxCalcLiabETR2
-    T_{s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right)
+    T_{j,s,t} &= T^{x+y}_{j,s,t} + T^w_{j,s,t} \\
+    &=\tau^{etr,xy}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) + \tau^{etr,w}_{s,t}\bigl(b_{j,s,t}\bigr)b_{j,s,t}
   ```
 
-  Rearranging {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate ($ETR$) as total tax liability divided by unadjusted gross income, or rather, total tax liability as a percent of unadjusted gross income.
+  where the wealth tax function is described in Section {ref}`SecGovWealthTax` of this chapter. Rearranging the first term on the right-hand-side of {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate on income ($\tau_{s,t}^{etr,xy}$) as total tax liability, minus the wealth tax liability, divided by unadjusted gross income. And the definition of the effective tax rate on wealth ($\tau_{s,t}^{etr,w}$) as total tax liability, minus the income tax liability, divided by wealth.
 
-  A marginal tax rate ($MTR$) is defined as the change in total tax liability from a small change income. In `OG-Core`, we differentiate between the marginal tax rate on labor income ($MTRx$) and the marginal tax rate on capital income ($MTRy$).
+  A marginal tax rate ($\tau_{s,t}^{mtr}$) is defined as the change in total tax liability from a small change in either income or wealth. We allow these functions to vary by age $s$ and time $t$. In `OG-Core`, we differentiate between the marginal tax rate on labor income ($\tau_{s,t}^{mtrx}$), the marginal tax rate on capital income ($\tau_{j,s}^{mtry}$), and the marginal tax rate on wealth ($\tau_{s,t}^{mtrw}$).
 
   ```{math}
   :label: EqTaxCalcMTRx
-    \tau^{mtrx} \equiv \frac{\partial T_{s,t}}{\partial w_t e_{j,s}n_{j,s,t}} = \frac{\partial T_{s,t}}{\partial x_{j,s,t}} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \tau^{mtrx} \equiv \frac{\partial T^{x+y}_{j,s,t}}{\partial w_t e_{j,s}n_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial x_{j,s,t}} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
   ```{math}
   :label: EqTaxCalcMTRy
-    \tau^{mtry} \equiv \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \tau^{mtry} \equiv \frac{\partial T^{x+y}_{j,s,t}}{\partial r_{p,t}b_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
+
+  ```{math}
+  :label: EqTaxCalcMTRw
+    \tau^{mtrw} \equiv \frac{\partial T^w_{j,s,t}}{\partial b_{j,s,t}} \qquad\qquad\qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+  ```
+
+  Note that a change in wealth $b_{j,s,t}$ changes both income tax liability (through capital income) and wealth tax liability. However, it is both intuitively and computationally convenient to defined the marginal tax rate on capital income and the marginal tax rate on wealth to be separate, as we have done here.
 
   As we show in Section [Optimality Conditions](https://pslmodels.github.io/OG-Core/content/theory/households.html#optimality-conditions) of the Households chapter of the `OG-Core` repository documentation, the derivative of total tax liability with respect to labor supply $\frac{\partial T_{s,t}}{n_{j,s,t}}$ and the derivative of total tax liability next period with respect to savings $\frac{\partial T_{s+1,t+1}}{b_{j,s+1,t+1}}$ show up in the household Euler equations for labor supply and savings , respectively, in the `OG-Core` documentation. It is valuable to be able to express those marginal tax rates, for which we have no data, as marginal tax rates for which we do have data. The following two expressions show how the marginal tax rates of labor supply can be expressed as the marginal tax rate on labor income times the household-specific wage and how the marginal tax rate of savings can be expressed as the marginal tax rate of capital income times the interest rate.
 
   ```{math}
-  :label: EqMTRx_derive2
-    \frac{\partial T_{s,t}}{\partial n_{j,s,t}}  = \frac{\partial T_{s,t}}{\partial w_t e_{j,s}n_{j,s,t}}\frac{\partial w_{t}e_{j,s}n_{j,s,t}}{\partial n_{j,s,t}} = \frac{\partial T_{s,t}}{\partial w_{t}e_{j,s}n_{j,s,t}}w_t e_{j,s} = \tau^{mtrx}_{s,t}w_t e_{j,s}
+  :label: EqMTRx_derive
+    \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}  = \frac{\partial T^{x+y}_{j,s,t}}{\partial w_t e_{j,s}n_{j,s,t}}\frac{\partial w_{t}e_{j,s}n_{j,s,t}}{\partial n_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial w_{t}e_{j,s}n_{j,s,t}}w_t e_{j,s} = \tau^{mtrx}_{s,t}w_t e_{j,s}
   ```
 
   ```{math}
-  :label: EqMTRy_derive2
-    \frac{\partial T_{s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}}\frac{\partial r_{hh,t}b_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T_{s,t}}{\partial r_{hh,t}b_{j,s,t}}r_{hh,t} = \tau^{mtry}_{s,t}r_{hh,t}
+  :label: EqMTRy_derive
+    \frac{\partial T_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t}b_{j,s,t}}{\partial b_{j,s,t}} + \frac{\partial T^w_{j,s,t}}{b_{j,s,t}}  = \tau^{mtry}_{s,t}r_{p,t} + \tau^{mtrw}_{s,t}
   ```
 
 
@@ -103,7 +111,6 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   The key building blocks of the functional form Equation {eq}`EqTaxCalcTaxFuncForm` are the $\tau(x)$ and $\tau(y)$ univariate functions. The ratio of polynomials in the $\tau(x)$ function $\frac{Ax^2 + Bx}{Ax^2 + Bx + 1}$ with positive coefficients $A,B>0$ and positive support for labor income $x>0$ creates a negative-exponential-shaped function that is bounded between 0 and 1, and the curvature is governed by the ratio of quadratic polynomials. The multiplicative scalar term $(max_x-min_x)$ on the ratio of polynomials and the addition of $min_x$ at the end of $\tau(x)$ expands the range of the univariate negative-exponential-shaped function to $\tau(x)\in[min_x, max_x]$. The $\tau(y)$ function is an analogous univariate negative-exponential-shaped function in capital income $y$, such that $\tau(y)\in[min_y,max_y]$.
 
   The respective $shift_x$ and $shift_y$ parameters in Equation {eq}`EqTaxCalcTaxFuncForm` are analogous to the additive constants in a Stone-Geary utility function. These constants ensure that the two sums $\tau(x) + shift_x$ and $\tau(y) + shift_y$ are both strictly positive. They allow for negative tax rates in the $\tau(\cdot)$ functions despite the requirement that the arguments inside the brackets be strictly positive. The general $shift$ parameter outside of the Cobb-Douglas brackets can then shift the tax rate function so that it can accommodate negative tax rates. The Cobb-Douglas share parameter $\phi\in[0,1]$ controls the shape of the function between the two univariate functions $\tau(x)$ and $\tau(y)$.
-
 
   This functional form for tax rates delivers flexible parametric functions that can fit the tax rate data shown in the scatterplot data in {numref}`Figure %s <FigTaxCalcETRtotinc>` and {numref}`Figure %s <FigTaxCalc3DvsPred>` as well as a wide variety of policy reforms. Further, these functional forms are monotonically increasing in both labor income $x$ and capital income $y$. This characteristic of monotonicity in $x$ and $y$ is essential for guaranteeing convex budget sets and thus uniqueness of solutions to the household Euler equations. The assumption of monotonicity does not appear to be a strong one when viewing the the tax rate data shown in {numref}`Figure %s <FigTaxCalc3DvsPred>`. While it does limit the potential tax systems to which one could apply our methodology, tax policies that do not satisfy this assumption would result in non-convex budget sets and thus require non-standard DGE model solutions methods and would not guarantee a unique equilibrium. The 12 parameters of our tax rate functional form from {eq}`EqTaxCalcTaxFuncForm` are summarized in {numref}`TabTaxCalcTfuncParams`.
 
@@ -291,18 +298,24 @@ When computing the role of compliance on the effective tax rate, we take a weigh
 
 Linear consumption taxes, $\tau^c_{i,t}$ can vary over time and by consumption good.
 
+
+(SecGovWealthTax)=
 #### Wealth taxes
 
-Wealth taxes can be implemented through the $T_{j,s,t}^{w}(b_{j,s,t})$ function.  This function allows for progressive wealth taxation and is given by:
+  Wealth taxes can be implemented through the $T_{j,s,t}^{w}(b_{j,s,t})$ function, shown in equations {eq}`EqTaxCalcLiabETR2` through {eq}`EqMTRy_derive`. This functional form allows for zero to flat to progressive wealth taxation and is given by the following,
 
   ```{math}
   :label: WealthTaxFunc
-    T_{j,s,t}^{w} = \left(\frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)b_{j,s,t}
+    T_{j,s,t}^{w} = p^w\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)b_{j,s,t}
   ```
+
+  where $p^w\geq 0$ is a nonnegative scale parameter of the overall tax rate, $h^w> 0$ is a strictly positive scale coefficient parameter on the linear term inside of the parentheses, and $m^w\geq 0$ is a nonnegative constant additive coefficient in the denominator of the rate function in parentheses. This functional form allows us to represent a zero wealth tax rate ($p^w=0$), a flat wealth tax rate ($p^w>0$ and $m_w= 0$), and a progressive wealth tax rate ($p^w$, $h^w$, and $m^w$ > 0).
+
 
 #### Corporate income taxes
 
 Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry and over time.  In the case of a single industry, `OG-Core` provides the parameters `c_corp_share_of_assets` to scale the tax rate applied to the representative firm so that it represents a weighted average between the rate on businesses entities taxes at the entity level (e.g., C corporations in the United States) and those with no entity level tax.  The parameter `adjustment_factor_for_cit_receipts` is additionally provided to represent a wedge between marginal and average tax rates (which could otherwise be zero with a linear tax function).
+
 ### Spending
 
   Government spending is comprised of government provided pension benefits, lump sum transfers, universal basic income payments, infrastructure investment, spending on public goods, and interest payments on debt.  Below, we describe the transfer spending amounts.  Spending on infrastructure, public goods, and interest are described in {ref}`SecUnbalGBCbudgConstr`. Because government spending on lump-sum transfers to households $TR_t$, public goods $G_t$, and government infrastructure capital $I_g$ are all functions of nominal GDP, we define nominal GDP here,
@@ -358,7 +371,7 @@ Under the U.S.-style social security system, households over age $R$ received a 
     \theta_{j,R,t+R} = \frac{PIA_{j,R,t+R} \times 12}{factor \times w_{t+R}}
   ```
 
-  Note that $aIME_{j,R,t+R}$ is a function of each households' earning history, but their choice of earning may depend on their retirement benefit.  Solving this exactly would introduce and additional fixed point problem in both the steady state solution and in the time path solution.  The latter would be extremely computationally taxing.  Therefore, we make the simplification of determining the AIME for each type $j$ using the steady state solution and earnings for type $j$ in the steady state.  This leads to some approximation error, but because $\theta_j$ is adjusted by the current wage rate, this approximation error is minized.
+  Note that $AIME_{j,R,t+R}$ is a function of each households' earning history, but their choice of earning may depend on their retirement benefit.  Solving this exactly would introduce and additional fixed point problem in both the steady state solution and in the time path solution.  The latter would be extremely computationally taxing.  Therefore, we make the simplification of determining the AIME for each type $j$ using the steady state solution and earnings for type $j$ in the steady state.  This leads to some approximation error, but because $\theta_j$ is adjusted by the current wage rate, this approximation error is minized.
 
   The pension amount for households under the US-style social security system is then:
 
@@ -545,7 +558,7 @@ Given this pension system, the partial derivatives from the household section ar
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
     &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + rm_{j,s,t} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
-    &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
+    &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t},b_{j,E+S+1,t}=0
   ```
 
   where we defined the tax liability function $T_{j,s,t}$ in {eq}`EqTaxCalcLiabETR` as an effective tax rate times total income and the transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate schedule $\tau^{corp}_{m,t}$ and the tax on depreciation expensing schedule $\delta^\tau_{m,t}$ enters the firms' profit function in each industry $m$.

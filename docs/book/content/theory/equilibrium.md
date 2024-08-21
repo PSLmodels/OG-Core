@@ -64,21 +64,22 @@ The computational algorithm for solving for the steady-state follows the steps b
     2. From price of consumption goods, determine the price of the composite consmpution good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
     3. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}_{j,s}$
     4. Use {eq}`EqStnrzTfer` to get aggregate GDP $\overline{Y}$ from steady-state transfers $\overline{TR}^i$ and composite goods prices $\bar{p}$.
-    5. With $\overline{Y}$, use {eq}`EqHH_AggrRemitStnrz` to get $\overline{RM}$ and use {eq}`EqHH_IndRemitRecStnrz` to get $\overline{rm}_{j,s}$.
+    5. With $\overline{Y}$ and $\bar{p}$, use {eq}`EqHH_AggrRemitStnrz` to get $\overline{RM}$ and use {eq}`EqHH_IndRemitRecStnrz` to get $\overline{rm}_{j,s}$.
     6. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}$
     7. Given values $\bar{p}^i$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}$, $\overline{rm}_{j,s}$, $\overline{tr}_{j,s}$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
-        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` simultaneously for each $j$.
+        1. Each of the $j\in 1,2,...J$ sets of $2S$ steady-state Euler equations can be solved separately. `OG-Core` parallelizes this process using the maximum number of processors possible (up to $J$ processors). Solve each system of Euler equations using a multivariate root-finder to solve the $2S$ necessary conditions of the household given by the following steady-state versions of stationarized household Euler equations {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` simultaneously for each $j$, where steady-state composite consumption $\bar{c}_{j,s}$ is given by the budget constraint {eq}`EqStnrzHHBC`.
 
         ```{math}
         :label: EqSS_HHBC
-          \bar{c}_{j,s} &= (1 + \bar{r}_{p}^i)\bar{b}_{j,s} + \bar{w}^i e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1} + \overline{bq}_{j,s} + \overline{rm}_{j,s} + \overline{tr}_{j,s} + \overline{ubi}_{j,s} - \overline{T}_{j,s}  \\
+          \bar{c}_{j,s} &= \Bigl[(1 + \bar{r}_{p}^i)\bar{b}_{j,s} + \bar{w}^i e_{j,s}\bar{n}_{j,s} - \sum_{i=1}^I\left(1 + \tau_i^c\right)\bar{p}_i c_{min,i} - e^{g_y}\bar{b}_{j,s+1} ... \\
+          &\qquad + \overline{bq}_{j,s} + \overline{rm}_{j,s} + \overline{tr}_{j,s} + \overline{ubi}_{j,s} - \overline{T}_{j,s}\Bigr] / \bar{p}^i  \\
           &\qquad\qquad\forall j\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \bar{b}_{j,E+1}=0
         ```
 
         ```{math}
         :label: EqSS_HHeul_n
-          \bar{w}^i e_{j,s}\bigl(1 - \tau^{mtrx}_{s}\bigr)(\bar{c}_{j,s})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
+          \frac{\bar{w}^i e_{j,s}}{\bar{p}^i}\bigl(1 - \tau^{mtrx}_{s}\bigr)(\bar{c}_{j,s})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{\bar{n}_{j,s}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
           \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S \\
         ```
 
@@ -141,10 +142,10 @@ The computational algorithm for solving for the steady-state follows the steps b
     19. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
 
-    1. Use $\bar{Y}_M^{i'}$ and $\bar{K}_M^{i'}$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
-    2. Use $\bar{Y}_M^{i'}$ and $\bar{L}_M^{i}$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
+    1. Use $\bar{Y}_M$ and $\bar{K}_M$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
+    2. Use $\bar{Y}_M$ and $\bar{L}_M$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
     3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
-    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i''}$ in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
+    4. Use $\bar{K}_g$ and $\bar{Y}^{i''}$ in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
     5. Use $\boldsymbol{\overline{MPK}}_g^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{K}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
     6. Use $\bar{Y}_m$, $\bar{L}_m$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{\bar{p}}^{i'}$
     7. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.

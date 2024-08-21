@@ -105,7 +105,7 @@ In this section, we describe what is arguably the most important economic agent 
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
     &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + rm_{j,s,t} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
-    &\quad\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad b_{j,E+1,t}=0\quad\forall j,t
+    &\quad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}, b_{j,E+S+1}=0
   ```
 
   where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the normalized interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the normalized wage, and $n_{j,s,t}$ is labor supply. Equations {eq}`eq_rK` and {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` show how the rate of return from the financial intermediary $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$. Note that we must add in the cost of minimum consumption $c_{min,i}$ for all $i$ because that amount is subtracted out of composite consumption in {eq}`EqHHCompCons`.
@@ -122,10 +122,10 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqTaxCalcLiabETR
-    T_{j,s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) + \left(\frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)b{j,s,t} \quad\forall j,s,t
+    T_{j,s,t} = \tau^{etr}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) + p^w\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)b_{j,s,t} \quad\forall j,s,t
   ```
 
-  where the effective income tax rate can be a function of both labor income and capital income $\tau^{etr}_{s,t}(x_{j,s,t},y_{j,s,t})$. The calibration chapter on the microsimulation model and tax function estimation in the country-specific repository documentation details exactly how the model estimates the income tax functions from microsimulation model data.
+  where the effective income tax rate can be a function of both labor income and capital income $\tau^{etr}_{s,t}(x_{j,s,t},y_{j,s,t})$, and the wealth tax is given by the functional form described in Section {ref}`SecGovWealthTax`. The calibration chapter on the microsimulation model and tax function estimation in the country-specific repository documentation details exactly how the model estimates the income tax functions from microsimulation model data.
 
 
 (SecHHellipUtil)=
@@ -254,8 +254,9 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHeul_b
-    &\frac{(c_{j,s,t})^{-\sigma}}{p_t} = \chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} + \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr] - MTR^w_{j,s+1,t+1}}{p_{t+1}}\right)(c_{j,s+1,t+1})^{-\sigma} \\
-    &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+    \frac{(c_{j,s,t})^{-\sigma}}{p_t} &= \chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} ... \\
+    &\qquad+ \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr] - \tau^{mtrw}_{s+1,t+1}}{p_{t+1}}\right)(c_{j,s+1,t+1})^{-\sigma} \\
+    &\qquad\qquad\qquad \forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
   ```{math}
@@ -263,26 +264,13 @@ In this section, we describe what is arguably the most important economic agent 
     \frac{(c_{j,E+S,t})^{-\sigma}}{p_t} = \chi^b_j(b_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
   ```
 
-  The distortion of taxation on household decisions can be seen in Euler equations {eq}`EqHHeul_n` and {eq}`EqHHeul_b` in the terms that have a marginal tax rate $(1-\tau^{mtr})$. This comes from the expression for total tax liabilities as a function of the effective tax rate and total income as expressed in Equation {eq}`EqTaxCalcLiabETR`. Using the chain rule, we can break up the derivatives of total tax liability with respect to $n_{j,s,t}$ and $b_{j,s,t}$, respectively, into simpler functions of marginal tax rates. We discuss this in more detail in the calibration chapter on the microsimulation model and tax function estimation in the country-specific repository.
-
-  ```{math}
-  :label: EqMTRx_derive
-    \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}  = \frac{\partial T_{s,t}}{\partial w_t e_{j,s}n_{j,s,t}}\frac{\partial w_{t}e_{j,s}n_{j,s,t}}{\partial n_{j,s,t}} = \frac{\partial T_{s,t}}{\partial w_{t}e_{j,s}n_{j,s,t}}w_t e_{j,s} = \tau^{mtrx}_{s,t}w_t e_{j,s}
-  ```
-
-  ```{math}
-  :label: EqMTRy_derive
-    \frac{\partial T_{j,s,t}}{\partial b_{j,s,t}} &= \frac{\partial T_{s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t} b_{j,s,t}}{\partial b_{j,s,t}} + \left(\frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\left[2 -
-        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\right] \right) \\ &= \frac{\partial T_{s,t}}{\partial r_{p,t} b_{j,s,t}}r_{p,t} + \left( \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\left[2 -
-        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\right]\right) \\ &= \tau^{mtry}_{s,t}r_{p,t} + \underbrace{\left( \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\left[2 -
-        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\right]\right)}_{\equiv MTR^w_{j,s,t}}
-  ```
+  The distortion of taxation on household decisions can be seen in Euler equations {eq}`EqHHeul_n` and {eq}`EqHHeul_b` in the terms that have a marginal tax rate $(1-\tau^{mtr})$. This comes from the expression for total tax liabilities as a function of the effective tax rate and total income as expressed in Equation {eq}`EqTaxCalcLiabETR`. The expressions for the marginal tax rates and effective tax rates that emerge from the total tax liability variable $T_{j,s,t}$ are derived in Section {ref}`SecTaxCalcRateTheory` of Chapter {ref}`Chap_UnbalGBC`.
 
 
 (SecHHincFactor)=
 ## Factor Transforming Income Units
 
-  The tax functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ are estimated in each country calibration model based on the currency units of the corresponding income data. However, the consumption units of the `OG-Core` model or any of its country calibrations are not in the same units as income data. For this reason, we have to transform the model income units $x$ and $y$ by a $factor$ so that they are in the same units as the income data on which the tax functions were estimated.
+  The tax functions $\tau^{etr,xy}_{s,t}$, $\tau^{etr,w}_{s,t}$, $\tau^{mtrx}_{s,t}$, $\tau^{mtry}_{s,t}$, and $\tau^{mtrw}_{s,t}$ are estimated in each country calibration model based on the currency units of the corresponding income data. However, the consumption units of the `OG-Core` model or any of its country calibrations are not in the same units as income data. For this reason, we have to transform the model income units $x$ and $y$ by a $factor$ so that they are in the same units as the income data on which the tax functions were estimated.
 
   The tax rate functions are each functions of capital income and labor income $\tau(x,y)$. In order to make the tax functions return accurate tax rates associated with the correct levels of income, we multiply the model income $x^I$ and $y^I$ by a $factor$ so that they are in the same units as the real-world income data $\tau(factor\times x^I, factor\times y^I)$. We define the $factor$ such that average steady-state household total income in the model times the $factor$ equals the U.S. data average total income.
 
