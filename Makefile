@@ -70,6 +70,11 @@ git-pr:
 build-docs:
 	@cd ./docs ; python make_params.py; jb build ./book
 
+format:
+	black . -l 79
+	linecheck . --fix
+
 pip-package:
 	pip install wheel
+	pip install setuptools
 	python setup.py sdist bdist_wheel
