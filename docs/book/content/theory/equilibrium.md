@@ -133,29 +133,30 @@ The computational algorithm for solving for the steady-state follows the steps b
     17. Determine factor demands and output for industry $M$:
         1.  $\bar{L}_M = \bar{L} - \sum_{m=1}^{M-1}\bar{L}_{m}$
         2.  Find $\bar{K}_m^{r^*}$ using the steady-state version of {eq}`EqFirmsMPKg_opt`
-        3.  Find total capital supply, and the split between that from domestic and foreign households: $\bar{K}^{i'}$, $\bar{K}^d$, $\bar{K}^f$:
+        3.  Find total capital supply, and the split between that from domestic and foreign households: $\bar{K}$, $\bar{K}^d$, $\bar{K}^f$:
             1.  We then use this to find foreign demand for domestic capital from {eq}`eq_foreign_cap_demand`: $\bar{K}^{f} = \bar{\zeta}_{K}\sum_{m=1}^{M}\bar{K}_m^{r^*}$
             2.  Using $\bar{D}^{d}$ we can then find domestic investors' holdings of private capital as the residual from their total asset holdings: , $\bar{K}^{d} = \bar{B} - \bar{D}^{d}$
-            3.  Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d} + \bar{K}^{f}$.
-        4.  $\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}$
+            3.  Aggregate capital supply is then determined as $\bar{K} = \bar{K}^{d} + \bar{K}^{f}$.
+        4.  $\bar{K}_M = \bar{K} - \sum_{m=1}^{M-1}\bar{K}_{m}$
         5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M$.
     18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \left(\frac{\bar{p}_m}{\bar{p}}\right)\bar{Y}_m$ using {eq}`EqStnrzNomGDP`.
-    19. Find a updated values for $\bar{I}_{g}^{i'}$ and $\bar{K}_g^{i'}$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
-3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
+    19. Find a updated values for $\bar{I}_{g}^{i'}$ and $\bar{K}_g^{i'}$ using  $\bar{Y}^{i'}$ and equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
+3. Given updated inner-loop values based on initial guesses for outer-loop variables $\Bigl\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \bigl\{\bar{p}_m^i\bigr\}_{m=1}^{M-1}, \overline{BQ}^i, \overline{TR}^i, factor^i\Bigr\}$, solve for updated values of outer-loop variables $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \bigl\{\bar{p}_m^i\bigr\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ using the remaining equations:
 
     1. Use $\bar{Y}_M$ and $\bar{K}_M$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
     2. Use $\bar{Y}_M$ and $\bar{L}_M$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
-    3. Use $\bar{r}^{i'}$ in equations {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
-    4. Use $\bar{K}_g$ and $\bar{Y}^{i''}$ in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}^{i'}$
-    5. Use $\boldsymbol{\overline{MPK}}_g^{i'}$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}^{i'}$, and $\bar{K}^{i'}$ to find the return on the households' investment portfolio, $\bar{r}_{p}^{i'}$
+    3. Use $\bar{r}^{i'}$ in equation {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
+    4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i'}$ in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}$
+    5. Use $\boldsymbol{\overline{MPK}}_g$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}$, and $\bar{K}$ to find the return on the households' investment portfolio $\bar{r}_{p}^{i'}$ using equation {eq}`EqStnrz_rate_p`.
     6. Use $\bar{Y}_m$, $\bar{L}_m$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{\bar{p}}^{i'}$
     7. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
-    8. Use $\bar{Y}^{i'}$ in the long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$.
+    8. Use $\bar{Y}^{i'}$ in the long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$. Note that this $\bar{Y}^{i'}$ is different from the $\bar{Y}$ derived from the initial guess of aggregate transfers $\overline{TR}^i$ from step 2.4.
     9. Use $\bar{r}^{i'}$, $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
 
         ```{math}
         :label: EqSS_factor
-          factor^{i'} = \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} = \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p}^{i'}\bar{b}_{j,s} + \bar{w}^{i'} e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
+          factor^{i'} &= \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} \\
+          &= \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p}^{i'}\bar{b}_{j,s} + \bar{w}^{i'} e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
         ```
 
 4. If the updated values of the outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ are close enough to the initial guess for the outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\{\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \boldsymbol{\bar{p}}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ as a convex combination of the first initial guess $\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeat steps (2) through (4).
