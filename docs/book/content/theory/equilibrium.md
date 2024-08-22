@@ -58,7 +58,7 @@ The computational algorithm for solving for the steady-state follows the steps b
 
 1. Use the techniques from Section {ref}`SecDemogPopSSTP` to solve for the steady-state population distribution vector $\boldsymbol{\bar{\omega}}$ and steady-state growth rate $\bar{g}_n$ of the exogenous population process.
 
-2. Choose an initial guess for the values of the steady-state interest rate (the after-tax marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$,  portfolio rate of return $\bar{r}_p^i$, output prices $\{\bar{p}_m^i\}_{m=1}^{M-1}$ (note that $\bar{p}_M =1$ since it's the numeraire good), total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess.
+2. Choose an initial guess for the values of the steady-state interest rate (the after-tax marginal product of capital) $\bar{r}^i$, wage rate $\bar{w}^i$,  portfolio rate of return $\bar{r}_p^i$, output prices $\{\bar{p}_m^i\}_{m=1}^{M-1}$ (note that $\bar{p}_M =1$ since it's the numeraire good), total bequests $\overline{BQ}^{\,i}$, total household transfers $\overline{TR}^{\,i}$, and income multiplier $factor^i$, where superscript $i$ is the index of the iteration number of the guess $\Bigl\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \{\bar{p}_m^i\}_{m=1}^{M-1}, \overline{TR}^i, \overline{BQ}^i, factor^i\Bigr\}$.
 
     1. Given $\{\bar{p}_m^i\}_{m=1}^{M-1}$ find the price of consumption goods $\{\bar{p}_i\}_{i=1}^I$ using {eq}`EqHH_pi2`
     2. From price of consumption goods, determine the price of the composite consmpution good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
@@ -139,8 +139,8 @@ The computational algorithm for solving for the steady-state follows the steps b
             3.  Aggregate capital supply is then determined as $\bar{K}^{i'} = \bar{K}^{d} + \bar{K}^{f}$.
         4.  $\bar{K}_M = \bar{K}^{i'} - \sum_{m=1}^{M-1}\bar{K}_{m}$
         5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M$.
-    18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m \bar{Y}_m$.
-    19. Find a updated values for $\bar{I}_{g}$ and $\bar{K}_g$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
+    18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \left(\frac{\bar{p}_m}{\bar{p}}\right)\bar{Y}_m$ using {eq}`EqStnrzNomGDP`.
+    19. Find a updated values for $\bar{I}_{g}^{i'}$ and $\bar{K}_g^{i'}$ using  $\bar{Y}^{i'}$, equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \boldsymbol{\bar{p}}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$, solve for updated values of outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ using the remaining equations:
 
     1. Use $\bar{Y}_M$ and $\bar{K}_M$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
