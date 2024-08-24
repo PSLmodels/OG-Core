@@ -363,7 +363,7 @@ def inner_loop(outer_loop_vars, p, client):
     K_vec[-1] = K_M
     Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, "SS", -1)
     # Find GDP
-    Y = (p_m * Y_vec).sum() / p_tilde
+    Y = (p_m * Y_vec).sum()
     I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
     K_g = fiscal.get_K_g(0, I_g, p, "SS")
     if p.zeta_K[-1] == 1.0:
