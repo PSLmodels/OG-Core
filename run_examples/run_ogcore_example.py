@@ -33,8 +33,8 @@ def main():
     # Directories to save data
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
     save_dir = os.path.join(CUR_DIR, "OG-Core-Example")
-    base_dir = os.path.join(save_dir, "OUTPUT_BASELINE")
-    reform_dir = os.path.join(save_dir, "OUTPUT_REFORM")
+    base_dir = os.path.join(save_dir, BASELINE_DIR)
+    reform_dir = os.path.join(save_dir, REFORM_DIR)
 
     # Start timer on overall run time: baseline + reform
     run_start_time = time.time()
