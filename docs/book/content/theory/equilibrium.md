@@ -139,7 +139,7 @@ The computational algorithm for solving for the steady-state follows the steps b
             3.  Aggregate capital supply is then determined as $\bar{K} = \bar{K}^{d} + \bar{K}^{f}$.
         4.  $\bar{K}_M = \bar{K} - \sum_{m=1}^{M-1}\bar{K}_{m}$
         5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M$.
-    18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \left(\frac{\bar{p}_m}{\bar{p}}\right)\bar{Y}_m$ using {eq}`EqStnrzNomGDP`.
+    18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m\bar{Y}_m$ using {eq}`EqStnrzNomGDP`.
     19. Find a updated values for $\bar{I}_{g}^{i'}$ and $\bar{K}_g^{i'}$ using  $\bar{Y}^{i'}$ and equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
 3. Given updated inner-loop values based on initial guesses for outer-loop variables $\Bigl\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \bigl\{\bar{p}_m^i\bigr\}_{m=1}^{M-1}, \overline{BQ}^i, \overline{TR}^i, factor^i\Bigr\}$, solve for updated values of outer-loop variables $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \bigl\{\bar{p}_m^i\bigr\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ using the remaining equations:
 
