@@ -990,11 +990,11 @@
         }
     },
     "h_wealth": {
-        "title": "Scale coefficient on linear term in parentheses of wealth tax function",
-        "description": "Scale coefficient on linear term in parentheses of wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "title": "Numerator in wealth tax function",
+        "description": "Numerator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "Must be positive to avoid division by zero when computing ETR and MTR for wealth tax",
+        "notes": "",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -1006,36 +1006,36 @@
         ],
         "validators": {
             "range": {
-                "min": 0.00000001,
-                "max": 10.0
-            }
-        }
-    },
-    "m_wealth": {
-        "title": "Constant term in denominator in wealth tax function",
-        "description": "Constant term in denominator in wealth tax function. Set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered.",
-        "section_1": "Fiscal Policy Parameters",
-        "section_2": "Taxes",
-        "notes": "",
-        "type": "float",
-        "number_dims": 1,
-        "value": [
-            {
-                "value": [
-                    0.0
-                ]
-            }
-        ],
-        "validators": {
-            "range": {
                 "min": 0.0,
                 "max": 10.0
             }
         }
     },
+    "m_wealth": {
+        "title": "Term in denominator in wealth tax function",
+        "description": "Term in denominator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
+        "notes": "Must be positive to avoid division by zero when computing ETR and MTR for wealth tax",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    1.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.00000001,
+                "max": 10.0
+            }
+        }
+    },
     "p_wealth": {
-        "title": "Scale parameter outside of parentheses in wealth tax function",
-        "description": "Scale parameter outside of parentheses in wealth tax function. Set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered.",
+        "title": "Scale parameter in wealth tax function",
+        "description": "Scale parameter in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Set to 0 to have no wealth tax.",
