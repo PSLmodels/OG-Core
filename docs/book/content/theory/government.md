@@ -488,6 +488,15 @@ Given this pension system, the partial derivatives from the household section ar
   \end{cases}
  ```
 
+##### Aggregate Pension Spending
+
+Total pension spending is the sum of the pension payments to each household in the model:
+
+  ```{math}
+  :label: EqPensionSpending
+  Pensions_{t} = \sum_{j=1}^{J}\sum_{s=E+1}^{E+S} pension_{j,s,t}\omega_{s,t}\lambda_j \quad\forall t
+  ```
+
 #### Lump sum transfers:
 
   Aggregate non-pension transfers to households are assumed to be a fixed fraction $\alpha_{tr}$ of GDP each period:
