@@ -104,15 +104,13 @@ In this section, we describe what is arguably the most important economic agent 
   :label: EqHHBC
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
-    &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + rm_{j,s,t} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
+    &\quad\quad bq_{j,s,t} + rm_{j,s,t} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
     &\quad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
   ```
 
   where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the normalized interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the normalized wage, and $n_{j,s,t}$ is labor supply. Equations {eq}`eq_rK` and {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` show how the rate of return from the financial intermediary $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$. Note that we must add in the cost of minimum consumption $c_{min,i}$ for all $i$ because that amount is subtracted out of composite consumption in {eq}`EqHHCompCons`.
 
-  The third term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. The calibration chapter on beqests in the country-specific repository documentation details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
-
-  The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents remittances received by the household $rm_{j,s,t}$. We describe these remittances in Section {ref}`SecHHremit` below.
+  The third term $bq_{j,s,t}$ on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Section {ref}`SecHHbequests` details how total bequests are distributed among the different households. The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents remittances received by the household $rm_{j,s,t}$. We describe these remittances in Section {ref}`SecHHremit` below.
 
   The last three terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with government transfers, universal basic income transfer, and taxes, respectively. $TR_{t}$ is total government transfers to households in period $t$ and $\eta_{j,s,t}$ is the percent of those transfers that go to households of age $s$ and lifetime income group $j$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. This term is divided by the population of type $(j,s)$ households. We assume government transfers to be lump sum, so they do not create any direct distortions to household decisions. Total government transfers $TR_t$ is in terms of the numeraire good, as shown in equation {eq}`EqUnbalGBCtfer` in Chapter {ref}`Chap_UnbalGBC`.
 
@@ -180,8 +178,37 @@ In this section, we describe what is arguably the most important economic agent 
   Because it is the marginal disutility of labor supply that matters for household decision making, we want to choose the parameters of the elliptical disutility of labor supply function $(b,\upsilon)$ so that the elliptical marginal utilities match the marginal utilities of the CFE disutility of labor supply. Figure {numref}`FigMDUcompar` shows the fit of marginal utilities for a Frisch elasticity of $\theta=0.9$ and a total time endowment of $\tilde{l}=1.0$. The estimated elliptical utility parameters in this case are $b=0.527$ and $\upsilon=1.497$.[^frisch_note]
 
 
+(SecHHtransfers)=
+## Transfers to the household
+
+
+(SecHHbequests)=
+### Bequests
+
+  `OG-Core` allows for two parameterizations of the distribution of bequests. Users can choose the bequest transmission process through two parameters: `use_zeta` and `zeta`.
+
+  If `use_zeta=False`, then bequests from households of lifetime earnings type `j` are distributed equality across households of type `j`.  That is:
+
+  ```{math}
+  :label: Eq_bq
+    bq_{j,s,t} = \frac{BQ_{j,t}}{\lambda_j \omega_{s,t}}
+  ```
+
+  If `use_zeta=True`, then in the distribution of bequests across age and lifetime ability is determined by $\boldsymbol{\zeta}_{t}$, which allocated aggregate bequests across households by age and lifetime income group:
+
+  ```{math}
+  :label: Eq_bq_use_zeta
+    \begin{split}
+      bq_{j,s,t} &= \zeta_{j,s,t}\left(BQ_t\right) \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S \\
+      &\quad\text{where}\quad \sum_{j=1}^J \sum_{s=E+1}^{E+S}\zeta_{j,s,t} = 1 \quad\forall t
+    \end{split}
+  ```
+
+  Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. The calibration chapter on beqests in the country-specific repository documentation details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
+
+
 (SecHHremit)=
-## Remittances
+### Remittances
 
   Remittances represent capital, most often currency balances, collected from ex patriots and citizens living abroad and sent back to households in the country. For most developed countries, like the United States, remittances represent an insignificant amount.[^remit_us] But for countries like the Phillipines, total incoming remittances are larger than total exports (?% of GDP in 202?).[^remit_phl]
 
@@ -199,7 +226,7 @@ In this section, we describe what is arguably the most important economic agent 
 
   The first two lines of {eq}`EqHH_AggrRemit` represent the transition path of remittances before the closure rule, which are growing at a rate independent of the growth rate of the country economy. But for the steady-state to exists, total remittances must grow at the long-run growth rate of GDP before reaching the steady state. Similar to the closure rule's described in Section {ref}`SecUnbalGBCcloseRule` of Chapter {ref}`Chap_UnbalGBC`, we implement a stabilizing rule that gradually transitions the growth rate of aggregate remittances from its exogenous rate through period $T_{G1}$ to the long run economic growth rate after period $T_{G2}$. The speed of the transition is governed by the parameter $\rho_{RM}\in(0,1]$, which represents the percent of the way to jump toward the target $\alpha_{RM,T}p_t Y_t$ from the exogenous trajectory growing at rate $g_{RM,t-1}$.
 
-  It is important to note that we specify the growth rate of remittances on nominal GPD as an initial percent $\alphs_{RM,1}$, a growth rate based on those initial remittances, then a movemnt back to a rate relative to nominal GDP. This will result in stationary equations in which it matters wither the growth rate of nominal GDP $g_{RM,t}$ is greater or less than the growth rate of labor productivity plus the population growth rate $e^{g_y}\left(1+g_{n,t}\right)$. See equations {eq}`EqHH_AggrRemitStnrz` and {eq}`EqHH_IndRemitRecStnrz` in Section {ref}`SecStnrzHH` in Chapter {ref}`Chap_Stnrz`.
+  It is important to note that we specify the growth rate of remittances on nominal GPD as an initial percent $\alpha_{RM,1}$, a growth rate based on those initial remittances, then a movemnt back to a rate relative to nominal GDP. This will result in stationary equations in which it matters wither the growth rate of nominal GDP $g_{RM,t}$ is greater or less than the growth rate of labor productivity plus the population growth rate $e^{g_y}\left(1+g_{n,t}\right)$. See equations {eq}`EqHH_AggrRemitStnrz` and {eq}`EqHH_IndRemitRecStnrz` in Section {ref}`SecStnrzHH` in Chapter {ref}`Chap_Stnrz`.
 
   The aggregate remittances $RM_t$ are then distributed by the $\eta_{RM,j,s,t}$ matrix, resulting in the value on the income side of the household budget constraint in {eq}`EqHHBC`.
 
@@ -209,6 +236,18 @@ In this section, we describe what is arguably the most important economic agent 
   ```
 
   The distribution object $\eta_{RM,j,s,t}$ is an $S\times J$ matrix in every period $t$ whose elements sum to one in every period. This object governs how total remittances in every period $RM_t$ are distributed as income among household budget constraints.
+
+
+(SecHHgovtransfers)=
+### Government transfers
+
+  Put household government transfers description here.
+
+
+(SecHHubi)=
+### Universal basic income (UBI)
+
+  Put household universal basic income (UBI) description here.
 
 
 (SecHHeulers)=
@@ -281,25 +320,6 @@ In this section, we describe what is arguably the most important economic agent 
 
   We do not know the steady-state wage, interest rate, household labor supply, and savings *ex ante*. So the income $factor$ is an endogenous variable in the steady-state equilibrium computational solution. We hold the factor constant throughout the nonsteady-state equilibrium solution.
 
-
-(SecHHbequests)=
-## The Distribution of Bequests
-
-`OG-Core` allows for two parameterizations of the distribution of bequests.  Users can choose the bequest transmission process through two parameters: `use_zeta` and `zeta`.
-
-If `use_zeta=False`, then bequests from households of lifetime earnings type `j` are distributed equality across households of type `j`.  That is:
-
-   ```{math}
-  :label: Eq_bq
-    bq_{j,s,t} = \frac{BQ_{j,t}}{\lambda_j \omega_{s,t}}
-  ```
-
-   If `use_zeta=True`, then in the distribution of bequests across age and lifetime ability is determined by $\boldsymbol{\zeta}_{t}$, which allocated aggregate bequests across households by age and lifetime income group:
-
-   ```{math}
-  :label: Eq_bq_use_zeta
-    bq_{j,s,t} = \boldsymbol{\zeta}_{t} BQ_{t}
-  ```
 
 (SecHHexp)=
 ## Expectations

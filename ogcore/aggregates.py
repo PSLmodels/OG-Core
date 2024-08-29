@@ -297,12 +297,14 @@ def revenue(
     Calculate aggregate tax revenue.
 
     .. math::
-        R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
+        \begin{split}
+            R_{t} &= \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
         (T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}
         w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +
-        \tau^{w}_{t}b_{j,s,t}) +
-        \sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -
+        \tau^{w}_{t}b_{j,s,t}) ... \\
+            &\qquad + \sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -
         \tau^{b}_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t}
+        \end{split}
 
     Args:
         r (array_like): the real interest rate
