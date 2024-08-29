@@ -401,7 +401,7 @@ The defined benefit system pension amount is given as:
 
   ```{math}
   :label: eqn:db_pension
-  pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \quad \forall s > R
+  pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \quad \forall s > R
   ```
 
 where:
@@ -427,7 +427,7 @@ The pension amount under a notional defined contribution system is given as:
 
   ```{math}
   :label: eqn:ndc_pension
-   pension{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s > R
+   pension_{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s > R
   ```
 
 where:
@@ -472,7 +472,7 @@ Under a points system, the pension amount is given as:
 
   ```{math}
   :label: eqn:ps_pension
-  pension{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s > R
+  pension_{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s > R
   ```
 
 where $v_{t}$ is the value of a point at time $t$
