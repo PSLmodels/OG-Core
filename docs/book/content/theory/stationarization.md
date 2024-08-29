@@ -53,6 +53,10 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{RM}_t \equiv \frac{RM_t}{e^{g_y t}\tilde{N}_t}$
   -
+* - $\hat{pensions}_{j,s,t} \equiv \frac{pensions_{j,s,t}}{e^{g_y t}}$
+  -
+  -
+  -
 ```
 
 The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHH_ciDem2`, {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab`, {eq}`EqMarkClr_DtDdDf`, {eq}`EqMarkClr_KtKdKf`, {eq}`EqMarkClrGoods_Mm1`, {eq}`EqMarkClrGoods_M`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` of Chapter {ref}`Chap_Eqm` to solve for the equilibria in the steady-state and transition path equilibrium definitions.
@@ -90,7 +94,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   :label: EqStnrzHHBC
     p_t\hat{c}_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
     &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \\
-    &\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \hat{rm}_{j,s,t} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
+    &\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \hat{rm}_{j,s,t} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{pensions}_{j,s,t} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
   ```
 
