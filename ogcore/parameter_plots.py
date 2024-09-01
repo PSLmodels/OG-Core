@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.ticker as mticker
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
@@ -33,7 +34,7 @@ def plot_imm_rates(
 
     """
     # create line styles to cycle through
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(layout="constrained")
     for y in years_to_plot:
         i = start_year - y
         plt.plot(imm_rates[i, :], c="blue", label="Year " + str(y))
@@ -48,7 +49,7 @@ def plot_imm_rates(
         "Source: " + source,
         fontsize=9,
     )
-    plt.tight_layout(rect=(0, 0.035, 1, 1))
+    # plt.tight_layout(rect=(0, 0.035, 1, 1))
     if include_title:
         plt.title("Immigration Rates")
     # Save or return figure
@@ -107,8 +108,9 @@ def plot_mort_rates(
         plt.ylabel(r"Mortality Rates $\rho_{s}$")
         plt.legend(loc="upper left")
         title = "Mortality Rates"
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.0%}".format(x) for x in ticks_loc])
     if include_title:
         plt.title(title)
     if path is None:
@@ -150,8 +152,9 @@ def plot_pop_growth(
     plt.plot(year_vec, p.g_n[start_index : start_index + num_years_to_plot])
     plt.xlabel(r"Year $t$")
     plt.ylabel(r"Population Growth Rate $g_{n, t}$")
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.2%}".format(x) for x in vals])
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.2%}".format(x) for x in ticks_loc])
     if include_title:
         plt.title("Population Growth Rates")
     if path is None:
@@ -485,9 +488,11 @@ def plot_g_n(p_list, label_list=[""], include_title=False, path=None):
         plt.plot(years, p.g_n[: p.T], label=label_list[i])
     plt.xlabel(r"Year $s$ (model periods)")
     plt.ylabel(r"Population Growth Rate $g_{n,t}$")
-    plt.legend(loc="upper right")
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
+    if label_list[0] != "":
+        plt.legend(loc="upper right")
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.0%}".format(x) for x in ticks_loc])
     if include_title:
         plt.title("Population Growth Rates")
     if path is None:
@@ -972,7 +977,7 @@ def plot_income_data(
         t = -1
     J = abil_midp.shape[0]
     abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
-    cmap1 = matplotlib.cm.get_cmap("summer")
+    cmap1 = matplotlib.colormaps["summer"]
     if path:
         # Make sure that directory is created
         utils.mkdirs(path)
