@@ -34,7 +34,7 @@ def plot_imm_rates(
 
     """
     # create line styles to cycle through
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
         plt.plot(imm_rates[i, :], c="blue", label="Year " + str(y))
@@ -49,7 +49,7 @@ def plot_imm_rates(
         "Source: " + source,
         fontsize=9,
     )
-    # plt.tight_layout(rect=(0, 0.035, 1, 1))
+    plt.tight_layout(rect=(0, 0.035, 1, 1))
     if include_title:
         plt.title("Immigration Rates")
     # Save or return figure
