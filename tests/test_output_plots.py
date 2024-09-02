@@ -7,6 +7,7 @@ import os
 import sys
 import numpy as np
 import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 from ogcore import utils, output_plots, constants
 
 
@@ -166,6 +167,7 @@ def test_plot_aggregates(
         plot_title=plot_title,
     )
     assert fig
+    plt.close()
 
 
 test_data = [
@@ -217,6 +219,7 @@ def test_plot_industry_aggregates(
         plot_title=plot_title,
     )
     assert fig
+    plt.close()
 
 
 test_data = [
@@ -300,6 +303,7 @@ def test_plot_gdp_ratio(
         plot_title=plot_title,
     )
     assert fig
+    plt.close()
 
 
 def test_plot_gdp_ratio_save_fig(tmpdir):
@@ -327,6 +331,7 @@ def test_ability_bar():
         plot_title=" Test Plot Title",
     )
     assert fig
+    plt.close()
 
 
 def test_ability_bar_save_fig(tmpdir):
@@ -353,6 +358,7 @@ def test_ability_bar_ss():
         plot_title=" Test Plot Title",
     )
     assert fig
+    plt.close()
 
 
 data_for_plot = np.ones(80) * 0.3
@@ -374,6 +380,7 @@ def test_ss_profiles(by_j, plot_data):
         plot_title=" Test Plot Title",
     )
     assert fig
+    plt.close()
 
 
 def test_ss_profiles_save_fig(tmpdir):
@@ -398,6 +405,7 @@ def test_tpi_profiles(by_j):
         plot_title=" Test Plot Title",
     )
     assert fig
+    plt.close()
 
 
 test_data = [
@@ -454,6 +462,7 @@ def test_ss_3Dplot(
         plot_title=plot_title,
     )
     assert fig
+    plt.close()
 
 
 def test_ss_3Dplot_save_fig(tmpdir):
@@ -540,6 +549,7 @@ def test_inequality_plot(
         plot_type=plot_type,
     )
     assert fig
+    plt.close()
 
 
 def test_inequality_plot_save_fig(tmpdir):
