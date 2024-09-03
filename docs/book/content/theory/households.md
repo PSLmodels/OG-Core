@@ -1,17 +1,16 @@
 ---
 jupytext:
+  formats: md:myst
   text_representation:
     extension: .md
     format_name: myst
-    format_version: '0.8'
-    jupytext_version: '1.4.1'
 kernelspec:
   display_name: Python 3
   language: python
-  name: ogcore-dev
+  name: python3
 ---
 
-(glue)=
+
 (Chap_House)=
 # Households
 
@@ -138,16 +137,13 @@ In this section, we describe what is arguably the most important economic agent 
 
   The functional form for the utility of leisure or the disutility of labor supply has important implications for the computational tractability of the model. One difference of the household's labor supply decision $n_{j,s,t}$ from the consumption decision $c_{j,s,t}$ is that the consumption decision only has a lower bound $c_{j,s,t}\geq 0$ whereas the labor supply decision has both upper and lower bounds $n_{j,s,t}\in[0,\tilde{l}]$. {cite}`EvansPhillips:2017` show that many of the traditional functional forms for the disutility of labor---Cobb-Douglas, constant Frisch elasticty, constant relative risk aversion (CRRA)---do not have Inada conditions on both the upper and lower bounds of labor supply. To solve these in a heterogeneous agent model would require occasionally binding constraints, which is a notoriously difficult computational problem.
 
-  +++
-  ```{code-cell} ogcore-dev
-  :tags: [hide-cell]
-  from myst_nb import glue
+  ```{code-cell} ipython3
+  :tags: ["hide-input", "remove-output"]
   import ogcore.parameter_plots as pp
   from ogcore import Specifications
   p = Specifications()
   p.update_specifications({'frisch': 0.6})
   fig = pp.plot_elliptical_u(p)
-  glue("labor_utility", fig, display=False)
   ```
 
   ```{figure} ./images/EllipVsCFE_MargUtil.png
@@ -156,7 +152,7 @@ In this section, we describe what is arguably the most important economic agent 
   name: FigMDUcompar
   ---
 
-  Comparison of CFE marginal disutility of leisure $\theta=1.67$ to fitted elliptical utility
+  Comparison of CFE marginal disutility of leisure $\theta=0.4$ to fitted elliptical utility
   ```
 
   {cite}`EvansPhillips:2017` propose using an equation for an ellipse to match the disutility of labor supply to whatever traditional functional form one wants. Our preferred specification in `OG-Core` is to fit an elliptical disutility of labor supply function to approximate a linearly separable constant Frisch elasticity (CFE) functional form. Let $v(n)$ be a general disutility of labor function. A CFE disutility of labor function is the following,

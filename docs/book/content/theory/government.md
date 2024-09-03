@@ -14,14 +14,14 @@ Government levies taxes on households and firms, funds public pensions, and make
 
 #### Individual income taxes
 
-Income taxes are modeled through the total tax liability function $T_{s,t}$, which can be decomposed into the effective tax rate times total income {eq}`EqTaxCalcLiabETR2`. In this chapter, we detail the household tax component of government activity $T_{s,t}$ in `OG-Core`, along with our method of incorporating detailed microsimulation data into a dynamic general equilibrium model.
+Income taxes are modeled through the net tax liability function for each household $tax_{j,s,t}$, which can be decomposed into the effective tax rates times total income and wealth, respectively, {eq}`EqTaxCalcLiabETR2`. In this chapter, we detail the household tax component of government activity $tax_{j,s,t}$ in `OG-Core`, along with our method of incorporating detailed microsimulation data into a dynamic general equilibrium model.
 
 ```{math}
 :label: EqHHBC2_gov
   p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
-  &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
-  &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + rm_{j,s,t} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
-  &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
+  &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ... \\
+  &\qquad +\: bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
+  &\qquad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
 ```
 
 Incorporating realistic tax and incentive detail into a general equilibrium model is notoriously difficult for two reasons. First, it is impossible in a dynamic general equilibrium model to capture all of the dimensions of heterogeneity on which the real-world tax rate depends. For example, a household's tax liability in reality depends on filing status, number of dependents, many types of income, and some characteristics correlated with age. A good heterogeneous agent DGE model tries to capture the most important dimensions of heterogeneity, and necessarily neglects the other dimensions.
@@ -332,14 +332,14 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
 
 ### Spending
 
-  Government spending is comprised of government provided pension benefits, lump sum transfers, universal basic income payments, infrastructure investment, spending on public goods, and interest payments on debt.  Below, we describe the transfer spending amounts.  Spending on infrastructure, public goods, and interest are described in {ref}`SecUnbalGBCbudgConstr`. Because government spending on lump-sum transfers to households $TR_t$, public goods $G_t$, and government infrastructure capital $I_g$ are all functions of nominal GDP, we define nominal GDP here,
+  Government spending is comprised of government provided pension benefits, lump sum transfers, universal basic income payments, infrastructure investment, spending on public goods, and interest payments on debt.  Below, we describe the transfer spending amounts.  Spending on infrastructure, public goods, and interest are described in {ref}`SecUnbalGBCbudgConstr`. Because government spending on lump-sum transfers to households $TR_t$, public goods $G_t$, and government infrastructure capital $I_g$ are all functions of nominal GDP, we define GDP here,
 
   ```{math}
   :label: EqGovtNomGDP
-    p_t Y_t \equiv \sum_{m=1}^M p_{m,t} Y_{m,t} \quad\forall t
+    Y_t \equiv \sum_{m=1}^M p_{m,t} Y_{m,t} \quad\forall t
   ```
 
-  where nominal GDP $p_t Y_t$ is in terms of the numeraire good of industry-$M$ output and $Y_t$ alone is in terms of composite consumption.
+  where GDP $Y_t$ is in terms of the numeraire good of industry-$M$ output.[^NomRealGDP]
 
 
 (SecGovPensions)=
@@ -782,6 +782,8 @@ Total pension spending is the sum of the pension payments to each household in t
   [^interpolation_note]: We use two criterion to determine whether the function should be interpolated. First, we require a minimum number of observations of filers of that age and in that tax year. Second, we require that that sum of squared errors meet a predefined threshold.
 
   [^param_note]: We assume that whatever parameters the tax functions have in the last year of the budget window persist forever.
+
+  [^NomRealGDP]: All quantities in OG-Core are real in the sense that their prices can only be denominated in terms of one of the goods in the model. We have made the assumption that all prices are given in terms of industry-$M$ output as the numeraire good. However, we can convert the real amounts in the model to currency prices using the income adjustment factor described in equation {eq}`EqIncFactor` in Section {ref}`SecHHincFactor` of Chapter `Chap_House`.
 
   [^UBIgrowthadj]: The steady-state assumption in equation {eq}`EqUBIubi_mod_NonGrwAdj_SS` implies that the UBI amount is growth adjusted for every period after the steady-state is reached.
 
