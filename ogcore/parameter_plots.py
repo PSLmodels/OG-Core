@@ -297,19 +297,20 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
             + k
         )
     fig, ax = plt.subplots()
-    plt.plot(n_grid, CFE, label="CFE")
-    plt.plot(n_grid, ellipse, label="Elliptical U")
+    plt.plot(n_grid, CFE, label="Constant Frisch elasticity")
+    plt.plot(n_grid, ellipse, label="Elliptical disutility")
     if include_title:
         if plot_MU:
             plt.title("Marginal Utility of CFE and Elliptical")
         else:
             plt.title("Constant Frisch Elasticity vs. Elliptical Utility")
-    plt.xlabel(r"Labor Supply")
+    plt.xlabel(r"Labor Supply $n_{j,s,t}$")
     if plot_MU:
-        plt.ylabel(r"Marginal Utility")
+        plt.ylabel(r"Marginal disutility")
     else:
-        plt.ylabel(r"Utility")
+        plt.ylabel(r"Disutility")
     plt.legend(loc="upper left")
+    plt.grid(color='gray', linestyle=':', linewidth=1, alpha=0.5)
     if path is None:
         return fig
     else:
