@@ -104,17 +104,15 @@ In this section, we describe what is arguably the most important economic agent 
   :label: EqHHBC
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
-    &\quad\quad bq_{j,s,t} + rm_{j,s,t} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
+    &\quad\quad bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} - T_{j,s,t}  \\
     &\quad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
   ```
 
   where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the normalized interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the normalized wage, and $n_{j,s,t}$ is labor supply. Equations {eq}`eq_rK` and {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` show how the rate of return from the financial intermediary $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$. Note that we must add in the cost of minimum consumption $c_{min,i}$ for all $i$ because that amount is subtracted out of composite consumption in {eq}`EqHHCompCons`.
 
-  The third term $bq_{j,s,t}$ on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Section {ref}`SecHHbequests` details how total bequests are distributed among the different households. The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents remittances received by the household $rm_{j,s,t}$. We describe these remittances in Section {ref}`SecHHremit` below.
+  The third through sixth terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with dfferent types of transfers to households: bequests $bq_{j,s,t}$, remittances $rm_{j,s,t}$, government transfers $tr_{j,s,t}$, and universal basic income $ubi_{j,s,t}$. These four types of transfers to households are detailed in the section below entitled {ref}`SecHHtransfers`. The third term $bq_{j,s,t}$ on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Section {ref}`SecHHbequests` details how total bequests are distributed among the different households. The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents remittances received by the household $rm_{j,s,t}$. We describe these remittances in Section {ref}`SecHHremit` below.
 
-  The last three terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with government transfers, universal basic income transfer, and taxes, respectively. $TR_{t}$ is total government transfers to households in period $t$ and $\eta_{j,s,t}$ is the percent of those transfers that go to households of age $s$ and lifetime income group $j$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. This term is divided by the population of type $(j,s)$ households. We assume government transfers to be lump sum, so they do not create any direct distortions to household decisions. Total government transfers $TR_t$ is in terms of the numeraire good, as shown in equation {eq}`EqUnbalGBCtfer` in Chapter {ref}`Chap_UnbalGBC`.
-
-  The term $ubi_{j,s,t}$ the time series of a matrix of universal basic income (UBI) transfers by lifetime income group $j$ and age group $s$ in each period $t$. There is a specification where the time series of this matrix is stationary (growth adjusted) and a specification in which it's stationary value is going to zero in the limit (non-growth-adjusted). The calibration chapter on UBI in the country-specific repository documentation describes the exact way in which this matrix is calibrated from the values of five parameters, household composition data, and OG-Core's demographics. Similar to the transfers term $TR_{t}$, the UBI transfers will not be distortionary.
+  The next term is government transfers $tr_{j,s,t}$ to households of lifetime income group $j$ in age $s$ at time $t$. Section {ref}`SecHHgovtransfers` details how total government transfers to households are distributed among the differenty household types. The term $ubi_{j,s,t}$ the time series of a matrix of universal basic income (UBI) transfers by lifetime income group $j$ and age group $s$ in each period $t$. There is a specification where the time series of this matrix is stationary (growth adjusted) and a specification in which it's stationary value is going to zero in the limit (non-growth-adjusted). The calibration chapter on UBI in the country-specific repository documentation describes the exact way in which this matrix is calibrated from the values of five parameters, household composition data, and OG-Core's demographics. Similar to the transfers term $TR_{t}$, the UBI transfers will not be distortionary.
 
   The term $T_{j,s,t}$ is the total tax liability of the household in terms of the numeraire good. In contrast to government transfers $tr_{j,s,t}$, tax liability can be a function of labor income $(x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t})$ and capital income $(y_{j,s,t}\equiv r_{p,t} b_{j,s,t})$ and wealth, $b_{j,s,t}$. The tax liability can, therefore, be a distortionary influence on household decisions. It becomes valuable to represent total tax liability as the sum of an effective income tax rate $\tau^{etr}_{s,t}$ function multiplied by total income and a wealth tax function,
 
@@ -181,30 +179,39 @@ In this section, we describe what is arguably the most important economic agent 
 (SecHHtransfers)=
 ## Transfers to the household
 
+  The household budget constraint {eq}`EqHHBC` includes four terms that represent different types of transfers to households: bequests $bq_{j,s,t}$, remittances $rm_{j,s,t}$, government transfers $tr_{j,s,t}$, and universal basic income $ubi_{j,s,t}$. These four types of household transfers are detailed in the following subsections.
+
 
 (SecHHbequests)=
 ### Bequests
 
   `OG-Core` allows for two parameterizations of the distribution of bequests. Users can choose the bequest transmission process through two parameters: `use_zeta` and `zeta`.
 
-  If `use_zeta=False`, then bequests from households of lifetime earnings type `j` are distributed equality across households of type `j`.  That is:
+  If `use_zeta=False`, then bequests from households of lifetime earnings type `j` are distributed equally across households of type `j`,
 
   ```{math}
   :label: Eq_bq
     bq_{j,s,t} = \frac{BQ_{j,t}}{\lambda_j \omega_{s,t}}
   ```
 
-  If `use_zeta=True`, then in the distribution of bequests across age and lifetime ability is determined by $\boldsymbol{\zeta}_{t}$, which allocated aggregate bequests across households by age and lifetime income group:
+  where $BQ_{j,t}$ is the total amount of bequests from the deceased in lifetime income group $j$. Note that the sum of all the $BQ_{j,t}$ equals aggregate bequests $BQ_t$ from equation {eq}`EqMarkClrBQ`.
+
+  ```{math}
+  :label: EqMarkClrBQjt
+    BQ_{j,t} \equiv (1+r_{p,t})\lambda_j\left(\sum_{s=E+2}^{E+S+1}\rho_{s-1}\omega_{s-1,t-1}b_{j,s,t}\right) \quad\forall j,t
+  ```
+
+  If `use_zeta=True`, then in the distribution of bequests across age and lifetime ability is determined by $\zeta_{j,s,t}$, which allocates aggregate bequests across households by age and lifetime income group:
 
   ```{math}
   :label: Eq_bq_use_zeta
     \begin{split}
-      bq_{j,s,t} &= \zeta_{j,s,t}\left(BQ_t\right) \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S \\
+      bq_{j,s,t} &= \zeta_{j,s,t}\left(\frac{BQ_t}{\lambda_j \omega_{s,t}}\right) \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S \\
       &\quad\text{where}\quad \sum_{j=1}^J \sum_{s=E+1}^{E+S}\zeta_{j,s,t} = 1 \quad\forall t
     \end{split}
   ```
 
-  Let $\zeta_{j,s}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. The calibration chapter on beqests in the country-specific repository documentation details how to calibrate the $\zeta_{j,s}$ values from consumer finance data.
+  Let $\zeta_{j,s,t}$ be the fraction of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household, such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\zeta_{j,s}=1$. We must divide that amount by the population of $(j,s)$ households $\lambda_j\omega_{s,t}$. The calibration chapter on beqests in the country-specific repository documentation details how to calibrate the $\zeta_{j,s,t}$ values from consumer finance data.
 
 
 (SecHHremit)=
@@ -241,7 +248,16 @@ In this section, we describe what is arguably the most important economic agent 
 (SecHHgovtransfers)=
 ### Government transfers
 
-  Put household government transfers description here.
+  Section {ref}`SecGovLumpSumTfers` in chapter {ref}`Chap_UnbalGBC` details how aggregate government transfers to households $TR_{t}$ in every period are a percentage of total GDP. We assume here that each household's portion of those tranfers in every period can be calibrated using the matrix of percentages $\eta_{j,s,t}$ in every time period to allocate the transfers by a household's lifetime income group $j$ and age $s$. Then the $\eta_{j,s,t}$ allocation percentages can also vary over time $t$.
+
+  ```{math}
+  :label: Eq_tr
+    tr_{j,s,t} = \eta_{j,s,t}\frac{TR_{t}}{\lambda_j \omega_{s,t}} \forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S
+  ```
+
+  These transfers to household are lump sum and only influence households' decisions through how they change income in the budget constraint. These transfers do not include pension payments or tax credits.
+
+  is total government transfers to households in period $t$ and $\eta_{j,s,t}$ is the percent of those transfers that go to households of age $s$ and lifetime income group $j$ such that $\sum_{s=E+1}^{E+S}\sum_{j=1}^J\eta_{j,s,t}=1$. This term is divided by the population of type $(j,s)$ households. We assume government transfers to be lump sum, so they do not create any direct distortions to household decisions. Total government transfers $TR_t$ is in terms of the numeraire good, as shown in equation {eq}`EqUnbalGBCtfer` in Chapter {ref}`Chap_UnbalGBC`.
 
 
 (SecHHubi)=

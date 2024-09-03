@@ -355,7 +355,7 @@ These can be selected with the `pension_system` parameter.  Accepted values are 
 
 For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit.
 
-##### U.S.-style social security system
+##### US-style social security system
 
 Under the U.S.-style social security system, households over age $R$ received a pension amount that is a function of their earnings history.  The earings history includes the highest earning `AIME_num_periods` prior to retirement (which OG-Core assumes happens at age $R$).  This history determines the Average Indexed Monthly Earnings (AIME):
 
@@ -488,25 +488,18 @@ Given this pension system, the partial derivatives from the household section ar
   \end{cases}
  ```
 
+(SecGovLumpSumTfers)=
 #### Lump sum transfers:
 
   Aggregate non-pension transfers to households are assumed to be a fixed fraction $\alpha_{tr}$ of GDP each period:
 
   ```{math}
   :label: EqUnbalGBCtfer
-    TR_t = g_{tr,t}\:\alpha_{tr}\: p_t Y_t \quad\forall t
+    TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \quad\forall t
   ```
-
-  where total government transfers to households $TR_t$ and GDP ($p_t Y_t$) are in terms of the numeraire good and the term $Y_t$ is in terms of the composite good.
 
   The time dependent multiplier $g_{tr,t}$ in front of the right-hand-side of {eq}`EqUnbalGBCtfer` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We will discuss the closure rule in Section {ref}`SecUnbalGBCcloseRule`.
 
-  We assume that total non-pension transfers are distributed in a lump sum manner to households.  The distribution across households by age and lifetime income group is parameterized by the the parameters $\eta_{j,s,t}$, which are in the time specific $\boldsymbol{\eta}_{t}$ matrix. Thus, transfers to households of lifetime income group $j$, age $s$, at time $t$ are given as:
-
-   ```{math}
-  :label: Eq_tr
-    tr_{j,s,t} = \boldsymbol{\eta}_{t} TR_{t}
-  ```
 
 (SecUBI)=
 #### Universal basic income
