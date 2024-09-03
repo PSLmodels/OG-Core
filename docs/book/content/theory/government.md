@@ -44,11 +44,11 @@ The second difficulty in modeling realistic tax and incentive detail is the need
     y_{j,s,t} \equiv r_{p,t}b_{j,s,t} \quad\forall j, t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
-  We can express total tax liability $T_{j,s,t}$ from the household budget constraint {eq}`EqHHBC` as an effective tax rate on income multiplied by total income plus an effective tax rate on wealth multiplied by wealth $b_{j,s,t}$,
+  We can express household net tax liability $tax_{j,s,t}$ from the household budget constraint {eq}`EqHHBC` as an effective tax rate on income multiplied by total income plus an effective tax rate on wealth multiplied by wealth $b_{j,s,t}$,
 
   ```{math}
   :label: EqTaxCalcLiabETR2
-    T_{j,s,t} &= T^{x+y}_{j,s,t} + T^w_{j,s,t} \\
+    tax_{j,s,t} &= tax^{x+y}_{j,s,t} + tax^w_{j,s,t} \\
     &=\tau^{etr,xy}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) + \tau^{etr,w}_{t}\bigl(b_{j,s,t}\bigr)b_{j,s,t}
   ```
 
@@ -58,30 +58,30 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqTaxCalcMTRx
-    \tau^{mtrx} \equiv \frac{\partial T^{x+y}_{j,s,t}}{\partial w_t e_{j,s}n_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial x_{j,s,t}} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \tau^{mtrx} \equiv \frac{\partial tax^{x+y}_{j,s,t}}{\partial w_t e_{j,s}n_{j,s,t}} = \frac{\partial tax^{x+y}_{j,s,t}}{\partial x_{j,s,t}} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
   ```{math}
   :label: EqTaxCalcMTRy
-    \tau^{mtry} \equiv \frac{\partial T^{x+y}_{j,s,t}}{\partial r_{p,t}b_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \tau^{mtry} \equiv \frac{\partial tax^{x+y}_{j,s,t}}{\partial r_{p,t}b_{j,s,t}} = \frac{\partial tax^{x+y}_{j,s,t}}{\partial y_{j,s,t}} \qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   ```{math}
   :label: EqTaxCalcMTRw
-    \tau^{mtrw} \equiv \frac{\partial T^w_{j,s,t}}{\partial b_{j,s,t}} \qquad\qquad\qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \tau^{mtrw} \equiv \frac{\partial tax^w_{j,s,t}}{\partial b_{j,s,t}} \qquad\qquad\qquad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   Note that a change in wealth $b_{j,s,t}$ changes both income tax liability (through capital income) and wealth tax liability. However, it is both intuitively and computationally convenient to defined the marginal tax rate on capital income and the marginal tax rate on wealth to be separate, as we have done here.
 
-  As we show in Section [Optimality Conditions](https://pslmodels.github.io/OG-Core/content/theory/households.html#optimality-conditions) of the Households chapter of the `OG-Core` repository documentation, the derivative of total tax liability with respect to labor supply $\frac{\partial T_{s,t}}{n_{j,s,t}}$ and the derivative of total tax liability next period with respect to savings $\frac{\partial T_{s+1,t+1}}{b_{j,s+1,t+1}}$ show up in the household Euler equations for labor supply and savings , respectively, in the `OG-Core` documentation. It is valuable to be able to express those marginal tax rates, for which we have no data, as marginal tax rates for which we do have data. The following two expressions show how the marginal tax rates of labor supply can be expressed as the marginal tax rate on labor income times the household-specific wage and how the marginal tax rate of savings can be expressed as the marginal tax rate of capital income times the interest rate.
+  As we show in Section [Optimality Conditions](https://pslmodels.github.io/OG-Core/content/theory/households.html#optimality-conditions) of the Households chapter of the `OG-Core` repository documentation, the derivative of total tax liability with respect to labor supply $\frac{\partial tax_{j,s,t}}{n_{j,s,t}}$ and the derivative of total tax liability next period with respect to savings $\frac{\partial tax_{j,s+1,t+1}}{b_{j,s+1,t+1}}$ show up in the household Euler equations for labor supply and savings , respectively, in the `OG-Core` documentation. It is valuable to be able to express those marginal tax rates, for which we have no data, as marginal tax rates for which we do have data. The following two expressions show how the marginal tax rates of labor supply can be expressed as the marginal tax rate on labor income times the household-specific wage and how the marginal tax rate of savings can be expressed as the marginal tax rate of capital income times the interest rate.
 
   ```{math}
   :label: EqMTRx_derive
-    \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}  = \frac{\partial T^{x+y}_{j,s,t}}{\partial w_t e_{j,s}n_{j,s,t}}\frac{\partial w_{t}e_{j,s}n_{j,s,t}}{\partial n_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial w_{t}e_{j,s}n_{j,s,t}}w_t e_{j,s} = \tau^{mtrx}_{s,t}w_t e_{j,s}
+    \frac{\partial tax_{j,s,t}}{\partial n_{j,s,t}}  = \frac{\partial tax^{x+y}_{j,s,t}}{\partial w_t e_{j,s}n_{j,s,t}}\frac{\partial w_{t}e_{j,s}n_{j,s,t}}{\partial n_{j,s,t}} = \frac{\partial tax^{x+y}_{j,s,t}}{\partial w_{t}e_{j,s}n_{j,s,t}}w_t e_{j,s} = \tau^{mtrx}_{s,t}w_t e_{j,s}
   ```
 
   ```{math}
   :label: EqMTRy_derive
-    \frac{\partial T_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial T^{x+y}_{j,s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t}b_{j,s,t}}{\partial b_{j,s,t}} + \frac{\partial T^w_{j,s,t}}{b_{j,s,t}}  = \tau^{mtry}_{s,t}r_{p,t} + \tau^{mtrw}_{t}
+    \frac{\partial tax_{j,s,t}}{\partial b_{j,s,t}} = \frac{\partial tax^{x+y}_{j,s,t}}{\partial r_{p,t}b_{j,s,t}}\frac{\partial r_{p,t}b_{j,s,t}}{\partial b_{j,s,t}} + \frac{\partial tax^w_{j,s,t}}{b_{j,s,t}}  = \tau^{mtry}_{s,t}r_{p,t} + \tau^{mtrw}_{t}
   ```
 
 
@@ -302,11 +302,11 @@ Linear consumption taxes, $\tau^c_{i,t}$ can vary over time and by consumption g
 (SecGovWealthTax)=
 #### Wealth taxes
 
-  Wealth taxes can be implemented through the $T_{j,s,t}^{w}(b_{j,s,t})$ function, shown in equations {eq}`EqTaxCalcLiabETR2` through {eq}`EqMTRy_derive`. This functional form allows for zero to flat to progressive wealth taxation and is given by the following,
+  Wealth taxes can be implemented through the $tax^{w}_{j,s,t}(b_{j,s,t})$ function, shown in equations {eq}`EqTaxCalcLiabETR2` through {eq}`EqMTRy_derive`. This functional form allows for zero to flat to progressive wealth taxation and is given by the following,
 
   ```{math}
   :label: WealthTaxFunc
-    T_{j,s,t}^{w} = p^w\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)b_{j,s,t}
+    tax^{w}_{j,s,t} = p^w\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)b_{j,s,t}
   ```
 
   where $p^w\geq 0$ is a nonnegative scale parameter of the overall tax rate, $h^w> 0$ is a strictly positive scale coefficient parameter on the linear term inside of the parentheses, and $m^w\geq 0$ is a nonnegative constant additive coefficient in the denominator of the rate function in parentheses. This functional form allows us to represent a zero wealth tax rate ($p^w=0$), a flat wealth tax rate ($p^w>0$ and $m_w= 0$), and a progressive wealth tax rate ($p^w$, $h^w$, and $m^w$ > 0).
@@ -315,20 +315,20 @@ Linear consumption taxes, $\tau^c_{i,t}$ can vary over time and by consumption g
 
   ```{math}
   :label: EqETRwealth
-    \tau^{etr,w}_{t} = \frac{T^w_{j,s,t}}{b_{j,s,t}} = p^w\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right) \quad\forall j,s,t
+    \tau^{etr,w}_{t} = \frac{tax^{w}_{j,s,t}}{b_{j,s,t}} = p^w\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right) \quad\forall j,s,t
   ```
 
   The analytical expression for the marginal tax rate on wealth defined in equation {eq}`` is the following.
 
   ```{math}
   :label: EqMTRwealth
-    \tau^{mtrw}_{t} = \frac{\partial T^w_{j,s,t}}{\partial b_{j,s,t}} = \tau^{etr,w}_t\left[2 - \left(\frac{h^w b_{j,s,t}}{h^w b_{j,s,t} + m^w}\right)\right] \quad\forall j,s,t
+    \tau^{mtrw}_{t} = \frac{\partial tax^{w}_{j,s,t}}{\partial b_{j,s,t}} = \tau^{etr,w}_t\left[2 - \left(\frac{h^w b_{j,s,t}}{h^w b_{j,s,t} + m^w}\right)\right] \quad\forall j,s,t
   ```
 
 
 #### Corporate income taxes
 
-Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry and over time.  In the case of a single industry, `OG-Core` provides the parameters `c_corp_share_of_assets` to scale the tax rate applied to the representative firm so that it represents a weighted average between the rate on businesses entities taxes at the entity level (e.g., C corporations in the United States) and those with no entity level tax.  The parameter `adjustment_factor_for_cit_receipts` is additionally provided to represent a wedge between marginal and average tax rates (which could otherwise be zero with a linear tax function).
+Businesses face a linear tax rate $\tau^{corp}_{m,t}$, which can vary by industry and over time.  In the case of a single industry, `OG-Core` provides the parameters `c_corp_share_of_assets` to scale the tax rate applied to the representative firm so that it represents a weighted average between the rate on businesses entities taxes at the entity level (e.g., C corporations in the United States) and those with no entity level tax.  The parameter `adjustment_factor_for_cit_receipts` is additionally provided to represent a wedge between marginal and average tax rates (which could otherwise be zero with a linear tax function).
 
 ### Spending
 
@@ -568,17 +568,17 @@ Total pension spending is the sum of the pension payments to each household in t
 (SecUnbalGBCrev)=
 ## Government Tax Revenue
 
-  We see from the household's budget constraint that taxes $T_{j,s,t}$ and transfers $TR_{t}$ enter into the household's decision,
+  We see from the household's budget constraint that net taxes $tax_{j,s,t}$ and government transfers $tr_{j,s,t}$ enter into the household's decision,
 
   ```{math}
   :label: EqHHBC3
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
-    &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + \\
-    &\quad\quad\zeta_{j,s}\frac{BQ_t}{\lambda_j\omega_{s,t}} + rm_{j,s,t} + \eta_{j,s,t}\frac{TR_{t}}{\lambda_j\omega_{s,t}} + ubi_{j,s,t} - T_{j,s,t}  \\
-    &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
+    &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ... \\
+    &\qquad +\: bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
+    &\qquad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
   ```
 
-  where we defined the tax liability function $T_{j,s,t}$ in {eq}`EqTaxCalcLiabETR` as effective tax rate times respective total income and wealth. The transfer distribution function $\eta_{j,s,t}$ is uniform across all households. And government revenue from the corporate income tax rate schedule $\tau^{corp}_{m,t}$ and the tax on depreciation expensing schedule $\delta^\tau_{m,t}$ enters the firms' profit function in each industry $m$.
+  where we defined the tax liability function $tax_{j,s,t}$ in {eq}`EqTaxCalcLiabETR` as effective tax rate times respective total income and wealth. The transfer distribution function $\eta_{j,s,t}$ can vary by lifetime ability group $j$, age $s$, and time period $t$. And government revenue from the corporate income tax rate schedule $\tau^{corp}_{m,t}$ and the tax on depreciation expensing schedule $\delta^\tau_{m,t}$ enters the firms' profit function in each industry $m$.
 
   ```{math}
   :label: EqFirmsProfit2
@@ -590,7 +590,7 @@ Total pension spending is the sum of the pension payments to each household in t
 
   ```{math}
   :label: EqUnbalGBCgovRev
-    Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} - \tau^{inv}_{m,t}\delta_{M,t}K_{m,t}\Bigr]}_{\text{corporate income tax revenue}} \\
+    Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_{m,t}\bigr) - \bigl(\tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\bigr)K_{m,t}\Bigr]}_{\text{corporate income tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,xy}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household income tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p_{i,t}c_{i,j,s,t}}_{\text{consumption tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,w}_{t}b_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
@@ -609,13 +609,13 @@ Total pension spending is the sum of the pension payments to each household in t
     D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
   ```
 
-  where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$. All variables in {eq}`EqUnbalGBCbudgConstr` are nominal variables denominated in current-period prices with the numeraire $p_{M,t}=1$ for all $t$.
+  where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$. All variables in {eq}`EqUnbalGBCbudgConstr` are real variables denominated in units of current-period output in industry $M$ the numeraire ($p_{M,t}=1$ for all $t$).
 
   We assume that government spending on public goods in terms of the numeraire good is a fixed fraction of GDP each period in the initial periods.
 
   ```{math}
   :label: EqUnbalGBC_Gt
-    G_t = g_{g,t}\:\alpha_{g}\: p_t Y_t \quad\forall t
+    G_t = g_{g,t}\:\alpha_{g}\: Y_t \quad\forall t
   ```
 
   Similar to transfers $TR_t$, the time dependent multiplier $g_{g,t}$ in front of the right-hand-side of {eq}`EqUnbalGBC_Gt` will equal 1 in most initial periods. It will potentially deviate from 1 in some future periods in order to provide a closure rule that ensures a stable long-run debt-to-GDP ratio. We make this more specific in the next section.
@@ -624,7 +624,7 @@ Total pension spending is the sum of the pension payments to each household in t
 
   ```{math}
   :label: EqUnbalGBC_Igt
-    I_{g,t} = \alpha_{I,t}\: p_t Y_t \quad\forall t
+    I_{g,t} = \alpha_{I,t}\: Y_t \quad\forall t
   ```
 
   The government also chooses what percent of total infrastructure investment goes to each industry $\alpha_{I,m,t}$, although these are exogenously calibrated parameters in the model.
@@ -675,7 +675,7 @@ Total pension spending is the sum of the pension payments to each household in t
 
   ```{math}
   :label: EqUnbalGBC_DY
-    \frac{D_t}{p_t Y_t} = \alpha_D \quad\text{for}\quad t\geq T
+    D_t = \alpha_D Y_t \quad\Rightarrow\quad \frac{D_t}{Y_t} = \alpha_D \quad\text{for}\quad t\geq T
   ```
 
   where $\alpha_D$ is a scalar long-run value of the debt-to-GDP ratio. This long-run stability condition on the debt-to-GDP ratio clearly applies to the steady-state as well as any point in the time path for $t>T$.
@@ -696,18 +696,18 @@ Total pension spending is the sum of the pension payments to each household in t
   ```{math}
   :label: EqUnbalGBCclosure_Gt
   \begin{split}
-    &G_t = g_{g,t}\:\alpha_{g}\: p_t Y_t \\
+    &G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
     &\text{where}\quad g_{g,t} =
       \begin{cases}
-        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}p_t Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g p_t Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}p_t Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g p_t Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
+        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t < T_{G1} \\
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
   ```
 
-  The first case in {eq}`EqUnbalGBCclosure_Gt` says that government spending $G_t$ will be a fixed fraction $\alpha_g$ of GDP $p_t Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between its long-run stable level $\alpha_D p_t Y_t$ and the current debt level $D_t$, where $\alpha_D$ is a target debt-to-GDP ratio and $\rho_d\in(0,1]$ is the percent of the way to jump toward the target $\alpha_D p_t Y_t$ from the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending $G_t$ is set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
+  The first case in {eq}`EqUnbalGBCclosure_Gt` says that government spending $G_t$ will be a fixed fraction $\alpha_g$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between its long-run stable level $\alpha_D Y_t$ and the current debt level $D_t$, where $\alpha_D$ is a target debt-to-GDP ratio and $\rho_d\in(0,1]$ is the percent of the way to jump toward the target $\alpha_D Y_t$ from the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending $G_t$ is set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
 
 (SecUnbalGBC_chgTRt)=
@@ -718,18 +718,18 @@ Total pension spending is the sum of the pension payments to each household in t
   ```{math}
   :label: EqUnbalGBCclosure_TRt
   \begin{split}
-    &TR_t = g_{tr,t}\:\alpha_{tr}\: p_t Y_t \\
+    &TR_t = g_{tr,t}\:\alpha_{tr}\: Y_t \\
     &\text{where}\quad g_{tr,t} =
       \begin{cases}
-        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}p_t Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t}}{\alpha_{tr} p_t Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}p_t Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\alpha_{tr}p_t Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+        1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
   ```
 
-  The first case in {eq}`EqUnbalGBCclosure_TRt` says that government transfers $TR_t$ will be a fixed fraction $\alpha_{tr}$ of GDP $p_t Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government transfers be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between the target debt $\alpha_D p_t Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government transfers $TR_t$ are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
+  The first case in {eq}`EqUnbalGBCclosure_TRt` says that government transfers $TR_t$ will be a fixed fraction $\alpha_{tr}$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government transfers be adjusted to set tomorrow's debt $D_{t+1}$ to be a convex combination between the target debt $\alpha_D Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government transfers $TR_t$ are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
 
 (SecUnbalGBC_chgGtTRt)=
@@ -749,19 +749,19 @@ Total pension spending is the sum of the pension payments to each household in t
   ```{math}
   :label: EqUnbalGBCclosure_TRGt
   \begin{split}
-    &G_t + TR_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)p_t Y_t \quad\Rightarrow\quad G_t = g_{trg,t}\:\alpha_g\: p_t Y_t \quad\text{and}\quad TR_t = g_{trg,t}\:\alpha_{tr}\: p_t Y_t \\
+    &G_t + TR_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)Y_t \quad\Rightarrow\quad G_t = g_{trg,t}\:\alpha_g\: Y_t \quad\text{and}\quad TR_t = g_{trg,t}\:\alpha_{tr}\: Y_t \\
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
-      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\:\,\text{if}\quad t < T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}p_t Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{\alpha_{D}p_t Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\,\text{if}\quad t < T_{G1} \\
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```
 
-  The first case in {eq}`EqUnbalGBCclosure_TRGt` says that government spending and government transfers $TR_t$ will their respective fixed fractions $\alpha_g$ and $\alpha_{tr}$ of GDP $p_t Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending and transfers be adjusted by the same rate to set tomorrow's debt $D_{t+1}$ to be a convex combination between target debt $\alpha_D p_t Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending and transfers are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
+  The first case in {eq}`EqUnbalGBCclosure_TRGt` says that government spending and government transfers $TR_t$ will their respective fixed fractions $\alpha_g$ and $\alpha_{tr}$ of GDP $Y_t$ for every period before $T_{G1}$. The second case specifies that, starting in period $T_{G1}$ and continuing until before period $T_{G2}$, government spending and transfers be adjusted by the same rate to set tomorrow's debt $D_{t+1}$ to be a convex combination between target debt $\alpha_D Y_t$ and the current debt level $D_t$. The last case specifies that, for every period after $T_{G2}$, government spending and transfers are set such that the next-period debt be a fixed target percentage $\alpha_D$ of GDP.
 
-  Each of these budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` allows the government to run increasing deficits or surpluses in the short run (before period $T_{G1}$). But then the adjustment rule is implemented gradually beginning in period $t=T_{G1}$ to return the debt-to-GDP ratio back to its long-run target of $\alpha_D$. Then the rule is implemented exactly in period $T_{G2}$ by adjusting some combination of government spending $G_t$ and transfers $TR_t$ to set the debt $D_{t+1}$ such that it is exactly $\alpha_D$ proportion of GDP $p_t Y_t$.
+  Each of these budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` allows the government to run increasing deficits or surpluses in the short run (before period $T_{G1}$). But then the adjustment rule is implemented gradually beginning in period $t=T_{G1}$ to return the debt-to-GDP ratio back to its long-run target of $\alpha_D$. Then the rule is implemented exactly in period $T_{G2}$ by adjusting some combination of government spending $G_t$ and transfers $TR_t$ to set the debt $D_{t+1}$ such that it is exactly $\alpha_D$ proportion of GDP $Y_t$.
 
 
 (SecUnbalGBCcaveat)=
@@ -783,7 +783,7 @@ Total pension spending is the sum of the pension payments to each household in t
 
   [^param_note]: We assume that whatever parameters the tax functions have in the last year of the budget window persist forever.
 
-  [^NomRealGDP]: All quantities in OG-Core are real in the sense that their prices can only be denominated in terms of one of the goods in the model. We have made the assumption that all prices are given in terms of industry-$M$ output as the numeraire good. However, we can convert the real amounts in the model to currency prices using the income adjustment factor described in equation {eq}`EqIncFactor` in Section {ref}`SecHHincFactor` of Chapter `Chap_House`.
+  [^NomRealGDP]: All quantities in OG-Core are real in the sense that their prices can only be denominated in terms of one of the goods in the model. We have made the assumption that all prices are given in terms of industry-$M$ output as the numeraire good. However, we can convert the real amounts in the model to currency prices using the income adjustment factor described in equation {eq}`EqIncFactor` in Section {ref}`SecHHincFactor` of Chapter {ref}`Chap_House`.
 
   [^UBIgrowthadj]: The steady-state assumption in equation {eq}`EqUBIubi_mod_NonGrwAdj_SS` implies that the UBI amount is growth adjusted for every period after the steady-state is reached.
 
