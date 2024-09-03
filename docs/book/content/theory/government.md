@@ -342,6 +342,7 @@ Businesses face a linear tax rate $\tau^{b}_{m,t}$, which can vary by industry a
   where nominal GDP $p_t Y_t$ is in terms of the numeraire good of industry-$M$ output and $Y_t$ alone is in terms of composite consumption.
 
 
+(SecGovPensions)=
 #### Pensions
 
 The `OG-Core` model allows for four different systems for public pensions:
