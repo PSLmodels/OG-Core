@@ -63,8 +63,8 @@ The computational algorithm for solving for the steady-state follows the steps b
     1. Given $\{\bar{p}_m^i\}_{m=1}^{M-1}$ find the price of consumption goods $\{\bar{p}_i\}_{i=1}^I$ using {eq}`EqHH_pi2`
     2. From price of consumption goods, determine the price of the composite consmpution good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
     3. Using {eq}`Eq_tr` with $\overline{TR}^{\,i}$, find transfers to each household, $\overline{tr}_{j,s}$
-    4. Use {eq}`EqStnrzTfer` to get aggregate GDP $\overline{Y}$ from steady-state transfers $\overline{TR}^i$ and composite goods prices $\bar{p}$.
-    5. With $\overline{Y}$ and $\bar{p}$, use {eq}`EqHH_AggrRemitStnrz` to get $\overline{RM}$ and use {eq}`EqHH_IndRemitRecStnrz` to get $\overline{rm}_{j,s}$.
+    4. Use {eq}`EqStnrzTfer` to get aggregate GDP $\overline{Y}$ from steady-state transfers $\overline{TR}^i$.
+    5. With $\overline{Y}$, use {eq}`EqHH_AggrRemitStnrz` to get $\overline{RM}$ and use {eq}`EqHH_IndRemitRecStnrz` to get $\overline{rm}_{j,s}$.
     6. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\overline{BQ}^{\,i}$, find $bq_{j,s}$
     7. Given values $\bar{p}^i$, $\bar{r}_{p}^i$, $\bar{w}^i$ $\overline{bq}_{j,s}$, $\overline{rm}_{j,s}$, $\overline{tr}_{j,s}$, and $factor^i$, solve for the steady-state household labor supply $\bar{n}_{j,s}$ and savings $\bar{b}_{j,s+1}$ decisions for all $j$ and $E+1\leq s\leq E+S$.
 
@@ -73,7 +73,7 @@ The computational algorithm for solving for the steady-state follows the steps b
         ```{math}
         :label: EqSS_HHBC
           \bar{c}_{j,s} &= \Bigl[(1 + \bar{r}_{p}^i)\bar{b}_{j,s} + \bar{w}^i e_{j,s}\bar{n}_{j,s} - \sum_{i=1}^I\left(1 + \tau_i^c\right)\bar{p}_i \bar{c}_{min,i} - e^{g_y}\bar{b}_{j,s+1} ... \\
-          &\qquad + \overline{bq}_{j,s} + \overline{rm}_{j,s} + \overline{tr}_{j,s} + \overline{ubi}_{j,s} - \overline{T}_{j,s}\Bigr] / \bar{p}  \\
+          &\qquad + \overline{bq}_{j,s} + \overline{rm}_{j,s} + \overline{tr}_{j,s} + \overline{ubi}_{j,s} + \overline{pension}_{j,s} - \overline{tax}_{j,s}\Bigr] / \bar{p}  \\
           &\qquad\qquad\forall j\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \bar{b}_{j,E+1}=0
         ```
 
@@ -141,14 +141,14 @@ The computational algorithm for solving for the steady-state follows the steps b
         5.  Use the factor demands and $\bar{K}_g$ in the production function for industry $M$ to find $\bar{Y}_M$.
     18. Find an updated value for GDP, $\bar{Y}^{i'} = \sum_{m=1}^{M} \bar{p}_m\bar{Y}_m$ using {eq}`EqStnrzNomGDP`.
     19. Find a updated values for $\bar{I}_{g}^{i'}$ and $\bar{K}_g^{i'}$ using  $\bar{Y}^{i'}$ and equations {eq}`EqStnrz_Igt` and {eq}`EqStnrz_Kgmt`
-3. Given updated inner-loop values based on initial guesses for outer-loop variables $\Bigl\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \bigl\{\bar{p}_m^i\bigr\}_{m=1}^{M-1}, \overline{BQ}^i, \overline{TR}^i, factor^i\Bigr\}$, solve for updated values of outer-loop variables $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \bigl\{\bar{p}_m^i\bigr\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ using the remaining equations:
+3. Given updated inner-loop values based on initial guesses for outer-loop variables $\Bigl\{\bar{r}_p^i, \bar{r}^i, \bar{w}^i, \bigl\{\bar{p}_m^i\bigr\}_{m=1}^{M-1}, \overline{BQ}^i, \overline{TR}^i, factor^i\Bigr\}$, solve for updated values of outer-loop variables $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \bigl\{\bar{p}_m^{i'}\bigr\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ using the remaining equations:
 
     1. Use $\bar{Y}_M$ and $\bar{K}_M$ in {eq}`EqStnrzFOC_K` to solve for updated value of the rental rate on private capital $\bar{r}^{i'}$.
     2. Use $\bar{Y}_M$ and $\bar{L}_M$ in {eq}`EqStnrzFOC_L` to solve for updated value of the wage rate $\bar{w}^{i'}$.
     3. Use $\bar{r}^{i'}$ in equation {eq}`EqUnbalGBC_rate_wedge` to get $\bar{r}_{gov}^{i'}$
     4. Use $\bar{K}_g^{i'}$ and $\bar{Y}^{i'}$ in {eq}`EqFirmsMPKg_opt` for each industry $m$ to solve for the value of the marginal product of government capital in each industry, $\overline{MPK}_{g,m}$
     5. Use $\boldsymbol{\overline{MPK}}_g$, $\bar{r}^{i'}$, $\bar{r}_{gov}^{i'}$, $\bar{D}$, and $\bar{K}$ to find the return on the households' investment portfolio $\bar{r}_{p}^{i'}$ using equation {eq}`EqStnrz_rate_p`.
-    6. Use $\bar{Y}_m$, $\bar{L}_m$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\boldsymbol{\bar{p}}^{i'}$
+    6. Use $\bar{Y}_m$, $\bar{L}_m$ in {eq}`EqStnrzFOC_L` to solve for the updates vector of prices, $\{\bar{p}_m^{i'}\}_{m=1}^{M-1}$.
     7. Use $\bar{r}_{p}^{i'}$ and $\bar{b}_{j,s}$ in {eq}`EqStnrzMarkClrBQ` to solve for updated aggregate bequests $\overline{BQ}^{i'}$.
     8. Use $\bar{Y}^{i'}$ in the long-run aggregate transfers assumption {eq}`EqStnrzTfer` to get an updated value for total transfers to households $\overline{TR}^{i'}$. Note that this $\bar{Y}^{i'}$ is different from the $\bar{Y}$ derived from the initial guess of aggregate transfers $\overline{TR}^i$ from step 2.4.
     9. Use $\bar{r}^{i'}$, $\bar{r}_{p}^{i}$, $\bar{w}^{i'}$, $\bar{n}_{j,s}$, and $\bar{b}_{j,s+1}$ in equation {eq}`EqSS_factor` to get an updated value for the income factor $factor^{i'}$.
@@ -159,14 +159,14 @@ The computational algorithm for solving for the steady-state follows the steps b
           &= \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p}^{i'}\bar{b}_{j,s} + \bar{w}^{i'} e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
         ```
 
-4. If the updated values of the outer-loop variables $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ are close enough to the initial guess for the outer-loop variables $\{\bar{r}_p^i, \bar{r}^i, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^i, \overline{TR}^i, factor^i\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\{\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \boldsymbol{\bar{p}}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ as a convex combination of the first initial guess $\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeat steps (2) through (4).
+4. If the updated values of the outer-loop variables $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ are close enough to the initial guess for the outer-loop variables $\Bigl\{\bar{r}_p^i, \bar{r}^i, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^i, \overline{TR}^i, factor^i\Bigr\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\Bigl\{\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \{\bar{p}_m^{i+1}\}_{m=1}^{M-1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\Bigr\}$ as a convex combination of the first initial guess $\Bigl\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\Bigr\}$ and the updated values $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ and repeat steps (2) through (4).
 
-    1. Define a tolerance $toler_{ss,out}$ and a distance metric $\left\lVert\,\cdot\,\right\rVert$ on the space of 5-tuples of outer-loop variables $\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i},  \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$. If the distance between the original guess for the outer-loop variables and the updated values for the outer-loop variables is less-than-or-equal-to the tolerance value, then the steady-state equilibrium has been found and it is the fixed point values of the variables at this point in the iteration.
+    1. Define a tolerance $toler_{ss,out}$ and a distance metric $\left\lVert\,\cdot\,\right\rVert$ on the space of 7-tuples of outer-loop variables $\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i},  \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$. If the distance between the original guess for the outer-loop variables and the updated values for the outer-loop variables is less-than-or-equal-to the tolerance value, then the steady-state equilibrium has been found and it is the fixed point values of the variables at this point in the iteration.
 
        ```{math}
        :label: EqSS_toldistdone
-        & \left\lVert\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert \\
-        &\qquad \leq toler_{ss,out}
+        & \Biggl\lVert\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) ... \\
+        &\qquad - \left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\Biggr\rVert \leq toler_{ss,out}
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
@@ -178,19 +178,19 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         1. The distance metric not being satisfied is the following condition.
 
-           ```{math}
-           :label: EqSS_toldistrepeat
-             &\left\lVert\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'},  \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) - \left(\bar{r}_p^{i}, (\bar{r}^{i}, \bar{w}^{i},  \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\right\rVert  \\
-            &\qquad > toler_{ss,out}
-           ```
+            ```{math}
+            :label: EqSS_toldistrepeat
+              &\Biggl\lVert\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'},  \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) ... \\
+              &\qquad - \left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i},  \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\Biggr\rVert > toler_{ss,out}
+            ```
 
-        2. If the distance metric is not satisfied {eq}`EqSS_toldistrepeat`, then an updated initial guess for the outer-loop variables $\{\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \boldsymbol{\bar{p}}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\}$ is made as a convex combination of the previous initial guess $\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\}$ and the updated values based on the previous initial guess $\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\}$ and repeats steps (2) through (4) with this new initial guess. The parameter $\xi_{ss}\in(0,1]$ governs the degree to which the new guess $i+1$ is close to the updated guess $i'$.
+        2. If the distance metric is not satisfied {eq}`EqSS_toldistrepeat`, then an updated initial guess for the outer-loop variables $\Bigl\{\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \{\bar{p}_m^{i+1}\}_{m=1}^{M-1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\Bigr\}$ is made as a convex combination of the previous initial guess $\Bigl\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\Bigr\}$ and the updated values based on the previous initial guess $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ and repeats steps (2) through (4) with this new initial guess. The parameter $\xi_{ss}\in(0,1]$ governs the degree to which the new guess $i+1$ is close to the updated guess $i'$.
 
            ```{math}
            :label: EqSS_updateguess
-             & \left(\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \boldsymbol{\bar{p}}^{i+1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\right) = ... \\
-             &\qquad  \xi_{ss}\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \boldsymbol{\bar{p}}^{i'}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) + ... \\
-             &\qquad(1-\xi_{ss})\left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \boldsymbol{\bar{p}}^{i}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)
+             & \left(\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \{\bar{p}_m^{i+1}\}_{m=1}^{M-1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\right) = ... \\
+             &\qquad  \xi_{ss}\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) + ... \\
+             &\qquad(1-\xi_{ss})\left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)
            ```
 
         3. Because the outer loop of the steady-state solution has $M-1+6$ variables, there are $M+5$ functions to minimize or set to zero. We use a root-finder and its corresponding Newton method for the updating the guesses of the outer-loop variables because it works well and is faster than the bisection method described in the previous step. The `OG-Core` code has the option to use either the bisection method or the root fining method to updated the outer-loop variables. The root finding algorithm is generally faster but is less robust than the bisection method in the previous step.
@@ -310,7 +310,7 @@ Under alternative model configurations, the solution algorithm changes slightly.
 
 This section describes the computational algorithm for the solution method for the stationary non-steady-state equilibrium described in the {ref}`SecEqlbNSSdef`. The default specification of the model is the baseline specification (`baseline = True`) in which the government can run deficits and surpluses (`budget_balance = False`), in which the economy is a large partially open economy [$\zeta_D,\zeta_K\in(0,1)$], and in which baseline government spending $G_t$ and transfers $TR_t$ are not held constant until the closure rule (`baseline_spending = False`). We describe the algorithm for this model configuration below and follow that with a description of how it is modified for alternative configurations.
 
-The computational algorithm for the non-steady-state solution follows similar steps to the steady-state solution described in Section {ref}`SecEqlbSSsoln`. There is an outer-loop of guessed values of macroeconomic variables $\{r_{p,t}, r_t, w_t, \boldsymbol{p}_t, BQ_t, TR_t\}$, but in this case, we guess the entire transition path of those variables. Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.
+The computational algorithm for the non-steady-state solution follows similar steps to the steady-state solution described in Section {ref}`SecEqlbSSsoln`. There is an outer-loop of guessed time series values of macroeconomic variables $\Bigl\{r_{p,t}, r_t, w_t, \{p_{m,t}\}_{m=1}^{M-1}, BQ_t, TR_t\Bigr\}_{t=1}^T$. Note that in the case of the transition path equilibrium algorithm, we guess the time series of those variables from the current period $t=1$ to the steady state ($t=T$). Then we solve the inner loop of mostly microeconomic variables for the whole transition path (many generations of households), given the outer-loop guesses. We iterate between these steps until we find a fixed point.
 
 We call this solution algorithm the time path iteration (TPI) method or transition path iteration. This method was originally outlined in a series of papers between 1981 and 1985 [^citation_note] and in the seminal book {cite}`AuerbachKotlikoff:1987` [Chapter 4] for the perfect foresight case and in {cite}`NishiyamaSmetters:2007` Appendix II and {cite}`EvansPhillips:2014`[Sec. 3.1] for the stochastic case. The intuition for the TPI solution method is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see {cite}`StokeyLucas1989` [Chapter 17]).
 
@@ -322,17 +322,17 @@ The stationary non-steady state (transition path) solution algorithm has followi
 
 2. Compute the steady-state solution $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$ corresponding to {ref}`SecEqlbSSdef` with the {ref}`SecEqlbSSsoln`.
 
-3. Given initial state of the economy $\boldsymbol{\hat{\Gamma}}_1$ and steady-state solutions $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$, guess transition paths of outer-loop macroeconomic variables $\{\boldsymbol{r}_p^i, \boldsymbol{r}^i, \boldsymbol{\hat{w}}^i, \boldsymbol{p}^i, \boldsymbol{\hat{BQ}}^i,\boldsymbol{\hat{TR}}^i\}$ such that $\hat{BQ}_1^i$ is consistent with $\boldsymbol{\hat{\Gamma}}_1$ and $\{r_{p,t}^i, r_t^i, \hat{w}_t^i, \boldsymbol{p}_t^i, \hat{BQ}_t^i, \hat{TR}_t^i\} = \{\bar{r}_p, \bar{r}, \bar{w}, \boldsymbol{\bar{p}}_t, \overline{BQ}, \overline{TR}\}$ for all $t\geq T$.  We also make an initial guess regarding the amount of government debt in each period, $\boldsymbol{\hat{D}}^i$.  This will not enter the ``outer loop'' variables, but is helpful in the first pass through the time path iteration algorithm.
+3. Given initial state of the economy $\boldsymbol{\hat{\Gamma}}_1$ and steady-state solutions $\{\bar{n}_{j,s},\bar{b}_{j,s+1}\}_{s=E+1}^{E+S}$, guess transition paths of outer-loop macroeconomic variables $\Bigl\{\boldsymbol{r}_p^i, \boldsymbol{r}^i, \boldsymbol{\hat{w}}^i, \{\boldsymbol{p}_m^i\}_{m=1}^{M-1}, \boldsymbol{\hat{BQ}}^i,\boldsymbol{\hat{TR}}^i\Bigr\}$ such that $\hat{BQ}_1^i$ is consistent with $\boldsymbol{\hat{\Gamma}}_1$ and $\Bigl\{r_{p,t}^i, r_t^i, \hat{w}_t^i, \{p_{m,t}^i\}_{m=1}^{M-1}, \hat{BQ}_t^i, \hat{TR}_t^i\Bigr\} = \{\bar{r}_p, \bar{r}, \bar{w}, \{\bar{p}_m\}_{m=1}^{M-1}, \overline{BQ}, \overline{TR}\}$ for all $t\geq T$.  We also make an initial guess regarding the amount of government debt in each period, $\boldsymbol{\hat{D}}^i$.  This will not enter the ``outer loop'' variables, but is helpful in the first pass through the time path iteration algorithm.
 
     1. If the economy is assumed to reach the steady state by period $T$, then we must be able to solve for every cohort's decisions in period $T$ including the decisions of agents in their first period of economically relevant life $s=E+S$. This means we need to guess time paths for the outer-loop variables that extend to period $t=T+S$. However, the values of the time path of outer-loop variables for every period $t\geq T$ are simply equal to the steady-state values.
-4. Using {eq}`Eq_tr` with $\boldsymbol{\hat{TR}}^{\,i}$, find transfers to each household, $\boldsymbol{\hat{tr}}_{j,s}^i$
-5. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\boldsymbol{\hat{BQ}}^{\,i}$, find $\boldsymbol{\hat{bq}}_{j,s}^i$
-6. Given time path guesses $\{\boldsymbol{r}_p^i, \boldsymbol{\hat{w}}^i, \boldsymbol{p}^i, \boldsymbol{\hat{bq}}^i, \boldsymbol{\hat{tr}}^i\}$, we can solve for each household's lifetime decisions $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$, $E+1\leq s \leq E+S$, and $1\leq t\leq T_2+S-1$.
-   1. Given $\boldsymbol{p}^i$ find the price of consumption goods using {eq}`EqHH_pi2`
-   2. From price of consumption goods, determine the price of the composite consmpution good, $\bar{p}$ using equation {eq}`EqCompPnorm2`
+4. Using {eq}`Eq_tr` with $\boldsymbol{\hat{TR}}^{\,i}$, find transfers to each household $\hat{tr}_{j,s,t}$.
+5. Using the bequest transfer process, {eq}`Eq_bq` and aggregate bequests, $\boldsymbol{\hat{BQ}}^{\,i}$, find bequests received by each household $\hat{bq}_{j,s,t}$.
+6. Given time path guesses for $\boldsymbol{r}_p^i$, $\boldsymbol{\hat{w}}^i$, and $\{\boldsymbol{p}_m^i\}_{m=1}^{M-1}$, and the transition paths of household received bequests $\hat{bq}_{j,s,t}$ and government transfers to households $\hat{tr}_{j,s,t}$, we can solve for each household's lifetime decisions $\{n_{j,s,t},\hat{b}_{j,s+1,t+1}\}_{s=E+1}^{E+S}$ for all $j$, $E+1\leq s \leq E+S$, and $1\leq t\leq T+S-1$.
+   1. Given the prices of production goods $\{\boldsymbol{p}_m^i\}_{m=1}^{M-1}$, find the transition path of the price of consumption goods $p_{i,t}$ using {eq}`EqHH_pi2`.
+   2. From price of consumption goods $p_{i,t}$, determine the price of the composite consmpution good, $p_t$ using equation {eq}`EqCompPnorm2`
    3. The household problem can be solved with a multivariate root finder solving the $2S$ equations and unknowns at once for each $j$ and $1\leq t\leq T+S-1$. The root finder uses $2S$ household Euler equations  {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` to solve for each household's $2S$ lifetime decisions. The household decision rules for each type and birth cohort are solved separately.
    4. After solving the first iteration of time path iteration, subsequent initial values for the $J$, $2S$ root finding problems are based on the solution in the prior iteration. This speeds up computation further and makes the initial guess for the highly nonlinear system of equations start closer to the solution value.
-7. Determine from the quantity of the composite consumption good consumed by each household, $\hat{c}_{j,s,t}$, use equation {eq}`EqStnrz_cmDem2` to determine consumption of each output good, $\hat{c}_{m,j,s,t}$
+7. Use the quantity of the composite consumption good consumed by each household, $\hat{c}_{j,s,t}$ and equation {eq}`EqStnrz_cmDem2` to determine consumption of each output good, $\hat{c}_{m,j,s,t}$.
 8. Using $\hat{c}_{m,j,s,t}$ in {eq}`EqCmt`, solve for aggregate consumption of each output good, $\hat{C}_{m,t}$
 9.  Given values for $n_{j,s,t}$ and $\hat{b}_{j,s+1,t+1}$ for all $j$, $s$, and $t$, solve for aggregate labor supply, $\hat{L}_t$, and savings, $B_t$ in each period
     1.  Use $n_{j,s,t}$ and the stationarized labor market clearing equation {eq}`EqStnrzMarkClrLab` to get a value for $\hat{L}_t^{i}$.
@@ -392,19 +392,19 @@ The stationary non-steady state (transition path) solution algorithm has followi
      5. $error_{bq} =  max\left\{\frac{\hat{BQ}_{t}^{\,i'} - \hat{BQ}_{t}^{\,i}}{\hat{BQ}_{t}^{\,i}}\right\}_{t=0}^{T}$
      6. $error_{tr} = \left\{\frac{\hat{TR}_{t}^{\,i'} - \hat{TR}_{t}^{\,i}}{\hat{TR}_{t}^{\,i}}\right\}_{t=0}^{T}$
 
-23. If the maximum absolute error among the four outer loop error terms is greater than some small positive tolerance $toler_{tpi,out}$, $\max\big|\left(error_{r_p}, error_r, error_w, error_p, error_{bq},error_{tr}\right)\bigr| > toler_{tpi,out}$, then update the guesses for the outer loop variables as a convex combination governed by $\xi_{tpi}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (5).
+23. If the maximum absolute error among the four outer loop error terms is greater than some small positive tolerance $toler_{tpi,out}$, $\max\big|\left(error_{r_p}, error_r, error_w, error_p, error_{bq},error_{tr}\right)\bigr| > toler_{tpi,out}$, then update the guesses for the outer loop variables as a convex combination governed by $\xi_{tpi}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (23).
 
   $$
-   &[\boldsymbol{r}_p^{i+1}, \boldsymbol{r}^{i+1}, \boldsymbol{\hat{w}}^{i+1}, \boldsymbol{p}^{i+1}, \boldsymbol{\hat{BQ}}^{i+1},\boldsymbol{\hat{TR}}^{i+1} ] = \\
-   &\qquad \xi_{tpi}[\boldsymbol{r}_p^{i'}, \boldsymbol{r}^{i'}, \boldsymbol{\hat{w}}^{i'}, \boldsymbol{p}^{i'}, \boldsymbol{\hat{BQ}}^{i'},\boldsymbol{\hat{TR}}^{i'}] + ... \\
-   &\qquad (1-\xi_{tpi})[\boldsymbol{r}_p^{i}, \boldsymbol{r}^{i}, \boldsymbol{\hat{w}}^{i}, \boldsymbol{p}^{i}, \boldsymbol{\hat{BQ}}^{i},\boldsymbol{\hat{TR}}^{i}]
+   &\left[\boldsymbol{r}_p^{i+1}, \boldsymbol{r}^{i+1}, \boldsymbol{\hat{w}}^{i+1}, \{\boldsymbol{p}_m^{i+1}\}_{m=1}^{M-1}, \boldsymbol{\hat{BQ}}^{i+1},\boldsymbol{\hat{TR}}^{i+1}\right] = \\
+   &\qquad \xi_{tpi}\left[\boldsymbol{r}_p^{i'}, \boldsymbol{r}^{i'}, \boldsymbol{\hat{w}}^{i'}, \{\boldsymbol{p}_m^{i'}\}_{m=1}^{M-1}, \boldsymbol{\hat{BQ}}^{i'},\boldsymbol{\hat{TR}}^{i'}\right] ... \\
+   &\qquad + (1-\xi_{tpi})\left[\boldsymbol{r}_p^{i}, \boldsymbol{r}^{i}, \boldsymbol{\hat{w}}^{i}, \{\boldsymbol{p}_m^{i}\}_{m=1}^{M-1}, \boldsymbol{\hat{BQ}}^{i},\boldsymbol{\hat{TR}}^{i}\right]
   $$
 
 24. If the maximum absolute error among the M-1+5 outer loop error terms is less-than-or-equal-to some small positive tolerance $toler_{tpi,out}$ in each period along the transition path, $\max\big|\left(error_{r_p}, error_r, error_w, error_p, error_{bq},error_{tr}\right)\bigr| \leq toler_{tpi,out}$ then the non-steady-state equilibrium has been found.
 
-  1. Make sure that the resource constraint for industry $M$ (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
-  2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
-  3. Make sure that all the $(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance.
+    1. Make sure that the resource constraint for industry $M$ (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
+    2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds in every period.
+    3. Make sure that all the $(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance in every period.
 
 Under alternative model configurations, the solution algorithm changes slightly.  When `budget_balance = True`, the guess of $\boldsymbol{\hat{TR}}$ in the outer loop is replaced by the guess of $\boldsymbol{\hat{Y}}$ and transfers are determined a residual from the government budget constraint given revenues and other spending policy.  When `baseline_spending = True`, $\boldsymbol{\hat{TR}}$ is determined from the baseline model solution and not updated in the outer loop described above.  In this case $\boldsymbol{\hat{Y}}$ becomes variable that is updates in the outer loop.
 
