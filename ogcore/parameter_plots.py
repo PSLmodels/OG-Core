@@ -310,7 +310,7 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
     else:
         plt.ylabel(r"Disutility")
     plt.legend(loc="upper left")
-    plt.grid(color='gray', linestyle=':', linewidth=1, alpha=0.5)
+    plt.grid(color="gray", linestyle=":", linewidth=1, alpha=0.5)
     if path is None:
         return fig
     else:
