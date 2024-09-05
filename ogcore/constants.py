@@ -243,10 +243,12 @@ PARAM_LABELS = {
     "eta_RM": ["Distribution of remittances", r"$\eta_{RM,j,s,t}$"],
     "alpha_G": ["Government spending as a share of GDP", r"$\alpha^{G}_{t}$"],
     "alpha_RM_1": [
-        "Remittances as a share of GDP in initial period", r"$\alpha_{RM,1}$"
+        "Remittances as a share of GDP in initial period",
+        r"$\alpha_{RM,1}$",
     ],
     "alpha_RM_T": [
-        "Remittances as a share of GDP in long run", r"$\alpha_{RM,T}$"
+        "Remittances as a share of GDP in long run",
+        r"$\alpha_{RM,T}$",
     ],
     "g_RM": ["Growth rate of remittances in initial periods", r"$g_{RM,t}$"],
     "rho_RM": ["Remittances smoothing parameter", r"$\rho_{RM}$"],
