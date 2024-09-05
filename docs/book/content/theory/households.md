@@ -175,7 +175,7 @@ In this section, we describe what is arguably the most important economic agent 
 
 
 (SecHHtransfers)=
-## Transfers to the household
+## Transfers to household
 
   The household budget constraint {eq}`EqHHBC` includes four terms that represent different types of transfers to households: bequests $bq_{j,s,t}$, remittances $rm_{j,s,t}$, government transfers $tr_{j,s,t}$, and universal basic income $ubi_{j,s,t}$. These four types of household transfers are detailed in the following subsections.
 
