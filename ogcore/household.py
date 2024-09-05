@@ -141,7 +141,8 @@ def get_bq(BQ, j, p, method):
     Calculate bequests to each household.
 
     .. math::
-        bq_{j,s,t} = \zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}
+        \hat{bq}_{j,s,t} = \zeta_{j,s}
+        \frac{\hat{BQ}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t
 
     Args:
         BQ (array_like): aggregate bequests
@@ -202,7 +203,8 @@ def get_tr(TR, j, p, method):
     Calculate transfers to each household.
 
     .. math::
-        tr_{j,s,t} = \zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}
+        \hat{tr}_{j,s,t} = \zeta_{j,s}
+        \frac{\hat{TR}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t
 
     Args:
         TR (array_like): aggregate transfers
@@ -212,7 +214,7 @@ def get_tr(TR, j, p, method):
             'TPI'
 
     Returns:
-        tr (array_like): transfers received by each household
+        tr (array_like): transfers received by household
 
     """
     if j is not None:
@@ -238,17 +240,64 @@ def get_tr(TR, j, p, method):
     return tr
 
 
-def get_cons(r, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
+def get_rm(RM, j, p, method):
     r"""
-    Calculate household consumption.
+    Calculate remittances to each household.
 
     .. math::
-        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t}
-        + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} -
-        e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}
+        \hat{rm}_{j,s,t} = \eta_{RM,j,s,t}
+        \frac{\hat{RM}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t
 
     Args:
-        r (array_like): the real interest rate
+        RM (array_like): aggregate remittances
+        j (int): index of lifetime ability group
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        rm (array_like): remittances received by household
+
+    """
+    if j is not None:
+        if method == "SS":
+            rm = (p.eta_RM[-1, :, j] * RM) / (p.lambdas[j] * p.omega_SS)
+        else:
+            len_T = RM.shape[0]
+            rm = (p.eta_RM[:len_T, :, j] * RM.reshape((len_T, 1))) / (
+                p.lambdas[j] * p.omega[:len_T, :]
+            )
+    else:
+        if method == "SS":
+            rm = (p.eta_RM[-1, :, :] * RM) / (
+                p.lambdas.reshape((1, p.J)) * p.omega_SS.reshape((p.S, 1))
+            )
+        else:
+            len_T = RM.shape[0]
+            rm = (p.eta_RM[:len_T, :, :] * utils.to_timepath_shape(RM)) / (
+                p.lambdas.reshape((1, 1, p.J))
+                * p.omega[:len_T, :].reshape((len_T, p.S, 1))
+            )
+
+    return rm
+
+
+def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
+    r"""
+    Calculate household composite consumption.
+
+    .. math::
+        \hat{c}_{j,s,t} &= \biggl[(1 + r_{p,t})\hat{b}_{j,s,t}
+        + \hat{w}_t e_{j,s}n_{j,s,t} + \hat{bq}_{j,s,t} + \hat{rm}_{j,s,t}
+        + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t}
+        - \hat{tax}_{j,s,t} \\
+        &\qquad - \sum_{i=1}^I\left(1 + \tau^c_{i,t}\right)p_{i,t}\hat{c}_{min,i}
+        - e^{g_y}\hat{b}_{j,s+1,t+1}\biggr] / p_t \\
+        &\qquad\qquad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+        \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
+
+    Args:
+        r_p (array_like): the real interest rate
         w (array_like): the real wage rate
         p_tilde (array_like): the ratio of real GDP to nominal GDP
         b (Numpy array): household savings
@@ -264,7 +313,7 @@ def get_cons(r, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
 
     """
     cons = (
-        (1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) - net_tax
+        (1 + r_p) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) - net_tax
     ) / p_tilde
     return cons
 
