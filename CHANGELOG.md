@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2024-09-05 12:00:00
+
+### Added
+
+- Added remittances to theory and code
+- Added 5 new remittance parameters to `default_parameters.json`
+- Changed all instances of "p_t Y_t" in the documentation to just "Y_t"
+- Added "Transfers to households" section in `households.md`
+- Added pensions to household budget constraint
+- Rewrote household budget constraint in terms of individual variables
+
 ## [0.12.0] - 2024-08-20 12:00:00
 
 ### Added
