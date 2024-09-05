@@ -145,7 +145,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 (SecStnrzFirms)=
 ## Stationarized Firms Equations
 
-  The nonstationary production function {eq}`EqFirmsCESprodfun` for each industry can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_{m,t}$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xK_g,xL) = xF(K,K_g,L)$, the right-hand-side of the production function is also stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
+  The nonstationary production function {eq}`EqFirmsCESprodfun` for each industry can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_{m,t}$ on the left-hand-side. Because the general CES production function is homogeneous of degree one, $F(xK,xK_g,xL) = xF(K,K_g,L)$, the right-hand-side of the production function is also stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzCESprodfun
@@ -207,7 +207,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzLiabETR
-    \hat{tax}_{js,t} = \tau^{etr,xy}_{s,t}\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) + \tau^{etr,w}_t\hat{b}_{j,s,t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+    \hat{tax}_{j,s,t} = \tau^{etr,xy}_{s,t}\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) + \tau^{etr,w}_t\hat{b}_{j,s,t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   We can stationarize the simple expressions for total government spending on household transfers $TR_t$ in {eq}`EqUnbalGBCtfer` and on public goods $G_t$ in {eq}`EqUnbalGBC_Gt` by dividing both sides by $e^{g_y t}\tilde{N}_t$,
