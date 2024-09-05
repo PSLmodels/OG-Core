@@ -30,6 +30,7 @@ VAR_LABELS = {
     "r_p": "Real interest rate on HH portfolio ($r_{p,t}$)",
     "w": "Wage rate",
     "BQ": "Aggregate bequests ($BQ_{j,t}$)",
+    "RM": "Aggregate remittances ($RM_t$)",
     "total_tax_revenue": "Total tax revenue ($REV_t$)",
     "business_tax_revenue": "Business tax revenue",
     "iit_revenue": "Individual income tax revenue",
@@ -39,6 +40,7 @@ VAR_LABELS = {
     "c_path": "Consumption ($c_{j,s,t}$)",
     "bmat_splus1": "Savings ($b_{j,s+1,t+1}$)",
     "bq_path": "Bequests ($bq_{j,s,t}$)",
+    "rm_path": "Remittances ($rm_{j,s,t}$)",
     "bmat_s": "Savings ($b_{j,s,t}$)",
     "y_before_tax_mat": "Before tax income",
     "etr_path": "Effective Tax Rate ($ETR_{j,s,t}$)",
@@ -77,6 +79,7 @@ VAR_LABELS = {
     "r_p_ss": "Real interest rate on HH portfolio ($\\bar{r}_{hh}$)",
     "wss": "Wage rate ($\\bar{w}$)",
     "BQss": "Aggregate bequests ($\\bar{BQ}_{j}$)",
+    "RMss": "Aggregate remittances ($\\bar{RM}$)",
     "debt_service_ss": "Debt service cost ($\\bar{r}_{gov}\\bar{D}$)",
     "D/Y": "Debt to GDP ratio",
     "T_Pss": "Government Pensions",
@@ -102,6 +105,7 @@ ToGDP_LABELS = {
     "total_tax_revenue": "Tax Revenue-to-GDP ($REV_{t}/Y_t$)",
     "TR": "Transfer Spending-to-GDP ($TR_{t}/Y_t$)",
     "BQ": "Bequests-to-GDP ($BQ_{t}/Y_t$)",
+    "RM": "Remittances-to-GDP ($RM_{t}/Y_t$)",
     "total_tax_revenue": "Tax Revenue-to-GDP ($Revenue_{t}/Y_t$)",
     "business_tax_revenue": "Corporate Tax Revenue-to-GDP",
     "iit_revenue": "Personal Income Tax Revenue-to-GDP",
@@ -236,7 +240,16 @@ PARAM_LABELS = {
     ],
     "alpha_T": ["Transfers as a share of GDP", r"$\alpha^{T}_{t}$"],
     "eta": ["Distribution of transfers", r"$\eta_{j,s,t}$"],
+    "eta_RM": ["Distribution of remittances", r"$\eta_{RM,j,s,t}$"],
     "alpha_G": ["Government spending as a share of GDP", r"$\alpha^{G}_{t}$"],
+    "alpha_RM_1": [
+        "Remittances as a share of GDP in initial period", r"$\alpha_{RM,1}$"
+    ],
+    "alpha_RM_T": [
+        "Remittances as a share of GDP in long run", r"$\alpha_{RM,T}$"
+    ],
+    "g_RM": ["Growth rate of remittances in initial periods", r"$g_{RM,t}$"],
+    "rho_RM": ["Remittances smoothing parameter", r"$\rho_{RM}$"],
     "tG1": ["Model period in which budget closure rule starts", r"$t_{G1}$"],
     "tG2": ["Model period in which budget closure rule ends", r"$t_{G2}$"],
     "rho_G": ["Budget closure rule smoothing parameter", r"$\rho_{G}$"],
