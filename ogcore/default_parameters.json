@@ -776,7 +776,6 @@
         "section_2": "Endowments",
         "notes": "",
         "type": "float",
-        "number_dims": 1,
         "value": [
             {
                 "value": 0.0
@@ -796,7 +795,6 @@
         "section_2": "Endowments",
         "notes": "",
         "type": "float",
-        "number_dims": 1,
         "value": [
             {
                 "value": 0.0
