@@ -282,7 +282,7 @@ def get_rm(RM, j, p, method):
     return rm
 
 
-def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
+def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, e, p):
     r"""
     Calculate household composite consumption.
 
@@ -304,6 +304,7 @@ def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
         b_splus1 (Numpy array): household savings one period ahead
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
+        rm (Numpy array): household remittances received
         net_tax (Numpy array): household net taxes paid
         e (Numpy array): effective labor units
         p (OG-Core Specifications object): model parameters
@@ -313,8 +314,10 @@ def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, net_tax, e, p):
 
     """
     cons = (
-        (1 + r_p) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) - net_tax
+        (1 + r_p) * b + w * e * n + bq + rm - net_tax
+        - b_splus1 * np.exp(p.g_y)
     ) / p_tilde
+
     return cons
 
 
@@ -369,6 +372,7 @@ def FOC_savings(
     b_splus1,
     n,
     bq,
+    rm,
     factor,
     tr,
     ubi,
@@ -402,6 +406,7 @@ def FOC_savings(
         b_splus2 (Numpy array): household savings two periods ahead
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
+        rm (Numpy array): household remittances received
         factor (scalar): scaling factor converting model units to dollars
         tr (Numpy array): government transfers to household
         ubi (Numpy array): universal basic income payment
@@ -498,7 +503,7 @@ def FOC_savings(
         etr_params,
         p,
     )
-    cons = get_cons(r, w, p_tilde, b, b_splus1, n, bq, taxes, e, p)
+    cons = get_cons(r, w, p_tilde, b, b_splus1, n, bq, rm, taxes, e, p)
     deriv = (
         (1 + r)
         - (
@@ -555,6 +560,7 @@ def FOC_labor(
     b_splus1,
     n,
     bq,
+    rm,
     factor,
     tr,
     ubi,
@@ -588,6 +594,7 @@ def FOC_labor(
         b_splus1 (Numpy array): household savings one period ahead
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
+        rm (Numpy array): household bequests received
         factor (scalar): scaling factor converting model units to dollars
         tr (Numpy array): government transfers to household
         ubi (Numpy array): universal basic income payment
@@ -686,7 +693,7 @@ def FOC_labor(
         etr_params,
         p,
     )
-    cons = get_cons(r, w, p_tilde, b, b_splus1, n, bq, taxes, e, p)
+    cons = get_cons(r, w, p_tilde, b, b_splus1, n, bq, rm, taxes, e, p)
     deriv = (
         1
         - tau_payroll

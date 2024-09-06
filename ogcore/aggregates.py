@@ -231,6 +231,53 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     return BQ
 
 
+def get_RM(Y, p, method):
+    r"""
+    Calculation of aggregate remittances.
+
+    .. math::
+        \hat{RM}_{t} = \begin{cases}
+            \alpha_{RM,1}\hat{Y}_t \quad\text{for}\quad t=1 \\
+            \frac{(1+g_{RM,t})}{e^{g_y}(1+\tilde{g}_{n,t})}\hat{RM}_{t-1}
+            \quad\text{for}\quad 2\leq t\leq T_{G1} \\
+            \rho_{RM}\alpha_{RM,T}\hat{Y}_t
+            + (1-\rho_{RM})\frac{(1+g_{RM,t})}{e^{g_y}(1+\tilde{g}_{n,t})}
+            \hat{RM}_{t-1} \quad\text{for}\quad T_{G1}< t<T_{G2} \\
+            \alpha_{RM,T}\hat{Y}_t \quad\text{for}\quad t\geq T_{G2}
+        \end{cases}
+
+    Args:
+        Y (array_like): GDP steady state or time path
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on SS or TPI
+
+    Returns:
+        RM (array_like): aggregate remittances
+
+    """
+    if method == "SS":
+        RM = p.alpha_RM_T * Y
+    elif method == "TPI":
+        RM = np.zeros_like(Y)
+        RM[0] = p.alpha_RM_1 * Y[0]
+        for t in range(1, p.tG1):
+            RM[t] = (
+                (1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t]))
+            ) * RM[t - 1]
+        for t in range(p.tG1, p.tG2 - 1):
+            RM[t] = (
+                p.rho_RM * p.alpha_RM_T * Y[t]
+                + (
+                    (1 - p.rho_RM)
+                    * ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t])))
+                    * RM[t - 1]
+                )
+            )
+        RM[p.tG2 - 1:] = p.alpha_RM_T * Y[p.tG2 - 1:]
+
+    return RM
+
+
 def get_C(c, p, method):
     r"""
     Calculation of aggregate consumption.
