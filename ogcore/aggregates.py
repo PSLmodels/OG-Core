@@ -261,19 +261,16 @@ def get_RM(Y, p, method):
         RM = np.zeros_like(Y)
         RM[0] = p.alpha_RM_1 * Y[0]
         for t in range(1, p.tG1):
-            RM[t] = (
-                (1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t]))
-            ) * RM[t - 1]
+            RM[t] = ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t]))) * RM[
+                t - 1
+            ]
         for t in range(p.tG1, p.tG2 - 1):
-            RM[t] = (
-                p.rho_RM * p.alpha_RM_T * Y[t]
-                + (
-                    (1 - p.rho_RM)
-                    * ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t])))
-                    * RM[t - 1]
-                )
+            RM[t] = p.rho_RM * p.alpha_RM_T * Y[t] + (
+                (1 - p.rho_RM)
+                * ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t])))
+                * RM[t - 1]
             )
-        RM[p.tG2 - 1:] = p.alpha_RM_T * Y[p.tG2 - 1:]
+        RM[p.tG2 - 1 :] = p.alpha_RM_T * Y[p.tG2 - 1 :]
 
     return RM
 

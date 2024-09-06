@@ -314,7 +314,11 @@ def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, e, p):
 
     """
     cons = (
-        (1 + r_p) * b + w * e * n + bq + rm - net_tax
+        (1 + r_p) * b
+        + w * e * n
+        + bq
+        + rm
+        - net_tax
         - b_splus1 * np.exp(p.g_y)
     ) / p_tilde
 
