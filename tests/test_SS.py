@@ -981,8 +981,8 @@ expected2 = np.array(
 def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    guesses, r, w, bq, tr, _, factor, j = input_tuple
-    args = (r, w, 1.0, bq, tr, ubi_j, factor, j, p)
+    guesses, r, w, bq, rm, tr, _, factor, j = input_tuple
+    args = (r, w, 1.0, bq, rm, tr, ubi_j, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
     print(repr(test_list))
 
