@@ -500,8 +500,8 @@ filename8 = "inner_loop_outputs_reform_MneI.pkl"
     ],
 )
 def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
-    # Test SS.inner_loop function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
+    # Test SS.inner_loop function. Provide inputs to function and ensure that
+    # output returned matches what it has been before.
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
@@ -532,6 +532,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             new_r_gov,
             new_r_p,
             new_w,
+            new_RM,
             new_TR,
             Y,
             new_factor,
@@ -557,6 +558,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             _,
             _,
             _,
+            _,
         ) = test_tuple
         expected_tuple = (
             euler_errors,
@@ -570,6 +572,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             K_vec,
             L_vec,
             Y_vec,
+            new_RM,
             new_TR,
             Y,
             new_factor,
@@ -1131,8 +1134,8 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
 )
 @pytest.mark.local
 def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
-    # Test SS.run_SS function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
+    # Test SS.run_SS function. Provide inputs to function and ensure that
+    # output returned matches what it has been before.
     SS.ENFORCE_SOLUTION_CHECKS = True
     # if running reform, then need to solve baseline first to get values
     baseline_dir = os.path.join(tmpdir, "OUTPUT_BASELINE")

@@ -4309,7 +4309,7 @@
         "type": "float",
         "value": [
             {
-                "value": 1e-09
+                "value": 1e-08
             }
         ],
         "validators": {
