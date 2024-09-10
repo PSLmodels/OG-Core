@@ -131,7 +131,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   \hat{RM}_t = \begin{cases}
     &\alpha_{RM,1}\hat{Y}_t \quad\text{for}\quad t=1, \\
     &\frac{\left(1 + g_{RM,t}\right)}{e^{g_y}\left(1 + \tilde{g}_{n,t}\right)}\hat{RM}_{t-1} \quad\text{for}\quad 2\leq t \leq T_{G1}, \\
-    &\rho_{RM}\alpha_{RM,T}\hat{Y}_t + \left(1-\rho_{RM}\right)\frac{\left(1 + g_{RM,t}\right)}{e^{g_y}\left(1 + \tilde{g}_{n,t}\right)}\hat{RM}_{t-1} \quad\text{for}\quad T_{G1} < t < T_{G2}, \\
+    &\left(\frac{t - T_{G1}}{T_{G2} - T_{G1}}\right)\alpha_{RM,T}\hat{Y}_t + \left(1 - \frac{t - T_{G1}}{T_{G2} - T_{G1}}\right)\frac{\left(1 + g_{RM,t}\right)}{e^{g_y}\left(1 + \tilde{g}_{n,t}\right)}\hat{RM}_{t-1} \:\:\text{for}\:\: T_{G1} < t < T_{G2}, \\
     &\alpha_{RM,T}\hat{Y}_t \quad\forall t\geq T_{G2}
   \end{cases}
   ```

@@ -829,25 +829,6 @@
             }
         }
     },
-    "rho_RM": {
-        "title": "Speed of convergence of aggregate remittances to a stable growth rate between periods tG1 and tG2",
-        "description": "Speed of convergence of aggregate remittances to a stable growth rate between periods tG1 and tG2.",
-        "section_1": "Household Parameters",
-        "section_2": "Endowments",
-        "notes": "Lower rho_RM => slower convergence.",
-        "type": "float",
-        "value": [
-            {
-                "value": 0.1
-            }
-        ],
-        "validators": {
-            "range": {
-                "min": 0.01,
-                "max": 0.9
-            }
-        }
-    },
     "debt_ratio_ss": {
         "title": "Debt to GDP ratio to be achieved in the steady state",
         "description": "Debt to GDP ratio to be achieved in the steady state.",

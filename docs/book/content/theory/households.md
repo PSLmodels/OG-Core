@@ -224,12 +224,12 @@ In this section, we describe what is arguably the most important economic agent 
   RM_t = \begin{cases}
     &\alpha_{RM,1}Y_t \quad\text{for}\quad t=1, \\
     &\left(1 + g_{RM,t}\right)RM_{t-1} \quad\text{for}\quad 2\leq t \leq T_{G1}, \\
-    &\rho_{RM}\alpha_{RM,T}Y_t + \left(1-\rho_{RM}\right)\left(1 + g_{RM,t}\right)RM_{t-1} \quad\text{for}\quad T_{G1} < t < T_{G2}, \\
+    &\left(\frac{t - T_{G1}}{T_{G2} - T_{G1}}\right)\alpha_{RM,T}Y_t + \left(1 - \frac{t - T_{G1}}{T_{G2} - T_{G1}}\right)\left(1 + g_{RM,t}\right)RM_{t-1} \:\:\text{for}\:\: T_{G1} < t < T_{G2}, \\
     &\alpha_{RM,T}Y_t \quad\forall t\geq T_{G2}
   \end{cases}
   ```
 
-  The first two lines of {eq}`EqHH_AggrRemit` represent the transition path of remittances before the closure rule, which are growing at a rate independent of the growth rate of the country economy. But for the steady-state to exists, total remittances must grow at the long-run growth rate of GDP before reaching the steady state. Similar to the closure rule's described in Section {ref}`SecUnbalGBCcloseRule` of Chapter {ref}`Chap_UnbalGBC`, we implement a stabilizing rule that gradually transitions the growth rate of aggregate remittances from its exogenous rate through period $T_{G1}$ to the long run economic growth rate after period $T_{G2}$. The speed of the transition is governed by the parameter $\rho_{RM}\in(0,1]$, which represents the percent of the way to jump toward the target $\alpha_{RM,T}Y_t$ from the exogenous trajectory growing at rate $g_{RM,t-1}$.
+  The first two lines of {eq}`EqHH_AggrRemit` represent the transition path of remittances before the closure rule, which are growing at a rate independent of the growth rate of the country economy. But for the steady-state to exists, total remittances must grow at the long-run growth rate of GDP before reaching the steady state. Similar to the closure rule's described in Section {ref}`SecUnbalGBCcloseRule` of Chapter {ref}`Chap_UnbalGBC`, we implement a stabilizing rule that gradually transitions the growth rate of aggregate remittances from its exogenous rate through period $T_{G1}$ to the long run economic growth rate after period $T_{G2}$.
 
   It is important to note that we specify the growth rate of remittances on nominal GPD as an initial percent $\alpha_{RM,1}$, a growth rate based on those initial remittances, then a movemnt back to a rate relative to nominal GDP. This will result in stationary equations in which it matters wither the growth rate of nominal GDP $g_{RM,t}$ is greater or less than the growth rate of labor productivity plus the population growth rate $e^{g_y}\left(1+g_{n,t}\right)$. See equations {eq}`EqHH_AggrRemitStnrz` and {eq}`EqHH_IndRemitRecStnrz` in Section {ref}`SecStnrzHH` in Chapter {ref}`Chap_Stnrz`.
 
