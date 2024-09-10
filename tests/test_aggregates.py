@@ -436,8 +436,8 @@ test_data_RM = [
     test_data_RM,
     ids=[
         "SS, alpha_RM_T=0.05",
-        "TPI, constant growth",
-        "TPI, extra growth",
+        "TPI, model growth",
+        "TPI, bigger growth",
     ],
 )
 def test_get_RM(Y, p, method, expected):
