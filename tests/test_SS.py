@@ -1000,7 +1000,7 @@ param_updates2 = {
     "initial_guess_TR_SS": 0.06,
 }
 filename2 = "run_SS_baseline_use_zeta.pkl"
-param_updates3 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
+param_updates3 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.04}
 filename3 = "run_SS_baseline_small_open.pkl"
 param_updates4 = {
     "zeta_K": [1.0],
@@ -1021,7 +1021,7 @@ param_updates6 = {
     "initial_guess_TR_SS": 0.06,
 }
 filename6 = "run_SS_reform_use_zeta.pkl"
-param_updates7 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
+param_updates7 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.04}
 filename7 = "run_SS_reform_small_open.pkl"
 param_updates8 = {
     "zeta_K": [1.0],

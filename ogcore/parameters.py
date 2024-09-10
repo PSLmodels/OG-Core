@@ -172,6 +172,7 @@ class Specifications(paramtools.Parameters):
             "zeta_K",
             "r_gov_scale",
             "r_gov_shift",
+            "g_RM",
         ]
         for item in tp_param_list:
             param_in = getattr(self, item)

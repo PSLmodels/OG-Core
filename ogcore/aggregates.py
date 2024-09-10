@@ -264,9 +264,11 @@ def get_RM(Y, p, method):
             RM[t] = ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t]))) * RM[
                 t - 1
             ]
+        rho_vec = np.linspace(0, 1, p.tG2 - p.tG1)
         for t in range(p.tG1, p.tG2 - 1):
-            RM[t] = p.rho_RM * p.alpha_RM_T * Y[t] + (
-                (1 - p.rho_RM)
+            RM[t] = (
+                rho_vec[t - p.tG1] * p.alpha_RM_T * Y[t]
+                + (1 - rho_vec[t - p.tG1])
                 * ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t])))
                 * RM[t - 1]
             )
