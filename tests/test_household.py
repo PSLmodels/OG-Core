@@ -230,7 +230,14 @@ def test_get_tr(TR, j, p, method, expected):
 
 # Set up test for get_rm
 (
-    RM1, RM2, RM3, RM4, expected_rm1, expected_rm2, expected_rm3, expected_rm4
+    RM1,
+    RM2,
+    RM3,
+    RM4,
+    expected_rm1,
+    expected_rm2,
+    expected_rm3,
+    expected_rm4,
 ) = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "RMrm_test_tuple.pkl")
 )
@@ -239,24 +246,24 @@ p_rm_1 = Specifications()
 p_rm_2 = copy.deepcopy(p_rm_1)
 p_rm_2.alpha_RM_1 = 0.05
 p_rm_2.alpha_RM_T = 0.05
-p_rm_2.g_RM =  (
-    ((np.exp(p_rm_2.g_y) * (1 + p_rm_2.g_n_ss)) - 1) *
-    np.ones(p_rm_2.T + p_rm_2.S)
+p_rm_2.g_RM = ((np.exp(p_rm_2.g_y) * (1 + p_rm_2.g_n_ss)) - 1) * np.ones(
+    p_rm_2.T + p_rm_2.S
 )
 j2 = 3
 j3 = 4
 j4 = 6
 p_rm_4 = copy.deepcopy(p_rm_2)
 p_rm_4.g_RM = (
-   ((np.exp(p_rm_4.g_y) * (1 + p_rm_4.g_n_ss)) - 1 + 0.005) *
-   np.ones(p_rm_4.T + p_rm_4.S)
-)
+    (np.exp(p_rm_4.g_y) * (1 + p_rm_4.g_n_ss)) - 1 + 0.005
+) * np.ones(p_rm_4.T + p_rm_4.S)
 test_data_rm = [
     (RM1, j1, p_rm_1, "SS", expected_rm1),
     (RM2, j2, p_rm_2, "SS", expected_rm2),
     (RM3, j3, p_rm_2, "TPI", expected_rm3),
     (RM4, j4, p_rm_4, "TPI", expected_rm4),
 ]
+
+
 @pytest.mark.parametrize(
     "RM,j,p,method,expected",
     test_data_rm,
