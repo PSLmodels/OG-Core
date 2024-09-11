@@ -1,8 +1,11 @@
 import pytest
 import numpy as np
 import copy
-from ogcore import household
+import os
+from ogcore import household, utils
 from ogcore.parameters import Specifications
+
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 test_data = [
     (0.1, 1, 10),
@@ -225,6 +228,47 @@ def test_get_tr(TR, j, p, method, expected):
     assert np.allclose(test_value, expected)
 
 
+# Set up test for get_rm
+(
+    RM1, RM2, RM3, RM4, expected_rm1, expected_rm2, expected_rm3, expected_rm4
+) = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, "test_io_data", "RMrm_test_tuple.pkl")
+)
+j1 = 0
+p_rm_1 = Specifications()
+p_rm_2 = copy.deepcopy(p_rm_1)
+p_rm_2.alpha_RM_1 = 0.05
+p_rm_2.alpha_RM_T = 0.05
+p_rm_2.g_RM =  (
+    ((np.exp(p_rm_2.g_y) * (1 + p_rm_2.g_n_ss)) - 1) *
+    np.ones(p_rm_2.T + p_rm_2.S)
+)
+j2 = 3
+j3 = 4
+j4 = 6
+p_rm_4 = copy.deepcopy(p_rm_2)
+p_rm_4.g_RM = (
+   ((np.exp(p_rm_4.g_y) * (1 + p_rm_4.g_n_ss)) - 1 + 0.005) *
+   np.ones(p_rm_4.T + p_rm_4.S)
+)
+test_data_rm = [
+    (RM1, j1, p_rm_1, "SS", expected_rm1),
+    (RM2, j2, p_rm_2, "SS", expected_rm2),
+    (RM3, j3, p_rm_2, "TPI", expected_rm3),
+    (RM4, j4, p_rm_4, "TPI", expected_rm4),
+]
+@pytest.mark.parametrize(
+    "RM,j,p,method,expected",
+    test_data_rm,
+    ids=["SS, zero", "SS, rm>0", "TPI, model growth", "TPI, bigger growth"],
+)
+def test_get_rm(RM, j, p, method, expected):
+    # Test the get_rm function
+    rm = household.get_rm(RM, j, p, method)
+    print("Test value = ", rm)
+    assert np.allclose(rm, expected)
+
+
 p1 = Specifications()
 p1.e = 0.99
 p1.lambdas = np.array([0.25])
@@ -235,6 +279,7 @@ b1 = 0.5
 b_splus1_1 = 0.55
 n1 = 0.8
 BQ1 = 0.1
+rm1 = 0.0
 tau_c1 = 0.05
 bq1 = BQ1 / p1.lambdas
 net_tax1 = 0.02
@@ -254,6 +299,7 @@ n2 = np.array([0.8, 3.2, 0.2])
 tau_c2 = np.array([0.08, 0.32, 0.02])
 BQ2 = np.array([0.1, 2.4, 0.2])
 bq2 = BQ2 / p2.lambdas
+rm2 = np.zeros_like(bq2)
 net_tax2 = np.array([0.02, 0.5, 1.4])
 j2 = None
 
@@ -271,6 +317,7 @@ b_splus1_3 = np.array([[0.4, 0.6], [0.33, 1.95], [1.6, 2.7]])
 n3 = np.array([[0.9, 0.5], [0.8, 1.1], [0, 0.77]])
 BQ3 = np.array([1.3, 0.3])
 bq3 = BQ3 / p3.lambdas.reshape(p3.J)
+rm3 = np.zeros_like(bq3)
 tau_c3 = np.array([[0.09, 0.05], [0.08, 0.11], [0.0, 0.077]])
 net_tax3 = np.array([[0.1, 1.1], [0.4, 0.44], [0.6, 1.7]])
 j3 = None
@@ -314,6 +361,7 @@ BQ4 = np.tile(
     (1, 3, 1),
 )
 bq4 = BQ4 / p4.lambdas.reshape(1, 1, 2)
+rm4 = np.zeros_like(bq4)
 tau_c4 = np.array(
     [
         np.array([[0.02, 0.03], [0.04, 0.05], [0.055, 0.066]]),
@@ -334,15 +382,15 @@ j4 = None
 
 test_data = [
     (
-        (r1, w1, b1, b_splus1_1, n1, bq1, net_tax1, p1),
+        (r1, w1, b1, b_splus1_1, n1, bq1, rm1, net_tax1, p1),
         1.288650006,
     ),
     (
-        (r2, w2, b2, b_splus1_2, n2, bq2, net_tax2, p2),
+        (r2, w2, b2, b_splus1_2, n2, bq2, rm2, net_tax2, p2),
         np.array([1.288650006, 13.76350909, 5.188181864]),
     ),
     (
-        (r3, w3, b3, b_splus1_3, n3, bq3, net_tax3, p3),
+        (r3, w3, b3, b_splus1_3, n3, bq3, rm3, net_tax3, p3),
         np.array(
             [
                 [4.042579933, 0.3584699],
@@ -352,7 +400,7 @@ test_data = [
         ),
     ),
     (
-        (r4, w4, b4, b_splus1_4, n4, bq4, net_tax4, p4),
+        (r4, w4, b4, b_splus1_4, n4, bq4, rm4, net_tax4, p4),
         np.array(
             [
                 np.array(
@@ -396,10 +444,10 @@ test_data = [
 )
 def test_get_cons(model_args, expected):
     # Test consumption calculation
-    r, w, b, b_splus1, n, bq, net_tax, p = model_args
+    r, w, b, b_splus1, n, bq, rm, net_tax, p = model_args
     p_tilde = np.ones_like(w)
     test_value = household.get_cons(
-        r, w, p_tilde, b, b_splus1, n, bq, net_tax, p.e, p
+        r, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, p.e, p
     )
 
     assert np.allclose(test_value, expected)
@@ -489,6 +537,7 @@ b = np.array([0.0, 0.8, 0.5])
 b_splus1 = np.array([0.8, 0.5, 0.1])
 n = np.array([0.9, 0.8, 0.5])
 bq = 0.1
+rm = 0.0
 factor = 120000
 tr = 0.22
 ubi_ss = np.zeros(p1.S)
@@ -502,6 +551,7 @@ test_vars_ss = (
     b_splus1,
     n,
     bq,
+    rm,
     factor,
     tr,
     ubi_ss,
@@ -519,6 +569,7 @@ test_vars_ss0 = (
     b_splus1,
     n,
     bq,
+    rm,
     factor,
     tr,
     ubi_ss,
@@ -547,6 +598,7 @@ b_path = np.tile(np.reshape(np.array([0.0, 0.8, 0.5]), (1, 3)), (3, 1))
 b_splus1_path = np.tile(np.reshape(np.array([0.8, 0.5, 0.1]), (1, 3)), (3, 1))
 n_path = np.tile(np.reshape(np.array([0.9, 0.8, 0.5]), (1, 3)), (3, 1))
 bq_vec = np.array([0.1, 0.05, 0.15])
+rm_vec = np.zeros_like(bq_vec)
 tr_vec = np.array([0.22, 0.15, 0.0])
 etr_params_tpi = np.empty((p1.S, etr_params.shape[2]))
 mtry_params_tpi = np.empty((p1.S, mtry_params.shape[2]))
@@ -560,6 +612,7 @@ test_vars_tpi = (
     np.diag(b_splus1_path),
     np.diag(n_path),
     bq_vec,
+    rm_vec,
     factor,
     tr_vec,
     ubi_ss,
@@ -640,6 +693,7 @@ def test_FOC_savings(model_vars, in_params, expected):
         b_splus1,
         n,
         BQ,
+        rm,
         factor,
         tr,
         ubi,
@@ -668,6 +722,7 @@ def test_FOC_savings(model_vars, in_params, expected):
             b_splus1,
             n,
             BQ,
+            rm,
             factor,
             tr,
             ubi,
@@ -689,6 +744,7 @@ def test_FOC_savings(model_vars, in_params, expected):
             b_splus1,
             n,
             BQ,
+            rm,
             factor,
             tr,
             ubi,
@@ -792,6 +848,7 @@ b = np.array([0.0, 0.8, 0.5])
 b_splus1 = np.array([0.8, 0.5, 0.1])
 n = np.array([0.9, 0.8, 0.5])
 bq = 0.1
+rm = 0.0
 factor = 120000
 tr = 0.22
 ubi_ss = np.zeros(p1.S)
@@ -803,6 +860,7 @@ test_vars_ss = (
     b_splus1,
     n,
     bq,
+    rm,
     factor,
     tr,
     ubi_ss,
@@ -831,6 +889,7 @@ b_path = np.tile(np.reshape(np.array([0.0, 0.8, 0.5]), (1, 3)), (3, 1))
 b_splus1_path = np.tile(np.reshape(np.array([0.8, 0.5, 0.1]), (1, 3)), (3, 1))
 n_path = np.tile(np.reshape(np.array([0.9, 0.8, 0.5]), (1, 3)), (3, 1))
 bq_vec = np.tile(np.array([0.1, 0.05, 0.15]).reshape(3, 1), (1, 3))
+rm_vec = np.zeros_like(bq_vec)
 tr_vec = np.tile(np.array([0.22, 0.15, 0.0]).reshape(3, 1), (1, 3))
 etr_params_tpi = np.empty((p1.S, etr_params.shape[2]))
 mtrx_params_tpi = np.empty((p1.S, mtrx_params.shape[2]))
@@ -843,6 +902,7 @@ test_vars_tpi = (
     b_splus1_path,
     n_path,
     bq_vec,
+    rm_vec,
     factor,
     tr_vec,
     ubi_ss,
@@ -926,6 +986,7 @@ def test_FOC_labor(model_vars, params, expected):
         b_splus1,
         n,
         bq,
+        rm,
         factor,
         tr,
         ubi,
@@ -952,6 +1013,7 @@ def test_FOC_labor(model_vars, params, expected):
         b_splus1,
         n,
         bq,
+        rm,
         factor,
         tr,
         ubi,
