@@ -251,7 +251,6 @@ PARAM_LABELS = {
         r"$\alpha_{RM,T}$",
     ],
     "g_RM": ["Growth rate of remittances in initial periods", r"$g_{RM,t}$"],
-    "rho_RM": ["Remittances smoothing parameter", r"$\rho_{RM}$"],
     "tG1": ["Model period in which budget closure rule starts", r"$t_{G1}$"],
     "tG2": ["Model period in which budget closure rule ends", r"$t_{G2}$"],
     "rho_G": ["Budget closure rule smoothing parameter", r"$\rho_{G}$"],
