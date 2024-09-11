@@ -59,9 +59,9 @@ def get_initial_SS_values(p):
                 solution results
             * theta (Numpy array): steady-state retirement replacement
                 rates, length J
-            * baseline_values (tuple): (TRbaseline, RMbaseline, Gbaseline,
-                D0_baseline), lump sum transfer, remittances, and government
-                spending amounts from the baseline model run
+            * baseline_values (tuple): (Ybaseline, TRbaseline, Gbaseline,
+                D0_baseline), GDP, lump sum transfer, and government spending
+                amounts from the baseline model run
 
     """
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
@@ -753,11 +753,14 @@ def run_TPI(p, client=None):
 
     # Initialize aggregate remittances
     if p.baseline:
-        RM = aggr.get_RM(Y[: p.T], p, "TPI")
+        RM = aggr.get_RM(Y, p, "TPI")
     else:
         # This is the reform case and is based off of Ybaseline, but allows for
         # remittance parameters to change in a reform and update the RM series
-        RM = aggr.get_RM(Ybaseline, p, "TPI")
+        Ybaseline_ext = np.concatenate(
+            [Ybaseline, np.ones(p.S) * Ybaseline[-1]]
+        )
+        RM = aggr.get_RM(Ybaseline_ext, p, "TPI")
 
     # Start transition path iteration (TPI)
     TPIiter = 0
@@ -1085,6 +1088,7 @@ def run_TPI(p, client=None):
             "TPI",
         )
         RM = aggr.get_RM(Y[: p.T], p, "TPI")
+        RM = np.concatenate([RM, np.ones(p.S) * RM[-1]])
 
         # update vars for next iteration
         w[: p.T] = utils.convex_combo(wnew[: p.T], w[: p.T], p.nu)
