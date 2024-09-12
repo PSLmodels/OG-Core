@@ -78,7 +78,7 @@ def D_G_path(r_gov, dg_fixed_values, p):
         D[0] = D0_baseline
 
     if p.baseline_spending:
-        G = Gbaseline[: p.T]
+        G = p.alpha_bs_G * Gbaseline[: p.T]
     else:
         G = p.alpha_G[: p.T] * Y[: p.T]
 
@@ -340,7 +340,7 @@ def get_TR(
             total_tax_revenue - agg_pension_outlays - G - UBI_outlays - I_g
         )
     elif p.baseline_spending:
-        new_TR = TR
+        new_TR = p.alpha_bs_T * TR
     else:
         if method == "SS":
             new_TR = p.alpha_T[-1] * Y
