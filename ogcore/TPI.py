@@ -68,9 +68,9 @@ def get_initial_SS_values(p):
     if p.baseline_spending:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
-        TRbaseline = tpi_baseline_vars["TR"]
-        Gbaseline = tpi_baseline_vars["G"]
-        Ig_baseline = tpi_baseline_vars["I_g"]
+        TRbaseline = p.alpha_bs_T * tpi_baseline_vars["TR"]
+        Gbaseline = p.alpha_bs_G * tpi_baseline_vars["G"]
+        Ig_baseline = p.alpha_I * tpi_baseline_vars["I_g"]
 
     if p.baseline:
         ss_vars = ss_baseline_vars
@@ -593,7 +593,7 @@ def run_TPI(p, client=None):
     if p.baseline_spending:
         I_g[: p.T] = Ig_baseline[: p.T]
     else:
-        I_g = fiscal.get_I_g(Y[: p.T], p.alpha_I[: p.T])
+        I_g = fiscal.get_I_g(Y[: p.T], p, "TPI")
     if p.baseline:
         K_g0 = p.initial_Kg_ratio * Y[0]
     else:
@@ -945,7 +945,7 @@ def run_TPI(p, client=None):
             B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
         )
         if not p.baseline_spending:
-            I_g = fiscal.get_I_g(Y[: p.T], p.alpha_I[: p.T])
+            I_g = fiscal.get_I_g(Y[: p.T], p, "TPI")
         if p.baseline:
             K_g0 = p.initial_Kg_ratio * Y[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
