@@ -5,17 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.13.0] - 2024-09-10 12:00:00
+## [0.13.0] - 2024-09-12 12:00:00
 
 ### Added
 
-- Added remittances to theory and code
-- Added 5 new remittance parameters to `default_parameters.json`
-- Changed all instances of "p_t Y_t" in the documentation to just "Y_t"
-- Added "Transfers to households" section in `households.md`
-- Added pensions to household budget constraint
-- Rewrote household budget constraint in terms of individual variables
-- Increased `RC_SS` steady-state resource constraint tolerance from 1e-9 to 1e-8 because two `test_run_SS()` tests were failing in `test_SS.py` with resource constraints errors just bigger than 1e-9 (-2.29575914e-09 for [Baseline, small open] and -2.29575914e-09 for [Reform, small open]).
+- Updates all of the documentation.
+    - Adds remittances to all instances of the household budget constraint
+    - Rewrites bequests and transfers components of household budget constraint in terms of individual variables in all instances
+    - Adds a household transfers section to `households.md` with subsections on bequests, remittances, government transfers, and universal basic income
+    - Changes all instances of $p_t Y_t$ to $Y_t
+    - Updates the steady-state equilibrium algorithm description in `equilibrium.md`
+    - Added updates to the government pensions descriptions in `government.md` and added `pensions` to all instances of the household budget constraint.
+    - Updates the docstrings in `tax.py` for the wealth tax ETR and MTR functions. The code is right. I just thought there was a clearer specification of the equations in LaTeX.
+- Adds remittances to the OG-Core code
+    - Adds aggregate remittances function `get_RM()` to `aggregates.py`
+    - Adds household remittances function `get_rm()` to `household.py`
+    - Adds four new remittance parameters: `alpha_RM_1`, `g_RM`, `alpha_RM_T`, `eta_RM`
+    - We model aggregate remittances as a percent of GDP in the first period, then growing at a specified rate that can deviate from the country growth rate until the cutoff rule period, after which the remittance growth rate trends back to the population growth rate. We also model remittances in reforms as being a percentage of baseline GDP. In this way, if remittance parameters are not changed in the reform, remittances remain at their baseline levels. The only way they change is if their parameter values are changed.
+    - Adds 3 tests using the `test_get_RM()` function in `test_aggregates.py`
+    - Adds 4 tests using the `test_get_rm()` function in `test_household.py`
+    - Changes the `initial_guess_r_SS` in two tests in `test_SS.py` because they were not solving with their current values
+- Increases `RC_SS` steady-state resource constraint tolerance from 1e-9 to 1e-8 because two `test_run_SS()` tests were failing in `test_SS.py` with resource constraints errors just bigger than 1e-9 (-2.29575914e-09 for [Baseline, small open] and -2.29575914e-09 for [Reform, small open]).
 
 ## [0.12.0] - 2024-08-20 12:00:00
 
