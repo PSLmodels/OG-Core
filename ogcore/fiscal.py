@@ -394,12 +394,12 @@ def get_I_g(Y, p, method="SS"):
         if method == "SS":
             I_g = p.alpha_bs_I * Y
         else:
-            I_g = p.alpha_bs_I[:p.T] * Y
+            I_g = p.alpha_bs_I[: p.T] * Y
     else:
         if method == "SS":
             I_g = p.alpha_I[-1] * Y
         else:
-            I_g = p.alpha_I[:p.T] * Y
+            I_g = p.alpha_I[: p.T] * Y
 
     return I_g
 
