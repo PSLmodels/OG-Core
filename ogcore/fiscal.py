@@ -375,7 +375,7 @@ def get_r_gov(r, p, method):
     return r_gov
 
 
-def get_I_g(Y, p, method="SS"):
+def get_I_g(Y, Ig_baseline, p, method="SS"):
     r"""
     Find investment in public capital
 
@@ -384,6 +384,8 @@ def get_I_g(Y, p, method="SS"):
 
     Args:
         Y (array_like): aggregate output
+        Ig_baseline (array_like): public infrastructure investment in
+            the baseliine simulation
         p (OG-Core Specifications object): model parameters
         method (str): either 'SS' for steady-state or 'TPI' for transition path
 
@@ -392,9 +394,9 @@ def get_I_g(Y, p, method="SS"):
     """
     if p.baseline_spending:
         if method == "SS":
-            I_g = p.alpha_bs_I * Y
+            I_g = p.alpha_bs_I[-1] * Ig_baseline
         else:
-            I_g = p.alpha_bs_I[: p.T] * Y
+            I_g = p.alpha_bs_I[: p.T] * Ig_baseline
     else:
         if method == "SS":
             I_g = p.alpha_I[-1] * Y
