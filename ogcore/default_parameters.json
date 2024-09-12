@@ -729,8 +729,74 @@
         }
     },
     "alpha_I": {
-        "title": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)",
-        "description": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)",
+        "title": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)when balanced budget is false",
+        "description": "Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital) when balanced budget is false.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.00
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.3
+            }
+        }
+    },
+    "alpha_bs_T": {
+        "title": "Proportional adjustment to government transfers relative to baseline amount when budget balance is true",
+        "description": "Proportional adjustment to government transfers relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.09
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.3
+            }
+        }
+    },
+    "alpha_bs_G": {
+        "title": "Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true",
+        "description": "Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.05
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.3
+            }
+        }
+    },
+    "alpha_bs_I": {
+        "title": "Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true",
+        "description": "Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
