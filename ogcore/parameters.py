@@ -330,7 +330,6 @@ class Specifications(paramtools.Parameters):
         # Create time series of stationarized UBI transfers
         self.ubi_nom_array = self.get_ubi_nom_objs()
 
-
     def get_ubi_nom_objs(self):
         """
         Generate time series of nominal SxJ UBI household matrix and aggregate
