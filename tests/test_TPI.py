@@ -1,3 +1,15 @@
+"""
+This module contains tests of the TPI.py module of the OG-Core model. This
+module contains the following tests:
+    - test_get_initial_SS_values(), 3 parameterizaations
+    - test_firstdoughnutring(), 1 parameterization
+    - test_twist_doughnut(), 2 parameterizations
+    - test_inner_loop(), 1 parameterization
+    - test_run_TPI_full_run(), 11 parameterizations, local only
+    - test_run_TPI(), 2 parameterizations, local only
+    - test_run_TPI_extra(), 8 parameterizations, local only
+"""
+
 import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
@@ -63,36 +75,13 @@ def test_get_initial_SS_values(baseline, param_updates, filename, dask_client):
         exp_theta,
         exp_baseline_values,
     ) = expected_tuple
-    (
-        B0,
-        b_sinit,
-        b_splus1init,
-        factor,
-        initial_b,
-        initial_n,
-    ) = exp_initial_values
-    B0 = aggr.get_B(exp_ss_vars["bssmat_splus1"], p, "SS", True)
-    initial_b = exp_ss_vars["bssmat_splus1"] * (exp_ss_vars["Bss"] / B0)
-    B0 = aggr.get_B(initial_b, p, "SS", True)
-    b_sinit = np.array(
-        list(np.zeros(p.J).reshape(1, p.J)) + list(initial_b[:-1])
-    )
-    b_splus1init = initial_b
-    exp_initial_values = (
-        B0,
-        b_sinit,
-        b_splus1init,
-        factor,
-        initial_b,
-        initial_n,
-    )
 
-    for i, v in enumerate(exp_initial_values):
-        assert np.allclose(test_initial_values[i], v, equal_nan=True)
+    for k, v in enumerate(exp_initial_values):
+        assert np.allclose(test_initial_values[k], v, equal_nan=True)
 
     if p.baseline_spending:
-        for i, v in enumerate(exp_baseline_values):
-            assert np.allclose(test_baseline_values[i], v, equal_nan=True)
+        for k, v in enumerate(exp_baseline_values):
+            assert np.allclose(test_baseline_values[k], v, equal_nan=True)
 
     assert np.allclose(test_theta, exp_theta)
 
