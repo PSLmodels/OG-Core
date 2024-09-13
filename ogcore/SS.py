@@ -1377,13 +1377,13 @@ def run_SS(p, client=None):
             if p.use_zeta:
                 BQguess = 0.12231465279007188
         if p.baseline_spending:
-            TR_ss = TRguess
+            TR_baseline = TRguess
             Ig_baseline = ss_solutions["I_g_ss"]
             ss_params_reform = (
                 b_guess,
                 n_guess,
-                TR_ss,
-                I_g_ss,
+                TR_baseline,
+                Ig_baseline,
                 factor,
                 p,
                 client,
@@ -1392,7 +1392,7 @@ def run_SS(p, client=None):
                 guesses = (
                     [r_p_guess, rguess, wguess]
                     + list(p_m_guess)
-                    + [Yguess, BQguess, TR_ss]
+                    + [Yguess, BQguess, TR_baseline]
                 )
             else:
                 guesses = (
@@ -1400,7 +1400,7 @@ def run_SS(p, client=None):
                     + list(p_m_guess)
                     + [Yguess]
                     + list(BQguess)
-                    + [TR_ss]
+                    + [TR_baseline]
                 )
             sol = opt.root(
                 SS_fsolve,
