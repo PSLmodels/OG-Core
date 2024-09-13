@@ -95,11 +95,11 @@ def test_firstdoughnutring():
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "firstdoughnutring_inputs.pkl")
     )
-    guesses, r, w, bq, tr, theta, factor, ubi, j, initial_b = input_tuple
+    guesses, r, w, bq, rm, tr, theta, factor, ubi, j, initial_b = input_tuple
     p_tilde = 1.0  # needed for multi-industry version
     p = Specifications()
     test_list = TPI.firstdoughnutring(
-        guesses, r, w, p_tilde, bq, tr, theta, factor, ubi, j, initial_b, p
+        guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
     )
 
     expected_list = utils.safe_read_pickle(
@@ -139,6 +139,7 @@ def test_twist_doughnut(file_inputs, file_outputs):
         r,
         w,
         bq,
+        rm,
         tr,
         theta,
         factor,
@@ -154,12 +155,13 @@ def test_twist_doughnut(file_inputs, file_outputs):
     ) = input_tuple
     p_tilde = np.ones_like(r)  # needed for multi-industry version
     p = Specifications()
-    input_tuple = (
+    input_tuple2 = (
         guesses,
         r,
         w,
         p_tilde,
         bq,
+        rm,
         tr,
         theta,
         factor,
@@ -173,7 +175,7 @@ def test_twist_doughnut(file_inputs, file_outputs):
         initial_b,
         p,
     )
-    test_list = TPI.twist_doughnut(*input_tuple)
+    test_list = TPI.twist_doughnut(*input_tuple2)
     expected_list = utils.safe_read_pickle(file_outputs)
     assert np.allclose(np.array(test_list), np.array(expected_list), atol=1e-5)
 
