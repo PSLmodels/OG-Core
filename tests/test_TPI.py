@@ -192,10 +192,11 @@ def test_inner_loop():
     r_p = outer_loop_vars_old[2]
     w = outer_loop_vars_old[1]
     BQ = outer_loop_vars_old[3]
-    TR = outer_loop_vars_old[4]
-    theta = outer_loop_vars_old[5]
+    RM = outer_loop_vars_old[4]
+    TR = outer_loop_vars_old[5]
+    theta = outer_loop_vars_old[6]
     p_m = np.ones((p.T + p.S, p.M))
-    outer_loop_vars = (r_p, r, w, p_m, BQ, TR, theta)
+    outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
     test_tuple = TPI.inner_loop(
         guesses, outer_loop_vars, initial_values, ubi, j, ind, p
     )
