@@ -340,7 +340,7 @@ def get_TR(
             total_tax_revenue - agg_pension_outlays - G - UBI_outlays - I_g
         )
     elif p.baseline_spending:
-        new_TR = p.alpha_bs_T * TR
+        new_TR = p.alpha_bs_T[-1] * TR
     else:
         if method == "SS":
             new_TR = p.alpha_T[-1] * Y
