@@ -78,7 +78,7 @@ def D_G_path(r_gov, dg_fixed_values, p):
         D[0] = D0_baseline
 
     if p.baseline_spending:
-        G = Gbaseline[: p.T]
+        G = alpha_bs_G[:T] * Gbaseline[: p.T]
     else:
         G = p.alpha_G[: p.T] * Y[: p.T]
 

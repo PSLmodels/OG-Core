@@ -589,11 +589,6 @@ def run_TPI(p, client=None):
     Y = np.zeros_like(K)
     Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
     Y[p.T :] = ss_vars["Yss"]
-    I_g = np.ones_like(Y) * ss_vars["I_g_ss"]
-    if p.baseline_spending:
-        I_g[: p.T] = Ig_baseline[: p.T]
-    else:
-        I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
     if p.baseline:
         K_g0 = p.initial_Kg_ratio * Y[0]
     else:
@@ -663,11 +658,21 @@ def run_TPI(p, client=None):
         D = np.zeros(p.T + p.S)
         D_d = np.zeros(p.T + p.S)
         D_f = np.zeros(p.T + p.S)
+        I_g = np.ones_like(Y) * ss_vars["I_g_ss"]
     else:
         if p.baseline_spending:
+            # Will set to TRbaseline here, but will be updated in TPI loop
+            # with call to fiscal.get_TR
             TR = np.concatenate(
                 (TRbaseline[: p.T], np.ones(p.S) * ss_vars["TR_ss"])
             )
+            # Will set to Ig_baseline here, but will be updated in TPI loop
+            # with call to fiscal.get_I_g
+            I_g = np.concatenate(
+                (Ig_baseline[: p.T], np.ones(p.S) * ss_vars["I_g_ss"])
+            )
+            # Will set to Gbaseline here, but will be updated in TPI loop
+            # with call to fiscal.D_G_path, which also does closure rule
             G = np.concatenate(
                 (Gbaseline[: p.T], np.ones(p.S) * ss_vars["Gss"])
             )
