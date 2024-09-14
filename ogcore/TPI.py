@@ -68,9 +68,9 @@ def get_initial_SS_values(p):
     if p.baseline_spending:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
-        TRbaseline = p.alpha_bs_T * tpi_baseline_vars["TR"]
-        Gbaseline = p.alpha_bs_G * tpi_baseline_vars["G"]
-        Ig_baseline = p.alpha_I * tpi_baseline_vars["I_g"]
+        TRbaseline = tpi_baseline_vars["TR"]
+        Gbaseline = tpi_baseline_vars["G"]
+        Ig_baseline = tpi_baseline_vars["I_g"]
 
     if p.baseline:
         ss_vars = ss_baseline_vars
