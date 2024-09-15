@@ -525,13 +525,37 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, None, factor)
+        outer_loop_vars = (
+            bssmat,
+            nssmat,
+            r_p,
+            r,
+            w,
+            p_m,
+            Y,
+            BQ,
+            TR,
+            None,
+            factor,
+        )
     else:
         if p.baseline_spending:
             Ig_baseline = 0.0
         else:
             Ig_baseline = None
-        outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline, factor)
+        outer_loop_vars = (
+            bssmat,
+            nssmat,
+            r_p,
+            r,
+            w,
+            p_m,
+            Y,
+            BQ,
+            TR,
+            Ig_baseline,
+            factor,
+        )
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
 
     try:

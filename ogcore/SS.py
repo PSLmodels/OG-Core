@@ -600,7 +600,19 @@ def SS_solver(
         if not p.budget_balance and not p.baseline_spending:
             Y = TR / p.alpha_T[-1]
 
-        outer_loop_vars = (bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline, factor)
+        outer_loop_vars = (
+            bmat,
+            nmat,
+            r_p,
+            r,
+            w,
+            p_m,
+            Y,
+            BQ,
+            TR,
+            Ig_baseline,
+            factor,
+        )
 
         (
             euler_errors,
