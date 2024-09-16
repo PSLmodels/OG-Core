@@ -413,6 +413,10 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     else:
         rguess = 0.06483431412921253
     r_p_guess = rguess
+    if p.baseline_spending:
+        Ig_baseline = 0.0
+    else:
+        Ig_baseline = None
     wguess = firm.get_w_from_r(rguess, p, "SS")
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
@@ -430,6 +434,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         Yguess,
         BQguess,
         TRguess,
+        Ig_baseline,
         factorguess,
         p,
         dask_client,
