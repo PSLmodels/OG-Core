@@ -18,67 +18,107 @@ test_data = [
 @pytest.mark.parametrize(
     "c,sigma,expected", test_data, ids=["Scalar 0", "Scalar 1", "Vector"]
 )
-def test_marg_ut_cons(c, sigma, expected):
+def test_mu_c(c, sigma, expected):
     # Test marginal utility of consumption calculation
-    test_value = household.marg_ut_cons(c, sigma)
+    test_value = household.mu_c(c, sigma)
 
     assert np.allclose(test_value, expected)
 
 
+
+test_data = [
+    (10, 1, .1),
+    (55.90169944, 2.5, 0.2),
+    (
+        np.array([9.18958684, 0.002913041, 0.273217159]),
+        3.2,
+        np.array([0.5, 6.2, 1.5]),
+    ),
+]
+
+@pytest.mark.parametrize(
+    "value,sigma,expected", test_data, ids=["Scalar 0", "Scalar 1", "Vector"]
+)
+def test_inv_mu_c(value, sigma, expected):
+    # Test inverse marginal utility of consumption calculation
+    test_value = household.inv_mu_c(value, sigma)
+
+    assert np.allclose(test_value, expected)
+
+
+
 # Tuples in order: n, p, expected result
 p1 = Specifications()
-p1.b_ellipse = 0.527
-p1.upsilon = 1.497
-p1.ltilde = 1.0
+p1.theta = 0.4
 p1.chi_n = 3.3
 
 p2 = Specifications()
-p2.b_ellipse = 0.527
-p2.upsilon = 0.9
-p2.ltilde = 1.0
-p2.chi_n = 3.3
+p2.theta = 0.4
+p2.chi_n = 2.0
 
 p3 = Specifications()
-p3.b_ellipse = 0.527
-p3.upsilon = 0.9
-p3.ltilde = 2.3
+p3.theta = 0.5
 p3.chi_n = 3.3
 
 p4 = Specifications()
-p4.b_ellipse = 2.6
-p4.upsilon = 1.497
-p4.ltilde = 1.0
+p4.theta = 1.5
 p4.chi_n = 3.3
 
 test_data = [
-    (0.87, p1, 2.825570309),
-    (0.0, p1, 0.0009117852028298067),
-    (0.99999, p1, 69.52423604),
-    (0.00001, p1, 0.005692782),
-    (0.8, p2, 1.471592068),
-    (0.8, p3, 0.795937549),
-    (0.8, p4, 11.66354267),
+    (0.87, p1, 2.329764758),
+    (0.0, p1, 0.0),
+    (0.99999, p1, 3.299917501),
+    (0.001, p1, 0.0000001043551628),
+    (0.8, p2, 1.144866804),
+    (0.8, p3, 2.112),
+    (0.8, p4, 2.843853791),
     (
-        np.array([[0.8, 0.9, 0.3], [0.5, 0.2, 0.99]]),
+        np.array([[0.87, 0.0], [0.99999, 0.001]]),
         p1,
         np.array(
             [
-                [2.364110379, 3.126796062, 1.014935377],
-                [1.4248841, 0.806333875, 6.987729463],
+                [2.329764758, 0.0],
+                [3.299917501, 0.0000001043551628],
             ]
         ),
     ),
 ]
-
 
 @pytest.mark.parametrize(
     "n,params,expected",
     test_data,
     ids=["1", "2", "3", "4", "5", "6", "7", "8"],
 )
-def test_marg_ut_labor(n, params, expected):
+def test_mu_n(n, params, expected):
     # Test marginal utility of labor calculation
-    test_value = household.marg_ut_labor(n, params.chi_n, params)
+    test_value = household.mu_n(n, params.chi_n, params)
+
+    assert np.allclose(test_value, expected)
+
+
+test_data = [
+    (2.329764758, p1, 0.87),
+    (0.0, p1, 0.0),
+    (3.299917501, p1, 0.99999),
+    (0.0000001043551628, p1, 0.001),
+    (1.144866804, p2, 0.8),
+    (2.112, p3, 0.8),
+    (2.843853791, p4, 0.8),
+    (
+        np.array([[2.329764758, 0.0], [3.299917501, 0.0000001043551628]]),
+        p1,
+        np.array([[0.87, 0.0], [0.99999, 0.001]]),
+    ),
+]
+
+@pytest.mark.parametrize(
+    "value,params,expected",
+    test_data,
+    ids=["1", "2", "3", "4", "5", "6", "7", "8"],
+)
+def test_inv_mu_n(value, params, expected):
+    # Test inverse marginal utility of labor calculation
+    test_value = household.inv_mu_n(value, params.chi_n, params)
 
     assert np.allclose(test_value, expected)
 
