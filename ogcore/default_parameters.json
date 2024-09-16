@@ -4308,7 +4308,7 @@
         "type": "float",
         "value": [
             {
-                "value": 1e-05
+                "value": 1e-04
             }
         ],
         "validators": {
