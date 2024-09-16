@@ -660,7 +660,11 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     BQ = np.ones(p.J) * 0.00019646295986015257
     p_m = np.array([1.0])
     r_p = 0.04260341179572245
-    outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+    if p.baseline_spending:
+        Ig_baseline = 0.0
+    else:
+        Ig_baseline = None
+    outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)

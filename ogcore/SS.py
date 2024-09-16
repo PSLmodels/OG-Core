@@ -1427,6 +1427,7 @@ def run_SS(p, client=None):
             p_m_ss = sol.x[3 : 3 + p.M]
             Yss = sol.x[3 + p.M]
             BQss = sol.x[3 + p.M + 1 : -1]
+            TR_ss = sol.x[-1]
         else:
             ss_params_reform = (
                 b_guess,
