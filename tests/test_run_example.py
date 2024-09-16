@@ -70,7 +70,7 @@ def test_run_ogcore_example_output(f=call_run_ogcore_example):
             path.parent,
             "run_examples",
             "OG-Core-Example",
-            "ogcore_example_output.csv",
+            "OG-Core_example_output.csv",
         )
     )
     # Delete directory created by run_ogcore_example.py
