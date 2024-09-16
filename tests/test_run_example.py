@@ -45,7 +45,7 @@ def test_run_ogcore_example(f=call_run_ogcore_example):
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     path = Path(cur_path)
     roe_output_dir = os.path.join(
-        path.parent, "run_examples", "OUTPUT_BASELINE"
+        path.parent, "run_examples", "OG-Core-Example", "OUTPUT_BASELINE"
     )
     shutil.rmtree(roe_output_dir)
 
@@ -66,7 +66,10 @@ def test_run_ogcore_example_output(f=call_run_ogcore_example):
     )
     # read in output from this run
     test_df = pd.read_csv(
-        os.path.join(path.parent, "run_examples", "ogcore_example_output.csv")
+        os.path.join(
+            path.parent, "run_examples", "OG-Core-Example",
+            "ogcore_example_output.csv"
+        )
     )
     # Delete directory created by run_ogcore_example.py
     roe_output_dir = os.path.join(
