@@ -333,7 +333,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```
 
 
-  ### Stationarized Pension System Equations
+### Stationarized Pension System Equations
 
 #### Stiationarized Notional Defined Contributions Equations
 
@@ -492,7 +492,7 @@ Stationarized pension amount derivative:
   ```{math}
   :label: EqStnrzMarkClrGoods_M
     \hat{Y}_{M,t} &= \hat{C}_{M,t} + \hat{I}_{M,t} + \hat{I}_{g,t} + \hat{G}_t + r_{p,t} \hat{K}^f_t + r_{p,t}\hat{D}^f_t ... \\
-    &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) \quad\forall t
+    &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) - \hat{RM}_t \quad\forall t
   ```
   where
   ```{math}

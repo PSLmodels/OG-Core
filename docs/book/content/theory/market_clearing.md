@@ -117,7 +117,7 @@
 
   ```{math}
   :label: EqMarkClrGoods_M
-    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) \quad\forall t
+    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) - RM_t \quad\forall t
   ```
   where
   ```{math}
@@ -129,9 +129,9 @@
 
   In the partially open economy, we must add to the right-hand-side of {eq}`EqMarkClrGoods_M` the output paid to the foreign owners of capital $r_{p,t} K^f_t$ and to the foreign holders of government debt $r_{p,t}D^f_t$. And we must subtract off the foreign inflow component $K^f_{t+1} - K^f_t$ from private capital investment as shown in the first term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. You can see in the definition of private investment {eq}`EqMarkClrGoods_IMt` where this amount of foreign capital is part of $I_{M,t}$.
 
-  Similarly, we must subtract off the foreign purchases of new government debt $D^f_{t+1} - D^f_t$ as shown in the second term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. These new foreign purchases of government debt are part of $I_{g,t}$ and $G_t$, as they are functions of GDP $p_tY_t$, as shown in {eq}`EqUnbalGBC_Gt`, {eq}`EqUnbalGBC_Igt`, and the government budget constraint {eq}`EqUnbalGBCbudgConstr`. Foreign lending relaxes the resource constraint.
+  Similarly, we must subtract off the foreign purchases of new government debt $D^f_{t+1} - D^f_t$ and aggregate remittances $RM_t$ as shown in the second term in parentheses and the last term, respectively, on the right-hand-side of {eq}`EqMarkClrGoods_M`. The new foreign purchases of government debt are part of $I_{g,t}$ and $G_t$, as they are functions of GDP $Y_t$, as shown in {eq}`EqUnbalGBC_Gt`, {eq}`EqUnbalGBC_Igt`, and the government budget constraint {eq}`EqUnbalGBCbudgConstr`. Foreign lending relaxes the resource constraint. And aggregate remittances are part of aggregate consumption $C_t$ and also relax the resource constraint.
 
-  Net exports (imports) of capital in the form of foreign private capital inflows $K^f_t$ and foreign holdings of government debt $D^f_t$ are clearly accounted for in {eq}`EqMarkClrGoods_M`. Foreign remittances described in Section {ref}`SecHHremit` of Chapter {ref}`Chap_House` are indirectly accounted for in these goods market clearing equations by domestic household consumption and savings, which are augmented by this income from abroad.
+  Net exports (imports) of capital in the form of foreign private capital inflows $K^f_t$, foreign holdings of government debt $D^f_t$, and remittances $RM_t$ are clearly accounted for in {eq}`EqMarkClrGoods_M`. Foreign remittances received by domestic households are described in Section {ref}`SecHHremit` of Chapter {ref}`Chap_House`.
 
 
 (SecMarkClrBQ)=
