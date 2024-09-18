@@ -517,7 +517,7 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     return np.squeeze(r_p)
 
 
-def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
+def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
     r"""
     Compute the error in the resource constraint.
 
@@ -525,7 +525,7 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
       \text{rc_error} = \hat{Y}_t - \hat{C}_t -
       \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
       \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
-      \text{net capital outflows}_t
+      \text{net capital outflows}_t - RM_t
 
     Args:
         Y (array_like): aggregate output by industry
@@ -534,12 +534,13 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
         I_d (array_like): aggregate private investment from domestic households
         I_g (array_like): investment in government capital
         net_capital_flows (array_like): net capital outflows
+        RM (array_like): aggregate remittances
 
     Returns:
         rc_error (array_like): error in the resource constraint
 
     """
-    rc_error = Y - C - I_d - I_g - G - net_capital_flows
+    rc_error = Y - C - I_d - I_g - G - net_capital_flows - RM
 
     return rc_error
 

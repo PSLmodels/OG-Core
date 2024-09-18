@@ -568,7 +568,6 @@ def SS_solver(
         p_m (array_like): good prices
         Y (scalar): real GDP
         BQ (array_like): aggregate bequest amount(s)
-        RM (array_like): remittance amount(s)
         TR (scalar): lump sum transfer amount
         factor (scalar): scaling factor converting model units to dollars
         p (OG-Core Specifications object): model parameters
@@ -925,6 +924,7 @@ def SS_solver(
     I_g_vec_ss[-1] = I_g_ss
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
+
     RC = aggr.resource_constraint(
         Y_vec_ss,
         C_m_vec_ss,
@@ -932,6 +932,7 @@ def SS_solver(
         I_d_vec_ss,
         I_g_vec_ss,
         net_capital_outflows_vec,
+        RM_ss,
     )
     if VERBOSE:
         print("Foreign debt holdings = ", D_f_ss)
