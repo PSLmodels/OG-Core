@@ -75,7 +75,10 @@ def test_run_ogcore_example_output(f=call_run_ogcore_example):
     )
     # Delete directory created by run_ogcore_example.py
     roe_output_dir = os.path.join(
-        path.parent, "run_examples", "OUTPUT_BASELINE"
+        path.parent,
+        "run_examples",
+        "OG-Core-Example",
+        "OUTPUT_BASELINE"
     )
     shutil.rmtree(roe_output_dir)
 

@@ -222,7 +222,7 @@ param_updates4 = {"baseline_spending": True}
 filename4 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_reform_baseline_spend.pkl"
 )
-param_updates5 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
+param_updates5 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.04}
 filename5 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_small_open.pkl"
 )
