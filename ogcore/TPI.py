@@ -1273,6 +1273,8 @@ def run_TPI(p, client=None):
     I_g_vec[:, -1] = I_g[: p.T]
     net_capital_outflows_vec = np.zeros((p.T, p.M))
     net_capital_outflows_vec[:, -1] = net_capital_outflows[: p.T]
+    RM_vec = np.zeros((p.T, p.M))
+    RM_vec[:, -1] = RM[: p.T]
     RC_error = aggr.resource_constraint(
         Y_vec,
         C_m_vec,
@@ -1280,7 +1282,7 @@ def run_TPI(p, client=None):
         I_d_vec,
         I_g_vec,
         net_capital_outflows_vec,
-        RM[: p.T],
+        RM_vec,
     )
     # Compute total investment (not just domestic)
     I_total = aggr.get_I(None, K[1 : p.T + 1], K[: p.T], p, "total_tpi")
