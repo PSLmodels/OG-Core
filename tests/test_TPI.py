@@ -1,7 +1,7 @@
 """
 This module contains tests of the TPI.py module of the OG-Core model. This
 module contains the following tests:
-    - test_get_initial_SS_values(), 3 parameterizaations
+    - test_get_initial_SS_values(), 3 parameterizations
     - test_firstdoughnutring(), 1 parameterization
     - test_twist_doughnut(), 2 parameterizations
     - test_inner_loop(), 1 parameterization
