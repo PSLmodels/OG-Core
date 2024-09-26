@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Adds aggregate remittances function `get_RM()` to `aggregates.py`
     - Adds household remittances function `get_rm()` to `household.py`
     - Adds four new remittance parameters: `alpha_RM_1`, `g_RM`, `alpha_RM_T`, `eta_RM`
-    - We model aggregate remittances as a percent of GDP in the first period, then growing at a specified rate that can deviate from the country growth rate until the cutoff rule period, after which the remittance growth rate trends back to the population growth rate. We also model remittances in reforms as being a percentage of baseline GDP. In this way, if remittance parameters are not changed in the reform, remittances remain at their baseline levels. The only way they change is if their parameter values are changed.
+    - We model aggregate remittances as a percent of GDP in the first period, then growing at a specified rate that can deviate from the country growth rate until the cutoff rule period, after which the remittance growth rate trends back to the long-run model growth rate (growth rate in population and productivity). We also model remittances in reforms as being a percentage of baseline GDP. In this way, if remittance parameters are not changed in the reform, remittances remain at their baseline levels. The only way they change is if their parameter values are changed.
     - Adds 3 tests using the `test_get_RM()` function in `test_aggregates.py`
     - Adds 4 tests using the `test_get_rm()` function in `test_household.py`
     - Changes the `initial_guess_r_SS` in two tests in `test_SS.py` because they were not solving with their current values
