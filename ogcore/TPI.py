@@ -400,7 +400,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     bq = household.get_bq(BQ, None, p, "TPI")
     # compute tr
     tr = household.get_tr(TR, None, p, "TPI")
-    # # compute rm
+    # compute rm
     rm = household.get_rm(RM, None, p, "TPI")
 
     # initialize arrays
