@@ -589,11 +589,6 @@ def run_TPI(p, client=None):
     Y = np.zeros_like(K)
     Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
     Y[p.T :] = ss_vars["Yss"]
-    if p.baseline:
-        K_g0 = p.initial_Kg_ratio * Y[0]
-    else:
-        K_g0 = Kg0_baseline
-    K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
     # path for industry specific aggregates
     K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_vec_ss"].reshape(
         1, p.M
@@ -679,9 +674,15 @@ def run_TPI(p, client=None):
         else:
             TR = p.alpha_T * Y
             G = np.ones(p.T + p.S) * ss_vars["Gss"]
+            I_g = np.ones(p.T + p.S) * ss_vars["I_g_ss"]
         D = np.ones(p.T + p.S) * ss_vars["Dss"]
         D_d = D * ss_vars["D_d_ss"] / ss_vars["Dss"]
         D_f = D * ss_vars["D_f_ss"] / ss_vars["Dss"]
+    if p.baseline:
+        K_g0 = p.initial_Kg_ratio * Y[0]
+    else:
+        K_g0 = Kg0_baseline
+    K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
     total_tax_revenue = np.ones(p.T + p.S) * ss_vars["total_tax_revenue"]
 
     # Compute other interest rates
