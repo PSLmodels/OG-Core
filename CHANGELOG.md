@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.13.0] - 2024-09-17 12:00:00
+## [0.13.0] - 2024-09-26 12:00:00
 
 ### Added
 
@@ -27,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Changes the `initial_guess_r_SS` in two tests in `test_SS.py` because they were not solving with their current values
 - Increases `RC_SS` steady-state resource constraint tolerance from 1e-9 to 1e-8 because two `test_run_SS()` tests were failing in `test_SS.py` with resource constraints errors just bigger than 1e-9 (-2.29575914e-09 for [Baseline, small open] and -2.29575914e-09 for [Reform, small open]).
 - Increases `RC_TPI` transition path resource constraint tolerance from 1e-5 to 1e-4 in because one `test_run_TPI_full_run()` test was failing in `test_TPI.py` with a resource constraint error just bigger than 1e-5 (1.4459913381864586e-05 for `[Baseline, M=3 non-zero Kg]`).
-    - However, there is another "local only" test that is failing in `test_run_TPI()` in `test_TPI.py` that has a much bigger resource constraint error. The specification is `[Baseline, small open]` with a maximum absolute resource constraint error of 0.07786113397046332. This error is big enough that it needs to be addressed.
 - Updated two directory path references that were out of date in `test_run_example.py`.
 - Updated expected value tuples and dictionaries in `test_txfunc.py`.
 
