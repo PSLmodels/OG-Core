@@ -561,6 +561,7 @@ document.write(`
             <span class="s2">&quot;zeta_K&quot;</span><span class="p">,</span>
             <span class="s2">&quot;r_gov_scale&quot;</span><span class="p">,</span>
             <span class="s2">&quot;r_gov_shift&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;g_RM&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tp_param_list</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
@@ -633,14 +634,20 @@ document.write(`
             <span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">tax_to_set_out</span><span class="p">)</span>
 
-        <span class="c1"># Try to deal with size of eta.  It may vary by S, J, T, but</span>
-        <span class="c1"># want to allow user to enter one that varies by only S, S and J,</span>
+        <span class="c1"># Try to deal with size of eta and eta_RM. They may vary by S, J, T,</span>
+        <span class="c1"># but want to allow user to enter one that varies by only S, S and J,</span>
         <span class="c1"># S and T, or T and S and J.</span>
-        <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;eta&quot;</span><span class="p">)</span>
-        <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
-            <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;eta&quot;</span>
-        <span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;eta&quot;</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
+        <span class="n">eta_params_to_TP</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;eta&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;eta_RM&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">eta_params_to_TP</span><span class="p">:</span>
+            <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+            <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
+                <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span>
+            <span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
+        <span class="c1"># extrapolate lifetime ability e matrix over time dimension</span>
         <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">)</span>
         <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
             <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;e&quot;</span>

@@ -441,6 +441,10 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#endowments">Endowments</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ltilde"><code class="docutils literal notranslate"><span class="pre">ltilde</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-rm-1"><code class="docutils literal notranslate"><span class="pre">alpha_RM_1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-rm-t"><code class="docutils literal notranslate"><span class="pre">alpha_RM_T</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#g-rm"><code class="docutils literal notranslate"><span class="pre">g_RM</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eta-rm"><code class="docutils literal notranslate"><span class="pre">eta_RM</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta"><code class="docutils literal notranslate"><span class="pre">zeta</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#use-zeta"><code class="docutils literal notranslate"><span class="pre">use_zeta</span></code></a></li>
 </ul>
@@ -678,6 +682,35 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <em>Notes:</em> Can be normalized to 1.0 without loss of generality.<br />
 <em>Value Type:</em> float<br />
 <em>Valid Range:</em> min = 0.01 and max = 5.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-rm-1">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_RM_1</span></code><a class="headerlink" href="#alpha-rm-1" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Exogenous ratio of aggregate remittances to GDP in current period (t=1).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -0.05 and max = 0.4<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-rm-t">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_RM_T</span></code><a class="headerlink" href="#alpha-rm-t" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Exogenous ratio of aggregate remittances to GDP in the long run/steady state (t&gt;T).<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -0.05 and max = 0.4<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="g-rm">
+<h4><code class="docutils literal notranslate"><span class="pre">g_RM</span></code><a class="headerlink" href="#g-rm" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Growth rate of aggregate remittances between periods tG1 and tG2<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -0.02 and max = 0.15<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="eta-rm">
+<h4><code class="docutils literal notranslate"><span class="pre">eta_RM</span></code><a class="headerlink" href="#eta-rm" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Matrix that allocates aggregate remittances across households.<br />
+<em>Notes:</em> This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
 <section id="zeta">
@@ -1542,6 +1575,10 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#endowments">Endowments</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ltilde"><code class="docutils literal notranslate"><span class="pre">ltilde</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-rm-1"><code class="docutils literal notranslate"><span class="pre">alpha_RM_1</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-rm-t"><code class="docutils literal notranslate"><span class="pre">alpha_RM_T</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#g-rm"><code class="docutils literal notranslate"><span class="pre">g_RM</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eta-rm"><code class="docutils literal notranslate"><span class="pre">eta_RM</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta"><code class="docutils literal notranslate"><span class="pre">zeta</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#use-zeta"><code class="docutils literal notranslate"><span class="pre">use_zeta</span></code></a></li>
 </ul>

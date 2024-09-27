@@ -495,7 +495,8 @@ parameters or nonparametric function</p></li>
 <span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">ETR_wealth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_wealth" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the effective tax rate on wealth.</p>
 <div class="math notranslate nohighlight">
-\[T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\]</div>
+\[\tau_{t}^{etr,w} =
+p^{w}\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -552,9 +553,8 @@ parameters or nonparametric function</p></li>
 <span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">MTR_wealth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_wealth" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the marginal tax rate on wealth from the wealth tax.</p>
 <div class="math notranslate nohighlight">
-\[\frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =
-\frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\left[2 -
-\frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\right]\]</div>
+\[\tau^{mtrw}_{t} = \tau^{etr,w}_{t}
+\left[2 - \left(\frac{h^w b_{j,s,t}}{h^w b_{j,s,t} + m^w}\right)\right]\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

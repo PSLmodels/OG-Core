@@ -405,7 +405,8 @@ document.write(`
 <span class="sd">    Calculates the effective tax rate on wealth.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}</span>
+<span class="sd">        \tau_{t}^{etr,w} =</span>
+<span class="sd">        p^{w}\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        b (Numpy array): savings</span>
@@ -430,9 +431,8 @@ document.write(`
 <span class="sd">    Calculates the marginal tax rate on wealth from the wealth tax.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} =</span>
-<span class="sd">        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\left[2 -</span>
-<span class="sd">        \frac{h^{w}p_{w}b_{j,s,t}}{(b_{j,s,t}h^{w}+m^{w})}\right]</span>
+<span class="sd">        \tau^{mtrw}_{t} = \tau^{etr,w}_{t}</span>
+<span class="sd">        \left[2 - \left(\frac{h^w b_{j,s,t}}{h^w b_{j,s,t} + m^w}\right)\right]</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        b (Numpy array): savings</span>

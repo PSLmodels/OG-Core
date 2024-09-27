@@ -436,6 +436,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_I"><code class="docutils literal notranslate"><span class="pre">get_I()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_K_splits"><code class="docutils literal notranslate"><span class="pre">get_K_splits()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_L"><code class="docutils literal notranslate"><span class="pre">get_L()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_RM"><code class="docutils literal notranslate"><span class="pre">get_RM()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_ptilde"><code class="docutils literal notranslate"><span class="pre">get_ptilde()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_r_p"><code class="docutils literal notranslate"><span class="pre">get_r_p()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.resource_constraint"><code class="docutils literal notranslate"><span class="pre">resource_constraint()</span></code></a></li>
@@ -643,6 +644,37 @@ by foreign investors</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.aggregates.get_RM">
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_RM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_RM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_RM" title="Link to this definition">#</a></dt>
+<dd><p>Calculation of aggregate remittances.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\hat{RM}_{t} = \begin{cases}
+    \alpha_{RM,1}\hat{Y}_t \quad\text{for}\quad t=1 \\
+    \frac{(1+g_{RM,t})}{e^{g_y}(1+\tilde{g}_{n,t})}\hat{RM}_{t-1}
+    \quad\text{for}\quad 2\leq t\leq T_{G1} \\
+    \rho_{RM}\alpha_{RM,T}\hat{Y}_t
+    + (1-\rho_{RM})\frac{(1+g_{RM,t})}{e^{g_y}(1+\tilde{g}_{n,t})}
+    \hat{RM}_{t-1} \quad\text{for}\quad T_{G1}&lt; t&lt;T_{G2} \\
+    \alpha_{RM,T}\hat{Y}_t \quad\text{for}\quad t\geq T_{G2}
+\end{cases}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>array_like</em>) – GDP steady state or time path</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on SS or TPI</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>aggregate remittances</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RM (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.get_ptilde">
 <span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_ptilde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SS'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_ptilde"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_ptilde" title="Link to this definition">#</a></dt>
 <dd><p>Calculate price of composite good.</p>
@@ -700,13 +732,15 @@ for each industry</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.resource_constraint">
-<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">resource_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_capital_flows</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#resource_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.resource_constraint" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">resource_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_capital_flows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RM</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#resource_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.resource_constraint" title="Link to this definition">#</a></dt>
 <dd><p>Compute the error in the resource constraint.</p>
 <div class="math notranslate nohighlight">
-\[\text{rc_error} = \hat{Y}_t - \hat{C}_t -
+\[\begin{split}\begin{split}
+  \text{rc_error} &amp;= \hat{Y}_t - \hat{C}_t -
 \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
-\hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
-\text{net capital outflows}_t\]</div>
+\hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} ... \\
+  &amp;\qquad -\: \hat{\text{net capital outflows}}_t - \hat{RM}_t
+\end{split}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -716,6 +750,7 @@ for each industry</p></li>
 <li><p><strong>I_d</strong> (<em>array_like</em>) – aggregate private investment from domestic households</p></li>
 <li><p><strong>I_g</strong> (<em>array_like</em>) – investment in government capital</p></li>
 <li><p><strong>net_capital_flows</strong> (<em>array_like</em>) – net capital outflows</p></li>
+<li><p><strong>RM</strong> (<em>array_like</em>) – aggregate remittances</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -732,12 +767,14 @@ for each industry</p></li>
 <span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">revenue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#revenue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.revenue" title="Link to this definition">#</a></dt>
 <dd><p>Calculate aggregate tax revenue.</p>
 <div class="math notranslate nohighlight">
-\[R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
+\[\begin{split}\begin{split}
+    R_{t} &amp;= \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
 (T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}
 w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +
-\tau^{w}_{t}b_{j,s,t}) +
-\sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -
-\tau^{b}_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t}\]</div>
+\tau^{w}_{t}b_{j,s,t}) ... \\
+    &amp;\qquad + \sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -
+\tau^{b}_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t}
+\end{split}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -868,6 +905,7 @@ iit_tax_revenue (array_like): aggregate income tax revenue</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_I"><code class="docutils literal notranslate"><span class="pre">get_I()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_K_splits"><code class="docutils literal notranslate"><span class="pre">get_K_splits()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_L"><code class="docutils literal notranslate"><span class="pre">get_L()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_RM"><code class="docutils literal notranslate"><span class="pre">get_RM()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_ptilde"><code class="docutils literal notranslate"><span class="pre">get_ptilde()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_r_p"><code class="docutils literal notranslate"><span class="pre">get_r_p()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.resource_constraint"><code class="docutils literal notranslate"><span class="pre">resource_constraint()</span></code></a></li>

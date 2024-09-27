@@ -531,7 +531,8 @@ document.write(`
 <span class="sd">    Calculate bequests to each household.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        bq_{j,s,t} = \zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}</span>
+<span class="sd">        \hat{bq}_{j,s,t} = \zeta_{j,s}</span>
+<span class="sd">        \frac{\hat{BQ}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        BQ (array_like): aggregate bequests</span>
@@ -595,7 +596,8 @@ document.write(`
 <span class="sd">    Calculate transfers to each household.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        tr_{j,s,t} = \zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}</span>
+<span class="sd">        \hat{tr}_{j,s,t} = \zeta_{j,s}</span>
+<span class="sd">        \frac{\hat{TR}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        TR (array_like): aggregate transfers</span>
@@ -605,7 +607,7 @@ document.write(`
 <span class="sd">            &#39;TPI&#39;</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        tr (array_like): transfers received by each household</span>
+<span class="sd">        tr (array_like): transfers received by household</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -632,25 +634,76 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="get_cons">
-<a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_cons">[docs]</a>
-<span class="k">def</span> <span class="nf">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">net_tax</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<div class="viewcode-block" id="get_rm">
+<a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_rm">[docs]</a>
+<span class="k">def</span> <span class="nf">get_rm</span><span class="p">(</span><span class="n">RM</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate household consumption.</span>
+<span class="sd">    Calculate remittances to each household.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t}</span>
-<span class="sd">        + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} -</span>
-<span class="sd">        e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}</span>
+<span class="sd">        \hat{rm}_{j,s,t} = \eta_{RM,j,s,t}</span>
+<span class="sd">        \frac{\hat{RM}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        r (array_like): the real interest rate</span>
+<span class="sd">        RM (array_like): aggregate remittances</span>
+<span class="sd">        j (int): index of lifetime ability group</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
+<span class="sd">            &#39;TPI&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        rm (array_like): remittances received by household</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">rm</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta_RM</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">RM</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">len_T</span> <span class="o">=</span> <span class="n">RM</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">rm</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta_RM</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">RM</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">rm</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta_RM</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">RM</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">len_T</span> <span class="o">=</span> <span class="n">RM</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">rm</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta_RM</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">RM</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+                <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rm</span></div>
+
+
+
+<div class="viewcode-block" id="get_cons">
+<a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_cons">[docs]</a>
+<span class="k">def</span> <span class="nf">get_cons</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">net_tax</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate household composite consumption.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \hat{c}_{j,s,t} &amp;= \biggl[(1 + r_{p,t})\hat{b}_{j,s,t}</span>
+<span class="sd">        + \hat{w}_t e_{j,s}n_{j,s,t} + \hat{bq}_{j,s,t} + \hat{rm}_{j,s,t}</span>
+<span class="sd">        + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t}</span>
+<span class="sd">        - \hat{tax}_{j,s,t} \\</span>
+<span class="sd">        &amp;\qquad - \sum_{i=1}^I\left(1 + \tau^c_{i,t}\right)p_{i,t}\hat{c}_{min,i}</span>
+<span class="sd">        - e^{g_y}\hat{b}_{j,s+1,t+1}\biggr] / p_t \\</span>
+<span class="sd">        &amp;\qquad\qquad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S</span>
+<span class="sd">        \quad\text{where}\quad \hat{b}_{j,E+1,t}=0</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r_p (array_like): the real interest rate</span>
 <span class="sd">        w (array_like): the real wage rate</span>
 <span class="sd">        p_tilde (array_like): the ratio of real GDP to nominal GDP</span>
 <span class="sd">        b (Numpy array): household savings</span>
 <span class="sd">        b_splus1 (Numpy array): household savings one period ahead</span>
 <span class="sd">        n (Numpy array): household labor supply</span>
 <span class="sd">        bq (Numpy array): household bequests received</span>
+<span class="sd">        rm (Numpy array): household remittances received</span>
 <span class="sd">        net_tax (Numpy array): household net taxes paid</span>
 <span class="sd">        e (Numpy array): effective labor units</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
@@ -660,8 +713,14 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cons</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="n">bq</span> <span class="o">-</span> <span class="n">b_splus1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">-</span> <span class="n">net_tax</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_p</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
+        <span class="o">+</span> <span class="n">bq</span>
+        <span class="o">+</span> <span class="n">rm</span>
+        <span class="o">-</span> <span class="n">net_tax</span>
+        <span class="o">-</span> <span class="n">b_splus1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">p_tilde</span>
+
     <span class="k">return</span> <span class="n">cons</span></div>
 
 
@@ -722,6 +781,7 @@ document.write(`
     <span class="n">b_splus1</span><span class="p">,</span>
     <span class="n">n</span><span class="p">,</span>
     <span class="n">bq</span><span class="p">,</span>
+    <span class="n">rm</span><span class="p">,</span>
     <span class="n">factor</span><span class="p">,</span>
     <span class="n">tr</span><span class="p">,</span>
     <span class="n">ubi</span><span class="p">,</span>
@@ -755,6 +815,7 @@ document.write(`
 <span class="sd">        b_splus2 (Numpy array): household savings two periods ahead</span>
 <span class="sd">        n (Numpy array): household labor supply</span>
 <span class="sd">        bq (Numpy array): household bequests received</span>
+<span class="sd">        rm (Numpy array): household remittances received</span>
 <span class="sd">        factor (scalar): scaling factor converting model units to dollars</span>
 <span class="sd">        tr (Numpy array): government transfers to household</span>
 <span class="sd">        ubi (Numpy array): universal basic income payment</span>
@@ -851,7 +912,7 @@ document.write(`
         <span class="n">etr_params</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span>
         <span class="o">-</span> <span class="p">(</span>
@@ -911,6 +972,7 @@ document.write(`
     <span class="n">b_splus1</span><span class="p">,</span>
     <span class="n">n</span><span class="p">,</span>
     <span class="n">bq</span><span class="p">,</span>
+    <span class="n">rm</span><span class="p">,</span>
     <span class="n">factor</span><span class="p">,</span>
     <span class="n">tr</span><span class="p">,</span>
     <span class="n">ubi</span><span class="p">,</span>
@@ -944,6 +1006,7 @@ document.write(`
 <span class="sd">        b_splus1 (Numpy array): household savings one period ahead</span>
 <span class="sd">        n (Numpy array): household labor supply</span>
 <span class="sd">        bq (Numpy array): household bequests received</span>
+<span class="sd">        rm (Numpy array): household bequests received</span>
 <span class="sd">        factor (scalar): scaling factor converting model units to dollars</span>
 <span class="sd">        tr (Numpy array): government transfers to household</span>
 <span class="sd">        ubi (Numpy array): universal basic income payment</span>
@@ -1042,7 +1105,7 @@ document.write(`
         <span class="n">etr_params</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span>
         <span class="mi">1</span>
         <span class="o">-</span> <span class="n">tau_payroll</span>

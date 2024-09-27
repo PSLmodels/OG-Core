@@ -437,6 +437,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_bq"><code class="docutils literal notranslate"><span class="pre">get_bq()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_ci"><code class="docutils literal notranslate"><span class="pre">get_ci()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_cons"><code class="docutils literal notranslate"><span class="pre">get_cons()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_rm"><code class="docutils literal notranslate"><span class="pre">get_rm()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_tr"><code class="docutils literal notranslate"><span class="pre">get_tr()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_y"><code class="docutils literal notranslate"><span class="pre">get_y()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.marg_ut_cons"><code class="docutils literal notranslate"><span class="pre">marg_ut_cons()</span></code></a></li>
@@ -464,7 +465,7 @@ document.write(`
 </section>
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.FOC_labor">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">FOC_labor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtrx_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#FOC_labor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.FOC_labor" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">FOC_labor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtrx_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#FOC_labor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.FOC_labor" title="Link to this definition">#</a></dt>
 <dd><p>Computes errors for the FOC for labor supply in the steady
 state.  This function is usually looped through over J, so it does
 one lifetime income group at a time.</p>
@@ -485,6 +486,7 @@ one lifetime income group at a time.</p>
 <li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – household savings one period ahead</p></li>
 <li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
 <li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>rm</strong> (<em>Numpy array</em>) – household bequests received</p></li>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
 <li><p><strong>tr</strong> (<em>Numpy array</em>) – government transfers to household</p></li>
 <li><p><strong>ubi</strong> (<em>Numpy array</em>) – universal basic income payment</p></li>
@@ -515,7 +517,7 @@ on labor income functions</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.FOC_savings">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">FOC_savings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtry_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#FOC_savings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.FOC_savings" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">FOC_savings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtry_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#FOC_savings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.FOC_savings" title="Link to this definition">#</a></dt>
 <dd><p>Computes Euler errors for the FOC for savings in the steady state.
 This function is usually looped through over J, so it does one
 lifetime income group at a time.</p>
@@ -536,6 +538,7 @@ lifetime income group at a time.</p>
 <li><p><strong>b_splus2</strong> (<em>Numpy array</em>) – household savings two periods ahead</p></li>
 <li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
 <li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>rm</strong> (<em>Numpy array</em>) – household remittances received</p></li>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
 <li><p><strong>tr</strong> (<em>Numpy array</em>) – government transfers to household</p></li>
 <li><p><strong>ubi</strong> (<em>Numpy array</em>) – universal basic income payment</p></li>
@@ -614,7 +617,8 @@ the transition path. Does this for each period t separately.</p>
 <span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_bq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_bq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_bq" title="Link to this definition">#</a></dt>
 <dd><p>Calculate bequests to each household.</p>
 <div class="math notranslate nohighlight">
-\[bq_{j,s,t} = \zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
+\[\hat{bq}_{j,s,t} = \zeta_{j,s}
+\frac{\hat{BQ}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -663,22 +667,28 @@ and prices.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.get_cons">
-<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_cons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_tax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_cons" title="Link to this definition">#</a></dt>
-<dd><p>Calculate household consumption.</p>
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_cons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tilde</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_tax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_cons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_cons" title="Link to this definition">#</a></dt>
+<dd><p>Calculate household composite consumption.</p>
 <div class="math notranslate nohighlight">
-\[c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t}
-+ bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} -
-e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
+\[\begin{split}\hat{c}_{j,s,t} &amp;= \biggl[(1 + r_{p,t})\hat{b}_{j,s,t}
++ \hat{w}_t e_{j,s}n_{j,s,t} + \hat{bq}_{j,s,t} + \hat{rm}_{j,s,t}
++ \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t}
+- \hat{tax}_{j,s,t} \\
+&amp;\qquad - \sum_{i=1}^I\left(1 + \tau^c_{i,t}\right)p_{i,t}\hat{c}_{min,i}
+- e^{g_y}\hat{b}_{j,s+1,t+1}\biggr] / p_t \\
+&amp;\qquad\qquad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
+\quad\text{where}\quad \hat{b}_{j,E+1,t}=0\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>r_p</strong> (<em>array_like</em>) – the real interest rate</p></li>
 <li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
 <li><p><strong>p_tilde</strong> (<em>array_like</em>) – the ratio of real GDP to nominal GDP</p></li>
 <li><p><strong>b</strong> (<em>Numpy array</em>) – household savings</p></li>
 <li><p><strong>b_splus1</strong> (<em>Numpy array</em>) – household savings one period ahead</p></li>
 <li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply</p></li>
 <li><p><strong>bq</strong> (<em>Numpy array</em>) – household bequests received</p></li>
+<li><p><strong>rm</strong> (<em>Numpy array</em>) – household remittances received</p></li>
 <li><p><strong>net_tax</strong> (<em>Numpy array</em>) – household net taxes paid</p></li>
 <li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
@@ -694,11 +704,38 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.household.get_rm">
+<span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_rm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">RM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_rm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_rm" title="Link to this definition">#</a></dt>
+<dd><p>Calculate remittances to each household.</p>
+<div class="math notranslate nohighlight">
+\[\hat{rm}_{j,s,t} = \eta_{RM,j,s,t}
+\frac{\hat{RM}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RM</strong> (<em>array_like</em>) – aggregate remittances</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime ability group</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>remittances received by household</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rm (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.household.get_tr">
 <span class="sig-prename descclassname"><span class="pre">ogcore.household.</span></span><span class="sig-name descname"><span class="pre">get_tr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/household.html#get_tr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.household.get_tr" title="Link to this definition">#</a></dt>
 <dd><p>Calculate transfers to each household.</p>
 <div class="math notranslate nohighlight">
-\[tr_{j,s,t} = \zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}\]</div>
+\[\hat{tr}_{j,s,t} = \zeta_{j,s}
+\frac{\hat{TR}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -710,7 +747,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>transfers received by each household</p>
+<dd class="field-even"><p>transfers received by household</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tr (array_like)</p>
@@ -862,6 +899,7 @@ e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}\]</div>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_bq"><code class="docutils literal notranslate"><span class="pre">get_bq()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_ci"><code class="docutils literal notranslate"><span class="pre">get_ci()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_cons"><code class="docutils literal notranslate"><span class="pre">get_cons()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_rm"><code class="docutils literal notranslate"><span class="pre">get_rm()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_tr"><code class="docutils literal notranslate"><span class="pre">get_tr()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.get_y"><code class="docutils literal notranslate"><span class="pre">get_y()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.household.marg_ut_cons"><code class="docutils literal notranslate"><span class="pre">marg_ut_cons()</span></code></a></li>

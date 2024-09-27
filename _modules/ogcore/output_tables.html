@@ -1166,17 +1166,17 @@ document.write(`
         <span class="c1"># Behavior effect</span>
         <span class="n">pct_change2</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">])</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">]</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="c1"># Macro effect</span>
         <span class="n">pct_change3</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">])</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">]</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="c1"># Dynamic effect (behavior + macro)</span>
         <span class="n">pct_change4</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">])</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">]</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="c1"># Total change in tax revenue (rates + behavior + macro)</span>
         <span class="n">pct_change5</span> <span class="o">=</span> <span class="p">(</span>
@@ -1205,7 +1205,7 @@ document.write(`
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">][</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
@@ -1218,7 +1218,7 @@ document.write(`
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">][</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
@@ -1231,7 +1231,7 @@ document.write(`
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">][</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>

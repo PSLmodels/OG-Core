@@ -74,6 +74,35 @@ _Valid Range:_ min = 0.01 and max = 5.0
 _Out-of-Range Action:_ error  
 
 
+####  `alpha_RM_1`  
+_Description:_ Exogenous ratio of aggregate remittances to GDP in current period (t=1).  
+_Value Type:_ float  
+_Valid Range:_ min = -0.05 and max = 0.4  
+_Out-of-Range Action:_ error  
+
+
+####  `alpha_RM_T`  
+_Description:_ Exogenous ratio of aggregate remittances to GDP in the long run/steady state (t>T).  
+_Value Type:_ float  
+_Valid Range:_ min = -0.05 and max = 0.4  
+_Out-of-Range Action:_ error  
+
+
+####  `g_RM`  
+_Description:_ Growth rate of aggregate remittances between periods tG1 and tG2  
+_Value Type:_ float  
+_Valid Range:_ min = -0.02 and max = 0.15  
+_Out-of-Range Action:_ error  
+
+
+####  `eta_RM`  
+_Description:_ Matrix that allocates aggregate remittances across households.  
+_Notes:_ This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `zeta`  
 _Description:_ Matrix that describes the bequest distribution process.  
 _Notes:_ This SxJ matrix gives the fraction of total aggregate bequests going to each age s and ability type j.  
