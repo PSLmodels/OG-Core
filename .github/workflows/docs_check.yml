@@ -22,7 +22,7 @@ jobs:
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
+          miniconda-version: "latest"
           activate-environment: ogcore-dev
           environment-file: environment.yml
           python-version: "3.12"

@@ -36,7 +36,7 @@ jobs:
       - name: Setup Miniconda using Python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
+          miniconda-version: "latest"
           auto-update-conda: true
           activate-environment: ogcore-dev
           environment-file: environment.yml
