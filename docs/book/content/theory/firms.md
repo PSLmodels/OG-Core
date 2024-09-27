@@ -119,6 +119,8 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 (SecFirmsfootnotes)=
 ## Footnotes
 
+  This section contains the footnotes for this chapter.
+
   [^Kg0_case]: It is important to note a special case of the Cobb-Douglas ($\varepsilon_m=1$) production function that we have to manually restrict. The inputs of production of private capital $K_{m,t}$ and labor $L_{m,t}$ are endogenous and have characteristics of the model that naturally bound them away from zero. But public capital $K_{g,m,t}$, although it is a function of endogenous variables in {eq}`EqUnbalGBC_Igt` and {eq}`EqUnbalGBC_Igmt`, can be exogenously set to zero as a policy parameter choice by setting $\alpha_{I,t}=0$ or $\alpha_{I,m,t}=0$. In the Cobb-Douglas case of the production function $\varepsilon_m=1$ {eq}`EqFirmsCDprodfun`, $K_{g,m,t}=0$ would zero out production and break the model. In the case when $\varepsilon_m=1$ and $K_{g,m,t}=0$, we set $\gamma_{g,m}=0$, thereby restricting the production function to only depend on private capital $K_{m,t}$ and labor $L_{m,t}$. This necessary restriction limits us from performing experiments in the model of the effect of changing $K_{g,m,t}=0$ to $K_{g,m,t}>0$ or vice versa in the $\varepsilon_m=1$ case.
 
   [^delta_M]: Because we are assuming that only the output of the $M$th industry can be used for investment, government spending, or government debt, and because that industry's output is the numeraire, the only depreciation rate that matters or can be nonzero is that of the $M$th industry $\delta_{M,t}$.

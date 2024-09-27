@@ -55,6 +55,7 @@ def euler_equation_solver(guesses, *args):
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
         bq (Numpy array): bequest amounts by age, length S
+        rm (scalar): remittance amounts by age, length S
         tr (scalar): government transfer amount by age, length S
         ubi (vector): universal basic income (UBI) payment, length S
         factor (scalar): scaling factor converting model units to dollars
@@ -64,7 +65,7 @@ def euler_equation_solver(guesses, *args):
         errros (Numpy array): errors from FOCs, length 2S
 
     """
-    (r, w, p_tilde, bq, tr, ubi, factor, j, p) = args
+    (r, w, p_tilde, bq, rm, tr, ubi, factor, j, p) = args
 
     b_guess = np.array(guesses[: p.S])
     n_guess = np.array(guesses[p.S :])
@@ -81,6 +82,7 @@ def euler_equation_solver(guesses, *args):
         b_splus1,
         n_guess,
         bq,
+        rm,
         factor,
         tr,
         ubi,
@@ -101,6 +103,7 @@ def euler_equation_solver(guesses, *args):
         b_splus1,
         n_guess,
         bq,
+        rm,
         factor,
         tr,
         ubi,
@@ -155,6 +158,7 @@ def euler_equation_solver(guesses, *args):
         b_splus1,
         n_guess,
         bq,
+        rm,
         taxes,
         p.e[-1, :, j],
         p,
@@ -174,8 +178,8 @@ def inner_loop(outer_loop_vars, p, client):
 
     Args:
         outer_loop_vars (tuple): tuple of outer loop variables,
-            (bssmat, nssmat, r_p, r, w, p_m, BQ, TR, factor) or
-            (bssmat, nssmat, r_p, r, w, p_m, BQ, Y, TR, factor)
+            (bssmat, nssmat, r_p, r, w, p_m, BQ, RM, TR, factor) or
+            (bssmat, nssmat, r_p, r, w, p_m, BQ, RM, Y, TR, factor)
         bssmat (Numpy array): initial guess at savings, size = SxJ
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
         r_p (scalar): return on household investment portfolio
@@ -228,11 +232,13 @@ def inner_loop(outer_loop_vars, p, client):
     p_m = np.array(p_m)  # TODO: why is this a list otherwise?
     p_i = np.dot(p.io_matrix, p_m)
     BQ = np.array(BQ)
+    RM = np.array(aggr.get_RM(Y, p, "SS"))
     # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
     p_tilde = aggr.get_ptilde(p_i, p.tau_c[-1, :], p.alpha_c)
     bq = household.get_bq(BQ, None, p, "SS")
+    rm = household.get_rm(RM, None, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
     ubi = p.ubi_nom_array[-1, :, :] / factor
 
@@ -244,6 +250,7 @@ def inner_loop(outer_loop_vars, p, client):
             w,
             p_tilde,
             bq[:, j],
+            rm[:, j],
             tr[:, j],
             ubi[:, j],
             factor,
@@ -314,6 +321,7 @@ def inner_loop(outer_loop_vars, p, client):
         b_splus1,
         nssmat,
         bq,
+        rm,
         net_tax,
         np.squeeze(p.e[-1, :, :]),
         p,
@@ -402,6 +410,8 @@ def inner_loop(outer_loop_vars, p, client):
         new_factor = factor
     new_BQ = aggr.get_BQ(new_r_p, bssmat, None, p, "SS", False)
     new_bq = household.get_bq(new_BQ, None, p, "SS")
+    new_RM = aggr.get_RM(Y, p, "SS")
+    new_rm = household.get_rm(new_RM, None, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
     theta = pensions.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
@@ -446,6 +456,7 @@ def inner_loop(outer_loop_vars, p, client):
         bssmat,
         nssmat,
         new_bq,
+        new_rm,
         taxss,
         np.squeeze(p.e[-1, :, :]),
         p,
@@ -534,6 +545,7 @@ def inner_loop(outer_loop_vars, p, client):
         K_vec,
         L_vec,
         Y_vec,
+        new_RM,
         new_TR,
         Y,
         new_factor,
@@ -626,6 +638,7 @@ def SS_solver(
             new_K_vec,
             new_L_vec,
             new_Y_vec,
+            new_RM,
             new_TR,
             new_Y,
             new_factor,
@@ -706,6 +719,7 @@ def SS_solver(
     p_m_ss = new_p_m
     p_i_ss = np.dot(p.io_matrix, p_m_ss)
     p_tilde_ss = aggr.get_ptilde(p_i_ss, p.tau_c[-1, :], p.alpha_c)
+    RM_ss = new_RM
     TR_ss = new_TR
     Yss = new_Y
     I_g_ss = fiscal.get_I_g(Yss, Ig_baseline, p, "SS")
@@ -750,6 +764,7 @@ def SS_solver(
     factor_ss = factor
     bqssmat = household.get_bq(BQss, None, p, "SS")
     trssmat = household.get_tr(TR_ss, None, p, "SS")
+    rmssmat = household.get_rm(RM_ss, None, p, "SS")
     ubissmat = p.ubi_nom_array[-1, :, :] / factor_ss
     theta = pensions.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
@@ -850,6 +865,7 @@ def SS_solver(
         bssmat_splus1,
         nssmat,
         bqssmat,
+        rmssmat,
         taxss,
         np.squeeze(p.e[-1, :, :]),
         p,
@@ -935,6 +951,9 @@ def SS_solver(
     I_g_vec_ss[-1] = I_g_ss
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
+    RM_vec_ss = np.zeros(p.M)
+    RM_vec_ss[-1] = RM_ss
+
     RC = aggr.resource_constraint(
         Y_vec_ss,
         C_m_vec_ss,
@@ -942,6 +961,7 @@ def SS_solver(
         I_d_vec_ss,
         I_g_vec_ss,
         net_capital_outflows_vec,
+        RM_vec_ss,
     )
     if VERBOSE:
         print("Foreign debt holdings = ", D_f_ss)
@@ -1006,6 +1026,7 @@ def SS_solver(
         "r_p_ss": r_p_ss,
         "theta": theta,
         "BQss": BQss,
+        "RMss": RM_ss,
         "factor_ss": factor_ss,
         "bssmat_s": bssmat_s,
         "cssmat": cssmat,
@@ -1014,6 +1035,7 @@ def SS_solver(
         "bqssmat": bqssmat,
         "TR_ss": TR_ss,
         "trssmat": trssmat,
+        "rmssmat": rmssmat,
         "Gss": Gss,
         "total_tax_revenue": total_tax_revenue,
         "business_tax_revenue": business_tax_revenue,
@@ -1111,6 +1133,7 @@ def SS_fsolve(guesses, *args):
         new_K_vec,
         new_L_vec,
         new_Y_vec,
+        new_RM,
         new_TR,
         new_Y,
         new_factor,

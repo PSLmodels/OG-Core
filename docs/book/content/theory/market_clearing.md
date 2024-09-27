@@ -1,9 +1,10 @@
 (Chap_MarkClr)=
 # Market Clearing
 
-$M+3$ markets must clear in `OG-Core`---the labor market, the private capital market, the government bond market, and $M$ goods markets. By Walras' Law, we only need to use $M+2$ of those market clearing conditions because the remaining one is redundant. In the model, we choose to use the labor, private capital, government bond market, and the first $M-1$ goods market clearing conditions and to ignore the $M$th goods market clearing condition. But we present all $M+3$ market clearing conditions here. Further, the redundant $M$th goods market clearing condition---sometimes referred to as the resource constraint---makes for a nice check on the solution method to see if everything worked.
+  $M+3$ markets must clear in `OG-Core`---the labor market, the private capital market, the government bond market, and $M$ goods markets. By Walras' Law, we only need to use $M+2$ of those market clearing conditions because the remaining one is redundant. In the model, we choose to use the labor, private capital, government bond market, and the first $M-1$ goods market clearing conditions and to ignore the $M$th goods market clearing condition. But we present all $M+3$ market clearing conditions here. Further, the redundant $M$th goods market clearing condition---sometimes referred to as the resource constraint---makes for a nice check on the solution method to see if everything worked.
 
-We also characterize here the law of motion for total bequests $BQ_t$. Although it is not technically a market clearing condition, one could think of the bequests law of motion as the bequests market clearing condition.
+  We also characterize here the law of motion for total bequests $BQ_t$. Although it is not technically a market clearing condition, one could think of the bequests law of motion as the bequests market clearing condition.
+
 
 (SecMarkClrMktClr)=
 ## Market Clearing Conditions
@@ -20,6 +21,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
   :label: EqMarkClrLab
     \sum_{m=1}^M L_{m,t} = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \omega_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t
   ```
+
 
   (SecMarkClrMktClr_CapGen)=
   ### Capital markets generalities
@@ -68,7 +70,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 
   ```{math}
   :label: EqMarkClr_KtKdKf
-   K_t = K^d_t + K^f_t \quad\forall t \quad\text{where}\quad K_t \equiv  \sum_{m=1}^M K_{m,t}
+  K_t = K^d_t + K^f_t \quad\forall t \quad\text{where}\quad K_t \equiv  \sum_{m=1}^M K_{m,t}
   ```
 
   Assume that there exists some exogenous world interest rate $r^*_t$. We assume that foreign capital supply $K^f_t$ is an exogenous percentage $\zeta_K\in[0,1]$ of the excess total domestic private capital demand $ED^{K,r^*}_t$ that would exist if domestic private capital demand were determined by the exogenous world interest rate $r^*_t$ and domestic private capital supply were determined by the model consistent return on household savings $r_{p,t}$. This percentage $\zeta_K$ is something we calibrate. Define excess total domestic capital demand at the exogenous world interest rate $r^*_t$ as $ED^{K,r^*}_t$, where $K^{r^*}_t\equiv\sum_{m=1}^M K^{r^*}_{m,t}$ is the capital demand by domestic firms at the world interest rate $r^*_t$, and $K^{d}_t$ is the domestic supply of private capital to firms, which is modeled as being a function of the actual rate faced by households $r_{p,t}$. Then our measure of excess demand at the world interest rate is the following.
@@ -115,7 +117,7 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 
   ```{math}
   :label: EqMarkClrGoods_M
-    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) \quad\forall t
+    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) - RM_t \quad\forall t
   ```
   where
   ```{math}
@@ -127,9 +129,9 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 
   In the partially open economy, we must add to the right-hand-side of {eq}`EqMarkClrGoods_M` the output paid to the foreign owners of capital $r_{p,t} K^f_t$ and to the foreign holders of government debt $r_{p,t}D^f_t$. And we must subtract off the foreign inflow component $K^f_{t+1} - K^f_t$ from private capital investment as shown in the first term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. You can see in the definition of private investment {eq}`EqMarkClrGoods_IMt` where this amount of foreign capital is part of $I_{M,t}$.
 
-  Similarly, we must subtract off the foreign purchases of new government debt $D^f_{t+1} - D^f_t$ as shown in the second term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. These new foreign purchases of government debt are part of $I_{g,t}$ and $G_t$, as they are functions of GDP $p_tY_t$, as shown in {eq}`EqUnbalGBC_Gt`, {eq}`EqUnbalGBC_Igt`, and the government budget constraint {eq}`EqUnbalGBCbudgConstr`. Foreign lending relaxes the resource constraint.
+  Similarly, we must subtract off the foreign purchases of new government debt $D^f_{t+1} - D^f_t$ and aggregate remittances $RM_t$ as shown in the second term in parentheses and the last term, respectively, on the right-hand-side of {eq}`EqMarkClrGoods_M`. The new foreign purchases of government debt are part of $I_{g,t}$ and $G_t$, as they are functions of GDP $Y_t$, as shown in {eq}`EqUnbalGBC_Gt`, {eq}`EqUnbalGBC_Igt`, and the government budget constraint {eq}`EqUnbalGBCbudgConstr`. Foreign lending relaxes the resource constraint. And aggregate remittances are part of aggregate consumption $C_t$ and also relax the resource constraint.
 
-  Net exports (imports) of capital in the form of foreign private capital inflows $K^f_t$ and foreign holdings of government debt $D^f_t$ are clearly accounted for in {eq}`EqMarkClrGoods_M`.
+  Net exports (imports) of capital in the form of foreign private capital inflows $K^f_t$, foreign holdings of government debt $D^f_t$, and remittances $RM_t$ are clearly accounted for in {eq}`EqMarkClrGoods_M`. Foreign remittances received by domestic households are described in Section {ref}`SecHHremit` of Chapter {ref}`Chap_House`.
 
 
 (SecMarkClrBQ)=
@@ -148,8 +150,10 @@ We also characterize here the law of motion for total bequests $BQ_t$. Although 
 (SecMarkClr_footnotes)=
 ## Footnotes
 
-[^indif_KD_note]: By assuming that households are indifferent between the savings allocation to private capital $K^d_t$ and government bonds $D^d_t$, we avoid the need for another state variable in the solution method. In our approach the allocation between the two types of capital is simply a residual of the exogenous proportion $\zeta_K$ of total private captial $K_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaK` and {eq}`EqMarkClr_KtKdKf` and a residual of the exogenous proportion $\zeta_D$ of total government bonds $D_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaD` and {eq}`EqMarkClr_DtDdDf`.
+  This section contains the footnotes for this chapter.
 
-[^M_ind]: Our assumption that only the $M$th industry output can be used as investment, government spending, and government debt is a strong one. However, it greatly simplifies our equilibrium solution method in the transition path. Intuitively, think of an economy that has two industries---delivery services and trucks. The delivery services industry uses trucks and labor to produce its output. The trucks industry uses trucks and labor to produce its output. Both industries face depreciation of their capital (trucks). But only in the trucks industry can the output be used for both consumption and investment.
+  [^indif_KD_note]: By assuming that households are indifferent between the savings allocation to private capital $K^d_t$ and government bonds $D^d_t$, we avoid the need for another state variable in the solution method. In our approach the allocation between the two types of capital is simply a residual of the exogenous proportion $\zeta_K$ of total private captial $K_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaK` and {eq}`EqMarkClr_KtKdKf` and a residual of the exogenous proportion $\zeta_D$ of total government bonds $D_t$ allocated to foreigners implied by equations {eq}`EqMarkClr_zetaD` and {eq}`EqMarkClr_DtDdDf`.
 
-[^RCrates_note]: Because we treat household return $r_{p,t}$ as an average between the return on private capital $r_{K,t}$ and the return on government bonds $r_{gov,t}$ in {eq}`eq_portfolio_return`, and because this return is actually given to households in the budget constraint {eq}`EqHHBC`, it is required for market clearing that the return paid to foreign suppliers of private capital $K^f_t$ and foreign holders of government bonds $D^f_t$ be paid that same average return $r_{p,t}$.
+  [^M_ind]: Our assumption that only the $M$th industry output can be used as investment, government spending, and government debt is a strong one. However, it greatly simplifies our equilibrium solution method in the transition path. Intuitively, think of an economy that has two industries---delivery services and trucks. The delivery services industry uses trucks and labor to produce its output. The trucks industry uses trucks and labor to produce its output. Both industries face depreciation of their capital (trucks). But only in the trucks industry can the output be used for both consumption and investment.
+
+  [^RCrates_note]: Because we treat household return $r_{p,t}$ as an average between the return on private capital $r_{K,t}$ and the return on government bonds $r_{gov,t}$ in {eq}`eq_portfolio_return`, and because this return is actually given to households in the budget constraint {eq}`EqHHBC`, it is required for market clearing that the return paid to foreign suppliers of private capital $K^f_t$ and foreign holders of government bonds $D^f_t$ be paid that same average return $r_{p,t}$.
