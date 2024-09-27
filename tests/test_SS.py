@@ -500,8 +500,8 @@ filename8 = "inner_loop_outputs_reform_MneI.pkl"
     ],
 )
 def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
-    # Test SS.inner_loop function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
+    # Test SS.inner_loop function. Provide inputs to function and ensure that
+    # output returned matches what it has been before.
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
@@ -532,6 +532,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             new_r_gov,
             new_r_p,
             new_w,
+            new_RM,
             new_TR,
             Y,
             new_factor,
@@ -557,6 +558,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             _,
             _,
             _,
+            _,
         ) = test_tuple
         expected_tuple = (
             euler_errors,
@@ -570,6 +572,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             K_vec,
             L_vec,
             Y_vec,
+            new_RM,
             new_TR,
             Y,
             new_factor,
@@ -981,8 +984,8 @@ expected2 = np.array(
 def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    guesses, r, w, bq, tr, _, factor, j = input_tuple
-    args = (r, w, 1.0, bq, tr, ubi_j, factor, j, p)
+    guesses, r, w, bq, rm, tr, _, factor, j = input_tuple
+    args = (r, w, 1.0, bq, rm, tr, ubi_j, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
     print(repr(test_list))
 
@@ -997,7 +1000,7 @@ param_updates2 = {
     "initial_guess_TR_SS": 0.06,
 }
 filename2 = "run_SS_baseline_use_zeta.pkl"
-param_updates3 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
+param_updates3 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.04}
 filename3 = "run_SS_baseline_small_open.pkl"
 param_updates4 = {
     "zeta_K": [1.0],
@@ -1018,7 +1021,7 @@ param_updates6 = {
     "initial_guess_TR_SS": 0.06,
 }
 filename6 = "run_SS_reform_use_zeta.pkl"
-param_updates7 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
+param_updates7 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.04}
 filename7 = "run_SS_reform_small_open.pkl"
 param_updates8 = {
     "zeta_K": [1.0],
@@ -1131,8 +1134,8 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
 )
 @pytest.mark.local
 def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
-    # Test SS.run_SS function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
+    # Test SS.run_SS function. Provide inputs to function and ensure that
+    # output returned matches what it has been before.
     SS.ENFORCE_SOLUTION_CHECKS = True
     # if running reform, then need to solve baseline first to get values
     baseline_dir = os.path.join(tmpdir, "OUTPUT_BASELINE")

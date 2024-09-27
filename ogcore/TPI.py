@@ -1,3 +1,14 @@
+"""
+Time path iteration (TPI) module for OG-Core.
+
+This module contains the following functions:
+    get_initial_SS_values()
+    firstdoughnutring()
+    twist_doughnut()
+    inner_loop()
+    run_TPI()
+"""
+
 # imports
 import numpy as np
 import pickle
@@ -49,8 +60,8 @@ def get_initial_SS_values(p):
                 solution results
             * theta (Numpy array): steady-state retirement replacement
                 rates, length J
-            * baseline_values (tuple): (TRbaseline, Gbaseline,
-                D0_baseline), lump sum transfer and government spending
+            * baseline_values (tuple): (Ybaseline, TRbaseline, Gbaseline,
+                D0_baseline), GDP, lump sum transfer, and government spending
                 amounts from the baseline model run
 
     """
@@ -62,9 +73,15 @@ def get_initial_SS_values(p):
         ss_baseline_vars["Bss"] / B0
     )
     initial_n = ss_baseline_vars["nssmat"]
+
+    Ybaseline = None
     TRbaseline = None
     Gbaseline = None
     Ig_baseline = None
+    if not p.baseline:
+        baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
+        tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+        Ybaseline = tpi_baseline_vars["Y"]
     if p.baseline_spending:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
@@ -101,11 +118,13 @@ def get_initial_SS_values(p):
         D0_baseline = tpi_baseline_vars["D"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
     else:
+        RM0_baseline = None
         D0_baseline = None
         Kg0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b, initial_n)
     baseline_values = (
+        Ybaseline,
         TRbaseline,
         Gbaseline,
         Ig_baseline,
@@ -117,7 +136,7 @@ def get_initial_SS_values(p):
 
 
 def firstdoughnutring(
-    guesses, r, w, p_tilde, bq, tr, theta, factor, ubi, j, initial_b, p
+    guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
 ):
     """
     Solves the first entries of the upper triangle of the twist doughnut. This
@@ -130,6 +149,7 @@ def firstdoughnutring(
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
         bq (scalar): bequest amounts by age
+        rm (scalar): remittance amounts by age
         tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
@@ -157,6 +177,7 @@ def firstdoughnutring(
         np.array([b_splus1]),
         np.array([n]),
         np.array([bq]),
+        np.array([rm]),
         factor,
         np.array([tr]),
         np.array([ubi]),
@@ -178,6 +199,7 @@ def firstdoughnutring(
         b_splus1,
         np.array([n]),
         np.array([bq]),
+        np.array([rm]),
         factor,
         np.array([tr]),
         np.array([ubi]),
@@ -205,6 +227,7 @@ def twist_doughnut(
     w,
     p_tilde,
     bq,
+    rm,
     tr,
     theta,
     factor,
@@ -229,6 +252,7 @@ def twist_doughnut(
         w (Numpy array): real wage rate
         p_tilde (Numpy array): composite good price
         bq (Numpy array): bequest amounts by age, length s
+        rm (Numpy array): remittance amounts by age, length s
         tr (Numpy array): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
@@ -276,6 +300,7 @@ def twist_doughnut(
         b_splus1,
         n_s,
         bq,
+        rm,
         factor,
         tr,
         ubi,
@@ -297,6 +322,7 @@ def twist_doughnut(
         b_splus1,
         n_s,
         bq,
+        rm,
         factor,
         tr,
         ubi,
@@ -334,8 +360,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         guesses (tuple): initial guesses for b and n, (guesses_b,
             guesses_n)
         outer_loop_vars (tuple): values for factor prices and economic
-            aggregates used in household problem (r_p, r, w, p+m, BQ, TR,
-            theta)
+            aggregates used in household problem
+            (r_p, r, w, p_m, BQ, RM, TR, theta)
         r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital
         w (Numpy array): real wage rate
@@ -362,7 +388,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
     guesses_b, guesses_n = guesses
-    r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars
+    r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
 
     # compute composite good price
     p_i = (
@@ -374,6 +400,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     bq = household.get_bq(BQ, None, p, "TPI")
     # compute tr
     tr = household.get_tr(TR, None, p, "TPI")
+    # compute rm
+    rm = household.get_rm(RM, None, p, "TPI")
 
     # initialize arrays
     b_mat = np.zeros((p.T + p.S, p.S))
@@ -388,6 +416,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             w[0],
             p_tilde[0],
             bq[0, -1, j],
+            rm[0, -1, j],
             tr[0, -1, j],
             theta * p.replacement_rate_adjust[0],
             factor,
@@ -407,6 +436,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         n_guesses_to_use = np.diag(guesses_n[: p.S, :], p.S - (s + 2))
         theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S]
         bq_to_use = np.diag(bq[: p.S, :, j], p.S - (s + 2))
+        rm_to_use = np.diag(rm[: p.S, :, j], p.S - (s + 2))
         tr_to_use = np.diag(tr[: p.S, :, j], p.S - (s + 2))
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
@@ -441,6 +471,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 w,
                 p_tilde,
                 bq_to_use,
+                rm_to_use,
                 tr_to_use,
                 theta_to_use,
                 factor,
@@ -468,6 +499,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         n_guesses_to_use = np.diag(guesses_n[t : t + p.S, :])
         theta_to_use = theta[j] * p.replacement_rate_adjust[t : t + p.S]
         bq_to_use = np.diag(bq[t : t + p.S, :, j])
+        rm_to_use = np.diag(rm[t : t + p.S, :, j])
         tr_to_use = np.diag(tr[t : t + p.S, :, j])
         ubi_to_use = np.diag(ubi[t : t + p.S, :, j])
 
@@ -494,6 +526,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 w,
                 p_tilde,
                 bq_to_use,
+                rm_to_use,
                 tr_to_use,
                 theta_to_use,
                 factor,
@@ -546,6 +579,7 @@ def run_TPI(p, client=None):
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
     (
+        Ybaseline,
         TRbaseline,
         Gbaseline,
         Ig_baseline,
@@ -718,6 +752,18 @@ def run_TPI(p, client=None):
         )
         BQ = np.array(BQ)
 
+    # Initialize aggregate remittances
+    if p.baseline:
+        RM = aggr.get_RM(Y, p, "TPI")
+    else:
+        # This is the reform case and is based off of Ybaseline, but allows for
+        # remittance parameters to change in a reform and update the RM series
+        Ybaseline_ext = np.concatenate(
+            [Ybaseline, np.ones(p.S) * Ybaseline[-1]]
+        )
+        RM = aggr.get_RM(Ybaseline_ext, p, "TPI")
+
+    # Start transition path iteration (TPI)
     TPIiter = 0
     TPIdist = 10
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
@@ -725,7 +771,7 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-        outer_loop_vars = (r_p, r, w, p_m, BQ, TR, theta)
+        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
         # compute composite good price
         p_i = (
             np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
@@ -752,7 +798,7 @@ def run_TPI(p, client=None):
             futures = client.compute(lazy_values, num_workers=p.num_workers)
             results = client.gather(futures)
         else:
-            results = results = compute(
+            results = compute(
                 *lazy_values,
                 scheduler=dask.multiprocessing.get,
                 num_workers=p.num_workers,
@@ -780,6 +826,7 @@ def run_TPI(p, client=None):
         ]
 
         bqmat = household.get_bq(BQ, None, p, "TPI")
+        rmmat = household.get_rm(RM, None, p, "TPI")
         trmat = household.get_tr(TR, None, p, "TPI")
         tax_mat = tax.net_taxes(
             r_p[: p.T],
@@ -810,6 +857,7 @@ def run_TPI(p, client=None):
             bmat_splus1,
             n_mat[: p.T, :, :],
             bqmat[: p.T, :, :],
+            rmmat[: p.T, :, :],
             tax_mat,
             p.e,
             p,
@@ -1040,6 +1088,8 @@ def run_TPI(p, client=None):
             p,
             "TPI",
         )
+        RM = aggr.get_RM(Y[: p.T], p, "TPI")
+        RM = np.concatenate([RM, np.ones(p.S) * RM[-1]])
 
         # update vars for next iteration
         w[: p.T] = utils.convex_combo(wnew[: p.T], w[: p.T], p.nu)
@@ -1223,8 +1273,16 @@ def run_TPI(p, client=None):
     I_g_vec[:, -1] = I_g[: p.T]
     net_capital_outflows_vec = np.zeros((p.T, p.M))
     net_capital_outflows_vec[:, -1] = net_capital_outflows[: p.T]
+    RM_vec = np.zeros((p.T, p.M))
+    RM_vec[:, -1] = RM[: p.T]
     RC_error = aggr.resource_constraint(
-        Y_vec, C_m_vec, G_vec, I_d_vec, I_g_vec, net_capital_outflows_vec
+        Y_vec,
+        C_m_vec,
+        G_vec,
+        I_d_vec,
+        I_g_vec,
+        net_capital_outflows_vec,
+        RM_vec,
     )
     # Compute total investment (not just domestic)
     I_total = aggr.get_I(None, K[1 : p.T + 1], K[: p.T], p, "total_tpi")
@@ -1269,6 +1327,7 @@ def run_TPI(p, client=None):
         "I_total": I_total[: p.T, ...],
         "I_d": I_d[: p.T, ...],
         "BQ": BQ[: p.T, ...],
+        "RM": RM[: p.T, ...],
         "total_tax_revenue": total_tax_revenue[: p.T, ...],
         "business_tax_revenue": business_tax_revenue[: p.T, ...],
         "iit_payroll_tax_revenue": iit_payroll_tax_revenue[: p.T, ...],
@@ -1294,6 +1353,7 @@ def run_TPI(p, client=None):
         "n_mat": n_mat[: p.T, ...],
         "c_path": c_mat[: p.T, ...],
         "bq_path": bqmat[: p.T, ...],
+        "rm_path": rmmat[: p.T, ...],
         "tr_path": trmat[: p.T, ...],
         "y_before_tax_mat": y_before_tax_mat[: p.T, ...],
         "tax_path": tax_mat[: p.T, ...],
