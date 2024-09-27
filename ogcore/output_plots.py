@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 from ogcore.constants import (
@@ -76,6 +77,9 @@ def plot_aggregates(
         assert reform_tpi is not None
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
+        assert (
+            v in VAR_LABELS.keys()
+        ), "{} is not in the list of variable labels".format(v)
         if plot_type == "pct_diff":
             if v in ["r_gov", "r", "r_p"]:
                 # Compute just percentage point changes for rates
@@ -237,6 +241,9 @@ def plot_industry_aggregates(
         assert reform_tpi is not None
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
+        assert (
+            v in VAR_LABELS.keys()
+        ), "{} is not in the list of variable labels".format(v)
         if len(var_list) == 1:
             var_label = ""
         else:
@@ -385,7 +392,7 @@ def ss_3Dplot(
         data = (reform_ss[var] - base_ss[var]).T
     elif plot_type == "pct_diff":
         data = ((reform_ss[var] - base_ss[var]) / base_ss[var]).T
-    cmap1 = matplotlib.cm.get_cmap("jet")
+    cmap1 = matplotlib.colormaps.get_cmap("jet")
     X, Y = np.meshgrid(domain, Jgrid)
     fig5, ax5 = plt.subplots(subplot_kw={"projection": "3d"})
     ax5.set_xlabel(r"age-$s$")
@@ -449,6 +456,9 @@ def plot_gdp_ratio(
     start_index = start_year - base_params.start_year
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
+        assert (
+            v in ToGDP_LABELS.keys()
+        ), "{} is not in the list of variable labels".format(v)
         if plot_type == "levels":
             plot_var_base = (
                 base_tpi[v][: base_params.T] / base_tpi["Y"][: base_params.T]
@@ -643,7 +653,7 @@ def ability_bar_ss(
     plt.ylabel(r"Percentage Change in " + VAR_LABELS[var])
     if plot_title:
         plt.title(plot_title, fontsize=15)
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
+    # plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
         fig_path1 = os.path.join(path)
         plt.savefig(fig_path1, bbox_inches="tight", dpi=300)
@@ -1190,14 +1200,17 @@ def inequality_plot(
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
     if plot_type == "pct_diff":
-        ax1.set_yticklabels(["{:,.2%}".format(x) for x in vals])
+        ticks_loc = ax1.get_yticks().tolist()
+        ax1.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+        ax1.set_yticklabels(["{:,.2%}".format(x) for x in ticks_loc])
     plt.xlim(
         (
             base_params.start_year - 1,
             base_params.start_year + num_years_to_plot,
         )
     )
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
+    if plot_type == "levels":
+        plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
         fig_path1 = os.path.join(path)
         plt.savefig(fig_path1, bbox_inches="tight", dpi=300)

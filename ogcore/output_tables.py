@@ -764,17 +764,17 @@ def dynamic_revenue_decomposition(
         # Behavior effect
         pct_change2 = (
             (tax_rev_dict[type]["C"] - tax_rev_dict[type]["B"])
-            / tax_rev_dict[type]["B"]
+            / tax_rev_dict[type]["A"]
         ) * 100
         # Macro effect
         pct_change3 = (
             (tax_rev_dict[type]["D"] - tax_rev_dict[type]["C"])
-            / tax_rev_dict[type]["C"]
+            / tax_rev_dict[type]["A"]
         ) * 100
         # Dynamic effect (behavior + macro)
         pct_change4 = (
             (tax_rev_dict[type]["D"] - tax_rev_dict[type]["B"])
-            / tax_rev_dict[type]["B"]
+            / tax_rev_dict[type]["A"]
         ) * 100
         # Total change in tax revenue (rates + behavior + macro)
         pct_change5 = (
@@ -803,7 +803,7 @@ def dynamic_revenue_decomposition(
                     start_index : start_index + num_years
                 ].sum()
             )
-            / tax_rev_dict[type]["B"][
+            / tax_rev_dict[type]["A"][
                 start_index : start_index + num_years
             ].sum()
         ) * 100
@@ -816,7 +816,7 @@ def dynamic_revenue_decomposition(
                     start_index : start_index + num_years
                 ].sum()
             )
-            / tax_rev_dict[type]["C"][
+            / tax_rev_dict[type]["A"][
                 start_index : start_index + num_years
             ].sum()
         ) * 100
@@ -829,7 +829,7 @@ def dynamic_revenue_decomposition(
                     start_index : start_index + num_years
                 ].sum()
             )
-            / tax_rev_dict[type]["B"][
+            / tax_rev_dict[type]["A"][
                 start_index : start_index + num_years
             ].sum()
         ) * 100

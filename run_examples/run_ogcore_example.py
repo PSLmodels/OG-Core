@@ -16,6 +16,7 @@ from ogcore.constants import REFORM_DIR, BASELINE_DIR
 from ogcore.utils import safe_read_pickle
 import matplotlib.pyplot as plt
 
+# Use a custom matplotlib style file for plots
 style_file_url = (
     "https://raw.githubusercontent.com/PSLmodels/OG-Core/"
     + "master/ogcore/OGcorePlots.mplstyle"
@@ -28,12 +29,15 @@ def main():
     num_workers = min(multiprocessing.cpu_count(), 7)
     print("Number of workers = ", num_workers)
     client = Client(n_workers=num_workers, threads_per_worker=1)
-    run_start_time = time.time()
 
     # Directories to save data
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-    base_dir = os.path.join(CUR_DIR, BASELINE_DIR)
-    reform_dir = os.path.join(CUR_DIR, REFORM_DIR)
+    save_dir = os.path.join(CUR_DIR, "OG-Core-Example")
+    base_dir = os.path.join(save_dir, BASELINE_DIR)
+    reform_dir = os.path.join(save_dir, REFORM_DIR)
+
+    # Start timer on overall run time: baseline + reform
+    run_start_time = time.time()
 
     # Set some OG model parameters
     # See default_parameters.json for more description of these parameters
@@ -121,13 +125,13 @@ def main():
 
     # create plots of output
     op.plot_all(
-        base_dir, reform_dir, os.path.join(CUR_DIR, "run_example_plots")
+        base_dir, reform_dir, os.path.join(save_dir, "OG-Core_example_plots")
     )
 
     print("total time was ", (time.time() - run_start_time))
     print("Percentage changes in aggregates:", ans)
     # save percentage change output to csv file
-    ans.to_csv(os.path.join(CUR_DIR, "ogcore_example_output.csv"))
+    ans.to_csv(os.path.join(save_dir, "OG-Core_example_output.csv"))
     client.close()
 
 

@@ -1,3 +1,15 @@
+"""
+This module contains tests of the TPI.py module of the OG-Core model. This
+module contains the following tests:
+    - test_get_initial_SS_values(), 3 parameterizations
+    - test_firstdoughnutring(), 1 parameterization
+    - test_twist_doughnut(), 2 parameterizations
+    - test_inner_loop(), 1 parameterization
+    - test_run_TPI_full_run(), 11 parameterizations, local only
+    - test_run_TPI(), 2 parameterizations, local only
+    - test_run_TPI_extra(), 8 parameterizations, local only
+"""
+
 import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
@@ -63,36 +75,13 @@ def test_get_initial_SS_values(baseline, param_updates, filename, dask_client):
         exp_theta,
         exp_baseline_values,
     ) = expected_tuple
-    (
-        B0,
-        b_sinit,
-        b_splus1init,
-        factor,
-        initial_b,
-        initial_n,
-    ) = exp_initial_values
-    B0 = aggr.get_B(exp_ss_vars["bssmat_splus1"], p, "SS", True)
-    initial_b = exp_ss_vars["bssmat_splus1"] * (exp_ss_vars["Bss"] / B0)
-    B0 = aggr.get_B(initial_b, p, "SS", True)
-    b_sinit = np.array(
-        list(np.zeros(p.J).reshape(1, p.J)) + list(initial_b[:-1])
-    )
-    b_splus1init = initial_b
-    exp_initial_values = (
-        B0,
-        b_sinit,
-        b_splus1init,
-        factor,
-        initial_b,
-        initial_n,
-    )
 
-    for i, v in enumerate(exp_initial_values):
-        assert np.allclose(test_initial_values[i], v, equal_nan=True)
+    for k, v in enumerate(exp_initial_values):
+        assert np.allclose(test_initial_values[k], v, equal_nan=True)
 
     if p.baseline_spending:
-        for i, v in enumerate(exp_baseline_values):
-            assert np.allclose(test_baseline_values[i], v, equal_nan=True)
+        for k, v in enumerate(exp_baseline_values):
+            assert np.allclose(test_baseline_values[k], v, equal_nan=True)
 
     assert np.allclose(test_theta, exp_theta)
 
@@ -106,11 +95,11 @@ def test_firstdoughnutring():
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "firstdoughnutring_inputs.pkl")
     )
-    guesses, r, w, bq, tr, theta, factor, ubi, j, initial_b = input_tuple
+    guesses, r, w, bq, rm, tr, theta, factor, ubi, j, initial_b = input_tuple
     p_tilde = 1.0  # needed for multi-industry version
     p = Specifications()
     test_list = TPI.firstdoughnutring(
-        guesses, r, w, p_tilde, bq, tr, theta, factor, ubi, j, initial_b, p
+        guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
     )
 
     expected_list = utils.safe_read_pickle(
@@ -150,6 +139,7 @@ def test_twist_doughnut(file_inputs, file_outputs):
         r,
         w,
         bq,
+        rm,
         tr,
         theta,
         factor,
@@ -165,12 +155,13 @@ def test_twist_doughnut(file_inputs, file_outputs):
     ) = input_tuple
     p_tilde = np.ones_like(r)  # needed for multi-industry version
     p = Specifications()
-    input_tuple = (
+    input_tuple2 = (
         guesses,
         r,
         w,
         p_tilde,
         bq,
+        rm,
         tr,
         theta,
         factor,
@@ -184,7 +175,7 @@ def test_twist_doughnut(file_inputs, file_outputs):
         initial_b,
         p,
     )
-    test_list = TPI.twist_doughnut(*input_tuple)
+    test_list = TPI.twist_doughnut(*input_tuple2)
     expected_list = utils.safe_read_pickle(file_outputs)
     assert np.allclose(np.array(test_list), np.array(expected_list), atol=1e-5)
 
@@ -201,10 +192,11 @@ def test_inner_loop():
     r_p = outer_loop_vars_old[2]
     w = outer_loop_vars_old[1]
     BQ = outer_loop_vars_old[3]
-    TR = outer_loop_vars_old[4]
-    theta = outer_loop_vars_old[5]
+    RM = outer_loop_vars_old[4]
+    TR = outer_loop_vars_old[5]
+    theta = outer_loop_vars_old[6]
     p_m = np.ones((p.T + p.S, p.M))
-    outer_loop_vars = (r_p, r, w, p_m, BQ, TR, theta)
+    outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
     test_tuple = TPI.inner_loop(
         guesses, outer_loop_vars, initial_values, ubi, j, ind, p
     )
@@ -230,7 +222,7 @@ param_updates4 = {"baseline_spending": True}
 filename4 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_reform_baseline_spend.pkl"
 )
-param_updates5 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
+param_updates5 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.04}
 filename5 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_small_open.pkl"
 )

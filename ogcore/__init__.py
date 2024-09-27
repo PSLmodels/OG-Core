@@ -21,4 +21,4 @@ from ogcore.tax import *
 from ogcore.txfunc import *
 from ogcore.utils import *
 
-__version__ = "0.11.13"
+__version__ = "0.13.0"

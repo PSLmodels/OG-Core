@@ -158,6 +158,7 @@ class Specifications(paramtools.Parameters):
         tp_param_list = [
             "alpha_G",
             "alpha_T",
+            "alpha_I",
             "world_int_rate_annual",
             "adjustment_factor_for_cit_receipts",
             "tau_bq",
@@ -171,6 +172,7 @@ class Specifications(paramtools.Parameters):
             "zeta_K",
             "r_gov_scale",
             "r_gov_shift",
+            "g_RM",
         ]
         for item in tp_param_list:
             param_in = getattr(self, item)
@@ -243,14 +245,20 @@ class Specifications(paramtools.Parameters):
             )
             setattr(self, item, tax_to_set_out)
 
-        # Try to deal with size of eta.  It may vary by S, J, T, but
-        # want to allow user to enter one that varies by only S, S and J,
+        # Try to deal with size of eta and eta_RM. They may vary by S, J, T,
+        # but want to allow user to enter one that varies by only S, S and J,
         # S and T, or T and S and J.
-        param_in = getattr(self, "eta")
-        param_out = extrapolate_array(
-            param_in, dims=(self.T + self.S, self.S, self.J), item="eta"
-        )
-        setattr(self, "eta", param_out)
+        eta_params_to_TP = [
+            "eta",
+            "eta_RM",
+        ]
+        for item in eta_params_to_TP:
+            param_in = getattr(self, item)
+            param_out = extrapolate_array(
+                param_in, dims=(self.T + self.S, self.S, self.J), item=item
+            )
+            setattr(self, item, param_out)
+        # extrapolate lifetime ability e matrix over time dimension
         param_in = getattr(self, "e")
         param_out = extrapolate_array(
             param_in, dims=(self.T, self.S, self.J), item="e"

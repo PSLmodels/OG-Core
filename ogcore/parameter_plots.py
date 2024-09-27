@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import matplotlib
-from cycler import cycler
+import matplotlib.ticker as mticker
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
@@ -34,7 +34,6 @@ def plot_imm_rates(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -46,7 +45,7 @@ def plot_imm_rates(
     plt.legend(loc="upper left")
     plt.text(
         -5,
-        -0.023,
+        -0.05,
         "Source: " + source,
         fontsize=9,
     )
@@ -109,8 +108,9 @@ def plot_mort_rates(
         plt.ylabel(r"Mortality Rates $\rho_{s}$")
         plt.legend(loc="upper left")
         title = "Mortality Rates"
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.0%}".format(x) for x in ticks_loc])
     if include_title:
         plt.title(title)
     if path is None:
@@ -152,8 +152,9 @@ def plot_pop_growth(
     plt.plot(year_vec, p.g_n[start_index : start_index + num_years_to_plot])
     plt.xlabel(r"Year $t$")
     plt.ylabel(r"Population Growth Rate $g_{n, t}$")
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.2%}".format(x) for x in vals])
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.2%}".format(x) for x in ticks_loc])
     if include_title:
         plt.title("Population Growth Rates")
     if path is None:
@@ -258,7 +259,7 @@ def plot_ability_profiles(
         return fig
     else:
         fig_path = os.path.join(path, "ability_profiles")
-        plt.savefig(fig_path, bbox_inches="tight")
+        plt.savefig(fig_path, bbox_inches="tight", dpi=300)
 
 
 def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
@@ -299,19 +300,20 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
             + k
         )
     fig, ax = plt.subplots()
-    plt.plot(n_grid, CFE, label="CFE")
-    plt.plot(n_grid, ellipse, label="Elliptical U")
+    plt.plot(n_grid, CFE, label="Constant Frisch elasticity")
+    plt.plot(n_grid, ellipse, label="Elliptical disutility")
     if include_title:
         if plot_MU:
             plt.title("Marginal Utility of CFE and Elliptical")
         else:
             plt.title("Constant Frisch Elasticity vs. Elliptical Utility")
-    plt.xlabel(r"Labor Supply")
+    plt.xlabel(r"Labor Supply $n_{j,s,t}$")
     if plot_MU:
-        plt.ylabel(r"Marginal Utility")
+        plt.ylabel(r"Marginal disutility")
     else:
-        plt.ylabel(r"Utility")
+        plt.ylabel(r"Disutility")
     plt.legend(loc="upper left")
+    plt.grid(color="gray", linestyle=":", linewidth=1, alpha=0.5)
     if path is None:
         return fig
     else:
@@ -389,7 +391,6 @@ def plot_fert_rates(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -441,7 +442,6 @@ def plot_mort_rates_data(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -489,9 +489,11 @@ def plot_g_n(p_list, label_list=[""], include_title=False, path=None):
         plt.plot(years, p.g_n[: p.T], label=label_list[i])
     plt.xlabel(r"Year $s$ (model periods)")
     plt.ylabel(r"Population Growth Rate $g_{n,t}$")
-    plt.legend(loc="upper right")
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
+    if label_list[0] != "":
+        plt.legend(loc="upper right")
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.0%}".format(x) for x in ticks_loc])
     if include_title:
         plt.title("Population Growth Rates")
     if path is None:
@@ -706,7 +708,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "ETR_age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D histogram for all data
@@ -737,7 +739,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "Hist_Age_" + str(s) + "_Year_" + str(t) + ".png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D scatterplot of MTRx data
@@ -755,7 +757,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "MTRx_Age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D scatterplot of MTRy data
@@ -773,7 +775,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "MTRy_Age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Garbage collection
@@ -855,7 +857,7 @@ def txfunc_graph(
     ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1, linewidth=0)
     filename = tx_label + "_age_" + str(s) + "_Year_" + str(t) + "_vsPred.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Make comparison plot with truncated income domains
@@ -908,7 +910,7 @@ def txfunc_graph(
         tx_label + "trunc_age_" + str(s) + "_Year_" + str(t) + "_vsPred.png"
     )
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
 
@@ -976,7 +978,7 @@ def plot_income_data(
         t = -1
     J = abil_midp.shape[0]
     abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
-    cmap1 = matplotlib.cm.get_cmap("summer")
+    cmap1 = matplotlib.colormaps["summer"]
     if path:
         # Make sure that directory is created
         utils.mkdirs(path)

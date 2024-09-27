@@ -45,7 +45,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Publish new git tag
         run: ".github/publish-tag.sh || true"
       - name: Publish new release

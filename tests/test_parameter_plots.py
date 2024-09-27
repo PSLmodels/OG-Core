@@ -6,6 +6,7 @@ import pytest
 import os
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
 import scipy.interpolate as si
 import matplotlib.image as mpimg
 from ogcore import utils, parameter_plots, Specifications
@@ -17,10 +18,16 @@ if sys.version_info[1] < 11:
     base_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
     )
-else:
+elif sys.version_info[1] == 11:
     base_params = utils.safe_read_pickle(
         os.path.join(
             CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
+        )
+    )
+else:
+    base_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
         )
     )
 base_taxfunctions = utils.safe_read_pickle(
@@ -36,10 +43,11 @@ if sys.version_info[1] < 11:
 micro_data = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
 )
-base_params.rho = np.tile(
-    base_params.rho.reshape(1, base_params.S),
-    (base_params.T + base_params.S, 1),
-)
+if base_params.rho.ndim == 1:
+    base_params.rho = np.tile(
+        base_params.rho.reshape(1, base_params.S),
+        (base_params.T + base_params.S, 1),
+    )
 
 
 def test_plot_imm_rates():
@@ -67,6 +75,7 @@ def test_plot_imm_rates_save_fig(tmpdir):
 def test_plot_mort_rates():
     fig = parameter_plots.plot_mort_rates([base_params], include_title=True)
     assert fig
+    plt.close()
 
 
 def test_plot_surv_rates():
@@ -74,6 +83,7 @@ def test_plot_surv_rates():
         [base_params], survival_rates=True, include_title=True
     )
     assert fig
+    plt.close()
 
 
 def test_plot_mort_rates_save_fig(tmpdir):
@@ -94,13 +104,16 @@ def test_plot_surv_rates_save_fig(tmpdir):
 
 def test_plot_pop_growth():
     fig = parameter_plots.plot_pop_growth(
-        base_params, start_year=2023, include_title=True
+        base_params, start_year=int(base_params.start_year), include_title=True
     )
     assert fig
+    plt.close()
 
 
 def test_plot_pop_growth_rates_save_fig(tmpdir):
-    parameter_plots.plot_pop_growth(base_params, start_year=2023, path=tmpdir)
+    parameter_plots.plot_pop_growth(
+        base_params, start_year=int(base_params.start_year), path=tmpdir
+    )
     img = mpimg.imread(os.path.join(tmpdir, "pop_growth_rates.png"))
 
     assert isinstance(img, np.ndarray)
@@ -110,6 +123,7 @@ def test_plot_ability_profiles():
     p = Specifications()
     fig = parameter_plots.plot_ability_profiles(p, p2=p, include_title=True)
     assert fig
+    plt.close()
 
 
 def test_plot_log_ability_profiles():
@@ -118,6 +132,7 @@ def test_plot_log_ability_profiles():
         p, p2=p, log_scale=True, include_title=True
     )
     assert fig
+    plt.close()
 
 
 def test_plot_ability_profiles_save_fig(tmpdir):
@@ -135,6 +150,7 @@ def test_plot_elliptical_u():
     )
     assert fig1
     assert fig2
+    plt.close()
 
 
 def test_plot_elliptical_u_save_fig(tmpdir):
@@ -148,6 +164,7 @@ def test_plot_chi_n():
     p = Specifications()
     fig = parameter_plots.plot_chi_n([p], include_title=True)
     assert fig
+    plt.close()
 
 
 def test_plot_chi_n_save_fig(tmpdir):
@@ -168,6 +185,7 @@ def test_plot_population(years_to_plot):
         base_params, years_to_plot=years_to_plot, include_title=True
     )
     assert fig
+    plt.close()
 
 
 def test_plot_population_save_fig(tmpdir):
@@ -206,6 +224,7 @@ def test_plot_fert_rates():
     fert_rates = np.random.uniform(size=totpers).reshape((1, totpers))
     fig = parameter_plots.plot_fert_rates([fert_rates], include_title=True)
     assert fig
+    plt.close()
 
 
 def test_plot_fert_rates_save_fig(tmpdir):
@@ -249,6 +268,7 @@ def test_plot_g_n():
     p = Specifications()
     fig = parameter_plots.plot_g_n([p], include_title=True)
     assert fig
+    plt.close()
 
 
 def test_plot_g_n_savefig(tmpdir):
@@ -267,6 +287,7 @@ def test_plot_mort_rates_data():
         path=None,
     )
     assert fig
+    plt.close()
 
 
 def test_plot_mort_rates_data_save_fig(tmpdir):
@@ -291,6 +312,7 @@ def test_plot_omega_fixed():
         age_per_EpS, omega_SS_orig, omega_SSfx, E, S
     )
     assert fig
+    plt.close()
 
 
 def test_plot_omega_fixed_save_fig(tmpdir):
@@ -317,6 +339,7 @@ def test_plot_imm_fixed():
         age_per_EpS, imm_rates_orig, imm_rates_adj, E, S
     )
     assert fig
+    plt.close()
 
 
 def test_plot_imm_fixed_save_fig(tmpdir):
@@ -351,6 +374,7 @@ def test_plot_population_path():
         S,
     )
     assert fig
+    plt.close()
 
 
 def test_plot_population_path_save_fig(tmpdir):
@@ -389,6 +413,7 @@ def test_plot_income_data():
     fig = parameter_plots.plot_income_data(ages, abil_midp, abil_pcts, emat)
 
     assert fig
+    plt.close()
 
 
 def test_plot_income_data_save_fig(tmpdir):
@@ -472,6 +497,7 @@ def test_plot_2D_taxfunc(
         )
 
         assert fig
+        plt.close()
     else:
         assert True
 

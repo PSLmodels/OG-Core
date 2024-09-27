@@ -5,6 +5,69 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2024-09-26 12:00:00
+
+### Added
+
+- Updates all of the documentation.
+    - Adds remittances to all instances of the household budget constraint
+    - Rewrites bequests and transfers components of household budget constraint in terms of individual variables in all instances
+    - Adds a household transfers section to `households.md` with subsections on bequests, remittances, government transfers, and universal basic income
+    - Changes all instances of $p_t Y_t$ to $Y_t
+    - Updates the steady-state equilibrium algorithm description in `equilibrium.md`
+    - Added updates to the government pensions descriptions in `government.md` and added `pensions` to all instances of the household budget constraint.
+    - Updates the docstrings in `tax.py` for the wealth tax ETR and MTR functions. The code is right. I just thought there was a clearer specification of the equations in LaTeX.
+- Adds remittances to the OG-Core code
+    - Adds aggregate remittances function `get_RM()` to `aggregates.py`
+    - Adds household remittances function `get_rm()` to `household.py`
+    - Adds four new remittance parameters: `alpha_RM_1`, `g_RM`, `alpha_RM_T`, `eta_RM`
+    - We model aggregate remittances as a percent of GDP in the first period, then growing at a specified rate that can deviate from the country growth rate until the cutoff rule period, after which the remittance growth rate trends back to the long-run model growth rate (growth rate in population and productivity). We also model remittances in reforms as being a percentage of baseline GDP. In this way, if remittance parameters are not changed in the reform, remittances remain at their baseline levels. The only way they change is if their parameter values are changed.
+    - Adds 3 tests using the `test_get_RM()` function in `test_aggregates.py`
+    - Adds 4 tests using the `test_get_rm()` function in `test_household.py`
+    - Changes the `initial_guess_r_SS` in two tests in `test_SS.py` because they were not solving with their current values
+- Increases `RC_SS` steady-state resource constraint tolerance from 1e-9 to 1e-8 because two `test_run_SS()` tests were failing in `test_SS.py` with resource constraints errors just bigger than 1e-9 (-2.29575914e-09 for [Baseline, small open] and -2.29575914e-09 for [Reform, small open]).
+- Increases `RC_TPI` transition path resource constraint tolerance from 1e-5 to 1e-4 in because one `test_run_TPI_full_run()` test was failing in `test_TPI.py` with a resource constraint error just bigger than 1e-5 (1.4459913381864586e-05 for `[Baseline, M=3 non-zero Kg]`).
+- Updated two directory path references that were out of date in `test_run_example.py`.
+- Updated expected value tuples and dictionaries in `test_txfunc.py`.
+
+## [0.12.0] - 2024-08-20 12:00:00
+
+### Added
+
+- Support for Python 3.12
+
+## [0.11.17] - 2024-08-18 12:00:00
+
+### Added
+
+- Description of `alpha_I` in docs
+- Updates valid range of the nominal UBI parameters
+
+### Bug Fix
+
+- Extrapolate `alpha_I` in `parameters.py`
+- Ensure `alpha_I` shape conforms in `TPI.py`
+- Fix formatting of labels in `constants.py`
+
+## [0.11.16] - 2024-08-10 12:00:00
+
+### Added
+
+- Added parameter script `make_params.py` that generates a markdown file for the documentation `parameters.md`. Updates `Makefile`, and GitHub Actions ([PR #963](https://github.com/PSLmodels/OG-Core/pull/963))
+- Updated debt-to-GDP plot labels ([PR #962](https://github.com/PSLmodels/OG-Core/pull/962))
+
+## [0.11.15] - 2024-07-30 12:00:00
+
+### Bug Fix
+
+- Make `OGcorePlots.mplstyle` importable from the package by adding it to `setup.py`
+
+## [0.11.14] - 2024-07-30 12:00:00
+
+### Added
+
+- Aesthetic updates to plotting functions in `parameter_plots.py` and `demographics.py`
+
 ## [0.11.13] - 2024-07-28 12:00:00
 
 ### Added
@@ -270,7 +333,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Version [0.7.0] on August 30, 2021 was the first time that the OG-USA repository was detached from all of the core model logic, which was named OG-Core. Before this version, OG-USA was part of what is now the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository. In the next version of OG-USA, we adjusted the version numbering to begin with 0.1.0. This initial version of 0.7.0, was sequential from what OG-USA used to be when the OG-Core project was called OG-USA.
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
-
+[0.12.0]: https://github.com/PSLmodels/OG-Core/compare/v0.11.17...v0.12.0
+[0.11.17]: https://github.com/PSLmodels/OG-Core/compare/v0.11.16...v0.11.17
+[0.11.16]: https://github.com/PSLmodels/OG-Core/compare/v0.11.15...v0.11.16
+[0.11.15]: https://github.com/PSLmodels/OG-Core/compare/v0.11.14...v0.11.15
+[0.11.14]: https://github.com/PSLmodels/OG-Core/compare/v0.11.13...v0.11.14
 [0.11.13]: https://github.com/PSLmodels/OG-Core/compare/v0.11.11...v0.11.13
 [0.11.11]: https://github.com/PSLmodels/OG-Core/compare/v0.11.10...v0.11.11
 [0.11.10]: https://github.com/PSLmodels/OG-Core/compare/v0.11.9...v0.11.10

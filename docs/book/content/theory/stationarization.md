@@ -49,6 +49,14 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
   - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
+* - $\hat{rm}_{j,s,t} \equiv \frac{rm_{j,s,t}}{e^{g_y t}}$
+  -
+  - $\hat{RM}_t \equiv \frac{RM_t}{e^{g_y t}\tilde{N}_t}$
+  -
+* - $\hat{pensions}_{j,s,t} \equiv \frac{pensions_{j,s,t}}{e^{g_y t}}$
+  -
+  -
+  -
 ```
 
 The usual definition of equilibrium would be allocations and prices such that households optimize {eq}`EqHH_ciDem2`, {eq}`EqHHeul_n`, {eq}`EqHHeul_b`, and {eq}`EqHHeul_bS`, firms optimize {eq}`EqFirmFOC_L` and {eq}`EqFirmFOC_K`, and markets clear {eq}`EqMarkClrLab`, {eq}`EqMarkClr_DtDdDf`, {eq}`EqMarkClr_KtKdKf`, {eq}`EqMarkClrGoods_Mm1`, {eq}`EqMarkClrGoods_M`, and {eq}`EqMarkClrBQ`. In this chapter, we show how to stationarize each of these characterizing equations so that we can use our fixed point methods described in Sections {ref}`SecEqlbSSsoln` and {ref}`SecEqlbNSSsoln` of Chapter {ref}`Chap_Eqm` to solve for the equilibria in the steady-state and transition path equilibrium definitions.
@@ -65,7 +73,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```
   ```{math}
   :label: EqStnrz_cmDem2
-    \hat{c}_{i,j,s,t} = \alpha_i\left(\frac{p_{i,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,i,t} \quad\forall i,j,s,t
+    \hat{c}_{i,j,s,t} = \alpha_i\left(\frac{[1+\tau^c_{i,t}]p_{i,t}}{p_t}\right)^{-1}\hat{c}_{j,s,t} + \hat{c}_{min,i,t} \quad\forall i,j,s,t
   ```
   ```{math}
   :label: EqStnrz_cmin
@@ -85,12 +93,12 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqStnrzHHBC
     p_t\hat{c}_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
-    &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} + \\
-    &\quad\quad\zeta_{j,s}\frac{\hat{BQ}_t}{\lambda_j\hat{\omega}_{s,t}} + \eta_{j,s,t}\frac{\hat{TR}_{t}}{\lambda_j\hat{\omega}_{s,t}} + \hat{ubi}_{j,s,t} - \hat{T}_{j,s,t}  \\
-    &\quad\forall j,t\quad\text{and}\quad s\geq E+1 \quad\text{where}\quad \hat{b}_{j,E+1,t}=0\quad\forall j,t
+    &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} ... \\
+    &\qquad +\: \hat{bq}_{j,s,t} + \hat{rm}_{j,s,t} + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t} - \hat{tax}_{j,s,t}  \\
+    &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
   ```
 
-  Because total bequests $BQ_t$ and total government transfers $TR_t$ grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population $\tilde{N}_t$. This stationarizes total bequests $\hat{BQ}_t$, total transfers $\hat{TR}_t$, and the respective population level in the denominator $\hat{\omega}_{s,t}$.
+  Because total bequests $BQ_t$ in $bq_{j,s,t}$ and total government transfers $TR_t$ in $tr_{j,s,t}$ grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population $\tilde{N}_t$. This stationarizes total bequests $\hat{BQ}_t$, total transfers $\hat{TR}_t$, and the respective population level in the denominator $\hat{\omega}_{s,t}$.
 
   We stationarize the Euler equations for labor supply {eq}`EqHHeul_n` by dividing both sides by $e^{g_y(1-\sigma)}$. On the left-hand-side, $e^{g_y}$ stationarizes the wage $\hat{w}_t$ and $e^{-\sigma g_y}$ goes inside the parentheses and stationarizes consumption $\hat{c}_{j,s,t}$. On the right-and-side, the $e^{g_y(1-\sigma)}$ terms cancel out.
 
@@ -100,27 +108,44 @@ The usual definition of equilibrium would be allocations and prices such that ho
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
   ```
 
-  We stationarize the Euler equations for savings {eq}`EqHHeul_b` and {eq}`EqHHeul_bS` by dividing both sides of the respective equations by $e^{-\sigma g_y t}$. On the right-hand-side of the equation, we then need to multiply and divide both terms by $e^{-\sigma g_y(t+1)}$, which leaves a multiplicative coefficient $e^{-\sigma g_y}$.
+  We stationarize the Euler equations for savings {eq}`EqHHeul_b` and {eq}`EqHHeul_bS` by dividing both sides of the respective equations by $e^{-\sigma g_y t}$. On the right-hand-side of the equation, we then need to multiply and divide both terms by $e^{-\sigma g_y(t+1)}$, which leaves a multiplicative coefficient $e^{-\sigma g_y}$,
 
   ```{math}
   :label: EqStnrz_eul_b
     \frac{(\hat{c}_{j,s,t})^{-\sigma}}{p_t} &= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \\
-    &\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr] - \hat{MTR}^w_{j,s+1,t+1}}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
+    &\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr] - \tau^{mtrw}_{t+1}}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
   ```
 
   ```{math}
   :label: EqStnrz_eul_bS
-    \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t \quad\text{and}\quad s = E+S
+    \frac{(\hat{c}_{j,E+S,t})^{-\sigma}}{p_t} = e^{-\sigma g_y}\chi^b_j(\hat{b}_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t
   ```
 
-Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\left[2 -
-        \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j,s,t}h^{w}+m^{w})}\right]\right)$
+  where $\tau^{mtrw}_{t+1}$ is defined in {eq}`EqMTRwealth` in Section {ref}`SecGovWealthTax` of Chapter {ref}`Chap_UnbalGBC`.
+
+  The stationarized versions of the remittance equations {eq}`EqHH_AggrRemit` and {eq}`EqHH_IndRemitRec` from Section {ref}`SecHHremit` in Chapter {ref}`Chap_House` are the following.
+
+  ```{math}
+  :label: EqHH_AggrRemitStnrz
+  \hat{RM}_t = \begin{cases}
+    &\alpha_{RM,1}\hat{Y}_t \quad\text{for}\quad t=1, \\
+    &\frac{\left(1 + g_{RM,t}\right)}{e^{g_y}\left(1 + \tilde{g}_{n,t}\right)}\hat{RM}_{t-1} \quad\text{for}\quad 2\leq t \leq T_{G1}, \\
+    &\left(\frac{t - T_{G1}}{T_{G2} - T_{G1}}\right)\alpha_{RM,T}\hat{Y}_t + \left(1 - \frac{t - T_{G1}}{T_{G2} - T_{G1}}\right)\frac{\left(1 + g_{RM,t}\right)}{e^{g_y}\left(1 + \tilde{g}_{n,t}\right)}\hat{RM}_{t-1} \:\:\text{for}\:\: T_{G1} < t < T_{G2}, \\
+    &\alpha_{RM,T}\hat{Y}_t \quad\forall t\geq T_{G2}
+  \end{cases}
+  ```
+
+  ```{math}
+  :label: EqHH_IndRemitRecStnrz
+  \hat{rm}_{j,s,t} = \eta_{RM,j,s,t}\frac{\hat{RM}_t}{\lambda_j\hat{\omega}_{s,t}} \quad\forall \quad j,s,t
+  ```
+
 
 (SecStnrzFirms)=
 ## Stationarized Firms Equations
 
-  The nonstationary production function {eq}`EqFirmsCESprodfun` for each industry can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_{m,t}$ on the left-hand-side. Because the general CES production function is homogeneous of degree 1, $F(xK,xK_g,xL) = xF(K,K_g,L)$, the right-hand-side of the production function is also stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
+  The nonstationary production function {eq}`EqFirmsCESprodfun` for each industry can be stationarized by dividing both sides by $e^{g_y t}\tilde{N}$. This stationarizes output $\hat{Y}_{m,t}$ on the left-hand-side. Because the general CES production function is homogeneous of degree one, $F(xK,xK_g,xL) = xF(K,K_g,L)$, the right-hand-side of the production function is also stationarized by dividing by $e^{g_y t}\tilde{N}_t$.
 
   ```{math}
   :label: EqStnrzCESprodfun
@@ -178,29 +203,28 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
 (SecStnrzGovt)=
 ## Stationarized Government Equations
 
-  Each of the tax rate functions $\tau^{etr}_{s,t}$, $\tau^{mtrx}_{s,t}$, and $\tau^{mtry}_{s,t}$ is stationary. The total tax liability function $T_{j,s,t}$ is growing at the rate of labor productivity growth $g_y$ This can be see by looking at the decomposition of the total tax liability function into the effective tax rate times total income {eq}`EqTaxCalcLiabETR`. The effective tax rate function is stationary, and household income is growing at rate $g_y$. So household total tax liability is stationarized by dividing both sides of the equation by $e^{g_y t}$.
+  Each of the tax rate functions $\tau^{etr,xy}_{s,t}$, $\tau^{etr,2}_{t}$ $\tau^{mtrx}_{s,t}$, $\tau^{mtry}_{s,t}$, and $\tau^{mtrw}_{t}$ is stationary. The total tax liability function $tax_{j,s,t}$ is growing at the rate of labor productivity growth $g_y$ This can be see by looking at the decomposition of the total tax liability function into the effective tax rate times total income {eq}`EqTaxCalcLiabETR`. The effective tax rate function is stationary, and household income is growing at rate $g_y$. So household total tax liability is stationarized by dividing both sides of the equation by $e^{g_y t}$.
 
   ```{math}
   :label: EqStnrzLiabETR
-    \hat{T}_{js,t} &= \tau^{etr}_{s,t}(\hat{x}_{j,s,t}, \hat{y}_{j,s,t})\left(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\right) \qquad\qquad\qquad\qquad\:\:\:\forall j,t \quad\text{and}\quad s\geq E+1 \\
-    &= \tau^{etr}_{s,t}(\hat{w}_t e_{j,s}n_{j,s,t}, r_{p,t}\hat{b}_{j,s,t})\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) \quad\forall j,t \quad\text{and}\quad s\geq E+1
+    \hat{tax}_{j,s,t} = \tau^{etr,xy}_{s,t}\left(\hat{w}_t e_{j,s}n_{j,s,t} + r_{p,t}\hat{b}_{j,s,t}\right) + \tau^{etr,w}_t\hat{b}_{j,s,t} \quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
   ```
 
   We can stationarize the simple expressions for total government spending on household transfers $TR_t$ in {eq}`EqUnbalGBCtfer` and on public goods $G_t$ in {eq}`EqUnbalGBC_Gt` by dividing both sides by $e^{g_y t}\tilde{N}_t$,
 
   ```{math}
   :label: EqStnrzNomGDP
-    p_t \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t} \hat{Y}_{m,t} \quad\forall t
+    \hat{Y}_t \equiv \sum_{m=1}^M p_{m,t} \hat{Y}_{m,t} \quad\forall t
   ```
 
   ```{math}
   :label: EqStnrzTfer
-    \hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t \hat{Y}_t \quad\forall t
+    \hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: \hat{Y}_t \quad\forall t
   ```
 
   ```{math}
   :label: EqStnrz_Gt
-    \hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t \hat{Y}_t \quad\forall t
+    \hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \quad\forall t
   ```
 
   where the time varying multipliers $g_{g,t}$ and $g_{tr,t}$, respectively, are defined in {eq}`EqStnrzClosureRule_Gt` and {eq}`EqStnrzClosureRule_TRt` below. These multipliers $g_{g,t}$ and $g_{tr,t}$ do not have a ``$\:\,\hat{}\,\:$'' on them because their specifications {eq}`EqUnbalGBCclosure_Gt` and {eq}`EqUnbalGBCclosure_TRt` that are functions of nonstationary variables are equivalent to {eq}`EqStnrzClosureRule_Gt` and {eq}`EqStnrzClosureRule_TRt` specified in stationary variables.
@@ -208,10 +232,10 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
   We can stationarize the expression for total government revenue $Rev_t$ in {eq}`EqUnbalGBCgovRev` by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.
   ```{math}
   :label: EqStnrzGovRev
-    \hat{Rev}_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_t\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} - \tau^{inv}_{m,t}\hat{I}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
-    &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \\
-    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p{i,t}\hat{c}_{i,j,s,t}}_{\text{consumption tax revenue}} \\
-    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{w}_{t}\hat{b}_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
+    \hat{Rev}_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_{m,t}\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} - \tau^{inv}_{m,t}\hat{I}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
+    &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr,xy}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p_{i,t}\hat{c}_{i,j,s,t}}_{\text{consumption tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,w}_{t}\hat{b}_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
   ```
 
   Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
@@ -224,7 +248,7 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
   The stationarized versions of the rule for total government infrastructure investment spending $I_{g,t}$ in {eq}`EqUnbalGBC_Igt` and the rule for government investment spending in each industry in {eq}`EqUnbalGBC_Igt` are found by dividing both sides of the respective equations by $e^{g_y t}\tilde{N}_t$.
   ```{math}
   :label: EqStnrz_Igt
-    \hat{I}_{g,t} = \alpha_{I,t}\: p_t\hat{Y}_t \quad\forall t
+    \hat{I}_{g,t} = \alpha_{I,t}\: \hat{Y}_t \quad\forall t
   ```
   ```{math}
   :label: EqStnrz_Igmt
@@ -260,7 +284,7 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
 
   ```{math}
   :label: EqStnrz_DY
-    \frac{\hat{D}_t}{p_t\hat{Y}_t} = \alpha_D \quad\text{for}\quad t\geq T
+    \hat{D}_t = \alpha_D\hat{Y}_t \quad\Rightarrow\quad \frac{\hat{D}_t}{\hat{Y}_t} = \alpha_D \quad\text{for}\quad t\geq T
   ```
 
   The three potential budget closure rules {eq}`EqUnbalGBCclosure_Gt`, {eq}`EqUnbalGBCclosure_TRt`, and {eq}`EqUnbalGBCclosure_TRGt` are the last government equations to stationarize. In each of the cases, we simply divide both sides by $e^{g_y t}\tilde{N}_t$.
@@ -268,12 +292,12 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
   ```{math}
   :label: EqStnrzClosureRule_Gt
   \begin{split}
-    &\hat{G}_t = g_{g,t}\:\alpha_{g}\: p_t\hat{Y}_t \\
+    &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
     &\text{where}\quad g_{g,t} =
     \begin{cases}
-      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}p_t\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g p_t\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}p_t\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g p_t\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t < T_{G1} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -283,12 +307,12 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
   ```{math}
   :label: EqStnrzClosureRule_TRt
   \begin{split}
-    &\hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: p_t\hat{Y}_t \\
+    &\hat{TR}_t = g_{tr,t}\:\alpha_{tr}\: \hat{Y}_t \\
     &\text{where}\quad g_{tr,t} =
     \begin{cases}
-      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}p_t\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} p_t\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}p_t\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} p_t\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\text{if}\quad t < T_{G1} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -298,18 +322,18 @@ Where $\hat{MTR}^w_{j,s,t} = \left( \frac{h^{w}p_{w}\hat{b}_{j,s,t}}{(\hat{b}_{j
   ```{math}
   :label: EqStnrzClosureRule_TRGt
   \begin{split}
-    &\hat{G}_t + \hat{TR}_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)p_t\hat{Y}_t \quad\Rightarrow\quad \hat{G}_t = g_{trg,t}\:\alpha_g\:p_t\hat{Y}_t \quad\text{and}\quad \hat{TR}_t = g_{trg,t}\:\alpha_{tr}\:p_t\hat{Y}_t \\
+    &\hat{G}_t + \hat{TR}_t = g_{trg,t}\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t \quad\Rightarrow\quad \hat{G}_t = g_{trg,t}\:\alpha_g\: \hat{Y}_t \quad\text{and}\quad \hat{TR}_t = g_{trg,t}\:\alpha_{tr}\: \hat{Y}_t \\
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
-      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}p_t\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t\hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}p_t\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)p_t\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\quad \text{if}\quad t < T_{G1} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```
 
 
-  ### Stationarized Pension System Equations
+### Stationarized Pension System Equations
 
 #### Stiationarized Notional Defined Contributions Equations
 
@@ -468,7 +492,7 @@ Stationarized pension amount derivative:
   ```{math}
   :label: EqStnrzMarkClrGoods_M
     \hat{Y}_{M,t} &= \hat{C}_{M,t} + \hat{I}_{M,t} + \hat{I}_{g,t} + \hat{G}_t + r_{p,t} \hat{K}^f_t + r_{p,t}\hat{D}^f_t ... \\
-    &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) \quad\forall t
+    &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) - \hat{RM}_t \quad\forall t
   ```
   where
   ```{math}
@@ -489,3 +513,5 @@ Stationarized pension amount derivative:
   :label: EqStnrzMarkClrBQ
     \hat{BQ}_{t} = \left(\frac{1+r_{p,t}}{1 + \tilde{g}_{n,t}}\right)\left(\sum_{s=E+2}^{E+S+1}\sum_{j=1}^J\rho_{s-1}\lambda_j\hat{\omega}_{s-1,t-1}\hat{b}_{j,s,t}\right) \quad\forall t
   ```
+
+  The demand side of aggregate consumption $\hat{C}_{m,t}$, aggregate investment $\hat{I}_{M,t}$, and aggregate bequests $\hat{BQ}_t$ is each indirectly affected by the size of remittances, described equations {eq}`EqHH_AggrRemit` and {eq}`EqHH_IndRemitRec` in Section {ref}`SecHHremit` of Chapter {ref}`Chap_House` and in the stationarized versions of those equations {eq}`EqHH_AggrRemitStnrz` and {eq}`EqHH_IndRemitRecStnrz` in Section {ref}`SecStnrzHH` in this Chapter.

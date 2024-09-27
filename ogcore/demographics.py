@@ -1,8 +1,9 @@
 """
-------------------------------------------------------------------------
-Functions for generating demographic objects necessary for the OG-USA
-model
-------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+Functions for generating demographic objects necessary for the OG-USA model. A
+list of UN official 3-digit country codes and corresponding 3-character country
+abbreviations is available at https://unstats.un.org/unsd/methodology/m49/
+-------------------------------------------------------------------------------
 """
 
 # Import packages
@@ -206,11 +207,15 @@ def get_fert(
 
     # Create plots if needed
     if graph:
+        if start_year == end_year:
+            years_to_plot = [start_year]
+        else:
+            years_to_plot = [start_year, end_year]
         if plot_path is not None:
             pp.plot_fert_rates(
                 [fert_rates_2D],
                 start_year=start_year,
-                years_to_plot=[start_year, end_year],
+                years_to_plot=years_to_plot,
                 path=plot_path,
             )
             return fert_rates_2D
@@ -218,7 +223,7 @@ def get_fert(
             fig = pp.plot_fert_rates(
                 [fert_rates_2D],
                 start_year=start_year,
-                years_to_plot=[start_year, end_year],
+                years_to_plot=years_to_plot,
             )
             return fert_rates_2D, fig
     else:
@@ -296,11 +301,15 @@ def get_mort(
 
     # Create plots if needed
     if graph:
+        if start_year == end_year:
+            years_to_plot = [start_year]
+        else:
+            years_to_plot = [start_year, end_year]
         if plot_path is not None:
             pp.plot_mort_rates_data(
                 mort_rates_2D,
                 start_year,
-                [start_year, end_year],
+                years_to_plot,
                 path=plot_path,
             )
             return mort_rates_2D, infmort_rate_vec
@@ -308,7 +317,7 @@ def get_mort(
             fig = pp.plot_mort_rates_data(
                 mort_rates_2D,
                 start_year,
-                [start_year, end_year],
+                years_to_plot,
             )
             return mort_rates_2D, infmort_rate_vec, fig
     else:
@@ -631,11 +640,15 @@ def get_imm_rates(
 
     # Create plots if needed
     if graph:
+        if start_year == end_year:
+            years_to_plot = [start_year]
+        else:
+            years_to_plot = [start_year, end_year]
         if plot_path is not None:
             pp.plot_imm_rates(
                 imm_rates_2D,
                 start_year,
-                [start_year, end_year],
+                years_to_plot,
                 path=plot_path,
             )
             return imm_rates_2D
@@ -643,7 +656,7 @@ def get_imm_rates(
             fig = pp.plot_imm_rates(
                 imm_rates_2D,
                 start_year,
-                [start_year, end_year],
+                years_to_plot,
             )
             return imm_rates_2D, fig
     else:
