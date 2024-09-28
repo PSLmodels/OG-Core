@@ -667,7 +667,19 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
         Ig_baseline = 0.0
     else:
         Ig_baseline = None
-    outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline, factor)
+    outer_loop_vars = (
+        bssmat,
+        nssmat,
+        r_p,
+        r,
+        w,
+        p_m,
+        Y,
+        BQ,
+        TR,
+        Ig_baseline,
+        factor,
+    )
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
