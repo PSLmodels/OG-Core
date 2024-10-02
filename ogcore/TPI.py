@@ -687,7 +687,7 @@ def run_TPI(p, client=None):
         D = np.zeros(p.T + p.S)
         D_d = np.zeros(p.T + p.S)
         D_f = np.zeros(p.T + p.S)
-        I_g = np.ones_like(Y) * ss_vars["I_g_ss"]
+        I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
     else:
         if p.baseline_spending:
             # Will set to TRbaseline here, but will be updated in TPI loop
