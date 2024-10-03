@@ -36,7 +36,7 @@ p1.update_specifications({"zeta_D": [0.0], "zeta_K": [0.0]})
 guesses1 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args1 = (bssmat, nssmat, None, None, p1, None)
+args1 = (bssmat, nssmat, None, None, None, p1, None)
 expected1 = np.array(
     [
         -0.03640424626041604,
@@ -61,7 +61,7 @@ p2.update_specifications({"zeta_D": [0.0], "zeta_K": [0.0]})
 guesses2 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07]
 )
-args2 = (bssmat, nssmat, None, 0.51, p2, None)
+args2 = (bssmat, nssmat, None, None, 0.51, p2, None)
 expected2 = np.array(
     [
         -0.0389819118896058,
@@ -87,7 +87,7 @@ p3.update_specifications(
 guesses3 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07]
 )
-args3 = (bssmat, nssmat, 0.13, 0.51, p3, None)
+args3 = (bssmat, nssmat, 0.13, 0.0, 0.51, p3, None)
 expected3 = np.array(
     [
         -0.042611174492217574,
@@ -110,7 +110,7 @@ p4 = Specifications(baseline=True)
 guesses4 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args4 = (bssmat, nssmat, None, None, p4, None)
+args4 = (bssmat, nssmat, None, None, None, p4, None)
 expected4 = np.array(
     [
         -0.04501723939772713,
@@ -135,7 +135,7 @@ p5.update_specifications({"zeta_D": [0.0], "zeta_K": [1.0]})
 guesses5 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args5 = (bssmat, nssmat, None, 0.51, p5, None)
+args5 = (bssmat, nssmat, None, None, 0.51, p5, None)
 expected5 = np.array(
     [
         -0.02690768327226259,
@@ -162,7 +162,7 @@ p6.update_specifications(
 guesses6 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args6 = (bssmat, nssmat, None, None, p6, None)
+args6 = (bssmat, nssmat, None, None, None, p6, None)
 expected6 = np.array(
     [
         -0.051097905293268894,
@@ -196,7 +196,7 @@ p7.update_specifications(
 guesses7 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args7 = (bssmat, nssmat, None, None, p7, None)
+args7 = (bssmat, nssmat, None, None, None, p7, None)
 expected7 = np.array(
     [
         -0.06985935377445636,
@@ -247,7 +247,7 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     ensure that output returned matches what it has been before.
     """
     # args =
-    (bssmat, nssmat, TR_ss, factor_ss, p, client) = args
+    (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client) = args
     p.baseline_dir = tmpdir
     p.output_base = tmpdir
 
@@ -297,7 +297,7 @@ param_updates4 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
 filename4 = "SS_solver_outputs_baseline_small_open.pkl"
 
 
-# Note that chaning the order in which these tests are run will cause
+# Note that changing the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
 @pytest.mark.parametrize(
@@ -336,6 +336,12 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     Yguess = 0.6376591201150815
     p_m_guess = np.ones(p.M)
 
+    # for new Ig_baseline arg
+    if p.baseline_spending:
+        Ig_baseline = 0.0  # tests only have zero infrastructure
+    else:
+        Ig_baseline = None
+
     test_dict = SS.SS_solver(
         b_guess,
         n_guess,
@@ -346,6 +352,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         Yguess,
         BQguess,
         TRguess,
+        Ig_baseline,
         factorguess,
         p,
         dask_client,
@@ -406,6 +413,10 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     else:
         rguess = 0.06483431412921253
     r_p_guess = rguess
+    if p.baseline_spending:
+        Ig_baseline = 0.0
+    else:
+        Ig_baseline = None
     wguess = firm.get_w_from_r(rguess, p, "SS")
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
@@ -423,6 +434,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         Yguess,
         BQguess,
         TRguess,
+        Ig_baseline,
         factorguess,
         p,
         dask_client,
@@ -518,9 +530,37 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+        outer_loop_vars = (
+            bssmat,
+            nssmat,
+            r_p,
+            r,
+            w,
+            p_m,
+            Y,
+            BQ,
+            TR,
+            None,
+            factor,
+        )
     else:
-        outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+        if p.baseline_spending:
+            Ig_baseline = 0.0
+        else:
+            Ig_baseline = None
+        outer_loop_vars = (
+            bssmat,
+            nssmat,
+            r_p,
+            r,
+            w,
+            p_m,
+            Y,
+            BQ,
+            TR,
+            Ig_baseline,
+            factor,
+        )
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
 
     try:
@@ -623,7 +663,23 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     BQ = np.ones(p.J) * 0.00019646295986015257
     p_m = np.array([1.0])
     r_p = 0.04260341179572245
-    outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+    if p.baseline_spending:
+        Ig_baseline = 0.0
+    else:
+        Ig_baseline = None
+    outer_loop_vars = (
+        bssmat,
+        nssmat,
+        r_p,
+        r,
+        w,
+        p_m,
+        Y,
+        BQ,
+        TR,
+        Ig_baseline,
+        factor,
+    )
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)

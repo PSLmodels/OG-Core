@@ -276,14 +276,37 @@ def test_get_r_gov(r, p, method, r_gov_expected):
     assert np.allclose(r_gov, r_gov_expected)
 
 
-def test_get_I_g():
+@pytest.mark.parametrize(
+    "baseline_spending,Ig_baseline,method",
+    [
+        (True, 3.5, "SS"),
+        (False, [3.5, 4.2], "TPI"),
+        (False, None, "SS"),
+        (False, None, "TPI"),
+    ],
+    ids=["baseline spend, SS", "baseline spend, TPI", "SS", "TPI"],
+)
+def test_get_I_g(baseline_spending, Ig_baseline, method):
     """
     Test function to determine investment in public capital
     """
+    p = Specifications()
+    p.baseline_spending = baseline_spending
     Y = np.array([0.2, 4.0])
-    alpha_I = np.array([0.1, 0.5])
-    expected = np.array([0.02, 2.0])
-    test_val = fiscal.get_I_g(Y, alpha_I)
+    p.alpha_I = np.array([0.1, 0.5])
+    p.alpha_bs_I = np.array([0.1, 1.0])
+    if method == "SS":
+        test_val = fiscal.get_I_g(Y[-1], Ig_baseline, p, method)
+        if baseline_spending:
+            expected = np.array([3.5])
+        else:
+            expected = np.array([2.0])
+    else:
+        test_val = fiscal.get_I_g(Y, Ig_baseline, p, method)
+        if baseline_spending:
+            expected = np.array([0.35, 4.2])
+        else:
+            expected = np.array([0.02, 2.0])
 
     assert np.allclose(test_val, expected)
 
