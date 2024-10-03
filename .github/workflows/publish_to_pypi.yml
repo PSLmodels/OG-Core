@@ -1,4 +1,4 @@
-name: Publish package to PyPI
+name: Tag, release, and publish package to PyPI
 
 on:
   push:
@@ -6,8 +6,37 @@ on:
       - master
 
 jobs:
+  versioning:
+    name: Update versioning
+    if: |
+      (github.repository == 'PSLmodels/OG-Core')
+      && !(github.event.head_commit.message == 'Update OG-Core')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.OGCORE_GITHUB }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build changelog
+        run: pip install yaml-changelog && make changelog
+      - name: Preview changelog update
+        run: ".github/get-changelog-diff.sh"
+      - name: Update changelog
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "."
+          committer_name: Github Actions[bot]
+          author_name: Github Actions[bot]
+          message: Update OG-Core
+          github_token: ${{ secrets.OGCORE_GITHUB }}
   deploy:
-    name: Publish to PyPI
+    name: Tag, release, Publish to PyPI
     if: github.repository == 'PSLmodels/OG-Core'
     runs-on: ubuntu-latest
     steps:
@@ -17,6 +46,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Publish new git tag
+        run: ".github/publish-tag.sh || true"
+      - name: Publish new release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body: |
+            ${{ steps.preview.outputs.changelog }}
+          name: ${{ github.ref[1:] }}
       - name: Build package
         run: make pip-package
       - name: Publish a Python distribution to PyPI

@@ -1,0 +1,12 @@
+- bump: patch
+  changes:
+    added:
+      - Adds the following files for automatic versioning, `.github/changelog_template.md`, `.github/get-changelog-diff.sh`, `.github/has-functional-changes.sh`, `.github/is-version-number-acceptable.sh`
+      - Adds "Check version" job to `build_and_test.yml` GH Action.
+      - Adds `tag_version.yml` GH Action on push to master branch.
+      - Adds three new functions to `Makefile`
+      - Adds starting `changelog.yaml`.
+      - Updates `contributor_guide.md`.
+      - Updates `README.md`.
+      - Renamed code formatting GH Action from `check_black.yml` to `check_format.yml` and updated the actions within.
+      - Removes hard reference to version number in `./ogcore/__init__.py` so that the version reference automatically updates.

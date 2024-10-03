@@ -63,18 +63,9 @@ If you have already completed the {ref}`Sec_SetupPython` and {ref}`Sec_SetupGit`
     OG-Core$ pip install -e .
     ```
 
-If you have made it this far, you've successfully made a remote copy (a
-fork) of the central `OG-Core` repo. That remote repo is hosted on GitHub.com at [https://github.com/PSLmodels/OG-Core](https://github.com/PSLmodels/OG-Core). You have also created a local repo (a [clone](https://help.github.com/articles/github-glossary/#clone)) that lives
-on your machine and only you can see; you will make your changes to
-the OG-Core model by editing the files in the `OG-Core`
-directory on your machine and then submitting those changes to your
-local repo. As a new contributor, you will push your changes from your
-local repo to your remote repo when you're ready to share that work
-with the team.
+If you have made it this far, you've successfully made a remote copy (a fork) of the central `OG-Core` repo. The main repository is hosted in the cloud at https://github.com/PSLmodels/OG-Core. Your fork of that repository is hosted in the cloud on your GitHub account at https://github.com/[YourGitHubHandle]/OG-Core. For example, Richard Evans' fork of OG-Core is at https://github.com/rickecon/OG-Core. You have also created a local repository (a [clone](https://help.github.com/articles/github-glossary/#clone)) of your fork that exists in the memory of your local machine that only you can see. You will make your changes to the OG-Core model by editing the files in the `OG-Core` directory on your machine and then submitting those changes to your local repo. As a new contributor, you will push your changes from your local repo to your remote repo when you're ready to share that work with the team.
 
-Don't be alarmed if the above paragraph is confusing. The following
-section introduces some standard Git practices and guides you through
-the contribution process.
+Don't be alarmed if the above paragraph is confusing. The following section introduces some standard Git practices and guides you through the contribution process.
 
 (Sec_Workflow)=
 ## Workflow
@@ -87,17 +78,11 @@ GitHub "issues" are an excellent way to ask questions, include code examples, an
 (Sec_GitHubPR)=
 ### Submitting a GitHub Pull Request
 
-The following text describes a typical workflow for changing
-`OG-Core`.  Different workflows may be necessary in some
-situations, in which case other contributors are here to help.
+The following text describes a typical workflow for changing `OG-Core`.  Different workflows may be necessary in some situations, in which case other contributors are here to help.
 
-1. Before you edit the `OG-Core` source code on your machine,
-   make sure you have the latest version of the central OG-Core
-   repository by executing the following **four** Git commands:
+1. Before you edit the `OG-Core` source code on your machine, make sure you have the latest version of the central OG-Core repository by executing the following **four** Git commands:
 
-   a. Tell Git to switch to the master branch in your local repo.
-      Navigate to your local `OG-Core` directory and enter the
-      following text at the command line:
+   a. Tell Git to switch to the master branch in your local repo. Navigate to your local `OG-Core` directory and enter the following text at the command line:
 
     ```console
         OG-Core$ git checkout master
@@ -109,9 +94,7 @@ situations, in which case other contributors are here to help.
         OG-Core$ git fetch upstream
     ```
 
-   c. Update your local master branch to contain the latest content of
-      the central master branch using [merge](https://help.github.com/articles/github-glossary/#merge). This step ensures that
-      you are working with the latest version of `OG-Core`:
+   c. Update your local master branch to contain the latest content of the central master branch using [merge](https://help.github.com/articles/github-glossary/#merge). This step ensures that you are working with the latest version of `OG-Core`:
 
     ```console
         OG-Core$ git merge upstream/master
@@ -123,20 +106,13 @@ situations, in which case other contributors are here to help.
         OG-Core$ git push origin master
     ```
 
-2. Create a new [branch](https://help.github.com/articles/github-glossary/#branch) on your local machine. Think of your
-   branches as a way to organize your projects. If you want to work on
-   this documentation, for example, create a separate branch for that
-   work. If you want to change an element of the `OG-Core` model, create
-   a different branch for that project:
+2. Create a new [branch](https://help.github.com/articles/github-glossary/#branch) on your local machine. Think of your branches as a way to organize your projects. If you want to work on this documentation, for example, create a separate branch for that work. If you want to change an element of the `OG-Core` model, create a different branch for that project:
 
     ```console
      OG-Core$ git checkout -b [new-branch-name]
     ```
 
-3. As you make changes, frequently check that your changes do not
-   introduce bugs or degrade the accuracy of the `OG-Core`. To do
-   this, run the following command from the command line from inside
-   the `OG-Core/ogcore` directory:
+3. As you make changes, frequently check that your changes do not introduce bugs or degrade the accuracy of the `OG-Core`. To do this, run the following command from the command line from inside the `OG-Core/ogcore` directory:
 
     ```console
      OG-Core/ogcore$  pytest
@@ -162,15 +138,42 @@ situations, in which case other contributors are here to help.
 
    You may need to resolve conflicts that arise when another contributor changed the same section of code that you are changing. Feel free to ask other contributors for guidance if this happens to you. If you do need to fix a merge conflict, re-run the test suite afterwards (step 4.)
 
-6. When you are ready for other team members to review your code, make your final commit and push your local branch to your remote repo:
+6. Make sure your changes conform to the formatting requirements of the OG-Core repository. We use the [`black`](https://pypi.org/project/black/) formatting package. You can automatically check the formatting of your changes by making sure your `ogcore-dev` conda environment is activated and typing the following commands. If you are on a Mac or Linux operating system, type the following commands in your terminal.
+    ```console
+    [Mac or Linux]OG-Core$ make format    or    [Windows]OG-Core$ black . -l 79    and    [Windows]OG-Core$ linecheck . --fix
+    OG-Core$ git status
+    OG-Core$ git add -A
+    OG-Core$ git commit -m "Black formatted files"
+    OG-Core$ git push origin [BranchName]
+    ```
 
+7. Update the empty [`changelog_entry.yaml`](https://github.com/PSLmodels/OG-Core/blob/master/changelog_entry.yaml) file. Our versioning process requires an updated to the version number for every pull request. This file describes the changes you have made in your pull request. It has the following format:
+    ```yaml
+    - bump: {major, minor, patch}
+      changes:
+        {added, removed, changed, fixed}:
+          - Updates these files and functions
+          - Removes these files and functions
+          - Solved this error or Issue
+          - Fixed this error or issue introduced in this PR
+    ```
+    A `major` bump moves the first digit of the version number up by one and would be used for a major update, refactor, or campatibility change. A `minor` bump moves the second digit of the version number up by one and would be used for adding a new significant feature or module. And a `patch` bump moves the third digit of the version number up by one and would be used for a minor addition, fix, or change to already existing calculation. Here is an example of an fictional `changelog_entry.yaml` file that could be submitted with a PR.
+    ```yaml
+    - bump: patch
+      changes:
+        added:
+          - Adds automatic versioning workflow by updating `build_and_test.yml`, adding `
+          - Updates `README.md`
+    ```
+
+
+8. When you are ready for other team members to review your code, make your final commit and push your local branch to your remote repo:
     ```console
      OG-Core$ git push origin [new-branch-name]
     ```
+9. From the GitHub.com user interface, [open a pull request](https://help.github.com/articles/creating-a-pull-request/#creating-the-pull-request).
 
-7. From the GitHub.com user interface, [open a pull request](https://help.github.com/articles/creating-a-pull-request/#creating-the-pull-request).
-
-8. When you open a GitHub pull request, a code coverage report will be automatically generated. If your branch adds new code that is not tested, the code coverage percent will decline and the number of untested statements ("misses" in the report) will increase. If this happens, you need to add to your branch one or more tests of your newly added code. Add tests so that the number of untested statements is the same as it is on the master branch.
+10. When you open a GitHub pull request, a code coverage report will be automatically generated. If your branch adds new code that is not tested, the code coverage percent will decline and the number of untested statements ("misses" in the report) will increase. If this happens, you need to add to your branch one or more tests of your newly added code. Add tests so that the number of untested statements is the same as it is on the master branch.
 
 
 (Sec_SimpleUsage)=

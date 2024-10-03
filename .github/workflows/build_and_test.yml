@@ -21,6 +21,25 @@ on:
       - '**.pkl'
       - '**.pbz2'
 jobs:
+  check-version:
+    name: Check version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build changelog
+        run: pip install yaml-changelog>=0.1.7 && make changelog
+      - name: Preview changelog update
+        run: ".github/get-changelog-diff.sh"
+      - name: Check version number has been properly updated
+        run: .github/is-version-number-acceptable.sh
   build:
     runs-on: ${{ matrix.os }}
     strategy:
