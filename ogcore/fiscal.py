@@ -78,7 +78,7 @@ def D_G_path(r_gov, dg_fixed_values, p):
         D[0] = D0_baseline
 
     if p.baseline_spending:
-        G = Gbaseline[: p.T]
+        G = p.alpha_bs_G[: p.T] * Gbaseline[: p.T]
     else:
         G = p.alpha_G[: p.T] * Y[: p.T]
 
@@ -340,7 +340,7 @@ def get_TR(
             total_tax_revenue - agg_pension_outlays - G - UBI_outlays - I_g
         )
     elif p.baseline_spending:
-        new_TR = TR
+        new_TR = p.alpha_bs_T[-1] * TR
     else:
         if method == "SS":
             new_TR = p.alpha_T[-1] * Y
@@ -375,7 +375,7 @@ def get_r_gov(r, p, method):
     return r_gov
 
 
-def get_I_g(Y, alpha_I):
+def get_I_g(Y, Ig_baseline, p, method="SS"):
     r"""
     Find investment in public capital
 
@@ -384,12 +384,24 @@ def get_I_g(Y, alpha_I):
 
     Args:
         Y (array_like): aggregate output
-        alpha_I (array_like): percentage of output invested in public capital
+        Ig_baseline (array_like): public infrastructure investment in
+            the baseliine simulation
+        p (OG-Core Specifications object): model parameters
+        method (str): either 'SS' for steady-state or 'TPI' for transition path
 
     Returns
         I_g (array_like): investment in public capital
     """
-    I_g = alpha_I * Y
+    if p.baseline_spending:
+        if method == "SS":
+            I_g = p.alpha_bs_I[-1] * Ig_baseline
+        else:
+            I_g = p.alpha_bs_I[: p.T] * Ig_baseline
+    else:
+        if method == "SS":
+            I_g = p.alpha_I[-1] * Y
+        else:
+            I_g = p.alpha_I[: p.T] * Y
 
     return I_g
 

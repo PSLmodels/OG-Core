@@ -225,7 +225,9 @@ def inner_loop(outer_loop_vars, p, client):
         scattered_p = client.scatter(p, broadcast=True) if client else p
 
     # unpack variables to pass to function
-    bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor = outer_loop_vars
+    bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline, factor = (
+        outer_loop_vars
+    )
 
     p_m = np.array(p_m)  # TODO: why is this a list otherwise?
     p_i = np.dot(p.io_matrix, p_m)
@@ -333,7 +335,7 @@ def inner_loop(outer_loop_vars, p, client):
     D, D_d, D_f, new_borrowing, _, new_borrowing_f = fiscal.get_D_ss(
         r_gov, Y, p
     )
-    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
+    I_g = fiscal.get_I_g(Y, Ig_baseline, p, "SS")
     K_g = fiscal.get_K_g(0, I_g, p, "SS")
 
     # Find wage rate consistent with open economy interest rate
@@ -372,7 +374,7 @@ def inner_loop(outer_loop_vars, p, client):
     Y_vec[-1] = firm.get_Y(K_vec[-1], K_g, L_vec[-1], p, "SS", -1)
     # Find GDP
     Y = (p_m * Y_vec).sum()
-    I_g = fiscal.get_I_g(Y, p.alpha_I[-1])
+    I_g = fiscal.get_I_g(Y, Ig_baseline, p, "SS")
     K_g = fiscal.get_K_g(0, I_g, p, "SS")
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
@@ -553,7 +555,20 @@ def inner_loop(outer_loop_vars, p, client):
 
 
 def SS_solver(
-    bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor, p, client, fsolve_flag=False
+    bmat,
+    nmat,
+    r_p,
+    r,
+    w,
+    p_m,
+    Y,
+    BQ,
+    TR,
+    Ig_baseline,
+    factor,
+    p,
+    client,
+    fsolve_flag=False,
 ):
     """
     Solves for the steady state distribution of capital, labor, as well
@@ -586,18 +601,30 @@ def SS_solver(
     if fsolve_flag:  # case where already solved via SS_fsolve
         maxiter_ss = 1
     if p.baseline_spending:
-        TR_ss = TR
+        TR_baseline = p.alpha_bs_T[-1] * TR
     if not p.budget_balance and not p.baseline_spending:
         Y = TR / p.alpha_T[-1]
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
         # Solve for the steady state levels of b and n, given w, r,
         # Y, BQ, TR, and factor
         if p.baseline_spending:
-            TR = TR_ss
+            TR = p.alpha_bs_T[-1] * TR_baseline
         if not p.budget_balance and not p.baseline_spending:
             Y = TR / p.alpha_T[-1]
 
-        outer_loop_vars = (bmat, nmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+        outer_loop_vars = (
+            bmat,
+            nmat,
+            r_p,
+            r,
+            w,
+            p_m,
+            Y,
+            BQ,
+            TR,
+            Ig_baseline,
+            factor,
+        )
 
         (
             euler_errors,
@@ -654,7 +681,7 @@ def SS_solver(
                 ).max()
         else:
             if p.baseline_spending:
-                TR = TR_ss
+                TR = p.alpha_bs_T[-1] * TR_baseline
             else:
                 TR = utils.convex_combo(new_TR, TR, nu_ss)
             dist = np.array(
@@ -695,7 +722,7 @@ def SS_solver(
     RM_ss = new_RM
     TR_ss = new_TR
     Yss = new_Y
-    I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
+    I_g_ss = fiscal.get_I_g(Yss, Ig_baseline, p, "SS")
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, "SS")
     Lss = aggr.get_L(nssmat, p, "SS")
     Bss = aggr.get_B(bssmat_splus1, p, "SS", False)
@@ -718,7 +745,7 @@ def SS_solver(
         Bss, K_demand_open_ss.sum(), D_d_ss, p.zeta_K[-1]
     )
     # Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
-    I_g_ss = fiscal.get_I_g(Yss, p.alpha_I[-1])
+    I_g_ss = fiscal.get_I_g(Yss, Ig_baseline, p, "SS")
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, "SS")
     MPKg_vec = np.zeros(p.M)
     for m in range(p.M):
@@ -1057,7 +1084,7 @@ def SS_fsolve(guesses, *args):
             implied outer loop variables
 
     """
-    (bssmat, nssmat, TR_ss, factor_ss, p, client) = args
+    (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client) = args
 
     # Rename the inputs
     r_p = guesses[0]
@@ -1078,7 +1105,19 @@ def SS_fsolve(guesses, *args):
     if not p.budget_balance and not p.baseline_spending:
         Y = TR / p.alpha_T[-1]
 
-    outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+    outer_loop_vars = (
+        bssmat,
+        nssmat,
+        r_p,
+        r,
+        w,
+        p_m,
+        Y,
+        BQ,
+        TR,
+        Ig_baseline,
+        factor,
+    )
 
     # Solve for the steady state levels of b and n, given w, r, TR and
     # factor
@@ -1236,7 +1275,15 @@ def run_SS(p, client=None):
                 Yguess = TRguess / p.alpha_T[-1]
                 factorguess = p.initial_guess_factor_SS
                 BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
-                ss_params_baseline = (b_guess, n_guess, None, None, p, client)
+                ss_params_baseline = (
+                    b_guess,
+                    n_guess,
+                    None,
+                    None,
+                    None,
+                    p,
+                    client,
+                )
                 if p.use_zeta:
                     BQguess = 0.12231465279007188
                     guesses = (
@@ -1285,6 +1332,7 @@ def run_SS(p, client=None):
             Yss,
             BQss,
             TR_ss,
+            None,
             factor_ss,
             p,
             client,
@@ -1364,13 +1412,22 @@ def run_SS(p, client=None):
             if p.use_zeta:
                 BQguess = 0.12231465279007188
         if p.baseline_spending:
-            TR_ss = TRguess
-            ss_params_reform = (b_guess, n_guess, TR_ss, factor, p, client)
+            TR_baseline = TRguess
+            Ig_baseline = ss_solutions["I_g_ss"]
+            ss_params_reform = (
+                b_guess,
+                n_guess,
+                TR_baseline,
+                Ig_baseline,
+                factor,
+                p,
+                client,
+            )
             if p.use_zeta:
                 guesses = (
                     [r_p_guess, rguess, wguess]
                     + list(p_m_guess)
-                    + [Yguess, BQguess, TR_ss]
+                    + [Yguess, BQguess, TR_baseline]
                 )
             else:
                 guesses = (
@@ -1378,7 +1435,7 @@ def run_SS(p, client=None):
                     + list(p_m_guess)
                     + [Yguess]
                     + list(BQguess)
-                    + [TR_ss]
+                    + [TR_baseline]
                 )
             sol = opt.root(
                 SS_fsolve,
@@ -1393,8 +1450,17 @@ def run_SS(p, client=None):
             p_m_ss = sol.x[3 : 3 + p.M]
             Yss = sol.x[3 + p.M]
             BQss = sol.x[3 + p.M + 1 : -1]
+            TR_ss = sol.x[-1]
         else:
-            ss_params_reform = (b_guess, n_guess, None, factor, p, client)
+            ss_params_reform = (
+                b_guess,
+                n_guess,
+                None,
+                None,
+                factor,
+                p,
+                client,
+            )
             if p.use_zeta:
                 guesses = (
                     [r_p_guess, rguess, wguess]
@@ -1435,6 +1501,8 @@ def run_SS(p, client=None):
         # Return SS values of variables
         fsolve_flag = True
         # Return SS values of variables
+        if not p.baseline_spending:
+            Ig_baseline = None
         output = SS_solver(
             b_guess,
             n_guess,
@@ -1445,6 +1513,7 @@ def run_SS(p, client=None):
             Yss,
             BQss,
             TR_ss,
+            Ig_baseline,
             factor,
             p,
             client,
