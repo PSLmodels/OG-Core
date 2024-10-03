@@ -516,6 +516,9 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-t"><code class="docutils literal notranslate"><span class="pre">alpha_T</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-g"><code class="docutils literal notranslate"><span class="pre">alpha_G</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-i"><code class="docutils literal notranslate"><span class="pre">alpha_I</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-bs-t"><code class="docutils literal notranslate"><span class="pre">alpha_bs_T</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-bs-g"><code class="docutils literal notranslate"><span class="pre">alpha_bs_G</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-bs-i"><code class="docutils literal notranslate"><span class="pre">alpha_bs_I</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-growthadj"><code class="docutils literal notranslate"><span class="pre">ubi_growthadj</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-017"><code class="docutils literal notranslate"><span class="pre">ubi_nom_017</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-1864"><code class="docutils literal notranslate"><span class="pre">ubi_nom_1864</span></code></a></li>
@@ -1033,9 +1036,30 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 </section>
 <section id="alpha-i">
 <h4><code class="docutils literal notranslate"><span class="pre">alpha_I</span></code><a class="headerlink" href="#alpha-i" title="Link to this heading">#</a></h4>
-<p><em>Description:</em> Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)<br />
+<p><em>Description:</em> Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital) when balanced budget is false.<br />
 <em>Value Type:</em> float<br />
 <em>Valid Range:</em> min = 0.0 and max = 0.3<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-bs-t">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_bs_T</span></code><a class="headerlink" href="#alpha-bs-t" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Proportional adjustment to government transfers relative to baseline amount when budget balance is true. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 9.9999e+103<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-bs-g">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_bs_G</span></code><a class="headerlink" href="#alpha-bs-g" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 9.9999e+103<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="alpha-bs-i">
+<h4><code class="docutils literal notranslate"><span class="pre">alpha_bs_I</span></code><a class="headerlink" href="#alpha-bs-i" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 9.9999e+103<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
 <section id="ubi-growthadj">
@@ -1650,6 +1674,9 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-t"><code class="docutils literal notranslate"><span class="pre">alpha_T</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-g"><code class="docutils literal notranslate"><span class="pre">alpha_G</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-i"><code class="docutils literal notranslate"><span class="pre">alpha_I</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-bs-t"><code class="docutils literal notranslate"><span class="pre">alpha_bs_T</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-bs-g"><code class="docutils literal notranslate"><span class="pre">alpha_bs_G</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-bs-i"><code class="docutils literal notranslate"><span class="pre">alpha_bs_I</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-growthadj"><code class="docutils literal notranslate"><span class="pre">ubi_growthadj</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-017"><code class="docutils literal notranslate"><span class="pre">ubi_nom_017</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi-nom-1864"><code class="docutils literal notranslate"><span class="pre">ubi_nom_1864</span></code></a></li>

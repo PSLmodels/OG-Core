@@ -464,6 +464,7 @@ document.write(`
 </li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#spending-in-the-reform-simulation">Spending in the <code class="docutils literal notranslate"><span class="pre">reform</span></code> simulation</a></li>
 </ul>
 </li>
 </ul>
@@ -912,6 +913,14 @@ document.write(`
 </section>
 </section>
 </section>
+<section id="spending-in-the-reform-simulation">
+<h4>Spending in the <code class="docutils literal notranslate"><span class="pre">reform</span></code> simulation<a class="headerlink" href="#spending-in-the-reform-simulation" title="Link to this heading">#</a></h4>
+<p>While aggregate spending on <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(TR\)</span>, and <span class="math notranslate nohighlight">\(I_g\)</span> in the baseline simulation are set as fractions of GDP, in the <code class="docutils literal notranslate"><span class="pre">reform</span></code> simulation, these spending amounts can be set in two different ways.  The method is controlled by the <code class="docutils literal notranslate"><span class="pre">baseline_spending</span></code> parameter.  If <code class="docutils literal notranslate"><span class="pre">baseline_spending=False</span></code>, the behavior of these spending is analgous to that in the baseline simulation; they are set as fractions of GDP, in this case <strong>GDP in the reform simulation</strong>. Thus, with the default assumption of <code class="docutils literal notranslate"><span class="pre">baseline_spending</span></code> it’s assumed that spending levels in these three categories are function of GDP in the reform.  In this case, users will see that, even with the parameters <span class="math notranslate nohighlight">\(\alpha_G\)</span>, <span class="math notranslate nohighlight">\(\alpha_T\)</span>, and <span class="math notranslate nohighlight">\(\alpha_I\)</span> are unchanged, the <em>level</em> of spending will change in the reform <em>if</em> GDP in the reform is different.</p>
+<p>With the assumption of <code class="docutils literal notranslate"><span class="pre">baseline_spending=True</span></code>, the level of spending in the reform is held to the level of spending in the baseline.  If the user wishes to adjust the level of spending, relative to the baseline level, in the reform, then the parameters <code class="docutils literal notranslate"><span class="pre">alpha_bs_G</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha_bs_T</span></code>, and <code class="docutils literal notranslate"><span class="pre">alpha_bs_I</span></code> can be used to proportionally increase or decrease the levels of spending on <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(TR\)</span>, and <span class="math notranslate nohighlight">\(I_g\)</span> in the reform simulation, relative to the levels in the baseline simulation. Note that the <code class="docutils literal notranslate"><span class="pre">alpha_bs_*</span></code> parameters are time varying, so the proportional change in spending can be different across time.  E.g., for government consumption expenditures, we’d have the reform amount of <span class="math notranslate nohighlight">\(G\)</span> determined as:</p>
+<div class="math notranslate nohighlight">
+\[  G^{reform}_t = \alpha^{BS}_{G,t}G^{baseline}_{t}\]</div>
+<p>Note that the budget closure rule (described in Section ref{<code class="docutils literal notranslate"><span class="pre">SecUnbalGBCcloseRule</span></code>}) still takes effect in the case of <code class="docutils literal notranslate"><span class="pre">baseline_spending=True</span></code>.  What this means is that the relation described above holds until the period in which the closure rules takes effect.  Once the closure rule begins, the path of <span class="math notranslate nohighlight">\(G\)</span> (and/or <span class="math notranslate nohighlight">\(TR\)</span>, depending on the closure rule used) will adjust as determined by the rule to close the government budget in the long run.</p>
+</section>
 </section>
 </section>
 <section id="government-tax-revenue">
@@ -1171,6 +1180,7 @@ document.write(`
 </li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#spending-in-the-reform-simulation">Spending in the <code class="docutils literal notranslate"><span class="pre">reform</span></code> simulation</a></li>
 </ul>
 </li>
 </ul>

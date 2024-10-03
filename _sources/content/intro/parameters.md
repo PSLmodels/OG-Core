@@ -412,9 +412,30 @@ _Out-of-Range Action:_ error
 
 
 ####  `alpha_I`  
-_Description:_ Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital)  
+_Description:_ Exogenous fraction of GDP that goes towards government investment in infrastructure (public capital) when balanced budget is false.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 0.3  
+_Out-of-Range Action:_ error  
+
+
+####  `alpha_bs_T`  
+_Description:_ Proportional adjustment to government transfers relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 9.9999e+103  
+_Out-of-Range Action:_ error  
+
+
+####  `alpha_bs_G`  
+_Description:_ Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 9.9999e+103  
+_Out-of-Range Action:_ error  
+
+
+####  `alpha_bs_I`  
+_Description:_ Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 9.9999e+103  
 _Out-of-Range Action:_ error  
 
 

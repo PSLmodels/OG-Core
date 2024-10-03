@@ -591,7 +591,7 @@ baseline_spending=True</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.get_I_g">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_I_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_I</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_I_g"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_I_g" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_I_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ig_baseline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SS'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_I_g"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_I_g" title="Link to this definition">#</a></dt>
 <dd><p>Find investment in public capital</p>
 <div class="math notranslate nohighlight">
 \[I_{g,t} = \alpha_{I,t}Y_{t}\]</div>
@@ -599,7 +599,10 @@ baseline_spending=True</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
-<li><p><strong>alpha_I</strong> (<em>array_like</em>) – percentage of output invested in public capital</p></li>
+<li><p><strong>Ig_baseline</strong> (<em>array_like</em>) – public infrastructure investment in
+the baseliine simulation</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – either ‘SS’ for steady-state or ‘TPI’ for transition path</p></li>
 </ul>
 </dd>
 </dl>

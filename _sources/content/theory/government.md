@@ -564,6 +564,17 @@ Total pension spending is the sum of the pension payments to each household in t
 
   Put description of growth-adjusted specification here.
 
+#### Spending in the `reform` simulation
+
+While aggregate spending on $G$, $TR$, and $I_g$ in the baseline simulation are set as fractions of GDP, in the `reform` simulation, these spending amounts can be set in two different ways.  The method is controlled by the `baseline_spending` parameter.  If `baseline_spending=False`, the behavior of these spending is analgous to that in the baseline simulation; they are set as fractions of GDP, in this case **GDP in the reform simulation**. Thus, with the default assumption of `baseline_spending` it's assumed that spending levels in these three categories are function of GDP in the reform.  In this case, users will see that, even with the parameters $\alpha_G$, $\alpha_T$, and $\alpha_I$ are unchanged, the *level* of spending will change in the reform *if* GDP in the reform is different.
+
+With the assumption of `baseline_spending=True`, the level of spending in the reform is held to the level of spending in the baseline.  If the user wishes to adjust the level of spending, relative to the baseline level, in the reform, then the parameters `alpha_bs_G`, `alpha_bs_T`, and `alpha_bs_I` can be used to proportionally increase or decrease the levels of spending on $G$, $TR$, and $I_g$ in the reform simulation, relative to the levels in the baseline simulation. Note that the `alpha_bs_*` parameters are time varying, so the proportional change in spending can be different across time.  E.g., for government consumption expenditures, we'd have the reform amount of $G$ determined as:
+
+  ```{math}
+    G^{reform}_t = \alpha^{BS}_{G,t}G^{baseline}_{t}
+  ```
+
+Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRule`}) still takes effect in the case of `baseline_spending=True`.  What this means is that the relation described above holds until the period in which the closure rules takes effect.  Once the closure rule begins, the path of $G$ (and/or $TR$, depending on the closure rule used) will adjust as determined by the rule to close the government budget in the long run.
 
 (SecUnbalGBCrev)=
 ## Government Tax Revenue
