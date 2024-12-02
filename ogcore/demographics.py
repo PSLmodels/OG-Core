@@ -116,7 +116,7 @@ def get_un_data(
             "360": "IDN",
             "608": "PHL",
             "764": "THA",
-            "076": "BRA"
+            "076": "BRA",
             "410": "KOR",
         }
         un_variable_dict = {
