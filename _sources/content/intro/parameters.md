@@ -548,7 +548,7 @@ _Out-of-Range Action:_ error
 ####  `h_wealth`  
 _Description:_ Numerator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
-_Valid Range:_ min = 0.0 and max = 10.0  
+_Valid Range:_ min = 1e-08 and max = 10.0  
 _Out-of-Range Action:_ error  
 
 
@@ -556,7 +556,7 @@ _Out-of-Range Action:_ error
 _Description:_ Term in denominator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Notes:_ Must be positive to avoid division by zero when computing ETR and MTR for wealth tax  
 _Value Type:_ float  
-_Valid Range:_ min = 1e-08 and max = 10.0  
+_Valid Range:_ min = 0.0 and max = 10.0  
 _Out-of-Range Action:_ error  
 
 
