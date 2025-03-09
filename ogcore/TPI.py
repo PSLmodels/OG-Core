@@ -67,10 +67,10 @@ def get_initial_SS_values(p):
     """
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
-    factor = ss_baseline_vars["factor_ss"]
-    B0 = aggr.get_B(ss_baseline_vars["bssmat_splus1"], p, "SS", True)
-    initial_b = ss_baseline_vars["bssmat_splus1"] * (
-        ss_baseline_vars["Bss"] / B0
+    factor = ss_baseline_vars["factor"]
+    B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
+    initial_b = ss_baseline_vars["b_sp1"] * (
+        ss_baseline_vars["B"] / B0
     )
     initial_n = ss_baseline_vars["nssmat"]
 
@@ -598,45 +598,45 @@ def run_TPI(p, client=None):
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
     guesses_b = utils.get_initial_path(
-        initial_b, ss_vars["bssmat_splus1"], p, "ratio"
+        initial_b, ss_vars["b_sp1"], p, "ratio"
     )
     guesses_n = utils.get_initial_path(
-        initial_n, ss_vars["nssmat"], p, "ratio"
+        initial_n, ss_vars["n"], p, "ratio"
     )
     b_mat = guesses_b
     n_mat = guesses_n
     ind = np.arange(p.S)
 
     # Get path for aggregate savings and labor supply
-    L_init = np.ones((p.T + p.S,)) * ss_vars["Lss"]
-    B_init = np.ones((p.T + p.S,)) * ss_vars["Bss"]
+    L_init = np.ones((p.T + p.S,)) * ss_vars["L"]
+    B_init = np.ones((p.T + p.S,)) * ss_vars["B"]
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
     B_init[1 : p.T] = aggr.get_B(b_mat[: p.T], p, "TPI", False)[: p.T - 1]
     B_init[0] = B0
-    K_init = B_init * ss_vars["Kss"] / ss_vars["Bss"]
+    K_init = B_init * ss_vars["K"] / ss_vars["B"]
     K = K_init
-    K_d = K_init * ss_vars["K_d_ss"] / ss_vars["Kss"]
-    K_f = K_init * ss_vars["K_f_ss"] / ss_vars["Kss"]
+    K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
+    K_f = K_init * ss_vars["K_f"] / ss_vars["K"]
     L = L_init
     B = B_init
-    K_g = np.ones_like(K) * ss_vars["K_g_ss"]
+    K_g = np.ones_like(K) * ss_vars["K_g"]
     Y = np.zeros_like(K)
     Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
-    Y[p.T :] = ss_vars["Yss"]
+    Y[p.T:] = ss_vars["Y"]
     # path for industry specific aggregates
-    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_vec_ss"].reshape(
+    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(
         1, p.M
     )
-    L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_vec_ss"].reshape(
+    L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(
         1, p.M
     )
-    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_vec_ss"].reshape(
+    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(
         1, p.M
     )
     # compute w
-    w = np.ones_like(K) * ss_vars["wss"]
+    w = np.ones_like(K) * ss_vars["w"]
     # compute goods prices
-    p_m = np.ones((p.T + p.S, p.M)) * ss_vars["p_m_ss"].reshape(1, p.M)
+    p_m = np.ones((p.T + p.S, p.M)) * ss_vars["p_m"].reshape(1, p.M)
     p_m[: p.T, :] = firm.get_pm(
         w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI"
     )
@@ -669,18 +669,18 @@ def run_TPI(p, client=None):
     r[: p.T] = np.squeeze(
         firm.get_r(Y[: p.T], K[: p.T], p_m[: p.T, :], p, "TPI")
     )
-    r[p.T :] = ss_vars["rss"]
+    r[p.T :] = ss_vars["r"]
     # For case where economy is small open econ
     r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
 
     # initial guesses at fiscal vars
     if p.budget_balance:
-        if np.abs(ss_vars["TR_ss"]) < 1e-13:
+        if np.abs(ss_vars["TR"]) < 1e-13:
             TR_ss2 = 0.0  # sometimes SS is very small but not zero,
             # even if taxes are zero, this get's rid of the
             # approximation error, which affects the pct changes below
         else:
-            TR_ss2 = ss_vars["TR_ss"]
+            TR_ss2 = ss_vars["TR"]
         TR = np.ones(p.T + p.S) * TR_ss2
         total_tax_revenue = TR - ss_vars["agg_pension_outlays"]
         G = np.zeros(p.T + p.S)
@@ -693,25 +693,25 @@ def run_TPI(p, client=None):
             # Will set to TRbaseline here, but will be updated in TPI loop
             # with call to fiscal.get_TR
             TR = np.concatenate(
-                (TRbaseline[: p.T], np.ones(p.S) * ss_vars["TR_ss"])
+                (TRbaseline[: p.T], np.ones(p.S) * ss_vars["TR"])
             )
             # Will set to Ig_baseline here, but will be updated in TPI loop
             # with call to fiscal.get_I_g
             I_g = np.concatenate(
-                (Ig_baseline[: p.T], np.ones(p.S) * ss_vars["I_g_ss"])
+                (Ig_baseline[: p.T], np.ones(p.S) * ss_vars["I_g"])
             )
             # Will set to Gbaseline here, but will be updated in TPI loop
             # with call to fiscal.D_G_path, which also does closure rule
             G = np.concatenate(
-                (Gbaseline[: p.T], np.ones(p.S) * ss_vars["Gss"])
+                (Gbaseline[: p.T], np.ones(p.S) * ss_vars["G"])
             )
         else:
             TR = p.alpha_T * Y
-            G = np.ones(p.T + p.S) * ss_vars["Gss"]
-            I_g = np.ones(p.T + p.S) * ss_vars["I_g_ss"]
-        D = np.ones(p.T + p.S) * ss_vars["Dss"]
-        D_d = D * ss_vars["D_d_ss"] / ss_vars["Dss"]
-        D_f = D * ss_vars["D_f_ss"] / ss_vars["Dss"]
+            G = np.ones(p.T + p.S) * ss_vars["G"]
+            I_g = np.ones(p.T + p.S) * ss_vars["I_g_"]
+        D = np.ones(p.T + p.S) * ss_vars["D"]
+        D_d = D * ss_vars["D_d"] / ss_vars["D"]
+        D_f = D * ss_vars["D_f"] / ss_vars["D"]
     if p.baseline:
         K_g0 = p.initial_Kg_ratio * Y[0]
     else:
@@ -721,7 +721,7 @@ def run_TPI(p, client=None):
 
     # Compute other interest rates
     r_gov = fiscal.get_r_gov(r, p, "TPI")
-    r_p = np.ones_like(r) * ss_vars["r_p_ss"]
+    r_p = np.ones_like(r) * ss_vars["r_p"]
     MPKg = np.zeros((p.T, p.M))
     for m in range(p.M):
         MPKg[:, m] = np.squeeze(
@@ -747,14 +747,14 @@ def run_TPI(p, client=None):
         BQ = np.zeros((p.T + p.S, p.J))
         for j in range(p.J):
             BQ[:, j] = (
-                list(np.linspace(BQ0[j], ss_vars["BQss"][j], p.T))
-                + [ss_vars["BQss"][j]] * p.S
+                list(np.linspace(BQ0[j], ss_vars["BQ"][j], p.T))
+                + [ss_vars["BQ"][j]] * p.S
             )
         BQ = np.array(BQ)
     else:
         BQ = (
-            list(np.linspace(BQ0, ss_vars["BQss"], p.T))
-            + [ss_vars["BQss"]] * p.S
+            list(np.linspace(BQ0, ss_vars["BQ"], p.T))
+            + [ss_vars["BQ"]] * p.S
         )
         BQ = np.array(BQ)
 
