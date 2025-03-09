@@ -68,7 +68,7 @@ git-pr:
 
 .PHONY=build-docs
 build-docs:
-	@cd ./docs ; python make_params.py; jb build ./book
+	@cd ./docs ; python make_params.py; python make_vars.py; jb build ./book
 
 format:
 	black . -l 79
