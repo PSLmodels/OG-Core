@@ -17,11 +17,7 @@ from ogcore.utils import safe_read_pickle
 import matplotlib.pyplot as plt
 
 # Use a custom matplotlib style file for plots
-style_file_url = (
-    "https://raw.githubusercontent.com/PSLmodels/OG-Core/"
-    + "master/ogcore/OGcorePlots.mplstyle"
-)
-plt.style.use(style_file_url)
+plt.style.use("ogcore.OGcorePlots")
 
 
 def main():
