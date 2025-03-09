@@ -703,7 +703,7 @@ def dynamic_revenue_decomposition(
     # Business tax revenue from the baseline simulation
     tax_rev_dict["biz"]["A"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        base_tpi["Y_m][:T, :],
+        base_tpi["Y_m"][:T, :],
         base_tpi["L_m"][:T, :],
         base_tpi["K_m"][:T, :],
         base_tpi["p_m"][:T],
