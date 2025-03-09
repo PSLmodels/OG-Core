@@ -1,3 +1,11 @@
+import json
+import os
+
+# Read in json file
+cur_dir = os.path.dirname(os.path.realpath(__file__))
+file = os.path.join(cur_dir, "model_variables.json")
+var_metadata = json.load(file)
+
 SHOW_RUNTIME = False  # Flag to display RuntimeWarnings when run model
 
 REFORM_DIR = "OUTPUT_REFORM"
@@ -6,117 +14,9 @@ BASELINE_DIR = "OUTPUT_BASELINE"
 # Default year for model runs
 DEFAULT_START_YEAR = 2025
 
+VAR_LABELS = dict([(k, v["label"]) for k, v in var_metadata.items()])
 
-VAR_LABELS = {
-    "Y": "GDP ($Y_t$)",
-    "C": "Consumption ($C_t$)",
-    "L": "Labor ($L_t$)",
-    "G": "Government Expenditures ($G_t$)",
-    "TR": "Lump sum transfers ($TR_t$)",
-    "B": "Wealth ($B_t$)",
-    "I_total": "Investment ($I_t$)",
-    "K": "Capital Stock ($K_t$)",
-    "Y_vec": "Output ($Y_t$)",
-    "C_vec": "Consumption ($C_t$)",
-    "L_vec": "Labor ($L_t$)",
-    "K_vec": "Capital Stock ($K_t$)",
-    "K_d": "Domestically-owned Capital Stock ($K^d_t$)",
-    "K_f": "Foreign-owned Capital Stock ($K^f_t$)",
-    "D": "Government Debt ($D_t$)",
-    "D_d": "Domestically-owned Gov Debt ($D^d_t$)",
-    "D_f": "Foreign-owned Gov Debt ($D^f_t$)",
-    "r": "Real interest rate ($r_t$)",
-    "r_gov": "Real interest rate on gov debt ($r_{gov,t}$)",
-    "r_p": "Real interest rate on HH portfolio ($r_{p,t}$)",
-    "w": "Wage rate",
-    "BQ": "Aggregate bequests ($BQ_{j,t}$)",
-    "RM": "Aggregate remittances ($RM_t$)",
-    "total_tax_revenue": "Total tax revenue ($REV_t$)",
-    "business_tax_revenue": "Business tax revenue",
-    "iit_revenue": "Individual income tax revenue",
-    "payroll_tax_revenue": "Payroll tax revenue",
-    "iit_payroll_tax_revenue": "IIT and payroll tax revenue",
-    "n_mat": "Labor Supply ($n_{j,s,t}$)",
-    "c_path": "Consumption ($c_{j,s,t}$)",
-    "bmat_splus1": "Savings ($b_{j,s+1,t+1}$)",
-    "bq_path": "Bequests ($bq_{j,s,t}$)",
-    "rm_path": "Remittances ($rm_{j,s,t}$)",
-    "bmat_s": "Savings ($b_{j,s,t}$)",
-    "y_before_tax_mat": "Before tax income",
-    "etr_path": "Effective Tax Rate ($ETR_{j,s,t}$)",
-    "mtrx_path": "Marginal Tax Rate, Labor Income ($MTRx_{j,s,t}$)",
-    "mtry_path": "Marginal Tax Rate, Capital Income ($MTRy_{j,s,t}$)",
-    "tax_path": "Total Taxes",
-    "nssmat": "Labor Supply ($\\bar{n}_{j,s}$)",
-    "bssmat_s": "Savings ($\\bar{b}_{j,s}$)",
-    "bssmat_splus1": "Savings ($\\bar{b}_{j,s+1}$)",
-    "cssmat": "Consumption ($\\bar{c}_{j,s}$)",
-    "yss_before_tax_mat": "Before-tax Income",
-    "etr_ss": "Effective Tax Rate ($\\bar{ETR}_{j,s}$)",
-    "mtrx_ss": "Marginal Tax Rate, Labor Income ($\\bar{MTRx}_{j,s}$)",
-    "mtry_ss": "Marginal Tax Rate, Capital Income ($\\bar{MTRy}_{j,s}$)",
-    "ETR": "Effective Tax Rates",
-    "MTRx": "Marginal Tax Rates on Labor Income",
-    "MTRy": "Marginal Tax Rates on Capital Income",
-    "etr": "Effective Tax Rates",
-    "mtrx": "Marginal Tax Rates on Labor Income",
-    "mtry": "Marginal Tax Rates on Capital Income",
-    "Yss": "GDP ($\\bar{Y}$)",
-    "Css": "Consumption ($\\bar{C}$)",
-    "Lss": "Labor ($\\bar{L}$)",
-    "Gss": "Government Expenditures ($\\bar{G}$)",
-    "TR_ss": "Lump sum transfers, ($\\bar{TR}$)",
-    "Bss": "Wealth ($\\bar{B}$)",
-    "Iss_total": "Investment ($\\bar{I}$)",
-    "Kss": "Capital Stock ($\\bar{K}$)",
-    "K_d_ss": "Domestically-owned Capital Stock ($\\bar{K}^d$)",
-    "K_f_ss": "Foreign-owned Capital Stock ($\\bar{K}^f$)",
-    "Dss": "Government Debt ($\\bar{D}$)",
-    "D_d_ss": "Domestically-owned Gov Debt ($\\bar{D}^d$)",
-    "D_f_ss": "Foreign-owned Gov Debt ($\\bar{D}^f$)",
-    "rss": "Real interest rate ($\\bar{r}$)",
-    "r_gov_ss": "Real interest rate on gov debt ($\\bar{r}_{gov}$)",
-    "r_p_ss": "Real interest rate on HH portfolio ($\\bar{r}_{hh}$)",
-    "wss": "Wage rate ($\\bar{w}$)",
-    "BQss": "Aggregate bequests ($\\bar{BQ}_{j}$)",
-    "RMss": "Aggregate remittances ($\\bar{RM}$)",
-    "debt_service_ss": "Debt service cost ($\\bar{r}_{gov}\\bar{D}$)",
-    "D/Y": "Debt to GDP ratio",
-    "T_Pss": "Government Pensions",
-}
-
-ToGDP_LABELS = {
-    "Y": "GDP-to-GDP (=1 ;-))",
-    "B": "Savings-to-GDP ($B_{t}/Y_t$)",
-    "C": "Consumption-to-GDP ($C_{t}/Y_t$)",
-    "D": "Debt-to-GDP ($D_{t}/Y_t$)",
-    "D_d": "Domestically-owned Debt-to-GDP ($D^d_{t}/Y_t$)",
-    "D_f": "Foreign-owned Debt-to-GDP ($D^f_{t}/Y_t$)",
-    "G": "Govt Spending-to-GDP ($G_{t}/Y_t$)",
-    "K": "Capital-Output Ratio ($K_{t}/Y_t$)",
-    "K_d": "Domestically-owned Capital-Output Ratio ($K^d_{t}/Y_t$)",
-    "K_f": "Foreign-owned Capital-Output Ratio ($K^f_{t}/Y_t$)",
-    "K_g": "Infrastructure-Output Ratio ($K^g_{t}/Y_t$)",
-    "C": "Consumption-Output Ratio ($C_{t}/Y_t$)",
-    "I": "Investment-Output Ratio ($I_{t}/Y_t$)",
-    "I_total": "Investment-Output Ratio ($I_{t}/Y_t$)",
-    "I_d": "Domestic Investment-Output Ratio ($I^d_{t}/Y_t$)",
-    "I_g": "Infrastructure Investment-Output Ratio ($I^g_{t}/Y_t$)",
-    "total_tax_revenue": "Tax Revenue-to-GDP ($REV_{t}/Y_t$)",
-    "TR": "Transfer Spending-to-GDP ($TR_{t}/Y_t$)",
-    "BQ": "Bequests-to-GDP ($BQ_{t}/Y_t$)",
-    "RM": "Remittances-to-GDP ($RM_{t}/Y_t$)",
-    "total_tax_revenue": "Tax Revenue-to-GDP ($Revenue_{t}/Y_t$)",
-    "business_tax_revenue": "Corporate Tax Revenue-to-GDP",
-    "iit_revenue": "Personal Income Tax Revenue-to-GDP",
-    "iit_payroll_revenue": "Personal Income + Payroll Tax Revenue-to-GDP",
-    "payroll_tax_revenue": "Payroll Tax Revenue-to-GDP",
-    "bequest_tax_revenue": "Bequest Tax Revenue-to-GDP",
-    "wealth_tax_revenue": "Wealth Tax Revenue-to-GDP",
-    "cons_tax_revenue": "Consumption Tax Revenue-to-GDP",
-    "agg_pension_outlays": "Pension Outlays-to-GDP ($Pensions_{t}/Y_t$)",
-    "UBI_path": "UBI Outlays-to-GDP ($UBI_{t}/Y_t$)",
-}
+ToGDP_LABELS = dict([(k, v["toGDP_label"]) for k, v in var_metadata.items()])
 
 GROUP_LABELS = {
     7: {
