@@ -1,6 +1,7 @@
 {
     "Y": {
       "desc": "Aggregate output, GDP",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -9,6 +10,7 @@
     },
     "B": {
       "desc": "Aggregate household savings",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -17,6 +19,7 @@
     },
     "K": {
       "desc": "Aggregate capital stock",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -25,6 +28,7 @@
     },
     "K_f": {
       "desc": "Aggregate capital stock owned by foreign investors",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -33,6 +37,7 @@
     },
     "K_d": {
       "desc": "Aggregate capital stock owned by domestic investors",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -41,6 +46,7 @@
     },
     "L": {
       "desc": "Aggregate labor",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -49,6 +55,7 @@
     },
     "C": {
       "desc": "Aggregate consumption",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -57,6 +64,7 @@
     },
     "I": {
       "desc": "Aggregate investment",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -65,6 +73,7 @@
     },
     "I_total": {
       "desc": "Aggregate investment, not account for immigrant investment",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -73,6 +82,7 @@
     },
     "I_d": {
       "desc": "Aggregate investment for domestic sources",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -81,6 +91,7 @@
     },
     "K_g": {
       "desc": "Aggregate stock of infrastructure",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -89,6 +100,7 @@
     },
     "I_g": {
       "desc": "Aggregate investment in infrastructure",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -97,6 +109,7 @@
     },
     "BQ": {
       "desc": "Aggregate bequests",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "TxJ or T (if use_zeta=True)",
       "SS dimensions": "J or scalar if use_zeta=True)",
@@ -105,6 +118,7 @@
     },
     "RM": {
       "desc": "Aggregate remittances",
+      "section": "Economic Aggregates",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -113,6 +127,7 @@
     },
     "Y_m": {
       "desc": "Total output by industry",
+      "section": "Production Sector/Consumption Good Aggregates",
       "type": "array-like",
       "TPI dimensions": "TxM",
       "SS dimensions": "M",
@@ -121,6 +136,7 @@
     },
     "K_m": {
       "desc": "Total capital stock by industry",
+      "section": "Production Sector/Consumption Good Aggregates",
       "type": "array-like",
       "TPI dimensions": "TxM",
       "SS dimensions": "M",
@@ -129,6 +145,7 @@
     },
     "L_m": {
       "desc": "Total labor by industry",
+      "section": "Production Sector/Consumption Good Aggregates",
       "type": "array-like",
       "TPI dimensions": "TxM",
       "SS dimensions": "M",
@@ -137,6 +154,7 @@
     },
     "C_i": {
       "desc": "Total consumption by consumption good",
+      "section": "Production Sector/Consumption Good Aggregates",
       "type": "array-like",
       "TPI dimensions": "TxI",
       "SS dimensions": "I",
@@ -145,6 +163,7 @@
     },
     "TR": {
       "desc": "Aggregate government, non-pension transfer spending",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -153,6 +172,7 @@
     },
     "agg_pension_outlays": {
       "desc": "Aggregate government pension outlays",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -161,6 +181,7 @@
     },
     "G": {
       "desc": "Aggregate government consumption expenditures",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -169,6 +190,7 @@
     },
     "UBI": {
         "desc": "Aggregate universal basic income outlays",
+        "section": "Government Revenues, Outlays, and Debt",
         "type": "array-like",
         "TPI dimensions": "T",
         "SS dimensions": "scalar",
@@ -177,6 +199,7 @@
       },
     "total_tax_revenue": {
       "desc": "Total tax revenue",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -185,6 +208,7 @@
     },
     "business_tax_revenue": {
       "desc": "Total corporate income tax revenue",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -193,6 +217,7 @@
     },
     "iit_payroll_tax_revenue": {
       "desc": "Total tax revenue from personal income and payroll taxes",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -201,6 +226,7 @@
     },
     "iit_tax_revenue": {
       "desc": "Total tax revenue from personal income taxes",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -209,6 +235,7 @@
     },
     "payroll_tax_revenue": {
       "desc": "Total tax revenue from payroll taxes (i.e., social security contributions)",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -217,6 +244,7 @@
     },
     "bequest_tax_revenue": {
       "desc": "Total tax revenue from taxes on bequests",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -225,6 +253,7 @@
     },
     "wealth_tax_revenue": {
       "desc": "Total tax revenue from wealth taxes",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -233,6 +262,7 @@
     },
     "cons_tax_revenue": {
       "desc": "Total tax revenue from consumption taxes",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -241,6 +271,7 @@
     },
     "D": {
       "desc": "Total government debt",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -249,6 +280,7 @@
     },
     "D_f": {
       "desc": "Total government debt held by foreign investors",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -257,6 +289,7 @@
     },
     "D_d": {
       "desc": "Total government debt held by domestic investors",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -265,6 +298,7 @@
     },
     "new_borrowing": {
       "desc": "New government borrowing, equal to budget deficit",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -273,6 +307,7 @@
     },
     "debt_service": {
       "desc": "Total interest payments on government debt",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -281,6 +316,7 @@
     },
     "new_borrowing_f": {
       "desc": "New government borrowing from foreign investors",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -289,6 +325,7 @@
     },
     "debt_service_f": {
       "desc": "Government debt interest payments made to foreign investors",
+      "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -297,6 +334,7 @@
     },
     "r": {
       "desc": "Real rate of return on private capital per model period.",
+      "section": "Prices",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -305,6 +343,7 @@
     },
     "r_gov": {
       "desc": "Real rate of return on government debt per model period.",
+      "section": "Prices",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -313,6 +352,7 @@
     },
     "r_p": {
       "desc": "Real rate of return on household investment portfolio per model period.",
+      "section": "Prices",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -321,6 +361,7 @@
     },
     "w": {
       "desc": "Wage rate per effective labor hour",
+      "section": "Prices",
       "type": "array-like",
       "TPI dimensions": "T",
       "SS dimensions": "scalar",
@@ -329,6 +370,7 @@
     },
     "p_m": {
         "desc": "Price of output in each industry. Normalized so that price of industry M output is 1 ($p_{m,t}=1$)",
+        "section": "Prices",
         "type": "array-like",
         "TPI dimensions": "TxM",
         "SS dimensions": "M",
@@ -337,6 +379,7 @@
     },
     "p_i": {
         "desc": "Price of output in each industry",
+        "section": "Prices",
         "type": "array-like",
         "TPI dimensions": "TxI",
         "SS dimensions": "I",
@@ -345,6 +388,7 @@
     },
     "p_tilde": {
         "desc": "Price of composite output good",
+        "section": "Prices",
         "type": "array-like",
         "TPI dimensions": "T",
         "SS dimensions": "scalar",
@@ -353,6 +397,7 @@
     },
     "b_sp1": {
         "desc": "Household savings",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -361,6 +406,7 @@
     },
     "b_s": {
         "desc": "Household wealth (equal to savings from last period)",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -369,6 +415,7 @@
     },
     "n": {
         "desc": "Household labor supply",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -377,6 +424,7 @@
     },
     "c": {
         "desc": "Household consumption of composite good",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -385,6 +433,7 @@
     },
     "c_i": {
         "desc": "Household consumption of differentiated consumption goods",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJxI",
         "SS dimensions": "SxJxI",
@@ -393,6 +442,7 @@
     },
     "bq": {
         "desc": "Household bequest received",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -401,6 +451,7 @@
     },
     "rm": {
         "desc": "Household remittances received",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -409,6 +460,7 @@
     },
     "tr": {
         "desc": "Government transfers received by households",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -417,6 +469,7 @@
     },
     "ubi": {
         "desc": "Universal basic income received by households",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -425,6 +478,7 @@
     },
     "before_tax_income": {
         "desc": "Household before tax income",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -433,6 +487,7 @@
     },
     "hh_taxes": {
         "desc": "Net taxes paid by households (taxes - transfers)",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -441,6 +496,7 @@
     },
     "etr": {
         "desc": "Effective tax rate, income and payroll taxes",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -449,6 +505,7 @@
     },
     "mtrx": {
         "desc": "Marginal tax rate on labor income",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -457,6 +514,7 @@
     },
     "mtry": {
         "desc": "Marginal tax rate on capital income",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -464,7 +522,8 @@
         "toGDP_label": ""
     },
     "theta": {
-        "desc": "Replacement rate for US-style social security pension system",
+        "desc": "Replacement rate for US-style social security pension system.  Steady-state only.",
+        "section": "Household Variables",
         "type": "array-like",
         "TPI dimensions": "",
         "SS dimensions": "J",
@@ -472,7 +531,8 @@
         "toGDP_label": ""
     },
     "factor": {
-        "desc": "Factor adjustment to convert from model units to local currency units to match mean income in local currency units",
+        "desc": "Factor adjustment to convert from model units to local currency units to match mean income in local currency units. Steady-state only.",
+        "section": "Model Scaling and Fit",
         "type": "scalar",
         "TPI dimensions": "",
         "SS dimensions": "scalar",
@@ -481,6 +541,7 @@
     },
     "euler_savings": {
         "desc": "Errors in household FOC for choice of savings",
+        "section": "Model Scaling and Fit",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -489,6 +550,7 @@
     },
     "euler_laborleisure": {
         "desc": "Errors in household FOC for choice of labor",
+        "section": "Model Scaling and Fit",
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
@@ -497,11 +559,11 @@
     },
     "resource_constraint_error": {
         "desc": "Errors in resource constraint",
+        "section": "Model Scaling and Fit",
         "type": "array-like",
         "TPI dimensions": "T",
         "SS dimensions": "scalar",
         "label": "Resource Constraint Error",
         "toGDP_label": ""
-    },
-
+    }
 }
