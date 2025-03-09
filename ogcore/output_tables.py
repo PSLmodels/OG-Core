@@ -164,7 +164,7 @@ def macro_table(
 def macro_table_SS(
     base_ss,
     reform_ss,
-    var_list=["Yss", "Css", "Kss", "Lss", "rss", "wss"],
+    var_list=["Y", "C", "K", "L", "r", "w"],
     table_format=None,
     path=None,
 ):
@@ -198,8 +198,8 @@ def macro_table_SS(
             diff = ((reform_ss[v] - base_ss[v]) / base_ss[v]) * 100
         else:
             diff = (
-                reform_ss["Dss"] / reform_ss["Yss"]
-                - base_ss["Dss"] / base_ss["Yss"]
+                reform_ss["D"] / reform_ss["Y"]
+                - base_ss["D"] / base_ss["Y"]
             )
         table_dict["% Change (or pp diff)"].append(diff)
         # Make df with dict so can use pandas functions
@@ -425,7 +425,7 @@ def wealth_moments_table(
         "Model": [],
     }
     base_ineq = Inequality(
-        base_ss["bssmat_splus1"],
+        base_ss["b_sp1"],
         base_params.omega_SS,
         base_params.lambdas,
         base_params.S,
@@ -585,12 +585,12 @@ def dynamic_revenue_decomposition(
            resulting series of tax revenues. Call these series for the
            baseline and reform A and D, respectively.
         2. Create a third revenue series that is computed using the
-           baseline behavior (i.e., `bmat_s` and `n_mat`) and macro
+           baseline behavior (i.e., `b_s` and `n`) and macro
            variables (`tr`, `bq`, `r`, `w`), but with the tax function
            parameter estimates from the reform policy.  Call this
            series B.
         3. Create a fourth revenue series that is computed using the
-           reform behavior (i.e., `bmat_s` and `n_mat`) and tax
+           reform behavior (i.e., `b_s` and `n`) and tax
            functions estimated on the reform tax policy, but
            the macro variables (`tr`, `bq`, `r`, `w`) from the baseline.
            Call this series C.
@@ -646,9 +646,9 @@ def dynamic_revenue_decomposition(
     indiv_liab["A"] = tax.income_tax_liab(
         base_tpi["r_p"][:T],
         base_tpi["w"][:T],
-        base_tpi["bmat_s"],
-        base_tpi["n_mat"][:T, :, :],
-        base_ss["factor_ss"],
+        base_tpi["b_s"],
+        base_tpi["n"][:T, :, :],
+        base_ss["factor"],
         0,
         None,
         "TPI",
@@ -661,9 +661,9 @@ def dynamic_revenue_decomposition(
     indiv_liab["B"] = tax.income_tax_liab(
         base_tpi["r_p"][:T],
         base_tpi["w"][:T],
-        base_tpi["bmat_s"],
-        base_tpi["n_mat"][:T, :, :],
-        base_ss["factor_ss"],
+        base_tpi["b_s"],
+        base_tpi["n"][:T, :, :],
+        base_ss["factor"],
         0,
         None,
         "TPI",
@@ -676,9 +676,9 @@ def dynamic_revenue_decomposition(
     indiv_liab["C"] = tax.income_tax_liab(
         base_tpi["r_p"][:T],
         base_tpi["w"][:T],
-        reform_tpi["bmat_s"],
-        reform_tpi["n_mat"][:T, :, :],
-        base_ss["factor_ss"],
+        reform_tpi["b_s"],
+        reform_tpi["n"][:T, :, :],
+        base_ss["factor"],
         0,
         None,
         "TPI",
@@ -690,9 +690,9 @@ def dynamic_revenue_decomposition(
     indiv_liab["D"] = tax.income_tax_liab(
         reform_tpi["r_p"][:T],
         reform_tpi["w"][:T],
-        reform_tpi["bmat_s"],
-        reform_tpi["n_mat"][:T, :, :],
-        base_ss["factor_ss"],
+        reform_tpi["b_s"],
+        reform_tpi["n"][:T, :, :],
+        base_ss["factor"],
         0,
         None,
         "TPI",
@@ -703,9 +703,9 @@ def dynamic_revenue_decomposition(
     # Business tax revenue from the baseline simulation
     tax_rev_dict["biz"]["A"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        base_tpi["Y_vec"][:T, :],
-        base_tpi["L_vec"][:T, :],
-        base_tpi["K_vec"][:T, :],
+        base_tpi["Y_m][:T, :],
+        base_tpi["L_m"][:T, :],
+        base_tpi["K_m"][:T, :],
         base_tpi["p_m"][:T],
         base_params,
         None,
@@ -715,9 +715,9 @@ def dynamic_revenue_decomposition(
     # the reform tax rates
     tax_rev_dict["biz"]["B"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        base_tpi["Y_vec"][:T, :],
-        base_tpi["L_vec"][:T, :],
-        base_tpi["K_vec"][:T, :],
+        base_tpi["Y_m"][:T, :],
+        base_tpi["L_m"][:T, :],
+        base_tpi["K_m"][:T, :],
         base_tpi["p_m"][:T],
         reform_params,
         None,
@@ -727,9 +727,9 @@ def dynamic_revenue_decomposition(
     # macros with the reform tax rates
     tax_rev_dict["biz"]["C"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        reform_tpi["Y_vec"][:T, :],
-        reform_tpi["L_vec"][:T, :],
-        reform_tpi["K_vec"][:T, :],
+        reform_tpi["Y_m"][:T, :],
+        reform_tpi["L_m"][:T, :],
+        reform_tpi["K_m"][:T, :],
         reform_tpi["p_m"][:T],
         reform_params,
         None,
@@ -738,9 +738,9 @@ def dynamic_revenue_decomposition(
     # Business tax revenue from the reform
     tax_rev_dict["biz"]["D"] = tax.get_biz_tax(
         reform_tpi["w"][:T],
-        reform_tpi["Y_vec"][:T, :],
-        reform_tpi["L_vec"][:T, :],
-        reform_tpi["K_vec"][:T, :],
+        reform_tpi["Y_m"][:T, :],
+        reform_tpi["L_m"][:T, :],
+        reform_tpi["K_m"][:T, :],
         reform_tpi["p_m"][:T],
         reform_params,
         None,
