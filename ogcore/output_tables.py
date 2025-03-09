@@ -216,7 +216,7 @@ def ineq_table(
     base_params,
     reform_ss=None,
     reform_params=None,
-    var_list=["cssmat"],
+    var_list=["c"],
     table_format=None,
     path=None,
 ):
@@ -313,7 +313,7 @@ def gini_table(
     base_params,
     reform_ss=None,
     reform_params=None,
-    var_list=["cssmat"],
+    var_list=["c"],
     table_format=None,
     path=None,
 ):
