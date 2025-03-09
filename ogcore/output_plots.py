@@ -675,15 +675,16 @@ def tpi_profiles(
     path=None,
 ):
     """
-    Plot lifecycle profiles of given variable in the SS.
+    Plot lifecycle profiles of given variable over the transition path
 
     Args:
-        base_ss (dictionary): TPI output from baseline run
+        base_tpi (dictionary): TPI output from baseline run
         base_params (OG-Core Specifications class): baseline parameters
             object
-        reform_ss (dictionary): TPI output from reform run
+        reform_tpi (dictionary): TPI output from reform run
         reform_params (OG-Core Specifications class): reform parameters
             object
+        by_j (bool): if True,then plot separate profiles for each j
         var (string): name of variable to plot
         num_year (integer): number of years to compute changes over
         start_year (integer): year to start plot
@@ -770,6 +771,7 @@ def ss_profiles(
         reform_ss (dictionary): SS output from reform run
         reform_params (OG-Core Specifications class): reform parameters
             object
+        by_j (bool): if True,then plot separate profiles for each j
         var (string): name of variable to plot
         plot_data (array_like): series of data to add to plot
         plot_title (string): title for plot
