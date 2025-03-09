@@ -72,7 +72,7 @@ def get_initial_SS_values(p):
     initial_b = ss_baseline_vars["b_sp1"] * (
         ss_baseline_vars["B"] / B0
     )
-    initial_n = ss_baseline_vars["nssmat"]
+    initial_n = ss_baseline_vars["n"]
 
     Ybaseline = None
     TRbaseline = None
@@ -708,7 +708,7 @@ def run_TPI(p, client=None):
         else:
             TR = p.alpha_T * Y
             G = np.ones(p.T + p.S) * ss_vars["G"]
-            I_g = np.ones(p.T + p.S) * ss_vars["I_g_"]
+            I_g = np.ones(p.T + p.S) * ss_vars["I_g"]
         D = np.ones(p.T + p.S) * ss_vars["D"]
         D_d = D * ss_vars["D_d"] / ss_vars["D"]
         D_f = D * ss_vars["D_f"] / ss_vars["D"]

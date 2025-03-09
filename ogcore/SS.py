@@ -1352,11 +1352,11 @@ def run_SS(p, client=None):
                     p.S,
                     p.J,
                 )
-                print("Shape firm = ", ss_solutions["Y_vec_ss"].shape, p.M)
-                if ss_solutions["bssmat_splus1"].shape == (
+                print("Shape firm = ", ss_solutions["Y_m"].shape, p.M)
+                if ss_solutions["b_sp1"].shape == (
                     p.S,
                     p.J,
-                ) and np.squeeze(ss_solutions["Y_vec_ss"].shape) == (p.M):
+                ) and np.squeeze(ss_solutions["Y_m"].shape) == (p.M):
                     print("Using previous solutions for SS")
                     (
                         b_guess,
@@ -1370,18 +1370,18 @@ def run_SS(p, client=None):
                         Yguess,
                         factor,
                     ) = (
-                        ss_solutions["bssmat_splus1"],
+                        ss_solutions["b_sp1"],
                         ss_solutions["nssmat"],
-                        float(ss_solutions["r_p_ss"]),
-                        float(ss_solutions["rss"]),
-                        float(ss_solutions["wss"]),
+                        float(ss_solutions["r_p"]),
+                        float(ss_solutions["r"]),
+                        float(ss_solutions["w"]),
                         ss_solutions[
-                            "p_m_ss"
+                            "p_m"
                         ],  # Not sure why need to index p_m,but otherwise its shape is off..
-                        ss_solutions["BQss"],
-                        float(ss_solutions["TR_ss"]),
-                        float(ss_solutions["Yss"]),
-                        ss_solutions["factor_ss"],
+                        ss_solutions["BQ"],
+                        float(ss_solutions["TR"]),
+                        float(ss_solutions["Y"]),
+                        ss_solutions["factor"],
                     )
                     use_new_guesses = False
                 else:
@@ -1414,7 +1414,7 @@ def run_SS(p, client=None):
                 BQguess = 0.12231465279007188
         if p.baseline_spending:
             TR_baseline = TRguess
-            Ig_baseline = ss_solutions["I_g_ss"]
+            Ig_baseline = ss_solutions["I_g"]
             ss_params_reform = (
                 b_guess,
                 n_guess,
@@ -1520,7 +1520,7 @@ def run_SS(p, client=None):
             client,
             fsolve_flag,
         )
-        if output["Gss"] < 0.0:
+        if output["G"] < 0.0:
             warnings.warn(
                 "Warning: The combination of the tax policy "
                 + "you specified and your target debt-to-GDP "
