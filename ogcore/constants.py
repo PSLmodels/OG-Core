@@ -1,10 +1,12 @@
-import json
 import os
+import ogcore.utils as utils
 
 # Read in json file
 cur_dir = os.path.dirname(os.path.realpath(__file__))
 file = os.path.join(cur_dir, "model_variables.json")
-var_metadata = json.load(file)
+with open(file) as f:
+    json_text = f.read()
+var_metadata = utils.json_to_dict(json_text)
 
 SHOW_RUNTIME = False  # Flag to display RuntimeWarnings when run model
 
