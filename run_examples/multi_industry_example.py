@@ -8,6 +8,7 @@ import multiprocessing
 from distributed import Client
 import time
 import numpy as np
+import copy
 import os
 from ogcore import output_tables as ot
 from ogcore import output_plots as op
@@ -16,12 +17,13 @@ from ogcore.parameters import Specifications
 from ogcore.constants import REFORM_DIR, BASELINE_DIR
 from ogcore.utils import safe_read_pickle
 import matplotlib.pyplot as plt
+import ogcore
 
-style_file_url = (
-    "https://raw.githubusercontent.com/PSLmodels/OG-Core/"
-    + "master/ogcore/OGcorePlots.mplstyle"
-)
-plt.style.use(style_file_url)
+
+ogcore.TPI.ENFORCE_SOLUTION_CHECKS = False
+
+# Use a custom matplotlib style file for plots
+plt.style.use("ogcore.OGcorePlots")
 
 
 def main():
@@ -33,8 +35,8 @@ def main():
 
     # Directories to save data
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-    base_dir = os.path.join(CUR_DIR, BASELINE_DIR)
-    reform_dir = os.path.join(CUR_DIR, REFORM_DIR)
+    base_dir = os.path.join(CUR_DIR, "MultiIndustryExample", BASELINE_DIR)
+    reform_dir = os.path.join(CUR_DIR, "MultiIndustryExample", REFORM_DIR)
 
     # Set some OG model parameters
     # See default_parameters.json for more description of these parameters
@@ -56,6 +58,7 @@ def main():
         "start_year": START_YEAR,
         "cit_rate": [[0.21, 0.25, 0.35]],
         "M": 3,
+        "I": 3,
         "epsilon": [1.0, 1.0, 1.0],
         "gamma": [0.3, 0.35, 0.4],
         "gamma_g": [0.1, 0.05, 0.15],
@@ -67,6 +70,8 @@ def main():
         "debt_ratio_ss": 1.5,
         "alpha_T": alpha_T.tolist(),
         "alpha_G": alpha_G.tolist(),
+        "io_matrix": np.eye(3).tolist(),
+        "tau_c": [[0]]
     }
 
     """
@@ -93,15 +98,14 @@ def main():
     ------------------------------------------------------------------------
     """
     # update the effective corporate income tax rate on all industries to 35%
-    og_spec.update({"cit_rate": [[0.35]]})
-    p2 = Specifications(
-        baseline=False,
-        num_workers=num_workers,
-        baseline_dir=base_dir,
-        output_base=reform_dir,
-    )
-    # Update parameters for baseline from default json file
-    p2.update_specifications(og_spec)
+    p2 = copy.deepcopy(p)
+    p2.baseline = False
+    p2.output_base = reform_dir
+    # Parameter change for the reform run
+    updated_params_ref = {
+        "cit_rate": [[0.30]],
+    }
+    p2.update_specifications(updated_params_ref)
 
     start_time = time.time()
     runner(p2, time_path=True, client=client)
@@ -138,7 +142,7 @@ def main():
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        var_list=["Y_vec"],
+        var_list=["Y_m"],
         plot_type="pct_diff",
         num_years_to_plot=50,
         start_year=base_params.start_year,
@@ -157,7 +161,7 @@ def main():
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        var_list=["L_vec"],
+        var_list=["L_m"],
         plot_type="pct_diff",
         num_years_to_plot=50,
         start_year=base_params.start_year,
@@ -176,7 +180,7 @@ def main():
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        var_list=["K_vec"],
+        var_list=["K_m"],
         plot_type="pct_diff",
         num_years_to_plot=50,
         start_year=base_params.start_year,
