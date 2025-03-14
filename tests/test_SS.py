@@ -1241,7 +1241,7 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         "TR_ss": "TR",
         "agg_pension_outlays": "agg_pension_outlays",
         "Gss": "G",
-        "UBIss": "UBI",
+        "UBI_outlays_SS": "UBI",
         "total_tax_revenue": "total_tax_revenue",
         "business_tax_revenue": "business_tax_revenue",
         "iit_payroll_tax_revenue": "iit_payroll_tax_revenue",
@@ -1264,24 +1264,24 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         "p_m_ss": "p_m",
         "p_i_ss": "p_i",
         "p_tilde_ss": "p_tilde",
-        "bssmat_sp1": "b_sp1",
+        "bssmat_splus1": "b_sp1",
         "bssmat_s": "b_s",
         "nssmat": "n",
         "cssmat": "c",
         "c_i_ss_mat": "c_i",
-        "bq": "bq",
-        "rm": "rm",
-        "tr": "tr",
-        "ubi": "ubi",
+        "bqssmat": "bq",
+        "rmssmat": "rm",
+        "trssmat": "tr",
+        "ubissmat": "ubi",
         "yss_before_tax_mat": "before_tax_income",
-        "taxss": "hh_taxes",
+        "total_taxes_ss": "hh_taxes",
         "etr_ss": "etr",
         "mtrx_ss": "mtrx",
         "mtry_ss": "mtry",
         "theta": "theta",
         "factor_ss": "factor",
-        "eul_savings": "euler_savings",
-        "eul_laborleisure": "euler_labor_leisure",
+        "euler_savings": "euler_savings",
+        "euler_labor_leisure": "euler_labor_leisure",
         "resource_constraint_error": "resource_constraint_error"
     }
 
@@ -1291,4 +1291,4 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         pass
     for k, v in expected_dict.items():
         print("Checking item = ", k)
-        assert np.allclose(test_dict[k], v, atol=5e-04)
+        assert np.allclose(test_dict[param_name_mapping[k]], v, atol=5e-04)
