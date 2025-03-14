@@ -15,6 +15,72 @@ from ogcore import firm
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
+PARAM_NAME_MAPPING = {
+    "Yss": "Y",
+    "Bss": "B",
+    "Kss": "K",
+    "K_f_ss": "K_f",
+    "K_d_ss": "K_d",
+    "Lss": "L",
+    "Css": "C",
+    "Iss": "I",
+    "Iss_total": "I_total",
+    "I_d_ss": "I_d",
+    "K_g_ss": "K_g",
+    "I_g_ss": "I_g",
+    "BQss": "BQ",
+    "RMss": "RM",
+    "Y_vec_ss": "Y_m",
+    "K_vec_ss": "K_m",
+    "L_vec_ss": "L_m",
+    "C_vec_ss": "C_i",
+    "TR_ss": "TR",
+    "agg_pension_outlays": "agg_pension_outlays",
+    "Gss": "G",
+    "UBI_outlays_SS": "UBI",
+    "total_tax_revenue": "total_tax_revenue",
+    "business_tax_revenue": "business_tax_revenue",
+    "iit_payroll_tax_revenue": "iit_payroll_tax_revenue",
+    "iit_revenue": "iit_revenue",
+    "payroll_tax_revenue": "payroll_tax_revenue",
+    "bequest_tax_revenue": "bequest_tax_revenue",
+    "wealth_tax_revenue": "wealth_tax_revenue",
+    "cons_tax_revenue": "cons_tax_revenue",
+    "Dss": "D",
+    "D_f_ss": "D_f",
+    "D_d_ss": "D_d",
+    "new_borrowing": "new_borrowing",
+    "debt_service": "debt_service",
+    "new_borrowing_f": "new_borrowing_f",
+    "debt_service_f": "debt_service_f",
+    "rss": "r",
+    "r_gov_ss": "r_gov",
+    "r_p_ss": "r_p",
+    "wss": "w",
+    "p_m_ss": "p_m",
+    "p_i_ss": "p_i",
+    "p_tilde_ss": "p_tilde",
+    "bssmat_splus1": "b_sp1",
+    "bssmat_s": "b_s",
+    "nssmat": "n",
+    "cssmat": "c",
+    "c_i_ss_mat": "c_i",
+    "bqssmat": "bq",
+    "rmssmat": "rm",
+    "trssmat": "tr",
+    "ubissmat": "ubi",
+    "yss_before_tax_mat": "before_tax_income",
+    "total_taxes_ss": "hh_taxes",
+    "etr_ss": "etr",
+    "mtrx_ss": "mtrx",
+    "mtry_ss": "mtry",
+    "theta": "theta",
+    "factor_ss": "factor",
+    "euler_savings": "euler_savings",
+    "euler_labor_leisure": "euler_labor_leisure",
+    "resource_constraint_error": "resource_constraint_error"
+}
+
 
 @pytest.fixture(scope="module")
 def dask_client():
@@ -365,12 +431,12 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        print("diff = ", np.abs(test_dict[k] - v).max())
+        print("diff = ", np.abs(test_dict[PARAM_NAME_MAPPING[k]] - v).max())
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        print("diff = ", np.abs(test_dict[k] - v).max())
-        assert np.allclose(test_dict[k], v, atol=1e-04, equal_nan=True)
+        print("diff = ", np.abs(test_dict[PARAM_NAME_MAPPING[k]] - v).max())
+        assert np.allclose(test_dict[PARAM_NAME_MAPPING[k]], v, atol=1e-04, equal_nan=True)
 
 
 param_updates5 = {"zeta_K": [1.0], "budget_balance": True, "alpha_G": [0.0]}
@@ -447,7 +513,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        assert np.allclose(test_dict[k], v, atol=1e-05, equal_nan=True)
+        assert np.allclose(test_dict[PARAM_NAME_MAPPING[k]], v, atol=1e-05, equal_nan=True)
 
 
 param_updates1 = {"zeta_K": [1.0]}
@@ -1219,71 +1285,6 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
-    param_name_mapping = {
-        "Yss": "Y",
-        "Bss": "B",
-        "Kss": "K",
-        "K_f_ss": "K_f",
-        "K_d_ss": "K_d",
-        "Lss": "L",
-        "Css": "C",
-        "Iss": "I",
-        "Iss_total": "I_total",
-        "I_d_ss": "I_d",
-        "K_g_ss": "K_g",
-        "I_g_ss": "I_g",
-        "BQss": "BQ",
-        "RMss": "RM",
-        "Y_vec_ss": "Y_m",
-        "K_vec_ss": "K_m",
-        "L_vec_ss": "L_m",
-        "C_vec_ss": "C_i",
-        "TR_ss": "TR",
-        "agg_pension_outlays": "agg_pension_outlays",
-        "Gss": "G",
-        "UBI_outlays_SS": "UBI",
-        "total_tax_revenue": "total_tax_revenue",
-        "business_tax_revenue": "business_tax_revenue",
-        "iit_payroll_tax_revenue": "iit_payroll_tax_revenue",
-        "iit_revenue": "iit_revenue",
-        "payroll_tax_revenue": "payroll_tax_revenue",
-        "bequest_tax_revenue": "bequest_tax_revenue",
-        "wealth_tax_revenue": "wealth_tax_revenue",
-        "cons_tax_revenue": "cons_tax_revenue",
-        "Dss": "D",
-        "D_f_ss": "D_f",
-        "D_d_ss": "D_d",
-        "new_borrowing": "new_borrowing",
-        "debt_service": "debt_service",
-        "new_borrowing_f": "new_borrowing_f",
-        "debt_service_f": "debt_service_f",
-        "rss": "r",
-        "r_gov_ss": "r_gov",
-        "r_p_ss": "r_p",
-        "wss": "w",
-        "p_m_ss": "p_m",
-        "p_i_ss": "p_i",
-        "p_tilde_ss": "p_tilde",
-        "bssmat_splus1": "b_sp1",
-        "bssmat_s": "b_s",
-        "nssmat": "n",
-        "cssmat": "c",
-        "c_i_ss_mat": "c_i",
-        "bqssmat": "bq",
-        "rmssmat": "rm",
-        "trssmat": "tr",
-        "ubissmat": "ubi",
-        "yss_before_tax_mat": "before_tax_income",
-        "total_taxes_ss": "hh_taxes",
-        "etr_ss": "etr",
-        "mtrx_ss": "mtrx",
-        "mtry_ss": "mtry",
-        "theta": "theta",
-        "factor_ss": "factor",
-        "euler_savings": "euler_savings",
-        "euler_labor_leisure": "euler_labor_leisure",
-        "resource_constraint_error": "resource_constraint_error"
-    }
 
     try:
         expected_dict["r_p_ss"] = expected_dict.pop("r_hh_ss")
@@ -1291,4 +1292,4 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         pass
     for k, v in expected_dict.items():
         print("Checking item = ", k)
-        assert np.allclose(test_dict[param_name_mapping[k]], v, atol=5e-04)
+        assert np.allclose(test_dict[PARAM_NAME_MAPPING[k]], v, atol=5e-04)
