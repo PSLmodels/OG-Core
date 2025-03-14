@@ -1056,7 +1056,7 @@ def SS_solver(
         "theta": theta,
         "factor": factor_ss,
         "euler_savings": euler_savings,
-        "euler_laborleisure": euler_labor_leisure,
+        "euler_labor_leisure": euler_labor_leisure,
         "resource_constraint_error": RC
     }
 
@@ -1348,7 +1348,7 @@ def run_SS(p, client=None):
             try:
                 print(
                     "Shape HH = ",
-                    ss_solutions["bssmat_splus1"].shape,
+                    ss_solutions["b_sp1"].shape,
                     p.S,
                     p.J,
                 )
@@ -1371,7 +1371,7 @@ def run_SS(p, client=None):
                         factor,
                     ) = (
                         ss_solutions["b_sp1"],
-                        ss_solutions["nssmat"],
+                        ss_solutions["n"],
                         float(ss_solutions["r_p"]),
                         float(ss_solutions["r"]),
                         float(ss_solutions["w"]),
