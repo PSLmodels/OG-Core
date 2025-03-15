@@ -608,7 +608,7 @@ def run_TPI(p, client=None):
     UBI = aggr.get_L(ubi[: p.T], p, "TPI")
 
     logging.info(
-        "Government spending breakpoints are tG1: ", p.tG1, "; and tG2:", p.tG2
+        f"Government spending breakpoints are tG1: {p.tG1}; and tG2: {p.tG2}"
     )
 
     # Initialize guesses at time paths
@@ -1133,34 +1133,28 @@ def run_TPI(p, client=None):
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         logging.info(
-            "w diff: ",
-            (wnew[: p.T] - w[: p.T]).max(),
-            (wnew[: p.T] - w[: p.T]).min(),
+            f"w diff: {(wnew[: p.T] - w[: p.T]).max()}, " +
+            f"{(wnew[: p.T] - w[: p.T]).min()}"
         )
         logging.info(
-            "r diff: ",
-            (rnew[: p.T] - r[: p.T]).max(),
-            (rnew[: p.T] - r[: p.T]).min(),
+            f"r diff: {(rnew[: p.T] - r[: p.T]).max()}, " +
+            f"{(rnew[: p.T] - r[: p.T]).min()}"
         )
         logging.info(
-            "r_p diff: ",
-            (r_p_new[: p.T] - r_p[: p.T]).max(),
-            (r_p_new[: p.T] - r_p[: p.T]).min(),
+            f"r_p diff: {(r_p_new[: p.T] - r_p[: p.T]).max()}, " +
+            f"{(r_p_new[: p.T] - r_p[: p.T]).min()}"
         )
         logging.info(
-            "p_m diff: ",
-            (new_p_m[: p.T, :] - p_m[: p.T, :]).max(),
-            (new_p_m[: p.T, :] - p_m[: p.T, :]).min(),
+            f"p_m diff: {(new_p_m[: p.T, :] - p_m[: p.T, :]).max()}, " +
+            f"{(new_p_m[: p.T, :] - p_m[: p.T, :]).min()}"
         )
         logging.info(
-            "BQ diff: ",
-            (BQnew[: p.T] - BQ[: p.T]).max(),
-            (BQnew[: p.T] - BQ[: p.T]).min(),
+            f"BQ diff: {(BQnew[: p.T] - BQ[: p.T]).max()}, " +
+            f"{(BQnew[: p.T] - BQ[: p.T]).min()}"
         )
         logging.info(
-            "TR diff: ",
-            (TR_new[: p.T] - TR[: p.T]).max(),
-            (TR_new[: p.T] - TR[: p.T]).min(),
+            f"TR diff: {(TR_new[: p.T] - TR[: p.T]).max()}, " +
+            f"{(TR_new[: p.T] - TR[: p.T]).min()}"
         )
 
         TPIdist = np.array(
@@ -1183,8 +1177,8 @@ def run_TPI(p, client=None):
         #         nu /= 2
         #         print 'New Value of nu:', nu
         TPIiter += 1
-        logging.info("Iteration:", TPIiter)
-        logging.info("\tDistance:", TPIdist)
+        logging.info(f"Iteration: {TPIiter}")
+        logging.info(f"\tDistance: {TPIdist}")
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
@@ -1316,7 +1310,7 @@ def run_TPI(p, client=None):
 
     # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))
-    logging.info("Max absolute value resource constraint error:", rce_max)
+    logging.info(f"Max absolute value resource constraint error: {rce_max}")
 
     logging.info("Checking time path for violations of constraints.")
     for t in range(p.T):
@@ -1327,8 +1321,8 @@ def run_TPI(p, client=None):
     eul_savings = euler_errors[:, : p.S, :]
     eul_laborleisure = euler_errors[:, p.S :, :]
 
-    logging.info("Max Euler error, savings: ", np.abs(eul_savings).max())
-    logging.info("Max Euler error labor supply: ", np.abs(eul_laborleisure).max())
+    logging.info(f"Max Euler error, savings: {np.abs(eul_savings).max()}")
+    logging.info(f"Max Euler error labor supply: {np.abs(eul_laborleisure).max()}")
 
     """
     ------------------------------------------------------------------------

@@ -706,9 +706,9 @@ def SS_solver(
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration - 1] > 0:
                 nu_ss /= 2.0
-                logging.info("New value of nu:", nu_ss)
+                logging.info(f"New value of nu: {nu_ss}")
         iteration += 1
-        logging.info("Iteration: %02d" % iteration, " Distance: ", dist)
+        logging.info(f"Iteration: {iteration}  Distance: {dist}")
 
     # Generate the SS values of variables, including euler errors
     bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
@@ -739,7 +739,7 @@ def SS_solver(
         debt_service,
         new_borrowing_f,
     ) = fiscal.get_D_ss(r_gov_ss, Yss, p)
-    logging.info("SS debt = ", Dss, new_borrowing_f)
+    logging.info(f"SS debt = {Dss}, {new_borrowing_f}")
     w_open = firm.get_w_from_r(p.world_int_rate[-1], p, "SS")
     K_demand_open_ss = np.zeros(p.M)
     for m in range(p.M):
@@ -947,7 +947,7 @@ def SS_solver(
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec_ss = np.zeros(p.M)
     # Map consumption goods back to demands for production goods
-    logging.info("IO: ", p.io_matrix.T.shape, ", C: ", C_vec_ss.shape)
+    logging.info(f"IO: {p.io_matrix.T.shape}, C: {C_vec_ss.shape}")
     C_m_vec_ss = np.dot(p.io_matrix.T, C_vec_ss)
     G_vec_ss[-1] = Gss
     I_d_vec_ss = np.zeros(p.M)
@@ -968,9 +968,9 @@ def SS_solver(
         net_capital_outflows_vec,
         RM_vec_ss,
     )
-    logging.info("Foreign debt holdings = ", D_f_ss)
-    logging.info("Foreign capital holdings = ", K_f_ss)
-    logging.info("resource constraint: ", RC)
+    logging.info(f"Foreign debt holdings = {D_f_ss}")
+    logging.info(f"Foreign capital holdings = {K_f_ss}")
+    logging.info(f"resource constraint: {RC}")
 
     if Gss < 0:
         logging.warning(
@@ -989,11 +989,10 @@ def SS_solver(
     euler_savings = euler_errors[: p.S, :]
     euler_labor_leisure = euler_errors[p.S :, :]
     logging.info(
-        "Maximum error in labor FOC = ",
-        np.absolute(euler_labor_leisure).max(),
+        f"Maximum error in labor FOC = {np.absolute(euler_labor_leisure).max()}"
     )
     logging.info(
-        "Maximum error in savings FOC = ", np.absolute(euler_savings).max()
+        f"Maximum error in savings FOC = {np.absolute(euler_savings).max()}"
     )
 
     # Return dictionary of SS results
@@ -1181,7 +1180,7 @@ def SS_fsolve(guesses, *args):
             + list(error_BQ)
             + [error_TR]
         )
-    logging.info("GE loop errors = ", errors)
+    logging.info(f"GE loop errors = {errors}")
 
     return errors
 
@@ -1258,11 +1257,8 @@ def run_SS(p, client=None):
         while not SS_solved and k < len(dev_factor_list) - 1:
             for k, v in enumerate(dev_factor_list):
                 logging.info(
-                    "SS using initial guess factors for r and TR of",
-                    v[0],
-                    "and",
-                    v[1],
-                    ", respectively.",
+                    f"SS using initial guess factors for r and TR of " +
+                    f"{v[0]} and {v[1]} respectively."
                 )
                 r_p_guess = v[0] * p.initial_guess_r_SS
                 rguess = v[0] * p.initial_guess_r_SS
