@@ -20,6 +20,7 @@ from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 import os
 import warnings
+import logging
 
 
 if not SHOW_RUNTIME:
@@ -34,6 +35,17 @@ MINIMIZER_TOL = 1e-13
 Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
+
+"""
+Set flag for verbosity
+"""
+VERBOSE = True
+# Configure logging
+log_level = logging.INFO if VERBOSE else logging.WARNING
+logging.basicConfig(
+    level=log_level,
+    format='%(message)s'  # Only show the message itself
+)
 
 """
 A global future for the Parameters object for client workers.
@@ -408,6 +420,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     n_mat = np.zeros((p.T + p.S, p.S))
     euler_errors = np.zeros((p.T, 2 * p.S))
 
+    print("TO HERE 1.75")
+
     solutions = opt.root(
         firstdoughnutring,
         [guesses_b[0, -1], guesses_n[0, -1]],
@@ -429,6 +443,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         tol=MINIMIZER_TOL,
     )
     b_mat[0, -1], n_mat[0, -1] = solutions.x[0], solutions.x[1]
+
+    print("TO HERE 1.9")
 
     for s in range(p.S - 2):  # Upper triangle
         ind2 = np.arange(s + 2)
@@ -591,7 +607,7 @@ def run_TPI(p, client=None):
     ubi = p.ubi_nom_array / factor
     UBI = aggr.get_L(ubi[: p.T], p, "TPI")
 
-    print(
+    logging.info(
         "Government spending breakpoints are tG1: ", p.tG1, "; and tG2:", p.tG2
     )
 
@@ -633,6 +649,7 @@ def run_TPI(p, client=None):
     Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(
         1, p.M
     )
+    print("TO HERE")
     # compute w
     w = np.ones_like(K) * ss_vars["w"]
     # compute goods prices
@@ -775,6 +792,7 @@ def run_TPI(p, client=None):
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
 
+    print("TO HERE 1")
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
@@ -784,6 +802,8 @@ def run_TPI(p, client=None):
             * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
         ).sum(axis=2)
         p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
+
+        print("TO HERE 1.5")
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
@@ -813,6 +833,7 @@ def run_TPI(p, client=None):
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
+        print("TO HERE 2 ")
         bmat_s = np.zeros((p.T, p.S, p.J))
         bmat_s[0, 1:, :] = initial_b[:-1, :]
         bmat_s[1:, 1:, :] = b_mat[: p.T - 1, :-1, :]
@@ -1111,32 +1132,32 @@ def run_TPI(p, client=None):
             TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
-        print(
+        logging.info(
             "w diff: ",
             (wnew[: p.T] - w[: p.T]).max(),
             (wnew[: p.T] - w[: p.T]).min(),
         )
-        print(
+        logging.info(
             "r diff: ",
             (rnew[: p.T] - r[: p.T]).max(),
             (rnew[: p.T] - r[: p.T]).min(),
         )
-        print(
+        logging.info(
             "r_p diff: ",
             (r_p_new[: p.T] - r_p[: p.T]).max(),
             (r_p_new[: p.T] - r_p[: p.T]).min(),
         )
-        print(
+        logging.info(
             "p_m diff: ",
             (new_p_m[: p.T, :] - p_m[: p.T, :]).max(),
             (new_p_m[: p.T, :] - p_m[: p.T, :]).min(),
         )
-        print(
+        logging.info(
             "BQ diff: ",
             (BQnew[: p.T] - BQ[: p.T]).max(),
             (BQnew[: p.T] - BQ[: p.T]).min(),
         )
-        print(
+        logging.info(
             "TR diff: ",
             (TR_new[: p.T] - TR[: p.T]).max(),
             (TR_new[: p.T] - TR[: p.T]).min(),
@@ -1162,8 +1183,8 @@ def run_TPI(p, client=None):
         #         nu /= 2
         #         print 'New Value of nu:', nu
         TPIiter += 1
-        print("Iteration:", TPIiter)
-        print("\tDistance:", TPIdist)
+        logging.info("Iteration:", TPIiter)
+        logging.info("\tDistance:", TPIdist)
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
@@ -1295,9 +1316,9 @@ def run_TPI(p, client=None):
 
     # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))
-    print("Max absolute value resource constraint error:", rce_max)
+    logging.info("Max absolute value resource constraint error:", rce_max)
 
-    print("Checking time path for violations of constraints.")
+    logging.info("Checking time path for violations of constraints.")
     for t in range(p.T):
         household.constraint_checker_TPI(
             b_mat[t], n_mat[t], c_mat[t], t, p.ltilde
@@ -1306,8 +1327,8 @@ def run_TPI(p, client=None):
     eul_savings = euler_errors[:, : p.S, :]
     eul_laborleisure = euler_errors[:, p.S :, :]
 
-    print("Max Euler error, savings: ", np.abs(eul_savings).max())
-    print("Max Euler error labor supply: ", np.abs(eul_laborleisure).max())
+    logging.info("Max Euler error, savings: ", np.abs(eul_savings).max())
+    logging.info("Max Euler error labor supply: ", np.abs(eul_laborleisure).max())
 
     """
     ------------------------------------------------------------------------
@@ -1386,7 +1407,7 @@ def run_TPI(p, client=None):
         pickle.dump(output, f)
 
     if np.any(G) < 0:
-        print(
+        logging.warning(
             "Government spending is negative along transition path"
             + " to satisfy budget"
         )
