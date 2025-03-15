@@ -43,8 +43,7 @@ VERBOSE = True
 # Configure logging
 log_level = logging.INFO if VERBOSE else logging.WARNING
 logging.basicConfig(
-    level=log_level,
-    format='%(message)s'  # Only show the message itself
+    level=log_level, format="%(message)s"  # Only show the message itself
 )
 
 """
@@ -81,9 +80,7 @@ def get_initial_SS_values(p):
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
     B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
-    initial_b = ss_baseline_vars["b_sp1"] * (
-        ss_baseline_vars["B"] / B0
-    )
+    initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
     initial_n = ss_baseline_vars["n"]
 
     Ybaseline = None
@@ -613,12 +610,8 @@ def run_TPI(p, client=None):
 
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
-    guesses_b = utils.get_initial_path(
-        initial_b, ss_vars["b_sp1"], p, "ratio"
-    )
-    guesses_n = utils.get_initial_path(
-        initial_n, ss_vars["n"], p, "ratio"
-    )
+    guesses_b = utils.get_initial_path(initial_b, ss_vars["b_sp1"], p, "ratio")
+    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "ratio")
     b_mat = guesses_b
     n_mat = guesses_n
     ind = np.arange(p.S)
@@ -638,17 +631,11 @@ def run_TPI(p, client=None):
     K_g = np.ones_like(K) * ss_vars["K_g"]
     Y = np.zeros_like(K)
     Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
-    Y[p.T:] = ss_vars["Y"]
+    Y[p.T :] = ss_vars["Y"]
     # path for industry specific aggregates
-    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(
-        1, p.M
-    )
-    L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(
-        1, p.M
-    )
-    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(
-        1, p.M
-    )
+    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
+    L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(1, p.M)
+    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
     print("TO HERE")
     # compute w
     w = np.ones_like(K) * ss_vars["w"]
@@ -719,9 +706,7 @@ def run_TPI(p, client=None):
             )
             # Will set to Gbaseline here, but will be updated in TPI loop
             # with call to fiscal.D_G_path, which also does closure rule
-            G = np.concatenate(
-                (Gbaseline[: p.T], np.ones(p.S) * ss_vars["G"])
-            )
+            G = np.concatenate((Gbaseline[: p.T], np.ones(p.S) * ss_vars["G"]))
         else:
             TR = p.alpha_T * Y
             G = np.ones(p.T + p.S) * ss_vars["G"]
@@ -769,10 +754,7 @@ def run_TPI(p, client=None):
             )
         BQ = np.array(BQ)
     else:
-        BQ = (
-            list(np.linspace(BQ0, ss_vars["BQ"], p.T))
-            + [ss_vars["BQ"]] * p.S
-        )
+        BQ = list(np.linspace(BQ0, ss_vars["BQ"], p.T)) + [ss_vars["BQ"]] * p.S
         BQ = np.array(BQ)
 
     # Initialize aggregate remittances
@@ -1133,28 +1115,28 @@ def run_TPI(p, client=None):
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         logging.info(
-            f"w diff: {(wnew[: p.T] - w[: p.T]).max()}, " +
-            f"{(wnew[: p.T] - w[: p.T]).min()}"
+            f"w diff: {(wnew[: p.T] - w[: p.T]).max()}, "
+            + f"{(wnew[: p.T] - w[: p.T]).min()}"
         )
         logging.info(
-            f"r diff: {(rnew[: p.T] - r[: p.T]).max()}, " +
-            f"{(rnew[: p.T] - r[: p.T]).min()}"
+            f"r diff: {(rnew[: p.T] - r[: p.T]).max()}, "
+            + f"{(rnew[: p.T] - r[: p.T]).min()}"
         )
         logging.info(
-            f"r_p diff: {(r_p_new[: p.T] - r_p[: p.T]).max()}, " +
-            f"{(r_p_new[: p.T] - r_p[: p.T]).min()}"
+            f"r_p diff: {(r_p_new[: p.T] - r_p[: p.T]).max()}, "
+            + f"{(r_p_new[: p.T] - r_p[: p.T]).min()}"
         )
         logging.info(
-            f"p_m diff: {(new_p_m[: p.T, :] - p_m[: p.T, :]).max()}, " +
-            f"{(new_p_m[: p.T, :] - p_m[: p.T, :]).min()}"
+            f"p_m diff: {(new_p_m[: p.T, :] - p_m[: p.T, :]).max()}, "
+            + f"{(new_p_m[: p.T, :] - p_m[: p.T, :]).min()}"
         )
         logging.info(
-            f"BQ diff: {(BQnew[: p.T] - BQ[: p.T]).max()}, " +
-            f"{(BQnew[: p.T] - BQ[: p.T]).min()}"
+            f"BQ diff: {(BQnew[: p.T] - BQ[: p.T]).max()}, "
+            + f"{(BQnew[: p.T] - BQ[: p.T]).min()}"
         )
         logging.info(
-            f"TR diff: {(TR_new[: p.T] - TR[: p.T]).max()}, " +
-            f"{(TR_new[: p.T] - TR[: p.T]).min()}"
+            f"TR diff: {(TR_new[: p.T] - TR[: p.T]).max()}, "
+            + f"{(TR_new[: p.T] - TR[: p.T]).min()}"
         )
 
         TPIdist = np.array(
@@ -1322,7 +1304,9 @@ def run_TPI(p, client=None):
     eul_laborleisure = euler_errors[:, p.S :, :]
 
     logging.info(f"Max Euler error, savings: {np.abs(eul_savings).max()}")
-    logging.info(f"Max Euler error labor supply: {np.abs(eul_laborleisure).max()}")
+    logging.info(
+        f"Max Euler error labor supply: {np.abs(eul_laborleisure).max()}"
+    )
 
     """
     ------------------------------------------------------------------------

@@ -198,8 +198,7 @@ def macro_table_SS(
             diff = ((reform_ss[v] - base_ss[v]) / base_ss[v]) * 100
         else:
             diff = (
-                reform_ss["D"] / reform_ss["Y"]
-                - base_ss["D"] / base_ss["Y"]
+                reform_ss["D"] / reform_ss["Y"] - base_ss["D"] / base_ss["Y"]
             )
         table_dict["% Change (or pp diff)"].append(diff)
         # Make df with dict so can use pandas functions

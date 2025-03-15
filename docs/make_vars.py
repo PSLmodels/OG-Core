@@ -40,9 +40,7 @@ def make_vars(path):
     # Add parameter text
     df["content"] = paramtextdf(df)
     # Organize sections
-    section_order_index = dict(
-        zip(SECTION_ORDER, range(len(SECTION_ORDER)))
-    )
+    section_order_index = dict(zip(SECTION_ORDER, range(len(SECTION_ORDER))))
     df["section_order"] = df.section.map(section_order_index)
     df.sort_values(["section_order", "var_order"], inplace=True)
     # Add section titles when they change.
@@ -123,9 +121,7 @@ def write_file(text, file):
 
 def main():
     # Model parameters.
-    param_text = make_vars(
-        os.path.join(OGCORE_PATH, "model_variables.json")
-    )
+    param_text = make_vars(os.path.join(OGCORE_PATH, "model_variables.json"))
     write_file(param_text, "variables")
     # Normal return code
     return 0

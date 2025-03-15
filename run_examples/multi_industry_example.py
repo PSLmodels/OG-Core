@@ -71,7 +71,7 @@ def main():
         "alpha_T": alpha_T.tolist(),
         "alpha_G": alpha_G.tolist(),
         "io_matrix": np.eye(3).tolist(),
-        "tau_c": [[0]]
+        "tau_c": [[0]],
     }
 
     """

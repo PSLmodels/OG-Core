@@ -78,7 +78,7 @@ PARAM_NAME_MAPPING = {
     "factor_ss": "factor",
     "euler_savings": "euler_savings",
     "euler_labor_leisure": "euler_labor_leisure",
-    "resource_constraint_error": "resource_constraint_error"
+    "resource_constraint_error": "resource_constraint_error",
 }
 
 
@@ -436,7 +436,9 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     for k, v in expected_dict.items():
         print("Testing ", k)
         print("diff = ", np.abs(test_dict[PARAM_NAME_MAPPING[k]] - v).max())
-        assert np.allclose(test_dict[PARAM_NAME_MAPPING[k]], v, atol=1e-04, equal_nan=True)
+        assert np.allclose(
+            test_dict[PARAM_NAME_MAPPING[k]], v, atol=1e-04, equal_nan=True
+        )
 
 
 param_updates5 = {"zeta_K": [1.0], "budget_balance": True, "alpha_G": [0.0]}
@@ -513,7 +515,9 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        assert np.allclose(test_dict[PARAM_NAME_MAPPING[k]], v, atol=1e-05, equal_nan=True)
+        assert np.allclose(
+            test_dict[PARAM_NAME_MAPPING[k]], v, atol=1e-05, equal_nan=True
+        )
 
 
 param_updates1 = {"zeta_K": [1.0]}

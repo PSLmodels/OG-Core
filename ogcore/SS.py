@@ -31,8 +31,7 @@ VERBOSE = True
 # Configure logging
 log_level = logging.INFO if VERBOSE else logging.WARNING
 logging.basicConfig(
-    level=log_level,
-    format='%(message)s'  # Only show the message itself
+    level=log_level, format="%(message)s"  # Only show the message itself
 )
 
 """
@@ -1059,7 +1058,7 @@ def SS_solver(
         "factor": factor_ss,
         "euler_savings": euler_savings,
         "euler_labor_leisure": euler_labor_leisure,
-        "resource_constraint_error": RC
+        "resource_constraint_error": RC,
     }
 
     return output
@@ -1257,8 +1256,8 @@ def run_SS(p, client=None):
         while not SS_solved and k < len(dev_factor_list) - 1:
             for k, v in enumerate(dev_factor_list):
                 logging.info(
-                    f"SS using initial guess factors for r and TR of " +
-                    f"{v[0]} and {v[1]} respectively."
+                    f"SS using initial guess factors for r and TR of "
+                    + f"{v[0]} and {v[1]} respectively."
                 )
                 r_p_guess = v[0] * p.initial_guess_r_SS
                 rguess = v[0] * p.initial_guess_r_SS
@@ -1347,7 +1346,9 @@ def run_SS(p, client=None):
                 if ss_solutions["b_sp1"].shape == (
                     p.S,
                     p.J,
-                ) and np.squeeze(ss_solutions["Y_m"].shape) == (p.M):
+                ) and np.squeeze(
+                    ss_solutions["Y_m"].shape
+                ) == (p.M):
                     logging.info("Using previous solutions for SS")
                     (
                         b_guess,
@@ -1381,7 +1382,9 @@ def run_SS(p, client=None):
                     )
                     use_new_guesses = True
             except KeyError:
-                logging.warning("KeyError: previous solutions for SS not found")
+                logging.warning(
+                    "KeyError: previous solutions for SS not found"
+                )
                 use_new_guesses = True
         else:
             logging.info("Using new guesses for SS")

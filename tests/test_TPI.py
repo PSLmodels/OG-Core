@@ -88,7 +88,7 @@ SS_PARAM_NAME_MAPPING = {
     "factor_ss": "factor",
     "euler_savings": "euler_savings",
     "euler_labor_leisure": "euler_labor_leisure",
-    "resource_constraint_error": "resource_constraint_error"
+    "resource_constraint_error": "resource_constraint_error",
 }
 
 PARAM_NAME_MAPPING = {
@@ -156,7 +156,7 @@ PARAM_NAME_MAPPING = {
     "euler_laborleisure": "euler_labor_leisure",
     "eul_savings": "euler_savings",
     "eul_laborleisure": "euler_labor_leisure",
-    "resource_constraint_error": "resource_constraint_error"
+    "resource_constraint_error": "resource_constraint_error",
 }
 
 TEST_PARAM_DICT = json.load(
@@ -193,11 +193,15 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
     p.update_specifications(param_updates)
 
     old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
-    ss_vars = utils.safe_read_pickle(os.path.join(old_baseline_dir, "SS", "SS_vars.pkl"))
+    ss_vars = utils.safe_read_pickle(
+        os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+    )
     ss_vars_new = {}
     for k, v in ss_vars.items():
         ss_vars_new[SS_PARAM_NAME_MAPPING[k]] = v
-    tpi_vars = utils.safe_read_pickle(os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl"))
+    tpi_vars = utils.safe_read_pickle(
+        os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl")
+    )
     tpi_vars_new = {}
     for k, v in tpi_vars.items():
         tpi_vars_new[PARAM_NAME_MAPPING[k]] = v
@@ -242,7 +246,9 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
     assert np.allclose(test_theta, exp_theta)
 
     for k, v in exp_ss_vars.items():
-        assert np.allclose(test_ss_vars[SS_PARAM_NAME_MAPPING[k]], v, equal_nan=True)
+        assert np.allclose(
+            test_ss_vars[SS_PARAM_NAME_MAPPING[k]], v, equal_nan=True
+        )
 
 
 def test_firstdoughnutring():
@@ -572,24 +578,43 @@ def test_run_TPI_full_run(
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
-            print("Diff = ", np.abs(test_dict[PARAM_NAME_MAPPING[k]][: p.T] - v[: p.T]).max())
+            print(
+                "Diff = ",
+                np.abs(
+                    test_dict[PARAM_NAME_MAPPING[k]][: p.T] - v[: p.T]
+                ).max(),
+            )
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :] - v[: p.T, :, :]).max(),
+                np.abs(
+                    test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :]
+                    - v[: p.T, :, :]
+                ).max(),
             )
 
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
-            print("Diff = ", np.abs(test_dict[PARAM_NAME_MAPPING[k]][: p.T] - v[: p.T]).max())
+            print(
+                "Diff = ",
+                np.abs(
+                    test_dict[PARAM_NAME_MAPPING[k]][: p.T] - v[: p.T]
+                ).max(),
+            )
             assert np.allclose(
-                test_dict[PARAM_NAME_MAPPING[k]][: p.T], v[: p.T], rtol=1e-04, atol=1e-04
+                test_dict[PARAM_NAME_MAPPING[k]][: p.T],
+                v[: p.T],
+                rtol=1e-04,
+                atol=1e-04,
             )
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :] - v[: p.T, :, :]).max(),
+                np.abs(
+                    test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :]
+                    - v[: p.T, :, :]
+                ).max(),
             )
             assert np.allclose(
                 test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :],
@@ -633,11 +658,15 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
         # If running reform, used cached baseline results
         old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT2")
         # map new var names and save to tmpdir
-        ss_vars = utils.safe_read_pickle(os.path.join(old_baseline_dir, "SS", "SS_vars.pkl"))
+        ss_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+        )
         ss_vars_new = {}
         for k, v in ss_vars.items():
             ss_vars_new[SS_PARAM_NAME_MAPPING[k]] = v
-        tpi_vars = utils.safe_read_pickle(os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl"))
+        tpi_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl")
+        )
         tpi_vars_new = {}
         for k, v in tpi_vars.items():
             tpi_vars_new[PARAM_NAME_MAPPING[k]] = v
@@ -686,16 +715,26 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
     for k, v in expected_dict.items():
         print("Max diff in ", k, " = ")
         try:
-            print(np.absolute(test_dict[PARAM_NAME_MAPPING[k]][: p.T] - v[: p.T]).max())
+            print(
+                np.absolute(
+                    test_dict[PARAM_NAME_MAPPING[k]][: p.T] - v[: p.T]
+                ).max()
+            )
         except ValueError:
             print(
-                np.absolute(test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :] - v[: p.T, :, :]).max()
+                np.absolute(
+                    test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :]
+                    - v[: p.T, :, :]
+                ).max()
             )
 
     for k, v in expected_dict.items():
         try:
             assert np.allclose(
-                test_dict[PARAM_NAME_MAPPING[k]][: p.T], v[: p.T], rtol=1e-04, atol=1e-04
+                test_dict[PARAM_NAME_MAPPING[k]][: p.T],
+                v[: p.T],
+                rtol=1e-04,
+                atol=1e-04,
             )
         except ValueError:
             assert np.allclose(
@@ -860,14 +899,25 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
     for k, v in expected_dict.items():
         print("Checking ", k)
         try:
-            print("Diff = ", np.absolute(test_dict[PARAM_NAME_MAPPING[k]][: p.T] - v[: p.T]).max())
+            print(
+                "Diff = ",
+                np.absolute(
+                    test_dict[PARAM_NAME_MAPPING[k]][: p.T] - v[: p.T]
+                ).max(),
+            )
             assert np.allclose(
-                test_dict[PARAM_NAME_MAPPING[k]][: p.T], v[: p.T], rtol=1e-04, atol=1e-04
+                test_dict[PARAM_NAME_MAPPING[k]][: p.T],
+                v[: p.T],
+                rtol=1e-04,
+                atol=1e-04,
             )
         except ValueError:
             print(
                 "Diff = ",
-                np.absolute(test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :] - v[: p.T, :, :]).max(),
+                np.absolute(
+                    test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :]
+                    - v[: p.T, :, :]
+                ).max(),
             )
             assert np.allclose(
                 test_dict[PARAM_NAME_MAPPING[k]][: p.T, :, :],
