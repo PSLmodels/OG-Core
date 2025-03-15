@@ -1,5 +1,4 @@
 # imports
-from re import VERBOSE
 import numpy as np
 import scipy.optimize as opt
 from dask import delayed, compute
@@ -9,6 +8,7 @@ from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 import os
 import warnings
+import logging
 
 
 if not SHOW_RUNTIME:
@@ -28,6 +28,12 @@ ENFORCE_SOLUTION_CHECKS = True
 Set flag for verbosity
 """
 VERBOSE = True
+# Configure logging
+log_level = logging.INFO if VERBOSE else logging.WARNING
+logging.basicConfig(
+    level=log_level,
+    format='%(message)s'  # Only show the message itself
+)
 
 """
 A global future for the Parameters object for client workers.
@@ -700,10 +706,9 @@ def SS_solver(
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration - 1] > 0:
                 nu_ss /= 2.0
-                print("New value of nu:", nu_ss)
+                logging.info("New value of nu:", nu_ss)
         iteration += 1
-        if VERBOSE:
-            print("Iteration: %02d" % iteration, " Distance: ", dist)
+        logging.info("Iteration: %02d" % iteration, " Distance: ", dist)
 
     # Generate the SS values of variables, including euler errors
     bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
@@ -734,7 +739,7 @@ def SS_solver(
         debt_service,
         new_borrowing_f,
     ) = fiscal.get_D_ss(r_gov_ss, Yss, p)
-    print("SS debt = ", Dss, new_borrowing_f)
+    logging.info("SS debt = ", Dss, new_borrowing_f)
     w_open = firm.get_w_from_r(p.world_int_rate[-1], p, "SS")
     K_demand_open_ss = np.zeros(p.M)
     for m in range(p.M):
@@ -942,7 +947,7 @@ def SS_solver(
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec_ss = np.zeros(p.M)
     # Map consumption goods back to demands for production goods
-    print("IO: ", p.io_matrix.T.shape, ", C: ", C_vec_ss.shape)
+    logging.info("IO: ", p.io_matrix.T.shape, ", C: ", C_vec_ss.shape)
     C_m_vec_ss = np.dot(p.io_matrix.T, C_vec_ss)
     G_vec_ss[-1] = Gss
     I_d_vec_ss = np.zeros(p.M)
@@ -963,19 +968,18 @@ def SS_solver(
         net_capital_outflows_vec,
         RM_vec_ss,
     )
-    if VERBOSE:
-        print("Foreign debt holdings = ", D_f_ss)
-        print("Foreign capital holdings = ", K_f_ss)
-        print("resource constraint: ", RC)
+    logging.info("Foreign debt holdings = ", D_f_ss)
+    logging.info("Foreign capital holdings = ", K_f_ss)
+    logging.info("resource constraint: ", RC)
 
     if Gss < 0:
-        print(
+        logging.warning(
             "Steady state government spending is negative to satisfy"
             + " budget"
         )
 
     if ENFORCE_SOLUTION_CHECKS and (max(np.absolute(RC)) > p.RC_SS):
-        print("Resource Constraint Difference:", RC)
+        logging.warning("Resource Constraint Difference:", RC)
         err = "Steady state aggregate resource constraint not satisfied"
         raise RuntimeError(err)
 
@@ -984,14 +988,13 @@ def SS_solver(
 
     euler_savings = euler_errors[: p.S, :]
     euler_labor_leisure = euler_errors[p.S :, :]
-    if VERBOSE:
-        print(
-            "Maximum error in labor FOC = ",
-            np.absolute(euler_labor_leisure).max(),
-        )
-        print(
-            "Maximum error in savings FOC = ", np.absolute(euler_savings).max()
-        )
+    logging.info(
+        "Maximum error in labor FOC = ",
+        np.absolute(euler_labor_leisure).max(),
+    )
+    logging.info(
+        "Maximum error in savings FOC = ", np.absolute(euler_savings).max()
+    )
 
     # Return dictionary of SS results
     output = {
@@ -1178,8 +1181,7 @@ def SS_fsolve(guesses, *args):
             + list(error_BQ)
             + [error_TR]
         )
-    if VERBOSE:
-        print("GE loop errors = ", errors)
+    logging.info("GE loop errors = ", errors)
 
     return errors
 
@@ -1255,7 +1257,7 @@ def run_SS(p, client=None):
         k = 0
         while not SS_solved and k < len(dev_factor_list) - 1:
             for k, v in enumerate(dev_factor_list):
-                print(
+                logging.info(
                     "SS using initial guess factors for r and TR of",
                     v[0],
                     "and",
@@ -1346,18 +1348,11 @@ def run_SS(p, client=None):
         if p.reform_use_baseline_solution:
             # use baseline solution as starting values if dimensions match
             try:
-                print(
-                    "Shape HH = ",
-                    ss_solutions["b_sp1"].shape,
-                    p.S,
-                    p.J,
-                )
-                print("Shape firm = ", ss_solutions["Y_m"].shape, p.M)
                 if ss_solutions["b_sp1"].shape == (
                     p.S,
                     p.J,
                 ) and np.squeeze(ss_solutions["Y_m"].shape) == (p.M):
-                    print("Using previous solutions for SS")
+                    logging.info("Using previous solutions for SS")
                     (
                         b_guess,
                         n_guess,
@@ -1385,15 +1380,15 @@ def run_SS(p, client=None):
                     )
                     use_new_guesses = False
                 else:
-                    print(
+                    logging.warning(
                         "Dimensions of previous solutions for SS do not match"
                     )
                     use_new_guesses = True
             except KeyError:
-                print("KeyError: previous solutions for SS not found")
+                logging.warning("KeyError: previous solutions for SS not found")
                 use_new_guesses = True
         else:
-            print("Using new guesses for SS")
+            logging.info("Using new guesses for SS")
             use_new_guesses = True
         if use_new_guesses:
             if p.use_zeta:
