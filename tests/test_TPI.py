@@ -580,9 +580,7 @@ def test_run_TPI_full_run(
         try:
             print(
                 "Diff = ",
-                np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]
-                ).max(),
+                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
             )
         except ValueError:
             print(
@@ -598,9 +596,7 @@ def test_run_TPI_full_run(
         try:
             print(
                 "Diff = ",
-                np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]
-                ).max(),
+                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
             )
             assert np.allclose(
                 test_dict[VAR_NAME_MAPPING[k]][: p.T],
