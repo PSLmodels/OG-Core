@@ -537,8 +537,32 @@ def test_run_TPI_full_run(
         baseline_dir = os.path.join(tmpdir, "baseline")
         output_base = baseline_dir
     else:
-        baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
+        old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
+        ss_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+        )
+        ss_vars_new = {}
+        for k, v in ss_vars.items():
+            ss_vars_new[SS_VAR_NAME_MAPPING[k]] = v
+        tpi_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl")
+        )
+        tpi_vars_new = {}
+        for k, v in tpi_vars.items():
+            tpi_vars_new[VAR_NAME_MAPPING[k]] = v
+        baseline_dir = os.path.join(tmpdir, "baseline")
+        ss_dir = os.path.join(baseline_dir, "SS")
+        utils.mkdirs(ss_dir)
+        tpi_dir = os.path.join(baseline_dir, "TPI")
+        utils.mkdirs(tpi_dir)
+        ss_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_path, "wb") as f:
+            pickle.dump(ss_vars_new, f)
+        tpi_path = os.path.join(baseline_dir, "TPI", "TPI_vars.pkl")
+        with open(tpi_path, "wb") as f:
+            pickle.dump(tpi_vars_new, f)
         output_base = os.path.join(tmpdir, "reform")
+
     p = Specifications(
         baseline=baseline,
         baseline_dir=baseline_dir,
@@ -860,7 +884,30 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
         baseline_dir = os.path.join(tmpdir, "baseline")
         output_base = baseline_dir
     else:
-        baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT2")
+        old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT2")
+        ss_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+        )
+        ss_vars_new = {}
+        for k, v in ss_vars.items():
+            ss_vars_new[SS_VAR_NAME_MAPPING[k]] = v
+        tpi_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl")
+        )
+        tpi_vars_new = {}
+        for k, v in tpi_vars.items():
+            tpi_vars_new[VAR_NAME_MAPPING[k]] = v
+        baseline_dir = os.path.join(tmpdir, "baseline")
+        ss_dir = os.path.join(baseline_dir, "SS")
+        utils.mkdirs(ss_dir)
+        tpi_dir = os.path.join(baseline_dir, "TPI")
+        utils.mkdirs(tpi_dir)
+        ss_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_path, "wb") as f:
+            pickle.dump(ss_vars_new, f)
+        tpi_path = os.path.join(baseline_dir, "TPI", "TPI_vars.pkl")
+        with open(tpi_path, "wb") as f:
+            pickle.dump(tpi_vars_new, f)
         output_base = os.path.join(tmpdir, "reform")
     p = Specifications(
         baseline=baseline,
