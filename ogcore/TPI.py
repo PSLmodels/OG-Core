@@ -417,8 +417,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     n_mat = np.zeros((p.T + p.S, p.S))
     euler_errors = np.zeros((p.T, 2 * p.S))
 
-    print("TO HERE 1.75")
-
     solutions = opt.root(
         firstdoughnutring,
         [guesses_b[0, -1], guesses_n[0, -1]],
@@ -440,8 +438,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         tol=MINIMIZER_TOL,
     )
     b_mat[0, -1], n_mat[0, -1] = solutions.x[0], solutions.x[1]
-
-    print("TO HERE 1.9")
 
     for s in range(p.S - 2):  # Upper triangle
         ind2 = np.arange(s + 2)
@@ -631,12 +627,11 @@ def run_TPI(p, client=None):
     K_g = np.ones_like(K) * ss_vars["K_g"]
     Y = np.zeros_like(K)
     Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
-    Y[p.T :] = ss_vars["Y"]
+    Y[p.T:] = ss_vars["Y"]
     # path for industry specific aggregates
     K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
     L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(1, p.M)
     Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
-    print("TO HERE")
     # compute w
     w = np.ones_like(K) * ss_vars["w"]
     # compute goods prices
@@ -774,7 +769,6 @@ def run_TPI(p, client=None):
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
 
-    print("TO HERE 1")
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
@@ -784,8 +778,6 @@ def run_TPI(p, client=None):
             * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
         ).sum(axis=2)
         p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
-
-        print("TO HERE 1.5")
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
@@ -815,7 +807,6 @@ def run_TPI(p, client=None):
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
-        print("TO HERE 2 ")
         bmat_s = np.zeros((p.T, p.S, p.J))
         bmat_s[0, 1:, :] = initial_b[:-1, :]
         bmat_s[1:, 1:, :] = b_mat[: p.T - 1, :-1, :]
