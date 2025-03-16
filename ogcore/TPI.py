@@ -291,7 +291,7 @@ def twist_doughnut(
     if length == p.S:
         b_s = np.array([0] + list(b_guess[:-1]))
     else:
-        b_s = np.array([(initial_b[-(s + 3), j])] + list(b_guess[:-1]))
+        b_s = np.array([initial_b[-(s + 3), j]] + list(b_guess[:-1]))
 
     b_splus1 = b_guess
     w_s = w[t : t + length]
@@ -627,7 +627,7 @@ def run_TPI(p, client=None):
     K_g = np.ones_like(K) * ss_vars["K_g"]
     Y = np.zeros_like(K)
     Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
-    Y[p.T:] = ss_vars["Y"]
+    Y[p.T :] = ss_vars["Y"]
     # path for industry specific aggregates
     K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
     L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(1, p.M)
