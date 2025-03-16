@@ -15,7 +15,7 @@ from ogcore import firm
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
-PARAM_NAME_MAPPING = {
+VAR_NAME_MAPPING = {
     "Yss": "Y",
     "Bss": "B",
     "Kss": "K",
@@ -431,13 +431,13 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        print("diff = ", np.abs(test_dict[PARAM_NAME_MAPPING[k]] - v).max())
+        print("diff = ", np.abs(test_dict[VAR_NAME_MAPPING[k]] - v).max())
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        print("diff = ", np.abs(test_dict[PARAM_NAME_MAPPING[k]] - v).max())
+        print("diff = ", np.abs(test_dict[VAR_NAME_MAPPING[k]] - v).max())
         assert np.allclose(
-            test_dict[PARAM_NAME_MAPPING[k]], v, atol=1e-04, equal_nan=True
+            test_dict[VAR_NAME_MAPPING[k]], v, atol=1e-04, equal_nan=True
         )
 
 
@@ -516,7 +516,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     for k, v in expected_dict.items():
         print("Testing ", k)
         assert np.allclose(
-            test_dict[PARAM_NAME_MAPPING[k]], v, atol=1e-05, equal_nan=True
+            test_dict[VAR_NAME_MAPPING[k]], v, atol=1e-05, equal_nan=True
         )
 
 
@@ -1296,4 +1296,4 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         pass
     for k, v in expected_dict.items():
         print("Checking item = ", k)
-        assert np.allclose(test_dict[PARAM_NAME_MAPPING[k]], v, atol=5e-04)
+        assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
