@@ -179,7 +179,7 @@ def plot_industry_aggregates(
     base_params,
     reform_tpi=None,
     reform_params=None,
-    var_list=["Y_vec"],
+    var_list=["Y_m"],
     ind_names_list=None,
     plot_type="pct_diff",
     num_years_to_plot=50,
@@ -349,7 +349,7 @@ def ss_3Dplot(
     base_ss,
     reform_params=None,
     reform_ss=None,
-    var="bssmat_splus1",
+    var="b_sp1",
     plot_type="levels",
     plot_title=None,
     path=None,
@@ -539,7 +539,7 @@ def ability_bar(
     base_params,
     reform_tpi,
     reform_params,
-    var="n_mat",
+    var="n",
     num_years=5,
     start_year=DEFAULT_START_YEAR,
     plot_title=None,
@@ -613,7 +613,7 @@ def ability_bar_ss(
     base_params,
     reform_ss,
     reform_params,
-    var="nssmat",
+    var="n",
     plot_title=None,
     path=None,
 ):
@@ -668,22 +668,23 @@ def tpi_profiles(
     reform_tpi=None,
     reform_params=None,
     by_j=True,
-    var="n_mat",
+    var="n",
     num_years=5,
     start_year=DEFAULT_START_YEAR,
     plot_title=None,
     path=None,
 ):
     """
-    Plot lifecycle profiles of given variable in the SS.
+    Plot lifecycle profiles of given variable over the transition path
 
     Args:
-        base_ss (dictionary): TPI output from baseline run
+        base_tpi (dictionary): TPI output from baseline run
         base_params (OG-Core Specifications class): baseline parameters
             object
-        reform_ss (dictionary): TPI output from reform run
+        reform_tpi (dictionary): TPI output from reform run
         reform_params (OG-Core Specifications class): reform parameters
             object
+        by_j (bool): if True,then plot separate profiles for each j
         var (string): name of variable to plot
         num_year (integer): number of years to compute changes over
         start_year (integer): year to start plot
@@ -755,7 +756,7 @@ def ss_profiles(
     reform_ss=None,
     reform_params=None,
     by_j=True,
-    var="nssmat",
+    var="n",
     plot_data=None,
     plot_title=None,
     path=None,
@@ -770,6 +771,7 @@ def ss_profiles(
         reform_ss (dictionary): SS output from reform run
         reform_params (OG-Core Specifications class): reform parameters
             object
+        by_j (bool): if True,then plot separate profiles for each j
         var (string): name of variable to plot
         plot_data (array_like): series of data to add to plot
         plot_title (string): title for plot
@@ -993,13 +995,13 @@ def plot_all(base_output_path, reform_output_path, save_path):
 
     # Pct change in c, n, b, y, etr, mtrx, mtry by ability group over 10 years
     var_list = [
-        "c_path",
-        "n_mat",
-        "bmat_splus1",
-        "etr_path",
-        "mtrx_path",
-        "mtry_path",
-        "y_before_tax_mat",
+        "c",
+        "n",
+        "b_sp1",
+        "etr",
+        "mtrx",
+        "mtry",
+        "before_tax_income",
     ]
     title_list = [
         "consumption",
@@ -1026,12 +1028,12 @@ def plot_all(base_output_path, reform_output_path, save_path):
 
     # lifetime profiles, base vs reform, SS for c, n, b, y - not by j
     var_list = [
-        "cssmat",
-        "nssmat",
-        "bssmat_splus1",
-        "etr_ss",
-        "mtrx_ss",
-        "mtry_ss",
+        "c",
+        "n",
+        "b_sp1",
+        "etr",
+        "mtrx",
+        "mtry",
     ]
     for i, v in enumerate(var_list):
         ss_profiles(
@@ -1077,7 +1079,7 @@ def inequality_plot(
     base_params,
     reform_tpi=None,
     reform_params=None,
-    var="c_path",
+    var="c",
     ineq_measure="gini",
     pctiles=None,
     plot_type="levels",

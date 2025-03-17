@@ -24,6 +24,7 @@ parts:
   chapters:
   - file: content/theory/derivations
   - file: content/intro/parameters
+  file: content/intro/variables
 - caption: References
   chapters:
   - file: content/OGCore_references

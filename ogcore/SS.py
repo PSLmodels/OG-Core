@@ -1,5 +1,4 @@
 # imports
-from re import VERBOSE
 import numpy as np
 import scipy.optimize as opt
 from dask import delayed, compute
@@ -9,6 +8,7 @@ from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 import os
 import warnings
+import logging
 
 
 if not SHOW_RUNTIME:
@@ -28,6 +28,11 @@ ENFORCE_SOLUTION_CHECKS = True
 Set flag for verbosity
 """
 VERBOSE = True
+# Configure logging
+log_level = logging.INFO if VERBOSE else logging.WARNING
+logging.basicConfig(
+    level=log_level, format="%(message)s"  # Only show the message itself
+)
 
 """
 A global future for the Parameters object for client workers.
@@ -700,10 +705,9 @@ def SS_solver(
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration - 1] > 0:
                 nu_ss /= 2.0
-                print("New value of nu:", nu_ss)
+                logging.info(f"New value of nu: {nu_ss}")
         iteration += 1
-        if VERBOSE:
-            print("Iteration: %02d" % iteration, " Distance: ", dist)
+        logging.info(f"Iteration: {iteration}  Distance: {dist}")
 
     # Generate the SS values of variables, including euler errors
     bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
@@ -734,7 +738,7 @@ def SS_solver(
         debt_service,
         new_borrowing_f,
     ) = fiscal.get_D_ss(r_gov_ss, Yss, p)
-    print("SS debt = ", Dss, new_borrowing_f)
+    logging.info(f"SS debt = {Dss}, {new_borrowing_f}")
     w_open = firm.get_w_from_r(p.world_int_rate[-1], p, "SS")
     K_demand_open_ss = np.zeros(p.M)
     for m in range(p.M):
@@ -942,7 +946,7 @@ def SS_solver(
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec_ss = np.zeros(p.M)
     # Map consumption goods back to demands for production goods
-    print("IO: ", p.io_matrix.T.shape, ", C: ", C_vec_ss.shape)
+    logging.info(f"IO: {p.io_matrix.T.shape}, C: {C_vec_ss.shape}")
     C_m_vec_ss = np.dot(p.io_matrix.T, C_vec_ss)
     G_vec_ss[-1] = Gss
     I_d_vec_ss = np.zeros(p.M)
@@ -963,19 +967,18 @@ def SS_solver(
         net_capital_outflows_vec,
         RM_vec_ss,
     )
-    if VERBOSE:
-        print("Foreign debt holdings = ", D_f_ss)
-        print("Foreign capital holdings = ", K_f_ss)
-        print("resource constraint: ", RC)
+    logging.info(f"Foreign debt holdings = {D_f_ss}")
+    logging.info(f"Foreign capital holdings = {K_f_ss}")
+    logging.info(f"resource constraint: {RC}")
 
     if Gss < 0:
-        print(
+        logging.warning(
             "Steady state government spending is negative to satisfy"
             + " budget"
         )
 
     if ENFORCE_SOLUTION_CHECKS and (max(np.absolute(RC)) > p.RC_SS):
-        print("Resource Constraint Difference:", RC)
+        logging.warning("Resource Constraint Difference:", RC)
         err = "Steady state aggregate resource constraint not satisfied"
         raise RuntimeError(err)
 
@@ -984,79 +987,78 @@ def SS_solver(
 
     euler_savings = euler_errors[: p.S, :]
     euler_labor_leisure = euler_errors[p.S :, :]
-    if VERBOSE:
-        print(
-            "Maximum error in labor FOC = ",
-            np.absolute(euler_labor_leisure).max(),
-        )
-        print(
-            "Maximum error in savings FOC = ", np.absolute(euler_savings).max()
-        )
+    logging.info(
+        f"Maximum error in labor FOC = {np.absolute(euler_labor_leisure).max()}"
+    )
+    logging.info(
+        f"Maximum error in savings FOC = {np.absolute(euler_savings).max()}"
+    )
 
     # Return dictionary of SS results
     output = {
-        "Kss": Kss,
-        "K_f_ss": K_f_ss,
-        "K_d_ss": K_d_ss,
-        "K_g_ss": K_g_ss,
-        "I_g_ss": I_g_ss,
-        "Bss": Bss,
-        "Lss": Lss,
-        "Css": Css,
-        "Iss": Iss,
-        "K_vec_ss": K_vec_ss,
-        "L_vec_ss": L_vec_ss,
-        "C_vec_ss": C_vec_ss,
-        "Y_vec_ss": Y_vec_ss,
-        "Iss_total": Iss_total,
-        "I_d_ss": I_d_ss,
-        "nssmat": nssmat,
-        "Yss": Yss,
-        "Dss": Dss,
-        "D_f_ss": D_f_ss,
-        "D_d_ss": D_d_ss,
-        "wss": wss,
-        "rss": rss,
-        "p_m_ss": p_m_ss,
-        "total_taxes_ss": taxss,
-        "ubissmat": ubissmat,
-        "p_m_ss": p_m_ss,
-        "p_tilde_ss": p_tilde_ss,
-        "r_gov_ss": r_gov_ss,
-        "r_p_ss": r_p_ss,
-        "theta": theta,
-        "BQss": BQss,
-        "RMss": RM_ss,
-        "factor_ss": factor_ss,
-        "bssmat_s": bssmat_s,
-        "cssmat": cssmat,
-        "bssmat_splus1": bssmat_splus1,
-        "yss_before_tax_mat": yss_before_tax_mat,
-        "bqssmat": bqssmat,
-        "TR_ss": TR_ss,
-        "trssmat": trssmat,
-        "rmssmat": rmssmat,
-        "Gss": Gss,
+        "Y": Yss,
+        "B": Bss,
+        "K": Kss,
+        "K_f": K_f_ss,
+        "K_d": K_d_ss,
+        "L": Lss,
+        "C": Css,
+        "I": Iss,
+        "I_total": Iss_total,
+        "I_d": I_d_ss,
+        "K_g": K_g_ss,
+        "I_g": I_g_ss,
+        "BQ": BQss,
+        "RM": RM_ss,
+        "Y_m": Y_vec_ss,
+        "K_m": K_vec_ss,
+        "L_m": L_vec_ss,
+        "C_i": C_vec_ss,
+        "TR": TR_ss,
+        "agg_pension_outlays": agg_pension_outlays,
+        "G": Gss,
+        "UBI": UBI_outlays,
         "total_tax_revenue": total_tax_revenue,
         "business_tax_revenue": business_tax_revenue,
         "iit_payroll_tax_revenue": iit_payroll_tax_revenue,
         "iit_revenue": iit_revenue,
         "payroll_tax_revenue": payroll_tax_revenue,
-        "agg_pension_outlays": agg_pension_outlays,
-        "UBI_outlays_SS": UBI_outlays,
         "bequest_tax_revenue": bequest_tax_revenue,
         "wealth_tax_revenue": wealth_tax_revenue,
         "cons_tax_revenue": cons_tax_revenue,
-        "euler_savings": euler_savings,
-        "debt_service_f": debt_service_f,
-        "new_borrowing_f": new_borrowing_f,
-        "debt_service": debt_service,
+        "D": Dss,
+        "D_f": D_f_ss,
+        "D_d": D_d_ss,
         "new_borrowing": new_borrowing,
+        "debt_service": debt_service,
+        "new_borrowing_f": new_borrowing_f,
+        "debt_service_f": debt_service_f,
+        "r": rss,
+        "r_gov": r_gov_ss,
+        "r_p": r_p_ss,
+        "w": wss,
+        "p_m": p_m_ss,
+        "p_i": p_i_ss,
+        "p_tilde": p_tilde_ss,
+        "b_sp1": bssmat_splus1,
+        "b_s": bssmat_s,
+        "n": nssmat,
+        "c": cssmat,
+        "c_i": c_i_ss_mat,
+        "bq": bqssmat,
+        "rm": rmssmat,
+        "tr": trssmat,
+        "ubi": ubissmat,
+        "before_tax_income": yss_before_tax_mat,
+        "hh_taxes": taxss,
+        "etr": etr_ss,
+        "mtrx": mtrx_ss,
+        "mtry": mtry_ss,
+        "theta": theta,
+        "factor": factor_ss,
+        "euler_savings": euler_savings,
         "euler_labor_leisure": euler_labor_leisure,
         "resource_constraint_error": RC,
-        "etr_ss": etr_ss,
-        "mtrx_ss": mtrx_ss,
-        "mtry_ss": mtry_ss,
     }
 
     return output
@@ -1177,8 +1179,7 @@ def SS_fsolve(guesses, *args):
             + list(error_BQ)
             + [error_TR]
         )
-    if VERBOSE:
-        print("GE loop errors = ", errors)
+    logging.info(f"GE loop errors = {errors}")
 
     return errors
 
@@ -1254,12 +1255,9 @@ def run_SS(p, client=None):
         k = 0
         while not SS_solved and k < len(dev_factor_list) - 1:
             for k, v in enumerate(dev_factor_list):
-                print(
-                    "SS using initial guess factors for r and TR of",
-                    v[0],
-                    "and",
-                    v[1],
-                    ", respectively.",
+                logging.info(
+                    f"SS using initial guess factors for r and TR of "
+                    + f"{v[0]} and {v[1]} respectively."
                 )
                 r_p_guess = v[0] * p.initial_guess_r_SS
                 rguess = v[0] * p.initial_guess_r_SS
@@ -1345,18 +1343,13 @@ def run_SS(p, client=None):
         if p.reform_use_baseline_solution:
             # use baseline solution as starting values if dimensions match
             try:
-                print(
-                    "Shape HH = ",
-                    ss_solutions["bssmat_splus1"].shape,
+                if ss_solutions["b_sp1"].shape == (
                     p.S,
                     p.J,
-                )
-                print("Shape firm = ", ss_solutions["Y_vec_ss"].shape, p.M)
-                if ss_solutions["bssmat_splus1"].shape == (
-                    p.S,
-                    p.J,
-                ) and np.squeeze(ss_solutions["Y_vec_ss"].shape) == (p.M):
-                    print("Using previous solutions for SS")
+                ) and np.squeeze(
+                    ss_solutions["Y_m"].shape
+                ) == (p.M):
+                    logging.info("Using previous solutions for SS")
                     (
                         b_guess,
                         n_guess,
@@ -1369,30 +1362,32 @@ def run_SS(p, client=None):
                         Yguess,
                         factor,
                     ) = (
-                        ss_solutions["bssmat_splus1"],
-                        ss_solutions["nssmat"],
-                        float(ss_solutions["r_p_ss"]),
-                        float(ss_solutions["rss"]),
-                        float(ss_solutions["wss"]),
+                        ss_solutions["b_sp1"],
+                        ss_solutions["n"],
+                        float(ss_solutions["r_p"]),
+                        float(ss_solutions["r"]),
+                        float(ss_solutions["w"]),
                         ss_solutions[
-                            "p_m_ss"
+                            "p_m"
                         ],  # Not sure why need to index p_m,but otherwise its shape is off..
-                        ss_solutions["BQss"],
-                        float(ss_solutions["TR_ss"]),
-                        float(ss_solutions["Yss"]),
-                        ss_solutions["factor_ss"],
+                        ss_solutions["BQ"],
+                        float(ss_solutions["TR"]),
+                        float(ss_solutions["Y"]),
+                        ss_solutions["factor"],
                     )
                     use_new_guesses = False
                 else:
-                    print(
+                    logging.warning(
                         "Dimensions of previous solutions for SS do not match"
                     )
                     use_new_guesses = True
             except KeyError:
-                print("KeyError: previous solutions for SS not found")
+                logging.warning(
+                    "KeyError: previous solutions for SS not found"
+                )
                 use_new_guesses = True
         else:
-            print("Using new guesses for SS")
+            logging.info("Using new guesses for SS")
             use_new_guesses = True
         if use_new_guesses:
             if p.use_zeta:
@@ -1413,7 +1408,7 @@ def run_SS(p, client=None):
                 BQguess = 0.12231465279007188
         if p.baseline_spending:
             TR_baseline = TRguess
-            Ig_baseline = ss_solutions["I_g_ss"]
+            Ig_baseline = ss_solutions["I_g"]
             ss_params_reform = (
                 b_guess,
                 n_guess,
@@ -1519,7 +1514,7 @@ def run_SS(p, client=None):
             client,
             fsolve_flag,
         )
-        if output["Gss"] < 0.0:
+        if output["G"] < 0.0:
             warnings.warn(
                 "Warning: The combination of the tax policy "
                 + "you specified and your target debt-to-GDP "

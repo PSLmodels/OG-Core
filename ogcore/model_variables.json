@@ -1,0 +1,569 @@
+{
+    "Y": {
+      "desc": "Aggregate output, GDP",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "GDP ($Y_t$)",
+      "toGDP_label": "GDP-to-GDP (=1 ;-))"
+    },
+    "B": {
+      "desc": "Aggregate household savings",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "HH Savings ($B_t$)",
+      "toGDP_label": "Savings-to-GDP ($B_{t}/Y_t$)"
+    },
+    "K": {
+      "desc": "Aggregate capital stock",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Capital Stock ($K_t$)",
+      "toGDP_label": "Capital-Output Ratio ($K_{t}/Y_t$)"
+    },
+    "K_f": {
+      "desc": "Aggregate capital stock owned by foreign investors",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Foreign-owned Capital Stock ($K^f_t$)",
+      "toGDP_label": "Foreign-owned Capital-Output Ratio ($K^f_{t}/Y_t$)"
+    },
+    "K_d": {
+      "desc": "Aggregate capital stock owned by domestic investors",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Domestically-owned Capital Stock ($K^d_t$)",
+      "toGDP_label": "Domestically-owned Capital-Output Ratio ($K^d_{t}/Y_t$)"
+    },
+    "L": {
+      "desc": "Aggregate labor",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Labor ($L_t$)",
+      "toGDP_label": "Labor-Output Ratio ($L_{t}/Y_t$)"
+    },
+    "C": {
+      "desc": "Aggregate consumption",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Consumption ($C_t$)",
+      "toGDP_label": "Consumption-Output Ratio ($C_{t}/Y_t$)"
+    },
+    "I": {
+      "desc": "Aggregate investment",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Investment ($I_t$)",
+      "toGDP_label": "Investment-Output Ratio ($I_{t}/Y_t$)"
+    },
+    "I_total": {
+      "desc": "Aggregate investment, not account for immigrant investment",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Investment ($I_t$)",
+      "toGDP_label": "Investment-Output Ratio ($I_{t}/Y_t$)"
+    },
+    "I_d": {
+      "desc": "Aggregate investment for domestic sources",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Domestic Investment ($I^d_t$)",
+      "toGDP_label": "Domestic Investment-Output Ratio ($I^d_{t}/Y_t$)"
+    },
+    "K_g": {
+      "desc": "Aggregate stock of infrastructure",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Infrastructure ($K^g_t$)",
+      "toGDP_label": "Infrastructure-Output Ratio ($K^g_{t}/Y_t$)"
+    },
+    "I_g": {
+      "desc": "Aggregate investment in infrastructure",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Infrastructure Investment ($I^g_t$)",
+      "toGDP_label": "Infrastructure Investment-Output Ratio ($I^g_{t}/Y_t$)"
+    },
+    "BQ": {
+      "desc": "Aggregate bequests",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "TxJ or T (if use_zeta=True)",
+      "SS dimensions": "J or scalar if use_zeta=True)",
+      "label": "Bequests ($BQ_t$)",
+      "toGDP_label": "Bequests-to-GDP ($BQ_{t}/Y_t$"
+    },
+    "RM": {
+      "desc": "Aggregate remittances",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Aggregate remittances ($RM_t$)",
+      "toGDP_label": "Remittances-to-GDP ($RM_{t}/Y_t$)"
+    },
+    "Y_m": {
+      "desc": "Total output by industry",
+      "section": "Production Sector/Consumption Good Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "TxM",
+      "SS dimensions": "M",
+      "label": "Output ($Y_{m,t}$)",
+      "toGDP_label": "Output-to-GDP ($Y_{m,t}/Y_t$)"
+    },
+    "K_m": {
+      "desc": "Total capital stock by industry",
+      "section": "Production Sector/Consumption Good Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "TxM",
+      "SS dimensions": "M",
+      "label": "Capital ($K_{m,t}$)",
+      "toGDP_label": "Capital-to-GDP ($K_{m,t}/Y_t$)"
+    },
+    "L_m": {
+      "desc": "Total labor by industry",
+      "section": "Production Sector/Consumption Good Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "TxM",
+      "SS dimensions": "M",
+      "label": "Labor ($L_{m,t}$)",
+      "toGDP_label": "Labor-to-GDP ($L_{m,t}/Y_t$)"
+    },
+    "C_i": {
+      "desc": "Total consumption by consumption good",
+      "section": "Production Sector/Consumption Good Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "TxI",
+      "SS dimensions": "I",
+      "label": "Consumption ($C_{i,t}$)",
+      "toGDP_label": "Consumption-to-GDP ($C_{i,t}/Y_t$)"
+    },
+    "TR": {
+      "desc": "Aggregate government, non-pension transfer spending",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Government Transfers ($TR_{t}$)",
+      "toGDP_label": "Transfers-to-GDP ($TR_{t}/Y_t$)"
+    },
+    "agg_pension_outlays": {
+      "desc": "Aggregate government pension outlays",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Pensions ($Pensions_{t}$)",
+      "toGDP_label": "Pension Spending-to-GDP ($Pensions_{t}/Y_t$)"
+    },
+    "G": {
+      "desc": "Aggregate government consumption expenditures",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Government Consumption Expenditures ($G_{t}$)",
+      "toGDP_label": "Gov't Spending-to-GDP ($G_{t}/Y_t$)"
+    },
+    "UBI": {
+        "desc": "Aggregate universal basic income outlays",
+        "section": "Government Revenues, Outlays, and Debt",
+        "type": "array-like",
+        "TPI dimensions": "T",
+        "SS dimensions": "scalar",
+        "label": "Universal Basic Income Outlay ($UBI_{t}$)",
+        "toGDP_label": "UBI-to-GDP ($UBI_{t}/Y_t$)"
+      },
+    "total_tax_revenue": {
+      "desc": "Total tax revenue",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Total tax revenue ($REV_t$)",
+      "toGDP_label": "Tax Revenue-to-GDP ($REV_{t}/Y_t$)"
+    },
+    "business_tax_revenue": {
+      "desc": "Total corporate income tax revenue",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Total corporate tax revenue",
+      "toGDP_label": "Corporate Tax Revenue-to-GDP"
+    },
+    "iit_payroll_tax_revenue": {
+      "desc": "Total tax revenue from personal income and payroll taxes",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Total personal income and payroll tax revenue",
+      "toGDP_label": "HH Income and Payroll Tax Revenue-to-GDP"
+    },
+    "iit_tax_revenue": {
+      "desc": "Total tax revenue from personal income taxes",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Total personal income tax revenue",
+      "toGDP_label": "HH Income Tax Revenue-to-GDP"
+    },
+    "payroll_tax_revenue": {
+      "desc": "Total tax revenue from payroll taxes (i.e., social security contributions)",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Total payroll tax revenue",
+      "toGDP_label": "Payroll Tax Revenue-to-GDP"
+    },
+    "bequest_tax_revenue": {
+      "desc": "Total tax revenue from taxes on bequests",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Total bequest tax revenue",
+      "toGDP_label": "Bequest Tax Revenue-to-GDP"
+    },
+    "wealth_tax_revenue": {
+      "desc": "Total tax revenue from wealth taxes",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Total wealth tax revenue",
+      "toGDP_label": "Wealth Tax Revenue-to-GDP"
+    },
+    "cons_tax_revenue": {
+      "desc": "Total tax revenue from consumption taxes",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Total consumption tax revenue",
+      "toGDP_label": "Consumption Tax Revenue-to-GDP"
+    },
+    "D": {
+      "desc": "Total government debt",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Government Debt ($D_t$)",
+      "toGDP_label": "Debt-to-GDP ($D_{t}/Y_t$)"
+    },
+    "D_f": {
+      "desc": "Total government debt held by foreign investors",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Foreign-owned Gov Debt ($D^f_t$)",
+      "toGDP_label": "Foreign-owned Debt-to-GDP ($D^f_{t}/Y_t$)"
+    },
+    "D_d": {
+      "desc": "Total government debt held by domestic investors",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Domestically-owned Gov Debt ($D^d_t$)",
+      "toGDP_label": "Domestically-owned Debt-to-GDP ($D^d_{t}/Y_t$)"
+    },
+    "new_borrowing": {
+      "desc": "New government borrowing, equal to budget deficit",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Budget Deficit",
+      "toGDP_label": "Deficit-to-GDP ($Deficit_{t}/Y_t$)"
+    },
+    "debt_service": {
+      "desc": "Total interest payments on government debt",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Interest Spending on Government Debt",
+      "toGDP_label": "Debt Service-to-GDP"
+    },
+    "new_borrowing_f": {
+      "desc": "New government borrowing from foreign investors",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "",
+      "toGDP_label": ""
+    },
+    "debt_service_f": {
+      "desc": "Government debt interest payments made to foreign investors",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "",
+      "toGDP_label": ""
+    },
+    "r": {
+      "desc": "Real rate of return on private capital per model period.",
+      "section": "Prices",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Real interest rate ($r_t$)",
+      "toGDP_label": ""
+    },
+    "r_gov": {
+      "desc": "Real rate of return on government debt per model period.",
+      "section": "Prices",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Real interest rate on gov debt ($r_{gov,t}$)",
+      "toGDP_label": ""
+    },
+    "r_p": {
+      "desc": "Real rate of return on household investment portfolio per model period.",
+      "section": "Prices",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Real interest rate on HH portfolio ($r_{p,t}$)",
+      "toGDP_label": ""
+    },
+    "w": {
+      "desc": "Wage rate per effective labor hour",
+      "section": "Prices",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Wage rate ($w_{t}$)",
+      "toGDP_label": ""
+    },
+    "p_m": {
+        "desc": "Price of output in each industry. Normalized so that price of industry M output is 1 ($p_{m,t}=1$)",
+        "section": "Prices",
+        "type": "array-like",
+        "TPI dimensions": "TxM",
+        "SS dimensions": "M",
+        "label": "Output good prices ($p_{m,t}$)",
+        "toGDP_label": ""
+    },
+    "p_i": {
+        "desc": "Price of output in each industry",
+        "section": "Prices",
+        "type": "array-like",
+        "TPI dimensions": "TxI",
+        "SS dimensions": "I",
+        "label": "Consumption good prices ($p_{i,t}$)",
+        "toGDP_label": ""
+    },
+    "p_tilde": {
+        "desc": "Price of composite output good",
+        "section": "Prices",
+        "type": "array-like",
+        "TPI dimensions": "T",
+        "SS dimensions": "scalar",
+        "label": "Composite consumption good price ($\tilde{p}_{t}$)",
+        "toGDP_label": ""
+    },
+    "b_sp1": {
+        "desc": "Household savings",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Household Savings ($b_{j,s+1,t+1}$)",
+        "toGDP_label": ""
+    },
+    "b_s": {
+        "desc": "Household wealth (equal to savings from last period)",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Household Wealth ($b_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "n": {
+        "desc": "Household labor supply",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Household Labor Supply ($n_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "c": {
+        "desc": "Household consumption of composite good",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Household Consumption ($\tilde{c}_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "c_i": {
+        "desc": "Household consumption of differentiated consumption goods",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJxI",
+        "SS dimensions": "SxJxI",
+        "label": "Household Consumption ($c_{i, j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "bq": {
+        "desc": "Household bequest received",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Bequests ($bq_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "rm": {
+        "desc": "Household remittances received",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Remittances ($rm_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "tr": {
+        "desc": "Government transfers received by households",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Transfers ($tr_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "ubi": {
+        "desc": "Universal basic income received by households",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Universal basic income ($ubi_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "before_tax_income": {
+        "desc": "Household before tax income",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Before tax income ($y_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "hh_taxes": {
+        "desc": "Net taxes paid by households (taxes - transfers)",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Net Taxes ($T_{j,s,t}$)",
+        "toGDP_label": ""
+    },
+    "etr": {
+        "desc": "Effective tax rate, income and payroll taxes",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Effective Tax Rate",
+        "toGDP_label": ""
+    },
+    "mtrx": {
+        "desc": "Marginal tax rate on labor income",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Marginal Tax Rates on Labor Income",
+        "toGDP_label": ""
+    },
+    "mtry": {
+        "desc": "Marginal tax rate on capital income",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Marginal Tax Rates on Capital Income",
+        "toGDP_label": ""
+    },
+    "theta": {
+        "desc": "Replacement rate for US-style social security pension system.  Steady-state only.",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "",
+        "SS dimensions": "J",
+        "label": "Replacement rate ($\theta_j$)",
+        "toGDP_label": ""
+    },
+    "factor": {
+        "desc": "Factor adjustment to convert from model units to local currency units to match mean income in local currency units. Steady-state only.",
+        "section": "Model Scaling and Fit",
+        "type": "scalar",
+        "TPI dimensions": "",
+        "SS dimensions": "scalar",
+        "label": "",
+        "toGDP_label": ""
+    },
+    "euler_savings": {
+        "desc": "Errors in household FOC for choice of savings",
+        "section": "Model Scaling and Fit",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Euler Errors, Savings",
+        "toGDP_label": ""
+    },
+    "euler_laborleisure": {
+        "desc": "Errors in household FOC for choice of labor",
+        "section": "Model Scaling and Fit",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Euler Errors, Labor",
+        "toGDP_label": ""
+    },
+    "resource_constraint_error": {
+        "desc": "Errors in resource constraint",
+        "section": "Model Scaling and Fit",
+        "type": "array-like",
+        "TPI dimensions": "T",
+        "SS dimensions": "scalar",
+        "label": "Resource Constraint Error",
+        "toGDP_label": ""
+    }
+}

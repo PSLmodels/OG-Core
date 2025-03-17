@@ -25,6 +25,140 @@ from ogcore.parameters import Specifications
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
+SS_VAR_NAME_MAPPING = {
+    "Yss": "Y",
+    "Bss": "B",
+    "Kss": "K",
+    "K_f_ss": "K_f",
+    "K_d_ss": "K_d",
+    "Lss": "L",
+    "Css": "C",
+    "Iss": "I",
+    "Iss_total": "I_total",
+    "I_d_ss": "I_d",
+    "K_g_ss": "K_g",
+    "I_g_ss": "I_g",
+    "BQss": "BQ",
+    "RMss": "RM",
+    "Y_vec_ss": "Y_m",
+    "K_vec_ss": "K_m",
+    "L_vec_ss": "L_m",
+    "C_vec_ss": "C_i",
+    "TR_ss": "TR",
+    "agg_pension_outlays": "agg_pension_outlays",
+    "Gss": "G",
+    "UBI_outlays_SS": "UBI",
+    "total_tax_revenue": "total_tax_revenue",
+    "business_tax_revenue": "business_tax_revenue",
+    "iit_payroll_tax_revenue": "iit_payroll_tax_revenue",
+    "iit_revenue": "iit_revenue",
+    "payroll_tax_revenue": "payroll_tax_revenue",
+    "bequest_tax_revenue": "bequest_tax_revenue",
+    "wealth_tax_revenue": "wealth_tax_revenue",
+    "cons_tax_revenue": "cons_tax_revenue",
+    "Dss": "D",
+    "D_f_ss": "D_f",
+    "D_d_ss": "D_d",
+    "new_borrowing": "new_borrowing",
+    "debt_service": "debt_service",
+    "new_borrowing_f": "new_borrowing_f",
+    "debt_service_f": "debt_service_f",
+    "rss": "r",
+    "r_gov_ss": "r_gov",
+    "r_p_ss": "r_p",
+    "wss": "w",
+    "p_m_ss": "p_m",
+    "p_i_ss": "p_i",
+    "p_tilde_ss": "p_tilde",
+    "bssmat_splus1": "b_sp1",
+    "bssmat_s": "b_s",
+    "nssmat": "n",
+    "cssmat": "c",
+    "c_i_ss_mat": "c_i",
+    "bqssmat": "bq",
+    "rmssmat": "rm",
+    "trssmat": "tr",
+    "ubissmat": "ubi",
+    "yss_before_tax_mat": "before_tax_income",
+    "total_taxes_ss": "hh_taxes",
+    "etr_ss": "etr",
+    "mtrx_ss": "mtrx",
+    "mtry_ss": "mtry",
+    "theta": "theta",
+    "factor_ss": "factor",
+    "euler_savings": "euler_savings",
+    "euler_labor_leisure": "euler_labor_leisure",
+    "resource_constraint_error": "resource_constraint_error",
+}
+
+VAR_NAME_MAPPING = {
+    "Y": "Y",
+    "B": "B",
+    "K": "K",
+    "K_f": "K_f",
+    "K_d": "K_d",
+    "L": "L",
+    "C": "C",
+    "I": "I",
+    "I_total": "I_total",
+    "I_d": "I_d",
+    "K_g": "K_g",
+    "I_g": "I_g",
+    "BQ": "BQ",
+    "RM": "RM",
+    "Y_vec": "Y_m",
+    "K_vec": "K_m",
+    "L_vec": "L_m",
+    "C_vec": "C_i",
+    "TR": "TR",
+    "agg_pension_outlays": "agg_pension_outlays",
+    "G": "G",
+    "UBI_path": "UBI",
+    "total_tax_revenue": "total_tax_revenue",
+    "business_tax_revenue": "business_tax_revenue",
+    "iit_payroll_tax_revenue": "iit_payroll_tax_revenue",
+    "iit_revenue": "iit_revenue",
+    "payroll_tax_revenue": "payroll_tax_revenue",
+    "bequest_tax_revenue": "bequest_tax_revenue",
+    "wealth_tax_revenue": "wealth_tax_revenue",
+    "cons_tax_revenue": "cons_tax_revenue",
+    "D": "D",
+    "D_f": "D_f",
+    "D_d": "D_d",
+    "new_borrowing": "new_borrowing",
+    "debt_service": "debt_service",
+    "new_borrowing_f": "new_borrowing_f",
+    "debt_service_f": "debt_service_f",
+    "r": "r",
+    "r_gov": "r_gov",
+    "r_p": "r_p",
+    "w": "w",
+    "p_m": "p_m",
+    "p_i": "p_i",
+    "p_tilde": "p_tilde",
+    "bmat_splus1": "b_sp1",
+    "bmat_s": "b_s",
+    "n_mat": "n",
+    "c_path": "c",
+    "c_i_path": "c_i",
+    "bq_path": "bq",
+    "rm_path": "rm",
+    "tr_path": "tr",
+    "ubi_path": "ubi",
+    "y_before_tax_mat": "before_tax_income",
+    "tax_path": "hh_taxes",
+    "etr_path": "etr",
+    "mtrx_path": "mtrx",
+    "mtry_path": "mtry",
+    "theta": "theta",
+    "factor": "factor",
+    "euler_savings": "euler_savings",
+    "euler_laborleisure": "euler_labor_leisure",
+    "eul_savings": "euler_savings",
+    "eul_laborleisure": "euler_labor_leisure",
+    "resource_constraint_error": "resource_constraint_error",
+}
+
 TEST_PARAM_DICT = json.load(
     open(os.path.join(CUR_PATH, "testing_params.json"))
 )
@@ -54,11 +188,37 @@ filename3 = "intial_SS_values_reform_base_spend.pkl"
     ],
     ids=["Baseline", "Reform", "Reform, baseline_spending"],
 )
-def test_get_initial_SS_values(baseline, param_updates, filename, dask_client):
+def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
-    p.baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
-    p.output_base = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
+
+    old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
+    ss_vars = utils.safe_read_pickle(
+        os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+    )
+    ss_vars_new = {}
+    for k, v in ss_vars.items():
+        ss_vars_new[SS_VAR_NAME_MAPPING[k]] = v
+    tpi_vars = utils.safe_read_pickle(
+        os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl")
+    )
+    tpi_vars_new = {}
+    for k, v in tpi_vars.items():
+        tpi_vars_new[VAR_NAME_MAPPING[k]] = v
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    ss_dir = os.path.join(baseline_dir, "SS")
+    utils.mkdirs(ss_dir)
+    tpi_dir = os.path.join(baseline_dir, "TPI")
+    utils.mkdirs(tpi_dir)
+    ss_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
+    with open(ss_path, "wb") as f:
+        pickle.dump(ss_vars_new, f)
+    tpi_path = os.path.join(baseline_dir, "TPI", "TPI_vars.pkl")
+    with open(tpi_path, "wb") as f:
+        pickle.dump(tpi_vars_new, f)
+
+    p.baseline_dir = baseline_dir
+    p.output_base = baseline_dir
     test_tuple = TPI.get_initial_SS_values(p)
     (
         test_initial_values,
@@ -86,7 +246,9 @@ def test_get_initial_SS_values(baseline, param_updates, filename, dask_client):
     assert np.allclose(test_theta, exp_theta)
 
     for k, v in exp_ss_vars.items():
-        assert np.allclose(test_ss_vars[k], v, equal_nan=True)
+        assert np.allclose(
+            test_ss_vars[SS_VAR_NAME_MAPPING[k]], v, equal_nan=True
+        )
 
 
 def test_firstdoughnutring():
@@ -375,8 +537,32 @@ def test_run_TPI_full_run(
         baseline_dir = os.path.join(tmpdir, "baseline")
         output_base = baseline_dir
     else:
-        baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
+        old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
+        ss_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+        )
+        ss_vars_new = {}
+        for k, v in ss_vars.items():
+            ss_vars_new[SS_VAR_NAME_MAPPING[k]] = v
+        tpi_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl")
+        )
+        tpi_vars_new = {}
+        for k, v in tpi_vars.items():
+            tpi_vars_new[VAR_NAME_MAPPING[k]] = v
+        baseline_dir = os.path.join(tmpdir, "baseline")
+        ss_dir = os.path.join(baseline_dir, "SS")
+        utils.mkdirs(ss_dir)
+        tpi_dir = os.path.join(baseline_dir, "TPI")
+        utils.mkdirs(tpi_dir)
+        ss_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_path, "wb") as f:
+            pickle.dump(ss_vars_new, f)
+        tpi_path = os.path.join(baseline_dir, "TPI", "TPI_vars.pkl")
+        with open(tpi_path, "wb") as f:
+            pickle.dump(tpi_vars_new, f)
         output_base = os.path.join(tmpdir, "reform")
+
     p = Specifications(
         baseline=baseline,
         baseline_dir=baseline_dir,
@@ -404,11 +590,11 @@ def test_run_TPI_full_run(
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict["r_p"] = expected_dict.pop("r_hh")
-        test_dict["eul_savings"] = (
-            test_dict["eul_savings"][:, :, :].max(1).max(1)
+        test_dict["euler_savings"] = (
+            test_dict["euler_savings"][:, :, :].max(1).max(1)
         )
-        test_dict["eul_laborleisure"] = (
-            test_dict["eul_laborleisure"][:, :, :].max(1).max(1)
+        test_dict["euler_labor_leisure"] = (
+            test_dict["euler_labor_leisure"][:, :, :].max(1).max(1)
         )
     except KeyError:
         pass
@@ -416,27 +602,42 @@ def test_run_TPI_full_run(
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
-            print("Diff = ", np.abs(test_dict[k][: p.T] - v[: p.T]).max())
+            print(
+                "Diff = ",
+                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
+            )
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
+                np.abs(
+                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
+                    - v[: p.T, :, :]
+                ).max(),
             )
 
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
-            print("Diff = ", np.abs(test_dict[k][: p.T] - v[: p.T]).max())
+            print(
+                "Diff = ",
+                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
+            )
             assert np.allclose(
-                test_dict[k][: p.T], v[: p.T], rtol=1e-04, atol=1e-04
+                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                v[: p.T],
+                rtol=1e-04,
+                atol=1e-04,
             )
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
+                np.abs(
+                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
+                    - v[: p.T, :, :]
+                ).max(),
             )
             assert np.allclose(
-                test_dict[k][: p.T, :, :],
+                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,
@@ -474,7 +675,32 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
         baseline_dir = os.path.join(tmpdir, "baseline")
         output_base = baseline_dir
     else:
-        baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT2")
+        # If running reform, used cached baseline results
+        old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT2")
+        # map new var names and save to tmpdir
+        ss_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+        )
+        ss_vars_new = {}
+        for k, v in ss_vars.items():
+            ss_vars_new[SS_VAR_NAME_MAPPING[k]] = v
+        tpi_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl")
+        )
+        tpi_vars_new = {}
+        for k, v in tpi_vars.items():
+            tpi_vars_new[VAR_NAME_MAPPING[k]] = v
+        baseline_dir = os.path.join(tmpdir, "baseline")
+        ss_dir = os.path.join(baseline_dir, "SS")
+        utils.mkdirs(ss_dir)
+        tpi_dir = os.path.join(baseline_dir, "TPI")
+        utils.mkdirs(tpi_dir)
+        ss_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_path, "wb") as f:
+            pickle.dump(ss_vars_new, f)
+        tpi_path = os.path.join(baseline_dir, "TPI", "TPI_vars.pkl")
+        with open(tpi_path, "wb") as f:
+            pickle.dump(tpi_vars_new, f)
         output_base = os.path.join(tmpdir, "reform")
     p = Specifications(
         baseline=baseline,
@@ -509,20 +735,30 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
     for k, v in expected_dict.items():
         print("Max diff in ", k, " = ")
         try:
-            print(np.absolute(test_dict[k][: p.T] - v[: p.T]).max())
+            print(
+                np.absolute(
+                    test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]
+                ).max()
+            )
         except ValueError:
             print(
-                np.absolute(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max()
+                np.absolute(
+                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
+                    - v[: p.T, :, :]
+                ).max()
             )
 
     for k, v in expected_dict.items():
         try:
             assert np.allclose(
-                test_dict[k][: p.T], v[: p.T], rtol=1e-04, atol=1e-04
+                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                v[: p.T],
+                rtol=1e-04,
+                atol=1e-04,
             )
         except ValueError:
             assert np.allclose(
-                test_dict[k][: p.T, :, :],
+                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,
@@ -648,7 +884,30 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
         baseline_dir = os.path.join(tmpdir, "baseline")
         output_base = baseline_dir
     else:
-        baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT2")
+        old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT2")
+        ss_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+        )
+        ss_vars_new = {}
+        for k, v in ss_vars.items():
+            ss_vars_new[SS_VAR_NAME_MAPPING[k]] = v
+        tpi_vars = utils.safe_read_pickle(
+            os.path.join(old_baseline_dir, "TPI", "TPI_vars.pkl")
+        )
+        tpi_vars_new = {}
+        for k, v in tpi_vars.items():
+            tpi_vars_new[VAR_NAME_MAPPING[k]] = v
+        baseline_dir = os.path.join(tmpdir, "baseline")
+        ss_dir = os.path.join(baseline_dir, "SS")
+        utils.mkdirs(ss_dir)
+        tpi_dir = os.path.join(baseline_dir, "TPI")
+        utils.mkdirs(tpi_dir)
+        ss_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_path, "wb") as f:
+            pickle.dump(ss_vars_new, f)
+        tpi_path = os.path.join(baseline_dir, "TPI", "TPI_vars.pkl")
+        with open(tpi_path, "wb") as f:
+            pickle.dump(tpi_vars_new, f)
         output_base = os.path.join(tmpdir, "reform")
     p = Specifications(
         baseline=baseline,
@@ -683,17 +942,28 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
     for k, v in expected_dict.items():
         print("Checking ", k)
         try:
-            print("Diff = ", np.absolute(test_dict[k][: p.T] - v[: p.T]).max())
+            print(
+                "Diff = ",
+                np.absolute(
+                    test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]
+                ).max(),
+            )
             assert np.allclose(
-                test_dict[k][: p.T], v[: p.T], rtol=1e-04, atol=1e-04
+                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                v[: p.T],
+                rtol=1e-04,
+                atol=1e-04,
             )
         except ValueError:
             print(
                 "Diff = ",
-                np.absolute(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
+                np.absolute(
+                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
+                    - v[: p.T, :, :]
+                ).max(),
             )
             assert np.allclose(
-                test_dict[k][: p.T, :, :],
+                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,

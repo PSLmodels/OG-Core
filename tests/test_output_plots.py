@@ -209,7 +209,7 @@ def test_plot_industry_aggregates(
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        var_list=["Y_vec"],
+        var_list=["Y_m"],
         plot_type=plot_type,
         num_years_to_plot=20,
         start_year=int(base_params.start_year),

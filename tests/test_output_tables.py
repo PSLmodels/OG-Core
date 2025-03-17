@@ -178,8 +178,8 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
     print("M = ", base_params.M, reform_params.M)
     print(
         "Shape of M implied by output = ",
-        base_tpi["p_m"].shape,
-        reform_tpi["p_m"].shape,
+        base_tpi["p_m"].shape[1],
+        reform_tpi["p_m"].shape[1],
     )
     df = output_tables.dynamic_revenue_decomposition(
         base_params,
