@@ -18,7 +18,11 @@ setuptools.setup(
     },
     packages=["ogcore"],
     package_data={
-        "ogcore": ["default_parameters.json", "model_variables.json", "OGcorePlots.mplstyle"]
+        "ogcore": [
+            "default_parameters.json",
+            "model_variables.json",
+            "OGcorePlots.mplstyle",
+        ]
     },
     include_packages=True,
     python_requires=">=3.7.7, <3.13",
