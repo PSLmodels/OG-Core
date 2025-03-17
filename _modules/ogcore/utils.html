@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,10 +26,10 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -38,10 +38,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -227,9 +227,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -362,28 +367,28 @@
                   
   <h1>Source code for ogcore.utils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Packages</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
-<span class="kn">import</span> <span class="nn">urllib</span>
-<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">CubicSpline</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">urllib3</span>
-<span class="kn">import</span> <span class="nn">ssl</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">zipfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZipFile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tempfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">CubicSpline</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ssl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 
 <span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">1e-10</span>  <span class="c1"># tolerance or comparison functions</span>
 
 
 <div class="viewcode-block" id="mkdirs">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.mkdirs">[docs]</a>
-<span class="k">def</span> <span class="nf">mkdirs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mkdirs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes directories to save output.</span>
 
@@ -405,7 +410,7 @@
 
 <div class="viewcode-block" id="pct_diff_func">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.pct_diff_func">[docs]</a>
-<span class="k">def</span> <span class="nf">pct_diff_func</span><span class="p">(</span><span class="n">simul</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pct_diff_func</span><span class="p">(</span><span class="n">simul</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to calculate the absolute percent difference between data</span>
 <span class="sd">    moments and model moments.</span>
@@ -431,7 +436,7 @@
 
 <div class="viewcode-block" id="convex_combo">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.convex_combo">[docs]</a>
-<span class="k">def</span> <span class="nf">convex_combo</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convex_combo</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes the convex combination of two variables, where nu is in [0,1].</span>
 
@@ -452,7 +457,7 @@
 
 <div class="viewcode-block" id="pickle_file_compare">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.pickle_file_compare">[docs]</a>
-<span class="k">def</span> <span class="nf">pickle_file_compare</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pickle_file_compare</span><span class="p">(</span>
     <span class="n">fname1</span><span class="p">,</span> <span class="n">fname2</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -488,7 +493,7 @@
 
 <div class="viewcode-block" id="comp_array">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.comp_array">[docs]</a>
-<span class="k">def</span> <span class="nf">comp_array</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">comp_array</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare two arrays in the L inifinity norm. Return True if | a - b | &lt; tol,</span>
 <span class="sd">    False otherwise. If not equal, add items to the unequal list name: the name</span>
@@ -538,7 +543,7 @@
 
 <div class="viewcode-block" id="comp_scalar">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.comp_scalar">[docs]</a>
-<span class="k">def</span> <span class="nf">comp_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">comp_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare two scalars in the L inifinity norm. Return True if</span>
 <span class="sd">    abs(a - b) &lt; tol, False otherwise. If not equal, add items to the unequal</span>
@@ -580,7 +585,7 @@
 
 <div class="viewcode-block" id="dict_compare">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.dict_compare">[docs]</a>
-<span class="k">def</span> <span class="nf">dict_compare</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dict_compare</span><span class="p">(</span>
     <span class="n">name1</span><span class="p">,</span>
     <span class="n">dict1</span><span class="p">,</span>
     <span class="n">name2</span><span class="p">,</span>
@@ -682,7 +687,7 @@
 
 <div class="viewcode-block" id="to_timepath_shape">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.to_timepath_shape">[docs]</a>
-<span class="k">def</span> <span class="nf">to_timepath_shape</span><span class="p">(</span><span class="n">some_array</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_timepath_shape</span><span class="p">(</span><span class="n">some_array</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function takes an vector of length T and tiles it to fill a</span>
 <span class="sd">    Tx1x1 array for time path computations.</span>
@@ -701,7 +706,7 @@
 
 <div class="viewcode-block" id="get_initial_path">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.get_initial_path">[docs]</a>
-<span class="k">def</span> <span class="nf">get_initial_path</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_initial_path</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function generates a path from point x1 to point xT such that</span>
 <span class="sd">    that the path x is a linear or quadratic function of time t.</span>
@@ -750,7 +755,7 @@
 
 <div class="viewcode-block" id="safe_read_pickle">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.safe_read_pickle">[docs]</a>
-<span class="k">def</span> <span class="nf">safe_read_pickle</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_read_pickle</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function reads a pickle from Python 2 into Python 2 or Python 3</span>
 
@@ -772,7 +777,7 @@
 
 <div class="viewcode-block" id="rate_conversion">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.rate_conversion">[docs]</a>
-<span class="k">def</span> <span class="nf">rate_conversion</span><span class="p">(</span><span class="n">annual_rate</span><span class="p">,</span> <span class="n">start_age</span><span class="p">,</span> <span class="n">end_age</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rate_conversion</span><span class="p">(</span><span class="n">annual_rate</span><span class="p">,</span> <span class="n">start_age</span><span class="p">,</span> <span class="n">end_age</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function converts annual rates to model period ratesself.</span>
 
@@ -793,7 +798,7 @@
 
 <div class="viewcode-block" id="save_return_table">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.save_return_table">[docs]</a>
-<span class="k">def</span> <span class="nf">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">output_type</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">output_type</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to save or return a table of data.</span>
 
@@ -846,12 +851,12 @@
 
 <div class="viewcode-block" id="Inequality">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality">[docs]</a>
-<span class="k">class</span> <span class="nc">Inequality</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Inequality</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class with methods to compute different measures of inequality.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">ability_weights</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">ability_weights</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            dist (Numpy array): distribution of endogenous variables</span>
@@ -882,7 +887,7 @@
 
 <div class="viewcode-block" id="Inequality.gini">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.gini">[docs]</a>
-    <span class="k">def</span> <span class="nf">gini</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;overall&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gini</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;overall&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the Gini coefficient</span>
 
@@ -919,7 +924,7 @@
 
 <div class="viewcode-block" id="Inequality.var_of_logs">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.var_of_logs">[docs]</a>
-    <span class="k">def</span> <span class="nf">var_of_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">var_of_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the variance of logs</span>
 
@@ -943,7 +948,7 @@
 
 <div class="viewcode-block" id="Inequality.ratio_pct1_pct2">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.ratio_pct1_pct2">[docs]</a>
-    <span class="k">def</span> <span class="nf">ratio_pct1_pct2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct1</span><span class="p">,</span> <span class="n">pct2</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ratio_pct1_pct2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct1</span><span class="p">,</span> <span class="n">pct2</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the pct1/pct2 percentile ratio</span>
 
@@ -972,7 +977,7 @@
 
 <div class="viewcode-block" id="Inequality.pct">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.pct">[docs]</a>
-    <span class="k">def</span> <span class="nf">pct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns value at given percentile</span>
 
@@ -994,7 +999,7 @@
 
 <div class="viewcode-block" id="Inequality.top_share">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.top_share">[docs]</a>
-    <span class="k">def</span> <span class="nf">top_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pctile</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">top_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pctile</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the top X% share</span>
 
@@ -1020,7 +1025,7 @@
 
 <div class="viewcode-block" id="print_progress">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.print_progress">[docs]</a>
-<span class="k">def</span> <span class="nf">print_progress</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_progress</span><span class="p">(</span>
     <span class="n">iteration</span><span class="p">,</span>
     <span class="n">total</span><span class="p">,</span>
     <span class="n">source_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -1081,7 +1086,7 @@
 
 <div class="viewcode-block" id="fetch_files_from_web">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.fetch_files_from_web">[docs]</a>
-<span class="k">def</span> <span class="nf">fetch_files_from_web</span><span class="p">(</span><span class="n">file_urls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_files_from_web</span><span class="p">(</span><span class="n">file_urls</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fetches zip files from respective web addresses and saves them as</span>
 <span class="sd">    temporary files. Prints progress bar as it downloads the files.</span>
@@ -1142,7 +1147,7 @@
 
 <div class="viewcode-block" id="not_connected">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.not_connected">[docs]</a>
-<span class="k">def</span> <span class="nf">not_connected</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://www.google.com/&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">not_connected</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://www.google.com/&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks for internet connection status of machine.</span>
 
@@ -1168,7 +1173,7 @@
 
 <div class="viewcode-block" id="avg_by_bin">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.avg_by_bin">[docs]</a>
-<span class="k">def</span> <span class="nf">avg_by_bin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">eql_pctl</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">avg_by_bin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">eql_pctl</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For an x series and y series (vectors), this function computes vectors of</span>
 <span class="sd">    weighted average values in specified bins.</span>
@@ -1303,7 +1308,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">extrapolate_array</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;Parameter Name&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extrapolate_array</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;Parameter Name&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extrapolates input values to fit model dimensions. Using this allows</span>
 <span class="sd">    users to input smaller dimensional arrays and have the model infer</span>
@@ -1456,7 +1461,7 @@
     <span class="k">return</span> <span class="n">param_out</span>
 
 
-<span class="k">def</span> <span class="nf">extrapolate_nested_list</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extrapolate_nested_list</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to extrapolate a nested list to a specified size.</span>
 
@@ -1477,7 +1482,7 @@
         <span class="k">pass</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s2">&quot;please give a list&quot;</span>
 
-    <span class="k">def</span> <span class="nf">depth</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">depth</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
 
     <span class="c1"># for now, just have this work for 3 deep lists since</span>
@@ -1505,20 +1510,20 @@
 
 <div class="viewcode-block" id="CustomHttpAdapter">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.CustomHttpAdapter">[docs]</a>
-<span class="k">class</span> <span class="nc">CustomHttpAdapter</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">adapters</span><span class="o">.</span><span class="n">HTTPAdapter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomHttpAdapter</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">adapters</span><span class="o">.</span><span class="n">HTTPAdapter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The UN Data Portal server doesn&#39;t support &quot;RFC 5746 secure renegotiation&quot;. This causes and error when the client is using OpenSSL 3, which enforces that standard by default.</span>
 <span class="sd">    The fix is to create a custom SSL context that allows for legacy connections. This defines a function get_legacy_session() that should be used instead of requests().</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># &quot;Transport adapter&quot; that allows us to use custom ssl_context.</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span> <span class="o">=</span> <span class="n">ssl_context</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CustomHttpAdapter.init_poolmanager">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.CustomHttpAdapter.init_poolmanager">[docs]</a>
-    <span class="k">def</span> <span class="nf">init_poolmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connections</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_poolmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connections</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">poolmanager</span> <span class="o">=</span> <span class="n">urllib3</span><span class="o">.</span><span class="n">poolmanager</span><span class="o">.</span><span class="n">PoolManager</span><span class="p">(</span>
             <span class="n">num_pools</span><span class="o">=</span><span class="n">connections</span><span class="p">,</span>
             <span class="n">maxsize</span><span class="o">=</span><span class="n">maxsize</span><span class="p">,</span>
@@ -1529,7 +1534,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">get_legacy_session</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_legacy_session</span><span class="p">():</span>
     <span class="n">ctx</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">Purpose</span><span class="o">.</span><span class="n">SERVER_AUTH</span><span class="p">)</span>
     <span class="n">ctx</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="mh">0x4</span>  <span class="c1"># OP_LEGACY_SERVER_CONNECT  #in Python 3.12 you will be able to switch from 0x4 to ssl.OP_LEGACY_SERVER_CONNECT.</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
@@ -1539,7 +1544,7 @@
 
 <div class="viewcode-block" id="shift_bio_clock">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.shift_bio_clock">[docs]</a>
-<span class="k">def</span> <span class="nf">shift_bio_clock</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">shift_bio_clock</span><span class="p">(</span>
     <span class="n">param_in</span><span class="p">,</span>
     <span class="n">initial_effect_period</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">final_effect_period</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -1649,7 +1654,7 @@
 
 <div class="viewcode-block" id="pct_change_unstationarized">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.pct_change_unstationarized">[docs]</a>
-<span class="k">def</span> <span class="nf">pct_change_unstationarized</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pct_change_unstationarized</span><span class="p">(</span>
     <span class="n">tpi_base</span><span class="p">,</span>
     <span class="n">param_base</span><span class="p">,</span>
     <span class="n">tpi_reform</span><span class="p">,</span>
@@ -1772,7 +1777,7 @@
 
 <div class="viewcode-block" id="param_dump_json">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.param_dump_json">[docs]</a>
-<span class="k">def</span> <span class="nf">param_dump_json</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">param_dump_json</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function creates a JSON file with the model parameters of the</span>
 <span class="sd">    format used for the default_parameters.json file.</span>
@@ -1814,7 +1819,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">json_to_dict</span><span class="p">(</span><span class="n">json_text</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">json_to_dict</span><span class="p">(</span><span class="n">json_text</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert specified JSON text into an ordered Python dictionary.</span>
 
@@ -1917,8 +1922,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

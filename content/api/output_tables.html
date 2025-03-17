@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,10 +27,10 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -39,10 +39,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -228,9 +228,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -486,12 +491,12 @@ baseline and reform A and D, respectively.</p>
 </div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p>Create a third revenue series that is computed using the
-baseline behavior (i.e., <cite>bmat_s</cite> and <cite>n_mat</cite>) and macro
+baseline behavior (i.e., <cite>b_s</cite> and <cite>n</cite>) and macro
 variables (<cite>tr</cite>, <cite>bq</cite>, <cite>r</cite>, <cite>w</cite>), but with the tax function
 parameter estimates from the reform policy.  Call this
 series B.</p></li>
 <li><p>Create a fourth revenue series that is computed using the
-reform behavior (i.e., <cite>bmat_s</cite> and <cite>n_mat</cite>) and tax
+reform behavior (i.e., <cite>b_s</cite> and <cite>n</cite>) and tax
 functions estimated on the reform tax policy, but
 the macro variables (<cite>tr</cite>, <cite>bq</cite>, <cite>r</cite>, <cite>w</cite>) from the baseline.
 Call this series C.</p></li>
@@ -512,7 +517,7 @@ to produce an estimate of the revenue including macro feedback.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.output_tables.gini_table">
-<span class="sig-prename descclassname"><span class="pre">ogcore.output_tables.</span></span><span class="sig-name descname"><span class="pre">gini_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_ss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['cssmat']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_tables.html#gini_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_tables.gini_table" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.output_tables.</span></span><span class="sig-name descname"><span class="pre">gini_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_ss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['c']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_tables.html#gini_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_tables.gini_table" title="Link to this definition">#</a></dt>
 <dd><p>Creates table with measures of the Gini coefficient: overall,
 across lifetime earnings group, and across age.</p>
 <dl class="field-list simple">
@@ -545,7 +550,7 @@ object</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.output_tables.ineq_table">
-<span class="sig-prename descclassname"><span class="pre">ogcore.output_tables.</span></span><span class="sig-name descname"><span class="pre">ineq_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_ss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['cssmat']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_tables.html#ineq_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_tables.ineq_table" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.output_tables.</span></span><span class="sig-name descname"><span class="pre">ineq_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_ss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['c']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_tables.html#ineq_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_tables.ineq_table" title="Link to this definition">#</a></dt>
 <dd><p>Creates table with various inequality measures in the model
 steady-state.</p>
 <dl class="field-list simple">
@@ -626,7 +631,7 @@ entire budget window as a column in the table</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.output_tables.macro_table_SS">
-<span class="sig-prename descclassname"><span class="pre">ogcore.output_tables.</span></span><span class="sig-name descname"><span class="pre">macro_table_SS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['Yss',</span> <span class="pre">'Css',</span> <span class="pre">'Kss',</span> <span class="pre">'Lss',</span> <span class="pre">'rss',</span> <span class="pre">'wss']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_tables.html#macro_table_SS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_tables.macro_table_SS" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.output_tables.</span></span><span class="sig-name descname"><span class="pre">macro_table_SS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['Y',</span> <span class="pre">'C',</span> <span class="pre">'K',</span> <span class="pre">'L',</span> <span class="pre">'r',</span> <span class="pre">'w']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_tables.html#macro_table_SS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_tables.macro_table_SS" title="Link to this definition">#</a></dt>
 <dd><p>Create a table of macro aggregates from the steady-state solutions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -839,8 +844,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

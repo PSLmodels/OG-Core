@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,10 +26,10 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -38,10 +38,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -227,9 +227,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -368,8 +373,8 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Packages</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">tax</span><span class="p">,</span> <span class="n">pensions</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">tax</span><span class="p">,</span> <span class="n">pensions</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">-------------------------------------------------------------------------------</span>
@@ -380,7 +385,7 @@
 
 <div class="viewcode-block" id="get_L">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_L">[docs]</a>
-<span class="k">def</span> <span class="nf">get_L</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_L</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate aggregate labor supply.</span>
 
@@ -415,7 +420,7 @@
 
 <div class="viewcode-block" id="get_I">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_I">[docs]</a>
-<span class="k">def</span> <span class="nf">get_I</span><span class="p">(</span><span class="n">b_splus1</span><span class="p">,</span> <span class="n">K_p1</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_I</span><span class="p">(</span><span class="n">b_splus1</span><span class="p">,</span> <span class="n">K_p1</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate aggregate investment.</span>
 
@@ -480,7 +485,7 @@
 
 <div class="viewcode-block" id="get_B">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_B">[docs]</a>
-<span class="k">def</span> <span class="nf">get_B</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_B</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate aggregate savings</span>
 
@@ -535,7 +540,7 @@
 
 <div class="viewcode-block" id="get_BQ">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_BQ">[docs]</a>
-<span class="k">def</span> <span class="nf">get_BQ</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_BQ</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculation of aggregate bequests.  If `use_zeta` is False, then</span>
 <span class="sd">    computes aggregate bequests within each lifetime income group.</span>
@@ -608,7 +613,7 @@
 
 <div class="viewcode-block" id="get_RM">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_RM">[docs]</a>
-<span class="k">def</span> <span class="nf">get_RM</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_RM</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculation of aggregate remittances.</span>
 
@@ -657,7 +662,7 @@
 
 <div class="viewcode-block" id="get_C">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_C">[docs]</a>
-<span class="k">def</span> <span class="nf">get_C</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_C</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculation of aggregate consumption.</span>
 
@@ -702,7 +707,7 @@
 
 <div class="viewcode-block" id="revenue">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.revenue">[docs]</a>
-<span class="k">def</span> <span class="nf">revenue</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">revenue</span><span class="p">(</span>
     <span class="n">r</span><span class="p">,</span>
     <span class="n">w</span><span class="p">,</span>
     <span class="n">b</span><span class="p">,</span>
@@ -854,7 +859,7 @@
 
 <div class="viewcode-block" id="get_r_p">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_r_p">[docs]</a>
-<span class="k">def</span> <span class="nf">get_r_p</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r_gov</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">K_vec</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">MPKg_vec</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_r_p</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r_gov</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">K_vec</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">MPKg_vec</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the interest rate on the household&#39;s portfolio of assets,</span>
 <span class="sd">    a mix of government debt and private equity.</span>
@@ -906,7 +911,7 @@
 
 <div class="viewcode-block" id="resource_constraint">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.resource_constraint">[docs]</a>
-<span class="k">def</span> <span class="nf">resource_constraint</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">I_d</span><span class="p">,</span> <span class="n">I_g</span><span class="p">,</span> <span class="n">net_capital_flows</span><span class="p">,</span> <span class="n">RM</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">resource_constraint</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">I_d</span><span class="p">,</span> <span class="n">I_g</span><span class="p">,</span> <span class="n">net_capital_flows</span><span class="p">,</span> <span class="n">RM</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the error in the resource constraint.</span>
 
@@ -937,7 +942,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">get_capital_outflows</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">K_f</span><span class="p">,</span> <span class="n">new_borrowing_f</span><span class="p">,</span> <span class="n">debt_service_f</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_capital_outflows</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">K_f</span><span class="p">,</span> <span class="n">new_borrowing_f</span><span class="p">,</span> <span class="n">debt_service_f</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute net capital outflows for open economy parameterizations</span>
 
@@ -966,7 +971,7 @@
 
 <div class="viewcode-block" id="get_K_splits">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_K_splits">[docs]</a>
-<span class="k">def</span> <span class="nf">get_K_splits</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">K_demand_open</span><span class="p">,</span> <span class="n">D_d</span><span class="p">,</span> <span class="n">zeta_K</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_K_splits</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">K_demand_open</span><span class="p">,</span> <span class="n">D_d</span><span class="p">,</span> <span class="n">zeta_K</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns total domestic capital as well as amounts of domestic</span>
 <span class="sd">    capital held by domestic and foreign investors separately.</span>
@@ -1011,7 +1016,7 @@
 
 <div class="viewcode-block" id="get_ptilde">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_ptilde">[docs]</a>
-<span class="k">def</span> <span class="nf">get_ptilde</span><span class="p">(</span><span class="n">p_i</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">alpha_c</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ptilde</span><span class="p">(</span><span class="n">p_i</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">alpha_c</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate price of composite good.</span>
 
@@ -1097,8 +1102,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -1,0 +1,1096 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Model variables &#8212; OG-Core</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/intro/variables';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="OG-Core - Home"/>
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-dark pst-js-only" alt="OG-Core - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    OG-Core
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing to OG-Core</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributor_guide.html">Contributor Guide</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/demographics.html">Demographics Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/execute.html">Model Execution Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/firm.html">Firm Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/fiscal.html">Fiscal Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/household.html">Household Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_plots.html">Output Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/output_tables.html">Output Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_plots.html">Parameter Plotting Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameter_tables.html">Parameter Table Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/parameters.html">Parameters Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/pensions.html">Pension Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/txfunc.html">Tax Function Estimation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities Functions</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">OG-Core Theory</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../theory/intro.html">Model Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/demographics.html">Demographics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/households.html">Households</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/firms.html">Firms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/government.html">Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/open_economy.html">Open Economy Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/financial.html">Financial Intermediary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/market_clearing.html">Market Clearing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/stationarization.html">Stationarization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/equilibrium.html">Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/calibration.html">Calibrating OG-Core</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../theory/derivations.html">Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">Model parameters</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../OGCore_references.html">References</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Citations of OG-Core</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../citations.html">Citations and use cases of OG-Core</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PSLmodels/OG-Core/issues/new?title=Issue%20on%20page%20%2Fcontent/intro/variables.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/content/intro/variables.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Model variables</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-aggregates">Economic Aggregates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#y"><code class="docutils literal notranslate"><span class="pre">Y</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b"><code class="docutils literal notranslate"><span class="pre">B</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k"><code class="docutils literal notranslate"><span class="pre">K</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-f"><code class="docutils literal notranslate"><span class="pre">K_f</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-d"><code class="docutils literal notranslate"><span class="pre">K_d</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#l"><code class="docutils literal notranslate"><span class="pre">L</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c"><code class="docutils literal notranslate"><span class="pre">C</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i"><code class="docutils literal notranslate"><span class="pre">I</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-total"><code class="docutils literal notranslate"><span class="pre">I_total</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-d"><code class="docutils literal notranslate"><span class="pre">I_d</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-g"><code class="docutils literal notranslate"><span class="pre">K_g</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-g"><code class="docutils literal notranslate"><span class="pre">I_g</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bq"><code class="docutils literal notranslate"><span class="pre">BQ</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rm"><code class="docutils literal notranslate"><span class="pre">RM</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#production-sector-consumption-good-aggregates">Production Sector/Consumption Good Aggregates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#y-m"><code class="docutils literal notranslate"><span class="pre">Y_m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-m"><code class="docutils literal notranslate"><span class="pre">K_m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#l-m"><code class="docutils literal notranslate"><span class="pre">L_m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-i"><code class="docutils literal notranslate"><span class="pre">C_i</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#government-revenues-outlays-and-debt">Government Revenues, Outlays, and Debt</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tr"><code class="docutils literal notranslate"><span class="pre">TR</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agg-pension-outlays"><code class="docutils literal notranslate"><span class="pre">agg_pension_outlays</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g"><code class="docutils literal notranslate"><span class="pre">G</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi"><code class="docutils literal notranslate"><span class="pre">UBI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#total-tax-revenue"><code class="docutils literal notranslate"><span class="pre">total_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#business-tax-revenue"><code class="docutils literal notranslate"><span class="pre">business_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iit-payroll-tax-revenue"><code class="docutils literal notranslate"><span class="pre">iit_payroll_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iit-tax-revenue"><code class="docutils literal notranslate"><span class="pre">iit_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#payroll-tax-revenue"><code class="docutils literal notranslate"><span class="pre">payroll_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bequest-tax-revenue"><code class="docutils literal notranslate"><span class="pre">bequest_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wealth-tax-revenue"><code class="docutils literal notranslate"><span class="pre">wealth_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cons-tax-revenue"><code class="docutils literal notranslate"><span class="pre">cons_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d"><code class="docutils literal notranslate"><span class="pre">D</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-f"><code class="docutils literal notranslate"><span class="pre">D_f</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-d"><code class="docutils literal notranslate"><span class="pre">D_d</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-borrowing"><code class="docutils literal notranslate"><span class="pre">new_borrowing</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#debt-service"><code class="docutils literal notranslate"><span class="pre">debt_service</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-borrowing-f"><code class="docutils literal notranslate"><span class="pre">new_borrowing_f</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#debt-service-f"><code class="docutils literal notranslate"><span class="pre">debt_service_f</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prices">Prices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r"><code class="docutils literal notranslate"><span class="pre">r</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r-gov"><code class="docutils literal notranslate"><span class="pre">r_gov</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r-p"><code class="docutils literal notranslate"><span class="pre">r_p</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#w"><code class="docutils literal notranslate"><span class="pre">w</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#p-m"><code class="docutils literal notranslate"><span class="pre">p_m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#p-i"><code class="docutils literal notranslate"><span class="pre">p_i</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#p-tilde"><code class="docutils literal notranslate"><span class="pre">p_tilde</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#household-variables">Household Variables</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-sp1"><code class="docutils literal notranslate"><span class="pre">b_sp1</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-s"><code class="docutils literal notranslate"><span class="pre">b_s</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#n"><code class="docutils literal notranslate"><span class="pre">n</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">c</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">c_i</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><code class="docutils literal notranslate"><span class="pre">bq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><code class="docutils literal notranslate"><span class="pre">rm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><code class="docutils literal notranslate"><span class="pre">tr</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6"><code class="docutils literal notranslate"><span class="pre">ubi</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#before-tax-income"><code class="docutils literal notranslate"><span class="pre">before_tax_income</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hh-taxes"><code class="docutils literal notranslate"><span class="pre">hh_taxes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#etr"><code class="docutils literal notranslate"><span class="pre">etr</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mtrx"><code class="docutils literal notranslate"><span class="pre">mtrx</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mtry"><code class="docutils literal notranslate"><span class="pre">mtry</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#theta"><code class="docutils literal notranslate"><span class="pre">theta</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-scaling-and-fit">Model Scaling and Fit</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#factor"><code class="docutils literal notranslate"><span class="pre">factor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#euler-savings"><code class="docutils literal notranslate"><span class="pre">euler_savings</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#euler-laborleisure"><code class="docutils literal notranslate"><span class="pre">euler_laborleisure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resource-constraint-error"><code class="docutils literal notranslate"><span class="pre">resource_constraint_error</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="model-variables">
+<h1>Model variables<a class="headerlink" href="#model-variables" title="Link to this heading">#</a></h1>
+<p>This section summarizes variables output from the model in a format
+that is easy to search and print.
+The model variables are grouped together in common categories and are
+available in both the dictionaries of steady-state and transition-path
+output, unless noted otherwise in these docs.</p>
+<section id="economic-aggregates">
+<h2>Economic Aggregates<a class="headerlink" href="#economic-aggregates" title="Link to this heading">#</a></h2>
+<section id="y">
+<h3><code class="docutils literal notranslate"><span class="pre">Y</span></code><a class="headerlink" href="#y" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate output, GDP<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="b">
+<h3><code class="docutils literal notranslate"><span class="pre">B</span></code><a class="headerlink" href="#b" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate household savings<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="k">
+<h3><code class="docutils literal notranslate"><span class="pre">K</span></code><a class="headerlink" href="#k" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate capital stock<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="k-f">
+<h3><code class="docutils literal notranslate"><span class="pre">K_f</span></code><a class="headerlink" href="#k-f" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate capital stock owned by foreign investors<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="k-d">
+<h3><code class="docutils literal notranslate"><span class="pre">K_d</span></code><a class="headerlink" href="#k-d" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate capital stock owned by domestic investors<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="l">
+<h3><code class="docutils literal notranslate"><span class="pre">L</span></code><a class="headerlink" href="#l" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate labor<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="c">
+<h3><code class="docutils literal notranslate"><span class="pre">C</span></code><a class="headerlink" href="#c" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate consumption<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="i">
+<h3><code class="docutils literal notranslate"><span class="pre">I</span></code><a class="headerlink" href="#i" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate investment<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="i-total">
+<h3><code class="docutils literal notranslate"><span class="pre">I_total</span></code><a class="headerlink" href="#i-total" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate investment, not account for immigrant investment<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="i-d">
+<h3><code class="docutils literal notranslate"><span class="pre">I_d</span></code><a class="headerlink" href="#i-d" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate investment for domestic sources<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="k-g">
+<h3><code class="docutils literal notranslate"><span class="pre">K_g</span></code><a class="headerlink" href="#k-g" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate stock of infrastructure<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="i-g">
+<h3><code class="docutils literal notranslate"><span class="pre">I_g</span></code><a class="headerlink" href="#i-g" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate investment in infrastructure<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="bq">
+<h3><code class="docutils literal notranslate"><span class="pre">BQ</span></code><a class="headerlink" href="#bq" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate bequests<br />
+<em>TPI dimensions:</em> TxJ or T (if use_zeta=True)<br />
+<em>SS dimensions:</em> J or scalar if use_zeta=True)</p>
+</section>
+<section id="rm">
+<h3><code class="docutils literal notranslate"><span class="pre">RM</span></code><a class="headerlink" href="#rm" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate remittances<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+</section>
+<section id="production-sector-consumption-good-aggregates">
+<h2>Production Sector/Consumption Good Aggregates<a class="headerlink" href="#production-sector-consumption-good-aggregates" title="Link to this heading">#</a></h2>
+<section id="y-m">
+<h3><code class="docutils literal notranslate"><span class="pre">Y_m</span></code><a class="headerlink" href="#y-m" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total output by industry<br />
+<em>TPI dimensions:</em> TxM<br />
+<em>SS dimensions:</em> M</p>
+</section>
+<section id="k-m">
+<h3><code class="docutils literal notranslate"><span class="pre">K_m</span></code><a class="headerlink" href="#k-m" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total capital stock by industry<br />
+<em>TPI dimensions:</em> TxM<br />
+<em>SS dimensions:</em> M</p>
+</section>
+<section id="l-m">
+<h3><code class="docutils literal notranslate"><span class="pre">L_m</span></code><a class="headerlink" href="#l-m" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total labor by industry<br />
+<em>TPI dimensions:</em> TxM<br />
+<em>SS dimensions:</em> M</p>
+</section>
+<section id="c-i">
+<h3><code class="docutils literal notranslate"><span class="pre">C_i</span></code><a class="headerlink" href="#c-i" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total consumption by consumption good<br />
+<em>TPI dimensions:</em> TxI<br />
+<em>SS dimensions:</em> I</p>
+</section>
+</section>
+<section id="government-revenues-outlays-and-debt">
+<h2>Government Revenues, Outlays, and Debt<a class="headerlink" href="#government-revenues-outlays-and-debt" title="Link to this heading">#</a></h2>
+<section id="tr">
+<h3><code class="docutils literal notranslate"><span class="pre">TR</span></code><a class="headerlink" href="#tr" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate government, non-pension transfer spending<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="agg-pension-outlays">
+<h3><code class="docutils literal notranslate"><span class="pre">agg_pension_outlays</span></code><a class="headerlink" href="#agg-pension-outlays" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate government pension outlays<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="g">
+<h3><code class="docutils literal notranslate"><span class="pre">G</span></code><a class="headerlink" href="#g" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate government consumption expenditures<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="ubi">
+<h3><code class="docutils literal notranslate"><span class="pre">UBI</span></code><a class="headerlink" href="#ubi" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Aggregate universal basic income outlays<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="total-tax-revenue">
+<h3><code class="docutils literal notranslate"><span class="pre">total_tax_revenue</span></code><a class="headerlink" href="#total-tax-revenue" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total tax revenue<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="business-tax-revenue">
+<h3><code class="docutils literal notranslate"><span class="pre">business_tax_revenue</span></code><a class="headerlink" href="#business-tax-revenue" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total corporate income tax revenue<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="iit-payroll-tax-revenue">
+<h3><code class="docutils literal notranslate"><span class="pre">iit_payroll_tax_revenue</span></code><a class="headerlink" href="#iit-payroll-tax-revenue" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total tax revenue from personal income and payroll taxes<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="iit-tax-revenue">
+<h3><code class="docutils literal notranslate"><span class="pre">iit_tax_revenue</span></code><a class="headerlink" href="#iit-tax-revenue" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total tax revenue from personal income taxes<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="payroll-tax-revenue">
+<h3><code class="docutils literal notranslate"><span class="pre">payroll_tax_revenue</span></code><a class="headerlink" href="#payroll-tax-revenue" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total tax revenue from payroll taxes (i.e., social security contributions)<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="bequest-tax-revenue">
+<h3><code class="docutils literal notranslate"><span class="pre">bequest_tax_revenue</span></code><a class="headerlink" href="#bequest-tax-revenue" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total tax revenue from taxes on bequests<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="wealth-tax-revenue">
+<h3><code class="docutils literal notranslate"><span class="pre">wealth_tax_revenue</span></code><a class="headerlink" href="#wealth-tax-revenue" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total tax revenue from wealth taxes<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="cons-tax-revenue">
+<h3><code class="docutils literal notranslate"><span class="pre">cons_tax_revenue</span></code><a class="headerlink" href="#cons-tax-revenue" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total tax revenue from consumption taxes<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="d">
+<h3><code class="docutils literal notranslate"><span class="pre">D</span></code><a class="headerlink" href="#d" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total government debt<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="d-f">
+<h3><code class="docutils literal notranslate"><span class="pre">D_f</span></code><a class="headerlink" href="#d-f" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total government debt held by foreign investors<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="d-d">
+<h3><code class="docutils literal notranslate"><span class="pre">D_d</span></code><a class="headerlink" href="#d-d" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total government debt held by domestic investors<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="new-borrowing">
+<h3><code class="docutils literal notranslate"><span class="pre">new_borrowing</span></code><a class="headerlink" href="#new-borrowing" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> New government borrowing, equal to budget deficit<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="debt-service">
+<h3><code class="docutils literal notranslate"><span class="pre">debt_service</span></code><a class="headerlink" href="#debt-service" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Total interest payments on government debt<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="new-borrowing-f">
+<h3><code class="docutils literal notranslate"><span class="pre">new_borrowing_f</span></code><a class="headerlink" href="#new-borrowing-f" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> New government borrowing from foreign investors<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="debt-service-f">
+<h3><code class="docutils literal notranslate"><span class="pre">debt_service_f</span></code><a class="headerlink" href="#debt-service-f" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Government debt interest payments made to foreign investors<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+</section>
+<section id="prices">
+<h2>Prices<a class="headerlink" href="#prices" title="Link to this heading">#</a></h2>
+<section id="r">
+<h3><code class="docutils literal notranslate"><span class="pre">r</span></code><a class="headerlink" href="#r" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Real rate of return on private capital per model period.<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="r-gov">
+<h3><code class="docutils literal notranslate"><span class="pre">r_gov</span></code><a class="headerlink" href="#r-gov" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Real rate of return on government debt per model period.<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="r-p">
+<h3><code class="docutils literal notranslate"><span class="pre">r_p</span></code><a class="headerlink" href="#r-p" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Real rate of return on household investment portfolio per model period.<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="w">
+<h3><code class="docutils literal notranslate"><span class="pre">w</span></code><a class="headerlink" href="#w" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Wage rate per effective labor hour<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="p-m">
+<h3><code class="docutils literal notranslate"><span class="pre">p_m</span></code><a class="headerlink" href="#p-m" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Price of output in each industry. Normalized so that price of industry M output is 1 (<span class="math notranslate nohighlight">\(p_{m,t}=1\)</span>)<br />
+<em>TPI dimensions:</em> TxM<br />
+<em>SS dimensions:</em> M</p>
+</section>
+<section id="p-i">
+<h3><code class="docutils literal notranslate"><span class="pre">p_i</span></code><a class="headerlink" href="#p-i" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Price of output in each industry<br />
+<em>TPI dimensions:</em> TxI<br />
+<em>SS dimensions:</em> I</p>
+</section>
+<section id="p-tilde">
+<h3><code class="docutils literal notranslate"><span class="pre">p_tilde</span></code><a class="headerlink" href="#p-tilde" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Price of composite output good<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+</section>
+<section id="household-variables">
+<h2>Household Variables<a class="headerlink" href="#household-variables" title="Link to this heading">#</a></h2>
+<section id="b-sp1">
+<h3><code class="docutils literal notranslate"><span class="pre">b_sp1</span></code><a class="headerlink" href="#b-sp1" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Household savings<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="b-s">
+<h3><code class="docutils literal notranslate"><span class="pre">b_s</span></code><a class="headerlink" href="#b-s" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Household wealth (equal to savings from last period)<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="n">
+<h3><code class="docutils literal notranslate"><span class="pre">n</span></code><a class="headerlink" href="#n" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Household labor supply<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="id1">
+<h3><code class="docutils literal notranslate"><span class="pre">c</span></code><a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Household consumption of composite good<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="id2">
+<h3><code class="docutils literal notranslate"><span class="pre">c_i</span></code><a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Household consumption of differentiated consumption goods<br />
+<em>TPI dimensions:</em> TxSxJxI<br />
+<em>SS dimensions:</em> SxJxI</p>
+</section>
+<section id="id3">
+<h3><code class="docutils literal notranslate"><span class="pre">bq</span></code><a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Household bequest received<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="id4">
+<h3><code class="docutils literal notranslate"><span class="pre">rm</span></code><a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Household remittances received<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="id5">
+<h3><code class="docutils literal notranslate"><span class="pre">tr</span></code><a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Government transfers received by households<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="id6">
+<h3><code class="docutils literal notranslate"><span class="pre">ubi</span></code><a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Universal basic income received by households<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="before-tax-income">
+<h3><code class="docutils literal notranslate"><span class="pre">before_tax_income</span></code><a class="headerlink" href="#before-tax-income" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Household before tax income<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="hh-taxes">
+<h3><code class="docutils literal notranslate"><span class="pre">hh_taxes</span></code><a class="headerlink" href="#hh-taxes" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Net taxes paid by households (taxes - transfers)<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="etr">
+<h3><code class="docutils literal notranslate"><span class="pre">etr</span></code><a class="headerlink" href="#etr" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Effective tax rate, income and payroll taxes<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="mtrx">
+<h3><code class="docutils literal notranslate"><span class="pre">mtrx</span></code><a class="headerlink" href="#mtrx" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Marginal tax rate on labor income<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="mtry">
+<h3><code class="docutils literal notranslate"><span class="pre">mtry</span></code><a class="headerlink" href="#mtry" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Marginal tax rate on capital income<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="theta">
+<h3><code class="docutils literal notranslate"><span class="pre">theta</span></code><a class="headerlink" href="#theta" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Replacement rate for US-style social security pension system.  Steady-state only.<br />
+<em>TPI dimensions:</em><br />
+<em>SS dimensions:</em> J</p>
+</section>
+</section>
+<section id="model-scaling-and-fit">
+<h2>Model Scaling and Fit<a class="headerlink" href="#model-scaling-and-fit" title="Link to this heading">#</a></h2>
+<section id="factor">
+<h3><code class="docutils literal notranslate"><span class="pre">factor</span></code><a class="headerlink" href="#factor" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Factor adjustment to convert from model units to local currency units to match mean income in local currency units. Steady-state only.<br />
+<em>TPI dimensions:</em><br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+<section id="euler-savings">
+<h3><code class="docutils literal notranslate"><span class="pre">euler_savings</span></code><a class="headerlink" href="#euler-savings" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Errors in household FOC for choice of savings<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="euler-laborleisure">
+<h3><code class="docutils literal notranslate"><span class="pre">euler_laborleisure</span></code><a class="headerlink" href="#euler-laborleisure" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Errors in household FOC for choice of labor<br />
+<em>TPI dimensions:</em> TxSxJ<br />
+<em>SS dimensions:</em> SxJ</p>
+</section>
+<section id="resource-constraint-error">
+<h3><code class="docutils literal notranslate"><span class="pre">resource_constraint_error</span></code><a class="headerlink" href="#resource-constraint-error" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Errors in resource constraint<br />
+<em>TPI dimensions:</em> T<br />
+<em>SS dimensions:</em> scalar</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./content/intro"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-aggregates">Economic Aggregates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#y"><code class="docutils literal notranslate"><span class="pre">Y</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b"><code class="docutils literal notranslate"><span class="pre">B</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k"><code class="docutils literal notranslate"><span class="pre">K</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-f"><code class="docutils literal notranslate"><span class="pre">K_f</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-d"><code class="docutils literal notranslate"><span class="pre">K_d</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#l"><code class="docutils literal notranslate"><span class="pre">L</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c"><code class="docutils literal notranslate"><span class="pre">C</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i"><code class="docutils literal notranslate"><span class="pre">I</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-total"><code class="docutils literal notranslate"><span class="pre">I_total</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-d"><code class="docutils literal notranslate"><span class="pre">I_d</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-g"><code class="docutils literal notranslate"><span class="pre">K_g</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-g"><code class="docutils literal notranslate"><span class="pre">I_g</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bq"><code class="docutils literal notranslate"><span class="pre">BQ</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rm"><code class="docutils literal notranslate"><span class="pre">RM</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#production-sector-consumption-good-aggregates">Production Sector/Consumption Good Aggregates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#y-m"><code class="docutils literal notranslate"><span class="pre">Y_m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-m"><code class="docutils literal notranslate"><span class="pre">K_m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#l-m"><code class="docutils literal notranslate"><span class="pre">L_m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-i"><code class="docutils literal notranslate"><span class="pre">C_i</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#government-revenues-outlays-and-debt">Government Revenues, Outlays, and Debt</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tr"><code class="docutils literal notranslate"><span class="pre">TR</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agg-pension-outlays"><code class="docutils literal notranslate"><span class="pre">agg_pension_outlays</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g"><code class="docutils literal notranslate"><span class="pre">G</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ubi"><code class="docutils literal notranslate"><span class="pre">UBI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#total-tax-revenue"><code class="docutils literal notranslate"><span class="pre">total_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#business-tax-revenue"><code class="docutils literal notranslate"><span class="pre">business_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iit-payroll-tax-revenue"><code class="docutils literal notranslate"><span class="pre">iit_payroll_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iit-tax-revenue"><code class="docutils literal notranslate"><span class="pre">iit_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#payroll-tax-revenue"><code class="docutils literal notranslate"><span class="pre">payroll_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bequest-tax-revenue"><code class="docutils literal notranslate"><span class="pre">bequest_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wealth-tax-revenue"><code class="docutils literal notranslate"><span class="pre">wealth_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cons-tax-revenue"><code class="docutils literal notranslate"><span class="pre">cons_tax_revenue</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d"><code class="docutils literal notranslate"><span class="pre">D</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-f"><code class="docutils literal notranslate"><span class="pre">D_f</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-d"><code class="docutils literal notranslate"><span class="pre">D_d</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-borrowing"><code class="docutils literal notranslate"><span class="pre">new_borrowing</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#debt-service"><code class="docutils literal notranslate"><span class="pre">debt_service</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-borrowing-f"><code class="docutils literal notranslate"><span class="pre">new_borrowing_f</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#debt-service-f"><code class="docutils literal notranslate"><span class="pre">debt_service_f</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prices">Prices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r"><code class="docutils literal notranslate"><span class="pre">r</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r-gov"><code class="docutils literal notranslate"><span class="pre">r_gov</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r-p"><code class="docutils literal notranslate"><span class="pre">r_p</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#w"><code class="docutils literal notranslate"><span class="pre">w</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#p-m"><code class="docutils literal notranslate"><span class="pre">p_m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#p-i"><code class="docutils literal notranslate"><span class="pre">p_i</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#p-tilde"><code class="docutils literal notranslate"><span class="pre">p_tilde</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#household-variables">Household Variables</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-sp1"><code class="docutils literal notranslate"><span class="pre">b_sp1</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-s"><code class="docutils literal notranslate"><span class="pre">b_s</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#n"><code class="docutils literal notranslate"><span class="pre">n</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">c</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">c_i</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><code class="docutils literal notranslate"><span class="pre">bq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><code class="docutils literal notranslate"><span class="pre">rm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><code class="docutils literal notranslate"><span class="pre">tr</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6"><code class="docutils literal notranslate"><span class="pre">ubi</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#before-tax-income"><code class="docutils literal notranslate"><span class="pre">before_tax_income</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hh-taxes"><code class="docutils literal notranslate"><span class="pre">hh_taxes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#etr"><code class="docutils literal notranslate"><span class="pre">etr</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mtrx"><code class="docutils literal notranslate"><span class="pre">mtrx</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mtry"><code class="docutils literal notranslate"><span class="pre">mtry</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#theta"><code class="docutils literal notranslate"><span class="pre">theta</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-scaling-and-fit">Model Scaling and Fit</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#factor"><code class="docutils literal notranslate"><span class="pre">factor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#euler-savings"><code class="docutils literal notranslate"><span class="pre">euler_savings</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#euler-laborleisure"><code class="docutils literal notranslate"><span class="pre">euler_laborleisure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resource-constraint-error"><code class="docutils literal notranslate"><span class="pre">resource_constraint_error</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jason DeBacker and Richard W. Evans
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

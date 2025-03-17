@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,10 +26,10 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -38,10 +38,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -227,9 +227,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -373,23 +378,23 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Import packages</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">opt</span>
-<span class="kn">from</span> <span class="nn">dask</span> <span class="kn">import</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">compute</span>
-<span class="kn">import</span> <span class="nn">dask.multiprocessing</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">cloudpickle</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span> <span class="k">as</span> <span class="n">intp</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">ogcore.parameter_plots</span> <span class="k">as</span> <span class="nn">pp</span>
-<span class="kn">from</span> <span class="nn">ogcore.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">SHOW_RUNTIME</span>
-<span class="kn">from</span> <span class="nn">ogcore</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">pygam</span> <span class="kn">import</span> <span class="n">LinearGAM</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">te</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">opt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dask</span><span class="w"> </span><span class="kn">import</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">compute</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dask.multiprocessing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cloudpickle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span> <span class="k">as</span> <span class="n">intp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ogcore.parameter_plots</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">SHOW_RUNTIME</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pygam</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearGAM</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">te</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">cm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">SHOW_RUNTIME</span><span class="p">:</span>
@@ -412,7 +417,7 @@
 
 <div class="viewcode-block" id="get_tax_rates">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.get_tax_rates">[docs]</a>
-<span class="k">def</span> <span class="nf">get_tax_rates</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_tax_rates</span><span class="p">(</span>
     <span class="n">params</span><span class="p">,</span>
     <span class="n">X</span><span class="p">,</span>
     <span class="n">Y</span><span class="p">,</span>
@@ -750,7 +755,7 @@
 
 <div class="viewcode-block" id="wsumsq">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.wsumsq">[docs]</a>
-<span class="k">def</span> <span class="nf">wsumsq</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">wsumsq</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function generates the weighted sum of squared deviations of</span>
 <span class="sd">    predicted values of tax rates (ETR, MTRx, or MTRy) from the tax</span>
@@ -796,7 +801,7 @@
 
 <div class="viewcode-block" id="find_outliers">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.find_outliers">[docs]</a>
-<span class="k">def</span> <span class="nf">find_outliers</span><span class="p">(</span><span class="n">sse_mat</span><span class="p">,</span> <span class="n">age_vec</span><span class="p">,</span> <span class="n">se_mult</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">varstr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_outliers</span><span class="p">(</span><span class="n">sse_mat</span><span class="p">,</span> <span class="n">age_vec</span><span class="p">,</span> <span class="n">se_mult</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">varstr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function takes a matrix of sum of squared errors (SSE) from</span>
 <span class="sd">    tax function estimations for each age (s) in each year of the budget</span>
@@ -865,7 +870,7 @@
 
 <div class="viewcode-block" id="replace_outliers">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.replace_outliers">[docs]</a>
-<span class="k">def</span> <span class="nf">replace_outliers</span><span class="p">(</span><span class="n">param_list</span><span class="p">,</span> <span class="n">sse_big_mat</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">replace_outliers</span><span class="p">(</span><span class="n">param_list</span><span class="p">,</span> <span class="n">sse_big_mat</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function replaces outlier estimated tax function parameters</span>
 <span class="sd">    with linearly interpolated tax function tax function parameters</span>
@@ -944,7 +949,7 @@
 
 <div class="viewcode-block" id="txfunc_est">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.txfunc_est">[docs]</a>
-<span class="k">def</span> <span class="nf">txfunc_est</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">txfunc_est</span><span class="p">(</span>
     <span class="n">df</span><span class="p">,</span>
     <span class="n">s</span><span class="p">,</span>
     <span class="n">t</span><span class="p">,</span>
@@ -1318,7 +1323,7 @@
 
 <div class="viewcode-block" id="tax_data_sample">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.tax_data_sample">[docs]</a>
-<span class="k">def</span> <span class="nf">tax_data_sample</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tax_data_sample</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span> <span class="n">max_etr</span><span class="o">=</span><span class="n">MAX_ETR</span><span class="p">,</span> <span class="n">min_income</span><span class="o">=</span><span class="n">MIN_INCOME</span><span class="p">,</span> <span class="n">max_mtr</span><span class="o">=</span><span class="n">MAX_MTR</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1366,7 +1371,7 @@
 
 <div class="viewcode-block" id="tax_func_loop">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.tax_func_loop">[docs]</a>
-<span class="k">def</span> <span class="nf">tax_func_loop</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tax_func_loop</span><span class="p">(</span>
     <span class="n">t</span><span class="p">,</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">start_year</span><span class="p">,</span>
@@ -1965,7 +1970,7 @@
 
 <div class="viewcode-block" id="tax_func_estimate">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.tax_func_estimate">[docs]</a>
-<span class="k">def</span> <span class="nf">tax_func_estimate</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tax_func_estimate</span><span class="p">(</span>
     <span class="n">micro_data</span><span class="p">,</span>
     <span class="n">BW</span><span class="p">,</span>
     <span class="n">S</span><span class="p">,</span>
@@ -2347,7 +2352,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">avg_by_bin_multd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">avg_by_bin_multd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        x (numpy array): 2d with dimensions n by m used for binning</span>
@@ -2402,7 +2407,7 @@
 
 <div class="viewcode-block" id="monotone_spline">
 <a class="viewcode-back" href="../../content/api/txfunc.html#ogcore.txfunc.monotone_spline">[docs]</a>
-<span class="k">def</span> <span class="nf">monotone_spline</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">monotone_spline</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="n">y</span><span class="p">,</span>
     <span class="n">weights</span><span class="p">,</span>
@@ -2566,7 +2571,7 @@
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="nf">interp</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">interp</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">gamCstr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">interp</span><span class="p">,</span> <span class="n">y_cstr</span><span class="p">,</span> <span class="n">wsse_cstr</span><span class="p">,</span> <span class="n">y_uncstr</span><span class="p">,</span> <span class="n">wsse_uncstr</span>
@@ -2633,7 +2638,7 @@
             <span class="n">y_uncstr</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">wsse_uncstr</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">def</span> <span class="nf">mono_interp</span><span class="p">(</span><span class="n">x_vec</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">mono_interp</span><span class="p">(</span><span class="n">x_vec</span><span class="p">):</span>
             <span class="c1"># replace last point in data with two copies further out to make smooth</span>
             <span class="c1"># extrapolation</span>
             <span class="n">x_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -2778,8 +2783,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

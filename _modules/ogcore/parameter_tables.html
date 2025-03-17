@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,10 +26,10 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -38,10 +38,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -227,9 +227,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -361,15 +366,15 @@
                 <article class="bd-article">
                   
   <h1>Source code for ogcore.parameter_tables</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">ogcore.utils</span> <span class="kn">import</span> <span class="n">save_return_table</span>
-<span class="kn">from</span> <span class="nn">ogcore.constants</span> <span class="kn">import</span> <span class="n">VAR_LABELS</span><span class="p">,</span> <span class="n">PARAM_LABELS</span><span class="p">,</span> <span class="n">DEFAULT_START_YEAR</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_return_table</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">VAR_LABELS</span><span class="p">,</span> <span class="n">PARAM_LABELS</span><span class="p">,</span> <span class="n">DEFAULT_START_YEAR</span>
 
 
 <div class="viewcode-block" id="tax_rate_table">
 <a class="viewcode-back" href="../../content/api/parameter_tables.html#ogcore.parameter_tables.tax_rate_table">[docs]</a>
-<span class="k">def</span> <span class="nf">tax_rate_table</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tax_rate_table</span><span class="p">(</span>
     <span class="n">base_TxFuncEst</span><span class="p">,</span>
     <span class="n">base_params</span><span class="p">,</span>
     <span class="n">reform_TxFuncEst</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -430,13 +435,13 @@
             <span class="n">len_rates</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">etr_rates</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">])</span>
             <span class="n">table</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">years</span><span class="p">[:</span><span class="n">len_rates</span><span class="p">],</span>
-                <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;ETR&quot;</span><span class="p">]:</span> <span class="n">etr_rates</span><span class="p">[</span>
+                <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;etr&quot;</span><span class="p">]:</span> <span class="n">etr_rates</span><span class="p">[</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">],</span>
-                <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;MTRx&quot;</span><span class="p">]:</span> <span class="n">mtrx_rates</span><span class="p">[</span>
+                <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;mtrx&quot;</span><span class="p">]:</span> <span class="n">mtrx_rates</span><span class="p">[</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">],</span>
-                <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;MTRy&quot;</span><span class="p">]:</span> <span class="n">mtry_rates</span><span class="p">[</span>
+                <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;mtry&quot;</span><span class="p">]:</span> <span class="n">mtry_rates</span><span class="p">[</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">],</span>
             <span class="p">}</span>
@@ -474,41 +479,41 @@
         <span class="n">table</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">years</span><span class="p">[:</span><span class="n">len_rates</span><span class="p">],</span>
             <span class="s2">&quot;Baseline &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;ETR&quot;</span><span class="p">]:</span> <span class="n">base_etr_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;etr&quot;</span><span class="p">]:</span> <span class="n">base_etr_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">],</span>
             <span class="s2">&quot;Reform &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;ETR&quot;</span><span class="p">]:</span> <span class="n">reform_etr_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;etr&quot;</span><span class="p">]:</span> <span class="n">reform_etr_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">],</span>
             <span class="s2">&quot;Differences in &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;ETR&quot;</span><span class="p">]:</span> <span class="n">reform_etr_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;etr&quot;</span><span class="p">]:</span> <span class="n">reform_etr_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span>
             <span class="o">-</span> <span class="n">base_etr_rates</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">],</span>
             <span class="s2">&quot;Baseline &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;MTRx&quot;</span><span class="p">]:</span> <span class="n">base_mtrx_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;mtrx&quot;</span><span class="p">]:</span> <span class="n">base_mtrx_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">],</span>
             <span class="s2">&quot;Reform &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;MTRx&quot;</span><span class="p">]:</span> <span class="n">reform_mtrx_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;mtrx&quot;</span><span class="p">]:</span> <span class="n">reform_mtrx_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">],</span>
             <span class="s2">&quot;Differences in &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;MTRx&quot;</span><span class="p">]:</span> <span class="n">reform_mtrx_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;mtrx&quot;</span><span class="p">]:</span> <span class="n">reform_mtrx_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span>
             <span class="o">-</span> <span class="n">base_mtrx_rates</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">],</span>
             <span class="s2">&quot;Baseline &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;MTRy&quot;</span><span class="p">]:</span> <span class="n">base_mtry_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;mtry&quot;</span><span class="p">]:</span> <span class="n">base_mtry_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">],</span>
             <span class="s2">&quot;Reform &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;MTRy&quot;</span><span class="p">]:</span> <span class="n">reform_mtry_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;mtry&quot;</span><span class="p">]:</span> <span class="n">reform_mtry_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">],</span>
             <span class="s2">&quot;Differences in &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;MTRy&quot;</span><span class="p">]:</span> <span class="n">reform_mtry_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="s2">&quot;mtry&quot;</span><span class="p">]:</span> <span class="n">reform_mtry_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span>
             <span class="o">-</span> <span class="n">base_mtry_rates</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">],</span>
@@ -518,11 +523,11 @@
         <span class="n">table</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">years</span><span class="p">[:</span><span class="n">len_rates</span><span class="p">],</span>
             <span class="s2">&quot;Baseline &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">rate_type</span><span class="p">]:</span> <span class="n">base_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">rate_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()]:</span> <span class="n">base_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">],</span>
             <span class="s2">&quot;Reform &quot;</span>
-            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">rate_type</span><span class="p">]:</span> <span class="n">reform_rates</span><span class="p">[</span>
+            <span class="o">+</span> <span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">rate_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()]:</span> <span class="n">reform_rates</span><span class="p">[</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">],</span>
             <span class="s2">&quot;Difference&quot;</span><span class="p">:</span> <span class="n">reform_rates</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">]</span>
@@ -542,7 +547,7 @@
 
 <div class="viewcode-block" id="param_table">
 <a class="viewcode-back" href="../../content/api/parameter_tables.html#ogcore.parameter_tables.param_table">[docs]</a>
-<span class="k">def</span> <span class="nf">param_table</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">table_format</span><span class="o">=</span><span class="s2">&quot;tex&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">param_table</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">table_format</span><span class="o">=</span><span class="s2">&quot;tex&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function creates a table of model parameters for publication.</span>
 
@@ -651,8 +656,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>
