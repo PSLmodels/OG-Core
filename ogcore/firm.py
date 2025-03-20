@@ -485,7 +485,7 @@ def get_K(r, w, L, p, method, m=-1):
     return K
 
 
-def get_cost_of_capital(r, p, method, m=-1):
+def get_cost_of_capital(r, K, Kp1, Km1, p, method, m=-1):
     r"""
     Compute the cost of capital.
 
@@ -505,43 +505,108 @@ def get_cost_of_capital(r, p, method, m=-1):
     if m is None:
         if method == "SS":
             tau_b = p.tau_b[-1, :]
+            tau_b_m1 = tau_b
             delta_tau = p.delta_tau[-1, :]
+            delta_tau_m1 = delta_tau
             tau_inv = p.inv_tax_credit[-1, :]
+            tau_inv_m1 = tau_inv
         else:
             tau_b = p.tau_b[: p.T, :]
+            # tau_b_m1 =  p.tau_b[: p.T - 1, :]  Append what to the front of this??
             delta_tau = p.delta_tau[: p.T, :]
             tau_inv = p.inv_tax_credit[: p.T, :]
             r = r.reshape(p.T, 1)
     else:
         if method == "SS":
             tau_b = p.tau_b[-1, m]
+            tau_b_m1 = tau_b
             delta_tau = p.delta_tau[-1, m]
+            delta_tau_m1 = delta_tau
             tau_inv = p.inv_tax_credit[-1, m]
+            tau_inv_m1 = tau_inv
         else:
             tau_b = p.tau_b[: p.T, m]
             delta_tau = p.delta_tau[: p.T, m]
             tau_inv = p.inv_tax_credit[: p.T, m]
             r = r.reshape(p.T)
 
-    cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv * p.delta) / (
-        1 - tau_b
-    )
+    # cost_of_capital = (r + p.delta - tau_b * delta_tau - tau_inv * p.delta) / (
+    #     1 - tau_b
+    # )
+    dPsidKp1_t = adj_cost_dKp1(Km1, K, p, method)
+    dPsidK_t = adj_cost_dK(K, Kp1, p, method)
+    cost_of_capital = (
+        (1 + r)
+        * (
+            ((1 - tau_b_m1) * dPsidKp1_t)
+            + 1
+            - tau_inv_m1
+            - tau_b_m1 * delta_tau_m1 * (1 - tau_inv_m1)
+        )
+        - 1
+        + p.delta
+        - tau_b
+        * delta_tau
+        * (
+            (1 - tau_inv_m1) * (1 - delta_tau_m1)
+            - (1 - p.delta) * (1 - tau_inv)
+        )
+        + tau_inv * (1 - p.delta)
+    ) / (1 - tau_b) + dPsidK_t
 
     return cost_of_capital
 
 
-def get_pm(w, Y_vec, L_vec, p, method):
+# def get_pm(w, Y_vec, L_vec, p, method):
+#     r"""
+#     Find prices for outputs from each industry.
+
+#     .. math::
+#          p_{m,t}=\frac{w_{t}}{\left((1-\gamma_m-\gamma_{g,m})
+#         \frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right)^{\varepsilon_m}}
+
+#     Args:
+#         w (array_like): the wage rate
+#         Y_vec (array_like): output for each industry
+#         L_vec (array_like): labor demand for each industry
+#         p (OG-Core Specifications object): model parameters
+#         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+
+#     Returns:
+#         p_m (array_like): output prices for each industry
+#     """
+#     if method == "SS":
+#         Y = Y_vec.reshape(1, p.M)
+#         L = L_vec.reshape(1, p.M)
+#         T = 1
+#     else:
+#         Y = Y_vec.reshape((p.T, p.M))
+#         L = L_vec.reshape((p.T, p.M))
+#         T = p.T
+#     p_m = np.zeros((T, p.M))
+#     for m in range(p.M):  # TODO: try to get rid of this loop
+#         MPL = get_MPx(
+#             Y[:, m], L[:, m], 1 - p.gamma[m] - p.gamma_g[m], p, method, m
+#         ).reshape(T)
+#         p_m[:, m] = w / MPL
+#     if method == "SS":
+#         p_m = p_m.reshape(p.M)
+#     return p_m
+
+
+def get_pm(w, Y_vec, K_vec, Kp1_vec, Km1_vec, p, method):
     r"""
     Find prices for outputs from each industry.
 
     .. math::
-         p_{m,t}=\frac{w_{t}}{\left((1-\gamma_m-\gamma_{g,m})
-        \frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right)^{\varepsilon_m}}
+         p_{m,t}=\frac{\left(\frac{\left(1+r_{t}\right)\left((1-\tau^{b}_{m,t-1})\frac{\partial \psi(K_{m,t}, K_{m,t-1})}{\partial K_{m,t}} + 1 - \tau^{inv}_{m,t-1}-\tau^{b}_{m,t-1}\delta^{\tau}_{m,t-1}(1-\tau^{inv}_{m,t})\right)-1 + \delta_m - \tau^{b}_{m,t}\delta^{\tau}_{m,t}\left((1-\tau^{inv}_{m,t-1})(1-\delta^{\tau}_{m,t-1})-(1-\delta_m)(1-\tau^{inv}_{m,t})\right) + \tau^{inv}_{m,t}(1-\delta_m)}{(1-\tau_{m,t}^{b})} \right) + \frac{\partial \psi(K_{m,t+1},K_{m,t})}{\partial K_{m,t}}}{Z_{m,t}^{\frac{\varepsilon_m-1}{\varepsilon_m}}\left(\gamma_m \frac{Y_{m,t}}{K_{m,t}}\right)^{\frac{1}{\varepsilon_m}}}
 
     Args:
         w (array_like): the wage rate
         Y_vec (array_like): output for each industry
-        L_vec (array_like): labor demand for each industry
+        K_vec (array_like): capital demand for each industry
+        K_vec (array_like): capital demand for each industry one period ahead
+        K_vec (array_like): capital demand for each industry one period prior
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
@@ -550,18 +615,23 @@ def get_pm(w, Y_vec, L_vec, p, method):
     """
     if method == "SS":
         Y = Y_vec.reshape(1, p.M)
-        L = L_vec.reshape(1, p.M)
+        K = K_vec.reshape(1, p.M)
+        Kp1 = Kp1_vec.reshape(1, p.M)
+        Km1 = Km1_vec.reshape(1, p.M)
         T = 1
     else:
         Y = Y_vec.reshape((p.T, p.M))
-        L = L_vec.reshape((p.T, p.M))
+        K = K_vec.reshape((p.T, p.M))
+        Kp1 = Kp1_vec.reshape((p.T, p.M))
+        Km1 = Km1_vec.reshape((p.T, p.M))
         T = p.T
     p_m = np.zeros((T, p.M))
     for m in range(p.M):  # TODO: try to get rid of this loop
-        MPL = get_MPx(
-            Y[:, m], L[:, m], 1 - p.gamma[m] - p.gamma_g[m], p, method, m
+        MPK = get_MPx(
+            Y[:, m], K[:, m], 1 - p.gamma[m] - p.gamma_g[m], p, method, m
         ).reshape(T)
-        p_m[:, m] = w / MPL
+        get_cost_of_capital = get_cost_of_capital(r, p, method, m)
+        p_m[:, m] = cost_of_capital / MPK
     if method == "SS":
         p_m = p_m.reshape(p.M)
     return p_m
@@ -613,7 +683,7 @@ def get_KY_ratio(r, p_m, p, method, m=-1):
 
 def solve_L(Y, K, K_g, p, method, m=-1):
     r"""
-    Solve for labor supply from the production function
+    Solve for labor demand from the production function
 
     .. math::
          \hat{L}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}
@@ -635,7 +705,7 @@ def solve_L(Y, K, K_g, p, method, m=-1):
             compute L for all industries)
 
     Returns:
-        L (array_like): labor demand each industry
+        L (array_like): labor demand for each industry
 
     """
     gamma = p.gamma[m]
@@ -670,7 +740,7 @@ def solve_L(Y, K, K_g, p, method, m=-1):
 
 def adj_cost(K, Kp1, p, method):
     r"""
-    Firm capital adjstment costs
+    Firm capital adjustment costs
 
     ..math::
         \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(\frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}{\frac{I_{t}}{K_{t}}}\biggl)
@@ -693,3 +763,237 @@ def adj_cost(K, Kp1, p, method):
     Psi = ((p.psi / 2) * (Inv / K - p.mu) ** 2) / (Inv / K)
 
     return Psi
+
+
+def adj_cost_dK(K, Kp1, p, method):
+    r"""
+    The derivative of firm capital adjustment costs with respect to the
+    capital stock.
+
+    ..math::
+        \frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t}} = \frac{-\psi}{2}\left(\frac{K_{m,t+1}}{I^2_{m,t}}\right)\left(\frac{I_{m,t}}{K_{m,t}}-\mu\right)\left(\frac{I_{m,t}}{K_{m,t}}+\mu\right) \forall m,t
+
+    Args:
+        K (array-like): Current period capital stock
+        Kp1 (array-like): One-period ahead capital stock
+        p (OG-USA Parameters class object): Model parameters
+        method (str): 'SS' or 'TPI'
+
+    Returns
+        dPsi (array-like): The derivative of capital adjustment costs
+    """
+    if method == "SS":
+        ac_method = "total_ss"
+    else:
+        ac_method = "total_tpi"
+    Inv = aggr.get_I(None, Kp1, K, p, ac_method)
+
+    dPsi = (
+        (-1 * p.psi / 2) * (Kp1 / Inv**2) * (Inv / K - p.mu) * (Inv / K + p.mu)
+    )
+
+    return dPsi
+
+
+def adj_cost_dKp1(K, Kp1, p, method):
+    r"""
+    The derivative of firm capital adjustment costs with respect to next
+    periods capital stock.
+
+    ..math::
+        \frac{\partial \Psi(I_{m,t},K_{m,t})}{\partial K_{m,t+1}} = \frac{\psi}{2}\frac{\left(\frac{I_{m,t}}{K_{m,t}}- \mu_{m}\right)}{I_{t}}\left[1 -\mu\frac{K_{m,t}}{I_{m,t}}\right] \forall m,t
+
+    Args:
+        K (array-like): Current period capital stock
+        Kp1 (array-like): One-period ahead capital stock
+        p (OG-USA Parameters class object): Model parameters
+        method (str): 'SS' or 'TPI'
+
+    Returns
+        dPsi (array-like): The derivative of capital adjustment costs
+    """
+    if method == "SS":
+        ac_method = "total_ss"
+    else:
+        ac_method = "total_tpi"
+    Inv = aggr.get_I(None, Kp1, K, p, ac_method)
+
+    dPsi = (p.psi / 2) * ((Inv / K - p.mu) / Inv) * (1 - p.mu * (K / Inv))
+
+    return dPsi
+
+
+def profits(r, w, K, L, Y, K_tau, p_m, p, method, m=-1):
+    """
+    Accounting profits for the firm.
+
+    ..math::
+        \pi_{m,t} = (1 - tau_b) * \left(p_{m,t}Y_{m,t} - w_{t}L_{m,t} -
+        \Psi(I_{m,t},K_{m,t})\right) - I_{m,t} +
+        \tau^b_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t} +
+        \tau^{inv}_{m,t}I_{m,t} \forall m,t
+
+    Args:
+
+    Returns:
+        profits (array-like): Per period profits of the firm
+    """
+    if m is None:
+        if method == "SS":
+            tau_b = p.tau_b[-1, :]
+            tau_b_m1 = tau_b
+            delta_tau = p.delta_tau[-1, :]
+            delta_tau_m1 = delta_tau
+            tau_inv = p.inv_tax_credit[-1, :]
+            tau_inv_m1 = tau_inv
+        else:
+            tau_b = p.tau_b[: p.T, :]
+            # tau_b_m1 =  p.tau_b[: p.T - 1, :]  Append what to the front of this??
+            delta_tau = p.delta_tau[: p.T, :]
+            tau_inv = p.inv_tax_credit[: p.T, :]
+            r = r.reshape(p.T, 1)
+    else:
+        if method == "SS":
+            tau_b = p.tau_b[-1, m]
+            tau_b_m1 = tau_b
+            delta_tau = p.delta_tau[-1, m]
+            delta_tau_m1 = delta_tau
+            tau_inv = p.inv_tax_credit[-1, m]
+            tau_inv_m1 = tau_inv
+        else:
+            tau_b = p.tau_b[: p.T, m]
+            delta_tau = p.delta_tau[: p.T, m]
+            tau_inv = p.inv_tax_credit[: p.T, m]
+            r = r.reshape(p.T)
+    if method == "SS":
+        ac_method = "total_ss"
+    else:
+        ac_method = "total_tpi"
+    Psi = adj_cost(K, K, p, method)
+    Inv = aggr.get_I(None, Kp1, K, p, ac_method)
+    profits = (
+        (1 - tau_b) * (p_m * Y - w * L - Psi)
+        - Inv
+        + tau_b * delta_tau * K_tau
+        + tau_inv * Inv
+    )
+
+    return profits
+
+
+def get_YL_from_w(w, p_m, p, method, m=-1):
+    r"""
+    Solve for the output-labor ratio given the wage rate w and output
+    prices p_m.
+
+    .. math::
+        \frac{K}{L} = Z_{m,t}^{\varepsilon_m - 1}\left(\frac{1-\gamma_m-\gamma+{g,m}}{p_{m,t}w_{t}}\right)
+
+    Args:
+        w (array_like): the wage rate
+        p_m (array_like): output prices
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+        m (int): production industry index
+
+    Returns:
+        YLratio (array_like): the capital-labor ratio
+
+    """
+    if method == "SS":
+        Z = p.Z[-1, m]
+    else:
+        Z = p.Z[: p.T, m]
+    YLratio = Z ** (p.epsilon[m] - 1) * (
+        (1 - p.gamma[m] - p.gamma_g[m]) / (p_m[m] * w)
+    )
+
+    return YLratio
+
+
+def solve_K(Y, L, K_g, p, method, m=-1):
+    r"""
+    Solve for capital demand from the production function
+
+    .. math::
+         \hat{K}_{m,t} = \left(\frac{\left(\frac{\hat{Y}_{m,t}}
+            {Z_{m,t}}\right)^{\frac{\varepsilon_m-1}{\varepsilon_m}} -
+            \gamma_{g,m}^{\frac{1}{\varepsilon_m}}\hat{K}_{g,m,t}^
+            {\frac{\varepsilon_m-1}{\varepsilon_m}} -
+            (1-\gamma_{m}-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}\hat{L}_{m,t}^
+            {\frac{\varepsilon_m-1}{\varepsilon_m}}}
+            {(1-\gamma_m-\gamma_{g,m})^{\frac{1}{\varepsilon_m}}}
+            \right)^{\frac{\varepsilon_m}{\varepsilon_m-1}}
+
+    Args:
+        Y (array_like): output for each industry
+        L (array_like): capital demand for each industry
+        K_g (array_like): public capital stock
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+        m (int or None): index of industry to compute L for (None will
+            compute L for all industries)
+
+    Returns:
+        K (array_like): capital demand each industry
+
+    """
+    gamma = p.gamma[m]
+    gamma_g = p.gamma_g[m]
+    epsilon = p.epsilon[m]
+    if method == "SS":
+        Z = p.Z[-1, m]
+    else:
+        Z = p.Z[: p.T, m]
+    try:
+        if K_g == 0:
+            K_g = 1.0
+            gamma_g = 0
+    except:
+        if np.any(K_g == 0):
+            K_g[K_g == 0] = 1.0
+            gamma_g = 0
+    if epsilon == 1.0:
+        K = (Y / (Z * K_g**gamma_g * L ** (1 - gamma - gamma_g))) ** (
+            1 / gamma
+        )
+    else:
+        K = (
+            (
+                (Y / Z) ** ((epsilon - 1) / epsilon)
+                - gamma_g ** (1 / epsilon) * K_g ** ((epsilon - 1) / epsilon)
+                - (1 - gamma - gamma_g) ** (1 / epsilon)
+                * L ** ((epsilon - 1) / epsilon)
+            )
+            / (gamma ** (1 / epsilon))
+        ) ** (epsilon / (epsilon - 1))
+
+    return K
+
+
+def FOC_K():
+    """
+    The firm's FOC for it's choice of capital stock.  Equibrium implies
+    equivalence between the interest rate and the after tax rate of return
+    on a unit of investment.
+
+    .. math::
+        r_{t+1} = \frac{(1 - \tau^{corp}_{m,t+1})\left(p_{m,t+1}
+        (Z_{m,t+1})^\frac{\varepsilon_m-1}{\varepsilon_m}
+        \left[\gamma_m\frac{\hat{Y}_{m,t+1}}{\hat{K}_{m,t+1}}
+        \right]^\frac{1}{\varepsilon_m} - \frac{\partial
+        \Psi(\hat{I}_{m,t+1},\hat{K}_{m,t+1})}{\partial
+        \hat{K}_{m,t+1}}\right) + 1 - \delta_{m} +
+        \tau^{corp}_{m,t+1}\delta^\tau_{m,t+1}\left[(1-
+        \tau^{inv}_{m,t})(1-\delta^\tau_{m,t})-(1-\delta_m)(1-
+        \tau^{inv}_{m,t+1})\right] - \tau^{inv}_{m,t+1}(1-\delta_{m})}
+        {(1-\tau^{corp}_{m,t})\frac{\partial
+        \Psi(\hat{I}_{m,t},\hat{K}_{m,t})}{\partial \hat{K}_{m,t+1}}+1
+        -\tau^{inv}_{m,t}-\tau^{corp}_{m,t}\delta^{\tau}_{m,t}(1
+        -\tau^{inv}_{m,t})} - 1 \quad\forall m,t
+
+    Args:
+
+    Returns:
+    """
