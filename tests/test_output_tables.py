@@ -22,10 +22,16 @@ if sys.version_info[1] < 11:
     base_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
     )
-else:
+elif sys.version_info[1] == 11:
     base_params = utils.safe_read_pickle(
         os.path.join(
             CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
+        )
+    )
+else:
+    base_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
         )
     )
 reform_ss = utils.safe_read_pickle(
@@ -38,9 +44,15 @@ if sys.version_info[1] < 11:
     reform_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_reform.pkl")
     )
-else:
+elif sys.version_info[1] == 11:
     reform_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_reform_v311.pkl")
+    )
+else:
+    reform_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
+        )
     )
 # add investment tax credit parameter that not in cached parameters
 base_params.inv_tax_credit = np.zeros(
@@ -51,27 +63,34 @@ reform_params.inv_tax_credit = np.zeros(
 )
 
 test_data = [
-    (base_tpi, base_params, reform_tpi, reform_params, "pct_diff"),
-    (base_tpi, base_params, reform_tpi, reform_params, "diff"),
-    (base_tpi, base_params, reform_tpi, reform_params, "levels"),
+    (base_tpi, base_params, reform_tpi, reform_params, "pct_diff", False),
+    (base_tpi, base_params, reform_tpi, reform_params, "diff", False),
+    (base_tpi, base_params, reform_tpi, reform_params, "levels", False),
+    (base_tpi, base_params, reform_tpi, reform_params, "pct_diff", True),
 ]
 
 
 @pytest.mark.parametrize(
-    "base_tpi,base_params,reform_tpi,reform_params,output_type",
+    "base_tpi,base_params,reform_tpi,reform_params,output_type,stationarized",
     test_data,
-    ids=["Pct Diff", "Diff", "Levels"],
+    ids=["Pct Diff", "Diff", "Levels", "Unstationary pct diff"],
 )
 def test_macro_table(
-    base_tpi, base_params, reform_tpi, reform_params, output_type
+    base_tpi,
+    base_params,
+    reform_tpi,
+    reform_params,
+    output_type,
+    stationarized,
 ):
     df = output_tables.macro_table(
         base_tpi,
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         output_type=output_type,
+        stationarized=stationarized,
         include_SS=True,
         include_overall=True,
     )
@@ -159,8 +178,8 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
     print("M = ", base_params.M, reform_params.M)
     print(
         "Shape of M implied by output = ",
-        base_tpi["p_m"].shape,
-        reform_tpi["p_m"].shape,
+        base_tpi["p_m"].shape[1],
+        reform_tpi["p_m"].shape[1],
     )
     df = output_tables.dynamic_revenue_decomposition(
         base_params,
@@ -169,7 +188,7 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
         reform_params,
         reform_tpi,
         reform_ss,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         include_business_tax=include_business_tax,
         full_break_out=full_break_out,
     )

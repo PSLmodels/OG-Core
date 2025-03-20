@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="ogcore",
-    version="0.11.3",
+    version="0.14.1",
     author="Jason DeBacker and Richard W. Evans",
     license="CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-    description="A general equilibribum overlapping generations model for fiscal policy analysis",
+    description="A general equilibrium overlapping generations model for fiscal policy analysis",
     long_description_content_type="text/markdown",
     long_description=longdesc,
     url="https://github.com/PSLmodels/OG-Core/",
@@ -20,14 +20,17 @@ setuptools.setup(
     package_data={
         "ogcore": [
             "default_parameters.json",
+            "model_variables.json",
+            "OGcorePlots.mplstyle",
         ]
     },
     include_packages=True,
-    python_requires=">=3.7.7, <3.12",
+    python_requires=">=3.7.7, <3.13",
     install_requires=[
         "numpy",
         "scipy>=1.7.1",
         "pandas>=1.2.5",
+        "numba",
         "matplotlib",
         "dask>=2.30.0",
         "distributed>=2.30.1",
@@ -44,7 +47,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",

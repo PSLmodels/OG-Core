@@ -4,6 +4,7 @@ import os
 from ogcore.constants import VAR_LABELS, DEFAULT_START_YEAR
 from ogcore import tax
 from ogcore.utils import save_return_table, Inequality
+from ogcore.utils import pct_change_unstationarized
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 
@@ -15,6 +16,7 @@ def macro_table(
     reform_params=None,
     var_list=["Y", "C", "K", "L", "r", "w"],
     output_type="pct_diff",
+    stationarized=True,
     num_years=10,
     include_SS=True,
     include_overall=True,
@@ -38,6 +40,8 @@ def macro_table(
                 and reform ((reform-base)/base)
             'diff': plots difference between baseline and reform (reform-base)
             'levels': variables in model units
+        stationarized (bool): whether used stationarized variables (False
+            only affects pct_diff right now)
         num_years (integer): number of years to include in table
         include_SS (bool): whether to include the steady-state results
             in the table
@@ -72,7 +76,17 @@ def macro_table(
     for i, v in enumerate(var_list):
         if output_type == "pct_diff":
             # multiple by 100 so in percentage points
-            results = ((reform_tpi[v] - base_tpi[v]) / base_tpi[v]) * 100
+            if stationarized:
+                results = ((reform_tpi[v] - base_tpi[v]) / base_tpi[v]) * 100
+            else:
+                pct_changes = pct_change_unstationarized(
+                    base_tpi,
+                    base_params,
+                    reform_tpi,
+                    reform_params,
+                    output_vars=[v],
+                )
+                results = pct_changes[v] * 100
             results_years = results[start_index : start_index + num_years]
             results_overall = (
                 (
@@ -150,7 +164,7 @@ def macro_table(
 def macro_table_SS(
     base_ss,
     reform_ss,
-    var_list=["Yss", "Css", "Kss", "Lss", "rss", "wss"],
+    var_list=["Y", "C", "K", "L", "r", "w"],
     table_format=None,
     path=None,
 ):
@@ -184,8 +198,7 @@ def macro_table_SS(
             diff = ((reform_ss[v] - base_ss[v]) / base_ss[v]) * 100
         else:
             diff = (
-                reform_ss["Dss"] / reform_ss["Yss"]
-                - base_ss["Dss"] / base_ss["Yss"]
+                reform_ss["D"] / reform_ss["Y"] - base_ss["D"] / base_ss["Y"]
             )
         table_dict["% Change (or pp diff)"].append(diff)
         # Make df with dict so can use pandas functions
@@ -202,7 +215,7 @@ def ineq_table(
     base_params,
     reform_ss=None,
     reform_params=None,
-    var_list=["cssmat"],
+    var_list=["c"],
     table_format=None,
     path=None,
 ):
@@ -299,7 +312,7 @@ def gini_table(
     base_params,
     reform_ss=None,
     reform_params=None,
-    var_list=["cssmat"],
+    var_list=["c"],
     table_format=None,
     path=None,
 ):
@@ -411,7 +424,7 @@ def wealth_moments_table(
         "Model": [],
     }
     base_ineq = Inequality(
-        base_ss["bssmat_splus1"],
+        base_ss["b_sp1"],
         base_params.omega_SS,
         base_params.lambdas,
         base_params.S,
@@ -571,12 +584,12 @@ def dynamic_revenue_decomposition(
            resulting series of tax revenues. Call these series for the
            baseline and reform A and D, respectively.
         2. Create a third revenue series that is computed using the
-           baseline behavior (i.e., `bmat_s` and `n_mat`) and macro
+           baseline behavior (i.e., `b_s` and `n`) and macro
            variables (`tr`, `bq`, `r`, `w`), but with the tax function
            parameter estimates from the reform policy.  Call this
            series B.
         3. Create a fourth revenue series that is computed using the
-           reform behavior (i.e., `bmat_s` and `n_mat`) and tax
+           reform behavior (i.e., `b_s` and `n`) and tax
            functions estimated on the reform tax policy, but
            the macro variables (`tr`, `bq`, `r`, `w`) from the baseline.
            Call this series C.
@@ -632,9 +645,9 @@ def dynamic_revenue_decomposition(
     indiv_liab["A"] = tax.income_tax_liab(
         base_tpi["r_p"][:T],
         base_tpi["w"][:T],
-        base_tpi["bmat_s"],
-        base_tpi["n_mat"][:T, :, :],
-        base_ss["factor_ss"],
+        base_tpi["b_s"],
+        base_tpi["n"][:T, :, :],
+        base_ss["factor"],
         0,
         None,
         "TPI",
@@ -647,9 +660,9 @@ def dynamic_revenue_decomposition(
     indiv_liab["B"] = tax.income_tax_liab(
         base_tpi["r_p"][:T],
         base_tpi["w"][:T],
-        base_tpi["bmat_s"],
-        base_tpi["n_mat"][:T, :, :],
-        base_ss["factor_ss"],
+        base_tpi["b_s"],
+        base_tpi["n"][:T, :, :],
+        base_ss["factor"],
         0,
         None,
         "TPI",
@@ -662,9 +675,9 @@ def dynamic_revenue_decomposition(
     indiv_liab["C"] = tax.income_tax_liab(
         base_tpi["r_p"][:T],
         base_tpi["w"][:T],
-        reform_tpi["bmat_s"],
-        reform_tpi["n_mat"][:T, :, :],
-        base_ss["factor_ss"],
+        reform_tpi["b_s"],
+        reform_tpi["n"][:T, :, :],
+        base_ss["factor"],
         0,
         None,
         "TPI",
@@ -676,9 +689,9 @@ def dynamic_revenue_decomposition(
     indiv_liab["D"] = tax.income_tax_liab(
         reform_tpi["r_p"][:T],
         reform_tpi["w"][:T],
-        reform_tpi["bmat_s"],
-        reform_tpi["n_mat"][:T, :, :],
-        base_ss["factor_ss"],
+        reform_tpi["b_s"],
+        reform_tpi["n"][:T, :, :],
+        base_ss["factor"],
         0,
         None,
         "TPI",
@@ -689,9 +702,9 @@ def dynamic_revenue_decomposition(
     # Business tax revenue from the baseline simulation
     tax_rev_dict["biz"]["A"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        base_tpi["Y_vec"][:T, :],
-        base_tpi["L_vec"][:T, :],
-        base_tpi["K_vec"][:T, :],
+        base_tpi["Y_m"][:T, :],
+        base_tpi["L_m"][:T, :],
+        base_tpi["K_m"][:T, :],
         base_tpi["p_m"][:T],
         base_params,
         None,
@@ -701,9 +714,9 @@ def dynamic_revenue_decomposition(
     # the reform tax rates
     tax_rev_dict["biz"]["B"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        base_tpi["Y_vec"][:T, :],
-        base_tpi["L_vec"][:T, :],
-        base_tpi["K_vec"][:T, :],
+        base_tpi["Y_m"][:T, :],
+        base_tpi["L_m"][:T, :],
+        base_tpi["K_m"][:T, :],
         base_tpi["p_m"][:T],
         reform_params,
         None,
@@ -713,9 +726,9 @@ def dynamic_revenue_decomposition(
     # macros with the reform tax rates
     tax_rev_dict["biz"]["C"] = tax.get_biz_tax(
         base_tpi["w"][:T],
-        reform_tpi["Y_vec"][:T, :],
-        reform_tpi["L_vec"][:T, :],
-        reform_tpi["K_vec"][:T, :],
+        reform_tpi["Y_m"][:T, :],
+        reform_tpi["L_m"][:T, :],
+        reform_tpi["K_m"][:T, :],
         reform_tpi["p_m"][:T],
         reform_params,
         None,
@@ -724,9 +737,9 @@ def dynamic_revenue_decomposition(
     # Business tax revenue from the reform
     tax_rev_dict["biz"]["D"] = tax.get_biz_tax(
         reform_tpi["w"][:T],
-        reform_tpi["Y_vec"][:T, :],
-        reform_tpi["L_vec"][:T, :],
-        reform_tpi["K_vec"][:T, :],
+        reform_tpi["Y_m"][:T, :],
+        reform_tpi["L_m"][:T, :],
+        reform_tpi["K_m"][:T, :],
         reform_tpi["p_m"][:T],
         reform_params,
         None,
@@ -750,17 +763,17 @@ def dynamic_revenue_decomposition(
         # Behavior effect
         pct_change2 = (
             (tax_rev_dict[type]["C"] - tax_rev_dict[type]["B"])
-            / tax_rev_dict[type]["B"]
+            / tax_rev_dict[type]["A"]
         ) * 100
         # Macro effect
         pct_change3 = (
             (tax_rev_dict[type]["D"] - tax_rev_dict[type]["C"])
-            / tax_rev_dict[type]["C"]
+            / tax_rev_dict[type]["A"]
         ) * 100
         # Dynamic effect (behavior + macro)
         pct_change4 = (
             (tax_rev_dict[type]["D"] - tax_rev_dict[type]["B"])
-            / tax_rev_dict[type]["B"]
+            / tax_rev_dict[type]["A"]
         ) * 100
         # Total change in tax revenue (rates + behavior + macro)
         pct_change5 = (
@@ -789,7 +802,7 @@ def dynamic_revenue_decomposition(
                     start_index : start_index + num_years
                 ].sum()
             )
-            / tax_rev_dict[type]["B"][
+            / tax_rev_dict[type]["A"][
                 start_index : start_index + num_years
             ].sum()
         ) * 100
@@ -802,7 +815,7 @@ def dynamic_revenue_decomposition(
                     start_index : start_index + num_years
                 ].sum()
             )
-            / tax_rev_dict[type]["C"][
+            / tax_rev_dict[type]["A"][
                 start_index : start_index + num_years
             ].sum()
         ) * 100
@@ -815,7 +828,7 @@ def dynamic_revenue_decomposition(
                     start_index : start_index + num_years
                 ].sum()
             )
-            / tax_rev_dict[type]["B"][
+            / tax_rev_dict[type]["A"][
                 start_index : start_index + num_years
             ].sum()
         ) * 100

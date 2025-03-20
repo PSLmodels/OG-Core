@@ -7,7 +7,8 @@ import os
 import sys
 import numpy as np
 import matplotlib.image as mpimg
-from ogcore import utils, output_plots
+import matplotlib.pyplot as plt
+from ogcore import utils, output_plots, constants
 
 
 # Load in test results and parameters
@@ -22,10 +23,16 @@ if sys.version_info[1] < 11:
     base_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
     )
-else:
+elif sys.version_info[1] == 11:
     base_params = utils.safe_read_pickle(
         os.path.join(
             CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
+        )
+    )
+else:
+    base_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
         )
     )
 reform_ss = utils.safe_read_pickle(
@@ -38,13 +45,129 @@ if sys.version_info[1] < 11:
     reform_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_reform.pkl")
     )
-else:
+elif sys.version_info[1] == 11:
     reform_params = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "model_params_reform_v311.pkl")
+    )
+else:
+    reform_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
+        )
     )
 reform_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_reform.pkl")
 )
+
+
+test_data = [
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "pct_diff",
+        False,
+        None,
+        None,
+    ),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "diff",
+        False,
+        None,
+        None,
+    ),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "forecast",
+        False,
+        None,
+        None,
+    ),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "levels",
+        False,
+        None,
+        None,
+    ),
+    (base_tpi, base_params, None, None, "levels", False, None, None),
+    (base_tpi, base_params, None, None, "levels", False, [2040, 2060], None),
+    (
+        base_tpi,
+        base_params,
+        None,
+        None,
+        "levels",
+        False,
+        None,
+        "Test plot title",
+    ),
+    (
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        "pct_diff",
+        True,
+        None,
+        None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "base_tpi,base_params,reform_tpi,reform_parms,plot_type,"
+    + "stationarized,vertical_line_years,plot_title",
+    test_data,
+    ids=[
+        "Pct Diff",
+        "Diff",
+        "Forecast",
+        "Levels w reform",
+        "Levels w/o reform",
+        "Vertical line included",
+        "Plot title included",
+        "Stationarized pct diff",
+    ],
+)
+def test_plot_aggregates(
+    base_tpi,
+    base_params,
+    reform_tpi,
+    reform_parms,
+    plot_type,
+    stationarized,
+    vertical_line_years,
+    plot_title,
+):
+    fig = output_plots.plot_aggregates(
+        base_tpi,
+        base_params,
+        reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        var_list=["Y", "r"],
+        plot_type=plot_type,
+        stationarized=stationarized,
+        num_years_to_plot=20,
+        start_year=int(base_params.start_year),
+        forecast_data=np.ones(20),
+        forecast_units="ones",
+        vertical_line_years=vertical_line_years,
+        plot_title=plot_title,
+    )
+    assert fig
+    plt.close()
 
 
 test_data = [
@@ -56,46 +179,6 @@ test_data = [
     (base_tpi, base_params, None, None, "levels", [2040, 2060], None),
     (base_tpi, base_params, None, None, "levels", None, "Test plot title"),
 ]
-
-
-@pytest.mark.parametrize(
-    "base_tpi,base_params,reform_tpi,reform_parms,plot_type,"
-    + "vertical_line_years,plot_title",
-    test_data,
-    ids=[
-        "Pct Diff",
-        "Diff",
-        "Forecast",
-        "Levels w reform",
-        "Levels w/o reform",
-        "Vertical line included",
-        "Plot title included",
-    ],
-)
-def test_plot_aggregates(
-    base_tpi,
-    base_params,
-    reform_tpi,
-    reform_parms,
-    plot_type,
-    vertical_line_years,
-    plot_title,
-):
-    fig = output_plots.plot_aggregates(
-        base_tpi,
-        base_params,
-        reform_tpi=reform_tpi,
-        reform_params=reform_params,
-        var_list=["Y", "r"],
-        plot_type=plot_type,
-        num_years_to_plot=20,
-        start_year=2023,
-        forecast_data=np.ones(20),
-        forecast_units="ones",
-        vertical_line_years=vertical_line_years,
-        plot_title=plot_title,
-    )
-    assert fig
 
 
 @pytest.mark.parametrize(
@@ -126,16 +209,17 @@ def test_plot_industry_aggregates(
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        var_list=["Y_vec"],
+        var_list=["Y_m"],
         plot_type=plot_type,
         num_years_to_plot=20,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         forecast_data=np.ones(20),
         forecast_units="ones",
         vertical_line_years=vertical_line_years,
         plot_title=plot_title,
     )
     assert fig
+    plt.close()
 
 
 test_data = [
@@ -149,7 +233,11 @@ test_data = [
 def test_plot_aggregates_save_fig(tmpdir):
     path = os.path.join(tmpdir, "test_plot.png")
     output_plots.plot_aggregates(
-        base_tpi, base_params, start_year=2023, plot_type="levels", path=path
+        base_tpi,
+        base_params,
+        start_year=int(base_params.start_year),
+        plot_type="levels",
+        path=path,
     )
     img = mpimg.imread(path)
 
@@ -159,7 +247,10 @@ def test_plot_aggregates_save_fig(tmpdir):
 def test_plot_aggregates_not_a_type(tmpdir):
     with pytest.raises(AssertionError):
         output_plots.plot_aggregates(
-            base_tpi, base_params, start_year=2023, plot_type="levels2"
+            base_tpi,
+            base_params,
+            start_year=int(base_params.start_year),
+            plot_type="levels2",
         )
 
 
@@ -206,12 +297,13 @@ def test_plot_gdp_ratio(
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         plot_type=plot_type,
         vertical_line_years=vertical_line_years,
         plot_title=plot_title,
     )
     assert fig
+    plt.close()
 
 
 def test_plot_gdp_ratio_save_fig(tmpdir):
@@ -220,7 +312,7 @@ def test_plot_gdp_ratio_save_fig(tmpdir):
         base_tpi,
         base_params,
         reform_tpi=reform_tpi,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         reform_params=reform_params,
         path=path,
     )
@@ -235,10 +327,11 @@ def test_ability_bar():
         base_params,
         reform_tpi,
         reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         plot_title=" Test Plot Title",
     )
     assert fig
+    plt.close()
 
 
 def test_ability_bar_save_fig(tmpdir):
@@ -248,7 +341,7 @@ def test_ability_bar_save_fig(tmpdir):
         base_params,
         reform_tpi,
         reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         path=path,
     )
     img = mpimg.imread(path)
@@ -265,6 +358,7 @@ def test_ability_bar_ss():
         plot_title=" Test Plot Title",
     )
     assert fig
+    plt.close()
 
 
 data_for_plot = np.ones(80) * 0.3
@@ -286,6 +380,7 @@ def test_ss_profiles(by_j, plot_data):
         plot_title=" Test Plot Title",
     )
     assert fig
+    plt.close()
 
 
 def test_ss_profiles_save_fig(tmpdir):
@@ -305,11 +400,12 @@ def test_tpi_profiles(by_j):
         base_params,
         reform_tpi,
         reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         by_j=by_j,
         plot_title=" Test Plot Title",
     )
     assert fig
+    plt.close()
 
 
 test_data = [
@@ -335,7 +431,7 @@ def test_tpi_profiles_save_fig(tmpdir):
         base_params,
         reform_tpi,
         reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         path=path,
     )
     img = mpimg.imread(path)
@@ -366,6 +462,7 @@ def test_ss_3Dplot(
         plot_title=plot_title,
     )
     assert fig
+    plt.close()
 
 
 def test_ss_3Dplot_save_fig(tmpdir):
@@ -446,12 +543,13 @@ def test_inequality_plot(
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         ineq_measure=ineq_measure,
         pctiles=pctiles,
         plot_type=plot_type,
     )
     assert fig
+    plt.close()
 
 
 def test_inequality_plot_save_fig(tmpdir):
@@ -461,7 +559,7 @@ def test_inequality_plot_save_fig(tmpdir):
         base_params,
         reform_tpi=reform_tpi,
         reform_params=reform_params,
-        start_year=2023,
+        start_year=int(base_params.start_year),
         path=path,
     )
     img = mpimg.imread(path)
@@ -487,3 +585,16 @@ def test_plot_all(tmpdir):
         assert isinstance(img3, np.ndarray)
     else:
         assert True
+
+
+def test_lambda_labels():
+    """
+    Test of the lambda_labels function in output_plots.py
+    """
+    labels = output_plots.lambda_labels(
+        [0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01]
+    )
+    print(labels)
+    for k, v in labels.items():
+        print(k, v)
+        assert v == constants.GROUP_LABELS[7][k]

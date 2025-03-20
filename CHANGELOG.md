@@ -5,12 +5,177 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.14.1] - 2025-03-16 12:00:00
+
+### Bug Fix
+
+- Packages `model_variables.json` with `ogcore`
+
+## [0.14.0] - 2025-03-16 07:00:00
+
+### Added
+
+- Updates the output dictionaries for `TPI.py` and `SS.py` to use consistent variables names
+- Adds a `model_variables.json` file that has metadata about the model variables and is used to build a new chapter in the documentation describing the model variables
+- Replaces `print` commands in `TPI.py` and `SS.py` with `logger.info` commands for easier suppression of output
+
+## [0.13.2] - 2024-12-08 12:00:00
+
+### Added
+
+- Adds KOR, THA, BRA to the list of countries in the `demographics.py` module.
+
+## [0.13.1] - 2024-10-02 12:00:00
+
+### Added
+
+- Three new parameters to adjust government spending amounts in the case of `baseline_spending=True`:
+  - `alpha_bs_G`: the proportional adjustment to the level of baseline spending on government consumption (time varying, default value is 1.0 for each model period)
+  - `alpha_bs_T`: the proportional adjustment to the level of baseline spending on non-pension transfers (time varying, default value is 1.0 for each model period)
+  - `alpha_bs_I`: the proportional adjustment to the level of baseline spending on infrastructure investment (time varying, default value is 1.0 for each model period)
+
+## [0.13.0] - 2024-09-26 12:00:00
+
+### Added
+
+- Updates all of the documentation.
+    - Adds remittances to all instances of the household budget constraint
+    - Rewrites bequests and transfers components of household budget constraint in terms of individual variables in all instances
+    - Adds a household transfers section to `households.md` with subsections on bequests, remittances, government transfers, and universal basic income
+    - Changes all instances of $p_t Y_t$ to $Y_t
+    - Updates the steady-state equilibrium algorithm description in `equilibrium.md`
+    - Added updates to the government pensions descriptions in `government.md` and added `pensions` to all instances of the household budget constraint.
+    - Updates the docstrings in `tax.py` for the wealth tax ETR and MTR functions. The code is right. I just thought there was a clearer specification of the equations in LaTeX.
+- Adds remittances to the OG-Core code
+    - Adds aggregate remittances function `get_RM()` to `aggregates.py`
+    - Adds household remittances function `get_rm()` to `household.py`
+    - Adds four new remittance parameters: `alpha_RM_1`, `g_RM`, `alpha_RM_T`, `eta_RM`
+    - We model aggregate remittances as a percent of GDP in the first period, then growing at a specified rate that can deviate from the country growth rate until the cutoff rule period, after which the remittance growth rate trends back to the long-run model growth rate (growth rate in population and productivity). We also model remittances in reforms as being a percentage of baseline GDP. In this way, if remittance parameters are not changed in the reform, remittances remain at their baseline levels. The only way they change is if their parameter values are changed.
+    - Adds 3 tests using the `test_get_RM()` function in `test_aggregates.py`
+    - Adds 4 tests using the `test_get_rm()` function in `test_household.py`
+    - Changes the `initial_guess_r_SS` in two tests in `test_SS.py` because they were not solving with their current values
+- Increases `RC_SS` steady-state resource constraint tolerance from 1e-9 to 1e-8 because two `test_run_SS()` tests were failing in `test_SS.py` with resource constraints errors just bigger than 1e-9 (-2.29575914e-09 for [Baseline, small open] and -2.29575914e-09 for [Reform, small open]).
+- Increases `RC_TPI` transition path resource constraint tolerance from 1e-5 to 1e-4 in because one `test_run_TPI_full_run()` test was failing in `test_TPI.py` with a resource constraint error just bigger than 1e-5 (1.4459913381864586e-05 for `[Baseline, M=3 non-zero Kg]`).
+- Updated two directory path references that were out of date in `test_run_example.py`.
+- Updated expected value tuples and dictionaries in `test_txfunc.py`.
+
+## [0.12.0] - 2024-08-20 12:00:00
+
+### Added
+
+- Support for Python 3.12
+
+## [0.11.17] - 2024-08-18 12:00:00
+
+### Added
+
+- Description of `alpha_I` in docs
+- Updates valid range of the nominal UBI parameters
+
+### Bug Fix
+
+- Extrapolate `alpha_I` in `parameters.py`
+- Ensure `alpha_I` shape conforms in `TPI.py`
+- Fix formatting of labels in `constants.py`
+
+## [0.11.16] - 2024-08-10 12:00:00
+
+### Added
+
+- Added parameter script `make_params.py` that generates a markdown file for the documentation `parameters.md`. Updates `Makefile`, and GitHub Actions ([PR #963](https://github.com/PSLmodels/OG-Core/pull/963))
+- Updated debt-to-GDP plot labels ([PR #962](https://github.com/PSLmodels/OG-Core/pull/962))
+
+## [0.11.15] - 2024-07-30 12:00:00
+
+### Bug Fix
+
+- Make `OGcorePlots.mplstyle` importable from the package by adding it to `setup.py`
+
+## [0.11.14] - 2024-07-30 12:00:00
+
+### Added
+
+- Aesthetic updates to plotting functions in `parameter_plots.py` and `demographics.py`
+
+## [0.11.13] - 2024-07-28 12:00:00
+
+### Added
+
+- Added three new pension types to the model: (i) defined benefits system, (ii) notional defined contribution system, and (iii) points system.
+
+## [0.11.12] - 2024-07-26 01:00:00
+
+### Bug Fix
+
+- Fixes extrapolation of nested lists of tax function parameters.
+
+## [0.11.11] - 2024-06-24 01:00:00
+
+### Added
+
+- Add new parameters for resource constraint tolerances for steady state and time path solution.
+
+## [0.11.10] - 2024-06-17 01:00:00
+
+### Added
+
+- Add HSV to list of valid tax functions in `default_parameters.json`
+
+
+## [0.11.9] - 2024-06-12 01:00:00
+
+### Added
+
+- Update `demographics.py` in the case input prompt not work.
+- Add new utility to dump the parameters to a JSON file
+
+
+## [0.11.8] - 2024-06-09 01:00:00
+
+### Added
+
+- Updates to `demographics.py` module to accept token for UN World Population Prospects database access or to download data from the [Population-Data](https://github.com/EAPD-DRB/Population-Data) repository.
+
+## [0.11.7] - 2024-06-07 01:00:00
+
+### Added
+
+- Heathcote, Storesletten, and Violante (2017) tax functions to `txfunc.py`
+
+## [0.11.6] - 2024-04-19 01:00:00
+
+### Added
+
+- Scatters parameters once in `TPI.py`
+- Removes Python 3.9 tests from `build_and_test.yml`
+
+
+## [0.11.5] - 2024-04-11 12:00:00
+
+### Added
+
+- Adds a list of file change event triggers to `build_and_test.yml` so that those tests only run when one of those files is changed.
+- Updates the codecov GH Action to version 4 and adds a secret token.
+- Adds a list of file change event triggers to `deploy_docs.yml` and `docs_check.yml`, and limits `docs_check.yml` to only run on pull requests.
+
+
+## [0.11.4] - 2024-04-03 22:00:00
+
+### Added
+
+- Add a function to `utils.py` to shift lifetime profiles of parameters
+- Add a function to `utils.py` to compute percentage changes in non-stationary variables
+- Add more functionality to `parameters_plots.py`, allowing the user to plot parameters from multiple parameters objects together
+
+
 ## [0.11.3] - 2024-03-08 12:00:00
 
 ### Added
 
 - Allow for `demographics.py` to save downloaded data directly.
 - Retrieve population data from the UN World Population Prospects database through CSV rather than JSON to avoid rate limit errors.
+
 
 ## [0.11.2] - 2024-02-17 12:00:00
 
@@ -21,11 +186,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extends all series returned from the get_pop_objs() function over the full transition path of T+S periods (except those that apply only to a single period).
 - Addresses Issues #900 and #899
 
+
 ## [0.11.1] - 2024-02-12 15:00:00
 
 ### Added
 
 - Updated `setup.py` Python version requirement to be `python_requires=">=3.7.7, <3.12"`
+
 
 ## [0.11.0] - 2024-02-06 15:00:00
 
@@ -196,8 +363,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Version [0.7.0] on August 30, 2021 was the first time that the OG-USA repository was detached from all of the core model logic, which was named OG-Core. Before this version, OG-USA was part of what is now the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository. In the next version of OG-USA, we adjusted the version numbering to begin with 0.1.0. This initial version of 0.7.0, was sequential from what OG-USA used to be when the OG-Core project was called OG-USA.
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
-
-
+[0.14.1]: https://github.com/PSLmodels/OG-Core/compare/v0.14.0...v0.14.1
+[0.14.0]: https://github.com/PSLmodels/OG-Core/compare/v0.13.2...v0.14.0
+[0.13.2]: https://github.com/PSLmodels/OG-Core/compare/v0.13.1...v0.13.2
+[0.13.1]: https://github.com/PSLmodels/OG-Core/compare/v0.13.0...v0.13.1
+[0.13.0]: https://github.com/PSLmodels/OG-Core/compare/v0.12.0...v0.13.0
+[0.12.0]: https://github.com/PSLmodels/OG-Core/compare/v0.11.17...v0.12.0
+[0.11.17]: https://github.com/PSLmodels/OG-Core/compare/v0.11.16...v0.11.17
+[0.11.16]: https://github.com/PSLmodels/OG-Core/compare/v0.11.15...v0.11.16
+[0.11.15]: https://github.com/PSLmodels/OG-Core/compare/v0.11.14...v0.11.15
+[0.11.14]: https://github.com/PSLmodels/OG-Core/compare/v0.11.13...v0.11.14
+[0.11.13]: https://github.com/PSLmodels/OG-Core/compare/v0.11.11...v0.11.13
+[0.11.11]: https://github.com/PSLmodels/OG-Core/compare/v0.11.10...v0.11.11
+[0.11.10]: https://github.com/PSLmodels/OG-Core/compare/v0.11.9...v0.11.10
+[0.11.9]: https://github.com/PSLmodels/OG-Core/compare/v0.11.8...v0.11.9
+[0.11.8]: https://github.com/PSLmodels/OG-Core/compare/v0.11.7...v0.11.8
+[0.11.7]: https://github.com/PSLmodels/OG-Core/compare/v0.11.6...v0.11.7
+[0.11.6]: https://github.com/PSLmodels/OG-Core/compare/v0.11.5...v0.11.6
+[0.11.5]: https://github.com/PSLmodels/OG-Core/compare/v0.11.4...v0.11.5
+[0.11.4]: https://github.com/PSLmodels/OG-Core/compare/v0.11.3...v0.11.4
+[0.11.3]: https://github.com/PSLmodels/OG-Core/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/PSLmodels/OG-Core/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/PSLmodels/OG-Core/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/PSLmodels/OG-Core/compare/v0.10.10...v0.11.0

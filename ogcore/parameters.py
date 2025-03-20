@@ -1,12 +1,14 @@
 import os
 import numpy as np
 import scipy.interpolate as si
-import pkg_resources
 import paramtools
-
-# import ogcore
+import ogcore
 from ogcore import elliptical_u_est
-from ogcore.utils import rate_conversion, extrapolate_arrays
+from ogcore.utils import (
+    rate_conversion,
+    extrapolate_array,
+    extrapolate_nested_list,
+)
 from ogcore.constants import BASELINE_DIR
 
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -35,7 +37,7 @@ class Specifications(paramtools.Parameters):
         self.num_workers = num_workers
 
         # put OG-Core version in parameters to save for reference
-        self.ogcore_version = pkg_resources.get_distribution("ogcore").version
+        self.ogcore_version = ogcore.__version__
 
         # does cheap calculations to find parameter values
         self.initialize()
@@ -156,6 +158,10 @@ class Specifications(paramtools.Parameters):
         tp_param_list = [
             "alpha_G",
             "alpha_T",
+            "alpha_I",
+            "alpha_bs_G",
+            "alpha_bs_T",
+            "alpha_bs_I",
             "world_int_rate_annual",
             "adjustment_factor_for_cit_receipts",
             "tau_bq",
@@ -169,10 +175,11 @@ class Specifications(paramtools.Parameters):
             "zeta_K",
             "r_gov_scale",
             "r_gov_shift",
+            "g_RM",
         ]
         for item in tp_param_list:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S,), item=item
             )
             setattr(self, item, param_out)
@@ -185,7 +192,7 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list2:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.M), item=item
             )
             setattr(self, item, param_out)
@@ -193,7 +200,7 @@ class Specifications(paramtools.Parameters):
         tp_param_list3 = ["tau_c"]
         for item in tp_param_list3:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.I), item=item
             )
             setattr(self, item, param_out)
@@ -204,7 +211,7 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list3:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.J), item=item
             )
             setattr(self, item, param_out)
@@ -214,7 +221,7 @@ class Specifications(paramtools.Parameters):
         ]
         for item in tp_param_list4:
             param_in = getattr(self, item)
-            param_out = extrapolate_arrays(
+            param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.S), item=item
             )
             setattr(self, item, param_out)
@@ -225,70 +232,44 @@ class Specifications(paramtools.Parameters):
             "mtry_params",
         ]
         for item in tax_params_to_TP:
-            tax_to_set = getattr(self, item)
+            tax_to_set_in = getattr(self, item)
             try:
-                tax_to_set = (
-                    tax_to_set.tolist()
-                )  # in case parameters are numpy arrays
-            except AttributeError:  # catches if they are lists already
-                pass
-            if len(tax_to_set) == 1 and isinstance(tax_to_set[0], float):
-                setattr(
-                    self,
-                    item,
-                    [
-                        [[tax_to_set] for i in range(self.S)]
-                        for t in range(self.T)
-                    ],
-                )
-            elif any(
-                [
-                    isinstance(tax_to_set[i][j], list)
-                    for i, v in enumerate(tax_to_set)
-                    for j, vv in enumerate(tax_to_set[i])
-                ]
-            ):
-                if len(tax_to_set) > self.T + self.S:
-                    tax_to_set = tax_to_set[: self.T + self.S]
-                if len(tax_to_set) < self.T + self.S:
-                    tax_params_to_add = [tax_to_set[-1]] * (
-                        self.T + self.S - len(tax_to_set)
-                    )
-                    tax_to_set.extend(tax_params_to_add)
-                if len(tax_to_set[0]) > self.S:
-                    for t, v in enumerate(tax_to_set):
-                        tax_to_set[t] = tax_to_set[t][: self.S]
-                if len(tax_to_set[0]) < self.S:
-                    tax_params_to_add = [tax_to_set[:][-1]] * (
-                        self.S - len(tax_to_set[0])
-                    )
-                    tax_to_set[0].extend(tax_params_to_add)
-                setattr(self, item, tax_to_set)
-            else:
+                len(tax_to_set_in[0][0])
+            except TypeError:
                 print(
                     "please give a "
                     + item
-                    + " that is a single element or nested lists of"
+                    + " that is a nested lists of"
                     + " lists that is three lists deep"
                 )
                 assert False
+            tax_to_set_out = extrapolate_nested_list(
+                tax_to_set_in, dims=(self.T, self.S, len(tax_to_set_in[0][0]))
+            )
+            setattr(self, item, tax_to_set_out)
 
-        # Try to deal with size of eta.  It may vary by S, J, T, but
-        # want to allow user to enter one that varies by only S, S and J,
+        # Try to deal with size of eta and eta_RM. They may vary by S, J, T,
+        # but want to allow user to enter one that varies by only S, S and J,
         # S and T, or T and S and J.
-        param_in = getattr(self, "eta")
-        param_out = extrapolate_arrays(
-            param_in, dims=(self.T + self.S, self.S, self.J), item="eta"
-        )
-        setattr(self, "eta", param_out)
+        eta_params_to_TP = [
+            "eta",
+            "eta_RM",
+        ]
+        for item in eta_params_to_TP:
+            param_in = getattr(self, item)
+            param_out = extrapolate_array(
+                param_in, dims=(self.T + self.S, self.S, self.J), item=item
+            )
+            setattr(self, item, param_out)
+        # extrapolate lifetime ability e matrix over time dimension
         param_in = getattr(self, "e")
-        param_out = extrapolate_arrays(
+        param_out = extrapolate_array(
             param_in, dims=(self.T, self.S, self.J), item="e"
         )
         setattr(self, "e", param_out)
         # Extrapolate chi_n over T + S
         param_in = getattr(self, "chi_n")
-        param_out = extrapolate_arrays(
+        param_out = extrapolate_array(
             param_in, dims=(self.T + self.S, self.S), item="chi_n"
         )
         setattr(self, "chi_n", param_out)

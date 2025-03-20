@@ -15,6 +15,72 @@ from ogcore import firm
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
+VAR_NAME_MAPPING = {
+    "Yss": "Y",
+    "Bss": "B",
+    "Kss": "K",
+    "K_f_ss": "K_f",
+    "K_d_ss": "K_d",
+    "Lss": "L",
+    "Css": "C",
+    "Iss": "I",
+    "Iss_total": "I_total",
+    "I_d_ss": "I_d",
+    "K_g_ss": "K_g",
+    "I_g_ss": "I_g",
+    "BQss": "BQ",
+    "RMss": "RM",
+    "Y_vec_ss": "Y_m",
+    "K_vec_ss": "K_m",
+    "L_vec_ss": "L_m",
+    "C_vec_ss": "C_i",
+    "TR_ss": "TR",
+    "agg_pension_outlays": "agg_pension_outlays",
+    "Gss": "G",
+    "UBI_outlays_SS": "UBI",
+    "total_tax_revenue": "total_tax_revenue",
+    "business_tax_revenue": "business_tax_revenue",
+    "iit_payroll_tax_revenue": "iit_payroll_tax_revenue",
+    "iit_revenue": "iit_revenue",
+    "payroll_tax_revenue": "payroll_tax_revenue",
+    "bequest_tax_revenue": "bequest_tax_revenue",
+    "wealth_tax_revenue": "wealth_tax_revenue",
+    "cons_tax_revenue": "cons_tax_revenue",
+    "Dss": "D",
+    "D_f_ss": "D_f",
+    "D_d_ss": "D_d",
+    "new_borrowing": "new_borrowing",
+    "debt_service": "debt_service",
+    "new_borrowing_f": "new_borrowing_f",
+    "debt_service_f": "debt_service_f",
+    "rss": "r",
+    "r_gov_ss": "r_gov",
+    "r_p_ss": "r_p",
+    "wss": "w",
+    "p_m_ss": "p_m",
+    "p_i_ss": "p_i",
+    "p_tilde_ss": "p_tilde",
+    "bssmat_splus1": "b_sp1",
+    "bssmat_s": "b_s",
+    "nssmat": "n",
+    "cssmat": "c",
+    "c_i_ss_mat": "c_i",
+    "bqssmat": "bq",
+    "rmssmat": "rm",
+    "trssmat": "tr",
+    "ubissmat": "ubi",
+    "yss_before_tax_mat": "before_tax_income",
+    "total_taxes_ss": "hh_taxes",
+    "etr_ss": "etr",
+    "mtrx_ss": "mtrx",
+    "mtry_ss": "mtry",
+    "theta": "theta",
+    "factor_ss": "factor",
+    "euler_savings": "euler_savings",
+    "euler_labor_leisure": "euler_labor_leisure",
+    "resource_constraint_error": "resource_constraint_error",
+}
+
 
 @pytest.fixture(scope="module")
 def dask_client():
@@ -36,7 +102,7 @@ p1.update_specifications({"zeta_D": [0.0], "zeta_K": [0.0]})
 guesses1 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args1 = (bssmat, nssmat, None, None, p1, None)
+args1 = (bssmat, nssmat, None, None, None, p1, None)
 expected1 = np.array(
     [
         -0.03640424626041604,
@@ -61,7 +127,7 @@ p2.update_specifications({"zeta_D": [0.0], "zeta_K": [0.0]})
 guesses2 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07]
 )
-args2 = (bssmat, nssmat, None, 0.51, p2, None)
+args2 = (bssmat, nssmat, None, None, 0.51, p2, None)
 expected2 = np.array(
     [
         -0.0389819118896058,
@@ -87,7 +153,7 @@ p3.update_specifications(
 guesses3 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07]
 )
-args3 = (bssmat, nssmat, 0.13, 0.51, p3, None)
+args3 = (bssmat, nssmat, 0.13, 0.0, 0.51, p3, None)
 expected3 = np.array(
     [
         -0.042611174492217574,
@@ -110,7 +176,7 @@ p4 = Specifications(baseline=True)
 guesses4 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args4 = (bssmat, nssmat, None, None, p4, None)
+args4 = (bssmat, nssmat, None, None, None, p4, None)
 expected4 = np.array(
     [
         -0.04501723939772713,
@@ -135,7 +201,7 @@ p5.update_specifications({"zeta_D": [0.0], "zeta_K": [1.0]})
 guesses5 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args5 = (bssmat, nssmat, None, 0.51, p5, None)
+args5 = (bssmat, nssmat, None, None, 0.51, p5, None)
 expected5 = np.array(
     [
         -0.02690768327226259,
@@ -162,7 +228,7 @@ p6.update_specifications(
 guesses6 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args6 = (bssmat, nssmat, None, None, p6, None)
+args6 = (bssmat, nssmat, None, None, None, p6, None)
 expected6 = np.array(
     [
         -0.051097905293268894,
@@ -196,26 +262,26 @@ p7.update_specifications(
 guesses7 = np.array(
     [0.06, 1.1, 0.2, 0.016, 0.02, 0.02, 0.01, 0.01, 0.02, 0.003, -0.07, 0.051]
 )
-args7 = (bssmat, nssmat, None, None, p7, None)
+args7 = (bssmat, nssmat, None, None, None, p7, None)
 expected7 = np.array(
     [
-        -0.07223291631036555,
-        -0.07826548741334771,
-        3.0911509552880334,
-        3.5079477421902254,
-        2.4414161493191413,
-        3.0137277396774236,
+        -0.06985935377445636,
+        -0.07388184648847439,
+        2.596215180212739,
+        3.0425352411195634,
+        2.08611520332783,
+        2.5993398246497392,
         0.0,
-        1.5448512748680931,
-        -0.0005707403143014808,
-        -0.01880468553296961,
-        -0.018630471665521498,
-        0.007811485269807893,
-        0.011911373110717808,
-        0.00898435233878905,
-        -0.0029658077084825795,
-        0.13903661473812837,
-        0.03462075279248166,
+        1.6276918281128583,
+        -0.0005336644680328222,
+        0.003641474531794135,
+        0.007892881165609,
+        0.007854285496066054,
+        0.011964025188377221,
+        0.00905400047723115,
+        0.0035962471039776792,
+        0.14649226453015723,
+        0.03816296076039217,
     ]
 )
 
@@ -223,21 +289,21 @@ expected7 = np.array(
 @pytest.mark.parametrize(
     "guesses,args,expected",
     [
-        # (guesses1, args1, expected1),
-        # (guesses2, args2, expected2),
-        # (guesses3, args3, expected3),
-        # (guesses4, args4, expected4),
-        # (guesses5, args5, expected5),
-        # (guesses6, args6, expected6),
+        (guesses1, args1, expected1),
+        (guesses2, args2, expected2),
+        (guesses3, args3, expected3),
+        (guesses4, args4, expected4),
+        (guesses5, args5, expected5),
+        (guesses6, args6, expected6),
         (guesses7, args7, expected7),
     ],
     ids=[
-        # "Baseline, Closed",
-        # "Reform, Closed",
-        # "Reform, Baseline spending=True, Closed",
-        # "Baseline, Partial Open",
-        # "Baseline, Small Open",
-        # "Baseline, Closed, delta_tau = 0",
+        "Baseline, Closed",
+        "Reform, Closed",
+        "Reform, Baseline spending=True, Closed",
+        "Baseline, Partial Open",
+        "Baseline, Small Open",
+        "Baseline, Closed, delta_tau = 0",
         "Baseline, M=4",
     ],
 )
@@ -247,7 +313,7 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     ensure that output returned matches what it has been before.
     """
     # args =
-    (bssmat, nssmat, TR_ss, factor_ss, p, client) = args
+    (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client) = args
     p.baseline_dir = tmpdir
     p.output_base = tmpdir
 
@@ -297,7 +363,7 @@ param_updates4 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
 filename4 = "SS_solver_outputs_baseline_small_open.pkl"
 
 
-# Note that chaning the order in which these tests are run will cause
+# Note that changing the order in which these tests are run will cause
 # failures for the baseline spending=True tests which depend on the
 # output of the baseline run just prior
 @pytest.mark.parametrize(
@@ -336,6 +402,12 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     Yguess = 0.6376591201150815
     p_m_guess = np.ones(p.M)
 
+    # for new Ig_baseline arg
+    if p.baseline_spending:
+        Ig_baseline = 0.0  # tests only have zero infrastructure
+    else:
+        Ig_baseline = None
+
     test_dict = SS.SS_solver(
         b_guess,
         n_guess,
@@ -346,6 +418,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         Yguess,
         BQguess,
         TRguess,
+        Ig_baseline,
         factorguess,
         p,
         dask_client,
@@ -358,12 +431,14 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        print("diff = ", np.abs(test_dict[k] - v).max())
+        print("diff = ", np.abs(test_dict[VAR_NAME_MAPPING[k]] - v).max())
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        print("diff = ", np.abs(test_dict[k] - v).max())
-        assert np.allclose(test_dict[k], v, atol=1e-04, equal_nan=True)
+        print("diff = ", np.abs(test_dict[VAR_NAME_MAPPING[k]] - v).max())
+        assert np.allclose(
+            test_dict[VAR_NAME_MAPPING[k]], v, atol=1e-04, equal_nan=True
+        )
 
 
 param_updates5 = {"zeta_K": [1.0], "budget_balance": True, "alpha_G": [0.0]}
@@ -406,6 +481,10 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
     else:
         rguess = 0.06483431412921253
     r_p_guess = rguess
+    if p.baseline_spending:
+        Ig_baseline = 0.0
+    else:
+        Ig_baseline = None
     wguess = firm.get_w_from_r(rguess, p, "SS")
     TRguess = 0.05738932081035772
     factorguess = 139355.1547340256
@@ -423,6 +502,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         Yguess,
         BQguess,
         TRguess,
+        Ig_baseline,
         factorguess,
         p,
         dask_client,
@@ -435,7 +515,9 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
 
     for k, v in expected_dict.items():
         print("Testing ", k)
-        assert np.allclose(test_dict[k], v, atol=1e-05, equal_nan=True)
+        assert np.allclose(
+            test_dict[VAR_NAME_MAPPING[k]], v, atol=1e-05, equal_nan=True
+        )
 
 
 param_updates1 = {"zeta_K": [1.0]}
@@ -500,8 +582,8 @@ filename8 = "inner_loop_outputs_reform_MneI.pkl"
     ],
 )
 def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
-    # Test SS.inner_loop function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
+    # Test SS.inner_loop function. Provide inputs to function and ensure that
+    # output returned matches what it has been before.
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
@@ -518,9 +600,37 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+        outer_loop_vars = (
+            bssmat,
+            nssmat,
+            r_p,
+            r,
+            w,
+            p_m,
+            Y,
+            BQ,
+            TR,
+            None,
+            factor,
+        )
     else:
-        outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+        if p.baseline_spending:
+            Ig_baseline = 0.0
+        else:
+            Ig_baseline = None
+        outer_loop_vars = (
+            bssmat,
+            nssmat,
+            r_p,
+            r,
+            w,
+            p_m,
+            Y,
+            BQ,
+            TR,
+            Ig_baseline,
+            factor,
+        )
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
 
     try:
@@ -532,6 +642,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             new_r_gov,
             new_r_p,
             new_w,
+            new_RM,
             new_TR,
             Y,
             new_factor,
@@ -557,6 +668,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             _,
             _,
             _,
+            _,
         ) = test_tuple
         expected_tuple = (
             euler_errors,
@@ -570,6 +682,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             K_vec,
             L_vec,
             Y_vec,
+            new_RM,
             new_TR,
             Y,
             new_factor,
@@ -620,7 +733,23 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     BQ = np.ones(p.J) * 0.00019646295986015257
     p_m = np.array([1.0])
     r_p = 0.04260341179572245
-    outer_loop_vars = (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, factor)
+    if p.baseline_spending:
+        Ig_baseline = 0.0
+    else:
+        Ig_baseline = None
+    outer_loop_vars = (
+        bssmat,
+        nssmat,
+        r_p,
+        r,
+        w,
+        p_m,
+        Y,
+        BQ,
+        TR,
+        Ig_baseline,
+        factor,
+    )
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
@@ -981,8 +1110,8 @@ expected2 = np.array(
 def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    guesses, r, w, bq, tr, _, factor, j = input_tuple
-    args = (r, w, 1.0, bq, tr, ubi_j, factor, j, p)
+    guesses, r, w, bq, rm, tr, _, factor, j = input_tuple
+    args = (r, w, 1.0, bq, rm, tr, ubi_j, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
     print(repr(test_list))
 
@@ -997,7 +1126,7 @@ param_updates2 = {
     "initial_guess_TR_SS": 0.06,
 }
 filename2 = "run_SS_baseline_use_zeta.pkl"
-param_updates3 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
+param_updates3 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.04}
 filename3 = "run_SS_baseline_small_open.pkl"
 param_updates4 = {
     "zeta_K": [1.0],
@@ -1018,7 +1147,7 @@ param_updates6 = {
     "initial_guess_TR_SS": 0.06,
 }
 filename6 = "run_SS_reform_use_zeta.pkl"
-param_updates7 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.10}
+param_updates7 = {"zeta_K": [1.0], "initial_guess_r_SS": 0.04}
 filename7 = "run_SS_reform_small_open.pkl"
 param_updates8 = {
     "zeta_K": [1.0],
@@ -1131,8 +1260,8 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
 )
 @pytest.mark.local
 def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
-    # Test SS.run_SS function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
+    # Test SS.run_SS function. Provide inputs to function and ensure that
+    # output returned matches what it has been before.
     SS.ENFORCE_SOLUTION_CHECKS = True
     # if running reform, then need to solve baseline first to get values
     baseline_dir = os.path.join(tmpdir, "OUTPUT_BASELINE")
@@ -1160,10 +1289,11 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
+
     try:
         expected_dict["r_p_ss"] = expected_dict.pop("r_hh_ss")
     except KeyError:
         pass
     for k, v in expected_dict.items():
         print("Checking item = ", k)
-        assert np.allclose(test_dict[k], v, atol=5e-04)
+        assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)

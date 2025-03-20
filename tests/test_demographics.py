@@ -52,6 +52,8 @@ def test_get_pop_objs_read_UN_data():
         GraphDiag=False,
     )
 
+    assert isinstance(pop_dict, dict)
+
 
 def test_get_pop_objs():
     """
@@ -260,7 +262,7 @@ def test_infant_mort():
     mort_rates, infmort_rate = demographics.get_mort(100, 0, 99, graph=False)
     # check that infant mortality equals rate hardcoded into
     # demographics.py
-    assert infmort_rate == 0.00491958
+    assert infmort_rate == 0.00496921
 
 
 def test_pop_rebin():
@@ -286,6 +288,8 @@ def test_get_imm_rates():
         mort_rates=mort_rates,
         infmort_rates=infmort_rates,
         pop_dist=pop_dist,
+        start_year=2024,
+        end_year=2025,
         graph=True,
     )
     assert imm_rates.shape[1] == S

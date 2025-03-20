@@ -65,13 +65,13 @@ def tax_rate_table(
             len_rates = len(etr_rates[start_index : start_index + num_years])
             table = {
                 "Year": years[:len_rates],
-                VAR_LABELS["ETR"]: etr_rates[
+                VAR_LABELS["etr"]: etr_rates[
                     start_index : start_index + num_years
                 ],
-                VAR_LABELS["MTRx"]: mtrx_rates[
+                VAR_LABELS["mtrx"]: mtrx_rates[
                     start_index : start_index + num_years
                 ],
-                VAR_LABELS["MTRy"]: mtry_rates[
+                VAR_LABELS["mtry"]: mtry_rates[
                     start_index : start_index + num_years
                 ],
             }
@@ -109,41 +109,41 @@ def tax_rate_table(
         table = {
             "Year": years[:len_rates],
             "Baseline "
-            + VAR_LABELS["ETR"]: base_etr_rates[
+            + VAR_LABELS["etr"]: base_etr_rates[
                 start_index : start_index + num_years
             ],
             "Reform "
-            + VAR_LABELS["ETR"]: reform_etr_rates[
+            + VAR_LABELS["etr"]: reform_etr_rates[
                 start_index : start_index + num_years
             ],
             "Differences in "
-            + VAR_LABELS["ETR"]: reform_etr_rates[
+            + VAR_LABELS["etr"]: reform_etr_rates[
                 start_index : start_index + num_years
             ]
             - base_etr_rates[start_index : start_index + num_years],
             "Baseline "
-            + VAR_LABELS["MTRx"]: base_mtrx_rates[
+            + VAR_LABELS["mtrx"]: base_mtrx_rates[
                 start_index : start_index + num_years
             ],
             "Reform "
-            + VAR_LABELS["MTRx"]: reform_mtrx_rates[
+            + VAR_LABELS["mtrx"]: reform_mtrx_rates[
                 start_index : start_index + num_years
             ],
             "Differences in "
-            + VAR_LABELS["MTRx"]: reform_mtrx_rates[
+            + VAR_LABELS["mtrx"]: reform_mtrx_rates[
                 start_index : start_index + num_years
             ]
             - base_mtrx_rates[start_index : start_index + num_years],
             "Baseline "
-            + VAR_LABELS["MTRy"]: base_mtry_rates[
+            + VAR_LABELS["mtry"]: base_mtry_rates[
                 start_index : start_index + num_years
             ],
             "Reform "
-            + VAR_LABELS["MTRy"]: reform_mtry_rates[
+            + VAR_LABELS["mtry"]: reform_mtry_rates[
                 start_index : start_index + num_years
             ],
             "Differences in "
-            + VAR_LABELS["MTRy"]: reform_mtry_rates[
+            + VAR_LABELS["mtry"]: reform_mtry_rates[
                 start_index : start_index + num_years
             ]
             - base_mtry_rates[start_index : start_index + num_years],
@@ -153,11 +153,11 @@ def tax_rate_table(
         table = {
             "Year": years[:len_rates],
             "Baseline "
-            + VAR_LABELS[rate_type]: base_rates[
+            + VAR_LABELS[rate_type.lower()]: base_rates[
                 start_index : start_index + num_years
             ],
             "Reform "
-            + VAR_LABELS[rate_type]: reform_rates[
+            + VAR_LABELS[rate_type.lower()]: reform_rates[
                 start_index : start_index + num_years
             ],
             "Difference": reform_rates[start_index : start_index + num_years]
@@ -194,7 +194,9 @@ def param_table(p, table_format="tex", path=None):
         value = getattr(p, k)
         if hasattr(value, "__len__") & ~isinstance(value, str):
             if value.ndim > 1:
-                report = "See elsewhere"
+                report = (
+                    "Too large to report here, see default parameters JSON"
+                )
             else:
                 report = (
                     "["

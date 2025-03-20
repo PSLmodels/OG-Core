@@ -3,6 +3,14 @@ on:
   push:
     branches:
       - master
+    paths:
+      - './docs/**.png'
+      - './docs/book/content/theory/images/**.png'
+      - './docs/book/**.yml'
+      - './docs/book/**.bib'
+      - '**.md'
+      - './docs/book/content/api/**.rst'
+      - './ogcore/**.py'
 jobs:
   build-and-deploy:
     if: github.repository == 'PSLmodels/OG-Core'
@@ -14,12 +22,12 @@ jobs:
           persist-credentials: false
 
       - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
-          activate-environment: ogusa-dev
+          miniconda-version: "latest"
+          activate-environment: ogcore-dev
           environment-file: environment.yml
-          python-version: "3.10"
+          python-version: "3.12"
           auto-activate-base: false
 
       - name: Build # Build Jupyter Book
@@ -27,8 +35,7 @@ jobs:
         run: |
           pip install -e .
           python -m ipykernel install --user --name=ogcore-dev
-          cd docs
-          jb build ./book
+          make build-docs
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4

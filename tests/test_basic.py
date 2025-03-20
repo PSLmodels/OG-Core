@@ -101,7 +101,7 @@ def test_constant_demographics_TPI(tmpdir, dask_client):
     # Run TPI
     tpi_output = TPI.run_TPI(spec, client=dask_client)
     assert np.allclose(
-        tpi_output["bmat_splus1"][: spec.T, :, :], ss_outputs["bssmat_splus1"]
+        tpi_output["b_sp1"][: spec.T, :, :], ss_outputs["b_sp1"]
     )
 
 
@@ -157,5 +157,5 @@ def test_constant_demographics_TPI_small_open(tmpdir, dask_client):
     # Run TPI
     tpi_output = TPI.run_TPI(spec, client=dask_client)
     assert np.allclose(
-        tpi_output["bmat_splus1"][: spec.T, :, :], ss_outputs["bssmat_splus1"]
+        tpi_output["b_sp1"][: spec.T, :, :], ss_outputs["b_sp1"]
     )

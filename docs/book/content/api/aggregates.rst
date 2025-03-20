@@ -9,5 +9,5 @@ ogcore.aggregates
 ------------------------------------------
 
 .. automodule:: ogcore.aggregates
-  :members: get_L, get_I, get_B, get_BQ, get_C, revenue, get_r_p,
+  :members: get_L, get_I, get_B, get_BQ, get_RM, get_C, revenue, get_r_p,
     resource_constraint, get_K_splits, get_ptilde

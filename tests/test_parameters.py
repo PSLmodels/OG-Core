@@ -160,7 +160,7 @@ def test_implement_bad_reform2():
     assert len(specs.errors) > 0
     assert specs.errors["tax_func_type"][0] == (
         'tax_func_type "not_a_functional_form" must be in list of '
-        + "choices DEP, DEP_totalinc, GS, linear, mono, mono2D."
+        + "choices DEP, DEP_totalinc, GS, HSV, linear, mono, mono2D."
     )
 
 

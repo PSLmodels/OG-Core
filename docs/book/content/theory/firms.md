@@ -16,9 +16,11 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
       &\quad\quad\quad\quad\quad(1-\gamma_m-\gamma_{g,m})^\frac{1}{\varepsilon_m}(e^{g_y t}L_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\biggr]^\frac{\varepsilon_m}{\varepsilon_m-1} \quad\forall m,t
     \end{split}
   ```
+
   where $Z_{m,t}$ is an exogenous scale parameter (total factor productivity) that can be time dependent, $\gamma_m$ represents private capital's share of income, $\gamma_{g,m}$ is public capital's share of income, and $\varepsilon_m$ is the constant elasticity of substitution among the two types of capital and labor. We have included constant productivity growth rate $g_y$ as the rate of labor augmenting technological progress.
 
   A nice feature of the CES production function is that the Cobb-Douglas production function is a nested case for $\varepsilon_m=1$.[^Kg0_case]
+
   ```{math}
   :label: EqFirmsCDprodfun
     Y_{m,t} = Z_{m,t} (K_{m,t})^{\gamma_m} (K_{g,m,t})^{\gamma_{g,m}}(e^{g_y t}L_{m,t})^{1-\gamma_m-\gamma_{g,m}} \quad\forall m,t \quad\text{for}\quad \varepsilon_m=1
@@ -125,6 +127,8 @@ Note that when $K_{g,t}$ is greater than zero, the public capital factor of prod
 
 (SecFirmsfootnotes)=
 ## Footnotes
+
+  This section contains the footnotes for this chapter.
 
   [^Kg0_case]: It is important to note a special case of the Cobb-Douglas ($\varepsilon_m=1$) production function that we have to manually restrict. The inputs of production of private capital $K_{m,t}$ and labor $L_{m,t}$ are endogenous and have characteristics of the model that naturally bound them away from zero. But public capital $K_{g,m,t}$, although it is a function of endogenous variables in {eq}`EqUnbalGBC_Igt` and {eq}`EqUnbalGBC_Igmt`, can be exogenously set to zero as a policy parameter choice by setting $\alpha_{I,t}=0$ or $\alpha_{I,m,t}=0$. In the Cobb-Douglas case of the production function $\varepsilon_m=1$ {eq}`EqFirmsCDprodfun`, $K_{g,m,t}=0$ would zero out production and break the model. In the case when $\varepsilon_m=1$ and $K_{g,m,t}=0$, we set $\gamma_{g,m}=0$, thereby restricting the production function to only depend on private capital $K_{m,t}$ and labor $L_{m,t}$. This necessary restriction limits us from performing experiments in the model of the effect of changing $K_{g,m,t}=0$ to $K_{g,m,t}>0$ or vice versa in the $\varepsilon_m=1$ case.
 

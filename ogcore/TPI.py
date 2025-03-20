@@ -1,3 +1,14 @@
+"""
+Time path iteration (TPI) module for OG-Core.
+
+This module contains the following functions:
+    get_initial_SS_values()
+    firstdoughnutring()
+    twist_doughnut()
+    inner_loop()
+    run_TPI()
+"""
+
 # imports
 import numpy as np
 import pickle
@@ -9,6 +20,7 @@ from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 import os
 import warnings
+import logging
 
 
 if not SHOW_RUNTIME:
@@ -23,6 +35,23 @@ MINIMIZER_TOL = 1e-13
 Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
+
+"""
+Set flag for verbosity
+"""
+VERBOSE = True
+# Configure logging
+log_level = logging.INFO if VERBOSE else logging.WARNING
+logging.basicConfig(
+    level=log_level, format="%(message)s"  # Only show the message itself
+)
+
+"""
+A global future for the Parameters object for client workers.
+This is scattered once and place at module scope, then used
+by the client in the inner loop.
+"""
+scattered_p = None
 
 
 def get_initial_SS_values(p):
@@ -42,22 +71,26 @@ def get_initial_SS_values(p):
                 solution results
             * theta (Numpy array): steady-state retirement replacement
                 rates, length J
-            * baseline_values (tuple): (TRbaseline, Gbaseline,
-                D0_baseline), lump sum transfer and government spending
+            * baseline_values (tuple): (Ybaseline, TRbaseline, Gbaseline,
+                D0_baseline), GDP, lump sum transfer, and government spending
                 amounts from the baseline model run
 
     """
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
-    factor = ss_baseline_vars["factor_ss"]
-    B0 = aggr.get_B(ss_baseline_vars["bssmat_splus1"], p, "SS", True)
-    initial_b = ss_baseline_vars["bssmat_splus1"] * (
-        ss_baseline_vars["Bss"] / B0
-    )
-    initial_n = ss_baseline_vars["nssmat"]
+    factor = ss_baseline_vars["factor"]
+    B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
+    initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
+    initial_n = ss_baseline_vars["n"]
+
+    Ybaseline = None
     TRbaseline = None
     Gbaseline = None
     Ig_baseline = None
+    if not p.baseline:
+        baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
+        tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+        Ybaseline = tpi_baseline_vars["Y"]
     if p.baseline_spending:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
@@ -94,11 +127,13 @@ def get_initial_SS_values(p):
         D0_baseline = tpi_baseline_vars["D"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
     else:
+        RM0_baseline = None
         D0_baseline = None
         Kg0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b, initial_n)
     baseline_values = (
+        Ybaseline,
         TRbaseline,
         Gbaseline,
         Ig_baseline,
@@ -110,7 +145,7 @@ def get_initial_SS_values(p):
 
 
 def firstdoughnutring(
-    guesses, r, w, p_tilde, bq, tr, theta, factor, ubi, j, initial_b, p
+    guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
 ):
     """
     Solves the first entries of the upper triangle of the twist doughnut. This
@@ -123,6 +158,7 @@ def firstdoughnutring(
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
         bq (scalar): bequest amounts by age
+        rm (scalar): remittance amounts by age
         tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
@@ -150,6 +186,7 @@ def firstdoughnutring(
         np.array([b_splus1]),
         np.array([n]),
         np.array([bq]),
+        np.array([rm]),
         factor,
         np.array([tr]),
         np.array([ubi]),
@@ -171,6 +208,7 @@ def firstdoughnutring(
         b_splus1,
         np.array([n]),
         np.array([bq]),
+        np.array([rm]),
         factor,
         np.array([tr]),
         np.array([ubi]),
@@ -198,6 +236,7 @@ def twist_doughnut(
     w,
     p_tilde,
     bq,
+    rm,
     tr,
     theta,
     factor,
@@ -222,6 +261,7 @@ def twist_doughnut(
         w (Numpy array): real wage rate
         p_tilde (Numpy array): composite good price
         bq (Numpy array): bequest amounts by age, length s
+        rm (Numpy array): remittance amounts by age, length s
         tr (Numpy array): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
@@ -251,7 +291,7 @@ def twist_doughnut(
     if length == p.S:
         b_s = np.array([0] + list(b_guess[:-1]))
     else:
-        b_s = np.array([(initial_b[-(s + 3), j])] + list(b_guess[:-1]))
+        b_s = np.array([initial_b[-(s + 3), j]] + list(b_guess[:-1]))
 
     b_splus1 = b_guess
     w_s = w[t : t + length]
@@ -269,6 +309,7 @@ def twist_doughnut(
         b_splus1,
         n_s,
         bq,
+        rm,
         factor,
         tr,
         ubi,
@@ -290,6 +331,7 @@ def twist_doughnut(
         b_splus1,
         n_s,
         bq,
+        rm,
         factor,
         tr,
         ubi,
@@ -327,8 +369,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         guesses (tuple): initial guesses for b and n, (guesses_b,
             guesses_n)
         outer_loop_vars (tuple): values for factor prices and economic
-            aggregates used in household problem (r_p, r, w, p+m, BQ, TR,
-            theta)
+            aggregates used in household problem
+            (r_p, r, w, p_m, BQ, RM, TR, theta)
         r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital
         w (Numpy array): real wage rate
@@ -355,7 +397,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
     guesses_b, guesses_n = guesses
-    r_p, r, w, p_m, BQ, TR, theta = outer_loop_vars
+    r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
 
     # compute composite good price
     p_i = (
@@ -367,6 +409,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     bq = household.get_bq(BQ, None, p, "TPI")
     # compute tr
     tr = household.get_tr(TR, None, p, "TPI")
+    # compute rm
+    rm = household.get_rm(RM, None, p, "TPI")
 
     # initialize arrays
     b_mat = np.zeros((p.T + p.S, p.S))
@@ -381,6 +425,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             w[0],
             p_tilde[0],
             bq[0, -1, j],
+            rm[0, -1, j],
             tr[0, -1, j],
             theta * p.replacement_rate_adjust[0],
             factor,
@@ -400,6 +445,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         n_guesses_to_use = np.diag(guesses_n[: p.S, :], p.S - (s + 2))
         theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S]
         bq_to_use = np.diag(bq[: p.S, :, j], p.S - (s + 2))
+        rm_to_use = np.diag(rm[: p.S, :, j], p.S - (s + 2))
         tr_to_use = np.diag(tr[: p.S, :, j], p.S - (s + 2))
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
@@ -434,6 +480,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 w,
                 p_tilde,
                 bq_to_use,
+                rm_to_use,
                 tr_to_use,
                 theta_to_use,
                 factor,
@@ -461,6 +508,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         n_guesses_to_use = np.diag(guesses_n[t : t + p.S, :])
         theta_to_use = theta[j] * p.replacement_rate_adjust[t : t + p.S]
         bq_to_use = np.diag(bq[t : t + p.S, :, j])
+        rm_to_use = np.diag(rm[t : t + p.S, :, j])
         tr_to_use = np.diag(tr[t : t + p.S, :, j])
         ubi_to_use = np.diag(ubi[t : t + p.S, :, j])
 
@@ -487,6 +535,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 w,
                 p_tilde,
                 bq_to_use,
+                rm_to_use,
                 tr_to_use,
                 theta_to_use,
                 factor,
@@ -529,10 +578,17 @@ def run_TPI(p, client=None):
             results
 
     """
+    global scattered_p
+    if client:
+        scattered_p = client.scatter(p, broadcast=True)
+    else:
+        scattered_p = p
+
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
     (
+        Ybaseline,
         TRbaseline,
         Gbaseline,
         Ig_baseline,
@@ -544,62 +600,42 @@ def run_TPI(p, client=None):
     ubi = p.ubi_nom_array / factor
     UBI = aggr.get_L(ubi[: p.T], p, "TPI")
 
-    print(
-        "Government spending breakpoints are tG1: ", p.tG1, "; and tG2:", p.tG2
+    logging.info(
+        f"Government spending breakpoints are tG1: {p.tG1}; and tG2: {p.tG2}"
     )
 
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
-    guesses_b = utils.get_initial_path(
-        initial_b, ss_vars["bssmat_splus1"], p, "ratio"
-    )
-    guesses_n = utils.get_initial_path(
-        initial_n, ss_vars["nssmat"], p, "ratio"
-    )
+    guesses_b = utils.get_initial_path(initial_b, ss_vars["b_sp1"], p, "ratio")
+    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "ratio")
     b_mat = guesses_b
     n_mat = guesses_n
     ind = np.arange(p.S)
 
     # Get path for aggregate savings and labor supply
-    L_init = np.ones((p.T + p.S,)) * ss_vars["Lss"]
-    B_init = np.ones((p.T + p.S,)) * ss_vars["Bss"]
+    L_init = np.ones((p.T + p.S,)) * ss_vars["L"]
+    B_init = np.ones((p.T + p.S,)) * ss_vars["B"]
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
     B_init[1 : p.T] = aggr.get_B(b_mat[: p.T], p, "TPI", False)[: p.T - 1]
     B_init[0] = B0
-    K_init = B_init * ss_vars["Kss"] / ss_vars["Bss"]
+    K_init = B_init * ss_vars["K"] / ss_vars["B"]
     K = K_init
-    K_d = K_init * ss_vars["K_d_ss"] / ss_vars["Kss"]
-    K_f = K_init * ss_vars["K_f_ss"] / ss_vars["Kss"]
+    K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
+    K_f = K_init * ss_vars["K_f"] / ss_vars["K"]
     L = L_init
     B = B_init
-    K_g = np.ones_like(K) * ss_vars["K_g_ss"]
+    K_g = np.ones_like(K) * ss_vars["K_g"]
     Y = np.zeros_like(K)
     Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
-    Y[p.T :] = ss_vars["Yss"]
-    I_g = np.ones_like(Y) * ss_vars["I_g_ss"]
-    if p.baseline_spending:
-        I_g[: p.T] = Ig_baseline[: p.T]
-    else:
-        I_g = fiscal.get_I_g(Y, p.alpha_I)
-    if p.baseline:
-        K_g0 = p.initial_Kg_ratio * Y[0]
-    else:
-        K_g0 = Kg0_baseline
-    K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
+    Y[p.T :] = ss_vars["Y"]
     # path for industry specific aggregates
-    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_vec_ss"].reshape(
-        1, p.M
-    )
-    L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_vec_ss"].reshape(
-        1, p.M
-    )
-    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_vec_ss"].reshape(
-        1, p.M
-    )
+    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
+    L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(1, p.M)
+    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
     # compute w
-    w = np.ones_like(K) * ss_vars["wss"]
+    w = np.ones_like(K) * ss_vars["w"]
     # compute goods prices
-    p_m = np.ones((p.T + p.S, p.M)) * ss_vars["p_m_ss"].reshape(1, p.M)
+    p_m = np.ones((p.T + p.S, p.M)) * ss_vars["p_m"].reshape(1, p.M)
     p_m[: p.T, :] = firm.get_pm(
         w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI"
     )
@@ -632,40 +668,57 @@ def run_TPI(p, client=None):
     r[: p.T] = np.squeeze(
         firm.get_r(Y[: p.T], K[: p.T], p_m[: p.T, :], p, "TPI")
     )
-    r[p.T :] = ss_vars["rss"]
+    r[p.T :] = ss_vars["r"]
     # For case where economy is small open econ
     r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
 
     # initial guesses at fiscal vars
     if p.budget_balance:
-        if np.abs(ss_vars["TR_ss"]) < 1e-13:
+        if np.abs(ss_vars["TR"]) < 1e-13:
             TR_ss2 = 0.0  # sometimes SS is very small but not zero,
             # even if taxes are zero, this get's rid of the
             # approximation error, which affects the pct changes below
         else:
-            TR_ss2 = ss_vars["TR_ss"]
+            TR_ss2 = ss_vars["TR"]
         TR = np.ones(p.T + p.S) * TR_ss2
         total_tax_revenue = TR - ss_vars["agg_pension_outlays"]
         G = np.zeros(p.T + p.S)
         D = np.zeros(p.T + p.S)
         D_d = np.zeros(p.T + p.S)
         D_f = np.zeros(p.T + p.S)
+        I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
     else:
         if p.baseline_spending:
-            TR = TRbaseline
-            G = Gbaseline
-            G[p.T :] = ss_vars["Gss"]
+            # Will set to TRbaseline here, but will be updated in TPI loop
+            # with call to fiscal.get_TR
+            TR = np.concatenate(
+                (TRbaseline[: p.T], np.ones(p.S) * ss_vars["TR"])
+            )
+            # Will set to Ig_baseline here, but will be updated in TPI loop
+            # with call to fiscal.get_I_g
+            I_g = np.concatenate(
+                (Ig_baseline[: p.T], np.ones(p.S) * ss_vars["I_g"])
+            )
+            # Will set to Gbaseline here, but will be updated in TPI loop
+            # with call to fiscal.D_G_path, which also does closure rule
+            G = np.concatenate((Gbaseline[: p.T], np.ones(p.S) * ss_vars["G"]))
         else:
             TR = p.alpha_T * Y
-            G = np.ones(p.T + p.S) * ss_vars["Gss"]
-        D = np.ones(p.T + p.S) * ss_vars["Dss"]
-        D_d = D * ss_vars["D_d_ss"] / ss_vars["Dss"]
-        D_f = D * ss_vars["D_f_ss"] / ss_vars["Dss"]
+            G = np.ones(p.T + p.S) * ss_vars["G"]
+            I_g = np.ones(p.T + p.S) * ss_vars["I_g"]
+        D = np.ones(p.T + p.S) * ss_vars["D"]
+        D_d = D * ss_vars["D_d"] / ss_vars["D"]
+        D_f = D * ss_vars["D_f"] / ss_vars["D"]
+    if p.baseline:
+        K_g0 = p.initial_Kg_ratio * Y[0]
+    else:
+        K_g0 = Kg0_baseline
+    K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
     total_tax_revenue = np.ones(p.T + p.S) * ss_vars["total_tax_revenue"]
 
     # Compute other interest rates
     r_gov = fiscal.get_r_gov(r, p, "TPI")
-    r_p = np.ones_like(r) * ss_vars["r_p_ss"]
+    r_p = np.ones_like(r) * ss_vars["r_p"]
     MPKg = np.zeros((p.T, p.M))
     for m in range(p.M):
         MPKg[:, m] = np.squeeze(
@@ -691,17 +744,26 @@ def run_TPI(p, client=None):
         BQ = np.zeros((p.T + p.S, p.J))
         for j in range(p.J):
             BQ[:, j] = (
-                list(np.linspace(BQ0[j], ss_vars["BQss"][j], p.T))
-                + [ss_vars["BQss"][j]] * p.S
+                list(np.linspace(BQ0[j], ss_vars["BQ"][j], p.T))
+                + [ss_vars["BQ"][j]] * p.S
             )
         BQ = np.array(BQ)
     else:
-        BQ = (
-            list(np.linspace(BQ0, ss_vars["BQss"], p.T))
-            + [ss_vars["BQss"]] * p.S
-        )
+        BQ = list(np.linspace(BQ0, ss_vars["BQ"], p.T)) + [ss_vars["BQ"]] * p.S
         BQ = np.array(BQ)
 
+    # Initialize aggregate remittances
+    if p.baseline:
+        RM = aggr.get_RM(Y, p, "TPI")
+    else:
+        # This is the reform case and is based off of Ybaseline, but allows for
+        # remittance parameters to change in a reform and update the RM series
+        Ybaseline_ext = np.concatenate(
+            [Ybaseline, np.ones(p.S) * Ybaseline[-1]]
+        )
+        RM = aggr.get_RM(Ybaseline_ext, p, "TPI")
+
+    # Start transition path iteration (TPI)
     TPIiter = 0
     TPIdist = 10
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
@@ -709,7 +771,7 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-        outer_loop_vars = (r_p, r, w, p_m, BQ, TR, theta)
+        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
         # compute composite good price
         p_i = (
             np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
@@ -719,10 +781,6 @@ def run_TPI(p, client=None):
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
-        if client:
-            scattered_p = client.scatter(p, broadcast=True)
-        else:
-            scattered_p = p
         for j in range(p.J):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
             lazy_values.append(
@@ -740,10 +798,10 @@ def run_TPI(p, client=None):
             futures = client.compute(lazy_values, num_workers=p.num_workers)
             results = client.gather(futures)
         else:
-            results = results = compute(
+            results = compute(
                 *lazy_values,
                 scheduler=dask.multiprocessing.get,
-                num_workers=p.num_workers
+                num_workers=p.num_workers,
             )
 
         for j, result in enumerate(results):
@@ -768,6 +826,7 @@ def run_TPI(p, client=None):
         ]
 
         bqmat = household.get_bq(BQ, None, p, "TPI")
+        rmmat = household.get_rm(RM, None, p, "TPI")
         trmat = household.get_tr(TR, None, p, "TPI")
         tax_mat = tax.net_taxes(
             r_p[: p.T],
@@ -798,6 +857,7 @@ def run_TPI(p, client=None):
             bmat_splus1,
             n_mat[: p.T, :, :],
             bqmat[: p.T, :, :],
+            rmmat[: p.T, :, :],
             tax_mat,
             p.e,
             p,
@@ -933,7 +993,7 @@ def run_TPI(p, client=None):
             B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
         )
         if not p.baseline_spending:
-            I_g = fiscal.get_I_g(Y, p.alpha_I)
+            I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
         if p.baseline:
             K_g0 = p.initial_Kg_ratio * Y[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
@@ -1028,6 +1088,8 @@ def run_TPI(p, client=None):
             p,
             "TPI",
         )
+        RM = aggr.get_RM(Y[: p.T], p, "TPI")
+        RM = np.concatenate([RM, np.ones(p.S) * RM[-1]])
 
         # update vars for next iteration
         w[: p.T] = utils.convex_combo(wnew[: p.T], w[: p.T], p.nu)
@@ -1043,35 +1105,29 @@ def run_TPI(p, client=None):
             TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
-        print(
-            "w diff: ",
-            (wnew[: p.T] - w[: p.T]).max(),
-            (wnew[: p.T] - w[: p.T]).min(),
+        logging.info(
+            f"w diff: {(wnew[: p.T] - w[: p.T]).max()}, "
+            + f"{(wnew[: p.T] - w[: p.T]).min()}"
         )
-        print(
-            "r diff: ",
-            (rnew[: p.T] - r[: p.T]).max(),
-            (rnew[: p.T] - r[: p.T]).min(),
+        logging.info(
+            f"r diff: {(rnew[: p.T] - r[: p.T]).max()}, "
+            + f"{(rnew[: p.T] - r[: p.T]).min()}"
         )
-        print(
-            "r_p diff: ",
-            (r_p_new[: p.T] - r_p[: p.T]).max(),
-            (r_p_new[: p.T] - r_p[: p.T]).min(),
+        logging.info(
+            f"r_p diff: {(r_p_new[: p.T] - r_p[: p.T]).max()}, "
+            + f"{(r_p_new[: p.T] - r_p[: p.T]).min()}"
         )
-        print(
-            "p_m diff: ",
-            (new_p_m[: p.T, :] - p_m[: p.T, :]).max(),
-            (new_p_m[: p.T, :] - p_m[: p.T, :]).min(),
+        logging.info(
+            f"p_m diff: {(new_p_m[: p.T, :] - p_m[: p.T, :]).max()}, "
+            + f"{(new_p_m[: p.T, :] - p_m[: p.T, :]).min()}"
         )
-        print(
-            "BQ diff: ",
-            (BQnew[: p.T] - BQ[: p.T]).max(),
-            (BQnew[: p.T] - BQ[: p.T]).min(),
+        logging.info(
+            f"BQ diff: {(BQnew[: p.T] - BQ[: p.T]).max()}, "
+            + f"{(BQnew[: p.T] - BQ[: p.T]).min()}"
         )
-        print(
-            "TR diff: ",
-            (TR_new[: p.T] - TR[: p.T]).max(),
-            (TR_new[: p.T] - TR[: p.T]).min(),
+        logging.info(
+            f"TR diff: {(TR_new[: p.T] - TR[: p.T]).max()}, "
+            + f"{(TR_new[: p.T] - TR[: p.T]).min()}"
         )
 
         TPIdist = np.array(
@@ -1094,8 +1150,8 @@ def run_TPI(p, client=None):
         #         nu /= 2
         #         print 'New Value of nu:', nu
         TPIiter += 1
-        print("Iteration:", TPIiter)
-        print("\tDistance:", TPIdist)
+        logging.info(f"Iteration: {TPIiter}")
+        logging.info(f"\tDistance: {TPIdist}")
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
@@ -1211,17 +1267,25 @@ def run_TPI(p, client=None):
     I_g_vec[:, -1] = I_g[: p.T]
     net_capital_outflows_vec = np.zeros((p.T, p.M))
     net_capital_outflows_vec[:, -1] = net_capital_outflows[: p.T]
+    RM_vec = np.zeros((p.T, p.M))
+    RM_vec[:, -1] = RM[: p.T]
     RC_error = aggr.resource_constraint(
-        Y_vec, C_m_vec, G_vec, I_d_vec, I_g_vec, net_capital_outflows_vec
+        Y_vec,
+        C_m_vec,
+        G_vec,
+        I_d_vec,
+        I_g_vec,
+        net_capital_outflows_vec,
+        RM_vec,
     )
     # Compute total investment (not just domestic)
     I_total = aggr.get_I(None, K[1 : p.T + 1], K[: p.T], p, "total_tpi")
 
     # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))
-    print("Max absolute value resource constraint error:", rce_max)
+    logging.info(f"Max absolute value resource constraint error: {rce_max}")
 
-    print("Checking time path for violations of constraints.")
+    logging.info("Checking time path for violations of constraints.")
     for t in range(p.T):
         household.constraint_checker_TPI(
             b_mat[t], n_mat[t], c_mat[t], t, p.ltilde
@@ -1230,8 +1294,10 @@ def run_TPI(p, client=None):
     eul_savings = euler_errors[:, : p.S, :]
     eul_laborleisure = euler_errors[:, p.S :, :]
 
-    print("Max Euler error, savings: ", np.abs(eul_savings).max())
-    print("Max Euler error labor supply: ", np.abs(eul_laborleisure).max())
+    logging.info(f"Max Euler error, savings: {np.abs(eul_savings).max()}")
+    logging.info(
+        f"Max Euler error labor supply: {np.abs(eul_laborleisure).max()}"
+    )
 
     """
     ------------------------------------------------------------------------
@@ -1248,53 +1314,59 @@ def run_TPI(p, client=None):
         "L": L[: p.T, ...],
         "C": C[: p.T, ...],
         "I": I[: p.T, ...],
-        "K_g": K_g[: p.T, ...],
-        "I_g": I_g[: p.T, ...],
-        "Y_vec": Y_vec[: p.T, ...],
-        "K_vec": K_vec[: p.T, ...],
-        "L_vec": L_vec[: p.T, ...],
-        "C_vec": C_vec[: p.T, ...],
         "I_total": I_total[: p.T, ...],
         "I_d": I_d[: p.T, ...],
+        "K_g": K_g[: p.T, ...],
+        "I_g": I_g[: p.T, ...],
         "BQ": BQ[: p.T, ...],
+        "RM": RM[: p.T, ...],
+        "Y_m": Y_vec[: p.T, ...],
+        "K_m": K_vec[: p.T, ...],
+        "L_m": L_vec[: p.T, ...],
+        "C_i": C_vec[: p.T, ...],
+        "TR": TR[: p.T, ...],
+        "agg_pension_outlays": agg_pension_outlays[: p.T, ...],
+        "G": G[: p.T, ...],
+        "UBI": UBI[: p.T, ...],
         "total_tax_revenue": total_tax_revenue[: p.T, ...],
         "business_tax_revenue": business_tax_revenue[: p.T, ...],
         "iit_payroll_tax_revenue": iit_payroll_tax_revenue[: p.T, ...],
         "iit_revenue": iit_revenue[: p.T, ...],
         "payroll_tax_revenue": payroll_tax_revenue[: p.T, ...],
-        "TR": TR[: p.T, ...],
-        "agg_pension_outlays": agg_pension_outlays[: p.T, ...],
         "bequest_tax_revenue": bequest_tax_revenue[: p.T, ...],
         "wealth_tax_revenue": wealth_tax_revenue[: p.T, ...],
         "cons_tax_revenue": cons_tax_revenue[: p.T, ...],
-        "G": G[: p.T, ...],
         "D": D[: p.T, ...],
         "D_f": D_f[: p.T, ...],
         "D_d": D_d[: p.T, ...],
+        "new_borrowing": new_borrowing[: p.T, ...],
+        "debt_service": debt_service[: p.T, ...],
+        "new_borrowing_f": new_borrowing_f[: p.T, ...],
+        "debt_service_f": debt_service_f[: p.T, ...],
         "r": r[: p.T, ...],
         "r_gov": r_gov[: p.T, ...],
         "r_p": r_p[: p.T, ...],
         "w": w[: p.T, ...],
-        "bmat_splus1": bmat_splus1[: p.T, ...],
         "p_m": p_m[: p.T, ...],
+        "p_i": p_i[: p.T, ...],
         "p_tilde": p_tilde[: p.T, ...],
-        "bmat_s": bmat_s[: p.T, ...],
-        "n_mat": n_mat[: p.T, ...],
-        "c_path": c_mat[: p.T, ...],
-        "bq_path": bqmat[: p.T, ...],
-        "tr_path": trmat[: p.T, ...],
-        "y_before_tax_mat": y_before_tax_mat[: p.T, ...],
-        "tax_path": tax_mat[: p.T, ...],
-        "eul_savings": eul_savings[: p.T, ...],
-        "eul_laborleisure": eul_laborleisure[: p.T, ...],
+        "b_sp1": bmat_splus1[: p.T, ...],
+        "b_s": bmat_s[: p.T, ...],
+        "n": n_mat[: p.T, ...],
+        "c": c_mat[: p.T, ...],
+        "c_i": c_i[: p.T, ...],
+        "bq": bqmat[: p.T, ...],
+        "rm": rmmat[: p.T, ...],
+        "tr": trmat[: p.T, ...],
+        "ubi": ubi[: p.T, ...],
+        "before_tax_income": y_before_tax_mat[: p.T, ...],
+        "hh_taxes": tax_mat[: p.T, ...],
+        "etr": etr_path[: p.T, ...],
+        "mtrx": mtrx_path[: p.T, ...],
+        "mtry": mtry_path[: p.T, ...],
+        "euler_savings": eul_savings[: p.T, ...],
+        "euler_labor_leisure": eul_laborleisure[: p.T, ...],
         "resource_constraint_error": RC_error[: p.T, ...],
-        "new_borrowing_f": new_borrowing_f[: p.T, ...],
-        "debt_service_f": debt_service_f[: p.T, ...],
-        "etr_path": etr_path[: p.T, ...],
-        "mtrx_path": mtrx_path[: p.T, ...],
-        "mtry_path": mtry_path[: p.T, ...],
-        "ubi_path": ubi[: p.T, ...],
-        "UBI_path": UBI[: p.T, ...],
     }
 
     tpi_dir = os.path.join(p.output_base, "TPI")
@@ -1304,7 +1376,7 @@ def run_TPI(p, client=None):
         pickle.dump(output, f)
 
     if np.any(G) < 0:
-        print(
+        logging.warning(
             "Government spending is negative along transition path"
             + " to satisfy budget"
         )
@@ -1316,9 +1388,7 @@ def run_TPI(p, client=None):
             "Transition path equlibrium not found" + " (TPIdist)"
         )
 
-    if (
-        np.any(np.absolute(RC_error) >= p.mindist_TPI * 10)
-    ) and ENFORCE_SOLUTION_CHECKS:
+    if (np.any(np.absolute(RC_error) >= p.RC_TPI)) and ENFORCE_SOLUTION_CHECKS:
         raise RuntimeError(
             "Transition path equlibrium not found " + "(RC_error)"
         )

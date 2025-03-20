@@ -58,28 +58,6 @@ def test_convex_combo():
     assert np.allclose(expected, combo)
 
 
-def test_read_file():
-    """
-    Test of utils.read_file() function
-    """
-    path = os.path.join(CUR_PATH, "test_io_data")
-    fname = "SS_fsolve_inputs.pkl"
-    bytes_data = utils.read_file(path, fname)
-
-    assert isinstance(bytes_data, io.TextIOWrapper)
-
-
-def test_read_file_from_egg():
-    """
-    Test of utils.read_file() function, case of reading file from .egg
-    """
-    path = os.path.join(CUR_PATH)
-    fname = "default_parameters.json"
-    bytes_data = utils.read_file(path, fname)
-
-    assert isinstance(bytes_data, io.StringIO)
-
-
 def test_pickle_file_compare():
     """
     Test of utils.pickle_file_compare() function
@@ -812,10 +790,207 @@ test_data = [
     test_data,
     ids=["2D, scalar in", "2D, 1D in", "2D in", "1D out", "3D out"],
 )
-def test_extrapolate_arrays(param_in, dims, expected):
+def test_extrapolate_array(param_in, dims, expected):
     """
-    Test of the utils.extrapolate_arrays function
+    Test of the utils.extrapolate_array function
     """
-    test_value = utils.extrapolate_arrays(param_in, dims=dims)
+    test_value = utils.extrapolate_array(param_in, dims=dims)
 
     assert np.allclose(test_value, expected)
+
+
+T_L = 20
+S_L = 4
+list1 = [[[3]]] * (T_L + 10)
+list2 = [[[3]]] * (T_L - 6)
+list3 = [[[3]] * (S_L + 2)]
+list4 = [[[3]] * (S_L - 2)]
+list5 = np.ones((18, 2, 3))
+test_data = [
+    (list1, (T_L, S_L, 1)),
+    (list2, (T_L, S_L, 1)),
+    (list3, (T_L, S_L, 1)),
+    (list4, (T_L, S_L, 1)),
+    (list5, (T_L, S_L, 3)),
+]
+
+
+@pytest.mark.parametrize(
+    "list_in,dims",
+    test_data,
+    ids=[" > T + S", "<T", ">S", "<S", "Numpy array"],
+)
+def test_extrapolate_nested_list(list_in, dims):
+    """
+    Test of the utils.extrapolate_nested_list function
+    """
+
+    test_value = utils.extrapolate_nested_list(list_in, dims=dims)
+
+    min_S = dims[1]
+    max_S = dims[1]
+    min_p = dims[2]
+    max_p = dims[2]
+    for t in range(len(test_value)):
+        min_S = min(min_S, len(test_value[t]))
+        max_S = max(max_S, len(test_value[t]))
+        for s in range(len(test_value[t])):
+            min_p = min(len(test_value[t][s]), min_p)
+            max_p = max(len(test_value[t][s]), max_p)
+
+    assert len(test_value) == dims[0] + dims[1]
+    assert len(test_value[0]) == dims[1]
+    assert len(test_value[0][0]) == dims[2]
+    assert min_S == dims[1]
+    assert max_S == dims[1]
+    assert min_p == dims[2]
+    assert max_p == dims[2]
+
+
+arr1 = np.array([1.0, 2.0, 2.0, 3.0])
+expected_array1 = np.tile(arr1.reshape(1, 4), (20, 1))
+expected_array2 = expected_array1.copy()
+expected_array2[0, :] = np.array([1.0, 2.0, 3.0, 4.0])
+expected_array3 = expected_array2.copy()
+expected_array3[1, :] = np.array([1.0, 2.0, 3.0, 4.0])
+expected_array3[2, :] = np.array([1.0, 2.0, 2.5, 3.5])
+expected_array3[3, :] = np.array([1.0, 2.0, 2.0, 3.0])
+expected_array4 = expected_array3.copy()
+expected_array4[2, :] = np.array([1.0, 2.0, 2.75, 3.75])
+expected_array4[3:, :] = np.array([1.0, 2.0, 2.5, 3.5])
+expected_array5 = np.tile(
+    np.array([1.0, 2.0, 3.0, 4.0]).reshape(1, 4), (20, 1)
+)
+expected_array6 = expected_array3.copy()
+expected_array6[2, :] = np.array([1.0, 2.0, 2.125, 3.125])
+expected_array6[3:, :] = np.array([1.0, 2.0, 1.25, 2.25])
+
+
+@pytest.mark.parametrize(
+    "start_period,end_period,total_effect,expected",
+    [
+        (0, 0, 1, expected_array1),
+        (1, 1, 1, expected_array2),
+        (1, 3, 1, expected_array3),
+        (1, 3, 0.5, expected_array4),
+        (1, 3, 0.0, expected_array5),
+        (1, 3, 1.75, expected_array6),
+    ],
+    ids=[
+        "Immediate start and phase in",
+        "Start one period in, immediate phase in",
+        "Start one period in, phase in over two periods",
+        "Start one period in, phase in over two periods, partial period effect",
+        "0 effect",
+        "Start one period in, phase in over two periods, partial period effect > 1",
+    ],
+)
+def test_shift_bio_clock(start_period, end_period, total_effect, expected):
+    """
+    Test of utils.shift_bio_clock
+    """
+    # create variation over age
+    param_S = np.array([1, 2, 3, 4])
+    # tile this over time dim
+    param_in = np.tile(param_S.reshape(1, 4), (20, 1))
+    param_shift = utils.shift_bio_clock(
+        param_in,
+        initial_effect_period=start_period,
+        final_effect_period=end_period,
+        total_effect=total_effect,
+        min_age_effect_felt=2,
+    )
+    assert np.allclose(param_shift, expected)
+
+
+p1 = Specifications()
+expected_pct_change1 = {
+    "K": np.ones(p1.T) * 0.2,
+    "Y": np.ones(p1.T) * 0.2,
+    "C": np.ones(p1.T) * 0.2,
+    "L": np.ones(p1.T) * 0.1,
+    "r": np.ones(p1.T) * 0.2,
+    "w": np.ones(p1.T) * 0.08333333333333333,
+}
+p1.g_n = np.ones(p1.T + p1.S) * 0.015
+p1.g_y = 0.03
+p2 = Specifications()
+p2.g_n = np.ones(p2.T + p2.S) * 0.01
+p2.g_y = 0.04
+g_y_discount = np.exp(np.arange(p2.T) * (p2.g_y - p1.g_y))
+g_n_discount = np.cumprod(1 + (p2.g_n[: p2.T])) / np.cumprod(
+    1 + p1.g_n[: p1.T]
+)
+expected_pct_change2 = {
+    "K": (np.ones(p2.T) * (1.2 * g_y_discount * g_n_discount)) - 1,
+    "Y": (np.ones(p2.T) * (1.2 * g_y_discount * g_n_discount)) - 1,
+    "C": (np.ones(p2.T) * (1.2 * g_y_discount * g_n_discount)) - 1,
+    "L": (np.ones(p2.T) * (1.1 * g_n_discount)) - 1,
+    "r": np.ones(p2.T) * 1.2 - 1,
+    "w": (np.ones(p2.T) * (1.08333333333333333 * g_y_discount)) - 1,
+}
+
+
+@pytest.mark.parametrize(
+    "p1,p2,expected",
+    [
+        (p1, p1, expected_pct_change1),
+        (p1, p2, expected_pct_change2),
+    ],
+    ids=[
+        "Same growth rates",
+        "Different growth rates",
+    ],
+)
+def test_pct_change_unstationarized(p1, p2, expected):
+    """
+    A test of the percentage change calculation function
+    """
+    base_tpi = {
+        "K": np.ones(p1.T) * 1000,
+        "Y": np.ones(p1.T) * 2000,
+        "C": np.ones(p1.T) * 1500,
+        "L": np.ones(p1.T) * 100,
+        "r": np.ones(p1.T) * 0.05,
+        "w": np.ones(p1.T) * 1.2,
+    }
+    reform_tpi = {
+        "K": np.ones(p2.T) * 1200,
+        "Y": np.ones(p2.T) * 2400,
+        "C": np.ones(p2.T) * 1800,
+        "L": np.ones(p2.T) * 110,
+        "r": np.ones(p2.T) * 0.06,
+        "w": np.ones(p2.T) * 1.3,
+    }
+    pct_change = utils.pct_change_unstationarized(
+        base_tpi,
+        p1,
+        reform_tpi,
+        p2,
+        output_vars=["K", "Y", "C", "L", "r", "w"],
+    )
+
+    for key in pct_change.keys():
+        print("Checking ", key)
+        assert np.allclose(pct_change[key], expected[key])
+
+
+def test_param_dump_json():
+    """
+    Test of the param_dump_json function
+    """
+    p = Specifications()
+    j_str = utils.param_dump_json(p)
+    assert isinstance(j_str, str)
+
+
+def test_param_dump_json_save(tmpdir):
+    """
+    Test of the param_dump_json function
+    """
+    p = Specifications()
+    utils.param_dump_json(p, path=os.path.join(tmpdir, "test.json"))
+    # read in file
+    with open(os.path.join(tmpdir, "test.json"), "r") as f:
+        j_str = f.read()
+    assert isinstance(j_str, str)

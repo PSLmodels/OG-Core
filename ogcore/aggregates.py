@@ -6,7 +6,7 @@ Functions to compute economic aggregates.
 
 # Packages
 import numpy as np
-from ogcore import tax
+from ogcore import tax, pensions
 
 """
 -------------------------------------------------------------------------------
@@ -231,6 +231,52 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     return BQ
 
 
+def get_RM(Y, p, method):
+    r"""
+    Calculation of aggregate remittances.
+
+    .. math::
+        \hat{RM}_{t} = \begin{cases}
+            \alpha_{RM,1}\hat{Y}_t \quad\text{for}\quad t=1 \\
+            \frac{(1+g_{RM,t})}{e^{g_y}(1+\tilde{g}_{n,t})}\hat{RM}_{t-1}
+            \quad\text{for}\quad 2\leq t\leq T_{G1} \\
+            \rho_{RM}\alpha_{RM,T}\hat{Y}_t
+            + (1-\rho_{RM})\frac{(1+g_{RM,t})}{e^{g_y}(1+\tilde{g}_{n,t})}
+            \hat{RM}_{t-1} \quad\text{for}\quad T_{G1}< t<T_{G2} \\
+            \alpha_{RM,T}\hat{Y}_t \quad\text{for}\quad t\geq T_{G2}
+        \end{cases}
+
+    Args:
+        Y (array_like): GDP steady state or time path
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on SS or TPI
+
+    Returns:
+        RM (array_like): aggregate remittances
+
+    """
+    if method == "SS":
+        RM = p.alpha_RM_T * Y
+    elif method == "TPI":
+        RM = np.zeros_like(Y)
+        RM[0] = p.alpha_RM_1 * Y[0]
+        for t in range(1, p.tG1):
+            RM[t] = ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t]))) * RM[
+                t - 1
+            ]
+        rho_vec = np.linspace(0, 1, p.tG2 - p.tG1)
+        for t in range(p.tG1, p.tG2 - 1):
+            RM[t] = (
+                rho_vec[t - p.tG1] * p.alpha_RM_T * Y[t]
+                + (1 - rho_vec[t - p.tG1])
+                * ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t])))
+                * RM[t - 1]
+            )
+        RM[p.tG2 - 1 :] = p.alpha_RM_T * Y[p.tG2 - 1 :]
+
+    return RM
+
+
 def get_C(c, p, method):
     r"""
     Calculation of aggregate consumption.
@@ -297,12 +343,14 @@ def revenue(
     Calculate aggregate tax revenue.
 
     .. math::
-        R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
+        \begin{split}
+            R_{t} &= \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}
         (T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}
         w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +
-        \tau^{w}_{t}b_{j,s,t}) +
-        \sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -
+        \tau^{w}_{t}b_{j,s,t}) ... \\
+            &\qquad + \sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -
         \tau^{b}_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t}
+        \end{split}
 
     Args:
         r (array_like): the real interest rate
@@ -347,8 +395,8 @@ def revenue(
     inc_pay_tax_liab = tax.income_tax_liab(
         r, w, b, n, factor, 0, None, method, e, etr_params, p
     )
-    pension_benefits = tax.pension_amount(
-        w, n, theta, 0, None, False, method, e, p
+    pension_benefits = pensions.pension_amount(
+        r, w, n, Y, theta, 0, None, False, method, e, factor, p
     )
     bq_tax_liab = tax.bequest_tax_liab(r, b, bq, 0, None, method, p)
     w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)
@@ -469,15 +517,17 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     return np.squeeze(r_p)
 
 
-def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
+def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
     r"""
     Compute the error in the resource constraint.
 
     .. math::
-      \text{rc_error} = \hat{Y}_t - \hat{C}_t -
+      \begin{split}
+        \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
       \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
-      \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} -
-      \text{net capital outflows}_t
+      \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} ... \\
+        &\qquad -\: \hat{\text{net capital outflows}}_t - \hat{RM}_t
+      \end{split}
 
     Args:
         Y (array_like): aggregate output by industry
@@ -486,12 +536,13 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows):
         I_d (array_like): aggregate private investment from domestic households
         I_g (array_like): investment in government capital
         net_capital_flows (array_like): net capital outflows
+        RM (array_like): aggregate remittances
 
     Returns:
         rc_error (array_like): error in the resource constraint
 
     """
-    rc_error = Y - C - I_d - I_g - G - net_capital_flows
+    rc_error = Y - C - I_d - I_g - G - net_capital_flows - RM
 
     return rc_error
 

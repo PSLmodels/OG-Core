@@ -1,54 +1,63 @@
-name: Build and test [Python 3.9, 3.10, 3.11]
-
-on: [push, pull_request]
-  # paths:
-  #   - '*.py'
-  #   - 'environment.yml'
-  #   - 'requirements.txt'
-  #   - '*.pkl'
-  #   - '*.csv'
-  #   - '*.json'
-
+name: Build and test
+on:
+  push:
+    paths:
+      - '**.yml'
+      - '**.toml'
+      - '**.ini'
+      - '**.py'
+      - '**.json'
+      - '**.csv'
+      - '**.pkl'
+      - '**.pbz2'
+  pull_request:
+    paths:
+      - '**.yml'
+      - '**.toml'
+      - '**.ini'
+      - '**.py'
+      - '**.json'
+      - '**.csv'
+      - '**.pkl'
+      - '**.pbz2'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.11", "3.12"]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
-
       - name: Setup Miniconda using Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
+          miniconda-version: "latest"
           auto-update-conda: true
           activate-environment: ogcore-dev
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
-
       - name: Build
         shell: bash -l {0}
         run: |
           pip install -e .
-          pip install pytest-cov
-          pip install pytest-pycodestyle
       - name: Test
         shell: bash -l {0}
         working-directory: ./
         run: |
-          pytest -m 'not local' --cov=./ --cov-report=xml
+          python -m pytest -m "not local" --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        if: matrix.os == 'ubuntu-latest' && contains(github.repository, 'PSLmodels/OG-Core')
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true

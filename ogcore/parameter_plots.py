@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import matplotlib
-from cycler import cycler
+import matplotlib.ticker as mticker
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
@@ -34,7 +34,6 @@ def plot_imm_rates(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -46,7 +45,7 @@ def plot_imm_rates(
     plt.legend(loc="upper left")
     plt.text(
         -5,
-        -0.023,
+        -0.05,
         "Source: " + source,
         fontsize=9,
     )
@@ -64,36 +63,63 @@ def plot_imm_rates(
 
 
 def plot_mort_rates(
-    p, years=[DEFAULT_START_YEAR], include_title=False, path=None
+    p_list,
+    labels=[""],
+    years=[DEFAULT_START_YEAR],
+    survival_rates=False,
+    include_title=False,
+    path=None,
 ):
     """
     Create a plot of mortality rates from OG-Core parameterization.
 
     Args:
-        p (OG-Core Specifications class): parameters object
+        p_list (list): list of parameters objects
+        labels (list): list of labels for the legend
+        survival_rates (bool): whether to plot survival rates instead
+            of mortality rates
         include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
-        fig (Matplotlib plot object): plot of immigration rates
+        fig (Matplotlib plot object): plot of mortality rates
 
     """
-    age_per = np.linspace(p.E, p.E + p.S, p.S)
-    years = np.array(years) - p.start_year
+    p0 = p_list[0]
+    age_per = np.linspace(p0.E, p0.E + p0.S, p0.S)
     fig, ax = plt.subplots()
     for y in years:
-        plt.plot(age_per, p.rho[y, :], label=str(y + p.start_year))
+        t = y - p0.start_year
+        for i, p in enumerate(p_list):
+            if survival_rates:
+                plt.plot(
+                    age_per,
+                    np.cumprod(1 - p.rho[t, :]),
+                    label=labels[i] + " " + str(y),
+                )
+            else:
+                plt.plot(age_per, p.rho[t, :], label=labels[i] + " " + str(y))
     plt.xlabel(r"Age $s$ (model periods)")
-    plt.ylabel(r"Mortality Rates $\rho_{s}$")
-    plt.legend(loc="upper right")
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.0%}".format(x) for x in vals])
+    if survival_rates:
+        plt.ylabel(r"Cumulative Survival Rates")
+        plt.legend(loc="lower left")
+        title = "Survival Rates"
+    else:
+        plt.ylabel(r"Mortality Rates $\rho_{s}$")
+        plt.legend(loc="upper left")
+        title = "Mortality Rates"
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.0%}".format(x) for x in ticks_loc])
     if include_title:
-        plt.title("Mortality Rates")
+        plt.title(title)
     if path is None:
         return fig
     else:
-        fig_path = os.path.join(path, "mortality_rates")
+        if survival_rates:
+            fig_path = os.path.join(path, "survival_rates")
+        else:
+            fig_path = os.path.join(path, "mortality_rates")
         plt.savefig(fig_path, dpi=300)
 
 
@@ -126,8 +152,9 @@ def plot_pop_growth(
     plt.plot(year_vec, p.g_n[start_index : start_index + num_years_to_plot])
     plt.xlabel(r"Year $t$")
     plt.ylabel(r"Population Growth Rate $g_{n, t}$")
-    vals = ax.get_yticks()
-    ax.set_yticklabels(["{:,.2%}".format(x) for x in vals])
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.2%}".format(x) for x in ticks_loc])
     if include_title:
         plt.title("Population Growth Rates")
     if path is None:
@@ -176,13 +203,17 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_ability_profiles(p, t=None, include_title=False, path=None):
+def plot_ability_profiles(
+    p, p2=None, t=None, log_scale=False, include_title=False, path=None
+):
     """
     Create a plot of earnings ability profiles.
 
     Args:
         p (OG-Core Specifications class): parameters object
         t (int): model period for year, if None, then plot ability matrix for SS
+        log_scale (bool): whether to plot in log points
+        include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
@@ -196,17 +227,39 @@ def plot_ability_profiles(p, t=None, include_title=False, path=None):
     cm = plt.get_cmap("coolwarm")
     ax.set_prop_cycle(color=[cm(1.0 * i / p.J) for i in range(p.J)])
     for j in range(p.J):
-        plt.plot(age_vec, p.e[t, :, j], label=GROUP_LABELS[p.J][j])
+        if log_scale:
+            plt.plot(age_vec, np.log(p.e[t, :, j]), label=GROUP_LABELS[p.J][j])
+        else:
+            plt.plot(age_vec, p.e[t, :, j], label=GROUP_LABELS[p.J][j])
+    if p2 is not None:
+        for j in range(p.J):
+            if log_scale:
+                plt.plot(
+                    age_vec,
+                    np.log(p2.e[t, :, j]),
+                    linestyle="--",
+                    label=GROUP_LABELS[p.J][j],
+                )
+            else:
+                plt.plot(
+                    age_vec,
+                    p2.e[t, :, j],
+                    linestyle="--",
+                    label=GROUP_LABELS[p.J][j],
+                )
     plt.xlabel(r"Age")
-    plt.ylabel(r"Earnings ability")
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
+    if log_scale:
+        plt.ylabel(r"ln(Earnings ability)")
+    else:
+        plt.ylabel(r"Earnings ability")
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncols=5)
     if include_title:
         plt.title("Lifecycle Profiles of Effective Labor Units")
     if path is None:
         return fig
     else:
         fig_path = os.path.join(path, "ability_profiles")
-        plt.savefig(fig_path, bbox_inches="tight")
+        plt.savefig(fig_path, bbox_inches="tight", dpi=300)
 
 
 def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
@@ -247,19 +300,20 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
             + k
         )
     fig, ax = plt.subplots()
-    plt.plot(n_grid, CFE, label="CFE")
-    plt.plot(n_grid, ellipse, label="Elliptical U")
+    plt.plot(n_grid, CFE, label="Constant Frisch elasticity")
+    plt.plot(n_grid, ellipse, label="Elliptical disutility")
     if include_title:
         if plot_MU:
             plt.title("Marginal Utility of CFE and Elliptical")
         else:
             plt.title("Constant Frisch Elasticity vs. Elliptical Utility")
-    plt.xlabel(r"Labor Supply")
+    plt.xlabel(r"Labor Supply $n_{j,s,t}$")
     if plot_MU:
-        plt.ylabel(r"Marginal Utility")
+        plt.ylabel(r"Marginal disutility")
     else:
-        plt.ylabel(r"Utility")
+        plt.ylabel(r"Disutility")
     plt.legend(loc="upper left")
+    plt.grid(color="gray", linestyle=":", linewidth=1, alpha=0.5)
     if path is None:
         return fig
     else:
@@ -267,21 +321,37 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_chi_n(p, include_title=False, path=None):
+def plot_chi_n(
+    p_list,
+    labels=[""],
+    years_to_plot=[DEFAULT_START_YEAR],
+    include_title=False,
+    path=None,
+):
     """
     Create a plot of showing the values of the chi_n parameters.
 
     Args:
-        p (OG-Core Specifications class): parameters object
+        p_list (list): parameters objects
+        labels (list): labels for legend
+        years_to_plot (list): list of years to plot
+        include_title (boolean): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
         fig (Matplotlib plot object): plot of chi_n parameters
 
     """
-    age = np.linspace(p.starting_age, p.ending_age, p.S)
+    p0 = p_list[0]
+    age = np.linspace(p0.starting_age, p0.ending_age, p0.S)
     fig, ax = plt.subplots()
-    plt.plot(age, p.chi_n)
+    for y in years_to_plot:
+        for i, p in enumerate(p_list):
+            plt.plot(
+                age,
+                p.chi_n[y - p.start_year, :],
+                label=labels[i] + " " + str(y),
+            )
     if include_title:
         plt.title("Utility Weight on the Disutility of Labor Supply")
     plt.xlabel("Age, $s$")
@@ -294,9 +364,11 @@ def plot_chi_n(p, include_title=False, path=None):
 
 
 def plot_fert_rates(
-    fert_rates,
+    fert_rates_list,
+    labels=[""],
     start_year=DEFAULT_START_YEAR,
     years_to_plot=[DEFAULT_START_YEAR],
+    include_title=False,
     source="United Nations, World Population Prospects",
     path=None,
 ):
@@ -304,10 +376,12 @@ def plot_fert_rates(
     Plot fertility rates from the data
 
     Args:
-        fert_rates (NumPy array): fertility rates for each of
-            totpers
+        fert_rates_list (list): list of Numpy arrays of fertility rates
+            for each model period and age
+        labels (list): list of labels for the legend
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
+        include_title (bool): whether to include a title in the plot
         source (str): data source for fertility rates
         path (str): path to save figure to, if None then figure
             is returned
@@ -317,13 +391,13 @@ def plot_fert_rates(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
-        plt.plot(fert_rates[i, :], c="blue", label="Year " + str(y))
-    # plt.title('Fertility rates by age ($f_{s}$)',
-    #     fontsize=20)
+        for i, fert_rates in enumerate(fert_rates_list):
+            plt.plot(fert_rates[i, :], label=labels[i] + " " + str(y))
+    if include_title:
+        plt.title("Fertility rates by age ($f_{s}$)", fontsize=20)
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Fertility rate $f_{s}$")
     plt.legend(loc="upper right")
@@ -368,7 +442,6 @@ def plot_mort_rates_data(
 
     """
     # create line styles to cycle through
-    plt.rc("axes", prop_cycle=(cycler("linestyle", [":", "-.", "-", "--"])))
     fig, ax = plt.subplots()
     for y in years_to_plot:
         i = start_year - y
@@ -393,6 +466,41 @@ def plot_mort_rates_data(
     else:
         fig.show()
         return fig
+
+
+def plot_g_n(p_list, label_list=[""], include_title=False, path=None):
+    """
+    Create a plot of population growth rates from OG-Core parameterization.
+
+    Args:
+        p_list (list): list of OG-Core Specifications objects
+        label_list (list): list of labels for the legend
+        include_title (bool): whether to include a title in the plot
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of immigration rates
+
+    """
+    p0 = p_list[0]
+    years = np.arange(p0.start_year, p0.start_year + p0.T)
+    fig, ax = plt.subplots()
+    for i, p in enumerate(p_list):
+        plt.plot(years, p.g_n[: p.T], label=label_list[i])
+    plt.xlabel(r"Year $s$ (model periods)")
+    plt.ylabel(r"Population Growth Rate $g_{n,t}$")
+    if label_list[0] != "":
+        plt.legend(loc="upper right")
+    ticks_loc = ax.get_yticks().tolist()
+    ax.yaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+    ax.set_yticklabels(["{:,.0%}".format(x) for x in ticks_loc])
+    if include_title:
+        plt.title("Population Growth Rates")
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "pop_growth_rates")
+        plt.savefig(fig_path, dpi=300)
 
 
 def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None):
@@ -600,7 +708,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "ETR_age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D histogram for all data
@@ -631,7 +739,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "Hist_Age_" + str(s) + "_Year_" + str(t) + ".png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D scatterplot of MTRx data
@@ -649,7 +757,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "MTRx_Age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Plot 3D scatterplot of MTRy data
@@ -667,7 +775,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     )
     filename = "MTRy_Age_" + str(s) + "_Year_" + str(t) + "_data.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Garbage collection
@@ -749,7 +857,7 @@ def txfunc_graph(
     ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1, linewidth=0)
     filename = tx_label + "_age_" + str(s) + "_Year_" + str(t) + "_vsPred.png"
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
     # Make comparison plot with truncated income domains
@@ -802,7 +910,7 @@ def txfunc_graph(
         tx_label + "trunc_age_" + str(s) + "_Year_" + str(t) + "_vsPred.png"
     )
     fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches="tight")
+    fig.savefig(fullpath, bbox_inches="tight", dpi=300)
     plt.close()
 
 
@@ -870,7 +978,7 @@ def plot_income_data(
         t = -1
     J = abil_midp.shape[0]
     abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
-    cmap1 = matplotlib.cm.get_cmap("summer")
+    cmap1 = matplotlib.colormaps["summer"]
     if path:
         # Make sure that directory is created
         utils.mkdirs(path)
