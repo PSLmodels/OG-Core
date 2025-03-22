@@ -20,7 +20,7 @@ def plot_aggregates(
     reform_params=None,
     var_list=["Y", "C", "K", "L"],
     plot_type="pct_diff",
-    stationarized=True,
+    stationarized=False,
     num_years_to_plot=50,
     start_year=DEFAULT_START_YEAR,
     forecast_data=None,

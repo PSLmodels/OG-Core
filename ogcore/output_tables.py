@@ -452,7 +452,7 @@ def wealth_moments_table(
     return table
 
 
-def tp_output_dump_table(
+def time_series_table(
     base_params,
     base_tpi,
     reform_params=None,
