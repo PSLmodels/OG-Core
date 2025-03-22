@@ -1231,6 +1231,11 @@ def unstationarize_vars(
     """
     # compute non-stationary variables
     T = params.T
+    pop_growth = np.cumprod(1 + params.g_n[:T])
+    prod_growth = np.exp(params.g_y * np.arange(params.T))
+    if ("_m" in var) or ("_i" in var):
+        pop_growth = pop_growth.reshape(T, 1)
+        prod_growth = prod_growth.reshape(T, 1)
     if var in [
         "Y",
         "B",
@@ -1267,16 +1272,14 @@ def unstationarize_vars(
     ]:
         non_stationary_output = (
             tpi_vars[var][:T]
-            * np.cumprod(1 + params.g_n[:T])
-            * np.exp(params.g_y * np.arange(params.T))
+            * pop_growth
+            * prod_growth
         )
     elif var in [
         "L",
         "L_m",
     ]:
-        non_stationary_output = tpi_vars[var][:T] * np.cumprod(
-            1 + params.g_n[:T]
-        )
+        non_stationary_output = tpi_vars[var][:T] * pop_growth
 
     elif var in [
         "w",
@@ -1290,9 +1293,7 @@ def unstationarize_vars(
         "before_tax_income",
         "hh_taxes",
     ]:
-        non_stationary_output = tpi_vars[var][:T] * np.exp(
-            params.g_y * np.arange(T)
-        )
+        non_stationary_output = tpi_vars[var][:T] * prod_growth
     else:
         non_stationary_output = tpi_vars[var][:T]
 
