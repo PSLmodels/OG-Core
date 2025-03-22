@@ -1209,39 +1209,27 @@ def shift_bio_clock(
     return param_out
 
 
-def pct_change_unstationarized(
-    tpi_base,
-    param_base,
-    tpi_reform,
-    param_reform,
-    output_vars=["K", "Y", "C", "L", "r", "w"],
+def unstationarize_vars(
+    var_name,
+    tpi_vars,
+    params,
 ):
     """
-    This function takes the time paths of variables from the baseline
-    and reform and parameters from the baseline and reform runs and
-    computes percent changes for each variable in the output_vars list.
-    The function first unstationarizes the time paths of the variables
-    and then computes the percent changes.
+    This function takes a model variable and returns the unstationarized
+    value by adjusting for underlying growth in labor productivity
+    and population growth (where necessary).
 
     Args:
-        tpi_base (Numpy array): time path of the output variables from
+        var_name (string): name of variable to unstationarize
+        tpi_vars (Numpy array): time path of the output variables from
             the baseline run
-        param_base (Specifications object): dictionary of parameters
+        params (Specifications object): parameters
             from the baseline run
-        tpi_reform (Numpy array): time path of the output variables from
-            the reform run
-        param_reform (Specifications object): dictionary of parameters
-            from the reform run
-        output_vars (list): list of variables for which to compute
-            percent changes
 
     Returns:
-        pct_changes (dict): dictionary of percent changes for each
-            variable in output_vars list
+        pct_changes (array_like): unstationarized values for var_name
     """
     # compute non-stationary variables
-    non_stationary_output = {"base": {}, "reform": {}}
-    pct_changes = {}
     T = param_base.T
     for var in output_vars:
         if var in [
@@ -1278,26 +1266,19 @@ def pct_change_unstationarized(
             "new_borrowing_f",
             "debt_service_f",
         ]:
-            non_stationary_output["base"][var] = (
-                tpi_base[var][:T]
-                * np.cumprod(1 + param_base.g_n[:T])
-                * np.exp(param_base.g_y * np.arange(param_base.T))
-            )
-            non_stationary_output["reform"][var] = (
-                tpi_reform[var][:T]
-                * np.cumprod(1 + param_reform.g_n[:T])
-                * np.exp(param_reform.g_y * np.arange(param_reform.T))
+            non_stationary_output = (
+                tpi_vars[var][:T]
+                * np.cumprod(1 + params.g_n[:T])
+                * np.exp(params.g_y * np.arange(params.T))
             )
         elif var in [
             "L",
             "L_m",
         ]:
-            non_stationary_output["base"][var] = tpi_base[var][
-                :T
-            ] * np.cumprod(1 + param_base.g_n[:T])
-            non_stationary_output["reform"][var] = tpi_reform[var][
-                :T
-            ] * np.cumprod(1 + param_reform.g_n[:T])
+            non_stationary_output = tpi_vars[var][:T] * np.cumprod(
+                1 + params.g_n[:T]
+            )
+
         elif var in [
             "w",
             "ubi",
@@ -1310,24 +1291,13 @@ def pct_change_unstationarized(
             "before_tax_income",
             "hh_taxes",
         ]:
-            non_stationary_output["base"][var] = tpi_base[var][:T] * np.exp(
-                param_base.g_y * np.arange(param_base.T)
+            non_stationary_output = tpi_vars[var][:T] * np.exp(
+                params.g_y * np.arange(T)
             )
-            non_stationary_output["reform"][var] = tpi_reform[var][
-                :T
-            ] * np.exp(param_reform.g_y * np.arange(param_reform.T))
         else:
-            non_stationary_output["base"][var] = tpi_base[var][:T]
-            non_stationary_output["reform"][var] = tpi_reform[var][:T]
+            non_stationary_output = tpi_vars[var][:T]
 
-        # calculate percent change
-        pct_changes[var] = (
-            non_stationary_output["reform"][var]
-            / non_stationary_output["base"][var]
-            - 1
-        )
-
-    return pct_changes
+    return non_stationary_output
 
 
 def param_dump_json(p, path=None):
