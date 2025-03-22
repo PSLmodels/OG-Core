@@ -4,7 +4,7 @@ import os
 from ogcore.constants import VAR_LABELS, DEFAULT_START_YEAR
 from ogcore import tax
 from ogcore.utils import save_return_table, Inequality
-from ogcore.utils import pct_change_unstationarized
+from ogcore.utils import unstationarize_vars
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 
@@ -457,6 +457,7 @@ def time_series_table(
     base_tpi,
     reform_params=None,
     reform_tpi=None,
+    stationarized=True,
     table_format=None,
     path=None,
 ):
@@ -471,6 +472,7 @@ def time_series_table(
         reform_params (OG-Core Specifications class): reform parameters
             object
         reform_tpi (dictionary): TP output from reform run
+        stationarized (bool): whether to report stationarized output
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
         path (string): path to save table to
@@ -501,6 +503,14 @@ def time_series_table(
         "total_tax_revenue",
         "business_tax_revenue",
     ]
+    # unsationarize variables if needed
+    if not stationarized:
+        for v in vars_to_keep:
+            base_tpi[v] = unstationarize_vars(v, base_tpi, base_params)
+            if reform_tpi:
+                reform_tpi[v] = unstationarize_vars(
+                    v, reform_tpi, reform_params
+                )
     base_dict = {k: base_tpi[k] for k in vars_to_keep}
     # update key names
     base_dict_final = dict(
