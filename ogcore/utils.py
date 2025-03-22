@@ -1254,9 +1254,9 @@ def pct_change_unstationarized(
             "I",
             "K_g",
             "I_g",
-            "Y_vec",
-            "K_vec",
-            "C_vec",
+            "Y_m",
+            "K_m",
+            "C_i",
             "I_total",
             "I_d",
             "BQ",
@@ -1290,7 +1290,7 @@ def pct_change_unstationarized(
             )
         elif var in [
             "L",
-            "L_vec",
+            "L_m",
         ]:
             non_stationary_output["base"][var] = tpi_base[var][
                 :T
@@ -1300,14 +1300,15 @@ def pct_change_unstationarized(
             ] * np.cumprod(1 + param_reform.g_n[:T])
         elif var in [
             "w",
-            "ubi_path",
-            "tr_path",
-            "bq_path",
-            "bmat_splus1",
-            "bmat_s",
-            "c_path",
-            "y_before_tax_path",
-            "tax_path",
+            "ubi",
+            "tr",
+            "bq",
+            "b_sp1",
+            "b_s",
+            "c",
+            "c_i",
+            "before_tax_income",
+            "hh_taxes",
         ]:
             non_stationary_output["base"][var] = tpi_base[var][:T] * np.exp(
                 param_base.g_y * np.arange(param_base.T)
