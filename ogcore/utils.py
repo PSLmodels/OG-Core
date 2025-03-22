@@ -1270,11 +1270,7 @@ def unstationarize_vars(
         "new_borrowing_f",
         "debt_service_f",
     ]:
-        non_stationary_output = (
-            tpi_vars[var][:T]
-            * pop_growth
-            * prod_growth
-        )
+        non_stationary_output = tpi_vars[var][:T] * pop_growth * prod_growth
     elif var in [
         "L",
         "L_m",
@@ -1323,13 +1319,25 @@ def params_to_json(p, path=None):
         else:
             converted_data[key] = val
 
-    # Parameters that need to be turned into annual rates for default_parameters.json
-    # g_y_annual
-    # beta_annual
-    # delta_annual
-    # delta_tau_annual
-    # delta_g_annual
-    # world_int_rate_annual
+    # Parameters that need to be turned into annual rates for
+    # default_parameters.json
+    annual_list = [
+        "g_y_annual",
+        "beta_annual",
+        "delta_annual",
+        "delta_tau_annual",
+        "delta_g_annual",
+        "world_int_rate_annual",
+    ]
+    for v in annual_list:
+        val = getattr(p, v.replace("_annual", ""))
+        annual_value = (1 + val) ** (
+            p.S / ((p.ending_age - p.starting_age))
+        ) - 1
+        if isinstance(annual_value, np.ndarray):
+            converted_data[v] = annual_value.tolist()
+        else:
+            converted_data[v] = annual_value
 
     # Convert to JSON string
     json_str = json.dumps(converted_data, indent=4)

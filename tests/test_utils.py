@@ -980,16 +980,16 @@ def test_params_to_json():
     Test of the params_to_json function
     """
     p = Specifications()
-    j_str = utils.param_dump_json(p)
+    j_str = utils.params_to_json(p)
     assert isinstance(j_str, str)
 
 
-def test_param_dump_json_save(tmpdir):
+def test_params_to_json_save(tmpdir):
     """
-    Test of the param_dump_json function
+    Test of the params_to_json function
     """
     p = Specifications()
-    utils.param_dump_json(p, path=os.path.join(tmpdir, "test.json"))
+    utils.params_to_json(p, path=os.path.join(tmpdir, "test.json"))
     # read in file
     with open(os.path.join(tmpdir, "test.json"), "r") as f:
         j_str = f.read()
