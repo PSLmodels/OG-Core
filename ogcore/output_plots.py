@@ -48,8 +48,7 @@ def plot_aggregates(
             'levels': plot variables in model units
             'forecast': plots variables in levels relative to baseline
                 economic forecast
-        stationarized (bool): whether used stationarized variables (False
-            only affects pct_diff right now)
+        stationarized (bool): whether used stationarized variables
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
         forecast_data (array_like): baseline economic forecast series,
@@ -76,6 +75,13 @@ def plot_aggregates(
     if plot_type == "pct_diff" or plot_type == "diff":
         assert reform_tpi is not None
     fig1, ax1 = plt.subplots()
+    if not stationarized:
+        for v in var_list:
+            base_tpi[v] = utils.unstationarize_vars(v, base_tpi, base_params)
+            if reform_tpi:
+                reform_tpi[v] = utils.unstationarize_vars(
+                    v, reform_tpi, reform_params
+                )
     for i, v in enumerate(var_list):
         assert (
             v in VAR_LABELS.keys()
@@ -85,17 +91,7 @@ def plot_aggregates(
                 # Compute just percentage point changes for rates
                 plot_var = reform_tpi[v] - base_tpi[v]
             else:
-                if stationarized:
-                    plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
-                else:
-                    pct_changes = utils.pct_change_unstationarized(
-                        base_tpi,
-                        base_params,
-                        reform_tpi,
-                        reform_params,
-                        output_vars=[v],
-                    )
-                    plot_var = pct_changes[v]
+                plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
             ylabel = r"Pct. change"
             plt.plot(
                 year_vec,
@@ -182,6 +178,7 @@ def plot_industry_aggregates(
     var_list=["Y_m"],
     ind_names_list=None,
     plot_type="pct_diff",
+    stationarized=False,
     num_years_to_plot=50,
     start_year=DEFAULT_START_YEAR,
     forecast_data=None,
@@ -201,6 +198,7 @@ def plot_industry_aggregates(
         reform_params (OG-Core Specifications class): reform parameters
             object
         var_list (list): names of variable to plot
+
         plot_type (string): type of plot, can be:
             'pct_diff': plots percentage difference between baseline
                 and reform ((reform-base)/base)
@@ -209,6 +207,7 @@ def plot_industry_aggregates(
             'levels': plot variables in model units
             'forecast': plots variables in levels relative to baseline
                 economic forecast
+        stationarized (bool): whether used stationarized variables
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
         forecast_data (array_like): baseline economic forecast series,
@@ -236,6 +235,14 @@ def plot_industry_aggregates(
         assert base_params.start_year == reform_params.start_year
     year_vec = np.arange(start_year, start_year + num_years_to_plot)
     start_index = start_year - base_params.start_year
+    # Unstationarize variables if needed
+    if not stationarized:
+        for v in var_list:
+            base_tpi[v] = utils.unstationarize_vars(v, base_tpi, base_params)
+            if reform_tpi:
+                reform_tpi[v] = utils.unstationarize_vars(
+                    v, reform_tpi, reform_params
+                )
     # Check that reform included if doing pct_diff or diff plot
     if plot_type == "pct_diff" or plot_type == "diff":
         assert reform_tpi is not None
