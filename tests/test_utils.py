@@ -975,9 +975,9 @@ def test_unstationarize_vars(p1, p2, expected):
         assert np.allclose(pct_change[key], expected[key])
 
 
-def test_param_dump_json():
+def test_params_to_json():
     """
-    Test of the param_dump_json function
+    Test of the params_to_json function
     """
     p = Specifications()
     j_str = utils.param_dump_json(p)

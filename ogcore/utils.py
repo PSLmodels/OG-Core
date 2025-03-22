@@ -1300,7 +1300,7 @@ def unstationarize_vars(
     return non_stationary_output
 
 
-def param_dump_json(p, path=None):
+def params_to_json(p, path=None):
     """
     This function creates a JSON file with the model parameters of the
     format used for the default_parameters.json file.
