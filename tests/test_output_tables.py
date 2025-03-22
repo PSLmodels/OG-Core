@@ -135,8 +135,8 @@ def test_wealth_moments_table():
     assert isinstance(df, pd.DataFrame)
 
 
-def test_tp_output_dump_table():
-    df = output_tables.tp_output_dump_table(
+def test_time_series_table():
+    df = output_tables.time_series_table(
         base_params,
         base_tpi,
         reform_params=reform_params,
