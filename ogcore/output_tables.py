@@ -64,6 +64,13 @@ def macro_table(
         assert base_params.start_year == reform_params.start_year
     year_vec = np.arange(start_year, start_year + num_years)
     start_index = start_year - base_params.start_year
+    if not stationarized:
+        for v in var_list:
+            base_tpi[v] = unstationarize_vars(v, base_tpi, base_params)
+            if reform_tpi:
+                reform_tpi[v] = unstationarize_vars(
+                    v, reform_tpi, reform_params
+                )
     # Check that reform included if doing pct_diff or diff plot
     if output_type == "pct_diff" or output_type == "diff":
         assert reform_tpi is not None
@@ -76,24 +83,14 @@ def macro_table(
     for i, v in enumerate(var_list):
         if output_type == "pct_diff":
             # multiple by 100 so in percentage points
-            if stationarized:
-                results = ((reform_tpi[v] - base_tpi[v]) / base_tpi[v]) * 100
-            else:
-                pct_changes = pct_change_unstationarized(
-                    base_tpi,
-                    base_params,
-                    reform_tpi,
-                    reform_params,
-                    output_vars=[v],
-                )
-                results = pct_changes[v] * 100
-            results_years = results[start_index : start_index + num_years]
+            results = ((reform_tpi[v] - base_tpi[v]) / base_tpi[v]) * 100
+            results_years = results[start_index: start_index + num_years]
             results_overall = (
                 (
-                    reform_tpi[v][start_index : start_index + num_years].sum()
-                    - base_tpi[v][start_index : start_index + num_years].sum()
+                    reform_tpi[v][start_index: start_index + num_years].sum()
+                    - base_tpi[v][start_index: start_index + num_years].sum()
                 )
-                / base_tpi[v][start_index : start_index + num_years].sum()
+                / base_tpi[v][start_index: start_index + num_years].sum()
             ) * 100
             results_SS = results[-1]
             results_for_table = results_years
@@ -106,10 +103,10 @@ def macro_table(
             table_dict[VAR_LABELS[v]] = results_for_table
         elif output_type == "diff":
             results = reform_tpi[v] - base_tpi[v]
-            results_years = results[start_index : start_index + num_years]
+            results_years = results[start_index: start_index + num_years]
             results_overall = (
-                reform_tpi[v][start_index : start_index + num_years].sum()
-                - base_tpi[v][start_index : start_index + num_years].sum()
+                reform_tpi[v][start_index: start_index + num_years].sum()
+                - base_tpi[v][start_index: start_index + num_years].sum()
             )
             results_SS = results[-1]
             results_for_table = results_years
@@ -121,7 +118,7 @@ def macro_table(
                 results_for_table = np.append(results_for_table, results_SS)
             table_dict[VAR_LABELS[v]] = results_for_table
         else:
-            results_years = base_tpi[v][start_index : start_index + num_years]
+            results_years = base_tpi[v][start_index: start_index + num_years]
             results_overall = results_years.sum()
             results_SS = base_tpi[v][-1]
             results_for_table = results_years
@@ -134,7 +131,7 @@ def macro_table(
             table_dict[VAR_LABELS[v] + " Baseline"] = results_for_table
             if reform_tpi is not None:
                 results_years = reform_tpi[v][
-                    start_index : start_index + num_years
+                    start_index: start_index + num_years
                 ]
                 results_overall = results_years.sum()
                 results_SS = reform_tpi[v][-1]
