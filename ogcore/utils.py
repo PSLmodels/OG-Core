@@ -1210,7 +1210,7 @@ def shift_bio_clock(
 
 
 def unstationarize_vars(
-    var_name,
+    var,
     tpi_vars,
     params,
 ):
@@ -1220,82 +1220,81 @@ def unstationarize_vars(
     and population growth (where necessary).
 
     Args:
-        var_name (string): name of variable to unstationarize
+        var (string): name of variable to unstationarize
         tpi_vars (Numpy array): time path of the output variables from
             the baseline run
         params (Specifications object): parameters
             from the baseline run
 
     Returns:
-        pct_changes (array_like): unstationarized values for var_name
+        pct_changes (array_like): unstationarized values for var
     """
     # compute non-stationary variables
-    T = param_base.T
-    for var in output_vars:
-        if var in [
-            "Y",
-            "B",
-            "K",
-            "K_f",
-            "K_d",
-            "C",
-            "I",
-            "K_g",
-            "I_g",
-            "Y_m",
-            "K_m",
-            "C_i",
-            "I_total",
-            "I_d",
-            "BQ",
-            "TR",
-            "total_tax_revenue",
-            "business_tax_revenue",
-            "iit_payroll_tax_revenue",
-            "iit_revenue",
-            "payroll_tax_revenue",
-            "agg_pension_outlays",
-            "bequest_tax_revenue",
-            "wealth_tax_revenue",
-            "cons_tax_revenue",
-            "G",
-            "D",
-            "D_f",
-            "D_d",
-            "UBI_path",
-            "new_borrowing_f",
-            "debt_service_f",
-        ]:
-            non_stationary_output = (
-                tpi_vars[var][:T]
-                * np.cumprod(1 + params.g_n[:T])
-                * np.exp(params.g_y * np.arange(params.T))
-            )
-        elif var in [
-            "L",
-            "L_m",
-        ]:
-            non_stationary_output = tpi_vars[var][:T] * np.cumprod(
-                1 + params.g_n[:T]
-            )
+    T = params.T
+    if var in [
+        "Y",
+        "B",
+        "K",
+        "K_f",
+        "K_d",
+        "C",
+        "I",
+        "K_g",
+        "I_g",
+        "Y_m",
+        "K_m",
+        "C_i",
+        "I_total",
+        "I_d",
+        "BQ",
+        "TR",
+        "total_tax_revenue",
+        "business_tax_revenue",
+        "iit_payroll_tax_revenue",
+        "iit_revenue",
+        "payroll_tax_revenue",
+        "agg_pension_outlays",
+        "bequest_tax_revenue",
+        "wealth_tax_revenue",
+        "cons_tax_revenue",
+        "G",
+        "D",
+        "D_f",
+        "D_d",
+        "UBI_path",
+        "new_borrowing_f",
+        "debt_service_f",
+    ]:
+        non_stationary_output = (
+            tpi_vars[var][:T]
+            * np.cumprod(1 + params.g_n[:T])
+            * np.exp(params.g_y * np.arange(params.T))
+        )
+    elif var in [
+        "L",
+        "L_m",
+    ]:
+        non_stationary_output = tpi_vars[var][:T] * np.cumprod(
+            1 + params.g_n[:T]
+        )
 
-        elif var in [
-            "w",
-            "ubi",
-            "tr",
-            "bq",
-            "b_sp1",
-            "b_s",
-            "c",
-            "c_i",
-            "before_tax_income",
-            "hh_taxes",
-        ]:
-            non_stationary_output = tpi_vars[var][:T] * np.exp(
-                params.g_y * np.arange(T)
-            )
-        else:
-            non_stationary_output = tpi_vars[var][:T]
+    elif var in [
+        "w",
+        "ubi",
+        "tr",
+        "bq",
+        "b_sp1",
+        "b_s",
+        "c",
+        "c_i",
+        "before_tax_income",
+        "hh_taxes",
+    ]:
+        non_stationary_output = tpi_vars[var][:T] * np.exp(
+            params.g_y * np.arange(T)
+        )
+    else:
+        non_stationary_output = tpi_vars[var][:T]
 
     return non_stationary_output
 

@@ -942,7 +942,7 @@ expected_pct_change2 = {
         "Different growth rates",
     ],
 )
-def test_pct_change_unstationarized(p1, p2, expected):
+def test_unstationarize_vars(p1, p2, expected):
     """
     A test of the percentage change calculation function
     """
@@ -962,13 +962,13 @@ def test_pct_change_unstationarized(p1, p2, expected):
         "r": np.ones(p2.T) * 0.06,
         "w": np.ones(p2.T) * 1.3,
     }
-    pct_change = utils.pct_change_unstationarized(
-        base_tpi,
-        p1,
-        reform_tpi,
-        p2,
-        output_vars=["K", "Y", "C", "L", "r", "w"],
-    )
+    pct_change = {}
+    for k in base_tpi.keys():
+        base_unstationarized = utils.unstationarize_vars(k, base_tpi, p1)
+        reform_unstationarized = utils.unstationarize_vars(k, reform_tpi, p2)
+        pct_change[k] = (
+            reform_unstationarized - base_unstationarized
+        ) / base_unstationarized
 
     for key in pct_change.keys():
         print("Checking ", key)
