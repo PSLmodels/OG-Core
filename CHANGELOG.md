@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `utils.pct_changes_unstationarized` replaced with `utils.unstationarize_vars`, which allows for more general use of a utilitiy to find unstationarized values of time series output
 - `output_plots.py` and `output_tables.py` are updated to all for plots and tables of unstationarized output for variables of any type, not just percentage changes.
-- `ouput_tables.tp_dump_ XXX` has been renamed `output_tables.time_series_table`
+- `output_tables.tp_dump_ XXX` has been renamed `output_tables.time_series_table`
 - `utils.param_dump_json` has been renamed `utils.params_to_json`
 - API docs have been updated to include functions left out previously and for new function names
 
