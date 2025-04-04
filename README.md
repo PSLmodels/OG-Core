@@ -10,12 +10,11 @@
 OG-Core is an overlapping-generations (OG) model core theory, logic, and solution method algorithms that allow for dynamic general equilibrium analysis of fiscal policy. OG-Core provides a general framework and is a dependency of several country-specific OG model caliibrations, as listed in the table belowsuch as [OG-USA](https://github.com/PSLmodels/OG-USA) and [OG-UK](https://github.com/PSLmodels/OG-UK). The model output includes changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available [here](https://pslmodels.github.io/OG-Core).
 
 **Country calibrations of OG-Core**
-|               |             |
-| :-----------: | :---------: |
-| United States, [OG-USA](https://github.com/PSLmodels/OG-USA) | United Kingdom, [OG-UK](https://github.com/PSLmodels/OG-USA) |
-| Phillipines, [OG-PHL](https://github.com/EAPD-DRB/OG-PHL) | South Africa, [OG-ZAF](https://github.com/EAPD-DRB/OG-ZAF) |
-| Indonesia, [OG-IDN](https://github.com/EAPD-DRB/OG-IDN) |  |
-| India, [OG-IND](https://github.com/OpenSourceEcon/OG-IND) | Malaysia, [OG-MYS](https://github.com/OpenSourceEcon/OG-MYS) |
+|               |             |             |
+| :-----------: | :---------: | :---------: |
+| United States, [OG-USA](https://github.com/PSLmodels/OG-USA) | United Kingdom, [OG-UK](https://github.com/PSLmodels/OG-USA) |  |
+| Phillipines, [OG-PHL](https://github.com/EAPD-DRB/OG-PHL) | South Africa, [OG-ZAF](https://github.com/EAPD-DRB/OG-ZAF) | Indonesia, [OG-IDN](https://github.com/EAPD-DRB/OG-IDN) |
+| India, [OG-IND](https://github.com/OpenSourceEcon/OG-IND) | Malaysia, [OG-MYS](https://github.com/OpenSourceEcon/OG-MYS) |  |
 
 
 ## Disclaimer
