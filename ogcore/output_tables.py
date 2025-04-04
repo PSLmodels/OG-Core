@@ -500,7 +500,7 @@ def time_series_table(
         "total_tax_revenue",
         "business_tax_revenue",
     ]
-    # unsationarize variables if needed
+    # unstationarize variables if needed
     if not stationarized:
         for v in vars_to_keep:
             base_tpi[v] = unstationarize_vars(v, base_tpi, base_params)
