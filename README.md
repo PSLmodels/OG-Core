@@ -12,10 +12,10 @@ OG-Core is an overlapping-generations (OG) model core theory, logic, and solutio
 **Country calibrations of OG-Core**
 |               |             |
 | :-----------: | :---------: |
-| United States, OG-USA, https://github.com/PSLmodels/OG-USA | United Kingdom, OG-UK, https://github.com/PSLmodels/OG-USA |
-| Phillipines, OG-PHL, https://github.com/EAPD-DRB/OG-PHL | South Africa, OG-ZAF, https://github.com/EAPD-DRB/OG-ZAF |
-| Indonesia, OG-IDN, https://github.com/EAPD-DRB/OG-IDN |  |
-| India, OG-IND, https://github.com/OpenSourceEcon/OG-IND | Malaysia, OG-MYS, https://github.com/OpenSourceEcon/OG-MYS |
+| United States, [OG-USA](https://github.com/PSLmodels/OG-USA) | United Kingdom, [OG-UK](https://github.com/PSLmodels/OG-USA) |
+| Phillipines, [OG-PHL](https://github.com/EAPD-DRB/OG-PHL) | South Africa, [OG-ZAF](https://github.com/EAPD-DRB/OG-ZAF) |
+| Indonesia, [OG-IDN](https://github.com/EAPD-DRB/OG-IDN) |  |
+| India, [OG-IND](https://github.com/OpenSourceEcon/OG-IND) | Malaysia, [OG-MYS](https://github.com/OpenSourceEcon/OG-MYS) |
 
 
 ## Disclaimer
