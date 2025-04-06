@@ -942,7 +942,7 @@ expected_pct_change2 = {
         "Different growth rates",
     ],
 )
-def test_pct_change_unstationarized(p1, p2, expected):
+def test_unstationarize_vars(p1, p2, expected):
     """
     A test of the percentage change calculation function
     """
@@ -962,34 +962,34 @@ def test_pct_change_unstationarized(p1, p2, expected):
         "r": np.ones(p2.T) * 0.06,
         "w": np.ones(p2.T) * 1.3,
     }
-    pct_change = utils.pct_change_unstationarized(
-        base_tpi,
-        p1,
-        reform_tpi,
-        p2,
-        output_vars=["K", "Y", "C", "L", "r", "w"],
-    )
+    pct_change = {}
+    for k in base_tpi.keys():
+        base_unstationarized = utils.unstationarize_vars(k, base_tpi, p1)
+        reform_unstationarized = utils.unstationarize_vars(k, reform_tpi, p2)
+        pct_change[k] = (
+            reform_unstationarized - base_unstationarized
+        ) / base_unstationarized
 
     for key in pct_change.keys():
         print("Checking ", key)
         assert np.allclose(pct_change[key], expected[key])
 
 
-def test_param_dump_json():
+def test_params_to_json():
     """
-    Test of the param_dump_json function
+    Test of the params_to_json function
     """
     p = Specifications()
-    j_str = utils.param_dump_json(p)
+    j_str = utils.params_to_json(p)
     assert isinstance(j_str, str)
 
 
-def test_param_dump_json_save(tmpdir):
+def test_params_to_json_save(tmpdir):
     """
-    Test of the param_dump_json function
+    Test of the params_to_json function
     """
     p = Specifications()
-    utils.param_dump_json(p, path=os.path.join(tmpdir, "test.json"))
+    utils.params_to_json(p, path=os.path.join(tmpdir, "test.json"))
     # read in file
     with open(os.path.join(tmpdir, "test.json"), "r") as f:
         j_str = f.read()

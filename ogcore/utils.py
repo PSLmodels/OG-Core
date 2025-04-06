@@ -1209,127 +1209,94 @@ def shift_bio_clock(
     return param_out
 
 
-def pct_change_unstationarized(
-    tpi_base,
-    param_base,
-    tpi_reform,
-    param_reform,
-    output_vars=["K", "Y", "C", "L", "r", "w"],
+def unstationarize_vars(
+    var,
+    tpi_vars,
+    params,
 ):
     """
-    This function takes the time paths of variables from the baseline
-    and reform and parameters from the baseline and reform runs and
-    computes percent changes for each variable in the output_vars list.
-    The function first unstationarizes the time paths of the variables
-    and then computes the percent changes.
+    This function takes a model variable and returns the unstationarized
+    value by adjusting for underlying growth in labor productivity
+    and population growth (where necessary).
 
     Args:
-        tpi_base (Numpy array): time path of the output variables from
+        var (string): name of variable to unstationarize
+        tpi_vars (Numpy array): time path of the output variables from
             the baseline run
-        param_base (Specifications object): dictionary of parameters
+        params (Specifications object): parameters
             from the baseline run
-        tpi_reform (Numpy array): time path of the output variables from
-            the reform run
-        param_reform (Specifications object): dictionary of parameters
-            from the reform run
-        output_vars (list): list of variables for which to compute
-            percent changes
 
     Returns:
-        pct_changes (dict): dictionary of percent changes for each
-            variable in output_vars list
+        pct_changes (array_like): unstationarized values for var
     """
     # compute non-stationary variables
-    non_stationary_output = {"base": {}, "reform": {}}
-    pct_changes = {}
-    T = param_base.T
-    for var in output_vars:
-        if var in [
-            "Y",
-            "B",
-            "K",
-            "K_f",
-            "K_d",
-            "C",
-            "I",
-            "K_g",
-            "I_g",
-            "Y_vec",
-            "K_vec",
-            "C_vec",
-            "I_total",
-            "I_d",
-            "BQ",
-            "TR",
-            "total_tax_revenue",
-            "business_tax_revenue",
-            "iit_payroll_tax_revenue",
-            "iit_revenue",
-            "payroll_tax_revenue",
-            "agg_pension_outlays",
-            "bequest_tax_revenue",
-            "wealth_tax_revenue",
-            "cons_tax_revenue",
-            "G",
-            "D",
-            "D_f",
-            "D_d",
-            "UBI_path",
-            "new_borrowing_f",
-            "debt_service_f",
-        ]:
-            non_stationary_output["base"][var] = (
-                tpi_base[var][:T]
-                * np.cumprod(1 + param_base.g_n[:T])
-                * np.exp(param_base.g_y * np.arange(param_base.T))
-            )
-            non_stationary_output["reform"][var] = (
-                tpi_reform[var][:T]
-                * np.cumprod(1 + param_reform.g_n[:T])
-                * np.exp(param_reform.g_y * np.arange(param_reform.T))
-            )
-        elif var in [
-            "L",
-            "L_vec",
-        ]:
-            non_stationary_output["base"][var] = tpi_base[var][
-                :T
-            ] * np.cumprod(1 + param_base.g_n[:T])
-            non_stationary_output["reform"][var] = tpi_reform[var][
-                :T
-            ] * np.cumprod(1 + param_reform.g_n[:T])
-        elif var in [
-            "w",
-            "ubi_path",
-            "tr_path",
-            "bq_path",
-            "bmat_splus1",
-            "bmat_s",
-            "c_path",
-            "y_before_tax_path",
-            "tax_path",
-        ]:
-            non_stationary_output["base"][var] = tpi_base[var][:T] * np.exp(
-                param_base.g_y * np.arange(param_base.T)
-            )
-            non_stationary_output["reform"][var] = tpi_reform[var][
-                :T
-            ] * np.exp(param_reform.g_y * np.arange(param_reform.T))
-        else:
-            non_stationary_output["base"][var] = tpi_base[var][:T]
-            non_stationary_output["reform"][var] = tpi_reform[var][:T]
+    T = params.T
+    pop_growth = np.cumprod(1 + params.g_n[:T])
+    prod_growth = np.exp(params.g_y * np.arange(params.T))
+    if ("_m" in var) or ("_i" in var):
+        pop_growth = pop_growth.reshape(T, 1)
+        prod_growth = prod_growth.reshape(T, 1)
+    if var in [
+        "Y",
+        "B",
+        "K",
+        "K_f",
+        "K_d",
+        "C",
+        "I",
+        "K_g",
+        "I_g",
+        "Y_m",
+        "K_m",
+        "C_i",
+        "I_total",
+        "I_d",
+        "BQ",
+        "TR",
+        "total_tax_revenue",
+        "business_tax_revenue",
+        "iit_payroll_tax_revenue",
+        "iit_revenue",
+        "payroll_tax_revenue",
+        "agg_pension_outlays",
+        "bequest_tax_revenue",
+        "wealth_tax_revenue",
+        "cons_tax_revenue",
+        "G",
+        "D",
+        "D_f",
+        "D_d",
+        "UBI_path",
+        "new_borrowing_f",
+        "debt_service_f",
+    ]:
+        non_stationary_output = tpi_vars[var][:T] * pop_growth * prod_growth
+    elif var in [
+        "L",
+        "L_m",
+    ]:
+        non_stationary_output = tpi_vars[var][:T] * pop_growth
 
-        # calculate percent change
-        pct_changes[var] = (
-            non_stationary_output["reform"][var]
-            / non_stationary_output["base"][var]
-            - 1
-        )
+    elif var in [
+        "w",
+        "ubi",
+        "tr",
+        "bq",
+        "b_sp1",
+        "b_s",
+        "c",
+        "c_i",
+        "before_tax_income",
+        "hh_taxes",
+    ]:
+        non_stationary_output = tpi_vars[var][:T] * prod_growth
+    else:
+        non_stationary_output = tpi_vars[var][:T]
 
-    return pct_changes
+    return non_stationary_output
 
 
-def param_dump_json(p, path=None):
+def params_to_json(p, path=None):
     """
     This function creates a JSON file with the model parameters of the
     format used for the default_parameters.json file.
@@ -1352,13 +1319,25 @@ def param_dump_json(p, path=None):
         else:
             converted_data[key] = val
 
-    # Parameters that need to be turned into annual rates for default_parameters.json
-    # g_y_annual
-    # beta_annual
-    # delta_annual
-    # delta_tau_annual
-    # delta_g_annual
-    # world_int_rate_annual
+    # Parameters that need to be turned into annual rates for
+    # default_parameters.json
+    annual_list = [
+        "g_y_annual",
+        "beta_annual",
+        "delta_annual",
+        "delta_tau_annual",
+        "delta_g_annual",
+        "world_int_rate_annual",
+    ]
+    for v in annual_list:
+        val = getattr(p, v.replace("_annual", ""))
+        annual_value = (1 + val) ** (
+            p.S / ((p.ending_age - p.starting_age))
+        ) - 1
+        if isinstance(annual_value, np.ndarray):
+            converted_data[v] = annual_value.tolist()
+        else:
+            converted_data[v] = annual_value
 
     # Convert to JSON string
     json_str = json.dumps(converted_data, indent=4)

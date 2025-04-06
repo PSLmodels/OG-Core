@@ -4,7 +4,7 @@ import os
 from ogcore.constants import VAR_LABELS, DEFAULT_START_YEAR
 from ogcore import tax
 from ogcore.utils import save_return_table, Inequality
-from ogcore.utils import pct_change_unstationarized
+from ogcore.utils import unstationarize_vars
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 
@@ -64,6 +64,13 @@ def macro_table(
         assert base_params.start_year == reform_params.start_year
     year_vec = np.arange(start_year, start_year + num_years)
     start_index = start_year - base_params.start_year
+    if not stationarized:
+        for v in var_list:
+            base_tpi[v] = unstationarize_vars(v, base_tpi, base_params)
+            if reform_tpi:
+                reform_tpi[v] = unstationarize_vars(
+                    v, reform_tpi, reform_params
+                )
     # Check that reform included if doing pct_diff or diff plot
     if output_type == "pct_diff" or output_type == "diff":
         assert reform_tpi is not None
@@ -76,17 +83,7 @@ def macro_table(
     for i, v in enumerate(var_list):
         if output_type == "pct_diff":
             # multiple by 100 so in percentage points
-            if stationarized:
-                results = ((reform_tpi[v] - base_tpi[v]) / base_tpi[v]) * 100
-            else:
-                pct_changes = pct_change_unstationarized(
-                    base_tpi,
-                    base_params,
-                    reform_tpi,
-                    reform_params,
-                    output_vars=[v],
-                )
-                results = pct_changes[v] * 100
+            results = ((reform_tpi[v] - base_tpi[v]) / base_tpi[v]) * 100
             results_years = results[start_index : start_index + num_years]
             results_overall = (
                 (
@@ -452,11 +449,12 @@ def wealth_moments_table(
     return table
 
 
-def tp_output_dump_table(
+def time_series_table(
     base_params,
     base_tpi,
     reform_params=None,
     reform_tpi=None,
+    stationarized=True,
     table_format=None,
     path=None,
 ):
@@ -471,6 +469,7 @@ def tp_output_dump_table(
         reform_params (OG-Core Specifications class): reform parameters
             object
         reform_tpi (dictionary): TP output from reform run
+        stationarized (bool): whether to report stationarized output
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
         path (string): path to save table to
@@ -501,6 +500,14 @@ def tp_output_dump_table(
         "total_tax_revenue",
         "business_tax_revenue",
     ]
+    # unstationarize variables if needed
+    if not stationarized:
+        for v in vars_to_keep:
+            base_tpi[v] = unstationarize_vars(v, base_tpi, base_params)
+            if reform_tpi:
+                reform_tpi[v] = unstationarize_vars(
+                    v, reform_tpi, reform_params
+                )
     base_dict = {k: base_tpi[k] for k in vars_to_keep}
     # update key names
     base_dict_final = dict(
