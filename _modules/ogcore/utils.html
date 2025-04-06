@@ -1653,132 +1653,99 @@
 
 
 
-<div class="viewcode-block" id="pct_change_unstationarized">
-<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.pct_change_unstationarized">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">pct_change_unstationarized</span><span class="p">(</span>
-    <span class="n">tpi_base</span><span class="p">,</span>
-    <span class="n">param_base</span><span class="p">,</span>
-    <span class="n">tpi_reform</span><span class="p">,</span>
-    <span class="n">param_reform</span><span class="p">,</span>
-    <span class="n">output_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">],</span>
+<div class="viewcode-block" id="unstationarize_vars">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.unstationarize_vars">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">unstationarize_vars</span><span class="p">(</span>
+    <span class="n">var</span><span class="p">,</span>
+    <span class="n">tpi_vars</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function takes the time paths of variables from the baseline</span>
-<span class="sd">    and reform and parameters from the baseline and reform runs and</span>
-<span class="sd">    computes percent changes for each variable in the output_vars list.</span>
-<span class="sd">    The function first unstationarizes the time paths of the variables</span>
-<span class="sd">    and then computes the percent changes.</span>
+<span class="sd">    This function takes a model variable and returns the unstationarized</span>
+<span class="sd">    value by adjusting for underlying growth in labor productivity</span>
+<span class="sd">    and population growth (where necessary).</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        tpi_base (Numpy array): time path of the output variables from</span>
+<span class="sd">        var (string): name of variable to unstationarize</span>
+<span class="sd">        tpi_vars (Numpy array): time path of the output variables from</span>
 <span class="sd">            the baseline run</span>
-<span class="sd">        param_base (Specifications object): dictionary of parameters</span>
+<span class="sd">        params (Specifications object): parameters</span>
 <span class="sd">            from the baseline run</span>
-<span class="sd">        tpi_reform (Numpy array): time path of the output variables from</span>
-<span class="sd">            the reform run</span>
-<span class="sd">        param_reform (Specifications object): dictionary of parameters</span>
-<span class="sd">            from the reform run</span>
-<span class="sd">        output_vars (list): list of variables for which to compute</span>
-<span class="sd">            percent changes</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pct_changes (dict): dictionary of percent changes for each</span>
-<span class="sd">            variable in output_vars list</span>
+<span class="sd">        pct_changes (array_like): unstationarized values for var</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># compute non-stationary variables</span>
-    <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;base&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;reform&quot;</span><span class="p">:</span> <span class="p">{}}</span>
-    <span class="n">pct_changes</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">T</span> <span class="o">=</span> <span class="n">param_base</span><span class="o">.</span><span class="n">T</span>
-    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">output_vars</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;Y&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;B&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;K&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;K_f&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;K_d&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;I&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;K_g&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;I_g&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Y_vec&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;K_vec&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C_vec&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;I_total&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;I_d&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;BQ&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;TR&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;business_tax_revenue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;iit_payroll_tax_revenue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;iit_revenue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;payroll_tax_revenue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;agg_pension_outlays&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;bequest_tax_revenue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;wealth_tax_revenue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cons_tax_revenue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;G&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;D&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;D_f&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;D_d&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;UBI_path&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;new_borrowing_f&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;debt_service_f&quot;</span><span class="p">,</span>
-        <span class="p">]:</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
-                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_base</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
-                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">param_base</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_base</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-            <span class="p">)</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
-                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_reform</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
-                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;L&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;L_vec&quot;</span><span class="p">,</span>
-        <span class="p">]:</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][</span>
-                <span class="p">:</span><span class="n">T</span>
-            <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_base</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][</span>
-                <span class="p">:</span><span class="n">T</span>
-            <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">param_reform</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;w&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ubi_path&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tr_path&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;bq_path&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;bmat_splus1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;bmat_s&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;c_path&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;y_before_tax_path&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tax_path&quot;</span><span class="p">,</span>
-        <span class="p">]:</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span>
-                <span class="n">param_base</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_base</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][</span>
-                <span class="p">:</span><span class="n">T</span>
-            <span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_reform</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_base</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">tpi_reform</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">pop_growth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">params</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
+    <span class="n">prod_growth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;_m&quot;</span> <span class="ow">in</span> <span class="n">var</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;_i&quot;</span> <span class="ow">in</span> <span class="n">var</span><span class="p">):</span>
+        <span class="n">pop_growth</span> <span class="o">=</span> <span class="n">pop_growth</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">prod_growth</span> <span class="o">=</span> <span class="n">prod_growth</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;B&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;K&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;K_f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;K_d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;I&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;K_g&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;I_g&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Y_m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;K_m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;C_i&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;I_total&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;I_d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;BQ&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TR&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;business_tax_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;iit_payroll_tax_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;iit_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;payroll_tax_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;agg_pension_outlays&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bequest_tax_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;wealth_tax_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cons_tax_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;G&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;D&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;D_f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;D_d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;UBI_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;new_borrowing_f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;debt_service_f&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
+        <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="n">tpi_vars</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">pop_growth</span> <span class="o">*</span> <span class="n">prod_growth</span>
+    <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;L&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;L_m&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
+        <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="n">tpi_vars</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">pop_growth</span>
 
-        <span class="c1"># calculate percent change</span>
-        <span class="n">pct_changes</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;reform&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span>
-            <span class="o">/</span> <span class="n">non_stationary_output</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span>
-            <span class="o">-</span> <span class="mi">1</span>
-        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ubi&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tr&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bq&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;b_sp1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;b_s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;c&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;c_i&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;before_tax_income&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hh_taxes&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
+        <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="n">tpi_vars</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">prod_growth</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="n">tpi_vars</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">pct_changes</span></div>
+    <span class="k">return</span> <span class="n">non_stationary_output</span></div>
 
 
 
-<div class="viewcode-block" id="param_dump_json">
-<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.param_dump_json">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">param_dump_json</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="params_to_json">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.params_to_json">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">params_to_json</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function creates a JSON file with the model parameters of the</span>
 <span class="sd">    format used for the default_parameters.json file.</span>
@@ -1801,13 +1768,25 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
-    <span class="c1"># Parameters that need to be turned into annual rates for default_parameters.json</span>
-    <span class="c1"># g_y_annual</span>
-    <span class="c1"># beta_annual</span>
-    <span class="c1"># delta_annual</span>
-    <span class="c1"># delta_tau_annual</span>
-    <span class="c1"># delta_g_annual</span>
-    <span class="c1"># world_int_rate_annual</span>
+    <span class="c1"># Parameters that need to be turned into annual rates for</span>
+    <span class="c1"># default_parameters.json</span>
+    <span class="n">annual_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;g_y_annual&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;beta_annual&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;delta_annual&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;delta_tau_annual&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;delta_g_annual&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;world_int_rate_annual&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">annual_list</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_annual&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">annual_value</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">val</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">ending_age</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">starting_age</span><span class="p">))</span>
+        <span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annual_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">converted_data</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">annual_value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_data</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">annual_value</span>
 
     <span class="c1"># Convert to JSON string</span>
     <span class="n">json_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">converted_data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>

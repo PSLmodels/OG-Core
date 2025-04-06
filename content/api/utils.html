@@ -435,8 +435,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.get_initial_path"><code class="docutils literal notranslate"><span class="pre">get_initial_path()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.mkdirs"><code class="docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.not_connected"><code class="docutils literal notranslate"><span class="pre">not_connected()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.param_dump_json"><code class="docutils literal notranslate"><span class="pre">param_dump_json()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_change_unstationarized"><code class="docutils literal notranslate"><span class="pre">pct_change_unstationarized()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.params_to_json"><code class="docutils literal notranslate"><span class="pre">params_to_json()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_diff_func"><code class="docutils literal notranslate"><span class="pre">pct_diff_func()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pickle_file_compare"><code class="docutils literal notranslate"><span class="pre">pickle_file_compare()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.print_progress"><code class="docutils literal notranslate"><span class="pre">print_progress()</span></code></a></li>
@@ -445,6 +444,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.save_return_table"><code class="docutils literal notranslate"><span class="pre">save_return_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.shift_bio_clock"><code class="docutils literal notranslate"><span class="pre">shift_bio_clock()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.to_timepath_shape"><code class="docutils literal notranslate"><span class="pre">to_timepath_shape()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.unstationarize_vars"><code class="docutils literal notranslate"><span class="pre">unstationarize_vars()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -843,8 +843,8 @@ or “quadratic”</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="ogcore.utils.param_dump_json">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">param_dump_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#param_dump_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.param_dump_json" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="ogcore.utils.params_to_json">
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">params_to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#params_to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.params_to_json" title="Link to this definition">#</a></dt>
 <dd><p>This function creates a JSON file with the model parameters of the
 format used for the default_parameters.json file.</p>
 <dl class="field-list simple">
@@ -859,42 +859,6 @@ format used for the default_parameters.json file.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>JSON (string)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ogcore.utils.pct_change_unstationarized">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">pct_change_unstationarized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tpi_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tpi_reform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_reform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['K',</span> <span class="pre">'Y',</span> <span class="pre">'C',</span> <span class="pre">'L',</span> <span class="pre">'r',</span> <span class="pre">'w']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#pct_change_unstationarized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.pct_change_unstationarized" title="Link to this definition">#</a></dt>
-<dd><p>This function takes the time paths of variables from the baseline
-and reform and parameters from the baseline and reform runs and
-computes percent changes for each variable in the output_vars list.
-The function first unstationarizes the time paths of the variables
-and then computes the percent changes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tpi_base</strong> (<em>Numpy array</em>) – time path of the output variables from
-the baseline run</p></li>
-<li><p><strong>param_base</strong> (<em>Specifications object</em>) – dictionary of parameters
-from the baseline run</p></li>
-<li><p><strong>tpi_reform</strong> (<em>Numpy array</em>) – time path of the output variables from
-the reform run</p></li>
-<li><p><strong>param_reform</strong> (<em>Specifications object</em>) – dictionary of parameters
-from the reform run</p></li>
-<li><p><strong>output_vars</strong> (<em>list</em>) – list of variables for which to compute
-percent changes</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>dictionary of percent changes for each</dt><dd><p>variable in output_vars list</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pct_changes (dict)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1100,6 +1064,31 @@ Tx1x1 array for time path computations.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.utils.unstationarize_vars">
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">unstationarize_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tpi_vars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#unstationarize_vars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.unstationarize_vars" title="Link to this definition">#</a></dt>
+<dd><p>This function takes a model variable and returns the unstationarized
+value by adjusting for underlying growth in labor productivity
+and population growth (where necessary).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var</strong> (<em>string</em>) – name of variable to unstationarize</p></li>
+<li><p><strong>tpi_vars</strong> (<em>Numpy array</em>) – time path of the output variables from
+the baseline run</p></li>
+<li><p><strong>params</strong> (<em>Specifications object</em>) – parameters
+from the baseline run</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>unstationarized values for var</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pct_changes (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -1190,8 +1179,7 @@ Tx1x1 array for time path computations.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.get_initial_path"><code class="docutils literal notranslate"><span class="pre">get_initial_path()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.mkdirs"><code class="docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.not_connected"><code class="docutils literal notranslate"><span class="pre">not_connected()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.param_dump_json"><code class="docutils literal notranslate"><span class="pre">param_dump_json()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_change_unstationarized"><code class="docutils literal notranslate"><span class="pre">pct_change_unstationarized()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.params_to_json"><code class="docutils literal notranslate"><span class="pre">params_to_json()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pct_diff_func"><code class="docutils literal notranslate"><span class="pre">pct_diff_func()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.pickle_file_compare"><code class="docutils literal notranslate"><span class="pre">pickle_file_compare()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.print_progress"><code class="docutils literal notranslate"><span class="pre">print_progress()</span></code></a></li>
@@ -1200,6 +1188,7 @@ Tx1x1 array for time path computations.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.save_return_table"><code class="docutils literal notranslate"><span class="pre">save_return_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.shift_bio_clock"><code class="docutils literal notranslate"><span class="pre">shift_bio_clock()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.to_timepath_shape"><code class="docutils literal notranslate"><span class="pre">to_timepath_shape()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.unstationarize_vars"><code class="docutils literal notranslate"><span class="pre">unstationarize_vars()</span></code></a></li>
 </ul>
 </li>
 </ul>

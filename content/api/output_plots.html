@@ -416,9 +416,13 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.output_plots">ogcore.output_plots</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.ability_bar"><code class="docutils literal notranslate"><span class="pre">ability_bar()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.ability_bar_ss"><code class="docutils literal notranslate"><span class="pre">ability_bar_ss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.inequality_plot"><code class="docutils literal notranslate"><span class="pre">inequality_plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.lambda_labels"><code class="docutils literal notranslate"><span class="pre">lambda_labels()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.plot_aggregates"><code class="docutils literal notranslate"><span class="pre">plot_aggregates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.plot_all"><code class="docutils literal notranslate"><span class="pre">plot_all()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.plot_gdp_ratio"><code class="docutils literal notranslate"><span class="pre">plot_gdp_ratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.plot_industry_aggregates"><code class="docutils literal notranslate"><span class="pre">plot_industry_aggregates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.ss_3Dplot"><code class="docutils literal notranslate"><span class="pre">ss_3Dplot()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.ss_profiles"><code class="docutils literal notranslate"><span class="pre">ss_profiles()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.tpi_profiles"><code class="docutils literal notranslate"><span class="pre">tpi_profiles()</span></code></a></li>
 </ul>
@@ -498,6 +502,74 @@ object</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.output_plots.inequality_plot">
+<span class="sig-prename descclassname"><span class="pre">ogcore.output_plots.</span></span><span class="sig-name descname"><span class="pre">inequality_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_tpi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_tpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'c'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ineq_measure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gini'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pctiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'levels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_line_years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_plots.html#inequality_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_plots.inequality_plot" title="Link to this definition">#</a></dt>
+<dd><p>Plot measures of inequality over the time path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_tpi</strong> (<em>dictionary</em>) – TPI output from baseline run</p></li>
+<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters
+object</p></li>
+<li><p><strong>reform_tpi</strong> (<em>dictionary</em>) – TPI output from reform run</p></li>
+<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters
+object</p></li>
+<li><p><strong>var</strong> (<em>string</em>) – name of variable to plot</p></li>
+<li><p><strong>ineq_measure</strong> (<em>string</em>) – inequality measure to plot, can be:
+‘gini’: Gini coefficient
+‘var_of_logs’: variance of logs
+‘pct_ratio’: percentile ratio
+‘top_share’: top share of total</p></li>
+<li><p><strong>pctiles</strong> (<em>tuple</em><em> or </em><em>None</em>) – percentiles for percentile ratios
+(numerator, denominator) or percentile for top share (not
+required for Gini or var_of_logs)</p></li>
+<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
+‘pct_diff’: plots percentage difference between baselien</p>
+<blockquote>
+<div><p>and reform ((reform-base)/base)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>’diff’: plots difference between baseline and reform</dt><dd><p>(reform-base)</p>
+</dd>
+</dl>
+<p>’levels’: plot variables in model units</p>
+</p></li>
+<li><p><strong>num_years_to_plot</strong> (<em>integer</em>) – number of years to include in plot</p></li>
+<li><p><strong>start_year</strong> (<em>integer</em>) – year to start plot</p></li>
+<li><p><strong>vertical_line_years</strong> (<em>list</em>) – list of integers for years want
+vertical lines at</p></li>
+<li><p><strong>plot_title</strong> (<em>string</em>) – title for plot</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>plot of inequality measure</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.output_plots.lambda_labels">
+<span class="sig-prename descclassname"><span class="pre">ogcore.output_plots.</span></span><span class="sig-name descname"><span class="pre">lambda_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambdas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_plots.html#lambda_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_plots.lambda_labels" title="Link to this definition">#</a></dt>
+<dd><p>Creates string labels of percentage groups for ability types given
+any number of ability types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lambdas</strong> (<em>np.array</em>) – array of lambdas for each ability type</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict of string labels for ability types</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>labels (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.output_plots.plot_aggregates">
 <span class="sig-prename descclassname"><span class="pre">ogcore.output_plots.</span></span><span class="sig-name descname"><span class="pre">plot_aggregates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_tpi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_tpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['Y',</span> <span class="pre">'C',</span> <span class="pre">'K',</span> <span class="pre">'L']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pct_diff'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stationarized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_line_years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_plots.html#plot_aggregates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_plots.plot_aggregates" title="Link to this definition">#</a></dt>
 <dd><p>Create a plot of macro aggregates.</p>
@@ -526,8 +598,7 @@ object</p></li>
 <div><p>economic forecast</p>
 </div></blockquote>
 </p></li>
-<li><p><strong>stationarized</strong> (<em>bool</em>) – whether used stationarized variables (False
-only affects pct_diff right now)</p></li>
+<li><p><strong>stationarized</strong> (<em>bool</em>) – whether used stationarized variables</p></li>
 <li><p><strong>num_years_to_plot</strong> (<em>integer</em>) – number of years to include in plot</p></li>
 <li><p><strong>start_year</strong> (<em>integer</em>) – year to start plot</p></li>
 <li><p><strong>forecast_data</strong> (<em>array_like</em>) – baseline economic forecast series,
@@ -599,6 +670,89 @@ vertical lines at</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>plot of ratio of a variable to GDP</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.output_plots.plot_industry_aggregates">
+<span class="sig-prename descclassname"><span class="pre">ogcore.output_plots.</span></span><span class="sig-name descname"><span class="pre">plot_industry_aggregates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_tpi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_tpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['Y_m']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind_names_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pct_diff'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stationarized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_line_years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_plots.html#plot_industry_aggregates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_plots.plot_industry_aggregates" title="Link to this definition">#</a></dt>
+<dd><p>Create a plot of macro aggregates by industry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_tpi</strong> (<em>dictionary</em>) – TPI output from baseline run</p></li>
+<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters
+object</p></li>
+<li><p><strong>reform_tpi</strong> (<em>dictionary</em>) – TPI output from reform run</p></li>
+<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters
+object</p></li>
+<li><p><strong>var_list</strong> (<em>list</em>) – names of variable to plot</p></li>
+<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
+‘pct_diff’: plots percentage difference between baseline</p>
+<blockquote>
+<div><p>and reform ((reform-base)/base)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>’diff’: plots difference between baseline and reform</dt><dd><p>(reform-base)</p>
+</dd>
+</dl>
+<p>’levels’: plot variables in model units
+‘forecast’: plots variables in levels relative to baseline</p>
+<blockquote>
+<div><p>economic forecast</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>stationarized</strong> (<em>bool</em>) – whether used stationarized variables</p></li>
+<li><p><strong>num_years_to_plot</strong> (<em>integer</em>) – number of years to include in plot</p></li>
+<li><p><strong>start_year</strong> (<em>integer</em>) – year to start plot</p></li>
+<li><p><strong>forecast_data</strong> (<em>array_like</em>) – baseline economic forecast series,
+must have length = num_year_to_plot</p></li>
+<li><p><strong>forecast_units</strong> (<em>str</em>) – units that baseline economic forecast is in</p></li>
+<li><p><strong>vertical_line_years</strong> (<em>list</em>) – list of integers for years want
+vertical lines at</p></li>
+<li><p><strong>plot_title</strong> (<em>string</em>) – title for plot</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>plot of macro aggregates</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.output_plots.ss_3Dplot">
+<span class="sig-prename descclassname"><span class="pre">ogcore.output_plots.</span></span><span class="sig-name descname"><span class="pre">ss_3Dplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_ss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'b_sp1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'levels'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_plots.html#ss_3Dplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_plots.ss_3Dplot" title="Link to this definition">#</a></dt>
+<dd><p>Create a 3d plot of household decisions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters object</p></li>
+<li><p><strong>base_ss</strong> (<em>dictionary</em>) – SS output from baseline run</p></li>
+<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters object</p></li>
+<li><p><strong>reform_ss</strong> (<em>dictionary</em>) – SS output from reform run</p></li>
+<li><p><strong>var</strong> (<em>string</em>) – name of variable to plot</p></li>
+<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
+‘pct_diff’: plots percentage difference between baseline</p>
+<blockquote>
+<div><p>and reform ((reform-base)/base)</p>
+</div></blockquote>
+<p>’diff’: plots difference between baseline and reform (reform-base)
+‘levels’: plot variables in model units</p>
+</p></li>
+<li><p><strong>plot_title</strong> (<em>string</em>) – title for plot</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>plot of household decisions</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>fig (Matplotlib plot object)</p>
@@ -736,9 +890,13 @@ object</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.output_plots">ogcore.output_plots</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.ability_bar"><code class="docutils literal notranslate"><span class="pre">ability_bar()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.ability_bar_ss"><code class="docutils literal notranslate"><span class="pre">ability_bar_ss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.inequality_plot"><code class="docutils literal notranslate"><span class="pre">inequality_plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.lambda_labels"><code class="docutils literal notranslate"><span class="pre">lambda_labels()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.plot_aggregates"><code class="docutils literal notranslate"><span class="pre">plot_aggregates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.plot_all"><code class="docutils literal notranslate"><span class="pre">plot_all()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.plot_gdp_ratio"><code class="docutils literal notranslate"><span class="pre">plot_gdp_ratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.plot_industry_aggregates"><code class="docutils literal notranslate"><span class="pre">plot_industry_aggregates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.ss_3Dplot"><code class="docutils literal notranslate"><span class="pre">ss_3Dplot()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.ss_profiles"><code class="docutils literal notranslate"><span class="pre">ss_profiles()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_plots.tpi_profiles"><code class="docutils literal notranslate"><span class="pre">tpi_profiles()</span></code></a></li>
 </ul>

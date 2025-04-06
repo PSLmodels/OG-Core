@@ -428,6 +428,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_mort_rates_data"><code class="docutils literal notranslate"><span class="pre">plot_mort_rates_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_omega_fixed"><code class="docutils literal notranslate"><span class="pre">plot_omega_fixed()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_pop_growth"><code class="docutils literal notranslate"><span class="pre">plot_pop_growth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_population"><code class="docutils literal notranslate"><span class="pre">plot_population()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_population_path"><code class="docutils literal notranslate"><span class="pre">plot_population_path()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.txfunc_graph"><code class="docutils literal notranslate"><span class="pre">txfunc_graph()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.txfunc_sse_plot"><code class="docutils literal notranslate"><span class="pre">txfunc_sse_plot()</span></code></a></li>
@@ -824,6 +825,29 @@ is returned</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.parameter_plots.plot_population">
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['SS']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population" title="Link to this definition">#</a></dt>
+<dd><p>Plot the distribution of the population over age for various years.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-Core Specifications class</em>) – parameters object</p></li>
+<li><p><strong>years_to_plot</strong> (<em>list</em>) – list of years to plot, ‘SS’ will denote
+the steady-state period</p></li>
+<li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>plot of population distribution</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>fig (Matplotlib plot object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_population_path">
 <span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_path_lev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population_path" title="Link to this definition">#</a></dt>
 <dd><p>Plot the distribution of the population over age for various years.</p>
@@ -993,6 +1017,7 @@ size is BW x S</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_mort_rates_data"><code class="docutils literal notranslate"><span class="pre">plot_mort_rates_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_omega_fixed"><code class="docutils literal notranslate"><span class="pre">plot_omega_fixed()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_pop_growth"><code class="docutils literal notranslate"><span class="pre">plot_pop_growth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_population"><code class="docutils literal notranslate"><span class="pre">plot_population()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.plot_population_path"><code class="docutils literal notranslate"><span class="pre">plot_population_path()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.txfunc_graph"><code class="docutils literal notranslate"><span class="pre">txfunc_graph()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.parameter_plots.txfunc_sse_plot"><code class="docutils literal notranslate"><span class="pre">txfunc_sse_plot()</span></code></a></li>
