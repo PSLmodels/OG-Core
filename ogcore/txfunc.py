@@ -596,6 +596,8 @@ def txfunc_est(
         output_dir (str): output directory for saving plot files
         graph (bool): whether to plot the estimated functions compared
             to the data
+        params_init (Numpy array): initial values for the parameters
+        global_opt (bool): whether to use global optimization method
 
     Returns:
         (tuple): tax function estimation output:
@@ -802,9 +804,9 @@ def txfunc_est(
         # Need to use a different functional form than for DEP function.
         # '''
         if params_init is None:
-            phi0_init = 1.0
-            phi1_init = 1.0
-            phi2_init = 1.0
+            phi0_init = 0.3
+            phi1_init = 0.3
+            phi2_init = 0.01
             params_init = np.array([phi0_init, phi1_init, phi2_init])
         tx_objs = (
             np.array([None]),
@@ -815,8 +817,7 @@ def txfunc_est(
             tax_func_type,
             rate_type,
         )
-        # bnds = ((1e-12, None), (1e-12, None), (1e-12, None))
-        bnds = ((1e-12, 9999), (1e-12, 9999), (1e-12, 9999))
+        bnds = ((1e-12, 1.0), (1e-12, 1.0), (1e-12, 1.0))
         if global_opt:
             params_til = opt.differential_evolution(
                 wsumsq, bounds=bnds, args=(tx_objs), seed=1
