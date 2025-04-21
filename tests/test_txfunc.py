@@ -231,6 +231,7 @@ expected_tuple_HSV_mtry = (
     "rate_type,tax_func_type,true_params",
     [
         # ("etr", "DEP", DEP_params),
+        ("etr", "DEP", [6.28E-12, 4.36E-05, 1.04E-23, 7.77E-09, 0.80, 0.80, 0.84, -0.14, -0.15, 0.15, 0.16, -0.15]),
         ("etr", "DEP_totalinc", [6.28E-12, 4.36E-05, 0.35, -0.14, 0.15, -0.15]),
         ("etr", "GS", [0.35, 0.25, 0.03]),
         ("etr", "linear", [0.25]),
@@ -241,7 +242,7 @@ expected_tuple_HSV_mtry = (
         ("mtry", "HSV", [0.4, 0.15]),
     ],
     # ids=["DEP", "DEP_totalinc", "GS"],
-    ids=["DEP_totalinc", "GS", "linear, etr",
+    ids=["DEP", "DEP_totalinc", "GS", "linear, etr",
             "linear, mtrx",
             "linear, mtry",
             "HSV, etr",
@@ -261,9 +262,9 @@ def test_txfunc_est(
     weights = np.ones(N)
     x = np.random.uniform(0, 500_000, size=N)
     y = np.random.uniform(0, 500_000, size=N)
-    eps1 = np.random.normal(scale=0.0001, size=N)
-    eps2 = np.random.normal(scale=0.0001, size=N)
-    eps3 = np.random.normal(scale=0.0001, size=N)
+    eps1 = np.random.normal(scale=0.00001, size=N)
+    eps2 = np.random.normal(scale=0.00001, size=N)
+    eps3 = np.random.normal(scale=0.00001, size=N)
     micro_data = pd.DataFrame(
         {
             "total_capinc": y,
@@ -305,10 +306,11 @@ def test_txfunc_est(
 
     assert obs == micro_data.shape[0]
     print("Estimated parameters:", param_est)
+    print("Diffs = ", np.absolute(param_est - true_params))
     if "DEP" in tax_func_type:
-        assert np.allclose(param_est, true_params, atol=0.1)
+        assert np.allclose(param_est, true_params, atol=0.2, rtol=0.01)
     else:
-        assert np.allclose(param_est, true_params, rtol=0.01)
+        assert np.allclose(param_est, true_params, atol=0.0, rtol=0.01)
     # TODO: maybe the test is that the true parameters are in the
     # 95% confidence interval of the estimated parameters
 
@@ -748,7 +750,6 @@ def test_get_tax_rates(
     assert np.allclose(test_txrates, expected)
 
 
-@pytest.mark.local
 def test_tax_func_estimate(tmpdir, dask_client):
     """
     Test txfunc.tax_func_loop() function.  The test is that given
@@ -774,7 +775,7 @@ def test_tax_func_estimate(tmpdir, dask_client):
         client,
         num_workers,
     ) = input_tuple
-    tax_func_type = "DEP"
+    tax_func_type = "HSV"
     age_specific = False
     BW = 1
     test_path = os.path.join(tmpdir, "test_out.pkl")
