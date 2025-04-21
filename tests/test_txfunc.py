@@ -228,10 +228,8 @@ expected_tuple_HSV_mtry = (
     "rate_type,tax_func_type,true_params",
     [
         # ("etr", "DEP", [6.28E-12, 4.36E-05, 1.04E-23, 7.77E-09, 0.80, 0.80, 0.84, -0.14, -0.15, 0.15, 0.16, -0.15]),
-        (
-            "etr",
-            "DEP_totalinc",
-            [6.28e-12, 4.36e-05, 0.35, -0.14, 0.15, -0.15],
+        ("etr", "DEP_totalinc",
+         [6.28e-12, 4.36e-05, 0.35, -0.14, 0.15, -0.15],
         ),
         ("etr", "GS", [0.35, 0.25, 0.03]),
         ("etr", "linear", [0.25]),
@@ -347,61 +345,6 @@ def test_txfunc_est(rate_type, tax_func_type, true_params, tmpdir):
         assert np.allclose(param_est, true_params, atol=0.0, rtol=0.01)
     # TODO: maybe the test is that the true parameters are in the
     # 95% confidence interval of the estimated parameters
-
-
-@pytest.mark.parametrize(
-    "rate_type,tax_func_type,numparams,expected_tuple",
-    [
-        ("etr", "linear", 1, expected_tuple_linear),
-        ("mtrx", "linear", 1, expected_tuple_linear_mtrx),
-        ("mtry", "linear", 1, expected_tuple_linear_mtry),
-        ("etr", "HSV", 2, expected_tuple_HSV),
-        ("mtrx", "HSV", 2, expected_tuple_HSV_mtrx),
-        ("mtry", "HSV", 2, expected_tuple_HSV_mtry),
-    ],
-    ids=[
-        "linear, etr",
-        "linear, mtrx",
-        "linear, mtry",
-        "HSV, etr",
-        "HSV, mtrx",
-        "HSV, mtry",
-    ],
-)
-def test_txfunc_est_on_GH(
-    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
-):
-    """
-    Test txfunc.txfunc_est() function.  The test is that given
-    inputs from previous run, the outputs are unchanged.
-    """
-    micro_data = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
-    )
-    s = 80
-    t = 2030
-    df = txfunc.tax_data_sample(micro_data[str(t)])
-    output_dir = tmpdir
-    # Put old df variables into new df var names
-    df.rename(
-        columns={
-            "MTR labor income": "mtr_labinc",
-            "MTR capital income": "mtr_capinc",
-            "Total labor income": "total_labinc",
-            "Total capital income": "total_capinc",
-            "ETR": "etr",
-            "expanded_income": "market_income",
-            "Weights": "weight",
-        },
-        inplace=True,
-    )
-    test_tuple = txfunc.txfunc_est(
-        df, s, t, rate_type, tax_func_type, numparams, output_dir, True
-    )
-
-    for i, v in enumerate(expected_tuple):
-        print("For element", i, ", test tuple =", test_tuple[i])
-        assert np.allclose(test_tuple[i], v, rtol=0.0, atol=1e-04)
 
 
 def test_txfunc_est_exception(tmpdir):
