@@ -406,9 +406,6 @@ def test_tax_data_sample():
     assert isinstance(df, pd.DataFrame)
 
 
-@pytest.mark.local
-# mark as local run since results work on Mac, but differ on other
-# platforms
 def test_tax_func_loop():
     """
     Test txfunc.tax_func_loop() function. The test is that given inputs from
@@ -434,7 +431,8 @@ def test_tax_func_loop():
         numparams,
         tpers,
     ) = input_tuple
-    tax_func_type = "DEP"
+    tax_func_type = "HSV"
+    numparams = 2
     # Rename and create vars to suit new micro_data var names
     micro_data["total_labinc"] = (
         micro_data["Wage income"] + micro_data["SE income"]
@@ -482,7 +480,6 @@ def test_tax_func_loop():
         output_dir,
         numparams,
     )
-
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "tax_func_loop_outputs.pkl")
     )
