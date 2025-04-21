@@ -288,9 +288,6 @@ def get_tax_rates(
             elif (
                 income.ndim == 2
             ):  # I think only calls here are for loops over S and J
-                # for s in range(income.shape[0]):
-                #     for j in range(income.shape[1]):
-                #         txrates[s, j] = params[s][j][0](income[s, j])
                 txrates = [
                     [
                         params[s][j][0](income[s, j])
@@ -299,12 +296,6 @@ def get_tax_rates(
                     for s in range(income.shape[0])
                 ]
             else:  # to catch 3D arrays, looping over T, S, J
-                # for t in range(income.shape[0]):
-                #     for s in range(income.shape[1]):
-                #         for j in range(income.shape[2]):
-                #             txrates[t, s, j] = params[t][s][j][0](
-                #                 income[t, s, j]
-                #             )
                 txrates = [
                     [
                         [
@@ -642,10 +633,14 @@ def txfunc_est(
         # '''
         # if Atil_init not exist, set to 1.0
         if params_init is None:
-            Atil_init = 1.0
-            Btil_init = 1.0
-            Ctil_init = 1.0
-            Dtil_init = 1.0
+            # Atil_init = 1.0
+            # Btil_init = 1.0
+            # Ctil_init = 1.0
+            # Dtil_init = 1.0
+            Atil_init = 0.001
+            Btil_init = 0.001
+            Ctil_init = 0.001
+            Dtil_init = 0.001
             max_x_init = np.minimum(
                 txrates[(df["total_capinc"] < y_20pctl)].max(), MAX_ETR + 0.05
             )
@@ -680,15 +675,6 @@ def txfunc_est(
         )
         lb_max_x = np.maximum(min_x, 0.0) + 1e-4
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
-        # bnds = (
-        #     (1e-12, None),
-        #     (1e-12, None),
-        #     (1e-12, None),
-        #     (1e-12, None),
-        #     (lb_max_x, MAX_ETR + 0.15),
-        #     (lb_max_y, MAX_ETR + 0.15),
-        #     (0, 1),
-        # )
         bnds = (
             (1e-12, 9999),
             (1e-12, 9999),
