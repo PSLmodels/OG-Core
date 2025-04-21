@@ -224,15 +224,15 @@ expected_tuple_HSV_mtry = (
 )
 
 
-@pytest.mark.local  # only marking as local because platform
-# affects results from scipy.opt that is called in this test - so it'll
-# pass if run on Mac with MKL, but not necessarily on other platforms
 @pytest.mark.parametrize(
     "rate_type,tax_func_type,true_params",
     [
-        # ("etr", "DEP", DEP_params),
-        ("etr", "DEP", [6.28E-12, 4.36E-05, 1.04E-23, 7.77E-09, 0.80, 0.80, 0.84, -0.14, -0.15, 0.15, 0.16, -0.15]),
-        ("etr", "DEP_totalinc", [6.28E-12, 4.36E-05, 0.35, -0.14, 0.15, -0.15]),
+        # ("etr", "DEP", [6.28E-12, 4.36E-05, 1.04E-23, 7.77E-09, 0.80, 0.80, 0.84, -0.14, -0.15, 0.15, 0.16, -0.15]),
+        (
+            "etr",
+            "DEP_totalinc",
+            [6.28e-12, 4.36e-05, 0.35, -0.14, 0.15, -0.15],
+        ),
         ("etr", "GS", [0.35, 0.25, 0.03]),
         ("etr", "linear", [0.25]),
         ("mtrx", "linear", [0.4]),
@@ -241,18 +241,19 @@ expected_tuple_HSV_mtry = (
         ("mtrx", "HSV", [0.5, 0.1]),
         ("mtry", "HSV", [0.4, 0.15]),
     ],
-    # ids=["DEP", "DEP_totalinc", "GS"],
-    ids=["DEP", "DEP_totalinc", "GS", "linear, etr",
-            "linear, mtrx",
-            "linear, mtry",
-            "HSV, etr",
-            "HSV, mtrx",
-            "HSV, mtry"
-            ],
+    # ids=["DEP", "DEP_totalinc", "GS", "linear, etr",
+    ids=[
+        "DEP_totalinc",
+        "GS",
+        "linear, etr",
+        "linear, mtrx",
+        "linear, mtry",
+        "HSV, etr",
+        "HSV, mtrx",
+        "HSV, mtry",
+    ],
 )
-def test_txfunc_est(
-    rate_type, tax_func_type, true_params, tmpdir
-):
+def test_txfunc_est(rate_type, tax_func_type, true_params, tmpdir):
     """
     Test txfunc.txfunc_est() function.  The test the estimator can
     recover (close to) the true parameters.
@@ -270,38 +271,71 @@ def test_txfunc_est(
             "total_capinc": y,
             "total_labinc": x,
             "weight": weights,
-            "total_tax": ((
-                txfunc.get_tax_rates(
-                    true_params,
-                    x, y, weights, tax_func_type,
-                    rate_type="etr",
-                    for_estimation=False) + eps1) * (x + y)),
+            "total_tax": (
+                (
+                    txfunc.get_tax_rates(
+                        true_params,
+                        x,
+                        y,
+                        weights,
+                        tax_func_type,
+                        rate_type="etr",
+                        for_estimation=False,
+                    )
+                    + eps1
+                )
+                * (x + y)
+            ),
             "etr": (
                 txfunc.get_tax_rates(
                     true_params,
-                    x, y, weights, tax_func_type,
+                    x,
+                    y,
+                    weights,
+                    tax_func_type,
                     rate_type="etr",
-                    for_estimation=False) + eps1),
+                    for_estimation=False,
+                )
+                + eps1
+            ),
             "mtr_labinc": (
                 txfunc.get_tax_rates(
                     true_params,
-                    x, y, weights, tax_func_type,
+                    x,
+                    y,
+                    weights,
+                    tax_func_type,
                     rate_type="mtr",
-                    for_estimation=False) + eps2),
+                    for_estimation=False,
+                )
+                + eps2
+            ),
             "mtr_capinc": (
                 txfunc.get_tax_rates(
                     true_params,
-                    x, y, weights, tax_func_type,
+                    x,
+                    y,
+                    weights,
+                    tax_func_type,
                     rate_type="mtr",
-                    for_estimation=False) + eps3),
+                    for_estimation=False,
+                )
+                + eps3
+            ),
         }
     )
     micro_data["age"] = 44
     micro_data["year"] = 2025
     output_dir = tmpdir
     param_est, _, obs, _ = txfunc.txfunc_est(
-        micro_data, 44, 2025, rate_type, tax_func_type,
-        len(true_params), output_dir, True
+        micro_data,
+        44,
+        2025,
+        rate_type,
+        tax_func_type,
+        len(true_params),
+        output_dir,
+        True,
     )
 
     assert obs == micro_data.shape[0]

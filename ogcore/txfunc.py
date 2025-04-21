@@ -633,14 +633,10 @@ def txfunc_est(
         # '''
         # if Atil_init not exist, set to 1.0
         if params_init is None:
-            # Atil_init = 1.0
-            # Btil_init = 1.0
-            # Ctil_init = 1.0
-            # Dtil_init = 1.0
-            Atil_init = 0.001
-            Btil_init = 0.001
-            Ctil_init = 0.001
-            Dtil_init = 0.001
+            Atil_init = 1.0
+            Btil_init = 1.0
+            Ctil_init = 1.0
+            Dtil_init = 1.0
             max_x_init = np.minimum(
                 txrates[(df["total_capinc"] < y_20pctl)].max(), MAX_ETR + 0.05
             )
