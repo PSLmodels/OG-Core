@@ -726,6 +726,7 @@ def test_get_tax_rates(
     assert np.allclose(test_txrates, expected)
 
 
+@pytest.mark.local
 def test_tax_func_estimate(tmpdir, dask_client):
     """
     Test txfunc.tax_func_loop() function.  The test is that given
