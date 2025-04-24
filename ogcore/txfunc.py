@@ -1687,7 +1687,7 @@ def tax_func_estimate(
             )
         )
     if client:
-        futures = client.compute(lazy_values, num_workers=num_workers)
+        futures = client.compute(lazy_values)
         results = client.gather(futures)
     else:
         results = results = compute(

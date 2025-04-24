@@ -795,7 +795,7 @@ def run_TPI(p, client=None):
                 )
             )
         if client:
-            futures = client.compute(lazy_values, num_workers=p.num_workers)
+            futures = client.compute(lazy_values)
             results = client.gather(futures)
         else:
             results = compute(

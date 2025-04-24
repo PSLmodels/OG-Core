@@ -272,7 +272,7 @@ def inner_loop(outer_loop_vars, p, client):
             )
         )
     if client:
-        futures = client.compute(lazy_values, num_workers=p.num_workers)
+        futures = client.compute(lazy_values)
         results = client.gather(futures)
     else:
         results = results = compute(
