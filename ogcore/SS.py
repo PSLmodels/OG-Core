@@ -34,12 +34,6 @@ logging.basicConfig(
     level=log_level, format="%(message)s"  # Only show the message itself
 )
 
-"""
-A global future for the Parameters object for client workers.
-This is scattered once and place at module scope, then used
-by the client in the inner loop.
-"""
-scattered_p = None
 
 """
 ------------------------------------------------------------------------
@@ -223,12 +217,6 @@ def inner_loop(outer_loop_vars, p, client):
                 units
 
     """
-    # Retrieve the "scattered" Parameters object.
-    global scattered_p
-
-    if scattered_p is None:
-        scattered_p = client.scatter(p, broadcast=True) if client else p
-
     # unpack variables to pass to function
     bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline, factor = (
         outer_loop_vars
@@ -247,35 +235,71 @@ def inner_loop(outer_loop_vars, p, client):
     tr = household.get_tr(TR, None, p, "SS")
     ubi = p.ubi_nom_array[-1, :, :] / factor
 
+    scattered_p = client.scatter(p, broadcast=True) if client else p
+
     lazy_values = []
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
-        euler_params = (
+
+        # Create a delayed function that will access the scattered_p
+        @delayed
+        def solve_for_j(
+            guesses,
             r_p,
             w,
             p_tilde,
-            bq[:, j],
-            rm[:, j],
-            tr[:, j],
-            ubi[:, j],
+            bq_j,
+            rm_j,
+            tr_j,
+            ubi_j,
             factor,
             j,
-            scattered_p,
-        )
-        lazy_values.append(
-            delayed(opt.root)(
+            scattered_p_future,
+        ):
+            # This function will be executed on workers with access to scattered_p
+            return opt.root(
                 euler_equation_solver,
                 guesses * 0.9,
-                args=euler_params,
+                args=(
+                    r_p,
+                    w,
+                    p_tilde,
+                    bq_j,
+                    rm_j,
+                    tr_j,
+                    ubi_j,
+                    factor,
+                    j,
+                    scattered_p_future,
+                ),
                 method=p.FOC_root_method,
                 tol=MINIMIZER_TOL,
             )
+
+        # Add the delayed computation to our list
+        lazy_values.append(
+            solve_for_j(
+                guesses,
+                r_p,
+                w,
+                p_tilde,
+                bq[:, j],
+                rm[:, j],
+                tr[:, j],
+                ubi[:, j],
+                factor,
+                j,
+                scattered_p,
+            )
         )
+
     if client:
+        # Compute all the values
         futures = client.compute(lazy_values)
+        # Later, gather the results when needed
         results = client.gather(futures)
     else:
-        results = results = compute(
+        results = compute(
             *lazy_values,
             scheduler=dask.multiprocessing.get,
             num_workers=p.num_workers,
@@ -1197,11 +1221,6 @@ def run_SS(p, client=None):
             results
 
     """
-    global scattered_p
-    if client:
-        scattered_p = client.scatter(p, broadcast=True)
-    else:
-        scattered_p = p
 
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
