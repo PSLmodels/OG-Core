@@ -659,9 +659,6 @@
             <span class="k">elif</span> <span class="p">(</span>
                 <span class="n">income</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
             <span class="p">):</span>  <span class="c1"># I think only calls here are for loops over S and J</span>
-                <span class="c1"># for s in range(income.shape[0]):</span>
-                <span class="c1">#     for j in range(income.shape[1]):</span>
-                <span class="c1">#         txrates[s, j] = params[s][j][0](income[s, j])</span>
                 <span class="n">txrates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="p">[</span>
                         <span class="n">params</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">](</span><span class="n">income</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
@@ -670,12 +667,6 @@
                     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">income</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># to catch 3D arrays, looping over T, S, J</span>
-                <span class="c1"># for t in range(income.shape[0]):</span>
-                <span class="c1">#     for s in range(income.shape[1]):</span>
-                <span class="c1">#         for j in range(income.shape[2]):</span>
-                <span class="c1">#             txrates[t, s, j] = params[t][s][j][0](</span>
-                <span class="c1">#                 income[t, s, j]</span>
-                <span class="c1">#             )</span>
                 <span class="n">txrates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="p">[</span>
                         <span class="p">[</span>
@@ -979,6 +970,8 @@
 <span class="sd">        output_dir (str): output directory for saving plot files</span>
 <span class="sd">        graph (bool): whether to plot the estimated functions compared</span>
 <span class="sd">            to the data</span>
+<span class="sd">        params_init (Numpy array): initial values for the parameters</span>
+<span class="sd">        global_opt (bool): whether to use global optimization method</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): tax function estimation output:</span>
@@ -1061,15 +1054,6 @@
         <span class="p">)</span>
         <span class="n">lb_max_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-4</span>
         <span class="n">lb_max_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">min_y</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-4</span>
-        <span class="c1"># bnds = (</span>
-        <span class="c1">#     (1e-12, None),</span>
-        <span class="c1">#     (1e-12, None),</span>
-        <span class="c1">#     (1e-12, None),</span>
-        <span class="c1">#     (1e-12, None),</span>
-        <span class="c1">#     (lb_max_x, MAX_ETR + 0.15),</span>
-        <span class="c1">#     (lb_max_y, MAX_ETR + 0.15),</span>
-        <span class="c1">#     (0, 1),</span>
-        <span class="c1"># )</span>
         <span class="n">bnds</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
             <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span>
@@ -1185,9 +1169,9 @@
         <span class="c1"># Need to use a different functional form than for DEP function.</span>
         <span class="c1"># &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">params_init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">phi0_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-            <span class="n">phi1_init</span> <span class="o">=</span> <span class="mf">1.0</span>
-            <span class="n">phi2_init</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">phi0_init</span> <span class="o">=</span> <span class="mf">0.3</span>
+            <span class="n">phi1_init</span> <span class="o">=</span> <span class="mf">0.3</span>
+            <span class="n">phi2_init</span> <span class="o">=</span> <span class="mf">0.01</span>
             <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">phi0_init</span><span class="p">,</span> <span class="n">phi1_init</span><span class="p">,</span> <span class="n">phi2_init</span><span class="p">])</span>
         <span class="n">tx_objs</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">None</span><span class="p">]),</span>
@@ -1198,8 +1182,7 @@
             <span class="n">tax_func_type</span><span class="p">,</span>
             <span class="n">rate_type</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="c1"># bnds = ((1e-12, None), (1e-12, None), (1e-12, None))</span>
-        <span class="n">bnds</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mi">9999</span><span class="p">))</span>
+        <span class="n">bnds</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">global_opt</span><span class="p">:</span>
             <span class="n">params_til</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">differential_evolution</span><span class="p">(</span>
                 <span class="n">wsumsq</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bnds</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tx_objs</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span>
@@ -1222,15 +1205,16 @@
         <span class="c1"># set initial values to parameter estimates</span>
         <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">phi0til</span><span class="p">,</span> <span class="n">phi1til</span><span class="p">,</span> <span class="n">phi2til</span><span class="p">])</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;HSV&quot;</span><span class="p">:</span>
-        <span class="c1"># &#39;&#39;&#39;</span>
-        <span class="c1"># Estimate Heathcote, Storesletten, Violante (2017) parameters via</span>
-        <span class="c1"># OLS</span>
-        <span class="c1"># &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimate Heathcote, Storesletten, Violante (2017) parameters via</span>
+<span class="sd">        OLS</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">constant</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
         <span class="n">ln_income</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
         <span class="n">X_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">constant</span><span class="p">,</span> <span class="n">ln_income</span><span class="p">))</span>
         <span class="n">Y_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">txrates</span><span class="p">)</span>
-        <span class="n">param_est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X_mat</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X_mat</span><span class="p">)</span> <span class="o">@</span> <span class="n">X_mat</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Y_vec</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">wgts</span><span class="p">)</span>
+        <span class="n">param_est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X_mat</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">W</span> <span class="o">@</span> <span class="n">X_mat</span><span class="p">)</span> <span class="o">@</span> <span class="n">X_mat</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">W</span> <span class="o">@</span> <span class="n">Y_vec</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numparams</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s2">&quot;etr&quot;</span><span class="p">:</span>
             <span class="n">ln_lambda_s_hat</span><span class="p">,</span> <span class="n">minus_tau_s_hat</span> <span class="o">=</span> <span class="n">param_est</span>
@@ -1241,16 +1225,15 @@
             <span class="n">params</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lambda_s_hat</span><span class="p">,</span> <span class="o">-</span><span class="n">minus_tau_s_hat</span><span class="p">])</span>
         <span class="c1"># Calculate the WSSE</span>
         <span class="n">Y_hat</span> <span class="o">=</span> <span class="n">X_mat</span> <span class="o">@</span> <span class="n">params</span>
-        <span class="c1"># wsse = ((Y_vec - Y_hat) ** 2 * wgts).sum()</span>
-        <span class="n">wsse</span> <span class="o">=</span> <span class="p">((</span><span class="n">Y_vec</span> <span class="o">-</span> <span class="n">Y_hat</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">wsse</span> <span class="o">=</span> <span class="p">((</span><span class="n">Y_vec</span> <span class="o">-</span> <span class="n">Y_hat</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">wgts</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="n">obs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">params_to_plot</span> <span class="o">=</span> <span class="n">params</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
-        <span class="c1"># &#39;&#39;&#39;</span>
-        <span class="c1"># For linear rates, just take the mean ETR or MTR by age-year.</span>
-        <span class="c1"># Can use DEP form and set all parameters except for the shift</span>
-        <span class="c1"># parameter to zero.</span>
-        <span class="c1"># &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For linear rates, just take the mean ETR or MTR by age-year.</span>
+<span class="sd">        Can use DEP form and set all parameters except for the shift</span>
+<span class="sd">        parameter to zero.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numparams</span><span class="p">)</span>
         <span class="n">wsse</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">obs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -2096,7 +2079,7 @@
             <span class="p">)</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">futures</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">lazy_values</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span>
+        <span class="n">futures</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">lazy_values</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">futures</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">results</span> <span class="o">=</span> <span class="n">compute</span><span class="p">(</span>
