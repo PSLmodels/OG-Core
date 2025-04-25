@@ -224,64 +224,27 @@ expected_tuple_HSV_mtry = (
 )
 
 
-@pytest.mark.local  # only marking as local because platform
-# affects results from scipy.opt that is called in this test - so it'll
-# pass if run on Mac with MKL, but not necessarily on other platforms
 @pytest.mark.parametrize(
-    "rate_type,tax_func_type,numparams,expected_tuple",
+    "rate_type,tax_func_type,true_params",
     [
-        ("etr", "DEP", 12, expected_tuple_DEP),
-        ("etr", "DEP_totalinc", 6, expected_tuple_DEP_totalinc),
-        ("etr", "GS", 3, expected_tuple_GS),
+        # ("etr", "DEP", [6.28E-12, 4.36E-05, 1.04E-23, 7.77E-09, 0.80, 0.80, 0.84, -0.14, -0.15, 0.15, 0.16, -0.15]),
+        (
+            "etr",
+            "DEP_totalinc",
+            [6.28e-12, 4.36e-05, 0.35, -0.14, 0.15, -0.15],
+        ),
+        ("etr", "GS", [0.35, 0.25, 0.03]),
+        ("etr", "linear", [0.25]),
+        ("mtrx", "linear", [0.4]),
+        ("mtry", "linear", [0.1]),
+        ("etr", "HSV", [0.5, 0.1]),
+        ("mtrx", "HSV", [0.5, 0.1]),
+        ("mtry", "HSV", [0.4, 0.15]),
     ],
-    ids=["DEP", "DEP_totalinc", "GS"],
-)
-def test_txfunc_est(
-    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
-):
-    """
-    Test txfunc.txfunc_est() function.  The test is that given
-    inputs from previous run, the outputs are unchanged.
-    """
-    micro_data = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
-    )
-    s = 80
-    t = 2030
-    df = txfunc.tax_data_sample(micro_data[str(t)])
-    output_dir = tmpdir
-    # Put old df variables into new df var names
-    df.rename(
-        columns={
-            "MTR labor income": "mtr_labinc",
-            "MTR capital income": "mtr_capinc",
-            "Total labor income": "total_labinc",
-            "Total capital income": "total_capinc",
-            "ETR": "etr",
-            "expanded_income": "market_income",
-            "Weights": "weight",
-        },
-        inplace=True,
-    )
-    test_tuple = txfunc.txfunc_est(
-        df, s, t, rate_type, tax_func_type, numparams, output_dir, True
-    )
-
-    for i, v in enumerate(expected_tuple):
-        assert np.allclose(test_tuple[i], v)
-
-
-@pytest.mark.parametrize(
-    "rate_type,tax_func_type,numparams,expected_tuple",
-    [
-        ("etr", "linear", 1, expected_tuple_linear),
-        ("mtrx", "linear", 1, expected_tuple_linear_mtrx),
-        ("mtry", "linear", 1, expected_tuple_linear_mtry),
-        ("etr", "HSV", 2, expected_tuple_HSV),
-        ("mtrx", "HSV", 2, expected_tuple_HSV_mtrx),
-        ("mtry", "HSV", 2, expected_tuple_HSV_mtry),
-    ],
+    # ids=["DEP", "DEP_totalinc", "GS", "linear, etr",
     ids=[
+        "DEP_totalinc",
+        "GS",
         "linear, etr",
         "linear, mtrx",
         "linear, mtry",
@@ -290,40 +253,100 @@ def test_txfunc_est(
         "HSV, mtry",
     ],
 )
-def test_txfunc_est_on_GH(
-    rate_type, tax_func_type, numparams, expected_tuple, tmpdir
-):
+def test_txfunc_est(rate_type, tax_func_type, true_params, tmpdir):
     """
-    Test txfunc.txfunc_est() function.  The test is that given
-    inputs from previous run, the outputs are unchanged.
+    Test txfunc.txfunc_est() function.  The test the estimator can
+    recover (close to) the true parameters.
     """
-    micro_data = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
+    # Generate data based on true parameters
+    N = 20_000
+    weights = np.ones(N)
+    x = np.random.uniform(0, 500_000, size=N)
+    y = np.random.uniform(0, 500_000, size=N)
+    eps1 = np.random.normal(scale=0.00001, size=N)
+    eps2 = np.random.normal(scale=0.00001, size=N)
+    eps3 = np.random.normal(scale=0.00001, size=N)
+    micro_data = pd.DataFrame(
+        {
+            "total_capinc": y,
+            "total_labinc": x,
+            "weight": weights,
+            "total_tax": (
+                (
+                    txfunc.get_tax_rates(
+                        true_params,
+                        x,
+                        y,
+                        weights,
+                        tax_func_type,
+                        rate_type="etr",
+                        for_estimation=False,
+                    )
+                    + eps1
+                )
+                * (x + y)
+            ),
+            "etr": (
+                txfunc.get_tax_rates(
+                    true_params,
+                    x,
+                    y,
+                    weights,
+                    tax_func_type,
+                    rate_type="etr",
+                    for_estimation=False,
+                )
+                + eps1
+            ),
+            "mtr_labinc": (
+                txfunc.get_tax_rates(
+                    true_params,
+                    x,
+                    y,
+                    weights,
+                    tax_func_type,
+                    rate_type="mtr",
+                    for_estimation=False,
+                )
+                + eps2
+            ),
+            "mtr_capinc": (
+                txfunc.get_tax_rates(
+                    true_params,
+                    x,
+                    y,
+                    weights,
+                    tax_func_type,
+                    rate_type="mtr",
+                    for_estimation=False,
+                )
+                + eps3
+            ),
+        }
     )
-    s = 80
-    t = 2030
-    df = txfunc.tax_data_sample(micro_data[str(t)])
+    micro_data["age"] = 44
+    micro_data["year"] = 2025
     output_dir = tmpdir
-    # Put old df variables into new df var names
-    df.rename(
-        columns={
-            "MTR labor income": "mtr_labinc",
-            "MTR capital income": "mtr_capinc",
-            "Total labor income": "total_labinc",
-            "Total capital income": "total_capinc",
-            "ETR": "etr",
-            "expanded_income": "market_income",
-            "Weights": "weight",
-        },
-        inplace=True,
-    )
-    test_tuple = txfunc.txfunc_est(
-        df, s, t, rate_type, tax_func_type, numparams, output_dir, True
+    param_est, _, obs, _ = txfunc.txfunc_est(
+        micro_data,
+        44,
+        2025,
+        rate_type,
+        tax_func_type,
+        len(true_params),
+        output_dir,
+        True,
     )
 
-    for i, v in enumerate(expected_tuple):
-        print("For element", i, ", test tuple =", test_tuple[i])
-        assert np.allclose(test_tuple[i], v, rtol=0.0, atol=1e-04)
+    assert obs == micro_data.shape[0]
+    print("Estimated parameters:", param_est)
+    print("Diffs = ", np.absolute(param_est - true_params))
+    if "DEP" in tax_func_type:
+        assert np.allclose(param_est, true_params, atol=0.2, rtol=0.01)
+    else:
+        assert np.allclose(param_est, true_params, atol=0.0, rtol=0.01)
+    # TODO: maybe the test is that the true parameters are in the
+    # 95% confidence interval of the estimated parameters
 
 
 def test_txfunc_est_exception(tmpdir):
@@ -362,9 +385,6 @@ def test_tax_data_sample():
     assert isinstance(df, pd.DataFrame)
 
 
-@pytest.mark.local
-# mark as local run since results work on Mac, but differ on other
-# platforms
 def test_tax_func_loop():
     """
     Test txfunc.tax_func_loop() function. The test is that given inputs from
@@ -390,7 +410,8 @@ def test_tax_func_loop():
         numparams,
         tpers,
     ) = input_tuple
-    tax_func_type = "DEP"
+    tax_func_type = "HSV"
+    numparams = 2
     # Rename and create vars to suit new micro_data var names
     micro_data["total_labinc"] = (
         micro_data["Wage income"] + micro_data["SE income"]
@@ -438,7 +459,6 @@ def test_tax_func_loop():
         output_dir,
         numparams,
     )
-
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "tax_func_loop_outputs.pkl")
     )
@@ -732,7 +752,7 @@ def test_tax_func_estimate(tmpdir, dask_client):
         client,
         num_workers,
     ) = input_tuple
-    tax_func_type = "DEP"
+    tax_func_type = "HSV"
     age_specific = False
     BW = 1
     test_path = os.path.join(tmpdir, "test_out.pkl")

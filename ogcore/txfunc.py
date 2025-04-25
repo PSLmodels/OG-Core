@@ -288,9 +288,6 @@ def get_tax_rates(
             elif (
                 income.ndim == 2
             ):  # I think only calls here are for loops over S and J
-                # for s in range(income.shape[0]):
-                #     for j in range(income.shape[1]):
-                #         txrates[s, j] = params[s][j][0](income[s, j])
                 txrates = [
                     [
                         params[s][j][0](income[s, j])
@@ -299,12 +296,6 @@ def get_tax_rates(
                     for s in range(income.shape[0])
                 ]
             else:  # to catch 3D arrays, looping over T, S, J
-                # for t in range(income.shape[0]):
-                #     for s in range(income.shape[1]):
-                #         for j in range(income.shape[2]):
-                #             txrates[t, s, j] = params[t][s][j][0](
-                #                 income[t, s, j]
-                #             )
                 txrates = [
                     [
                         [
@@ -596,6 +587,8 @@ def txfunc_est(
         output_dir (str): output directory for saving plot files
         graph (bool): whether to plot the estimated functions compared
             to the data
+        params_init (Numpy array): initial values for the parameters
+        global_opt (bool): whether to use global optimization method
 
     Returns:
         (tuple): tax function estimation output:
@@ -678,15 +671,6 @@ def txfunc_est(
         )
         lb_max_x = np.maximum(min_x, 0.0) + 1e-4
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
-        # bnds = (
-        #     (1e-12, None),
-        #     (1e-12, None),
-        #     (1e-12, None),
-        #     (1e-12, None),
-        #     (lb_max_x, MAX_ETR + 0.15),
-        #     (lb_max_y, MAX_ETR + 0.15),
-        #     (0, 1),
-        # )
         bnds = (
             (1e-12, 9999),
             (1e-12, 9999),
@@ -802,9 +786,9 @@ def txfunc_est(
         # Need to use a different functional form than for DEP function.
         # '''
         if params_init is None:
-            phi0_init = 1.0
-            phi1_init = 1.0
-            phi2_init = 1.0
+            phi0_init = 0.3
+            phi1_init = 0.3
+            phi2_init = 0.01
             params_init = np.array([phi0_init, phi1_init, phi2_init])
         tx_objs = (
             np.array([None]),
@@ -815,8 +799,7 @@ def txfunc_est(
             tax_func_type,
             rate_type,
         )
-        # bnds = ((1e-12, None), (1e-12, None), (1e-12, None))
-        bnds = ((1e-12, 9999), (1e-12, 9999), (1e-12, 9999))
+        bnds = ((1e-12, 1.0), (1e-12, 1.0), (1e-12, 1.0))
         if global_opt:
             params_til = opt.differential_evolution(
                 wsumsq, bounds=bnds, args=(tx_objs), seed=1
@@ -839,15 +822,16 @@ def txfunc_est(
         # set initial values to parameter estimates
         params_init = np.array([phi0til, phi1til, phi2til])
     elif tax_func_type == "HSV":
-        # '''
-        # Estimate Heathcote, Storesletten, Violante (2017) parameters via
-        # OLS
-        # '''
+        """
+        Estimate Heathcote, Storesletten, Violante (2017) parameters via
+        OLS
+        """
         constant = np.ones_like(income)
         ln_income = np.log(income)
         X_mat = np.column_stack((constant, ln_income))
         Y_vec = np.log(1 - txrates)
-        param_est = np.linalg.inv(X_mat.T @ X_mat) @ X_mat.T @ Y_vec
+        W = np.diag(wgts)
+        param_est = np.linalg.inv(X_mat.T @ W @ X_mat) @ X_mat.T @ W @ Y_vec
         params = np.zeros(numparams)
         if rate_type == "etr":
             ln_lambda_s_hat, minus_tau_s_hat = param_est
@@ -858,16 +842,15 @@ def txfunc_est(
             params[:2] = np.array([lambda_s_hat, -minus_tau_s_hat])
         # Calculate the WSSE
         Y_hat = X_mat @ params
-        # wsse = ((Y_vec - Y_hat) ** 2 * wgts).sum()
-        wsse = ((Y_vec - Y_hat) ** 2).sum()
+        wsse = ((Y_vec - Y_hat) ** 2 * wgts).sum()
         obs = df.shape[0]
         params_to_plot = params
     elif tax_func_type == "linear":
-        # '''
-        # For linear rates, just take the mean ETR or MTR by age-year.
-        # Can use DEP form and set all parameters except for the shift
-        # parameter to zero.
-        # '''
+        """
+        For linear rates, just take the mean ETR or MTR by age-year.
+        Can use DEP form and set all parameters except for the shift
+        parameter to zero.
+        """
         params = np.zeros(numparams)
         wsse = 0.0
         obs = df.shape[0]
@@ -1704,7 +1687,7 @@ def tax_func_estimate(
             )
         )
     if client:
-        futures = client.compute(lazy_values, num_workers=num_workers)
+        futures = client.compute(lazy_values)
         results = client.gather(futures)
     else:
         results = results = compute(
