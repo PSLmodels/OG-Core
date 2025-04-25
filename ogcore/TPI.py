@@ -46,13 +46,6 @@ logging.basicConfig(
     level=log_level, format="%(message)s"  # Only show the message itself
 )
 
-"""
-A global future for the Parameters object for client workers.
-This is scattered once and place at module scope, then used
-by the client in the inner loop.
-"""
-scattered_p = None
-
 
 def get_initial_SS_values(p):
     """
@@ -578,12 +571,6 @@ def run_TPI(p, client=None):
             results
 
     """
-    global scattered_p
-    if client:
-        scattered_p = client.scatter(p, broadcast=True)
-    else:
-        scattered_p = p
-
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
@@ -779,10 +766,15 @@ def run_TPI(p, client=None):
         ).sum(axis=2)
         p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
 
+        # scatter parameters to workers
+        scattered_p = client.scatter(p, broadcast=True) if client else p
+
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
         for j in range(p.J):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
+
+            # Add the delayed computation to our list
             lazy_values.append(
                 delayed(inner_loop)(
                     guesses,
@@ -791,11 +783,13 @@ def run_TPI(p, client=None):
                     ubi,
                     j,
                     ind,
-                    scattered_p,
+                    scattered_p
                 )
             )
         if client:
+            # Compute all the values
             futures = client.compute(lazy_values)
+            # Later, gather the results when needed
             results = client.gather(futures)
         else:
             results = compute(
