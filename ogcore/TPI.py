@@ -783,7 +783,7 @@ def run_TPI(p, client=None):
                     ubi,
                     j,
                     ind,
-                    scattered_p
+                    scattered_p,
                 )
             )
         if client:
