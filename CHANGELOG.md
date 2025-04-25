@@ -6,13 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.14.3] - 2025-04-22 16:00:00
+## [0.14.3] - 2025-04-25 10:00:00
 
 ### Added
 
 - Puts a ceiling on the version of the `marshmallow<4.0.0` package in `environment.yml`
 - Update `txfunc.py` for the estimation of the `HSV` and `GS` tax functions.
 - Update `test_txfunc.py`, `tax_func_estimate_outputs.pkl`, and `tax_func_loop_outputs.pkl` files for testing
+- Update `dask` and `distributed` client calls in `SS.py` and `TPI.py` to allow for updated versions.
 
 ## [0.14.2] - 2025-04-04 12:00:00
 
