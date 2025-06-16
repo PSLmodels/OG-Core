@@ -979,10 +979,11 @@ def run_TPI(p, client=None):
             G[: p.T],
             D_d[: p.T],
             D_f[: p.T],
+            r_gov_new,
             new_borrowing,
             debt_service,
             new_borrowing_f,
-        ) = fiscal.D_G_path(r_gov, dg_fixed_values, p)
+        ) = fiscal.D_G_path(r, dg_fixed_values, p)
         K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
             B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
         )
@@ -999,7 +1000,6 @@ def run_TPI(p, client=None):
         )
         # For case where economy is small open econ
         rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
-        r_gov_new = fiscal.get_r_gov(rnew, p, "TPI")
         MPKg_vec = np.zeros((p.T, p.M))
         for m in range(p.M):
             MPKg_vec[:, m] = np.squeeze(
