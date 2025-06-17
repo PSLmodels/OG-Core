@@ -997,7 +997,7 @@
         "number_dims": 1,
         "value": [
             {
-                "value": [0.02]
+                "value": [0.0]
             }
         ],
         "validators": {
@@ -1016,7 +1016,7 @@
         "number_dims": 1,
         "value": [
             {
-                "value": [0.02]
+                "value": [0.0]
             }
         ],
         "validators": {
