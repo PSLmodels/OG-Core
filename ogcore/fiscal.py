@@ -96,7 +96,7 @@ def D_G_path(r, dg_fixed_values, p):
     else:
         t = 1
         r_gov = np.zeros_like(r)
-        r_gov[0] = get_r_gov(r[0], D[0] / Y[0], p, method="TPI")
+        r_gov[0] = get_r_gov(r[0], D[0] / Y[0], p, method="scalar", t=0)
         while t < p.T - 1:
             D[t] = (1 / growth[t]) * (
                 (1 + r_gov[t - 1]) * D[t - 1]
@@ -128,7 +128,7 @@ def D_G_path(r, dg_fixed_values, p):
                     - TR[t]
                     - UBI_outlays[t]
                 )
-            r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="TPI")
+            r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
             t += 1
 
         # in final period, growth rate has stabilized, so we can replace
@@ -162,7 +162,8 @@ def D_G_path(r, dg_fixed_values, p):
             - total_tax_revenue[t]
         )
         # find r_gov for last two periods
-        r_gov[t] = get_r_gov(r[t:t+2], D[t:t+2] / Y[t:t+2], p, method="TPI")
+        r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
+        r_gov[t+1] = get_r_gov(r[t+1], D[t+1] / Y[t+1], p, method="scalar", t=t+1)
         D_ratio_max = np.amax(D[: p.T] / Y[: p.T])
         print("Maximum debt ratio: ", D_ratio_max)
 
@@ -359,7 +360,7 @@ def get_TR(
     return new_TR
 
 
-def get_r_gov(r, DY_ratio, p, method):
+def get_r_gov(r, DY_ratio, p, method, t=0):
     r"""
     Determine the interest rate on government debt
 
@@ -372,6 +373,7 @@ def get_r_gov(r, DY_ratio, p, method):
         DY_ratio (array_like): ratio of government debt to GDP
         p (OG-Core Specifications object): model parameters
         method (str): either 'SS' for steady-state or 'TPI' for
+        t (int): time period index, used only if method is 'scalar'
 
     Returns:
         r_gov (array_like): interest rate on government debt over the
@@ -379,7 +381,9 @@ def get_r_gov(r, DY_ratio, p, method):
 
     """
     if method == "SS":
-        r_gov = np.maximum(p.r_gov_scale[-1] * r - p.r_gov_shift[-1] + p.r_gov_DY * DY_ratio  + p.r_gov_DY2 * DY_ratio ** 2, 0.00)
+        r_gov = np.maximum(p.r_gov_scale[-1] * r - p.r_gov_shift[-1] + p.r_gov_DY[-1] * DY_ratio  + p.r_gov_DY2[-1] * DY_ratio ** 2, 0.00)
+    if method == "scalar":
+        r_gov = np.maximum(p.r_gov_scale[t] * r - p.r_gov_shift[t] + p.r_gov_DY[t] * DY_ratio  + p.r_gov_DY2[t] * DY_ratio ** 2, 0.00)
     else:
         r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift + p.r_gov_DY * DY_ratio  + p.r_gov_DY2 * DY_ratio ** 2, 0.00)
 

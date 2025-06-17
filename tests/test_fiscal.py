@@ -27,6 +27,9 @@ D_d3 = df["D_d3"].values
 D_f1 = df["D_f1"].values
 D_f2 = df["D_f2"].values
 D_f3 = df["D_f3"].values
+r_gov1 = np.ones_like(df["D1"].values) * 0.03 - 0.02  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.03 - 0.02 = 0.01
+r_gov2 = r_gov1
+r_gov3 = r_gov1
 nb1 = df["new_borrow1"].values
 nb2 = df["new_borrow2"].values
 nb3 = df["new_borrow3"].values
@@ -36,9 +39,9 @@ ds3 = df["debt_service3"].values
 nbf1 = df["new_borrow_f1"].values
 nbf2 = df["new_borrow_f2"].values
 nbf3 = df["new_borrow_f3"].values
-expected_tuple1 = (D1, G1, D_d1, D_f1, nb1, ds1, nbf1)
-expected_tuple2 = (D2, G2, D_d2, D_f2, nb2, ds2, nbf2)
-expected_tuple3 = (D3, G3, D_d3, D_f3, nb3, ds3, nbf3)
+expected_tuple1 = (D1, G1, D_d1, D_f1, r_gov1, nb1, ds1, nbf1)
+expected_tuple2 = (D2, G2, D_d2, D_f2, r_gov2, nb2, ds2, nbf2)
+expected_tuple3 = (D3, G3, D_d3, D_f3, r_gov3, nb3, ds3, nbf3)
 
 
 @pytest.mark.parametrize(
@@ -78,7 +81,7 @@ def test_D_G_path(
         "budget_balance": budget_balance,
     }
     p.update_specifications(new_param_values, raise_errors=False)
-    r_gov = np.ones(p.T + p.S) * 0.03
+    r = np.ones(p.T + p.S) * 0.03
     p.g_n = np.ones(p.T + p.S) * 0.02
     D0_baseline = 0.59
     Gbaseline[0] = 0.05
@@ -96,7 +99,7 @@ def test_D_G_path(
         Gbaseline,
         D0_baseline,
     )
-    test_tuple = fiscal.D_G_path(r_gov, dg_fixed_values, p)
+    test_tuple = fiscal.D_G_path(r, dg_fixed_values, p)
     for i, v in enumerate(test_tuple):
         assert np.allclose(v[: p.T], expected_tuple[i][: p.T])
 
@@ -125,7 +128,7 @@ expected_tuple2 = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 )
 def test_get_D_ss(budget_balance, expected_tuple):
     """
-    Test of the fiscla.get_D_ss() function.
+    Test of the fiscal.get_D_ss() function.
     """
     r_gov = 0.03
     Y = 1.176255339
@@ -272,7 +275,7 @@ p4 = p3.update_specifications({"r_gov_scale": [0.5], "r_gov_shift": [0.03]})
     ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI"],
 )
 def test_get_r_gov(r, p, method, r_gov_expected):
-    r_gov = fiscal.get_r_gov(r, p, method)
+    r_gov = fiscal.get_r_gov(r, 0, p, method)
     assert np.allclose(r_gov, r_gov_expected)
 
 
