@@ -1726,14 +1726,11 @@ test_data_rc = [
 @pytest.mark.parametrize(
     "Y,C,G,I_d,I_g,net_capital_flows,RM,expected",
     test_data_rc,
-    ids=[
-        "RM=0, M=5",
-        "RM>0, M=5"
-    ],
+    ids=["RM=0, M=5", "RM>0, M=5"],
 )
 def test_resource_constraint(
-        Y, C, G, I_d, I_g, net_capital_flows, RM, expected
-    ):
+    Y, C, G, I_d, I_g, net_capital_flows, RM, expected
+):
     """
     Test resource constraint equation.
     """
