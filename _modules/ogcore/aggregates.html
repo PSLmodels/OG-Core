@@ -921,7 +921,7 @@
 <span class="sd">        \text{rc_error} &amp;= \hat{Y}_t - \hat{C}_t -</span>
 <span class="sd">      \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -</span>
 <span class="sd">      \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} ... \\</span>
-<span class="sd">        &amp;\qquad -\: \hat{\text{net capital outflows}}_t - \hat{RM}_t</span>
+<span class="sd">        &amp;\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t</span>
 <span class="sd">      \end{split}</span>
 
 <span class="sd">    Args:</span>
@@ -937,7 +937,7 @@
 <span class="sd">        rc_error (array_like): error in the resource constraint</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">rc_error</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">-</span> <span class="n">C</span> <span class="o">-</span> <span class="n">I_d</span> <span class="o">-</span> <span class="n">I_g</span> <span class="o">-</span> <span class="n">G</span> <span class="o">-</span> <span class="n">net_capital_flows</span> <span class="o">-</span> <span class="n">RM</span>
+    <span class="n">rc_error</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">-</span> <span class="n">C</span> <span class="o">-</span> <span class="n">I_d</span> <span class="o">-</span> <span class="n">I_g</span> <span class="o">-</span> <span class="n">G</span> <span class="o">-</span> <span class="n">net_capital_flows</span> <span class="o">+</span> <span class="n">RM</span>
 
     <span class="k">return</span> <span class="n">rc_error</span></div>
 
