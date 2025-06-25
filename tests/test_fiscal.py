@@ -27,7 +27,9 @@ D_d3 = df["D_d3"].values
 D_f1 = df["D_f1"].values
 D_f2 = df["D_f2"].values
 D_f3 = df["D_f3"].values
-r_gov1 = np.ones_like(df["D1"].values) * 0.05 - 0.02  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
+r_gov1 = (
+    np.ones_like(df["D1"].values) * 0.05 - 0.02
+)  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
 r_gov2 = r_gov1
 r_gov3 = r_gov1
 nb1 = df["new_borrow1"].values
@@ -275,16 +277,17 @@ p4.update_specifications(
         "r_gov_scale": [1.5],
         "r_gov_shift": [0.01],
         "r_gov_DY": 0.01,
-        "r_gov_DY2": 0.001
+        "r_gov_DY2": 0.001,
     }
 )
 p4.r_gov_scale = [1.5]
 p4.r_gov_shift = [0.01]
 r_gov4 = (
-    r * p4.r_gov_scale[0] - p4.r_gov_shift[0] +
-    p4.r_gov_DY * 0.5 + p4.r_gov_DY2 * 0.25
+    r * p4.r_gov_scale[0]
+    - p4.r_gov_shift[0]
+    + p4.r_gov_DY * 0.5
+    + p4.r_gov_DY2 * 0.25
 )
-
 
 
 @pytest.mark.parametrize(
@@ -297,7 +300,14 @@ r_gov4 = (
         (r, p3, 0, "scalar", r_gov3),
         (r, p4, 0.5, "scalar", r_gov4),
     ],
-    ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI", "scalar", "DY params"],
+    ids=[
+        "Scale only",
+        "Scale and shift",
+        "r_gov < 0",
+        "TPI",
+        "scalar",
+        "DY params",
+    ],
 )
 def test_get_r_gov(r, p, DY_ratio, method, r_gov_expected):
     r_gov = fiscal.get_r_gov(r, DY_ratio, p, method, t=0)
