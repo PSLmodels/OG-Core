@@ -271,8 +271,9 @@ p4 = p3.update_specifications({"r_gov_scale": [0.5], "r_gov_shift": [0.03]})
         (r, p2, "SS", r_gov2),
         (r, p3, "SS", r_gov3),
         (r, p3, "TPI", r_gov3),
+        (r, p3, "scalar", r_gov3),
     ],
-    ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI"],
+    ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI", "scalar"],
 )
 def test_get_r_gov(r, p, method, r_gov_expected):
     # if r is scalar
@@ -280,7 +281,7 @@ def test_get_r_gov(r, p, method, r_gov_expected):
         DY_ratio = 0.0
     else:
         DY_ratio = np.zeros_like(r)
-    r_gov = fiscal.get_r_gov(r, DY_ratio, p, method)
+    r_gov = fiscal.get_r_gov(r, DY_ratio, p, method, t=0)
     assert np.allclose(r_gov, r_gov_expected)
 
 
