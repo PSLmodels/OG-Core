@@ -259,28 +259,47 @@ r = 0.04
 r_gov1 = 0.02
 r_gov2 = 0.01
 r_gov3 = 0.0
-r_tpi = np.ones(320) * r
-r_gov_tpi = np.ones(320) * r_gov3
-p4 = p3.update_specifications({"r_gov_scale": [0.5], "r_gov_shift": [0.03]})
+p_tpi = Specifications()
+p_tpi.update_specifications(
+    {
+        "r_gov_scale": [1.5],
+        "r_gov_shift": [0.01],
+    }
+)
+r_tpi = np.ones(400) * r
+r_gov_tpi = np.ones(400) * r * p_tpi.r_gov_scale - p_tpi.r_gov_shift
+DY_tpi = np.ones(400) * 0.01
+p4 = Specifications()
+p4.update_specifications(
+    {
+        "r_gov_scale": [1.5],
+        "r_gov_shift": [0.01],
+        "r_gov_DY": 0.01,
+        "r_gov_DY2": 0.001
+    }
+)
+p4.r_gov_scale = [1.5]
+p4.r_gov_shift = [0.01]
+r_gov4 = (
+    r * p4.r_gov_scale[0] - p4.r_gov_shift[0] +
+    p4.r_gov_DY * 0.5 + p4.r_gov_DY2 * 0.25
+)
+
 
 
 @pytest.mark.parametrize(
-    "r,p,method,r_gov_expected",
+    "r,p,DY_ratio,method,r_gov_expected",
     [
-        (r, p1, "SS", r_gov1),
-        (r, p2, "SS", r_gov2),
-        (r, p3, "SS", r_gov3),
-        (r, p3, "TPI", r_gov3),
-        (r, p3, "scalar", r_gov3),
+        (r, p1, 0, "SS", r_gov1),
+        (r, p2, 0, "SS", r_gov2),
+        (r, p3, 0, "SS", r_gov3),
+        (r_tpi, p_tpi, DY_tpi, "TPI", r_gov_tpi),
+        (r, p3, 0, "scalar", r_gov3),
+        (r, p4, 0.5, "scalar", r_gov4),
     ],
-    ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI", "scalar"],
+    ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI", "scalar", "DY params"],
 )
-def test_get_r_gov(r, p, method, r_gov_expected):
-    # if r is scalar
-    if method == "SS":
-        DY_ratio = 0.0
-    else:
-        DY_ratio = np.zeros_like(r)
+def test_get_r_gov(r, p, DY_ratio, method, r_gov_expected):
     r_gov = fiscal.get_r_gov(r, DY_ratio, p, method, t=0)
     assert np.allclose(r_gov, r_gov_expected)
 
