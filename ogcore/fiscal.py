@@ -107,6 +107,7 @@ def D_G_path(r, dg_fixed_values, p):
                 + agg_pension_outlays[t - 1]
                 - total_tax_revenue[t - 1]
             )
+            r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
             if (t >= p.tG1) and (t < p.tG2):
                 G[t] = (
                     growth[t + 1]
@@ -128,7 +129,6 @@ def D_G_path(r, dg_fixed_values, p):
                     - TR[t]
                     - UBI_outlays[t]
                 )
-            r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
             t += 1
 
         # in final period, growth rate has stabilized, so we can replace
@@ -143,6 +143,7 @@ def D_G_path(r, dg_fixed_values, p):
             + agg_pension_outlays[t - 1]
             - total_tax_revenue[t - 1]
         )
+        r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
         G[t] = (
             growth[t] * (p.debt_ratio_ss * Y[t])
             - (1 + r_gov[t]) * D[t]
@@ -161,8 +162,7 @@ def D_G_path(r, dg_fixed_values, p):
             + agg_pension_outlays[t]
             - total_tax_revenue[t]
         )
-        # find r_gov for last two periods
-        r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
+        # find r_gov for the period
         r_gov[t+1] = get_r_gov(r[t+1], D[t+1] / Y[t+1], p, method="scalar", t=t+1)
         D_ratio_max = np.amax(D[: p.T] / Y[: p.T])
         print("Maximum debt ratio: ", D_ratio_max)

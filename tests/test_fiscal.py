@@ -27,7 +27,7 @@ D_d3 = df["D_d3"].values
 D_f1 = df["D_f1"].values
 D_f2 = df["D_f2"].values
 D_f3 = df["D_f3"].values
-r_gov1 = np.ones_like(df["D1"].values) * 0.03 - 0.02  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.03 - 0.02 = 0.01
+r_gov1 = np.ones_like(df["D1"].values) * 0.05 - 0.02  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
 r_gov2 = r_gov1
 r_gov3 = r_gov1
 nb1 = df["new_borrow1"].values
@@ -81,7 +81,7 @@ def test_D_G_path(
         "budget_balance": budget_balance,
     }
     p.update_specifications(new_param_values, raise_errors=False)
-    r = np.ones(p.T + p.S) * 0.03
+    r = np.ones(p.T + p.S) * 0.05
     p.g_n = np.ones(p.T + p.S) * 0.02
     D0_baseline = 0.59
     Gbaseline[0] = 0.05
@@ -275,7 +275,12 @@ p4 = p3.update_specifications({"r_gov_scale": [0.5], "r_gov_shift": [0.03]})
     ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI"],
 )
 def test_get_r_gov(r, p, method, r_gov_expected):
-    r_gov = fiscal.get_r_gov(r, 0, p, method)
+    # if r is scalar
+    if method == "SS":
+        DY_ratio = 0.0
+    else:
+        DY_ratio = np.zeros_like(r)
+    r_gov = fiscal.get_r_gov(r, DY_ratio, p, method)
     assert np.allclose(r_gov, r_gov_expected)
 
 
