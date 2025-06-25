@@ -88,8 +88,8 @@ def D_G_path(r, dg_fixed_values, p):
         D_f = np.zeros(p.T)
         D_d = np.zeros(p.T)
         r_gov = get_r_gov(
-            r[: p.T], 0, p, method="TPI"
-        )
+            r[: p.T + p.S], 0, p, method="TPI"
+        )[:p.T]
         new_borrowing = np.zeros(p.T)
         debt_service = np.zeros(p.T)
         new_borrowing_f = np.zeros(p.T)
@@ -381,9 +381,9 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
 
     """
     if method == "SS":
-        r_gov = np.maximum(p.r_gov_scale[-1] * r - p.r_gov_shift[-1] + p.r_gov_DY[-1] * DY_ratio  + p.r_gov_DY2[-1] * DY_ratio ** 2, 0.00)
-    if method == "scalar":
-        r_gov = np.maximum(p.r_gov_scale[t] * r - p.r_gov_shift[t] + p.r_gov_DY[t] * DY_ratio  + p.r_gov_DY2[t] * DY_ratio ** 2, 0.00)
+        r_gov = np.maximum(p.r_gov_scale[-1] * r - p.r_gov_shift[-1] + p.r_gov_DY * DY_ratio  + p.r_gov_DY2 * DY_ratio ** 2, 0.00)
+    elif method == "scalar":
+        r_gov = np.maximum(p.r_gov_scale[t] * r - p.r_gov_shift[t] + p.r_gov_DY * DY_ratio  + p.r_gov_DY2 * DY_ratio ** 2, 0.00)
     else:
         r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift + p.r_gov_DY * DY_ratio  + p.r_gov_DY2 * DY_ratio ** 2, 0.00)
 
