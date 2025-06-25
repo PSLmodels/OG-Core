@@ -994,10 +994,9 @@
         "description": "Parameter summarizing the linear effect of the debt to GDP ratio on the government interest rate.",
         "notes": "",
         "type": "float",
-        "number_dims": 1,
         "value": [
             {
-                "value": [0.0]
+                "value": 0.0
             }
         ],
         "validators": {
@@ -1013,10 +1012,9 @@
         "description": "Parameter summarizing the quadratic effect of the debt to GDP ratio on the government interest rate.",
         "notes": "",
         "type": "float",
-        "number_dims": 1,
         "value": [
             {
-                "value": [0.0]
+                "value": 0.0
             }
         ],
         "validators": {
