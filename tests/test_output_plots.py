@@ -29,7 +29,7 @@ base_params.update_specifications(
         "epsilon": [0.5, 0.5, 0.5],
         "I": 3,
         "alpha_c": [0.3, 0.4, 0.3],
-        "io_matrix": np.eye(3)
+        "io_matrix": np.eye(3),
     }
 )
 reform_ss = utils.safe_read_pickle(
@@ -47,7 +47,7 @@ reform_params.update_specifications(
         "epsilon": [0.5, 0.5, 0.5],
         "I": 3,
         "alpha_c": [0.3, 0.4, 0.3],
-        "io_matrix": np.eye(3)
+        "io_matrix": np.eye(3),
     }
 )
 reform_taxfunctions = utils.safe_read_pickle(
