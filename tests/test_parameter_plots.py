@@ -14,22 +14,7 @@ from ogcore import utils, parameter_plots, Specifications
 
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-if sys.version_info[1] < 11:
-    base_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
-    )
-elif sys.version_info[1] == 11:
-    base_params = utils.safe_read_pickle(
-        os.path.join(
-            CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
-        )
-    )
-else:
-    base_params = utils.safe_read_pickle(
-        os.path.join(
-            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
-        )
-    )
+base_params = Specifications()
 base_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_baseline.pkl")
 )
