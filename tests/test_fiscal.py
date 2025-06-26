@@ -18,45 +18,68 @@ Gbaseline = df["Gbaseline"].values
 D1 = df["D1"].values
 D2 = df["D2"].values
 D3 = df["D3"].values
+D4 = df["D4"].values
 G1 = df["G1"].values
 G2 = df["G2"].values
 G3 = df["G3"].values
+G4 = df["G4"].values
 D_d1 = df["D_d1"].values
 D_d2 = df["D_d2"].values
 D_d3 = df["D_d3"].values
+D_d4 = df["D_d4"].values
 D_f1 = df["D_f1"].values
 D_f2 = df["D_f2"].values
 D_f3 = df["D_f3"].values
+D_f4 = df["D_f4"].values
 r_gov1 = (
     np.ones_like(df["D1"].values) * 0.05 - 0.02
 )  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
 r_gov2 = r_gov1
 r_gov3 = r_gov1
+r_gov4 = df["r_gov4"].values
 nb1 = df["new_borrow1"].values
 nb2 = df["new_borrow2"].values
 nb3 = df["new_borrow3"].values
+nb4 = df["new_borrow4"].values
 ds1 = df["debt_service1"].values
 ds2 = df["debt_service2"].values
 ds3 = df["debt_service3"].values
+ds4 = df["debt_service4"].values
 nbf1 = df["new_borrow_f1"].values
 nbf2 = df["new_borrow_f2"].values
 nbf3 = df["new_borrow_f3"].values
+nbf4 = df["new_borrow_f4"].values
 expected_tuple1 = (D1, G1, D_d1, D_f1, r_gov1, nb1, ds1, nbf1)
 expected_tuple2 = (D2, G2, D_d2, D_f2, r_gov2, nb2, ds2, nbf2)
 expected_tuple3 = (D3, G3, D_d3, D_f3, r_gov3, nb3, ds3, nbf3)
+expected_tuple4 = (D4, G4, D_d4, D_f4, r_gov4, nb4, ds4, nbf4)
 
 
 @pytest.mark.parametrize(
-    ("baseline_spending,Y,TR,Revenue,Gbaseline,budget_balance,expected_tuple"),
+    (
+        "baseline_spending,Y,TR,Revenue,Gbaseline,budget_balance,r_gov_DY,r_gov_DY2,expected_tuple"
+    ),
     [
-        (False, Y, TR, Revenue, Gbaseline, False, expected_tuple1),
-        (True, Y, TR, Revenue, Gbaseline, False, expected_tuple2),
-        (False, Y, TR, Revenue, Gbaseline, True, expected_tuple3),
+        (False, Y, TR, Revenue, Gbaseline, False, 0.0, 0.0, expected_tuple1),
+        (True, Y, TR, Revenue, Gbaseline, False, 0.0, 0.0, expected_tuple2),
+        (False, Y, TR, Revenue, Gbaseline, True, 0.0, 0.0, expected_tuple3),
+        (
+            False,
+            Y,
+            TR,
+            Revenue,
+            Gbaseline,
+            False,
+            0.01,
+            0.001,
+            expected_tuple4,
+        ),
     ],
     ids=[
         "baseline_spending = False",
         "baseline_spending = True",
         "balanced_budget = True",
+        "r_gov function of D/Y",
     ],
 )
 def test_D_G_path(
@@ -66,6 +89,8 @@ def test_D_G_path(
     Revenue,
     Gbaseline,
     budget_balance,
+    r_gov_DY,
+    r_gov_DY2,
     expected_tuple,
 ):
     p = Specifications()
@@ -81,6 +106,8 @@ def test_D_G_path(
         "g_y_annual": 0.03,
         "baseline_spending": baseline_spending,
         "budget_balance": budget_balance,
+        "r_gov_DY": r_gov_DY,
+        "r_gov_DY2": r_gov_DY2,
     }
     p.update_specifications(new_param_values, raise_errors=False)
     r = np.ones(p.T + p.S) * 0.05
@@ -102,6 +129,25 @@ def test_D_G_path(
         D0_baseline,
     )
     test_tuple = fiscal.D_G_path(r, dg_fixed_values, p)
+    if p.r_gov_DY > 0:
+        import pandas as pd
+
+        df = pd.DataFrame(
+            {
+                "D": test_tuple[0][: p.T],
+                "G": test_tuple[1][: p.T],
+                "D_d": test_tuple[2][: p.T],
+                "D_f": test_tuple[3][: p.T],
+                "r_gov": test_tuple[4][: p.T],
+                "new_borrowing": test_tuple[5][: p.T],
+                "debt_service": test_tuple[6][: p.T],
+                "new_borrowing_f": test_tuple[7][: p.T],
+            }
+        )
+        df.to_csv(
+            os.path.join(CUR_PATH, "test_io_data", "get_D_G_path_data4.csv"),
+            index=False,
+        )
     for i, v in enumerate(test_tuple):
         assert np.allclose(v[: p.T], expected_tuple[i][: p.T])
 
