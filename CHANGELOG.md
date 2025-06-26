@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.15.0] - 2025-06-26 12:00:00
+
+### Added
+
+- Allows the government interest rate on debt to be a function of the debt-to-GDP ratio.
+
+## [0.14.4] - 2025-06-23 18:00:00
+
+### Added
+
+- Fixes the sign error on the remittances `RM` term in `aggregates.py`, `resource_constraint()` function.
+- Added a test with positive remittances to `test_aggregates.py`, `test_resource_constraint()` function.
+
 ## [0.14.3] - 2025-04-25 10:00:00
 
 ### Added
@@ -383,6 +396,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.15.0]: https://github.com/PSLmodels/OG-Core/compare/v0.14.4...v0.15.0
+[0.14.4]: https://github.com/PSLmodels/OG-Core/compare/v0.14.3...v0.14.4
 [0.14.3]: https://github.com/PSLmodels/OG-Core/compare/v0.14.2...v0.14.3
 [0.14.2]: https://github.com/PSLmodels/OG-Core/compare/v0.14.1...v0.14.2
 [0.14.1]: https://github.com/PSLmodels/OG-Core/compare/v0.14.0...v0.14.1

@@ -526,7 +526,7 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
         \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
       \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
       \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} ... \\
-        &\qquad -\: \hat{\text{net capital outflows}}_t - \hat{RM}_t
+        &\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t
       \end{split}
 
     Args:
@@ -542,7 +542,7 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
         rc_error (array_like): error in the resource constraint
 
     """
-    rc_error = Y - C - I_d - I_g - G - net_capital_flows - RM
+    rc_error = Y - C - I_d - I_g - G - net_capital_flows + RM
 
     return rc_error
 
