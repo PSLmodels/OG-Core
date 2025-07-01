@@ -87,7 +87,7 @@ def D_G_path(r, dg_fixed_values, p):
         G = p.alpha_G[: p.T] * Y[: p.T]
         D_f = np.zeros(p.T)
         D_d = np.zeros(p.T)
-        r_gov = get_r_gov(r[: p.T + p.S], 0, p, method="TPI")[: p.T]
+        r_gov = get_r_gov(r[: p.T], np.zeros(p.T), p, method="TPI")
         new_borrowing = np.zeros(p.T)
         debt_service = np.zeros(p.T)
         new_borrowing_f = np.zeros(p.T)
@@ -161,9 +161,9 @@ def D_G_path(r, dg_fixed_values, p):
             - total_tax_revenue[t]
         )
         # find r_gov for the period
-        r_gov[t + 1] = get_r_gov(
-            r[t + 1], D[t + 1] / Y[t + 1], p, method="scalar", t=t + 1
-        )
+        # r_gov[t + 1] = get_r_gov(
+        #     r[t + 1], D[t + 1] / Y[t + 1], p, method="scalar", t=t + 1
+        # )
         D_ratio_max = np.amax(D[: p.T] / Y[: p.T])
         print("Maximum debt ratio: ", D_ratio_max)
 
@@ -398,10 +398,10 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
         )
     else:
         r_gov = np.maximum(
-            p.r_gov_scale * r
-            - p.r_gov_shift
-            + p.r_gov_DY * DY_ratio
-            + p.r_gov_DY2 * DY_ratio**2,
+            p.r_gov_scale[:p.T] * r[:p.T]
+            - p.r_gov_shift[:p.T]
+            + p.r_gov_DY * DY_ratio[:p.T]
+            + p.r_gov_DY2 * DY_ratio[:p.T]**2,
             0.00,
         )
 

@@ -704,7 +704,8 @@ def run_TPI(p, client=None):
     total_tax_revenue = np.ones(p.T + p.S) * ss_vars["total_tax_revenue"]
 
     # Compute other interest rates
-    r_gov = fiscal.get_r_gov(r, D / Y, p, "TPI")
+    r_gov = np.ones_like(r) * ss_vars["r_gov"]
+    r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], D[:p.T] / Y[:p.T], p, "TPI")
     r_p = np.ones_like(r) * ss_vars["r_p"]
     MPKg = np.zeros((p.T, p.M))
     for m in range(p.M):

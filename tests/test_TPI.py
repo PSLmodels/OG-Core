@@ -573,7 +573,8 @@ def test_run_TPI_full_run(
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = True
-    ss_outputs = SS.run_SS(p, client=dask_client)
+    # ss_outputs = SS.run_SS(p, client=dask_client)
+    ss_outputs = SS.run_SS(p, client=None)
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
@@ -715,7 +716,8 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
-    ss_outputs = SS.run_SS(p, client=dask_client)
+    # ss_outputs = SS.run_SS(p, client=dask_client)
+    ss_outputs = SS.run_SS(p, client=None)
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
