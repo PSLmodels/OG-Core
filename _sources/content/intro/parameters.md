@@ -859,9 +859,9 @@ _Out-of-Range Action:_ error
 
 
 ####  `initial_guess_TR_SS`  
-_Description:_ Initial guess of TR for the SS solution.  
+_Description:_ Initial guess of TR for the SS solution. This value is in model units and can therefore be any large positive number. We may have to adjust the maximum for this parameter from time to time.  
 _Value Type:_ float  
-_Valid Range:_ min = 0.0 and max = 0.2  
+_Valid Range:_ min = 0.0 and max = 2.5  
 _Out-of-Range Action:_ error  
 
 
