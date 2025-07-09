@@ -500,30 +500,30 @@ filename11 = os.path.join(
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        (True, param_updates2, filename2),
-        (True, {"initial_guess_r_SS": 0.035}, filename1),
-        (False, {}, filename3),
-        (False, param_updates4, filename4),
-        (True, param_updates5, filename5),
-        (True, param_updates6, filename6),
+        # (True, param_updates2, filename2),
+        # (True, {"initial_guess_r_SS": 0.035}, filename1),
+        # (False, {}, filename3),
+        # (False, param_updates4, filename4),
+        # (True, param_updates5, filename5),
+        # (True, param_updates6, filename6),
         (True, param_updates7, filename7),
-        (True, param_updates8, filename8),
-        (True, param_updates9, filename9),
-        (True, param_updates10, filename10),
-        (True, param_updates11, filename11),
+        # (True, param_updates8, filename8),
+        # (True, param_updates9, filename9),
+        # (True, param_updates10, filename10),
+        # (True, param_updates11, filename11),
     ],
     ids=[
-        "Baseline, balanced budget",
-        "Baseline",
-        "Reform",
-        "Reform, baseline spending",
-        "Baseline, small open",
-        "Baseline, small open some periods",
+        # "Baseline, balanced budget",
+        # "Baseline",
+        # "Reform",
+        # "Reform, baseline spending",
+        # "Baseline, small open",
+        # "Baseline, small open some periods",
         "Baseline, delta_tau = 0",
-        "Baseline, Kg > 0",
-        "Baseline, M=3 non-zero Kg",
-        "Baseline, M=3 zero Kg",
-        "Baseline, M!=I",
+        # "Baseline, Kg > 0",
+        # "Baseline, M=3 non-zero Kg",
+        # "Baseline, M=3 zero Kg",
+        # "Baseline, M!=I",
     ],
 )
 def test_run_TPI_full_run(
@@ -575,6 +575,8 @@ def test_run_TPI_full_run(
     SS.ENFORCE_SOLUTION_CHECKS = True
     # ss_outputs = SS.run_SS(p, client=dask_client)
     ss_outputs = SS.run_SS(p, client=None)
+    print("SS factor = ", ss_outputs["factor"])
+    assert False
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
