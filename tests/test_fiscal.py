@@ -129,25 +129,7 @@ def test_D_G_path(
         D0_baseline,
     )
     test_tuple = fiscal.D_G_path(r, dg_fixed_values, p)
-    if p.r_gov_DY > 0:
-        import pandas as pd
 
-        df = pd.DataFrame(
-            {
-                "D": test_tuple[0][: p.T],
-                "G": test_tuple[1][: p.T],
-                "D_d": test_tuple[2][: p.T],
-                "D_f": test_tuple[3][: p.T],
-                "r_gov": test_tuple[4][: p.T],
-                "new_borrowing": test_tuple[5][: p.T],
-                "debt_service": test_tuple[6][: p.T],
-                "new_borrowing_f": test_tuple[7][: p.T],
-            }
-        )
-        df.to_csv(
-            os.path.join(CUR_PATH, "test_io_data", "get_D_G_path_data4.csv"),
-            index=False,
-        )
     for i, v in enumerate(test_tuple):
         assert np.allclose(v[: p.T], expected_tuple[i][: p.T])
 
@@ -314,9 +296,9 @@ p_tpi.update_specifications(
         "r_gov_shift": [0.01],
     }
 )
-r_tpi = np.ones(400) * r
-r_gov_tpi = np.ones(400) * r * p_tpi.r_gov_scale - p_tpi.r_gov_shift
-DY_tpi = np.ones(400) * 0.01
+r_tpi = np.ones(320) * r
+r_gov_tpi = np.ones(320) * r * p_tpi.r_gov_scale[:320] - p_tpi.r_gov_shift[:320]
+DY_tpi = np.ones(320) * 0.01
 p4 = Specifications()
 p4.update_specifications(
     {
