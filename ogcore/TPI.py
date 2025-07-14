@@ -965,6 +965,26 @@ def run_TPI(p, client=None):
             "TPI",
         )
         total_tax_revenue[: p.T] = total_tax_rev
+        if not p.baseline_spending:
+            I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
+        if p.baseline:
+            K_g0 = p.initial_Kg_ratio * Y[0]
+        K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
+        rnew = r.copy()
+        rnew[: p.T] = np.squeeze(
+            firm.get_r(
+                Y_vec[: p.T, -1], K_vec[: p.T, -1], p_m[: p.T, :], p, "TPI", -1
+            )
+        )
+        # For case where economy is small open econ
+        rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
+        MPKg_vec = np.zeros((p.T, p.M))
+        for m in range(p.M):
+            MPKg_vec[:, m] = np.squeeze(
+                firm.get_MPx(
+                    Y_vec[: p.T, m], K_g[: p.T], p.gamma_g[m], p, "TPI", m
+                )
+            )
         dg_fixed_values = (
             Y,
             total_tax_revenue,
@@ -988,26 +1008,6 @@ def run_TPI(p, client=None):
         K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
             B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
         )
-        if not p.baseline_spending:
-            I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
-        if p.baseline:
-            K_g0 = p.initial_Kg_ratio * Y[0]
-        K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
-        rnew = r.copy()
-        rnew[: p.T] = np.squeeze(
-            firm.get_r(
-                Y_vec[: p.T, -1], K_vec[: p.T, -1], p_m[: p.T, :], p, "TPI", -1
-            )
-        )
-        # For case where economy is small open econ
-        rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
-        MPKg_vec = np.zeros((p.T, p.M))
-        for m in range(p.M):
-            MPKg_vec[:, m] = np.squeeze(
-                firm.get_MPx(
-                    Y_vec[: p.T, m], K_g[: p.T], p.gamma_g[m], p, "TPI", m
-                )
-            )
         r_p_new = aggr.get_r_p(
             rnew[: p.T],
             r_gov_new[: p.T],
