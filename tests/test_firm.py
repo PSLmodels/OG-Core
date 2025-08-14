@@ -1,4 +1,3 @@
-from math import exp
 import pytest
 from ogcore import firm
 import numpy as np
@@ -1008,8 +1007,8 @@ p2.mu = 0.05
 K_2 = 6
 Kp1_2 = 6
 expected_Psi_2 = 0.011527985
-expected_dPsidK_2 = -0.122196836
-expected_dPsidKp1_2 = 0.102296044
+expected_dPsidK_2 = -0.102296044
+expected_dPsidKp1_2 = 0.023880951
 
 
 p3 = Specifications()
@@ -1023,8 +1022,8 @@ p3.mu = 0.05
 K_3 = np.array([4, 4.5, 5.5])
 Kp1_3 = np.array([4.5, 5.5, 5])
 expected_Psi_3 = np.array([0.309124823, 0.534408906, -1.520508524])
-expected_dPsidK_3 = np.array([-0.805820108, -0.846107505, 2.657143029])
-expected_dPsidKp1_3 = np.array([0.479061039, 0.43588367, -62.31580895])
+expected_dPsidK_3 = np.array([-0.538943669, -0.532746708, 56.65073541])
+expected_dPsidKp1_3 = np.array([0.316298002, 0.329639281, 72.59138531])
 
 
 @pytest.mark.parametrize(
@@ -1041,4 +1040,38 @@ def test_adj_cost(K, Kp1, p, method, expected):
     Test of the firm capital adjustment cost function.
     """
     test_val = firm.adj_cost(K, Kp1, p, method)
+    assert np.allclose(test_val, expected)
+
+
+@pytest.mark.parametrize(
+    "K,Kp1,p,method,expected",
+    [
+        (K_1, Kp1_1, p1, "SS", expected_dPsidK_1),
+        (K_2, Kp1_2, p2, "SS", expected_dPsidK_2),
+        (K_3, Kp1_3, p3, "TPI", expected_dPsidK_3),
+    ],
+    ids=["Zero cost", "Non-zero cost", "TPI"],
+)
+def test_adj_cost_dK(K, Kp1, p, method, expected):
+    """
+    Test of the firm capital adjustment cost function.
+    """
+    test_val = firm.adj_cost_dK(K, Kp1, p, method)
+    assert np.allclose(test_val, expected)
+
+
+@pytest.mark.parametrize(
+    "K,Kp1,p,method,expected",
+    [
+        (K_1, Kp1_1, p1, "SS", expected_dPsidKp1_1),
+        (K_2, Kp1_2, p2, "SS", expected_dPsidKp1_2),
+        (K_3, Kp1_3, p3, "TPI", expected_dPsidKp1_3),
+    ],
+    ids=["Zero cost", "Non-zero cost", "TPI"],
+)
+def test_adj_cost_dKp1(K, Kp1, p, method, expected):
+    """
+    Test of the firm capital adjustment cost function.
+    """
+    test_val = firm.adj_cost_dKp1(K, Kp1, p, method)
     assert np.allclose(test_val, expected)
