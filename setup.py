@@ -25,7 +25,7 @@ setuptools.setup(
         ]
     },
     include_packages=True,
-    python_requires=">=3.7.7, <3.13",
+    python_requires=">=3.11, <3.14",
     install_requires=[
         "numpy",
         "scipy>=1.7.1",
@@ -34,7 +34,7 @@ setuptools.setup(
         "matplotlib",
         "dask>=2.30.0",
         "distributed>=2.30.1",
-        "paramtools>=0.15.0",
+        "paramtools>=0.20.0",
         "requests",
         "pip",
         "pygam",
@@ -47,8 +47,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     tests_require=["pytest"],
