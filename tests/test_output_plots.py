@@ -19,22 +19,27 @@ base_ss = utils.safe_read_pickle(
 base_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TPI_vars_baseline.pkl")
 )
-if sys.version_info[1] < 11:
-    base_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
-    )
-elif sys.version_info[1] == 11:
+if sys.version_info[1] == 11:
     base_params = utils.safe_read_pickle(
         os.path.join(
             CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
         )
     )
-else:
+elif sys.version_info[1] == 12:
     base_params = utils.safe_read_pickle(
         os.path.join(
             CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
         )
     )
+elif sys.version_info[1] == 13:
+    base_params = utils.safe_read_pickle(
+        os.path.join(
+            CUR_PATH, "test_io_data", "model_params_baseline.pkl"
+        )
+    )
+else:
+    # Raise assertion error
+    assert False, "Unsupported Python version"
 reform_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "SS_vars_reform.pkl")
 )
