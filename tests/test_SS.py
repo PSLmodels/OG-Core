@@ -1135,7 +1135,6 @@ param_updates4 = {
     "initial_guess_TR_SS": 0.04,
     # "initial_guess_r_SS": 0.033092316727737416,
     # "initial_guess_TR_SS": 0.06323878350496814,
-    # "initial_guess_w_SS": 1.3320748594894016,
     "initial_guess_factor_SS": 111267.90426318572,
 }
 filename4 = "run_SS_baseline_small_open_use_zeta.pkl"
