@@ -1306,9 +1306,7 @@ p12.labor_income_tax_noncompliance_rate = (
 p12.capital_income_tax_noncompliance_rate = (
     np.ones((p12.T + p12.S, p12.J)) * 0.05
 )
-p12.replacement_rate_adjust = (
-    np.ones((p12.T + p12.S, p12.J)) * 1.0
-)
+p12.replacement_rate_adjust = np.ones((p12.T + p12.S, p12.J)) * 1.0
 p13 = copy.deepcopy(p5)
 p13.labor_income_tax_noncompliance_rate = (
     np.ones((p13.T + p13.S, p13.J)) * 0.05
@@ -1316,9 +1314,7 @@ p13.labor_income_tax_noncompliance_rate = (
 p13.capital_income_tax_noncompliance_rate = (
     np.ones((p13.T + p13.S, p13.J)) * 0.05
 )
-p13.replacement_rate_adjust = (
-    np.ones((p13.T + p13.S, p13.J)) * 1.0
-)
+p13.replacement_rate_adjust = np.ones((p13.T + p13.S, p13.J)) * 1.0
 
 expected1 = np.array([0.47374766, -0.09027663, 0.03871394])
 expected2 = np.array([0.20374766, -0.09027663, 0.03871394])

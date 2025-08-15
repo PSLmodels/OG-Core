@@ -1251,7 +1251,13 @@ new_param_values3 = {
     "m_wealth": [1.0],
     "cit_rate": [[0.2]],
     "inv_tax_credit": [[0.02]],
-    "replacement_rate_adjust": [[1.5, 1.5], [1.5, 1.5], [1.5, 1.5], [1.6, 1.6], [1.0, 1.0]],
+    "replacement_rate_adjust": [
+        [1.5, 1.5],
+        [1.5, 1.5],
+        [1.5, 1.5],
+        [1.6, 1.6],
+        [1.0, 1.0],
+    ],
     "delta_tau_annual": [
         [float(1 - ((1 - 0.0975) ** (20 / (p3.ending_age - p3.starting_age))))]
     ],
