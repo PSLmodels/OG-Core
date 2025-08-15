@@ -851,13 +851,6 @@ _Valid Range:_ min = 0.01 and max = 0.25
 _Out-of-Range Action:_ error
 
 
-####  `initial_guess_w_SS`
-_Description:_ Initial guess of w for the SS solution.
-_Value Type:_ float
-_Valid Range:_ min = 0.01 and max = 5.15
-_Out-of-Range Action:_ error
-
-
 ####  `initial_guess_TR_SS`
 _Description:_ Initial guess of TR for the SS solution.
 _Value Type:_ float
