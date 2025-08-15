@@ -4417,7 +4417,7 @@
     },
     "initial_guess_TR_SS": {
         "title": "Initial guess of TR for the SS solution",
-        "description": "Initial guess of TR for the SS solution.",
+        "description": "Initial guess of TR for the SS solution. This value is in model units and can therefore be any large positive number. We may have to adjust the maximum for this parameter from time to time.",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -4429,7 +4429,7 @@
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": 0.2
+                "max": 2.5
             }
         }
     },
