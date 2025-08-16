@@ -11,5 +11,5 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 79
-target-version = ["py311", "py312"]
+target-version = ["py312", "py313"]
 include = '\.pyi?$'
