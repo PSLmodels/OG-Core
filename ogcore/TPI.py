@@ -420,7 +420,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             bq[0, -1, j],
             rm[0, -1, j],
             tr[0, -1, j],
-            theta * p.replacement_rate_adjust[0],
+            theta * p.replacement_rate_adjust[0, j],
             factor,
             ubi[0, -1, j],
             j,
@@ -436,7 +436,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         ind2 = np.arange(s + 2)
         b_guesses_to_use = np.diag(guesses_b[: p.S, :], p.S - (s + 2))
         n_guesses_to_use = np.diag(guesses_n[: p.S, :], p.S - (s + 2))
-        theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S]
+        theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S, j]
         bq_to_use = np.diag(bq[: p.S, :, j], p.S - (s + 2))
         rm_to_use = np.diag(rm[: p.S, :, j], p.S - (s + 2))
         tr_to_use = np.diag(tr[: p.S, :, j], p.S - (s + 2))
@@ -499,7 +499,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     for t in range(0, p.T):
         b_guesses_to_use = 0.75 * np.diag(guesses_b[t : t + p.S, :])
         n_guesses_to_use = np.diag(guesses_n[t : t + p.S, :])
-        theta_to_use = theta[j] * p.replacement_rate_adjust[t : t + p.S]
+        theta_to_use = theta[j] * p.replacement_rate_adjust[t : t + p.S, j]
         bq_to_use = np.diag(bq[t : t + p.S, :, j])
         rm_to_use = np.diag(rm[t : t + p.S, :, j])
         tr_to_use = np.diag(tr[t : t + p.S, :, j])

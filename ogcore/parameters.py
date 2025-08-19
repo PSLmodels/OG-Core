@@ -170,7 +170,6 @@ class Specifications(paramtools.Parameters):
             "m_wealth",
             "p_wealth",
             "retirement_age",
-            "replacement_rate_adjust",
             "zeta_D",
             "zeta_K",
             "r_gov_scale",
@@ -208,6 +207,7 @@ class Specifications(paramtools.Parameters):
         tp_param_list3 = [
             "labor_income_tax_noncompliance_rate",
             "capital_income_tax_noncompliance_rate",
+            "replacement_rate_adjust",
         ]
         for item in tp_param_list3:
             param_in = getattr(self, item)

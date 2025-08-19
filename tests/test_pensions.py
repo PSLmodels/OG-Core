@@ -14,6 +14,7 @@ new_param_values = {
     "lambdas": [1.0],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "J": 1,
     "T": 4,
     "chi_n": np.ones(4),
@@ -456,7 +457,7 @@ e_ss = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n_ss = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 omegas = (1 / p4.S) * np.ones(p4.S)
 theta = np.array([0.4, 0.4])
-p4.replacement_rate_adjust = np.ones(p4.T)
+p4.replacement_rate_adjust = np.ones((p4.T, p4.J))
 pension_expected_ss = [0, 0, 0, 0, 0.404, 0.396, 0.32]
 method = "TPI"
 shift = False

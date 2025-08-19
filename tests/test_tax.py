@@ -23,6 +23,7 @@ new_param_values = {
     "m_wealth": [4],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
 }
 p1.update_specifications(new_param_values)
 expected1 = np.array([0.14285714, 0.6, 0.93103448])
@@ -41,6 +42,7 @@ new_param_values2 = {
     "m_wealth": [3, 4, 3],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
 }
 p2.update_specifications(new_param_values2)
 expected2 = np.array([0.084615385, 0.278021978, 0.734911243])
@@ -76,6 +78,7 @@ new_param_values = {
     "m_wealth": [5],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
 }
 p1.update_specifications(new_param_values)
 expected1 = np.array([0.81122449, 1.837370242, 2.173849525])
@@ -95,6 +98,7 @@ new_param_values2 = {
     "m_wealth": [3, 4, 3],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
 }
 p2.update_specifications(new_param_values2)
 expected2 = np.array([0.165976331, 0.522436904, 1.169769966])
@@ -896,6 +900,7 @@ p.J = 1
 p.S = 3
 p.labor_income_tax_noncompliance_rate = np.zeros((p.T, p.S, p.J))
 p.capital_income_tax_noncompliance_rate = np.zeros((p.T, p.S, p.J))
+p.replacement_rate_adjust = np.ones((p.T, p.J))
 p.lambdas = np.array([1.0])
 p.e = np.array([0.5, 0.45, 0.3]).reshape(3, 1)
 p.h_wealth = np.ones(p.T + p.S) * 1
@@ -910,6 +915,7 @@ p3 = copy.deepcopy(p)
 p3.T = 3
 p3.labor_income_tax_noncompliance_rate = np.zeros((p3.T, p3.S, p3.J))
 p3.capital_income_tax_noncompliance_rate = np.zeros((p3.T, p3.S, p3.J))
+p3.replacement_rate_adjust = np.ones((p3.T, p3.J))
 p4 = copy.deepcopy(p)
 p5 = copy.deepcopy(p)
 p5.e = np.array([[0.3, 0.2], [0.5, 0.4], [0.45, 0.3]])
@@ -917,6 +923,7 @@ p5.J = 2
 p5.T = 3
 p5.labor_income_tax_noncompliance_rate = np.zeros((p5.T, p5.S, p5.J))
 p5.capital_income_tax_noncompliance_rate = np.zeros((p5.T, p5.S, p5.J))
+p5.replacement_rate_adjust = np.ones((p5.T, p5.J))
 p5.lambdas = np.array([0.65, 0.35])
 # set variables and other parameters for each case
 r1 = 0.04
@@ -1139,7 +1146,7 @@ p7.tau_bq = np.array([0.05, 0.2, 0.0])
 p7.retire = (np.array([1, 2, 2])).astype(int)
 
 p8 = copy.deepcopy(p6)
-p8.replacement_rate_adjust = [1.5, 0.6, 1.0]
+p8.replacement_rate_adjust = np.array([[1.5, 1.5], [0.6, 0.6], [1.0, 1.0]])
 
 factor = 105000
 ubi1 = np.zeros((p1.T, p1.S, p1.J))
@@ -1163,6 +1170,7 @@ new_param_values_ubi = {
     "ubi_nom_65p": 500,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
 }
 p_u.update_specifications(new_param_values_ubi)
 p_u.tax_func_type = "DEP"
@@ -1298,6 +1306,7 @@ p12.labor_income_tax_noncompliance_rate = (
 p12.capital_income_tax_noncompliance_rate = (
     np.ones((p12.T + p12.S, p12.J)) * 0.05
 )
+p12.replacement_rate_adjust = np.ones((p12.T + p12.S, p12.J)) * 1.0
 p13 = copy.deepcopy(p5)
 p13.labor_income_tax_noncompliance_rate = (
     np.ones((p13.T + p13.S, p13.J)) * 0.05
@@ -1305,6 +1314,7 @@ p13.labor_income_tax_noncompliance_rate = (
 p13.capital_income_tax_noncompliance_rate = (
     np.ones((p13.T + p13.S, p13.J)) * 0.05
 )
+p13.replacement_rate_adjust = np.ones((p13.T + p13.S, p13.J)) * 1.0
 
 expected1 = np.array([0.47374766, -0.09027663, 0.03871394])
 expected2 = np.array([0.20374766, -0.09027663, 0.03871394])

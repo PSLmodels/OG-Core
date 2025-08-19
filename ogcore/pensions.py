@@ -168,24 +168,24 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
             else:
                 retireTPI = p.retire[t] - 1 - p.S
             pension[retireTPI:] = (
-                theta[j] * p.replacement_rate_adjust[t] * w[retireTPI:]
+                theta[j] * p.replacement_rate_adjust[t, j] * w[retireTPI:]
             )
         elif len(n.shape) == 2:
             for tt in range(pension.shape[0]):
                 pension[tt, retireTPI[tt] :] = (
-                    theta * p.replacement_rate_adjust[t + tt] * w[tt]
+                    theta * p.replacement_rate_adjust[t + tt, j] * w[tt]
                 )
         else:
             for tt in range(pension.shape[0]):
                 pension[tt, retireTPI[tt] :, :] = (
                     theta.reshape(1, p.J)
-                    * p.replacement_rate_adjust[t + tt]
+                    * p.replacement_rate_adjust[t + tt, :].reshape(1, p.J)
                     * w[tt]
                 )
     elif method == "TPI_scalar":
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
-        pension = theta * p.replacement_rate_adjust[0] * w
+        pension = theta * p.replacement_rate_adjust[0, j] * w
 
     return pension
 
