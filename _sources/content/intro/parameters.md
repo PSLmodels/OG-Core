@@ -388,7 +388,7 @@ _Out-of-Range Action:_ error
 
 
 ####  `replacement_rate_adjust`  
-_Description:_ Adjustment to the Social Security retirement benefits replacement rate. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Adjustment to the Social Security retirement benefits replacement rate for year t and household type j. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Notes:_ This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 10.0  
