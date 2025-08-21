@@ -169,6 +169,60 @@ def euler_equation_solver(guesses, *args):
     return errors
 
 
+def solve_for_j(
+    guesses,
+    r_p,
+    w,
+    p_tilde,
+    bq_j,
+    rm_j,
+    tr_j,
+    ubi_j,
+    factor,
+    j,
+    p_future,
+):
+    """
+    Solves the household's optimization problem for a given type j.
+
+    Args:
+        guesses (Numpy array): initial guesses for b and n, length 2S
+        r_p (scalar): return on household investment portfolio
+        w (scalar): real wage rate
+        p_tilde (scalar): composite good price
+        bq_j (Numpy array): bequest amounts by age, length S
+        rm_j (Numpy array): remittance amounts by age, length S
+        tr_j (Numpy array): government transfer amount by age, length S
+        ubi_j (vector): universal basic income (UBI) payment, length S
+        factor (scalar): scaling factor converting model units to dollars
+        j (int): household type index
+        p_future (OG-Core Specifications object): future model parameters
+
+    Returns:
+        root (OptimizeResult): the optimization result
+    """
+    # scattered_p is either the original object (serial case)
+    # or a Future pointing to it (distributed case)
+    return opt.root(
+        euler_equation_solver,
+        guesses * 0.9,
+        args=(
+            r_p,
+            w,
+            p_tilde,
+            bq_j,
+            rm_j,
+            tr_j,
+            ubi_j,
+            factor,
+            j,
+            p_future,
+        ),
+        method=p.FOC_root_method,
+        tol=MINIMIZER_TOL,
+    )
+
+
 def inner_loop(outer_loop_vars, p, client):
     """
     This function solves for the inner loop of the SS.  That is, given
@@ -235,44 +289,12 @@ def inner_loop(outer_loop_vars, p, client):
     tr = household.get_tr(TR, None, p, "SS")
     ubi = p.ubi_nom_array[-1, :, :] / factor
 
-    def solve_for_j(
-        guesses,
-        r_p,
-        w,
-        p_tilde,
-        bq_j,
-        rm_j,
-        tr_j,
-        ubi_j,
-        factor,
-        j,
-        scattered_p_future,
-    ):
-        # scattered_p is either the original object (serial case)
-        # or a Future pointing to it (distributed case)
-        return opt.root(
-            euler_equation_solver,
-            guesses * 0.9,
-            args=(
-                r_p,
-                w,
-                p_tilde,
-                bq_j,
-                rm_j,
-                tr_j,
-                ubi_j,
-                factor,
-                j,
-                scattered_p_future,
-            ),
-            method=p.FOC_root_method,
-            tol=MINIMIZER_TOL,
-        )
-
     results = []
+    # from dask.base import dask_sizeof
+
     if client:
         # Scatter p only once and only if client not equal None
-        scattered_p_future = client.scatter(p, broadcast=True)
+        # scattered_p_future = client.scatter(p, broadcast=True)
 
         # Launch in parallel with submit (or map)
         futures = []
@@ -293,6 +315,12 @@ def inner_loop(outer_loop_vars, p, client):
                 scattered_p_future,
             )
             futures.append(f)
+
+        # print("Futures =")
+        # print(dask_sizeof(futures))  # shows what’s embedded
+        # d = dask.delayed(futures)
+        # d.visualize(rankdir="LR", filename="graph.svg")
+        print("Client link = ", client.dashboard_link)
 
         results = client.gather(futures)
 
@@ -1231,6 +1259,14 @@ def run_SS(p, client=None):
             results
 
     """
+
+    # Definte a scattered version of the parameters, p at the module
+    # level so that it can be used in functions called by Dask
+    global scattered_p_future
+    if client:
+        scattered_p_future = client.scatter(p, broadcast=True)
+    else:
+        scattered_p_future = p
 
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
