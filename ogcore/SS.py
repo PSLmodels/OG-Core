@@ -294,7 +294,7 @@ def inner_loop(outer_loop_vars, p, client):
 
     if client:
         # Scatter p only once and only if client not equal None
-        # scattered_p_future = client.scatter(p, broadcast=True)
+        scattered_p_future = client.scatter(p, broadcast=True)
 
         # Launch in parallel with submit (or map)
         futures = []
@@ -1253,15 +1253,6 @@ def run_SS(p, client=None):
             results
 
     """
-
-    # Definte a scattered version of the parameters, p at the module
-    # level so that it can be used in functions called by Dask
-    global scattered_p_future
-    if client:
-        scattered_p_future = client.scatter(p, broadcast=True)
-    else:
-        scattered_p_future = p
-
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
         [1.00, 1.0],
