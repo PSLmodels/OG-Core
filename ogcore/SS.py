@@ -169,6 +169,60 @@ def euler_equation_solver(guesses, *args):
     return errors
 
 
+def solve_for_j(
+    guesses,
+    r_p,
+    w,
+    p_tilde,
+    bq_j,
+    rm_j,
+    tr_j,
+    ubi_j,
+    factor,
+    j,
+    p_future,
+):
+    """
+    Solves the household's optimization problem for a given type j.
+
+    Args:
+        guesses (Numpy array): initial guesses for b and n, length 2S
+        r_p (scalar): return on household investment portfolio
+        w (scalar): real wage rate
+        p_tilde (scalar): composite good price
+        bq_j (Numpy array): bequest amounts by age, length S
+        rm_j (Numpy array): remittance amounts by age, length S
+        tr_j (Numpy array): government transfer amount by age, length S
+        ubi_j (vector): universal basic income (UBI) payment, length S
+        factor (scalar): scaling factor converting model units to dollars
+        j (int): household type index
+        p_future (OG-Core Specifications object): future model parameters
+
+    Returns:
+        root (OptimizeResult): the optimization result
+    """
+    # scattered_p is either the original object (serial case)
+    # or a Future pointing to it (distributed case)
+    return opt.root(
+        euler_equation_solver,
+        guesses * 0.9,
+        args=(
+            r_p,
+            w,
+            p_tilde,
+            bq_j,
+            rm_j,
+            tr_j,
+            ubi_j,
+            factor,
+            j,
+            p_future,
+        ),
+        method=p_future.FOC_root_method,
+        tol=MINIMIZER_TOL,
+    )
+
+
 def inner_loop(outer_loop_vars, p, client):
     """
     This function solves for the inner loop of the SS.  That is, given
@@ -235,50 +289,19 @@ def inner_loop(outer_loop_vars, p, client):
     tr = household.get_tr(TR, None, p, "SS")
     ubi = p.ubi_nom_array[-1, :, :] / factor
 
-    scattered_p = client.scatter(p, broadcast=True) if client else p
+    results = []
+    # from dask.base import dask_sizeof
 
-    lazy_values = []
-    for j in range(p.J):
-        guesses = np.append(bssmat[:, j], nssmat[:, j])
+    if client:
+        # Scatter p only once and only if client not equal None
+        scattered_p_future = client.scatter(p, broadcast=True)
 
-        # Create a delayed function that will access the scattered_p
-        @delayed
-        def solve_for_j(
-            guesses,
-            r_p,
-            w,
-            p_tilde,
-            bq_j,
-            rm_j,
-            tr_j,
-            ubi_j,
-            factor,
-            j,
-            scattered_p_future,
-        ):
-            # This function will be executed on workers with access to scattered_p
-            return opt.root(
-                euler_equation_solver,
-                guesses * 0.9,
-                args=(
-                    r_p,
-                    w,
-                    p_tilde,
-                    bq_j,
-                    rm_j,
-                    tr_j,
-                    ubi_j,
-                    factor,
-                    j,
-                    scattered_p_future,
-                ),
-                method=p.FOC_root_method,
-                tol=MINIMIZER_TOL,
-            )
-
-        # Add the delayed computation to our list
-        lazy_values.append(
-            solve_for_j(
+        # Launch in parallel with submit (or map)
+        futures = []
+        for j in range(p.J):
+            guesses = np.append(bssmat[:, j], nssmat[:, j])
+            f = client.submit(
+                solve_for_j,
                 guesses,
                 r_p,
                 w,
@@ -289,21 +312,30 @@ def inner_loop(outer_loop_vars, p, client):
                 ubi[:, j],
                 factor,
                 j,
-                scattered_p,
+                scattered_p_future,
             )
-        )
+            futures.append(f)
 
-    if client:
-        # Compute all the values
-        futures = client.compute(lazy_values)
-        # Later, gather the results when needed
         results = client.gather(futures)
+
     else:
-        results = compute(
-            *lazy_values,
-            scheduler=dask.multiprocessing.get,
-            num_workers=p.num_workers,
-        )
+        # Serial fallback (no dask client)
+        for j in range(p.J):
+            guesses = np.append(bssmat[:, j], nssmat[:, j])
+            res = solve_for_j(
+                guesses,
+                r_p,
+                w,
+                p_tilde,
+                bq[:, j],
+                rm[:, j],
+                tr[:, j],
+                ubi[:, j],
+                factor,
+                j,
+                p,  # pass the raw object directly
+            )
+            results.append(res)
 
     for j, result in enumerate(results):
         euler_errors[:, j] = result.fun
@@ -1221,7 +1253,6 @@ def run_SS(p, client=None):
             results
 
     """
-
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
         [1.00, 1.0],

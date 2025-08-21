@@ -756,6 +756,10 @@ def run_TPI(p, client=None):
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
 
+    # scatter parameters to workers
+    if client:
+        scattered_p_future = client.scatter(p, broadcast=True)
+
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
@@ -766,38 +770,40 @@ def run_TPI(p, client=None):
         ).sum(axis=2)
         p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
 
-        # scatter parameters to workers
-        scattered_p = client.scatter(p, broadcast=True) if client else p
-
+        # Initialize Euler errors
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
-        lazy_values = []
-        for j in range(p.J):
-            guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
-
-            # Add the delayed computation to our list
-            lazy_values.append(
-                delayed(inner_loop)(
+        # Solve for household decisions
+        results = []
+        if client:
+            futures = []
+            for j in range(p.J):
+                guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
+                f = client.submit(
+                    inner_loop,
                     guesses,
                     outer_loop_vars,
                     initial_values,
                     ubi,
                     j,
                     ind,
-                    scattered_p,
+                    scattered_p_future,
                 )
-            )
-        if client:
-            # Compute all the values
-            futures = client.compute(lazy_values)
-            # Later, gather the results when needed
+                futures.append(f)
             results = client.gather(futures)
         else:
-            results = compute(
-                *lazy_values,
-                scheduler=dask.multiprocessing.get,
-                num_workers=p.num_workers,
-            )
-
+            # Serial fallback (no dask client)
+            for j in range(p.J):
+                guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
+                res = inner_loop(
+                    guesses,
+                    outer_loop_vars,
+                    initial_values,
+                    ubi,
+                    j,
+                    ind,
+                    p,  # pass the raw object directly
+                )
+                results.append(res)
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
