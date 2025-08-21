@@ -316,12 +316,6 @@ def inner_loop(outer_loop_vars, p, client):
             )
             futures.append(f)
 
-        # print("Futures =")
-        # print(dask_sizeof(futures))  # shows what’s embedded
-        # d = dask.delayed(futures)
-        # d.visualize(rankdir="LR", filename="graph.svg")
-        print("Client link = ", client.dashboard_link)
-
         results = client.gather(futures)
 
     else:
