@@ -218,7 +218,7 @@ def solve_for_j(
             j,
             p_future,
         ),
-        method=p.FOC_root_method,
+        method=p_future.FOC_root_method,
         tol=MINIMIZER_TOL,
     )
 
