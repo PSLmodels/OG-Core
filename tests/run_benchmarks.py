@@ -56,8 +56,8 @@ def run_benchmark_tests(quick: bool = False) -> bool:
     if quick:
         cmd.extend(["-m", "not slow"])
     
-    # Add the specific test file
-    cmd.append("test_dask_benchmarks.py")
+    # Add the benchmark test files
+    cmd.extend(["test_dask_benchmarks.py", "test_real_txfunc_benchmarks.py"])
     
     print("Running benchmark tests...")
     print(f"Command: {' '.join(cmd)}")
