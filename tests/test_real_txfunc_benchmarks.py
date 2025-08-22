@@ -32,7 +32,7 @@ from test_dask_benchmarks import (
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-def create_realistic_micro_data(num_records_per_year: int = 2000, num_years: int = 3):
+def create_realistic_micro_data(num_records_per_year: int = 5000, num_years: int = 3):
     """
     Create micro data that closely matches what txfunc expects.
     
@@ -111,6 +111,7 @@ def create_realistic_micro_data(num_records_per_year: int = 2000, num_years: int
             'AGEP': ages,  # Primary taxpayer age
             'AGAGE': ages,  # Duplicate for compatibility
             'AGEX': ages,  # Another age field
+            'year': year,  # Year field expected by txfunc
             
             # Income components
             'e00200': wage_income,  # Wages and salaries
@@ -125,26 +126,31 @@ def create_realistic_micro_data(num_records_per_year: int = 2000, num_years: int
             'iitax': tax_liability,  # Final income tax liability
             'payrolltax': total_labor_income * 0.153,  # Payroll tax (FICA)
             
-            # Calculated fields that txfunc expects
+            # Calculated fields that txfunc expects - using exact column names from test data
             'total_labinc': total_labor_income,
             'total_capinc': total_capital_income, 
+            'market_income': total_income,  # This is the missing column!
             'etr': np.clip(tax_liability / np.maximum(total_income, 1), 0, 0.6),
-            'mtrx': np.clip(mtr_labor, 0, 0.8),  # MTR on labor
-            'mtry': np.clip(mtr_capital, 0, 0.8),  # MTR on capital
+            'mtr_labinc': np.clip(mtr_labor, 0, 0.8),  # MTR on labor (correct name)
+            'mtr_capinc': np.clip(mtr_capital, 0, 0.8),  # MTR on capital (correct name)
+            'total_tax_liab': tax_liability,  # Total tax liability
+            'payroll_tax_liab': total_labor_income * 0.153,  # Payroll tax liability
             
-            # Weights
-            's006': weights,  # Sample weight
-            'wgts': weights,  # Alternative weight name
+            # Weights - use the standard name from test data
+            'weight': weights,  # Sample weight (standard name)
+            's006': weights,  # Alternative weight name for compatibility
+            'wgts': weights,  # Another alternative weight name
         })
         
         # Filter out extreme or invalid cases
         valid_mask = (
             (data['total_labinc'] >= 0) & 
             (data['total_capinc'] >= 0) &
+            (data['market_income'] >= 0) &
             (data['etr'] >= 0) & (data['etr'] <= 1) &
-            (data['mtrx'] >= 0) & (data['mtrx'] <= 1) &
-            (data['mtry'] >= 0) & (data['mtry'] <= 1) &
-            (data['s006'] > 0)
+            (data['mtr_labinc'] >= 0) & (data['mtr_labinc'] <= 1) &
+            (data['mtr_capinc'] >= 0) & (data['mtr_capinc'] <= 1) &
+            (data['weight'] > 0)
         )
         
         data = data[valid_mask].reset_index(drop=True)
@@ -161,7 +167,7 @@ class TestRealTaxFuncBenchmarks:
     @pytest.fixture(scope="class")
     def small_real_data(self):
         """Generate small realistic dataset."""
-        return create_realistic_micro_data(num_records_per_year=500, num_years=2)
+        return create_realistic_micro_data(num_records_per_year=2000, num_years=2)
     
     @pytest.fixture(scope="class")
     def medium_real_data(self):
@@ -219,7 +225,7 @@ class TestRealTaxFuncBenchmarks:
                             start_year=start_year,
                             analytical_mtrs=False,
                             tax_func_type=tax_func_type,
-                            age_specific=True,
+                            age_specific=False,  # Disable for faster benchmarking
                             desc_data=False,
                             graph_data=False,
                             graph_est=False,
@@ -540,11 +546,11 @@ def test_platform_specific_optimal_config():
                                 continue
                         
                         success = result is not None
-                        error_msg = None
+                        error_message = None
                         
                     except Exception as e:
                         success = False
-                        error_msg = str(e)
+                        error_message = str(e)
                         result = None
             
             compute_time = get_time()
@@ -560,7 +566,7 @@ def test_platform_specific_optimal_config():
                 data_size_mb=sum(df.memory_usage(deep=True).sum() for df in test_data.values()) / 1024 / 1024,
                 num_tasks=len(test_data),
                 success=success,
-                error_message=error_msg
+                error_message=error_message
             )
             
             results.append(benchmark_result)
@@ -569,7 +575,7 @@ def test_platform_specific_optimal_config():
             if success:
                 print(f"{config_name}: {compute_time:.3f}s, {mem_tracker.peak_memory:.1f}MB")
             else:
-                print(f"{config_name}: FAILED - {error_msg}")
+                print(f"{config_name}: FAILED - {error_message}")
     
     finally:
         # Clean up any clients
