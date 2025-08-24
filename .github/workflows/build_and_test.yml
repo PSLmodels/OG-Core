@@ -50,7 +50,7 @@ jobs:
         shell: bash -l {0}
         working-directory: ./
         run: |
-          python -m pytest -m "not local" --cov=./ --cov-report=xml
+          python -m pytest -m "not local and not benchmark" --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && contains(github.repository, 'PSLmodels/OG-Core')
         uses: codecov/codecov-action@v4
