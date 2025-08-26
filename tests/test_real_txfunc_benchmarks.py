@@ -705,7 +705,6 @@ def test_platform_specific_optimal_config():
         )
         os.makedirs(os.path.dirname(rec_file), exist_ok=True)
 
-
         with open(rec_file, "w") as f:
             json.dump(recommendation, f, indent=2)
 
