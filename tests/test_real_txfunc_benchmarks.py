@@ -672,7 +672,7 @@ def test_platform_specific_optimal_config():
                     client.close()
                     if hasattr(client, "cluster"):
                         client.cluster.close()
-                except:
+                except Exception:
                     pass
 
     # Report optimal configuration
