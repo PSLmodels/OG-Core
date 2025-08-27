@@ -8,9 +8,9 @@ Household functions.
 import numpy as np
 from ogcore import tax, utils
 import logging
-from ogcore.SS import VERBOSE
 
 # Configure logging
+VERBOSE = False
 log_level = logging.INFO if VERBOSE else logging.WARNING
 logging.basicConfig(
     level=log_level, format="%(message)s"  # Only show the message itself
