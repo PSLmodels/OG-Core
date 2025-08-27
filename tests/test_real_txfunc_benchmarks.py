@@ -14,7 +14,7 @@ import tempfile
 import shutil
 from pathlib import Path
 import json
-
+import logging
 import pytest
 import numpy as np
 import pandas as pd
@@ -183,7 +183,7 @@ def create_realistic_micro_data(
         data = data[valid_mask].reset_index(drop=True)
         micro_data[str(year)] = data
 
-        print(f"Generated {len(data)} valid tax records for year {year}")
+        logging.info(f"Generated {len(data)} valid tax records for year {year}")
 
     return micro_data
 
@@ -317,7 +317,7 @@ class TestRealTaxFuncBenchmarks:
         )
         save_benchmark_result(result)
 
-        print(
+        logging.info(
             f"Real small (no client): {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB peak"
         )
         assert result.success, f"Real benchmark failed: {result.error_message}"
@@ -345,7 +345,7 @@ class TestRealTaxFuncBenchmarks:
             )
             save_benchmark_result(result)
 
-            print(
+            logging.info(
                 f"Real small (threaded): {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB peak"
             )
             assert (
@@ -383,7 +383,7 @@ class TestRealTaxFuncBenchmarks:
             )
             save_benchmark_result(result)
 
-            print(
+            logging.info(
                 f"Real small (processes): {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB peak"
             )
             assert (
@@ -416,7 +416,7 @@ class TestRealTaxFuncBenchmarks:
             threaded_client = Client(threaded_cluster)
             configs.append(("threaded", threaded_client))
         except Exception as e:
-            print(f"Failed to create threaded client: {e}")
+            logging.info(f"Failed to create threaded client: {e}")
 
         # Process client (skip on Windows due to known issues)
         if platform.system() != "Windows":
@@ -431,7 +431,7 @@ class TestRealTaxFuncBenchmarks:
                 process_client = Client(process_cluster)
                 configs.append(("processes", process_client))
             except Exception as e:
-                print(f"Failed to create process client: {e}")
+                logging.info(f"Failed to create process client: {e}")
 
         results = []
 
@@ -446,7 +446,7 @@ class TestRealTaxFuncBenchmarks:
                 results.append(result)
                 save_benchmark_result(result)
 
-                print(
+                logging.info(
                     f"Real medium ({config_name}): {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB"
                 )
 
@@ -470,7 +470,7 @@ class TestRealTaxFuncBenchmarks:
         # Report performance comparison
         if len(successful_results) > 1:
             fastest = min(successful_results, key=lambda x: x.compute_time)
-            print(
+            logging.info(
                 f"Fastest configuration: {fastest.scheduler} ({fastest.compute_time:.3f}s)"
             )
 
@@ -500,7 +500,7 @@ class TestRealTaxFuncBenchmarks:
                 if result.data_size_mb > 0
                 else float("inf")
             )
-            print(
+            logging.info(
                 f"Real memory {name}: {result.data_size_mb:.1f}MB data -> {result.peak_memory_mb:.1f}MB peak (efficiency: {memory_efficiency:.2f})"
             )
 
@@ -513,7 +513,7 @@ class TestRealTaxFuncBenchmarks:
                 medium_result.peak_memory_mb / small_result.peak_memory_mb
             )
 
-            print(
+            logging.info(
                 f"Memory scaling: {memory_ratio:.2f}x memory for {data_ratio:.2f}x data"
             )
 
@@ -557,7 +557,7 @@ def test_platform_specific_optimal_config():
         client = Client(cluster)
         configurations.append(("distributed_threaded", client, "threaded"))
     except Exception as e:
-        print(f"Could not create threaded client: {e}")
+        logging.info(f"Could not create threaded client: {e}")
 
     # Configuration 4: Distributed processes (skip on Windows)
     if platform.system() != "Windows":
@@ -573,7 +573,7 @@ def test_platform_specific_optimal_config():
                 ("distributed_processes", client, "processes")
             )
         except Exception as e:
-            print(f"Could not create process client: {e}")
+            logging.info(f"Could not create process client: {e}")
 
     results = []
 
@@ -659,11 +659,11 @@ def test_platform_specific_optimal_config():
             save_benchmark_result(benchmark_result)
 
             if success:
-                print(
+                logging.info(
                     f"{config_name}: {compute_time:.3f}s, {mem_tracker.peak_memory:.1f}MB"
                 )
             else:
-                print(f"{config_name}: FAILED - {error_message}")
+                logging.info(f"{config_name}: FAILED - {error_message}")
 
     finally:
         # Clean up any clients
@@ -680,10 +680,10 @@ def test_platform_specific_optimal_config():
     successful_results = [r for r in results if r.success]
     if successful_results:
         optimal = min(successful_results, key=lambda x: x.compute_time)
-        print(
+        logging.info(
             f"\nOptimal configuration for {platform.system()}: {optimal.scheduler}"
         )
-        print(
+        logging.info(
             f"Time: {optimal.compute_time:.3f}s, Memory: {optimal.peak_memory_mb:.1f}MB"
         )
 
@@ -708,6 +708,6 @@ def test_platform_specific_optimal_config():
         with open(rec_file, "w") as f:
             json.dump(recommendation, f, indent=2)
 
-        print(f"Saved platform recommendation to {rec_file}")
+        logging.info(f"Saved platform recommendation to {rec_file}")
 
     assert len(successful_results) > 0, "No benchmark configurations succeeded"

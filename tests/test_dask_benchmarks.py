@@ -186,7 +186,7 @@ def create_dask_clients() -> List[Tuple[str, Optional[Client]]]:
         threaded_client = Client(threaded_cluster)
         clients.append(("threaded", threaded_client))
     except Exception as e:
-        print(f"Failed to create threaded client: {e}")
+        logging.info(f"Failed to create threaded client: {e}")
 
     # Process-based client (if not Windows or if requested)
     if platform.system() != "Windows":
@@ -201,7 +201,7 @@ def create_dask_clients() -> List[Tuple[str, Optional[Client]]]:
             process_client = Client(process_cluster)
             clients.append(("processes", process_client))
         except Exception as e:
-            print(f"Failed to create process client: {e}")
+            logging.info(f"Failed to create process client: {e}")
 
     return clients
 
@@ -314,7 +314,7 @@ class TestDaskBenchmarks:
             }
 
         # Add some CPU time to simulate real computation
-        time.sleep(0.01)  # 10ms per task
+        _ = np.linalg.svd(np.random.rand(50, 50))
 
         return result
 
@@ -413,7 +413,7 @@ class TestDaskBenchmarks:
         )
         save_benchmark_result(result)
         assert result.success, f"Benchmark failed: {result.error_message}"
-        print(
+        logging.info(
             f"Small dataset multiprocessing: {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB peak"
         )
 
@@ -425,7 +425,7 @@ class TestDaskBenchmarks:
         )
         save_benchmark_result(result)
         assert result.success, f"Benchmark failed: {result.error_message}"
-        print(
+        logging.info(
             f"Small dataset threaded: {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB peak"
         )
 
@@ -447,7 +447,7 @@ class TestDaskBenchmarks:
             )
             results.append(result)
             save_benchmark_result(result)
-            print(
+            logging.info(
                 f"Medium {scheduler}: {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB peak"
             )
 
@@ -475,7 +475,7 @@ class TestDaskBenchmarks:
                 )
                 results.append(result)
                 save_benchmark_result(result)
-                print(
+                logging.info(
                     f"Distributed {client_name}: {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB peak"
                 )
 
@@ -517,7 +517,7 @@ class TestDaskBenchmarks:
                 if result.data_size_mb > 0
                 else 0
             )
-            print(
+            logging.info(
                 f"Memory scaling {name}: {result.data_size_mb:.1f}MB data -> {result.peak_memory_mb:.1f}MB peak (ratio: {memory_per_mb:.2f})"
             )
 
@@ -551,7 +551,7 @@ class TestDaskBenchmarks:
             )
             results.append(result)
             save_benchmark_result(result)
-            print(f"Worker scaling {num_workers}: {result.compute_time:.3f}s")
+            logging.info(f"Worker scaling {num_workers}: {result.compute_time:.3f}s")
 
         # Performance should improve or stay similar with more workers
         if all(r.success for r in results):
@@ -560,7 +560,7 @@ class TestDaskBenchmarks:
 
             # Allow some overhead, but expect some improvement
             speedup = single_worker_time / max_worker_time
-            print(f"Speedup with {max_workers} workers: {speedup:.2f}x")
+            logging.info(f"Speedup with {max_workers} workers: {speedup:.2f}x")
 
             # Should be at least 1.2x speedup with multiple workers (conservative)
             if max_workers > 1:
@@ -583,7 +583,7 @@ class TestDaskBenchmarks:
         )
         save_benchmark_result(result)
 
-        print(
+        logging.info(
             f"Large dataset stress ({scheduler}): {result.compute_time:.3f}s, {result.peak_memory_mb:.1f}MB peak"
         )
 
@@ -613,7 +613,7 @@ def load_benchmark_results() -> List[BenchmarkResult]:
                     result = BenchmarkResult(**data)
                     results.append(result)
             except Exception as e:
-                print(f"Failed to load {filename}: {e}")
+                logging.info(f"Failed to load {filename}: {e}")
 
     return results
 
@@ -622,12 +622,12 @@ def generate_benchmark_report():
     """Generate a summary report of all benchmark results."""
     results = load_benchmark_results()
     if not results:
-        print("No benchmark results found.")
+        logging.info("No benchmark results found.")
         return
 
-    print("\n" + "=" * 80)
-    print("DASK PERFORMANCE BENCHMARK REPORT")
-    print("=" * 80)
+    logging.info("\n" + "=" * 80)
+    logging.info("DASK PERFORMANCE BENCHMARK REPORT")
+    logging.info("=" * 80)
 
     # Group by platform and scheduler
     by_config = {}
@@ -638,8 +638,8 @@ def generate_benchmark_report():
         by_config[key].append(result)
 
     for (platform, scheduler), config_results in by_config.items():
-        print(f"\n{platform} - {scheduler}:")
-        print("-" * 40)
+        logging.info(f"\n{platform} - {scheduler}:")
+        logging.info("-" * 40)
 
         successful = [r for r in config_results if r.success]
         failed = [r for r in config_results if not r.success]
@@ -651,14 +651,14 @@ def generate_benchmark_report():
             avg_memory = sum(r.peak_memory_mb for r in successful) / len(
                 successful
             )
-            print(f"  Successful tests: {len(successful)}")
-            print(f"  Average time: {avg_time:.3f}s")
-            print(f"  Average peak memory: {avg_memory:.1f}MB")
+            logging.info(f"  Successful tests: {len(successful)}")
+            logging.info(f"  Average time: {avg_time:.3f}s")
+            logging.info(f"  Average peak memory: {avg_memory:.1f}MB")
 
         if failed:
-            print(f"  Failed tests: {len(failed)}")
+            logging.info(f"  Failed tests: {len(failed)}")
             for failure in failed[:3]:  # Show first 3 failures
-                print(f"    {failure.test_name}: {failure.error_message}")
+                logging.info(f"    {failure.test_name}: {failure.error_message}")
 
 
 if __name__ == "__main__":
