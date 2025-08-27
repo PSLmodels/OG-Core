@@ -6,6 +6,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.14.8] - 2025-08-26 12:00:00
+
+### Added
+
+- Adds a complete benchmark suite for measuring and optimizing Dask performance in OG-Core, with particular focus on Windows performance issues.
+- New and updated files:
+    - tests/test_dask_benchmarks.py: Mock benchmark tests with synthetic workloads
+    - tests/test_real_txfunc_benchmarks.py: Real-world tax function benchmarks
+    - tests/run_benchmarks.py: Automated benchmark runner with reporting
+    - tests/BENCHMARK_README.md: Comprehensive documentation and usage guide
+    - pytest.ini: Updated with benchmark test markers
+- Key features:
+    - Platform-specific optimization tests (Windows, macOS, Linux)
+    - Memory usage and compute time benchmarking
+    - Baseline establishment and performance regression detection
+    - Comparison of different Dask schedulers and client configurations
+    - Real tax function estimation performance measurement
+    - Automated identification of optimal Dask settings per platform
+- Benefits:
+    - Establishes performance baselines before optimization work
+    - Identifies Windows-specific Dask performance bottlenecks
+    - Provides automated regression detection for future changes
+    - Enables data-driven optimization decisions
+    - Supports continuous performance monitoring
+- Usage:
+    - `python tests/run_benchmarks.py  # Run all benchmarks`
+    - `python tests/run_benchmarks.py --quick  # Quick benchmarks only`
+    - `python tests/run_benchmarks.py --save-baseline  # Save performance baseline`
+    - `python tests/run_benchmarks.py --compare-baseline # Compare against baseline`
+- 🤖 Generated with help from Claude Code
+
 ## [0.14.7] - 2025-08-21 17:00:00
 
 ### Added
@@ -409,6 +440,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.14.8]: https://github.com/PSLmodels/OG-Core/compare/v0.14.7...v0.14.8
 [0.14.7]: https://github.com/PSLmodels/OG-Core/compare/v0.14.6...v0.14.7
 [0.14.6]: https://github.com/PSLmodels/OG-Core/compare/v0.14.5...v0.14.6
 [0.14.5]: https://github.com/PSLmodels/OG-Core/compare/v0.14.4...v0.14.5
