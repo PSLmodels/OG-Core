@@ -18,6 +18,7 @@ import dask.multiprocessing
 from ogcore import tax, utils, household, firm, fiscal
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
+from ogcore import config
 import os
 import warnings
 import logging
@@ -36,15 +37,6 @@ Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
 
-"""
-Set flag for verbosity
-"""
-VERBOSE = True
-# Configure logging
-log_level = logging.INFO if VERBOSE else logging.WARNING
-logging.basicConfig(
-    level=log_level, format="%(message)s"  # Only show the message itself
-)
 
 
 def get_initial_SS_values(p):
@@ -558,19 +550,22 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     return euler_errors, b_mat, n_mat
 
 
-def run_TPI(p, client=None):
+def run_TPI(p, client=None, verbose=False):
     """
     Solve for transition path equilibrium of OG-Core.
 
     Args:
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
+        verbose (bool): if True, set logging to INFO level
 
     Returns:
         output (dictionary): dictionary with transition path solution
             results
 
     """
+    # Configure logging level based on verbose parameter
+    config.set_logging_level(verbose)
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values

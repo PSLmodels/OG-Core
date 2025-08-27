@@ -6,6 +6,7 @@ import dask.multiprocessing
 from ogcore import tax, pensions, household, firm, utils, fiscal
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
+from ogcore import config
 import os
 import warnings
 import logging
@@ -24,15 +25,6 @@ Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
 
-"""
-Set flag for verbosity
-"""
-VERBOSE = True
-# Configure logging
-log_level = logging.INFO if VERBOSE else logging.WARNING
-logging.basicConfig(
-    level=log_level, format="%(message)s"  # Only show the message itself
-)
 
 
 """
@@ -1240,19 +1232,22 @@ def SS_fsolve(guesses, *args):
     return errors
 
 
-def run_SS(p, client=None):
+def run_SS(p, client=None, verbose=False):
     """
     Solve for steady-state equilibrium of OG-Core.
 
     Args:
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
+        verbose (bool): if True, set logging to INFO level
 
     Returns:
         output (dictionary): dictionary with steady-state solution
             results
 
     """
+    # Configure logging level based on verbose parameter
+    config.set_logging_level(verbose)
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
         [1.00, 1.0],
