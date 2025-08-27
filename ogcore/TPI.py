@@ -38,7 +38,6 @@ Set flag for enforcement of solution check
 ENFORCE_SOLUTION_CHECKS = True
 
 
-
 def get_initial_SS_values(p):
     """
     Get values of variables for the initial period and the steady state

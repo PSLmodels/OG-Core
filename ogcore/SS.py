@@ -26,7 +26,6 @@ Set flag for enforcement of solution check
 ENFORCE_SOLUTION_CHECKS = True
 
 
-
 """
 ------------------------------------------------------------------------
     Define Functions
