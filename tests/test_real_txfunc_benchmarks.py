@@ -183,7 +183,9 @@ def create_realistic_micro_data(
         data = data[valid_mask].reset_index(drop=True)
         micro_data[str(year)] = data
 
-        logging.info(f"Generated {len(data)} valid tax records for year {year}")
+        logging.info(
+            f"Generated {len(data)} valid tax records for year {year}"
+        )
 
     return micro_data
 

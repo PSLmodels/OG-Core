@@ -551,7 +551,9 @@ class TestDaskBenchmarks:
             )
             results.append(result)
             save_benchmark_result(result)
-            logging.info(f"Worker scaling {num_workers}: {result.compute_time:.3f}s")
+            logging.info(
+                f"Worker scaling {num_workers}: {result.compute_time:.3f}s"
+            )
 
         # Performance should improve or stay similar with more workers
         if all(r.success for r in results):
@@ -658,7 +660,9 @@ def generate_benchmark_report():
         if failed:
             logging.info(f"  Failed tests: {len(failed)}")
             for failure in failed[:3]:  # Show first 3 failures
-                logging.info(f"    {failure.test_name}: {failure.error_message}")
+                logging.info(
+                    f"    {failure.test_name}: {failure.error_message}"
+                )
 
 
 if __name__ == "__main__":

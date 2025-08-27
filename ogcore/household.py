@@ -791,7 +791,9 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
             " supply.",
         )
     if (cssmat < 0).any():
-        logging.info("\tWARNING: Consumption violates nonnegativity", " constraints.")
+        logging.info(
+            "\tWARNING: Consumption violates nonnegativity", " constraints."
+        )
     else:
         logging.info(
             "\tThere were no violations of the constraints on", " consumption."
