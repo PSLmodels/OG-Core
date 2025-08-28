@@ -7,6 +7,14 @@ Household functions.
 # Packages
 import numpy as np
 from ogcore import tax, utils
+import logging
+
+# Configure logging
+VERBOSE = False
+log_level = logging.INFO if VERBOSE else logging.WARNING
+logging.basicConfig(
+    level=log_level, format="%(message)s"  # Only show the message itself
+)
 
 """
 ------------------------------------------------------------------------
@@ -764,28 +772,30 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
         Warnings: if constraints are violated, warnings printed
 
     """
-    print("Checking constraints on capital, labor, and consumption.")
+    logging.info("Checking constraints on capital, labor, and consumption.")
 
     if (bssmat < 0).any():
-        print("\tWARNING: There is negative capital stock")
+        logging.info("\tWARNING: There is negative capital stock")
     flag2 = False
     if (nssmat < 0).any():
-        print(
+        logging.info(
             "\tWARNING: Labor supply violates nonnegativity ", "constraints."
         )
         flag2 = True
     if (nssmat > ltilde).any():
-        print("\tWARNING: Labor supply violates the ltilde constraint.")
+        logging.info("\tWARNING: Labor supply violates the ltilde constraint.")
         flag2 = True
     if flag2 is False:
-        print(
+        logging.info(
             "\tThere were no violations of the constraints on labor",
             " supply.",
         )
     if (cssmat < 0).any():
-        print("\tWARNING: Consumption violates nonnegativity", " constraints.")
+        logging.info(
+            "\tWARNING: Consumption violates nonnegativity", " constraints."
+        )
     else:
-        print(
+        logging.info(
             "\tThere were no violations of the constraints on", " consumption."
         )
 
@@ -810,22 +820,22 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
 
     """
     if (b_dist <= 0).any():
-        print(
+        logging.info(
             "\tWARNING: Aggregate capital is less than or equal to ",
             "zero in period %.f." % t,
         )
     if (n_dist < 0).any():
-        print(
+        logging.info(
             "\tWARNING: Labor supply violates nonnegativity",
             " constraints in period %.f." % t,
         )
     if (n_dist > ltilde).any():
-        print(
+        logging.info(
             "\tWARNING: Labor suppy violates the ltilde constraint",
             " in period %.f." % t,
         )
     if (c_dist < 0).any():
-        print(
+        logging.info(
             "\tWARNING: Consumption violates nonnegativity",
             " constraints in period %.f." % t,
         )
