@@ -15,9 +15,10 @@ import pickle
 import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
-from ogcore import tax, utils, household, firm, fiscal
+from ogcore import tax, utils, household, firm, fiscal, pensions
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
+from ogcore import config
 import os
 import warnings
 import logging
@@ -35,16 +36,6 @@ MINIMIZER_TOL = 1e-13
 Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
-
-"""
-Set flag for verbosity
-"""
-VERBOSE = True
-# Configure logging
-log_level = logging.INFO if VERBOSE else logging.WARNING
-logging.basicConfig(
-    level=log_level, format="%(message)s"  # Only show the message itself
-)
 
 
 def get_initial_SS_values(p):
@@ -558,19 +549,22 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     return euler_errors, b_mat, n_mat
 
 
-def run_TPI(p, client=None):
+def run_TPI(p, client=None, verbose=False):
     """
     Solve for transition path equilibrium of OG-Core.
 
     Args:
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
+        verbose (bool): if True, set logging to INFO level
 
     Returns:
         output (dictionary): dictionary with transition path solution
             results
 
     """
+    # Configure logging level based on verbose parameter
+    config.set_logging_level(verbose)
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
@@ -846,6 +840,39 @@ def run_TPI(p, client=None):
             etr_params_4D,
             p,
         )
+        income_tax_mat = tax.income_tax_liab(
+            r_p[: p.T],
+            w[: p.T],
+            bmat_s,
+            n_mat[: p.T, :, :],
+            factor,
+            0,
+            None,
+            "TPI",
+            p.e,
+            etr_params_4D,
+            p,
+        )
+        pension_mat = pensions.pension_amount(
+            r_p[: p.T],
+            w[: p.T],
+            n_mat[: p.T, :, :],
+            1,
+            theta,
+            0,
+            None,
+            False,
+            "TPI",
+            p.e,
+            factor,
+            p,
+        )
+        bq_tax_mat = tax.bequest_tax_liab(
+            r_p[: p.T], bmat_s, bqmat[: p.T, :, :], 0, None, "TPI", p
+        )
+        wealth_tax_mat = tax.wealth_tax_liab(
+            r_p[: p.T], bmat_s, 0, None, "TPI", p
+        )
         r_p_path = utils.to_timepath_shape(r_p)
         p_tilde_path = utils.to_timepath_shape(p_tilde)
         wpath = utils.to_timepath_shape(w)
@@ -862,6 +889,9 @@ def run_TPI(p, client=None):
             p.e,
             p,
         )
+        sales_tax_mat = (p.tau_c[: p.T, :] * p_i).reshape(
+            p.T, p.I, 1, 1
+        ) * c_mat
         C = aggr.get_C(c_mat, p, "TPI")
 
         c_i = household.get_ci(
@@ -1360,7 +1390,12 @@ def run_TPI(p, client=None):
         "tr": trmat[: p.T, ...],
         "ubi": ubi[: p.T, ...],
         "before_tax_income": y_before_tax_mat[: p.T, ...],
-        "hh_taxes": tax_mat[: p.T, ...],
+        "hh_net_taxes": tax_mat[: p.T, ...],
+        "income_payroll_taxes": income_tax_mat[: p.T, ...],
+        "sales_tax": sales_tax_mat[: p.T, ...],
+        "wealth_tax": wealth_tax_mat[: p.T, ...],
+        "bequest_tax": bq_tax_mat[: p.T, ...],
+        "pension_benefits": pension_mat[: p.T, ...],
         "etr": etr_path[: p.T, ...],
         "mtrx": mtrx_path[: p.T, ...],
         "mtry": mtry_path[: p.T, ...],
