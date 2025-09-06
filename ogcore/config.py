@@ -7,10 +7,8 @@ across all OG-Core modules, avoiding circular import issues.
 
 import logging
 
-VERBOSE = False  # Default value
 
-
-def set_logging_level(verbose=False):
+def set_logging_level(verbose=True):
     """
     Set the logging level for OG-Core modules.
 
