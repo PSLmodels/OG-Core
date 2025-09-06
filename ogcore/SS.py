@@ -1226,7 +1226,7 @@ def SS_fsolve(guesses, *args):
             + list(error_BQ)
             + [error_TR]
         )
-    logging.info(f"GE loop errors = {errors:.3e}")
+    logging.info(f"GE loop errors = ", [f"{error:.3e}" for error in errors])
 
     return errors
 
