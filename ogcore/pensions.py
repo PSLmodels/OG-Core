@@ -148,10 +148,14 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
         # entry for retirement will change (it shifts back one).
         # The shift boolean makes sure we start replacement rates
         # at the correct age.
-        if shift is False:
-            pension[p.retire[-1] :] = theta * w
+        if j is None:
+            replace_rate_adjust = p.replacement_rate_adjust[-1, :]
         else:
-            pension[p.retire[-1] - 1 :] = theta * w
+            replace_rate_adjust = p.replacement_rate_adjust[-1, j]
+        if shift is False:
+            pension[p.retire[-1] :] = replace_rate_adjust * theta * w
+        else:
+            pension[p.retire[-1] - 1 :] = replace_rate_adjust * theta * w
     elif method == "TPI":
         length = w.shape[0]
         if not shift:
