@@ -785,7 +785,7 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
         )
     if (cssmat < 0).any():
         logging.info(
-            "\tWARNING: Consumption violates nonnegativity constraints."
+            "WARNING: Consumption violates nonnegativity constraints."
         )
     else:
         logging.info(
@@ -814,14 +814,11 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
     """
     if (b_dist <= 0).any():
         logging.info(
-            "\tWARNING: Aggregate capital is less than or equal to ",
-            "zero in period %.f." % t,
+            f"WARNING: Aggregate capital is less than or equal to zero in period {t}."
         )
     if (n_dist < 0).any():
         logging.info(
-            "\tWARNING: Labor supply violates nonnegativity",
-            " constraints in period %.f." % t,
-        )
+            f"WARNING: Labor supply violates nonnegativity constraints in period {t}.")
     if (n_dist > ltilde).any():
         logging.info(
             "\tWARNING: Labor suppy violates the ltilde constraint",
