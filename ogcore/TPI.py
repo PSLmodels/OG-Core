@@ -1139,7 +1139,7 @@ def run_TPI(p, client=None):
         #         print 'New Value of nu:', nu
         TPIiter += 1
         logging.info(f"Iteration: {TPIiter}")
-        logging.info(f"\tDistance: {TPIdist}")
+        logging.info(f"Distance: {TPIdist}")
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
