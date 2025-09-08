@@ -910,7 +910,13 @@ def run_TPI(p, client=None, verbose=False):
             p,
             "TPI",
         )
-
+        labor_income_mat = (
+            w[: p.T].reshape(p.T, 1, 1) * n_mat[: p.T, :, :] * p.e
+        )
+        capital_income_mat = (
+            r_p[: p.T].reshape(p.T, 1, 1) * bmat_s[: p.T, :, :]
+        )
+        # Update aggregate variables
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
         B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
@@ -1358,6 +1364,21 @@ def run_TPI(p, client=None, verbose=False):
         "agg_pension_outlays": agg_pension_outlays[: p.T, ...],
         "G": G[: p.T, ...],
         "UBI": UBI[: p.T, ...],
+        "total_government_outlays": (
+            TR[: p.T, ...]
+            + UBI[: p.T, ...]
+            + G[: p.T, ...]
+            + I_g[: p.T, ...]
+            + debt_service[: p.T, ...]
+            + agg_pension_outlays[: p.T, ...]
+        ),
+        "total_primary_government_outlays": (
+            agg_pension_outlays[: p.T, ...]
+            + TR[: p.T, ...]
+            + UBI[: p.T, ...]
+            + G[: p.T, ...]
+            + I_g[: p.T, ...]
+        ),
         "total_tax_revenue": total_tax_revenue[: p.T, ...],
         "business_tax_revenue": business_tax_revenue[: p.T, ...],
         "iit_payroll_tax_revenue": iit_payroll_tax_revenue[: p.T, ...],
@@ -1390,6 +1411,8 @@ def run_TPI(p, client=None, verbose=False):
         "tr": trmat[: p.T, ...],
         "ubi": ubi[: p.T, ...],
         "before_tax_income": y_before_tax_mat[: p.T, ...],
+        "labor_income": labor_income_mat[: p.T, ...],
+        "capital_income": capital_income_mat[: p.T, ...],
         "hh_net_taxes": tax_mat[: p.T, ...],
         "income_payroll_taxes": income_tax_mat[: p.T, ...],
         "sales_tax": sales_tax_mat[: p.T, ...],

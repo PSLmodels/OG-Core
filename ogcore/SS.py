@@ -908,6 +908,37 @@ def SS_solver(
         etr_params_3D,
         p,
     )
+    income_tax_ss = tax.income_tax_liab(
+        r_p_ss,
+        wss,
+        bssmat_s,
+        bqssmat,
+        factor_ss,
+        0,
+        None,
+        "SS",
+        np.squeeze(p.e[-1, :, :]),
+        etr_params_3D,
+        p,
+    )
+    pension_ss = pensions.pension_amount(
+        r_p_ss,
+        wss,
+        nssmat,
+        1,
+        theta,
+        0,
+        None,
+        False,
+        "SS",
+        np.squeeze(p.e[-1, :, :]),
+        factor_ss,
+        p,
+    )
+    bq_tax_ss = tax.bequest_tax_liab(
+        r_p_ss, bssmat_s, bqssmat, 0, None, "SS", p
+    )
+    wealth_tax_ss = tax.wealth_tax_liab(r_p_ss, bssmat_s, 0, None, "SS", p)
     cssmat = household.get_cons(
         r_p_ss,
         wss,
@@ -921,6 +952,7 @@ def SS_solver(
         np.squeeze(p.e[-1, :, :]),
         p,
     )
+    sales_tax_ss = (p.tau_c[-1, :] * p_i_ss).reshape(p.I, 1, 1) * cssmat
     yss_before_tax_mat = household.get_y(
         r_p_ss, wss, bssmat_s, nssmat, p, "SS"
     )
@@ -1063,6 +1095,17 @@ def SS_solver(
         "C_i": C_vec_ss,
         "TR": TR_ss,
         "agg_pension_outlays": agg_pension_outlays,
+        "total_government_outlays": (
+            TR_ss
+            + UBI_outlays
+            + Gss
+            + I_g_ss
+            + debt_service
+            + agg_pension_outlays
+        ),
+        "total_primary_government_outlays": (
+            agg_pension_outlays + TR_ss + UBI_outlays + Gss + I_g_ss
+        ),
         "G": Gss,
         "UBI": UBI_outlays,
         "total_tax_revenue": total_tax_revenue,
@@ -1097,15 +1140,11 @@ def SS_solver(
         "tr": trssmat,
         "ubi": ubissmat,
         "before_tax_income": yss_before_tax_mat,
-        "hh_taxes": taxss,
-        # TODO add SS equivalents of these variables:
-        # "before_tax_income": y_before_tax_mat[: p.T, ...],
-        # "hh_net_taxes": tax_mat[: p.T, ...],
-        # "income_payroll_taxes": income_tax_mat[: p.T, ...],
-        # "sales_tax": sales_tax_mat[: p.T, ...],
-        # "wealth_tax": wealth_tax_mat[: p.T, ...],
-        # "bequest_tax": bq_tax_mat[: p.T, ...],
-        # "pension_benefits": pension_mat[: p.T, ...],
+        "hh_net_taxes": taxss,
+        "sales_tax": sales_tax_ss[: p.T, ...],
+        "wealth_tax": wealth_tax_ss[: p.T, ...],
+        "bequest_tax": bq_tax_ss[: p.T, ...],
+        "pension_benefits": pension_ss[: p.T, ...],
         "etr": etr_ss,
         "mtrx": mtrx_ss,
         "mtry": mtry_ss,
