@@ -362,7 +362,7 @@ Under the U.S.-style social security system, households over age $R$ received a 
 
   ```{math}
   :label: eqn:AIME
-  AIME_{j,R,t+R} = {\sum_{u=0}^{AIMEper} w_{t+u}e_{j,u,t+u}n{j,u,t+u}}{ 12 * AIMEper}
+  AIME_{j,R,t+R} = {\sum_{u=0}^{AIMEper} w_{t+u}e_{j,u,t+u}n_{j,u,t+u}}{ 12 * AIMEper}
   ```
 
  The AIME in turn, determines a household's (PIA) based on three rates and brackets:
