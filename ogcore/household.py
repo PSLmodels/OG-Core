@@ -818,7 +818,8 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
         )
     if (n_dist < 0).any():
         logging.info(
-            f"WARNING: Labor supply violates nonnegativity constraints in period {t}.")
+            f"WARNING: Labor supply violates nonnegativity constraints in period {t}."
+        )
     if (n_dist > ltilde).any():
         logging.info(
             "\tWARNING: Labor suppy violates the ltilde constraint",
