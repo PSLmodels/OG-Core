@@ -26,10 +26,7 @@ def set_logging_level(verbose=True):
     level = logging.INFO if verbose else logging.WARNING
 
     # Configure the root logger
-    logging.basicConfig(
-        level=level,
-        format="%(message)s"
-    )
+    logging.basicConfig(level=level, format="%(message)s")
 
     # Also set the ogcore logger specifically
     logger = logging.getLogger("ogcore")
