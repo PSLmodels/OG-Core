@@ -543,9 +543,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         n_vec = solutions.x[p.S :]
         n_mat[t + ind, ind] = n_vec
 
-    # print('Type ', j, ' max euler error = ',
-    #       np.absolute(euler_errors).max())
-
     return euler_errors, b_mat, n_mat
 
 
