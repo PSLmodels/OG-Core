@@ -21,10 +21,6 @@ import matplotlib.pyplot as plt
 # Use a custom matplotlib style file for plots
 plt.style.use("ogcore.OGcorePlots")
 
-# Set verbosity
-ogcore.SS.VERBOSE = False
-ogcore.TPI.VERBOSE = False
-
 
 def main():
     # Define parameters to use for multiprocessing

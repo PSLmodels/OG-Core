@@ -11,7 +11,6 @@ import os
 import warnings
 import logging
 
-
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
 
@@ -1226,27 +1225,25 @@ def SS_fsolve(guesses, *args):
             + list(error_BQ)
             + [error_TR]
         )
-    logging.info(f"GE loop errors = ", [f"{error:.3e}" for error in errors])
+    error_string = [f"{error:.3e}" for error in errors]
+    logging.info(f"GE loop errors = {error_string}")
 
     return errors
 
 
-def run_SS(p, client=None, verbose=False):
+def run_SS(p, client=None):
     """
     Solve for steady-state equilibrium of OG-Core.
 
     Args:
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
-        verbose (bool): if True, set logging to INFO level
 
     Returns:
         output (dictionary): dictionary with steady-state solution
             results
 
     """
-    # Configure logging level based on verbose parameter
-    config.set_logging_level(verbose)
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
         [1.00, 1.0],
