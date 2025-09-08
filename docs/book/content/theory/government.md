@@ -253,7 +253,7 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   2. Functions of the Gouveia and Strauss form {cite}`GouveiaStrauss:1994`:
 
      ```{math}
-       \tau = \phi_{0}(1 - (x+y)^{(\phi_{1}-1)}((x+y)^{-\phi1} + \phi_{2})^{(-1 - \phi_{1})/\phi_{1}})
+         \tau = \phi_{0}(1 - (x+y)^{(\phi_{1}-1)}((x+y)^{-\phi_{1}} + \phi_{2})^{(-1 - \phi_{1})/\phi_{1}})
      ```
 
      Users can select this option by setting the parameter `tax_func_type="GS"`.  The three parameters of this function ($\phi_{0}, \phi_{1}, \phi_{2}$) are estimated using the weighted sum of squares estimated described in Equation {eq}`EqTaxCalcThetaWSSQ`.
