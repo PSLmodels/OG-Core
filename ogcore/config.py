@@ -7,10 +7,10 @@ across all OG-Core modules, avoiding circular import issues.
 
 import logging
 
-VERBOSE = False  # Default value
+VERBOSE = True  # Default verbosity setting
 
 
-def set_logging_level(verbose=False):
+def set_logging_level(verbose=True):
     """
     Set the logging level for OG-Core modules.
 
@@ -26,13 +26,14 @@ def set_logging_level(verbose=False):
     level = logging.INFO if verbose else logging.WARNING
 
     # Configure the root logger
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    )
+    logging.basicConfig(level=level, format="%(message)s")
 
     # Also set the ogcore logger specifically
     logger = logging.getLogger("ogcore")
     logger.setLevel(level)
 
     return level
+
+
+# Auto-configure when module is imported
+set_logging_level(verbose=VERBOSE)

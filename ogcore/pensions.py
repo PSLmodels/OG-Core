@@ -738,8 +738,8 @@ def deriv_DB_loop(
             another unit of labor supply
     """
     d_theta = np.zeros(per_rmn)
-    print("Year contribution: ", yr_contr)
-    print("Average earnings years: ", avg_earn_num_years)
+    # print("Year contribution: ", yr_contr)
+    # print("Average earnings years: ", avg_earn_num_years)
     num_per_retire = S - S_ret
     for s in range(per_rmn):
         d_theta[s] = w[s] * e[s] * alpha_db * (yr_contr / avg_earn_num_years)

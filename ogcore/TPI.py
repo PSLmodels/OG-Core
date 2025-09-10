@@ -543,28 +543,22 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         n_vec = solutions.x[p.S :]
         n_mat[t + ind, ind] = n_vec
 
-    # print('Type ', j, ' max euler error = ',
-    #       np.absolute(euler_errors).max())
-
     return euler_errors, b_mat, n_mat
 
 
-def run_TPI(p, client=None, verbose=False):
+def run_TPI(p, client=None):
     """
     Solve for transition path equilibrium of OG-Core.
 
     Args:
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
-        verbose (bool): if True, set logging to INFO level
 
     Returns:
         output (dictionary): dictionary with transition path solution
             results
 
     """
-    # Configure logging level based on verbose parameter
-    config.set_logging_level(verbose)
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
@@ -1187,7 +1181,7 @@ def run_TPI(p, client=None, verbose=False):
         #         print 'New Value of nu:', nu
         TPIiter += 1
         logging.info(f"Iteration: {TPIiter}")
-        logging.info(f"\tDistance: {TPIdist}")
+        logging.info(f"Distance: {TPIdist}")
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
