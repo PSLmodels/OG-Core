@@ -15,7 +15,7 @@ import pickle
 import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
-from ogcore import tax, utils, household, firm, fiscal
+from ogcore import tax, utils, household, firm, fiscal, pensions
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 from ogcore import config
@@ -834,6 +834,39 @@ def run_TPI(p, client=None):
             etr_params_4D,
             p,
         )
+        income_tax_mat = tax.income_tax_liab(
+            r_p[: p.T],
+            w[: p.T],
+            bmat_s,
+            n_mat[: p.T, :, :],
+            factor,
+            0,
+            None,
+            "TPI",
+            p.e,
+            etr_params_4D,
+            p,
+        )
+        pension_mat = pensions.pension_amount(
+            r_p[: p.T],
+            w[: p.T],
+            n_mat[: p.T, :, :],
+            1,
+            theta,
+            0,
+            None,
+            False,
+            "TPI",
+            p.e,
+            factor,
+            p,
+        )
+        bq_tax_mat = tax.bequest_tax_liab(
+            r_p[: p.T], bmat_s, bqmat[: p.T, :, :], 0, None, "TPI", p
+        )
+        wealth_tax_mat = tax.wealth_tax_liab(
+            r_p[: p.T], bmat_s, 0, None, "TPI", p
+        )
         r_p_path = utils.to_timepath_shape(r_p)
         p_tilde_path = utils.to_timepath_shape(p_tilde)
         wpath = utils.to_timepath_shape(w)
@@ -850,6 +883,9 @@ def run_TPI(p, client=None):
             p.e,
             p,
         )
+        sales_tax_mat = (p.tau_c[: p.T, :] * p_i).reshape(
+            p.T, p.I, 1, 1
+        ) * c_mat
         C = aggr.get_C(c_mat, p, "TPI")
 
         c_i = household.get_ci(
@@ -868,7 +904,13 @@ def run_TPI(p, client=None):
             p,
             "TPI",
         )
-
+        labor_income_mat = (
+            w[: p.T].reshape(p.T, 1, 1) * n_mat[: p.T, :, :] * p.e
+        )
+        capital_income_mat = (
+            r_p[: p.T].reshape(p.T, 1, 1) * bmat_s[: p.T, :, :]
+        )
+        # Update aggregate variables
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
         B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
@@ -1316,6 +1358,21 @@ def run_TPI(p, client=None):
         "agg_pension_outlays": agg_pension_outlays[: p.T, ...],
         "G": G[: p.T, ...],
         "UBI": UBI[: p.T, ...],
+        "total_government_outlays": (
+            TR[: p.T, ...]
+            + UBI[: p.T, ...]
+            + G[: p.T, ...]
+            + I_g[: p.T, ...]
+            + debt_service[: p.T, ...]
+            + agg_pension_outlays[: p.T, ...]
+        ),
+        "total_primary_government_outlays": (
+            agg_pension_outlays[: p.T, ...]
+            + TR[: p.T, ...]
+            + UBI[: p.T, ...]
+            + G[: p.T, ...]
+            + I_g[: p.T, ...]
+        ),
         "total_tax_revenue": total_tax_revenue[: p.T, ...],
         "business_tax_revenue": business_tax_revenue[: p.T, ...],
         "iit_payroll_tax_revenue": iit_payroll_tax_revenue[: p.T, ...],
@@ -1348,7 +1405,14 @@ def run_TPI(p, client=None):
         "tr": trmat[: p.T, ...],
         "ubi": ubi[: p.T, ...],
         "before_tax_income": y_before_tax_mat[: p.T, ...],
-        "hh_taxes": tax_mat[: p.T, ...],
+        "labor_income": labor_income_mat[: p.T, ...],
+        "capital_income": capital_income_mat[: p.T, ...],
+        "hh_net_taxes": tax_mat[: p.T, ...],
+        "income_payroll_taxes": income_tax_mat[: p.T, ...],
+        "sales_tax": sales_tax_mat[: p.T, ...],
+        "wealth_tax": wealth_tax_mat[: p.T, ...],
+        "bequest_tax": bq_tax_mat[: p.T, ...],
+        "pension_benefits": pension_mat[: p.T, ...],
         "etr": etr_path[: p.T, ...],
         "mtrx": mtrx_path[: p.T, ...],
         "mtry": mtry_path[: p.T, ...],

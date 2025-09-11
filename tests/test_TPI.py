@@ -80,7 +80,7 @@ SS_VAR_NAME_MAPPING = {
     "trssmat": "tr",
     "ubissmat": "ubi",
     "yss_before_tax_mat": "before_tax_income",
-    "total_taxes_ss": "hh_taxes",
+    "total_taxes_ss": "hh_net_taxes",
     "etr_ss": "etr",
     "mtrx_ss": "mtrx",
     "mtry_ss": "mtry",
