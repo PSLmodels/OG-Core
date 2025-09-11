@@ -883,7 +883,7 @@ def run_TPI(p, client=None):
             p.e,
             p,
         )
-        sales_tax_mat = (p.tau_c[: p.T, :] * p_i).reshape(
+        sales_tax_mat = (p.tau_c[: p.T, :] * p_i[: p.T, :]).reshape(
             p.T, p.I, 1, 1
         ) * c_mat
         C = aggr.get_C(c_mat, p, "TPI")

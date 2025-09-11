@@ -41,10 +41,7 @@ envs/
 docs/book/_build/*
 docs/build/*
 *micro_data_*.pkl
-run_examples/run_example_plots/*
-run_examples/OUTPUT_BASELINE/*
-run_examples/OUTPUT_REFORM/*
-run_examples/ogcore_example_output.csv
+examples/OG-Core-Example/*
 ogcore/tests/test_io_data/tax_func_loop_inputs_large.pkl
 ogcore/tests/baseline/*
 ogcore/tests/reform/*
