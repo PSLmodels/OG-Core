@@ -377,13 +377,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ogcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">tax</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-
-<span class="c1"># Configure logging</span>
-<span class="n">VERBOSE</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">log_level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="k">if</span> <span class="n">VERBOSE</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
-    <span class="n">level</span><span class="o">=</span><span class="n">log_level</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span>  <span class="c1"># Only show the message itself</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">------------------------------------------------------------------------</span>
@@ -1176,28 +1170,27 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Checking constraints on capital, labor, and consumption.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">bssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: There is negative capital stock&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;WARNING: There is negative capital stock&quot;</span><span class="p">)</span>
     <span class="n">flag2</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">nssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Labor supply violates nonnegativity &quot;</span><span class="p">,</span> <span class="s2">&quot;constraints.&quot;</span>
+            <span class="s2">&quot;WARNING: Labor supply violates nonnegativity constraints.&quot;</span>
         <span class="p">)</span>
         <span class="n">flag2</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">nssmat</span> <span class="o">&gt;</span> <span class="n">ltilde</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Labor supply violates the ltilde constraint.&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;WARNING: Labor supply violates the ltilde constraint.&quot;</span><span class="p">)</span>
         <span class="n">flag2</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">flag2</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">There were no violations of the constraints on labor&quot;</span><span class="p">,</span>
-            <span class="s2">&quot; supply.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;There were no violations of the constraints on labor supply.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">cssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Consumption violates nonnegativity&quot;</span><span class="p">,</span> <span class="s2">&quot; constraints.&quot;</span>
+            <span class="s2">&quot;WARNING: Consumption violates nonnegativity constraints.&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">There were no violations of the constraints on&quot;</span><span class="p">,</span> <span class="s2">&quot; consumption.&quot;</span>
+            <span class="s2">&quot;There were no violations of the constraints on consumption.&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -1225,13 +1218,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">b_dist</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Aggregate capital is less than or equal to &quot;</span><span class="p">,</span>
-            <span class="s2">&quot;zero in period %.f.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;WARNING: Aggregate capital is less than or equal to zero in period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Labor supply violates nonnegativity&quot;</span><span class="p">,</span>
-            <span class="s2">&quot; constraints in period %.f.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;WARNING: Labor supply violates nonnegativity constraints in period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_dist</span> <span class="o">&gt;</span> <span class="n">ltilde</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>

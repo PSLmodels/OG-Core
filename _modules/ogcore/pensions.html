@@ -525,10 +525,14 @@
         <span class="c1"># entry for retirement will change (it shifts back one).</span>
         <span class="c1"># The shift boolean makes sure we start replacement rates</span>
         <span class="c1"># at the correct age.</span>
-        <span class="k">if</span> <span class="n">shift</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">replace_rate_adjust</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
+            <span class="n">replace_rate_adjust</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">shift</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">replace_rate_adjust</span> <span class="o">*</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pension</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">replace_rate_adjust</span> <span class="o">*</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">w</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">shift</span><span class="p">:</span>
@@ -1147,8 +1151,8 @@
 <span class="sd">            another unit of labor supply</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">d_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">per_rmn</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Year contribution: &quot;</span><span class="p">,</span> <span class="n">yr_contr</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Average earnings years: &quot;</span><span class="p">,</span> <span class="n">avg_earn_num_years</span><span class="p">)</span>
+    <span class="c1"># print(&quot;Year contribution: &quot;, yr_contr)</span>
+    <span class="c1"># print(&quot;Average earnings years: &quot;, avg_earn_num_years)</span>
     <span class="n">num_per_retire</span> <span class="o">=</span> <span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">per_rmn</span><span class="p">):</span>
         <span class="n">d_theta</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_db</span> <span class="o">*</span> <span class="p">(</span><span class="n">yr_contr</span> <span class="o">/</span> <span class="n">avg_earn_num_years</span><span class="p">)</span>
