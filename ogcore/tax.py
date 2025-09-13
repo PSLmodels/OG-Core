@@ -501,3 +501,21 @@ def bequest_tax_liab(r, b, bq, t, j, method, p):
         T_BQ = p.tau_bq[0] * bq
 
     return T_BQ
+
+
+def cons_tax_liab(c, p_i, p, method="SS"):
+    """
+    Calculates consumption tax liability for each household.
+
+    Args:
+
+    Returns:
+    """
+    if method == "SS":
+        c_tax = ((p.tau_c[-1, :] * p_i).reshape(p.I, 1, 1) * c).sum(axis=0)
+    else:
+        c_tax = ((p.tau_c[: p.T, :] * p_i).reshape(p.T, p.I, 1, 1) * c).sum(
+            axis=1
+        )
+
+    return c_tax
