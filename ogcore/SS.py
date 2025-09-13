@@ -951,7 +951,7 @@ def SS_solver(
         np.squeeze(p.e[-1, :, :]),
         p,
     )
-    sales_tax_ss = (p.tau_c[-1, :] * p_i_ss).reshape(p.I, 1, 1) * cssmat
+    sales_tax_ss = tax.cons_tax_liab(cssmat, p_i_ss, p, "SS")
     yss_before_tax_mat = household.get_y(
         r_p_ss, wss, bssmat_s, nssmat, p, "SS"
     )
