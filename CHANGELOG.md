@@ -6,6 +6,76 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.14.10] - 2025-09-11 12:00:00
+
+### Added
+
+- Fixes nonconformable matrices in `TPI.py` introduced in version 0.14.9 ((PR #1054)[https://github.com/PSLmodels/OG-Core/pull/1054])
+
+## [0.14.9] - 2025-09-10 20:00:00
+
+### Added
+
+- Fixes `replacement_rate_adjustment` parameter in the steady state ((PR #1053)[https://github.com/PSLmodels/OG-Core/pull/1053])
+- Adds some saved output to `tpi_vars.pkl` object ((PR #1054)[https://github.com/PSLmodels/OG-Core/pull/1054])
+
+## [0.14.8] - 2025-08-26 12:00:00
+
+### Added
+
+- Adds a complete benchmark suite for measuring and optimizing Dask performance in OG-Core, with particular focus on Windows performance issues.
+- New and updated files:
+    - tests/test_dask_benchmarks.py: Mock benchmark tests with synthetic workloads
+    - tests/test_real_txfunc_benchmarks.py: Real-world tax function benchmarks
+    - tests/run_benchmarks.py: Automated benchmark runner with reporting
+    - tests/BENCHMARK_README.md: Comprehensive documentation and usage guide
+    - pytest.ini: Updated with benchmark test markers
+- Key features:
+    - Platform-specific optimization tests (Windows, macOS, Linux)
+    - Memory usage and compute time benchmarking
+    - Baseline establishment and performance regression detection
+    - Comparison of different Dask schedulers and client configurations
+    - Real tax function estimation performance measurement
+    - Automated identification of optimal Dask settings per platform
+- Benefits:
+    - Establishes performance baselines before optimization work
+    - Identifies Windows-specific Dask performance bottlenecks
+    - Provides automated regression detection for future changes
+    - Enables data-driven optimization decisions
+    - Supports continuous performance monitoring
+- Usage:
+    - `python tests/run_benchmarks.py  # Run all benchmarks`
+    - `python tests/run_benchmarks.py --quick  # Quick benchmarks only`
+    - `python tests/run_benchmarks.py --save-baseline  # Save performance baseline`
+    - `python tests/run_benchmarks.py --compare-baseline # Compare against baseline`
+- 🤖 Generated with help from Claude Code
+
+## [0.14.7] - 2025-08-21 17:00:00
+
+### Added
+
+- Refactor calls to dask in `SS.py` and `TPI.py`.  See PR [#1048](https://github.com/PSLmodels/OG-Core/pull/1048)
+
+## [0.14.6] - 2025-08-15 14:00:00
+
+### Added
+
+- Removes `initial_guess_w_SS` in `default_parameters.json`
+- Updates environment and testing to cover Python 3.13
+
+## [0.14.5] - 2025-07-08 22:00:00
+
+### Added
+
+- Increases the maximum value of `initial_guess_TR_SS` in `default_parameters.json`
+
+## [0.14.4] - 2025-06-23 18:00:00
+
+### Added
+
+- Fixes the sign error on the remittances `RM` term in `aggregates.py`, `resource_constraint()` function.
+- Added a test with positive remittances to `test_aggregates.py`, `test_resource_constraint()` function.
+
 ## [0.14.3] - 2025-04-25 10:00:00
 
 ### Added
@@ -383,6 +453,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.14.10]: https://github.com/PSLmodels/OG-Core/compare/v0.14.9...v0.14.10
+[0.14.9]: https://github.com/PSLmodels/OG-Core/compare/v0.14.8...v0.14.9
+[0.14.8]: https://github.com/PSLmodels/OG-Core/compare/v0.14.7...v0.14.8
+[0.14.7]: https://github.com/PSLmodels/OG-Core/compare/v0.14.6...v0.14.7
+[0.14.6]: https://github.com/PSLmodels/OG-Core/compare/v0.14.5...v0.14.6
+[0.14.5]: https://github.com/PSLmodels/OG-Core/compare/v0.14.4...v0.14.5
+[0.14.4]: https://github.com/PSLmodels/OG-Core/compare/v0.14.3...v0.14.4
 [0.14.3]: https://github.com/PSLmodels/OG-Core/compare/v0.14.2...v0.14.3
 [0.14.2]: https://github.com/PSLmodels/OG-Core/compare/v0.14.1...v0.14.2
 [0.14.1]: https://github.com/PSLmodels/OG-Core/compare/v0.14.0...v0.14.1

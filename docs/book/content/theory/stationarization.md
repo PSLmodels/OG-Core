@@ -94,7 +94,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   :label: EqStnrzHHBC
     p_t\hat{c}_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
     &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} ... \\
-    &\qquad +\: \hat{bq}_{j,s,t} + \hat{rm}_{j,s,t} + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t} - \hat{tax}_{j,s,t}  \\
+    &\qquad +\: (1-\tau^{bq}_t)\hat{bq}_{j,s,t} + \hat{rm}_{j,s,t} + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t} - \hat{tax}_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
   ```
 
@@ -235,7 +235,9 @@ The usual definition of equilibrium would be allocations and prices such that ho
     \hat{Rev}_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_{m,t}\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} - \tau^{inv}_{m,t}\hat{I}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
     &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr,xy}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p_{i,t}\hat{c}_{i,j,s,t}}_{\text{consumption tax revenue}} \\
-    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,w}_{t}\hat{b}_{j,s,t}}_{\text{wealth tax revenue}} \quad\forall t
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,w}_{t}\hat{b}_{j,s,t}}_{\text{wealth tax revenue}} \\
+    &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{bq}_{t}\hat{bq}_{j,s,t}}_{\text{bequest tax revenue}} \\
+    &\quad\forall t
   ```
 
   Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.

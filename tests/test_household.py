@@ -712,6 +712,11 @@ def test_FOC_savings(model_vars, in_params, expected):
         method,
     ) = model_vars
     params = copy.deepcopy(in_params)
+    # replacement rate adjust parameter : scale by J used here
+    if j is None:
+        params.replacement_rate_adjust = params.replacement_rate_adjust[
+            :, : len(theta)
+        ]
     # reshape e matrix to be 3D
     params.e = np.tile(
         params.e.reshape(1, params.S, params.J), (params.T, 1, 1)

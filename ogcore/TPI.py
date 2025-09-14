@@ -15,9 +15,10 @@ import pickle
 import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
-from ogcore import tax, utils, household, firm, fiscal
+from ogcore import tax, utils, household, firm, fiscal, pensions
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
+from ogcore import config
 import os
 import warnings
 import logging
@@ -35,16 +36,6 @@ MINIMIZER_TOL = 1e-13
 Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
-
-"""
-Set flag for verbosity
-"""
-VERBOSE = True
-# Configure logging
-log_level = logging.INFO if VERBOSE else logging.WARNING
-logging.basicConfig(
-    level=log_level, format="%(message)s"  # Only show the message itself
-)
 
 
 def get_initial_SS_values(p):
@@ -420,7 +411,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             bq[0, -1, j],
             rm[0, -1, j],
             tr[0, -1, j],
-            theta * p.replacement_rate_adjust[0],
+            theta * p.replacement_rate_adjust[0, j],
             factor,
             ubi[0, -1, j],
             j,
@@ -436,7 +427,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         ind2 = np.arange(s + 2)
         b_guesses_to_use = np.diag(guesses_b[: p.S, :], p.S - (s + 2))
         n_guesses_to_use = np.diag(guesses_n[: p.S, :], p.S - (s + 2))
-        theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S]
+        theta_to_use = theta[j] * p.replacement_rate_adjust[: p.S, j]
         bq_to_use = np.diag(bq[: p.S, :, j], p.S - (s + 2))
         rm_to_use = np.diag(rm[: p.S, :, j], p.S - (s + 2))
         tr_to_use = np.diag(tr[: p.S, :, j], p.S - (s + 2))
@@ -499,7 +490,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     for t in range(0, p.T):
         b_guesses_to_use = 0.75 * np.diag(guesses_b[t : t + p.S, :])
         n_guesses_to_use = np.diag(guesses_n[t : t + p.S, :])
-        theta_to_use = theta[j] * p.replacement_rate_adjust[t : t + p.S]
+        theta_to_use = theta[j] * p.replacement_rate_adjust[t : t + p.S, j]
         bq_to_use = np.diag(bq[t : t + p.S, :, j])
         rm_to_use = np.diag(rm[t : t + p.S, :, j])
         tr_to_use = np.diag(tr[t : t + p.S, :, j])
@@ -551,9 +542,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         b_mat[t + ind, ind] = b_vec
         n_vec = solutions.x[p.S :]
         n_mat[t + ind, ind] = n_vec
-
-    # print('Type ', j, ' max euler error = ',
-    #       np.absolute(euler_errors).max())
 
     return euler_errors, b_mat, n_mat
 
@@ -756,6 +744,10 @@ def run_TPI(p, client=None):
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
 
+    # scatter parameters to workers
+    if client:
+        scattered_p_future = client.scatter(p, broadcast=True)
+
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
@@ -766,38 +758,40 @@ def run_TPI(p, client=None):
         ).sum(axis=2)
         p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
 
-        # scatter parameters to workers
-        scattered_p = client.scatter(p, broadcast=True) if client else p
-
+        # Initialize Euler errors
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
-        lazy_values = []
-        for j in range(p.J):
-            guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
-
-            # Add the delayed computation to our list
-            lazy_values.append(
-                delayed(inner_loop)(
+        # Solve for household decisions
+        results = []
+        if client:
+            futures = []
+            for j in range(p.J):
+                guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
+                f = client.submit(
+                    inner_loop,
                     guesses,
                     outer_loop_vars,
                     initial_values,
                     ubi,
                     j,
                     ind,
-                    scattered_p,
+                    scattered_p_future,
                 )
-            )
-        if client:
-            # Compute all the values
-            futures = client.compute(lazy_values)
-            # Later, gather the results when needed
+                futures.append(f)
             results = client.gather(futures)
         else:
-            results = compute(
-                *lazy_values,
-                scheduler=dask.multiprocessing.get,
-                num_workers=p.num_workers,
-            )
-
+            # Serial fallback (no dask client)
+            for j in range(p.J):
+                guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
+                res = inner_loop(
+                    guesses,
+                    outer_loop_vars,
+                    initial_values,
+                    ubi,
+                    j,
+                    ind,
+                    p,  # pass the raw object directly
+                )
+                results.append(res)
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
@@ -840,6 +834,39 @@ def run_TPI(p, client=None):
             etr_params_4D,
             p,
         )
+        income_tax_mat = tax.income_tax_liab(
+            r_p[: p.T],
+            w[: p.T],
+            bmat_s,
+            n_mat[: p.T, :, :],
+            factor,
+            0,
+            None,
+            "TPI",
+            p.e,
+            etr_params_4D,
+            p,
+        )
+        pension_mat = pensions.pension_amount(
+            r_p[: p.T],
+            w[: p.T],
+            n_mat[: p.T, :, :],
+            1,
+            theta,
+            0,
+            None,
+            False,
+            "TPI",
+            p.e,
+            factor,
+            p,
+        )
+        bq_tax_mat = tax.bequest_tax_liab(
+            r_p[: p.T], bmat_s, bqmat[: p.T, :, :], 0, None, "TPI", p
+        )
+        wealth_tax_mat = tax.wealth_tax_liab(
+            r_p[: p.T], bmat_s, 0, None, "TPI", p
+        )
         r_p_path = utils.to_timepath_shape(r_p)
         p_tilde_path = utils.to_timepath_shape(p_tilde)
         wpath = utils.to_timepath_shape(w)
@@ -856,6 +883,9 @@ def run_TPI(p, client=None):
             p.e,
             p,
         )
+        sales_tax_mat = (p.tau_c[: p.T, :] * p_i[: p.T, :]).reshape(
+            p.T, p.I, 1, 1
+        ) * c_mat
         C = aggr.get_C(c_mat, p, "TPI")
 
         c_i = household.get_ci(
@@ -874,7 +904,13 @@ def run_TPI(p, client=None):
             p,
             "TPI",
         )
-
+        labor_income_mat = (
+            w[: p.T].reshape(p.T, 1, 1) * n_mat[: p.T, :, :] * p.e
+        )
+        capital_income_mat = (
+            r_p[: p.T].reshape(p.T, 1, 1) * bmat_s[: p.T, :, :]
+        )
+        # Update aggregate variables
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
         B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
@@ -1145,7 +1181,7 @@ def run_TPI(p, client=None):
         #         print 'New Value of nu:', nu
         TPIiter += 1
         logging.info(f"Iteration: {TPIiter}")
-        logging.info(f"\tDistance: {TPIdist}")
+        logging.info(f"Distance: {TPIdist}")
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
@@ -1322,6 +1358,21 @@ def run_TPI(p, client=None):
         "agg_pension_outlays": agg_pension_outlays[: p.T, ...],
         "G": G[: p.T, ...],
         "UBI": UBI[: p.T, ...],
+        "total_government_outlays": (
+            TR[: p.T, ...]
+            + UBI[: p.T, ...]
+            + G[: p.T, ...]
+            + I_g[: p.T, ...]
+            + debt_service[: p.T, ...]
+            + agg_pension_outlays[: p.T, ...]
+        ),
+        "total_primary_government_outlays": (
+            agg_pension_outlays[: p.T, ...]
+            + TR[: p.T, ...]
+            + UBI[: p.T, ...]
+            + G[: p.T, ...]
+            + I_g[: p.T, ...]
+        ),
         "total_tax_revenue": total_tax_revenue[: p.T, ...],
         "business_tax_revenue": business_tax_revenue[: p.T, ...],
         "iit_payroll_tax_revenue": iit_payroll_tax_revenue[: p.T, ...],
@@ -1354,7 +1405,14 @@ def run_TPI(p, client=None):
         "tr": trmat[: p.T, ...],
         "ubi": ubi[: p.T, ...],
         "before_tax_income": y_before_tax_mat[: p.T, ...],
-        "hh_taxes": tax_mat[: p.T, ...],
+        "labor_income": labor_income_mat[: p.T, ...],
+        "capital_income": capital_income_mat[: p.T, ...],
+        "hh_net_taxes": tax_mat[: p.T, ...],
+        "income_payroll_taxes": income_tax_mat[: p.T, ...],
+        "sales_tax": sales_tax_mat[: p.T, ...],
+        "wealth_tax": wealth_tax_mat[: p.T, ...],
+        "bequest_tax": bq_tax_mat[: p.T, ...],
+        "pension_benefits": pension_mat[: p.T, ...],
         "etr": etr_path[: p.T, ...],
         "mtrx": mtrx_path[: p.T, ...],
         "mtry": mtry_path[: p.T, ...],

@@ -6,10 +6,10 @@ import dask.multiprocessing
 from ogcore import tax, pensions, household, firm, utils, fiscal
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
+from ogcore import config
 import os
 import warnings
 import logging
-
 
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
@@ -23,16 +23,6 @@ MINIMIZER_TOL = 1e-13
 Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
-
-"""
-Set flag for verbosity
-"""
-VERBOSE = True
-# Configure logging
-log_level = logging.INFO if VERBOSE else logging.WARNING
-logging.basicConfig(
-    level=log_level, format="%(message)s"  # Only show the message itself
-)
 
 
 """
@@ -169,6 +159,60 @@ def euler_equation_solver(guesses, *args):
     return errors
 
 
+def solve_for_j(
+    guesses,
+    r_p,
+    w,
+    p_tilde,
+    bq_j,
+    rm_j,
+    tr_j,
+    ubi_j,
+    factor,
+    j,
+    p_future,
+):
+    """
+    Solves the household's optimization problem for a given type j.
+
+    Args:
+        guesses (Numpy array): initial guesses for b and n, length 2S
+        r_p (scalar): return on household investment portfolio
+        w (scalar): real wage rate
+        p_tilde (scalar): composite good price
+        bq_j (Numpy array): bequest amounts by age, length S
+        rm_j (Numpy array): remittance amounts by age, length S
+        tr_j (Numpy array): government transfer amount by age, length S
+        ubi_j (vector): universal basic income (UBI) payment, length S
+        factor (scalar): scaling factor converting model units to dollars
+        j (int): household type index
+        p_future (OG-Core Specifications object): future model parameters
+
+    Returns:
+        root (OptimizeResult): the optimization result
+    """
+    # scattered_p is either the original object (serial case)
+    # or a Future pointing to it (distributed case)
+    return opt.root(
+        euler_equation_solver,
+        guesses * 0.9,
+        args=(
+            r_p,
+            w,
+            p_tilde,
+            bq_j,
+            rm_j,
+            tr_j,
+            ubi_j,
+            factor,
+            j,
+            p_future,
+        ),
+        method=p_future.FOC_root_method,
+        tol=MINIMIZER_TOL,
+    )
+
+
 def inner_loop(outer_loop_vars, p, client):
     """
     This function solves for the inner loop of the SS.  That is, given
@@ -235,50 +279,19 @@ def inner_loop(outer_loop_vars, p, client):
     tr = household.get_tr(TR, None, p, "SS")
     ubi = p.ubi_nom_array[-1, :, :] / factor
 
-    scattered_p = client.scatter(p, broadcast=True) if client else p
+    results = []
+    # from dask.base import dask_sizeof
 
-    lazy_values = []
-    for j in range(p.J):
-        guesses = np.append(bssmat[:, j], nssmat[:, j])
+    if client:
+        # Scatter p only once and only if client not equal None
+        scattered_p_future = client.scatter(p, broadcast=True)
 
-        # Create a delayed function that will access the scattered_p
-        @delayed
-        def solve_for_j(
-            guesses,
-            r_p,
-            w,
-            p_tilde,
-            bq_j,
-            rm_j,
-            tr_j,
-            ubi_j,
-            factor,
-            j,
-            scattered_p_future,
-        ):
-            # This function will be executed on workers with access to scattered_p
-            return opt.root(
-                euler_equation_solver,
-                guesses * 0.9,
-                args=(
-                    r_p,
-                    w,
-                    p_tilde,
-                    bq_j,
-                    rm_j,
-                    tr_j,
-                    ubi_j,
-                    factor,
-                    j,
-                    scattered_p_future,
-                ),
-                method=p.FOC_root_method,
-                tol=MINIMIZER_TOL,
-            )
-
-        # Add the delayed computation to our list
-        lazy_values.append(
-            solve_for_j(
+        # Launch in parallel with submit (or map)
+        futures = []
+        for j in range(p.J):
+            guesses = np.append(bssmat[:, j], nssmat[:, j])
+            f = client.submit(
+                solve_for_j,
                 guesses,
                 r_p,
                 w,
@@ -289,21 +302,30 @@ def inner_loop(outer_loop_vars, p, client):
                 ubi[:, j],
                 factor,
                 j,
-                scattered_p,
+                scattered_p_future,
             )
-        )
+            futures.append(f)
 
-    if client:
-        # Compute all the values
-        futures = client.compute(lazy_values)
-        # Later, gather the results when needed
         results = client.gather(futures)
+
     else:
-        results = compute(
-            *lazy_values,
-            scheduler=dask.multiprocessing.get,
-            num_workers=p.num_workers,
-        )
+        # Serial fallback (no dask client)
+        for j in range(p.J):
+            guesses = np.append(bssmat[:, j], nssmat[:, j])
+            res = solve_for_j(
+                guesses,
+                r_p,
+                w,
+                p_tilde,
+                bq[:, j],
+                rm[:, j],
+                tr[:, j],
+                ubi[:, j],
+                factor,
+                j,
+                p,  # pass the raw object directly
+            )
+            results.append(res)
 
     for j, result in enumerate(results):
         euler_errors[:, j] = result.fun
@@ -885,6 +907,37 @@ def SS_solver(
         etr_params_3D,
         p,
     )
+    income_tax_ss = tax.income_tax_liab(
+        r_p_ss,
+        wss,
+        bssmat_s,
+        bqssmat,
+        factor_ss,
+        0,
+        None,
+        "SS",
+        np.squeeze(p.e[-1, :, :]),
+        etr_params_3D,
+        p,
+    )
+    pension_ss = pensions.pension_amount(
+        r_p_ss,
+        wss,
+        nssmat,
+        1,
+        theta,
+        0,
+        None,
+        False,
+        "SS",
+        np.squeeze(p.e[-1, :, :]),
+        factor_ss,
+        p,
+    )
+    bq_tax_ss = tax.bequest_tax_liab(
+        r_p_ss, bssmat_s, bqssmat, 0, None, "SS", p
+    )
+    wealth_tax_ss = tax.wealth_tax_liab(r_p_ss, bssmat_s, 0, None, "SS", p)
     cssmat = household.get_cons(
         r_p_ss,
         wss,
@@ -898,6 +951,7 @@ def SS_solver(
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p,
     )
+    sales_tax_ss = (p.tau_c[-1, :] * p_i_ss).reshape(p.I, 1, 1) * cssmat
     yss_before_tax_mat = household.get_y(
         r_p_ss, wss, bssmat_s, nssmat, p, "SS"
     )
@@ -1040,6 +1094,17 @@ def SS_solver(
         "C_i": C_vec_ss,
         "TR": TR_ss,
         "agg_pension_outlays": agg_pension_outlays,
+        "total_government_outlays": (
+            TR_ss
+            + UBI_outlays
+            + Gss
+            + I_g_ss
+            + debt_service
+            + agg_pension_outlays
+        ),
+        "total_primary_government_outlays": (
+            agg_pension_outlays + TR_ss + UBI_outlays + Gss + I_g_ss
+        ),
         "G": Gss,
         "UBI": UBI_outlays,
         "total_tax_revenue": total_tax_revenue,
@@ -1074,7 +1139,11 @@ def SS_solver(
         "tr": trssmat,
         "ubi": ubissmat,
         "before_tax_income": yss_before_tax_mat,
-        "hh_taxes": taxss,
+        "hh_net_taxes": taxss,
+        "sales_tax": sales_tax_ss[: p.T, ...],
+        "wealth_tax": wealth_tax_ss[: p.T, ...],
+        "bequest_tax": bq_tax_ss[: p.T, ...],
+        "pension_benefits": pension_ss[: p.T, ...],
         "etr": etr_ss,
         "mtrx": mtrx_ss,
         "mtry": mtry_ss,
@@ -1203,7 +1272,8 @@ def SS_fsolve(guesses, *args):
             + list(error_BQ)
             + [error_TR]
         )
-    logging.info(f"GE loop errors = {errors}")
+    error_string = [f"{error:.3e}" for error in errors]
+    logging.info(f"GE loop errors = {error_string}")
 
     return errors
 
@@ -1221,7 +1291,6 @@ def run_SS(p, client=None):
             results
 
     """
-
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
         [1.00, 1.0],

@@ -16,6 +16,7 @@ new_param_values = {
     "chi_n": np.ones(2),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -58,6 +59,7 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -140,6 +142,7 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -198,6 +201,7 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -1128,6 +1132,7 @@ new_param_values = {
     "M": 3,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -1178,6 +1183,7 @@ new_param_values = {
     "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
     "tau_bq": [0.17],
@@ -1245,7 +1251,13 @@ new_param_values3 = {
     "m_wealth": [1.0],
     "cit_rate": [[0.2]],
     "inv_tax_credit": [[0.02]],
-    "replacement_rate_adjust": [1.5, 1.5, 1.5, 1.6, 1.0],
+    "replacement_rate_adjust": [
+        [1.5, 1.5],
+        [1.5, 1.5],
+        [1.5, 1.5],
+        [1.6, 1.6],
+        [1.0, 1.0],
+    ],
     "delta_tau_annual": [
         [float(1 - ((1 - 0.0975) ** (20 / (p3.ending_age - p3.starting_age))))]
     ],
@@ -1272,6 +1284,7 @@ new_param_values_ubi = {
     "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
     "tau_bq": [0.17],
@@ -1699,21 +1712,57 @@ def test_get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, method, expected):
     assert np.allclose(r_p_test, expected)
 
 
-def test_resource_constraint():
+test_data_rc = [
+    (
+        np.array([48, 55, 2, 99, 8]),  # Y
+        np.array([33, 44, 0.4, 55, 6]),  # C
+        np.array([4, 5, 0.01, 22, 0]),  # G
+        np.array([20, 5, 0.6, 10, 1]),  # I_d
+        np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # I_g
+        np.array([0.1, 0, 0.016, -1.67, -0.477]),  # net_capital_flows
+        np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # RM1
+        np.array([-9.1, 1, 0.974, 13.67, 1.477]),  # expected1
+    ),
+    (
+        np.array([48, 55, 2, 99, 8]),  # Y
+        np.array([33, 44, 0.4, 55, 6]),  # C
+        np.array([4, 5, 0.01, 22, 0]),  # G
+        np.array([20, 5, 0.6, 10, 1]),  # I_d
+        np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # I_g
+        np.array([0.1, 0, 0.016, -1.67, -0.477]),  # net_capital_flows
+        np.array([0.0, 0.0, 0.0, 0.0, 0.03]),  # RM2
+        np.array([-9.1, 1, 0.974, 13.67, 1.507]),  # expected2
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "Y,C,G,I_d,I_g,net_capital_flows,RM,expected",
+    test_data_rc,
+    ids=["RM=0, M=5", "RM>0, M=5"],
+)
+def test_resource_constraint(
+    Y, C, G, I_d, I_g, net_capital_flows, RM, expected
+):
     """
     Test resource constraint equation.
     """
-    Y = np.array([48, 55, 2, 99, 8])
-    C = np.array([33, 44, 0.4, 55, 6])
-    G = np.array([4, 5, 0.01, 22, 0])
-    I_d = np.array([20, 5, 0.6, 10, 1])
-    I_g = np.zeros_like(I_d)
-    net_capital_flows = np.array([0.1, 0, 0.016, -1.67, -0.477])
-    RM = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
-    expected = np.array([-9.1, 1, 0.974, 13.67, 1.477])
+    # Y = np.array([48, 55, 2, 99, 8])
+    # C = np.array([33, 44, 0.4, 55, 6])
+    # G = np.array([4, 5, 0.01, 22, 0])
+    # I_d = np.array([20, 5, 0.6, 10, 1])
+    # I_g = np.zeros_like(I_d)
+    # net_capital_flows = np.array([0.1, 0, 0.016, -1.67, -0.477])
+    # RM1 = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
+    # expected1 = np.array([-9.1, 1, 0.974, 13.67, 1.477])
     test_RC = aggr.resource_constraint(
         Y, C, G, I_d, I_g, net_capital_flows, RM
     )
+    # RM2 = np.array([0.0, 0.0, 0.0, 0.0, 0.03])
+    # expected2 = np.array([-9.1, 1, 0.974, 13.67, 1.477])
+    # test_RC2 = aggr.resource_constraint(
+    #     Y, C, G, I_d, I_g, net_capital_flows, RM2
+    # )
 
     assert np.allclose(test_RC, expected)
 
