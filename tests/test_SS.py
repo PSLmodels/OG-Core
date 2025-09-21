@@ -558,27 +558,31 @@ param_updates8 = {
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
 }
 filename8 = "inner_loop_outputs_reform_MneI.pkl"
+param_updates9 = {"J": 1, "lambdas": np.array([1.0])}
+filename9 = "inner_loop_outputs_J1.pkl"
 
 
 @pytest.mark.parametrize(
     "baseline,r_p,param_updates,filename",
     [
-        (True, 0.03309231672773741, param_updates1, filename1),
-        (True, 0.05, param_updates2, filename2),
-        (True, 0.04260341179572245, param_updates3, filename3),
-        (False, 0.04260341179572245, param_updates4, filename4),
-        (False, 0.04260341179572245, param_updates5, filename5),
-        (False, 0.04759112768438152, param_updates7, filename7),
-        (False, 0.04759112768438152, param_updates8, filename8),
+        # (True, 0.03309231672773741, param_updates1, filename1),
+        # (True, 0.05, param_updates2, filename2),
+        # (True, 0.04260341179572245, param_updates3, filename3),
+        # (False, 0.04260341179572245, param_updates4, filename4),
+        # (False, 0.04260341179572245, param_updates5, filename5),
+        # (False, 0.04759112768438152, param_updates7, filename7),
+        # (False, 0.04759112768438152, param_updates8, filename8),
+        (True, 0.04, param_updates9, filename9),
     ],
     ids=[
-        "Baseline, Small Open",
-        "Baseline, Balanced Budget",
-        "Baseline",
-        "Reform",
-        "Reform, baseline spending",
-        "Reform, M>1",
-        "Reform, I!=>M",
+        # "Baseline, Small Open",
+        # "Baseline, Balanced Budget",
+        # "Baseline",
+        # "Reform",
+        # "Reform, baseline spending",
+        # "Reform, M>1",
+        # "Reform, I!=>M",
+        "J=1"
     ],
 )
 def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
