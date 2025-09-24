@@ -2,7 +2,11 @@
 (Chap_FinInt)=
 # Financial Intermediary
 
+<<<<<<< HEAD
+Domestic household wealth $B_{t}$ is invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic demand for these assets and then returns a single portfolio rate of return to all investors.
+=======
   Domestic household wealth $W^d_{t}=B_{t}$ and foreign ownership of domestic assets $W^f_{t}$, both in terms of the numeraire good, are invested in a financial intermediary. This intermediary purchases a portfolio of government bonds and private capital in accordance with the domestic and foreign investor demand for these assets and then returns a single portfolio rate of return to all investors.
+>>>>>>> upstream/master
 
   Foreign demand for government bonds is specified in section {ref}`SecMarkClrMktClr_G` of the {ref}`Chap_MarkClr` chapter:
 
@@ -18,22 +22,44 @@
     D^{d}_{t} = D_{t} - D^{f}_{t} \quad\forall t
   ```
 
+<<<<<<< HEAD
+We assume that debt dominates the capital markets, such that domestic investor demand for equity, $V^{d}_{t}$ is given as:
+=======
   We assume that debt dominates the capital markets, such that domestic investor demand for capital, $K^{d}_{t}$ is given as:
+>>>>>>> upstream/master
 
   ```{math}
   :label: eq_domestic_cap_demand
-    K^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t
+    V^{d}_{t} = B_{t} - D^{d}_{t} \quad\forall t
   ```
 
+<<<<<<< HEAD
+Foreign demand for equity is given in {ref}`SecMarkClrMktClr_K`, where $V^{f}_{t}$ is an exogenous fraction of excess equity demand:
+=======
   Foreign demand for capital is given in {ref}`SecMarkClrMktClr_K`, where $K^{f}_{t}$ is an exogenous fraction of excess capital demand at the world interest rate:
+>>>>>>> upstream/master
 
   ```{math}
   :label: eq_foreign_cap_demand
-    K^{f}_t = \zeta_{K, t}ED^{K,r^*}_t \quad\forall t
+    V^{f}_t = \zeta_{K, t}ED^{V,r^*}_t \quad\forall t
   ```
 
   The total amount invested in the financial intermediary is thus:
 
+<<<<<<< HEAD
+```{math}
+    B_t & = D^d_t + V^d_t \\
+```
+
+The return on the portfolio of assets held in the financial intermediary is the weighted average of the return on equity and government debt. As derived in {eq}`EqFirms_rKt` of Section {ref}`EqFirmsPosProfits`, the presence of public infrastructure in the production function means that the returns to private factors of production ($r_t$ and $w_t$) exhibit decreasing returns to scale.[^MoorePecoraro]. These excess profits are returned to shareholders through the financial intermediary.
+
+The return on the portfolio of assets held by the financial intermediary is thus a weighted average of the return to government debt $r_{gov,t}$ from {eq}`EqUnbalGBC_rate_wedge` and the adjusted return on equity through the distribution of profits and capital gains:
+
+```{math}
+:label: eq_portfolio_return
+  r_{p,t} = \frac{r_{gov,t}D_{t} + \Pi^d_{m,t}  + (V^d_{t+1} - V^d_{t}) }{D_{t} + V^d_{t}} \quad\forall t \quad\text{where}\quad \Pi^d_t \equiv \sum_{m=1}^M \pi_{m,t} * \frac{V^d_{t}}{V_{t}}
+```
+=======
   ```{math}
   W_{t} & = W^d_{t} + W^f_{t} \\
       & = D^d_t + K^d_t  + D^f_t + K^f_t \\
@@ -54,6 +80,7 @@
     r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}} \quad\forall t \quad\text{where}\quad K_t \equiv \sum_{m=1}^M K_{m,t}
   ```
 
+>>>>>>> upstream/master
 
 (SecFinfootnotes)=
 ## Footnotes

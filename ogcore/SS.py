@@ -397,22 +397,65 @@ def inner_loop(outer_loop_vars, p, client):
     # Find output, labor demand, capital demand for M-1 industries
     L_vec = np.zeros(p.M)
     K_vec = np.zeros(p.M)
+    K_tau_vec = np.zeros(p.M)
+    profit_vec = np.zeros(p.M)
+    V_vec = np.zeros(p.M)
+    V_open_vec = np.zeros(p.M)
     C_vec = np.zeros(p.I)
     K_demand_open_vec = np.zeros(p.M)
     for i_ind in range(p.I):
         C_vec[i_ind] = aggr.get_C(c_i[i_ind, :, :], p, "SS")
     Y_vec = np.dot(p.io_matrix.T, C_vec)
     for m_ind in range(p.M - 1):
-        KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
-        K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
-        L_vec[m_ind] = firm.solve_L(
-            Y_vec[m_ind], K_vec[m_ind], K_g, p, "SS", m_ind
+        YL_rat_m = firm.get_YL_from_w(w, p_m, p, "SS", m_ind)
+        L_vec[m_ind] = Y_vec[m_ind] * YL_rat_m
+        K_vec[m_ind] = firm.solve_K(
+            Y_vec[m_ind], L_vec[m_ind], K_g, p, "SS", m_ind
         )
+        K_tau_vec[m_ind] = (
+            (1 - p.tau_inv[-1, m_ind]) * p.delta[m] * K_vec[m_ind]
+        ) / p.delta_tau[-1, m_ind]
+        profit_vec[m_ind] = firm.profits(
+            r,
+            w,
+            K_vec[m_ind],
+            L_vec[m_ind],
+            Y_vec[m_ind],
+            K_tau_vec[m_ind],
+            p_m,
+            p,
+            "SS",
+            m_ind,
+        )
+        V_vec[m_ind] = profit_vec[m_ind] / (1  + r)
+        # KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
+        # K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
+        # L_vec[m_ind] = firm.solve_L(
+        #     Y_vec[m_ind], K_vec[m_ind], K_g, p, "SS", m_ind
+        # )
+        # TODO: update how solve for K below, need to use equation 125, probably with a root finder
         K_demand_open_vec[m_ind] = firm.get_K(
             p.world_int_rate[-1], w_open, L_vec[m_ind], p, "SS", m_ind
         )
+        K_tau_open = (
+            (1 - p.tau_inv[-1, m_ind]) * p.delta[m] * K_demand_open_vec[m_ind]
+        ) / p.delta_tau[-1, m_ind]
+        Y_vec_open = firm.get_Y(K_demand_open_vec[m_ind], K_g, L_vec[m_ind], p, "SS", m=m_ind)
+        profit_open = firm.profits(
+            p.world_int_rate[-1], w_open,
+            K_demand_open_vec[m_ind],
+            L_vec[m_ind],
+            Y_vec_open,
+            K_tau_open,
+            p_m,
+            p,
+            "SS",
+            m_ind,
+        )
+        V_open_vec[m_ind] = profit_open / (1 + p.world_int_rate[-1])
     # Find output, labor demand, capital demand for industry M
     L_M = max(0.001, L - L_vec.sum())  # make sure L_M > 0
+    # TODO: update how solve for K below, need to use equation 125, probably with a root finder
     K_demand_open_vec[-1] = firm.get_K(
         p.world_int_rate[-1], w_open, L_M, p, "SS", -1
     )
