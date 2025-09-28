@@ -514,8 +514,8 @@ def cons_tax_liab(c, p_i, p, method="SS"):
     if method == "SS":
         c_tax = ((p.tau_c[-1, :] * p_i).reshape(p.I, 1, 1) * c).sum(axis=0)
     else:
-        c_tax = ((p.tau_c[: p.T, :] * p_i).reshape(p.T, p.I, 1, 1) * c).sum(
-            axis=1
-        )
+        c_tax = (
+            (p.tau_c[: p.T, :] * p_i[: p.T, :]).reshape(p.T, p.I, 1, 1) * c
+        ).sum(axis=1)
 
     return c_tax
