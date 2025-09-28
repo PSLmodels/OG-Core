@@ -508,8 +508,17 @@ def cons_tax_liab(c, p_i, p, method="SS"):
     Calculates consumption tax liability for each household.
 
     Args:
+        c (numpy.ndarray): Consumption array. Dimensions depend on the method:
+            - If method == "SS": shape (I, S, J)
+            - If method != "SS": shape (T, I, S, J)
+        p_i (numpy.ndarray): Array of consumption tax rates by good. Shape (I,) or (T, I).
+        p (OG-Core Specifications object): Model parameters, including tax rates and dimensions.
+        method (str, optional): Indicates whether calculation is for steady-state ('SS') or transition path ('TPI'). Default is 'SS'.
 
     Returns:
+        c_tax (numpy.ndarray): Consumption tax liability for each household.
+            - If method == "SS": shape (S, J)
+            - If method != "SS": shape (T, S, J)
     """
     if method == "SS":
         c_tax = ((p.tau_c[-1, :] * p_i).reshape(p.I, 1, 1) * c).sum(axis=0)
