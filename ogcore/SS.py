@@ -400,7 +400,7 @@ def inner_loop(outer_loop_vars, p, client):
     C_vec = np.zeros(p.I)
     K_demand_open_vec = np.zeros(p.M)
     for i_ind in range(p.I):
-        C_vec[i_ind] = aggr.get_C(c_i[i_ind, :, :], p, "SS")
+        C_vec[i_ind] = aggr.get_C(c_i[i_ind, :, :], p, "SS").item()
     Y_vec = np.dot(p.io_matrix.T, C_vec)
     for m_ind in range(p.M - 1):
         KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
