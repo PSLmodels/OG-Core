@@ -22,7 +22,7 @@ from ogcore import SS, TPI, utils
 import ogcore.aggregates as aggr
 from ogcore.parameters import Specifications
 
-NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
+NUM_WORKERS = min(multiprocessing.cpu_count(), 4)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 SS_VAR_NAME_MAPPING = {
@@ -146,7 +146,7 @@ VAR_NAME_MAPPING = {
     "tr_path": "tr",
     "ubi_path": "ubi",
     "y_before_tax_mat": "before_tax_income",
-    "tax_path": "hh_taxes",
+    "tax_path": "hh_net_taxes",
     "etr_path": "etr",
     "mtrx_path": "mtrx",
     "mtry_path": "mtry",
@@ -166,7 +166,14 @@ TEST_PARAM_DICT = json.load(
 
 @pytest.fixture(scope="module")
 def dask_client():
-    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    cluster = LocalCluster(
+        n_workers=NUM_WORKERS,
+        threads_per_worker=2,
+        memory_limit="2GB",
+        timeout="300s",
+        heartbeat_interval="10s",
+        death_timeout="60s",
+    )
     client = Client(cluster)
     yield client
     # teardown
