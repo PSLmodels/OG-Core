@@ -306,7 +306,34 @@ def inner_loop(outer_loop_vars, p, client):
             )
             futures.append(f)
 
-        results = client.gather(futures)
+        try:
+            results = client.gather(futures, timeout=300)
+        except Exception as e:
+            # Cancel remaining futures and fall back to serial computation
+            print(
+                f"Dask computation failed ({e}), falling back to serial computation"
+            )
+            for f in futures:
+                f.cancel()
+
+            # Re-run serially
+            results = []
+            for j in range(p.J):
+                guesses = np.append(bssmat[:, j], nssmat[:, j])
+                res = solve_for_j(
+                    guesses,
+                    r_p,
+                    w,
+                    p_tilde,
+                    bq[:, j],
+                    rm[:, j],
+                    tr[:, j],
+                    ubi[:, j],
+                    factor,
+                    j,
+                    p,  # pass the raw object directly
+                )
+                results.append(res)
 
     else:
         # Serial fallback (no dask client)
