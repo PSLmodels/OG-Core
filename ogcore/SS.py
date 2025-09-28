@@ -967,7 +967,7 @@ def SS_solver(
             c_i_ss_mat[i_ind, :, :],
             p,
             "SS",
-        )
+        ).item()
 
     (
         total_tax_revenue,
