@@ -814,7 +814,7 @@ def txfunc_graph(
         None
 
     """
-    cmap1 = matplotlib.cm.get_cmap("summer")
+    cmap1 = matplotlib.colormaps.get_cmap("summer")
 
     # Make comparison plot with full income domains
     fig = plt.figure()
