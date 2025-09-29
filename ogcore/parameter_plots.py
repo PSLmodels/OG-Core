@@ -49,13 +49,12 @@ def plot_imm_rates(
         "Source: " + source,
         fontsize=9,
     )
-    plt.tight_layout(rect=(0, 0.035, 1, 1))
     if include_title:
         plt.title("Immigration Rates")
     # Save or return figure
     if path:
         output_path = os.path.join(path, "imm_rates")
-        plt.savefig(output_path, dpi=300)
+        plt.savefig(output_path, bbox_inches="tight", dpi=300)
         plt.close()
     else:
         fig.show()
@@ -407,11 +406,10 @@ def plot_fert_rates(
         "Source: " + source,
         fontsize=9,
     )
-    plt.tight_layout(rect=(0, 0.035, 1, 1))
     # Save or return figure
     if path:
         output_path = os.path.join(path, "fert_rates")
-        plt.savefig(output_path, dpi=300)
+        plt.savefig(output_path, bbox_inches="tight", dpi=300)
         plt.close()
     else:
         fig.show()
