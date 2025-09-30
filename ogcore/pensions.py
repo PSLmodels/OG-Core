@@ -30,16 +30,14 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     """
     if j is not None:
         e = np.squeeze(p.e[-1, :, j])  # Only computes using SS earnings
+        dim2 = 1
     else:
-        e = np.squeeze(p.e[-1, :, :])  # Only computes using SS earnings
-        if p.J == 1:
-            e = e.reshape((p.S, 1))  # Reshape if only one income group
+        e = np.squeeze(p.e[-1, :, :]).reshape(
+            (p.S, p.J)
+        )  # Only computes using SS earnings
+        dim2 = p.J
     # adjust number of calendar years AIME computed from int model periods
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
-    if e.ndim == 2:
-        dim2 = e.shape[1]
-    else:
-        dim2 = 1
     earnings = (e * (wss * nssmat * factor_ss)).reshape(p.S, dim2)
     # get highest earning years for number of years AIME computed from
     highest_earn = (
