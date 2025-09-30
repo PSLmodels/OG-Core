@@ -360,7 +360,7 @@ def inner_loop(outer_loop_vars, p, client):
         None,
         False,
         "SS",
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         etr_params_3D,
         p,
     )
@@ -374,7 +374,7 @@ def inner_loop(outer_loop_vars, p, client):
         bq,
         rm,
         net_tax,
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p,
     )
     c_i = household.get_ci(c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c)
@@ -495,7 +495,7 @@ def inner_loop(outer_loop_vars, p, client):
         None,
         False,
         "SS",
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         etr_params_3D,
         p,
     )
@@ -509,7 +509,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_bq,
         new_rm,
         taxss,
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p,
     )
     (
@@ -538,7 +538,7 @@ def inner_loop(outer_loop_vars, p, client):
         ubi,
         theta,
         etr_params_3D,
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p,
         None,
         "SS",
@@ -857,7 +857,7 @@ def SS_solver(
         nssmat,
         factor,
         True,
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         etr_params_3D,
         mtry_params_3D,
         capital_noncompliance_rate_2D,
@@ -870,7 +870,7 @@ def SS_solver(
         nssmat,
         factor,
         False,
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         etr_params_3D,
         mtrx_params_3D,
         labor_noncompliance_rate_2D,
@@ -882,7 +882,7 @@ def SS_solver(
         bssmat_s,
         nssmat,
         factor,
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         etr_params_3D,
         labor_noncompliance_rate_2D,
         capital_noncompliance_rate_2D,
@@ -903,7 +903,7 @@ def SS_solver(
         None,
         False,
         "SS",
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         etr_params_3D,
         p,
     )
@@ -948,7 +948,7 @@ def SS_solver(
         bqssmat,
         rmssmat,
         taxss,
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p,
     )
     sales_tax_ss = (p.tau_c[-1, :] * p_i_ss).reshape(p.I, 1, 1) * cssmat
@@ -995,7 +995,7 @@ def SS_solver(
         ubissmat,
         theta,
         etr_params_3D,
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p,
         None,
         "SS",

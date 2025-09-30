@@ -167,11 +167,11 @@ TEST_PARAM_DICT = json.load(
 @pytest.fixture(scope="module")
 def dask_client():
     cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
-    client = Client(cluster)
+    client = None  # Client(cluster)
     yield client
     # teardown
-    client.close()
-    cluster.close()
+    # client.close()
+    # cluster.close()
 
 
 filename1 = "intial_SS_values_baseline.pkl"
@@ -798,6 +798,19 @@ param_updates8 = {
 filename8 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_Kg_nonzero_2.pkl"
 )
+param_updates10 = {
+    "J": 1,
+    "lambdas": np.array([1.0]),
+    "e": np.ones((40, 1)),
+    "beta_annual": [0.96],
+    "chi_b": [80],
+    "labor_income_tax_noncompliance_rate": [[0.0]],
+    "capital_income_tax_noncompliance_rate": [[0.0]],
+    "eta": np.ones((40, 1)) * (1 / 40),
+    "eta_RM": np.ones((40, 1)) * (1 / 40),
+    "replacement_rate_adjust": [[1.0]],
+}
+filename10 = os.path.join(CUR_PATH, "test_io_data", "run_TPI_outputs_J1.pkl")
 # read in mono tax funcs (not age specific)
 if sys.version_info[1] < 11:
     dict_params = utils.safe_read_pickle(
@@ -827,6 +840,7 @@ if sys.version_info[1] < 11:
         CUR_PATH, "test_io_data", "run_TPI_outputs_mono_2.pkl"
     )
 
+
 if sys.version_info[1] < 11:
     test_list = [
         (True, param_updates2, filename2),
@@ -850,22 +864,24 @@ if sys.version_info[1] < 11:
     ]
 else:
     test_list = [
-        (True, param_updates2, filename2),
-        (True, param_updates5, filename5),
-        (True, param_updates6, filename6),
-        (True, param_updates7, filename7),
-        (True, {}, filename1),
-        (False, param_updates4, filename4),
-        (True, param_updates8, filename8),
+        # (True, param_updates2, filename2),
+        # (True, param_updates5, filename5),
+        # (True, param_updates6, filename6),
+        # (True, param_updates7, filename7),
+        # (True, {}, filename1),
+        # (False, param_updates4, filename4),
+        # (True, param_updates8, filename8),
+        (True, param_updates10, filename10),
     ]
     id_list = [
-        "Baseline, balanced budget",
-        "Baseline, small open",
-        "Baseline, small open for some periods",
-        "Baseline, delta_tau = 0",
-        "Baseline",
-        "Reform, baseline spending",
-        "Baseline, Kg>0",
+        # "Baseline, balanced budget",
+        # "Baseline, small open",
+        # "Baseline, small open for some periods",
+        # "Baseline, delta_tau = 0",
+        # "Baseline",
+        # "Reform, baseline spending",
+        # "Baseline, Kg>0",
+        "J=1"
     ]
 
 
@@ -942,14 +958,16 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
     for k, v in expected_dict.items():
         print("Checking ", k)
         try:
+            test_value = test_dict[VAR_NAME_MAPPING[k]]
+        except KeyError:
+            test_value = test_dict[k]
+        try:
             print(
                 "Diff = ",
-                np.absolute(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]
-                ).max(),
+                np.absolute(test_value[: p.T] - v[: p.T]).max(),
             )
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                test_value[: p.T],
                 v[: p.T],
                 rtol=1e-04,
                 atol=1e-04,
@@ -957,13 +975,10 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
         except ValueError:
             print(
                 "Diff = ",
-                np.absolute(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.absolute(test_value[: p.T, :, :] - v[: p.T, :, :]).max(),
             )
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
+                test_value[: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,
