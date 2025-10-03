@@ -1752,3 +1752,32 @@ def test_net_taxes(
     )
 
     assert np.allclose(net_taxes, expected)
+
+
+p = Specifications()
+p.update_specifications({"tau_c": [[0.1]]})
+c = np.ones((p.T, p.I, p.S, p.J)) * 0.3
+p_i = np.ones((p.T, p.I)) * 1.2
+
+
+@pytest.mark.parametrize(
+    "c,p_i,p,method,expected",
+    [
+        (c, p_i, p, "TPI", np.ones((p.T, p.S, p.J)) * 0.036),
+        (
+            c[-1, :, :, :],
+            p_i[-1, :],
+            p,
+            "SS",
+            np.ones((p.T, p.S, p.J)) * 0.036,
+        ),
+    ],
+    ids=[
+        "TPI",
+        "SS",
+    ],
+)
+def test_cons_tax_liab(c, p_i, p, method, expected):
+    c_tax_test = tax.cons_tax_liab(c, p_i, p, method)
+
+    assert np.allclose(c_tax_test, expected)

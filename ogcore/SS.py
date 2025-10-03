@@ -306,7 +306,34 @@ def inner_loop(outer_loop_vars, p, client):
             )
             futures.append(f)
 
-        results = client.gather(futures)
+        try:
+            results = client.gather(futures, timeout=300)
+        except Exception as e:
+            # Cancel remaining futures and fall back to serial computation
+            print(
+                f"Dask computation failed ({e}), falling back to serial computation"
+            )
+            for f in futures:
+                f.cancel()
+
+            # Re-run serially
+            results = []
+            for j in range(p.J):
+                guesses = np.append(bssmat[:, j], nssmat[:, j])
+                res = solve_for_j(
+                    guesses,
+                    r_p,
+                    w,
+                    p_tilde,
+                    bq[:, j],
+                    rm[:, j],
+                    tr[:, j],
+                    ubi[:, j],
+                    factor,
+                    j,
+                    p,  # pass the raw object directly
+                )
+                results.append(res)
 
     else:
         # Serial fallback (no dask client)
@@ -951,7 +978,7 @@ def SS_solver(
         np.squeeze(p.e[-1, :, :]),
         p,
     )
-    sales_tax_ss = (p.tau_c[-1, :] * p_i_ss).reshape(p.I, 1, 1) * cssmat
+    sales_tax_ss = tax.cons_tax_liab(cssmat, p_i_ss, p, "SS")
     yss_before_tax_mat = household.get_y(
         r_p_ss, wss, bssmat_s, nssmat, p, "SS"
     )
