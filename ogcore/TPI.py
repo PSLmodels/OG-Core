@@ -883,9 +883,7 @@ def run_TPI(p, client=None):
             p.e,
             p,
         )
-        sales_tax_mat = (p.tau_c[: p.T, :] * p_i[: p.T, :]).reshape(
-            p.T, p.I, 1, 1
-        ) * c_mat
+        sales_tax_mat = tax.cons_tax_liab(c_mat, p_i, p, "TPI")
         C = aggr.get_C(c_mat, p, "TPI")
 
         c_i = household.get_ci(
