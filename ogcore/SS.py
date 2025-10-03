@@ -307,11 +307,13 @@ def inner_loop(outer_loop_vars, p, client):
             futures.append(f)
 
         try:
-            results = client.gather(futures, timeout=300)
+            results = client.gather(futures, timeout=600)
         except Exception as e:
             # Cancel remaining futures and fall back to serial computation
-            print(
-                f"Dask computation failed ({e}), falling back to serial computation"
+            import logging
+            logging.warning(
+                f"Dask client.gather() failed with error: {e}. "
+                "Falling back to serial computation."
             )
             for f in futures:
                 f.cancel()
