@@ -778,11 +778,19 @@ def run_TPI(p, client=None):
                 )
                 futures.append(f)
             try:
-                results = client.gather(futures, timeout=600)
+                # Wait for futures with timeout, then gather results
+                from distributed import wait
+                done, not_done = wait(futures, timeout=600)
+                if not_done:
+                    # Some futures didn't complete in time
+                    raise TimeoutError(
+                        f"{len(not_done)} futures did not complete within 600 seconds"
+                    )
+                results = client.gather(futures)
             except Exception as e:
                 # Cancel remaining futures and fall back to serial computation
                 logging.warning(
-                    f"Dask client.gather() failed with error: {e}. "
+                    f"Dask computation failed with error: {e}. "
                     "Falling back to serial computation for this iteration."
                 )
                 for future in futures:
