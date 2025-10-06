@@ -542,7 +542,7 @@ Total pension spending is the sum of the pension payments to each household in t
 (SecUBI_NonGrowthAdj)=
 ###### UBI specification not adjusted for economic growth
 
-  A non-growth adjusted UBI (`ubi_growthadj = False`) is one in which the initial nonstationary nominal-valued $t=0$ UBI matrix $ubi^{\$}_{j,s,t=0}$ does not grow, while the economy's long-run growth rate is $g_y$ for the most common parameterization is positive ($g_y>0$).
+  A non-growth adjusted UBI (`ubi_growthadj = False`) is one in which the initial nonstationary nominal-valued $t=0$ UBI matrix $ubi^{nom}_{j,s,t=0}$ does not grow, while the economy's long-run growth rate is $g_y$ for the most common parameterization is positive ($g_y>0$).
 
   ```{math}
   :label: EqUBIubi_nom_NonGrwAdj_jst
