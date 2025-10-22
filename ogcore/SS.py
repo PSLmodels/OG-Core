@@ -1400,7 +1400,7 @@ def run_SS(p, client=None):
                 Yguess = TRguess / p.alpha_T[-1]
                 factorguess = p.initial_guess_factor_SS
                 BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
-                ss_params_baseline = (
+                ss_params = (
                     b_guess,
                     n_guess,
                     None,
@@ -1424,45 +1424,6 @@ def run_SS(p, client=None):
                         + list(BQguess)
                         + [TRguess, factorguess]
                     )
-                sol = opt.root(
-                    SS_fsolve,
-                    guesses,
-                    args=ss_params_baseline,
-                    method=p.SS_root_method,
-                    tol=p.mindist_SS,
-                )
-                if sol.success:
-                    SS_solved = True
-                    break
-        if ENFORCE_SOLUTION_CHECKS and not sol.success:
-            raise RuntimeError("Steady state equilibrium not found")
-        r_p_ss = sol.x[0]
-        rss = sol.x[1]
-        wss = sol.x[2]
-        p_m_ss = sol.x[3 : 3 + p.M]
-        Yss = sol.x[3 + p.M]
-        BQss = sol.x[3 + p.M + 1 : -2]
-        TR_ss = sol.x[-2]
-        factor_ss = sol.x[-1]
-        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if budget_balance
-        # # = True, but that's ok - will be fixed in SS_solver
-        fsolve_flag = True
-        output = SS_solver(
-            b_guess,
-            n_guess,
-            r_p_ss,
-            rss,
-            wss,
-            p_m_ss,
-            Yss,
-            BQss,
-            TR_ss,
-            None,
-            factor_ss,
-            p,
-            client,
-            fsolve_flag,
-        )
     else:
         # Use the baseline solution to get starting values for the reform
         baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
@@ -1487,7 +1448,7 @@ def run_SS(p, client=None):
                         BQguess,
                         TRguess,
                         Yguess,
-                        factor,
+                        factor_ss,
                     ) = (
                         ss_solutions["b_sp1"],
                         ss_solutions["n"],
@@ -1529,7 +1490,9 @@ def run_SS(p, client=None):
             p_m_guess = np.ones(p.M)
             TRguess = p.initial_guess_TR_SS
             Yguess = TRguess / p.alpha_T[-1]
-            factor = p.initial_guess_factor_SS
+            factor_ss = ss_solutions[
+                "factor"
+            ]  # don't guess factor, use baseline
             BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
             if p.use_zeta:
                 BQguess = 0.12231465279007188
@@ -1540,12 +1503,12 @@ def run_SS(p, client=None):
             TR_baseline = None
             Ig_baseline = None
         # Now solve for the steady state of the reform
-        ss_params_reform = (
+        ss_params = (
             b_guess,
             n_guess,
             TR_baseline,
             Ig_baseline,
-            factor,
+            factor_ss,
             p,
             client,
         )
@@ -1563,13 +1526,26 @@ def run_SS(p, client=None):
                 + list(BQguess)
                 + [TRguess]
             )
-        sol = opt.root(
-            SS_fsolve,
-            guesses,
-            args=ss_params_reform,
-            method=p.SS_root_method,
-            tol=p.mindist_SS,
-        )
+    # Solve for steady state using root finder
+    sol = opt.root(
+        SS_fsolve,
+        guesses,
+        args=ss_params,
+        method=p.SS_root_method,
+        tol=p.mindist_SS,
+    )
+    if p.baseline:
+        r_p_ss = sol.x[0]
+        rss = sol.x[1]
+        wss = sol.x[2]
+        p_m_ss = sol.x[3 : 3 + p.M]
+        Yss = sol.x[3 + p.M]
+        BQss = sol.x[3 + p.M + 1 : -2]
+        TR_ss = sol.x[-2]
+        factor_ss = sol.x[-1]
+        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if budget_balance
+        # # = True, but that's ok - will be fixed in SS_solver
+    else:
         r_p_ss = sol.x[0]
         rss = sol.x[1]
         wss = sol.x[2]
@@ -1580,39 +1556,36 @@ def run_SS(p, client=None):
         Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
         # budget_balance = True, but that's ok - will be fixed in
         # SS_solver
-        if (
-            (ENFORCE_SOLUTION_CHECKS)
-            and not (sol.success == 1)
-            and (np.absolute(np.array(sol.fun)).max() > p.mindist_SS)
-        ):
-            raise RuntimeError("Steady state equilibrium not found")
-        # Return SS values of variables
-        fsolve_flag = True
-        # Return SS values of variables
-        if not p.baseline_spending:
-            Ig_baseline = None
-        output = SS_solver(
-            b_guess,
-            n_guess,
-            r_p_ss,
-            rss,
-            wss,
-            p_m_ss,
-            Yss,
-            BQss,
-            TR_ss,
-            Ig_baseline,
-            factor,
-            p,
-            client,
-            fsolve_flag,
+    if ENFORCE_SOLUTION_CHECKS and not sol.success:
+        raise RuntimeError("Steady state equilibrium not found")
+    # Trigger flag that model has been solved
+    fsolve_flag = True
+    # Return SS values of variables
+    if p.baseline or not p.baseline_spending:
+        Ig_baseline = None
+    output = SS_solver(
+        b_guess,
+        n_guess,
+        r_p_ss,
+        rss,
+        wss,
+        p_m_ss,
+        Yss,
+        BQss,
+        TR_ss,
+        Ig_baseline,
+        factor_ss,
+        p,
+        client,
+        fsolve_flag,
+    )
+    if output["G"] < 0.0:
+        warnings.warn(
+            "Warning: The combination of the tax policy "
+            + "you specified and your target debt-to-GDP "
+            + "ratio results in an infeasible amount of "
+            + "government spending in order to close the "
+            + "budget (i.e., G < 0)"
         )
-        if output["G"] < 0.0:
-            warnings.warn(
-                "Warning: The combination of the tax policy "
-                + "you specified and your target debt-to-GDP "
-                + "ratio results in an infeasible amount of "
-                + "government spending in order to close the "
-                + "budget (i.e., G < 0)"
-            )
+
     return output
