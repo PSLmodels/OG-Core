@@ -780,6 +780,7 @@ def run_TPI(p, client=None):
             try:
                 # Wait for futures with timeout, then gather results
                 from distributed import wait
+
                 done, not_done = wait(futures, timeout=600)
                 if not_done:
                     # Some futures didn't complete in time

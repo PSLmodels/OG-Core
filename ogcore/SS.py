@@ -309,6 +309,7 @@ def inner_loop(outer_loop_vars, p, client):
         try:
             # Wait for futures with timeout, then gather results
             from distributed import wait
+
             done, not_done = wait(futures, timeout=600)
             if not_done:
                 # Some futures didn't complete in time
@@ -319,6 +320,7 @@ def inner_loop(outer_loop_vars, p, client):
         except Exception as e:
             # Cancel remaining futures and fall back to serial computation
             import logging
+
             logging.warning(
                 f"Dask computation failed with error: {e}. "
                 "Falling back to serial computation."
