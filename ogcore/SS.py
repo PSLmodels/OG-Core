@@ -1317,6 +1317,53 @@ def SS_fsolve(guesses, *args):
     return errors
 
 
+def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
+    """
+    Finds the initial guesses for b, n and for the steady state outer
+    loop variables.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        guesses (list): initial guesses for outer loop variables
+    """
+    r_p_guess = r_tr_scalars[0] * p.initial_guess_r_SS
+    rguess = r_tr_scalars[0] * p.initial_guess_r_SS
+    wguess = firm.get_w_from_r(rguess, p, "SS")
+    p_m_guess = np.ones(p.M)
+    TRguess = r_tr_scalars[1] * p.initial_guess_TR_SS
+    Yguess = TRguess / p.alpha_T[-1]
+
+    # create guesses list
+    # Note that BQ is an vector of lenght J if use_zeta=False
+    if p.use_zeta:
+        b_guess = np.ones((p.S, p.J)) * b_val
+        n_guess = np.ones((p.S, p.J)) * n_val * p.ltilde
+        BQguess = 0.12231465279007188
+        guesses = (
+            [r_p_guess, rguess, wguess]
+            + list(p_m_guess)
+            + [Yguess, BQguess, TRguess]
+        )
+    else:
+        b_guess = np.ones((p.S, p.J)) * 0.07  # TODO: remove hardcode here and next line
+        n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
+        BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
+        guesses = (
+            [r_p_guess, rguess, wguess]
+            + list(p_m_guess)
+            + [Yguess]
+            + list(BQguess)
+            + [TRguess]
+        )
+        # append factor if baseline
+        if p.baseline:
+            guesses.append(p.initial_guess_factor_SS)
+
+        return guesses, b_guess, n_guess
+
+
 def run_SS(p, client=None):
     """
     Solve for steady-state equilibrium of OG-Core.
@@ -1330,6 +1377,7 @@ def run_SS(p, client=None):
             results
 
     """
+    # TODO: move the list below to constants.py
     # Create list of deviation factors for initial guesses of r and TR
     dev_factor_list = [
         [1.00, 1.0],
@@ -1386,20 +1434,9 @@ def run_SS(p, client=None):
                     f"SS using initial guess factors for r and TR of "
                     + f"{v[0]} and {v[1]} respectively."
                 )
-                r_p_guess = v[0] * p.initial_guess_r_SS
-                rguess = v[0] * p.initial_guess_r_SS
-                if p.use_zeta:
-                    b_guess = np.ones((p.S, p.J)) * 0.0055
-                    n_guess = np.ones((p.S, p.J)) * 0.4 * p.ltilde
-                else:
-                    b_guess = np.ones((p.S, p.J)) * 0.07
-                    n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
-                wguess = firm.get_w_from_r(rguess, p, "SS")
-                p_m_guess = np.ones(p.M)
-                TRguess = v[1] * p.initial_guess_TR_SS
-                Yguess = TRguess / p.alpha_T[-1]
-                factorguess = p.initial_guess_factor_SS
-                BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
+                guesses, b_guess, n_guess = SS_initial_guesses(
+                    p, r_tr_scalars=v
+                )
                 ss_params = (
                     b_guess,
                     n_guess,
@@ -1409,21 +1446,6 @@ def run_SS(p, client=None):
                     p,
                     client,
                 )
-                if p.use_zeta:
-                    BQguess = 0.12231465279007188
-                    guesses = (
-                        [r_p_guess, rguess, wguess]
-                        + list(p_m_guess)
-                        + [Yguess, BQguess, TRguess, factorguess]
-                    )
-                else:
-                    guesses = (
-                        [r_p_guess, rguess, wguess]
-                        + list(p_m_guess)
-                        + [Yguess]
-                        + list(BQguess)
-                        + [TRguess, factorguess]
-                    )
     else:
         # Use the baseline solution to get starting values for the reform
         baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
@@ -1455,15 +1477,21 @@ def run_SS(p, client=None):
                         float(ss_solutions["r_p"]),
                         float(ss_solutions["r"]),
                         float(ss_solutions["w"]),
-                        ss_solutions[
-                            "p_m"
-                        ],  # Not sure why need to index p_m,but otherwise its shape is off..
+                        ss_solutions["p_m"],
                         ss_solutions["BQ"],
                         float(ss_solutions["TR"]),
                         float(ss_solutions["Y"]),
                         ss_solutions["factor"],
                     )
                     use_new_guesses = False
+                    BQ_items = [BQguess] if p.use_zeta else list(BQguess)
+                    guesses = (
+                        [r_p_guess, rguess, wguess]
+                        + list(p_m_guess)
+                        + [Yguess]
+                        + BQ_items
+                        + [TRguess]
+                    )
                 else:
                     logging.warning(
                         "Dimensions of previous solutions for SS do not match"
@@ -1478,26 +1506,15 @@ def run_SS(p, client=None):
             logging.info("Using new guesses for SS")
             use_new_guesses = True
         if use_new_guesses:
-            if p.use_zeta:
-                b_guess = np.ones((p.S, p.J)) * 0.0055
-                n_guess = np.ones((p.S, p.J)) * 0.4 * p.ltilde
-            else:
-                b_guess = np.ones((p.S, p.J)) * 0.07
-                n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
-            r_p_guess = p.initial_guess_r_SS
-            rguess = p.initial_guess_r_SS
-            wguess = firm.get_w_from_r(rguess, p, "SS")
-            p_m_guess = np.ones(p.M)
-            TRguess = p.initial_guess_TR_SS
-            Yguess = TRguess / p.alpha_T[-1]
+            # TODO: think about if add loop over dev factors here too
+            guesses, b_guess, n_guess = SS_initial_guesses(
+                    p
+                )
             factor_ss = ss_solutions[
                 "factor"
             ]  # don't guess factor, use baseline
-            BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
-            if p.use_zeta:
-                BQguess = 0.12231465279007188
         if p.baseline_spending:
-            TR_baseline = TRguess
+            TR_baseline = ss_solutions["TR"]
             Ig_baseline = ss_solutions["I_g"]
         else:
             TR_baseline = None
@@ -1512,20 +1529,6 @@ def run_SS(p, client=None):
             p,
             client,
         )
-        if p.use_zeta:
-            guesses = (
-                [r_p_guess, rguess, wguess]
-                + list(p_m_guess)
-                + [Yguess, BQguess, TRguess]
-            )
-        else:
-            guesses = (
-                [r_p_guess, rguess, wguess]
-                + list(p_m_guess)
-                + [Yguess]
-                + list(BQguess)
-                + [TRguess]
-            )
     # Solve for steady state using root finder
     sol = opt.root(
         SS_fsolve,
@@ -1534,28 +1537,22 @@ def run_SS(p, client=None):
         method=p.SS_root_method,
         tol=p.mindist_SS,
     )
+    r_p_ss = sol.x[0]
+    rss = sol.x[1]
+    wss = sol.x[2]
+    p_m_ss = sol.x[3 : 3 + p.M]
     if p.baseline:
-        r_p_ss = sol.x[0]
-        rss = sol.x[1]
-        wss = sol.x[2]
-        p_m_ss = sol.x[3 : 3 + p.M]
-        Yss = sol.x[3 + p.M]
         BQss = sol.x[3 + p.M + 1 : -2]
         TR_ss = sol.x[-2]
         factor_ss = sol.x[-1]
-        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if budget_balance
-        # # = True, but that's ok - will be fixed in SS_solver
-    else:
-        r_p_ss = sol.x[0]
-        rss = sol.x[1]
-        wss = sol.x[2]
-        p_m_ss = sol.x[3 : 3 + p.M]
-        Yss = sol.x[3 + p.M]
-        BQss = sol.x[3 + p.M + 1 : -1]
-        TR_ss = sol.x[-1]
         Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
         # budget_balance = True, but that's ok - will be fixed in
         # SS_solver
+    else:
+        Yss = sol.x[3 + p.M]
+        BQss = sol.x[3 + p.M + 1 : -1]
+        TR_ss = sol.x[-1]
+
     if ENFORCE_SOLUTION_CHECKS and not sol.success:
         raise RuntimeError("Steady state equilibrium not found")
     # Trigger flag that model has been solved
