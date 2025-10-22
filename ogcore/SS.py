@@ -1534,84 +1534,50 @@ def run_SS(p, client=None):
         if p.baseline_spending:
             TR_baseline = TRguess
             Ig_baseline = ss_solutions["I_g"]
-            ss_params_reform = (
-                b_guess,
-                n_guess,
-                TR_baseline,
-                Ig_baseline,
-                factor,
-                p,
-                client,
-            )
-            if p.use_zeta:
-                guesses = (
-                    [r_p_guess, rguess, wguess]
-                    + list(p_m_guess)
-                    + [Yguess, BQguess, TR_baseline]
-                )
-            else:
-                guesses = (
-                    [r_p_guess, rguess, wguess]
-                    + list(p_m_guess)
-                    + [Yguess]
-                    + list(BQguess)
-                    + [TR_baseline]
-                )
-            sol = opt.root(
-                SS_fsolve,
-                guesses,
-                args=ss_params_reform,
-                method=p.SS_root_method,
-                tol=p.mindist_SS,
-            )
-            r_p_ss = sol.x[0]
-            rss = sol.x[1]
-            wss = sol.x[2]
-            p_m_ss = sol.x[3 : 3 + p.M]
-            Yss = sol.x[3 + p.M]
-            BQss = sol.x[3 + p.M + 1 : -1]
-            TR_ss = sol.x[-1]
         else:
-            ss_params_reform = (
-                b_guess,
-                n_guess,
-                None,
-                None,
-                factor,
-                p,
-                client,
+            TR_baseline = None
+            Ig_baseline = None
+        # Now solve for the steady state of the reform
+        ss_params_reform = (
+            b_guess,
+            n_guess,
+            TR_baseline,
+            Ig_baseline,
+            factor,
+            p,
+            client,
+        )
+        if p.use_zeta:
+            guesses = (
+                [r_p_guess, rguess, wguess]
+                + list(p_m_guess)
+                + [Yguess, BQguess, TRguess]
             )
-            if p.use_zeta:
-                guesses = (
-                    [r_p_guess, rguess, wguess]
-                    + list(p_m_guess)
-                    + [Yguess, BQguess, TRguess]
-                )
-            else:
-                guesses = (
-                    [r_p_guess, rguess, wguess]
-                    + list(p_m_guess)
-                    + [Yguess]
-                    + list(BQguess)
-                    + [TRguess]
-                )
-            sol = opt.root(
-                SS_fsolve,
-                guesses,
-                args=ss_params_reform,
-                method=p.SS_root_method,
-                tol=p.mindist_SS,
+        else:
+            guesses = (
+                [r_p_guess, rguess, wguess]
+                + list(p_m_guess)
+                + [Yguess]
+                + list(BQguess)
+                + [TRguess]
             )
-            r_p_ss = sol.x[0]
-            rss = sol.x[1]
-            wss = sol.x[2]
-            p_m_ss = sol.x[3 : 3 + p.M]
-            Yss = sol.x[3 + p.M]
-            BQss = sol.x[3 + p.M + 1 : -1]
-            TR_ss = sol.x[-1]
-            Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
-            # budget_balance = True, but that's ok - will be fixed in
-            # SS_solver
+        sol = opt.root(
+            SS_fsolve,
+            guesses,
+            args=ss_params_reform,
+            method=p.SS_root_method,
+            tol=p.mindist_SS,
+        )
+        r_p_ss = sol.x[0]
+        rss = sol.x[1]
+        wss = sol.x[2]
+        p_m_ss = sol.x[3 : 3 + p.M]
+        Yss = sol.x[3 + p.M]
+        BQss = sol.x[3 + p.M + 1 : -1]
+        TR_ss = sol.x[-1]
+        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
+        # budget_balance = True, but that's ok - will be fixed in
+        # SS_solver
         if (
             (ENFORCE_SOLUTION_CHECKS)
             and not (sol.success == 1)
